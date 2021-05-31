@@ -4,9 +4,6 @@ from toontown.coghq import DistributedCashbotBossCrane
 from toontown.coghq import DistributedCashbotBossSafe
 from panda3d.core import *
 
-from toontown.suit import DistributedCashbotBossGoon
-
-
 class DistributedCashbotBossSideCrane(DistributedCashbotBossCrane.DistributedCashbotBossCrane, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossCrane')
     firstMagnetBit = 21
@@ -26,21 +23,9 @@ class DistributedCashbotBossSideCrane(DistributedCashbotBossCrane.DistributedCas
     def __init__(self, cr):
         DistributedCashbotBossCrane.DistributedCashbotBossCrane.__init__(self, cr)
         FSM.FSM.__init__(self, 'DistributedCashbotBossSideCrane')
-
-    def getName(self):
-        return 'SideCrane-%s' % self.index
         
     def grabObject(self, obj):
         if isinstance(obj, DistributedCashbotBossSafe.DistributedCashbotBossSafe):
             return
         else:
             DistributedCashbotBossCrane.DistributedCashbotBossCrane.grabObject(self, obj)
-
-    def getPointsForStun(self):
-        return self.boss.ruleset.POINTS_SIDESTUN
-
-    # Override base method, always wake up goons
-    def considerObjectState(self, obj):
-        if isinstance(obj, DistributedCashbotBossGoon.DistributedCashbotBossGoon):
-            obj.d_requestWalk()
-            obj.setObjectState('W', 0, obj.craneId)  # wake goon up

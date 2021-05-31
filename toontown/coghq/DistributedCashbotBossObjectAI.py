@@ -17,11 +17,6 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         self.avId = 0
         self.craneId = 0
         self.isHelmet = False
-        self.setBroadcastStateChanges(True)
-        self.accept(self.getStateChangeEvent(), self._doDebug)
-
-    def _doDebug(self, _=None):
-        pass
 
     def cleanup(self):
         self.detachNode()
@@ -52,6 +47,20 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         return self.boss.doId
 
     def d_setObjectState(self, state, avId, craneId):
+        if not self.air:
+            return
+        crane = self.air.doId2do.get(craneId)
+        if (state == 'D' or state == 'G'):
+            if not (self == self.boss.heldObject):
+                if isinstance(crane, DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI):
+                    if crane.index <= 3:
+                        for toonId in self.boss.involvedToons:
+                            if avId == toonId:
+                                #print("Update to %s will be skipped" % (avId))
+                                continue
+                            #print("UPDATING %s" % (toonId))
+                            self.sendUpdateToAvatarId(toonId, 'setObjectState', [state, avId, craneId])
+                        return
         self.sendUpdate('setObjectState', [state, avId, craneId])
 
     def requestGrab(self):
@@ -103,7 +112,7 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         if self.air:
             crane = self.air.doId2do.get(craneId)
             if crane:
-                crane.setObjectID(objectId)
+                crane.objectId = objectId
 
     def enterGrabbed(self, avId, craneId):
         self.avId = avId
@@ -118,7 +127,7 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         self.avId = avId
         self.craneId = craneId
         self.d_setObjectState('D', avId, craneId)
-        self.startWaitFree(3)
+        self.startWaitFree(10)
 
     def exitDropped(self):
         self.stopWaitFree()

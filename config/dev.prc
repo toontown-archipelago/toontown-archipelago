@@ -2,13 +2,13 @@
 # specific to developer instances of Toontown Online.
 
 # Window settings
-window-title Toontown: Crane League Edition
+window-title Toontown Online [DEV]
 
 # Notify settings
 console-output true
 
 # Server settings
-server-version tt-cl-edition
+server-version tto-dev
 
 # Developer settings
 want-dev false

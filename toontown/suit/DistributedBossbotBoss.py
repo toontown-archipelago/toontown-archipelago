@@ -382,7 +382,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
             retval.append(Sequence(Wait(delay), Func(toon.wrtReparentTo, render), Func(toWalk, toon), Func(toon.headsUp, 0, 0, 0), LerpPosInterval(toon, 3, Point3(0, 0, 0)), Func(toon.headsUp, destPos), LerpPosInterval(toon, 3, destPos), LerpHprInterval(toon, 1, Point3(0, 0, 0)), Func(toNeutral, toon)))
             if toon == base.localAvatar:
-                retval.append(Sequence(Wait(delay), Func(camera.reparentTo, toon), Func(camera.setPos, base.localAvatar.getOldCameraPos()), Func(camera.setHpr, 0, 0, 0)))
+                retval.append(Sequence(Wait(delay), Func(camera.reparentTo, toon), Func(camera.setPos, toon.cameraPositions[0][0]), Func(camera.setHpr, 0, 0, 0)))
             delay += 1.0
             index += 1
 

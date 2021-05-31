@@ -3,7 +3,6 @@ from panda3d.physics import *
 from direct.interval.IntervalGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed import DistributedSmoothNode
-from toontown.coghq import CraneLeagueGlobals
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 from direct.fsm import FSM
@@ -33,12 +32,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.touchedBossSfx = loader.loadSfx('phase_5/audio/sfx/AA_drop_sandbag.ogg')
         self.touchedBossSoundInterval = SoundInterval(self.touchedBossSfx, duration=0.8)
         self.lerpInterval = None
-        self.setBroadcastStateChanges(True)
-        self.accept(self.getStateChangeEvent(), self._doDebug)
-        self.isPosHprBroadcasting = False
-
-    def _doDebug(self, _=None):
-        pass
+        return
 
     def disable(self):
         self.cleanup()
@@ -112,12 +106,12 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.collisionNodePath.unstash()
 
     def __hitFloor(self, entry):
-        if self.state == 'Dropped':
+        if self.state == 'Dropped' or self.state == 'LocalDropped':
             self.d_hitFloor()
             self.demand('SlidingFloor', localAvatar.doId)
 
     def __hitGoon(self, entry):
-        if self.state == 'Dropped':
+        if self.state == 'Dropped' or self.state == 'LocalDropped':
             goonId = int(entry.getIntoNodePath().getNetTag('doId'))
             goon = self.cr.doId2do.get(goonId)
             if goon:
@@ -127,20 +121,18 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         pass
 
     def __hitBoss(self, entry):
-        if (self.state == 'Dropped') and self.craneId != self.boss.doId:
+        if (self.state == 'Dropped' or self.state == 'LocalDropped') and self.craneId != self.boss.doId:
             vel = self.physicsObject.getVelocity()
             vel = self.crane.root.getRelativeVector(render, vel)
             vel.normalize()
             impact = vel[1]
-
             if impact >= self.getMinImpact():
+                print 'hit! %s' % impact
                 self.hitBossSoundInterval.start()
+                self.doHitBoss(impact, self.craneId)
             else:
                 self.touchedBossSoundInterval.start()
-
-            impact = max(0, impact)
-
-            self.doHitBoss(impact, self.craneId)
+                print '--not hard enough: %s' % impact
 
     def doHitBoss(self, impact, craneId):
         self.d_hitBoss(impact, craneId)
@@ -173,12 +165,11 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.boss = base.cr.doId2do[bossCogId]
 
     def setObjectState(self, state, avId, craneId):
-
         if state == 'G':
-            if self.boss.doId == avId or base.localAvatar.doId != avId:
-                self.demand('Grabbed', avId, craneId)
+            self.demand('Grabbed', avId, craneId)
         elif state == 'D':
-            self.demand('Dropped', avId, craneId)
+            if self.state != 'Dropped':
+                self.demand('Dropped', avId, craneId)
         elif state == 's':
             if self.state != 'SlidingFloor':
                 self.demand('SlidingFloor', avId)
@@ -196,13 +187,25 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         return (0, 0)
 
     def d_requestGrab(self):
+        avId = base.localAvatar.doId
+        if self.state != 'Grabbed' and self.state != 'Off':
+            craneId, objectId = self.__getCraneAndObject(avId)
+            if (craneId != 0 and objectId == 0):
+                self.demand('LocalGrabbed', avId, craneId)
+                return
         self.sendUpdate('requestGrab')
 
     def rejectGrab(self):
-        if self.state == 'Grabbed':
-            self.demand('Dropped', self.avId, self.craneId)
+        if self.state == 'LocalGrabbed':
+            self.demand('LocalDropped', self.avId, self.craneId)
 
     def d_requestDrop(self):
+        avId = base.localAvatar.doId
+        if avId == self.avId and (self.state == 'Grabbed' or self.state == 'LocalGrabbed'):
+            craneId, objectId = self.__getCraneAndObject(avId)
+            crane = self.cr.doId2do.get(craneId)
+            if (craneId != 0 and objectId == self.doId):
+                self.demand('LocalDropped', avId, craneId)
         self.sendUpdate('requestDrop')
 
     def d_hitFloor(self):
@@ -232,6 +235,23 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
     def exitOff(self):
         self.reparentTo(render)
 
+    def enterLocalGrabbed(self, avId, craneId):
+        self.avId = avId
+        self.craneId = craneId
+        self.crane = self.cr.doId2do.get(craneId)
+        self.hideShadows()
+        self.prepareGrab()
+        if self.crane:
+            self.crane.grabObject(self)
+
+    def exitLocalGrabbed(self):
+        if self.newState != 'Grabbed':
+            if self.crane:
+                self.crane.dropObject(self)
+                self.prepareRelease()
+                del self.crane
+                self.showShadows()
+
     def enterGrabbed(self, avId, craneId):
         self.crane = self.cr.doId2do.get(craneId)
         if self.oldState == 'LocalGrabbed':
@@ -255,15 +275,30 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.showShadows()
         del self.crane
 
-    def enterDropped(self, avId, craneId):
+    def enterLocalDropped(self, avId, craneId):
+        self.avId = avId
+        self.craneId = craneId
+        self.crane = self.cr.doId2do.get(craneId)
+        self.activatePhysics()
+        self.startPosHprBroadcast()
+        self.hideShadows()
+        self.handler.setStaticFrictionCoef(0)
+        self.handler.setDynamicFrictionCoef(0)
 
+    def exitLocalDropped(self):
+        if self.newState != 'SlidingFloor' and self.newState != 'Dropped':
+            self.deactivatePhysics()
+            self.stopPosHprBroadcast()
+        del self.crane
+        self.showShadows()
+
+    def enterDropped(self, avId, craneId):
         self.avId = avId
         self.craneId = craneId
         self.crane = self.cr.doId2do.get(craneId)
         if self.avId == base.localAvatar.doId:
             self.activatePhysics()
-            self.startPosHprBroadcast(period=.05)
-            self.isPosHprBroadcasting = True
+            self.startPosHprBroadcast()
             self.handler.setStaticFrictionCoef(0)
             self.handler.setDynamicFrictionCoef(0)
         else:
@@ -275,7 +310,6 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             if self.newState != 'SlidingFloor':
                 self.deactivatePhysics()
                 self.stopPosHprBroadcast()
-                self.isPosHprBroadcasting = False
         else:
             self.stopSmooth()
         del self.crane
@@ -288,8 +322,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.lerpInterval = None
         if self.avId == base.localAvatar.doId:
             self.activatePhysics()
-            self.startPosHprBroadcast(period=.05)
-            self.isPosHprBroadcasting = True
+            self.startPosHprBroadcast()
             self.handler.setStaticFrictionCoef(0.9)
             self.handler.setDynamicFrictionCoef(0.5)
             if self.wantsWatchDrift:
@@ -304,7 +337,6 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             taskMgr.remove(self.watchDriftName)
             self.deactivatePhysics()
             self.stopPosHprBroadcast()
-            self.isPosHprBroadcasting = False
         else:
             self.stopSmooth()
 

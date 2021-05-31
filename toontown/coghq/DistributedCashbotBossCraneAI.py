@@ -1,6 +1,5 @@
 from panda3d.core import *
 from direct.distributed import DistributedObjectAI
-from toontown.coghq import CraneLeagueGlobals
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 from direct.fsm import FSM
@@ -16,29 +15,9 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
         cs = CollisionSphere(0, -6, 0, 6)
         cn.addSolid(cs)
         self.goonShield = NodePath(cn)
-        self.goonShield.setPosHpr(*CraneLeagueGlobals.ALL_CRANE_POSHPR[self.index])
+        self.goonShield.setPosHpr(*ToontownGlobals.CashbotBossCranePosHprs[self.index])
         self.avId = 0
         self.objectId = 0
-        self.setBroadcastStateChanges(True)
-        self.accept(self.getStateChangeEvent(), self._doDebug)
-
-    def _doDebug(self, _=None):
-        self.boss.craneStatesDebug(doId=self.doId,
-                              content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
-
-    def getName(self):
-        return 'NormalCrane-%s' % self.index
-
-    def setObjectID(self, objId):
-        self.objectId = objId
-        self.boss.craneStatesDebug(doId=self.doId, content='(Server) grabbing object: %s' % objId)
-
-    # Should we multiply any damage done from this crane?
-    def getDamageMultiplier(self):
-        return 1.0
-
-    def getPointsForStun(self):
-        return self.boss.ruleset.POINTS_STUN
 
     def getBossCogId(self):
         return self.boss.doId
@@ -51,11 +30,7 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
 
     def requestControl(self):
         avId = self.air.getAvatarIdFromSender()
-        if avId not in self.air.doId2do:
-            return
-
-        av = self.air.doId2do[avId]
-        if av.getHp() > 0 and avId in self.boss.involvedToons and self.avId == 0:
+        if avId in self.boss.involvedToons and self.avId == 0:
             craneId = self.__getCraneId(avId)
             if craneId == 0:
                 self.request('Controlled', avId)
@@ -90,7 +65,7 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
     def exitControlled(self):
         if self.objectId:
             obj = self.air.doId2do[self.objectId]
-            obj.demand('Dropped', self.avId, self.doId)
+            obj.request('Dropped', self.avId, self.doId)
 
     def enterFree(self):
         self.avId = 0

@@ -4,14 +4,13 @@ from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
 from direct.directnotify import DirectNotifyGlobal
 from otp.avatar import DistributedAvatar
-from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimer, BossSpeedrunTimedTimer
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.battle import BattleExperience
 from toontown.battle import BattleBase
 import BossCog
 import SuitDNA
-from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
+from toontown.coghq import CogDisguiseGlobals
 from toontown.coghq import BossHealthBar
 from direct.showbase import Transitions
 from toontown.hood import ZoneUtil
@@ -62,8 +61,6 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.activeIntervals = {}
         self.flashInterval = None
         self.elevatorType = ElevatorConstants.ELEVATOR_VP
-        self.bossSpeedrunTimer = BossSpeedrunTimer()
-        self.bossSpeedrunTimer.hide()
         return
 
     def announceGenerate(self):
@@ -123,10 +120,6 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bubbleF.setTag('attackCode', str(ToontownGlobals.BossCogFrontAttack))
         self.bubbleF.stash()
 
-    def updateTimer(self, secs):
-        self.bossSpeedrunTimer.override_time(secs)
-        self.bossSpeedrunTimer.update_time()
-
     def disable(self):
         DistributedAvatar.DistributedAvatar.disable(self)
         self.battleAId = None
@@ -143,7 +136,6 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.disableLocalToonSimpleCollisions()
         self.ignoreAll()
         self.bossHealthBar.cleanup()
-        self.bossSpeedrunTimer.cleanup()
         return
 
     def delete(self):
@@ -620,14 +612,14 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def localToonDied(self):
         target_sz = ZoneUtil.getSafeZoneId(localAvatar.defaultZone)
         place = self.cr.playGame.getPlace()
-        # place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
-        #   'where': ZoneUtil.getWhereName(target_sz, 1),
-        #   'how': 'teleportIn',
-        #   'hoodId': target_sz,
-        #   'zoneId': target_sz,
-        #   'shardId': None,
-        #   'avId': -1,
-        #   'battle': 1}])
+        place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
+          'where': ZoneUtil.getWhereName(target_sz, 1),
+          'how': 'teleportIn',
+          'hoodId': target_sz,
+          'zoneId': target_sz,
+          'shardId': None,
+          'avId': -1,
+          'battle': 1}])
         return
 
     def toonsToBattlePosition(self, toonIds, battleNode):
@@ -711,8 +703,6 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
          bp2d[1],
          attackCode,
          timestamp])
-        if attackCode == ToontownGlobals.BossCogSlowDirectedAttack:
-            toon.stunToon()
         self.doZapToon(toon, fling=fling, shake=shake)
         return
 

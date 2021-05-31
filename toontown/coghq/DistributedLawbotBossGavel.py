@@ -48,7 +48,7 @@ class DistributedLawbotBossGavel(DistributedObject.DistributedObject, FSM.FSM):
     def delete(self):
         DistributedObject.DistributedObject.delete(self)
         loader.unloadModel(self.modelPath)
-        self.nodePath.cleanup()
+        self.nodePath.removeNode()
 
     def loadModel(self, modelPath, modelFindString = None):
         if self.nodePath == None:

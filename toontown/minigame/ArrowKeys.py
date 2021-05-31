@@ -10,11 +10,11 @@ class ArrowKeys(DirectObject):
     NULL_HANDLERS = (None, None, None, None, None)
 
     def __init__(self):
-        self.UP_KEY = base.MOVE_UP
-        self.DOWN_KEY = base.MOVE_DOWN
-        self.LEFT_KEY = base.MOVE_LEFT
-        self.RIGHT_KEY = base.MOVE_RIGHT
-        self.JUMP_KEY = base.JUMP
+        UP_KEY = base.MOVE_UP
+        DOWN_KEY = base.MOVE_DOWN
+        LEFT_KEY = base.MOVE_LEFT
+        RIGHT_KEY = base.MOVE_RIGHT
+        JUMP_KEY = base.JUMP
         self.__jumpPost = 0
         self.setPressHandlers(self.NULL_HANDLERS)
         self.setReleaseHandlers(self.NULL_HANDLERS)

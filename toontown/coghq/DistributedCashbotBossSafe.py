@@ -5,8 +5,6 @@ from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 import DistributedCashbotBossObject
 
-from toontown.coghq import CraneLeagueGlobals
-
 class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbotBossObject):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossSafe')
     grabPos = (0, 0, -8.2)
@@ -26,9 +24,6 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         self.hitFloorSoundInterval = SoundInterval(self.hitFloorSfx, node=self)
         return
 
-    def _doDebug(self, _=None):
-        self.boss.safeStatesDebug(doId=self.doId, content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
-
     def announceGenerate(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.announceGenerate(self)
         self.name = 'safe-%s' % self.doId
@@ -36,8 +31,7 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         self.boss.safe.copyTo(self)
         self.shadow = self.find('**/shadow')
         self.collisionNode.setName('safe')
-        #cs = CollisionSphere(0, 0, 4, 4) #TTR Collisions
-        cs = CollisionCapsule(0, 0, 4, 0, 0, 4, 4) #TTCC Collisions
+        cs = CollisionCapsule(0, 0, 4, 0, 0, 4, 4)
         self.collisionNode.addSolid(cs)
         if self.index == 0:
             self.collisionNode.setIntoCollideMask(ToontownGlobals.PieBitmask | OTPGlobals.WallBitmask)
@@ -58,21 +52,15 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
 
     def getMinImpact(self):
         if self.boss.heldObject:
-            return self.boss.ruleset.MIN_DEHELMET_IMPACT
+            return ToontownGlobals.CashbotBossSafeKnockImpact
         else:
-            return self.boss.ruleset.MIN_SAFE_IMPACT
+            return ToontownGlobals.CashbotBossSafeNewImpact
 
     def doHitGoon(self, goon):
-
-        # Should we disable or destroy?
-        if self.boss.ruleset.SAFES_STUN_GOONS:
-            goon.doLocalStun()
-        else:
-            goon.b_destroyGoon()
-            self.sendUpdate('destroyedGoon', [])
+        goon.b_destroyGoon()
 
     def resetToInitialPosition(self):
-        posHpr = CraneLeagueGlobals.SAFE_POSHPR[self.index]
+        posHpr = ToontownGlobals.CashbotBossSafePosHprs[self.index]
         self.setPosHpr(*posHpr)
         self.physicsObject.setVelocity(0, 0, 0)
 
@@ -101,6 +89,3 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
     def exitInitial(self):
         if self.index == 0:
             self.unstash()
-            
-    def move(self, x, y, z, rotation):
-        self.setPosHpr(x, y, z, rotation, 0, 0)

@@ -695,7 +695,7 @@ class NameShop(StateData.StateData):
         self.nameResult['text'] = self.names[0]
 
     def findTempName(self):
-        colorstring = 'Colorful'
+        colorstring = TTLocalizer.NumToColor[self.toon.style.headColor]
         animaltype = TTLocalizer.AnimalToSpecies[self.toon.style.getAnimal()]
         tempname = colorstring + ' ' + animaltype
         if not TTLocalizer.NScolorPrecede:

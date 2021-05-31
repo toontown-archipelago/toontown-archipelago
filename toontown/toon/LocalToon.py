@@ -74,7 +74,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.LocalToon_initialized
         except:
             self.LocalToon_initialized = 1
-            self.neverSleep = False
             self.numFlowers = 0
             self.maxFlowerBasket = 0
             DistributedToon.DistributedToon.__init__(self, cr)
@@ -1968,9 +1967,3 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
     def getTeleporting(self):
         return self.teleporting
-
-    def enableSleeping(self):
-        self.neverSleep = False
-
-    def disableSleeping(self):
-        self.neverSleep = True

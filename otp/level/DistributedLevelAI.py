@@ -51,7 +51,7 @@ class DistributedLevelAI(DistributedObjectAI.DistributedObjectAI, Level.Level):
         return 1.0
 
     def delete(self, deAllocZone = True):
-        self.notify.debug('delete')
+        self.notify.debug(base.ACTION_BUTTON)
         if __dev__:
             self.removeAutosaveTask()
         self.destroyLevel()

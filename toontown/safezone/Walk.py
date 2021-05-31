@@ -27,6 +27,7 @@ class Walk(StateData.StateData):
     def enter(self, slowWalk = 0):
         base.localAvatar.startPosHprBroadcast()
         base.localAvatar.startBlink()
+        base.localAvatar.attachCamera()
         shouldPush = 1
         if len(base.localAvatar.cameraPositions) > 0:
             shouldPush = not base.localAvatar.cameraPositions[base.localAvatar.cameraIndex][4]

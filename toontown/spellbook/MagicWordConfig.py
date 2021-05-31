@@ -4,7 +4,7 @@ PREFIX_ALLOWED = ['~', '?', '/', '<', ':', ';']
 if config.GetBool('exec-chat', False):
     PREFIX_ALLOWED.append('>')
 WIZARD_DEFAULT = 'Magic Minnie'
-MAGIC_WORD_SUCCESS_PHRASES = ['Magic Word executed successfully!']
+MAGIC_WORD_SUCCESS_PHRASES = ['Alakazam!', 'Voila!', 'Ta-da!', 'Presto!', 'Abracadabra!']
 MAGIC_WORD_RESPONSES = {
     "SuccessNoResp": 'response will be randomly selected from MAGIC_WORD_SUCCESS_PHRASES',
     "Success": 'response will be provided by magic word',

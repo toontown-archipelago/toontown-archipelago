@@ -1,6 +1,5 @@
 from panda3d.core import *
 from libotp import *
-from toontown.toon.LaffMeter import LaffMeter
 from toontown.toonbase.ToontownGlobals import *
 from direct.distributed.ClockDelta import *
 from direct.interval.IntervalGlobal import *
@@ -195,7 +194,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.unlimitedGags = False
         self.instaKill = False
         self.accept('f10', self.openTeleportGUI)
-        self.overheadLaffMeter = None
         return
 
     def disable(self):
@@ -244,9 +242,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         try:
             self.DistributedToon_deleted
         except:
-            if self.overheadLaffMeter:
-                self.overheadLaffMeter.destroy()
-                self.overheadLaffMeter = None
             self.DistributedToon_deleted = 1
             del self.safeZonesVisited
             DistributedPlayer.DistributedPlayer.delete(self)
@@ -269,25 +264,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if self.animFSM.getCurrentState().getName() == 'off':
             self.setAnimState('neutral')
         self._startZombieCheck()
-
-        if self.maxHp and self.hp:
-            self.overheadLaffMeter = LaffMeter(self.style, self.hp, self.maxHp)
-            self.overheadLaffMeter.setAvatar(self)
-            self.overheadLaffMeter.reparentTo(self.nametag.getNameIcon())
-            self.overheadLaffMeter.setPos(0, 0, 3.5)
-            self.overheadLaffMeter.setScale(1.35)
-            self.overheadLaffMeter.fixOverhead()
-            self.overheadLaffMeter.adjustFace(self.hp, self.maxHp)
-
-    def setHp(self, hp):
-        super(DistributedToon, self).setHp(hp)
-        if self.overheadLaffMeter:
-            self.overheadLaffMeter.start()
-
-    def setMaxHp(self, hp):
-        super(DistributedToon, self).setMaxHp(hp)
-        if self.overheadLaffMeter:
-            self.overheadLaffMeter.start()
 
     def _handleClientCleanup(self):
         if self.track != None:
@@ -718,15 +694,15 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if self.isLocal():
             target_sz = ZoneUtil.getSafeZoneId(self.defaultZone)
             place = self.cr.playGame.getPlace()
-            # if place and place.fsm:
-            #     place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
-            #       'where': ZoneUtil.getWhereName(target_sz, 1),
-            #       'how': 'teleportIn',
-            #       'hoodId': target_sz,
-            #       'zoneId': target_sz,
-            #       'shardId': None,
-            #       'avId': -1,
-            #       'battle': 1}])
+            if place and place.fsm:
+                place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
+                  'where': ZoneUtil.getWhereName(target_sz, 1),
+                  'how': 'teleportIn',
+                  'hoodId': target_sz,
+                  'zoneId': target_sz,
+                  'shardId': None,
+                  'avId': -1,
+                  'battle': 1}])
         return
 
     def setInterface(self, string):
@@ -1291,9 +1267,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def doSmoothTask(self, task):
         self.smoother.computeAndApplySmoothPosHpr(self, self)
-        self.setSpeed(self.smoother.getSmoothForwardVelocity(),
-                      self.smoother.getSmoothRotationalVelocity(),
-                      self.smoother.getSmoothLateralVelocity())
+        self.setSpeed(self.smoother.getSmoothForwardVelocity(), self.smoother.getSmoothRotationalVelocity())
         return Task.cont
 
     def d_setParent(self, parentToken):
@@ -2510,7 +2484,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             self.hp = min(max(self.hp, 0) + hpGained, self.maxHp)
         hpGained = self.hp - max(oldHp, 0)
         if hpGained > 0:
-            # self.showHpText(hpGained, hasInteractivePropBonus=hasInteractivePropBonus) # Commented out since we are using laff meters instead
+            self.showHpText(hpGained, hasInteractivePropBonus=hasInteractivePropBonus)
             self.hpChange(quietly=0)
         return
 

@@ -1271,6 +1271,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
             camera.reparentTo(render)
             camera.setPosHpr(localAvatar, 5.2, 5.45, localAvatar.getHeight() * 0.66, 131.5, 3.6, 0)
         else:
+            camera.wrtReparentTo(base.localAvatar)
             messenger.send('localToonLeftBattle')
         base.camLens.setMinFov(ToontownGlobals.DefaultCameraFov / (4. / 3.))
         return

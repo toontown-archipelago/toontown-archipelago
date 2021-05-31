@@ -25,7 +25,6 @@ from direct.controls.PhysicsWalker import PhysicsWalker
 from direct.controls.SwimWalker import SwimWalker
 from direct.controls.TwoDWalker import TwoDWalker
 from otp.avatar import ToontownControlManager
-from toontown.toon.OrbitalCamera import OrbitalCamera
 
 class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.DistributedSmoothNode):
     notify = DirectNotifyGlobal.directNotify.newCategory('LocalAvatar')
@@ -87,7 +86,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.showNametag2d()
         self.setPickable(0)
         self.cameraLerp = None
-        self.orbitalCamera = OrbitalCamera(self)
         return
 
     def useSwimControls(self):
@@ -351,14 +349,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
 
     def detachCamera(self):
         base.disableMouse()
-    
-    def getOldCameraPos(self):
-        height = self.getClampedAvatarHeight()
-        return Point3(0.0, -9.0 * height * 0.3333333333, height)
-    
-    def getOldCameraPosTwo(self):
-        height = self.getClampedAvatarHeight()
-        return Point3(5.7 * (height * 0.3333333333), 7.65 * (height * 0.3333333333), height + .25)
 
     def stopJumpLandTask(self):
         if self.jumpLandAnimFixTask:
@@ -437,7 +427,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
             return
         self.avatarControlsEnabled = 0
         self.ignoreAnimationEvents()
-        self.controlManager.setWASDTurn(1)
         self.controlManager.disable()
         self.clearPageUpDown()
 
@@ -643,13 +632,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.updateSmartCameraCollisionLineSegment()
 
     def getIdealCameraPos(self):
-        try:
-            return Point3(self.__idealCameraPos)
-        except AttributeError:
-            height = self.getClampedAvatarHeight()
-            point = Point3(height * (7 / 3.0), height * (-7 / 3.0), height)
-            self.setIdealCameraPos(point)
-            return Point3(self.__idealCameraPos)
+        return Point3(self.__idealCameraPos)
 
     def setCameraPositionByIndex(self, index):
         self.notify.debug('switching to camera position %s' % index)
@@ -732,15 +715,8 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
 
     def setGeom(self, geom):
         self.__geom = geom
-    
-    def getGeom(self):
-        return self.__geom
 
     def startUpdateSmartCamera(self, push = 1):
-        self.initCameraPositions()
-        self.setCameraPositionByIndex(self.cameraIndex)
-        self.orbitalCamera.start()
-        return
         if self._smartCamEnabled:
             LocalAvatar.notify.warning('redundant call to startUpdateSmartCamera')
             return
@@ -766,8 +742,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.enableSmartCameraViews()
 
     def stopUpdateSmartCamera(self):
-        self.orbitalCamera.stop()
-        return
         if not self._smartCamEnabled:
             LocalAvatar.notify.warning('redundant call to stopUpdateSmartCamera')
             return
@@ -1074,7 +1048,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
 
     def trackAnimToSpeed(self, task):
         speed, rotSpeed, slideSpeed = self.controlManager.getSpeeds()
-        if speed != 0.0 or rotSpeed != 0.0 or slideSpeed != 0.0 or inputState.isSet('jump'):
+        if speed != 0.0 or rotSpeed != 0.0 or inputState.isSet('jump'):
             if not self.movingFlag:
                 self.movingFlag = 1
                 self.stopLookAround()
@@ -1116,15 +1090,15 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
                 self.lastNeedH = needH
         else:
             self.lastNeedH = None
-        action = self.setSpeed(speed, rotSpeed, slideSpeed)
+        action = self.setSpeed(speed, rotSpeed)
         if action != self.lastAction:
             self.lastAction = action
             if self.emoteTrack:
                 self.emoteTrack.finish()
                 self.emoteTrack = None
-            if action in (OTPGlobals.WALK_INDEX, OTPGlobals.REVERSE_INDEX):
+            if action == OTPGlobals.WALK_INDEX or action == OTPGlobals.REVERSE_INDEX:
                 self.walkSound()
-            elif action in (OTPGlobals.RUN_INDEX, OTPGlobals.STRAFE_LEFT_INDEX, OTPGlobals.STRAFE_RIGHT_INDEX):
+            elif action == OTPGlobals.RUN_INDEX:
                 self.runSound()
             else:
                 self.stopSound()

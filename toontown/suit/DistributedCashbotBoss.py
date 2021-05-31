@@ -1,9 +1,6 @@
-from direct.gui.OnscreenText import OnscreenText
 from direct.interval.IntervalGlobal import *
 from direct.task.TaskManagerGlobal import *
 from direct.directnotify import DirectNotifyGlobal
-from toontown.coghq.ActivityLog import ActivityLog
-from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimedTimer, BossSpeedrunTimer
 from toontown.toonbase import TTLocalizer
 import DistributedBossCog
 from direct.task.Task import Task
@@ -20,7 +17,7 @@ from toontown.battle import MovieToonVictory
 from toontown.battle import RewardPanel
 from toontown.distributed import DelayDelete
 from toontown.chat import ResistanceChat
-from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
+from toontown.coghq import CogDisguiseGlobals
 from panda3d.core import *
 from panda3d.physics import *
 from panda3d.direct import *
@@ -30,14 +27,10 @@ import math
 OneBossCog = None
 TTL = TTLocalizer
 from toontown.coghq import BossHealthBar
-from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
-from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 
 class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBoss')
     numFakeGoons = 3
-
-    BASE_HEAT = 500
 
     def __init__(self, cr):
         DistributedBossCog.DistributedBossCog.__init__(self, cr)
@@ -47,85 +40,15 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.cranes = {}
         self.safes = {}
         self.goons = []
+        self.bossMaxDamage = ToontownGlobals.CashbotBossMaxDamage
         self.elevatorType = ElevatorConstants.ELEVATOR_CFO
         base.boss = self
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
-        self.ruleset = CraneLeagueGlobals.CFORuleset()  # Setup a default ruleset as a fallback
-        self.modifiers = []
-        self.heatDisplay = CraneLeagueHeatDisplay()
-        self.heatDisplay.hide()
-        self.spectators = []
-        self.localToonSpectating = False
-        self.endVault = None
-
-        self.activityLog = ActivityLog()
         return
-
-    def addToActivityLog(self, doId, content):
-        doObj = base.cr.doId2do.get(doId)
-
-        try:
-            name = doObj.getName()
-        except:
-            name = doId
-
-        msg = '[%s]' % name
-        msg += ' %s' % content
-        self.activityLog.addToLog(msg)
-
-    def debug(self, doId='system', content='null'):
-        if self.ruleset.GENERAL_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def goonStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.GOON_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def safeStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.SAFE_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def craneStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.CRANE_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def updateSpectators(self, specs):
-        self.spectators = specs
-        if not self.localToonSpectating and localAvatar.doId in self.spectators:
-            self.setLocalToonSpectating()
-        elif self.localToonSpectating and localAvatar.doId not in self.spectators:
-            self.disableLocalToonSpectating()
-
-        for toonId in self.involvedToons:
-            t = base.cr.doId2do.get(toonId)
-            if t:
-                if toonId in self.spectators:
-                    t.hide()
-                elif toonId in self.getInvolvedToonsNotSpectating():
-                    t.show()
-
-    def setLocalToonSpectating(self):
-        self.localToonSpectating = True
-        self.localToonIsSafe = True
-
-    def disableLocalToonSpectating(self):
-        self.localToonSpectating = False
-        self.localToonIsSafe = False
-
-    def getInvolvedToonsNotSpectating(self):
-        toons = list(self.involvedToons)
-        for s in self.spectators:
-            if s in toons:
-                toons.remove(s)
-
-        return toons
 
     def announceGenerate(self):
         DistributedBossCog.DistributedBossCog.announceGenerate(self)
-        self.bossSpeedrunTimer = BossSpeedrunTimedTimer(
-            time_limit=self.ruleset.TIMER_MODE_TIME_LIMIT) if self.ruleset.TIMER_MODE else BossSpeedrunTimer()
-        self.bossSpeedrunTimer.hide()
         base.cr.forbidCheesyEffects(1)
         self.setName(TTLocalizer.CashbotBossName)
         nameInfo = TTLocalizer.BossCogNameWithDept % {'name': self._name,
@@ -154,54 +77,11 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         fn.addForce(gravity)
         self.physicsMgr.addLinearForce(gravity)
         localAvatar.chatMgr.chatInputSpeedChat.addCFOMenu()
-        # The crane round scoreboard
-        self.scoreboard = CashbotBossScoreboard()
-        self.scoreboard.hide()
         global OneBossCog
         if OneBossCog != None:
             self.notify.warning('Multiple BossCogs visible.')
         OneBossCog = self
         return
-
-    def getBossMaxDamage(self):
-        return self.ruleset.CFO_MAX_HP
-
-    def calculateHeat(self):
-        bonusHeat = 0
-        # Loop through all modifiers present and calculate the bonus heat
-        for modifier in self.modifiers:
-            bonusHeat += modifier.getHeat()
-
-        return self.BASE_HEAT + bonusHeat
-
-    def updateRequiredElements(self):
-        self.bossSpeedrunTimer.cleanup()
-        self.bossSpeedrunTimer = BossSpeedrunTimedTimer(time_limit=self.ruleset.TIMER_MODE_TIME_LIMIT) if self.ruleset.TIMER_MODE else BossSpeedrunTimer()
-        self.bossSpeedrunTimer.hide()
-        self.heatDisplay.update(self.calculateHeat(), self.modifiers)
-
-        if self.ruleset.WANT_BACKWALL:
-            self.enableBackWall()
-        else:
-            self.disableBackWall()
-
-    def setRawRuleset(self, attrs):
-        self.ruleset = CraneLeagueGlobals.CFORuleset.fromStruct(attrs)
-        self.updateRequiredElements()
-        print('ruleset updated: ' + str(self.ruleset))
-
-    def getRawRuleset(self):
-        return self.ruleset.asStruct()
-
-    def getRuleset(self):
-        return self.ruleset
-
-    def setModifiers(self, mods):
-        modsToSet = []  # A list of CFORulesetModifierBase subclass instances
-        for modStruct in mods:
-            modsToSet.append(CraneLeagueGlobals.CFORulesetModifierBase.fromStruct(modStruct))
-
-        self.modifiers = modsToSet
 
     def disable(self):
         global OneBossCog
@@ -215,8 +95,6 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.battleThreeMusic.stop()
         self.epilogueMusic.stop()
         localAvatar.chatMgr.chatInputSpeedChat.removeCFOMenu()
-        self.scoreboard.cleanup()
-        self.heatDisplay.cleanup()
         if OneBossCog == self:
             OneBossCog = None
         return
@@ -291,26 +169,6 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             for goon in self.fakeGoons:
                 goon.request(state)
 
-    def disableBackWall(self):
-        if self.endVault is None:
-            return
-
-        try:
-            cn = self.endVault.find('**/wallsCollision').node()
-            cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask)  # TTCC No Back Wall
-        except:
-            pass
-
-    def enableBackWall(self):
-        if self.endVault is None:
-            return
-
-        try:
-            cn = self.endVault.find('**/wallsCollision').node()
-            cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask | BitMask32.lowerOn(3) << 21) #TTR Back Wall
-        except:
-            pass
-
     def loadEnvironment(self):
         DistributedBossCog.DistributedBossCog.loadEnvironment(self)
         self.midVault = loader.loadModel('phase_10/models/cogHQ/MidVault.bam')
@@ -334,7 +192,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.endVault.findAllMatches('**/MagnetArms').detach()
         self.endVault.findAllMatches('**/Safes').detach()
         self.endVault.findAllMatches('**/MagnetControlsAll').detach()
-        self.disableBackWall()
+        cn = self.endVault.find('**/wallsCollision').node()
+        #cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask | BitMask32.lowerOn(3) << 21)
+        cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask)
         self.door1 = self.midVault.find('**/SlidingDoor1/')
         self.door2 = self.midVault.find('**/SlidingDoor/')
         self.door3 = self.endVault.find('**/SlidingDoor/')
@@ -616,7 +476,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             Func(self.__hideFakeGoons),
             Func(crane.request, 'Free'),
             Func(self.getGeomNode().setH, 0),
-            self.moveToonsToBattleThreePos(self.getInvolvedToonsNotSpectating()),
+            self.moveToonsToBattleThreePos(self.involvedToons),
             Func(self.__showToons))
         return Sequence(Func(camera.reparentTo, self), Func(camera.setPosHpr, 0, -27, 25, 0, -18, 0), track)
 
@@ -737,16 +597,16 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         if bossDamage > self.bossDamage:
             delta = bossDamage - self.bossDamage
             self.flashRed()
-
-            if self.ruleset.CFO_FLINCHES_ON_HIT or self.dizzy:
-                self.doAnimate('hit', now=1)
-
+            self.doAnimate('hit', now=1)
             self.showHpText(-delta, scale=5)
         self.bossDamage = bossDamage
         self.updateHealthBar()
-        self.bossHealthBar.update(self.ruleset.CFO_MAX_HP - bossDamage, self.ruleset.CFO_MAX_HP)
+        self.bossHealthBar.update(self.bossMaxDamage - bossDamage, self.bossMaxDamage)
 
     def setCraneSpawn(self, want, spawn, toonId):
+        print(want)
+        print(spawn)
+        print(toonId)
         self.wantCustomCraneSpawns = want
         self.customSpawnPositions[toonId] = spawn
 
@@ -787,25 +647,13 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         return Task.cont
 
     def __hideToons(self):
-        for toonId in self.getInvolvedToonsNotSpectating():
+        for toonId in self.involvedToons:
             toon = self.cr.doId2do.get(toonId)
             if toon:
                 toon.hide()
 
-    def __hideSpectators(self):
-        for s in self.spectators:
-            toon = self.cr.doId2do.get(s)
-            if toon:
-                toon.hide()
-
-    def __showSpectators(self):
-        for s in self.spectators:
-            toon = self.cr.doId2do.get(s)
-            if toon:
-                toon.show()
-
     def __showToons(self):
-        for toonId in self.getInvolvedToonsNotSpectating():
+        for toonId in self.involvedToons:
             toon = self.cr.doId2do.get(toonId)
             if toon:
                 toon.show()
@@ -894,7 +742,6 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         DistributedBossCog.DistributedBossCog.exitBattleOne(self)
 
     def enterPrepareBattleThree(self):
-        self.__hideSpectators()
         self.controlToons()
         NametagGlobals.setMasterArrowsOn(0)
         intervalName = 'PrepareBattleThreeMovie'
@@ -946,29 +793,12 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.evWalls.unstash()
         self.midVault.stash()
         self.__hideResistanceToon()
-        localAvatar.orbitalCamera.start()
         localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
         self.generateHealthBar()
         self.updateHealthBar()
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
         taskMgr.add(self.__doPhysics, self.uniqueName('physics'), priority=25)
-        self.bossHealthBar.initialize(self.ruleset.CFO_MAX_HP - self.bossDamage, self.ruleset.CFO_MAX_HP)
-        self.bossSpeedrunTimer.reset()
-        self.bossSpeedrunTimer.start_updating()
-        self.bossSpeedrunTimer.show()
-        self.heatDisplay.update(self.calculateHeat(), self.modifiers)
-        self.heatDisplay.show()
-
-        # Make all laff meters blink when in uber mode
-        messenger.send('uberThreshold', [self.ruleset.LOW_LAFF_BONUS_THRESHOLD])
-
-        self.localToonIsSafe = 0 if base.localAvatar.doId in self.getInvolvedToonsNotSpectating() else 1
-
-        # Setup the scoreboard
-        self.scoreboard.clearToons()
-        for avId in self.getInvolvedToonsNotSpectating():
-            if avId in base.cr.doId2do:
-                self.scoreboard.addToon(avId)
+        self.bossHealthBar.initialize(self.bossMaxDamage - self.bossDamage, self.bossMaxDamage)
 
     def exitBattleThree(self):
         DistributedBossCog.DistributedBossCog.exitBattleThree(self)
@@ -1008,8 +838,6 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossHealthBar.deinitialize()
         if self.oldState != 'BattleThree':
             base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
-        self.bossSpeedrunTimer.stop_updating()
-        self.__showSpectators()
 
     def __continueVictory(self):
         self.doneBarrier('Victory')
@@ -1033,7 +861,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.controlToons()
         panelName = self.uniqueName('reward')
         self.rewardPanel = RewardPanel.RewardPanel(panelName)
-        victory, camVictory, skipper = MovieToonVictory.doToonVictory(1, self.getInvolvedToonsNotSpectating(), self.toonRewardIds, self.toonRewardDicts, self.deathList, self.rewardPanel, allowGroupShot=0, uberList=self.uberList, noSkip=True)
+        victory, camVictory, skipper = MovieToonVictory.doToonVictory(1, self.involvedToons, self.toonRewardIds, self.toonRewardDicts, self.deathList, self.rewardPanel, allowGroupShot=0, uberList=self.uberList, noSkip=True)
         ival = Sequence(Parallel(victory, camVictory), Func(self.__doneReward))
         intervalName = 'RewardMovie'
         delayDeletes = []
@@ -1077,8 +905,26 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         camera.setPos(self.resistanceToon, -9, 12, 6)
         camera.lookAt(self.resistanceToon, 0, 0, 3)
         intervalName = 'EpilogueMovie'
-
-        speech = TTLocalizer.ResistanceToonCongratulations
+        text = ResistanceChat.getChatText(self.rewardId)
+        menuIndex, itemIndex = ResistanceChat.decodeId(self.rewardId)
+        value = ResistanceChat.getItemValue(self.rewardId)
+        if menuIndex == ResistanceChat.RESISTANCE_TOONUP:
+            if value == -1:
+                instructions = TTLocalizer.ResistanceToonToonupAllInstructions
+            else:
+                instructions = TTLocalizer.ResistanceToonToonupInstructions % value
+        elif menuIndex == ResistanceChat.RESISTANCE_MONEY:
+            if value == -1:
+                instructions = TTLocalizer.ResistanceToonMoneyAllInstructions
+            else:
+                instructions = TTLocalizer.ResistanceToonMoneyInstructions % value
+        elif menuIndex == ResistanceChat.RESISTANCE_RESTOCK:
+            if value == -1:
+                instructions = TTLocalizer.ResistanceToonRestockAllInstructions
+            else:
+                trackName = TTLocalizer.BattleGlobalTracks[value]
+                instructions = TTLocalizer.ResistanceToonRestockInstructions % trackName
+        speech = TTLocalizer.ResistanceToonCongratulations % (text, instructions)
         speech = self.__talkAboutPromotion(speech)
         self.resistanceToon.setLocalPageChat(speech, 0)
         self.accept('nextChatPage', self.__epilogueChatNext)
@@ -1093,6 +939,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             intervalName = 'EpilogueMovieToonAnim'
             self.storeInterval(track, intervalName)
             track.start()
+        elif pageNumber == 3:
+            self.d_applyReward()
+            ResistanceChat.doEffect(self.rewardId, self.resistanceToon, self.involvedToons)
 
     def __epilogueChatDone(self, elapsed):
         self.resistanceToon.setChatAbsolute(TTLocalizer.CagedToonGoodbye, CFSpeech)
@@ -1125,111 +974,12 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def exitFrolic(self):
         self.door3.setZ(0)
         self.door2.setZ(0)
-
-    def toonDied(self, avId):
-        self.scoreboard.addScore(avId, self.ruleset.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT, ignoreLaff=True)
-        self.scoreboard.toonDied(avId)
-        DistributedBossCog.DistributedBossCog.toonDied(self, avId)
-
-    def localToonDied(self):
-        DistributedBossCog.DistributedBossCog.localToonDied(self)
-        self.localToonIsSafe = 1
         
     def updateDamageDealt(self, avId, damageDealt):
         self.bossHealthBar.updateDamageDealt(avId, damageDealt)
-        self.scoreboard.addScore(avId, damageDealt)
         
-    def updateStunCount(self, avId, craneId):
-        crane = base.cr.doId2do.get(craneId)
-        if crane:
-            self.bossHealthBar.updateStunCount(avId)
-            self.scoreboard.addScore(avId, crane.getPointsForStun(), CraneLeagueGlobals.STUN_TEXT)
+    def updateStunCount(self, avId):
+        self.bossHealthBar.updateStunCount(avId)
         
     def updateGoonsStomped(self, avId):
         self.bossHealthBar.updateGoonsStomped(avId)
-        self.scoreboard.addScore(avId, self.ruleset.POINTS_GOON_STOMP, CraneLeagueGlobals.GOON_STOMP_TEXT)
-
-    def updateSafePoints(self, avId, points):
-        self.scoreboard.addScore(avId, points, CraneLeagueGlobals.PENALTY_SAFEHEAD_TEXT if points < 0 else CraneLeagueGlobals.DESAFE_TEXT)
-
-    def updateMaxImpactHits(self, avId):
-        self.scoreboard.addScore(avId, self.ruleset.POINTS_IMPACT, CraneLeagueGlobals.IMPACT_TEXT)
-
-    def updateLowImpactHits(self, avId):
-        self.scoreboard.addScore(avId, self.ruleset.POINTS_PENALTY_SANDBAG, CraneLeagueGlobals.PENALTY_SANDBAG_TEXT)
-
-    def updateCombo(self, avId, comboLength):
-        self.scoreboard.setCombo(avId, comboLength)
-
-    def awardCombo(self, avId, comboLength, amount):
-        self.scoreboard.addScore(avId, amount, reason='COMBO x' + str(comboLength) + '!')
-
-    def announceCraneRestart(self):
-        restartingOrEnding = 'Restarting ' if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL else 'Ending '
-        title = OnscreenText(parent=aspect2d, text='All toons are sad!', style=3, fg=(.8, .2, .2, 1), align=TextNode.ACenter, scale=.15, pos=(0, .35))
-        sub = OnscreenText(parent=aspect2d, text=restartingOrEnding + 'crane round in 10 seconds...', style=3, fg=(.8, .8, .8, 1), align=TextNode.ACenter, scale=.09, pos=(0, .2))
-
-        Parallel(
-            Sequence(
-                LerpColorScaleInterval(title, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0), blendType='easeInOut'),
-                Wait(9.75),
-                LerpColorScaleInterval(title, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1), blendType='easeInOut'),
-                Func(lambda: title.cleanup())
-            ),
-            Sequence(
-                LerpColorScaleInterval(sub, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0),
-                                       blendType='easeInOut'),
-                Wait(9.75),
-                LerpColorScaleInterval(sub, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1),
-                                       blendType='easeInOut'),
-                Func(lambda: sub.cleanup())
-            ),
-        ).start()
-
-    def revivedToon(self, avId):
-        self.scoreboard.toonRevived(avId)
-        if avId == base.localAvatar.doId:
-            self.localToonIsSafe = False
-            base.localAvatar.stunToon()
-
-    def goonKilledBySafe(self, avId):
-        self.scoreboard.addScore(avId, amount=self.ruleset.POINTS_GOON_KILLED_BY_SAFE, reason=CraneLeagueGlobals.GOON_KILLED_BY_SAFE_TEXT)
-
-    def updateUnstun(self, avId):
-        self.scoreboard.addScore(avId, amount=self.ruleset.POINTS_PENALTY_UNSTUN, reason=CraneLeagueGlobals.PENALTY_UNSTUN_TEXT)
-
-    def timesUp(self):
-
-        restartingOrEnding = 'Restarting ' if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL else 'Ending '
-
-
-        for avId in self.getInvolvedToonsNotSpectating():
-            av = base.cr.doId2do.get(avId)
-            if av:
-                if avId == base.localAvatar.doId:
-                    messenger.send('exitCrane')
-                av.stunToon(knockdown=1)
-
-        title = OnscreenText(parent=aspect2d, text='Times up!', style=3, fg=(.8, .2, .2, 1),
-                             align=TextNode.ACenter, scale=.15, pos=(0, .35))
-        sub = OnscreenText(parent=aspect2d, text=restartingOrEnding + 'crane round in 10 seconds...', style=3, fg=(.8, .8, .8, 1),
-                           align=TextNode.ACenter, scale=.09, pos=(0, .2))
-
-        Parallel(
-            Sequence(
-                LerpColorScaleInterval(title, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0),
-                                       blendType='easeInOut'),
-                Wait(8.75),
-                LerpColorScaleInterval(title, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1),
-                                       blendType='easeInOut'),
-                Func(lambda: title.cleanup())
-            ),
-            Sequence(
-                LerpColorScaleInterval(sub, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0),
-                                       blendType='easeInOut'),
-                Wait(8.75),
-                LerpColorScaleInterval(sub, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1),
-                                       blendType='easeInOut'),
-                Func(lambda: sub.cleanup())
-            ),
-        ).start()

@@ -1894,6 +1894,7 @@ ChatGarblerMouse = ['squeak', 'squeaky', 'squeakity']
 ChatGarblerHorse = ['neigh', 'brrr']
 ChatGarblerRabbit = ['eek', 'eepr', 'eepy', 'eeky']
 ChatGarblerDuck = ['quack', 'quackity', 'quacky']
+ChatGarblerChicken = ['bawk', 'cluck', 'bawkbawk']
 ChatGarblerMonkey = ['ooh', 'ooo', 'ahh']
 ChatGarblerBear = ['growl', 'grrr']
 ChatGarblerPig = ['oink', 'oik', 'snort']
@@ -4679,7 +4680,7 @@ OptionsKeybindsMenu = 'Keybinds'
 
 RemapPrompt = 'Choose the keys you wish to remap.'
 RemapPopup = 'Press the key you wish to remap this control to.'
-Controls = ['Move Up:', 'Move Left:', 'Move Down:', 'Move Right:', 'Jump:', 'Action Key:', 'Options Hotkey:', 'Chatbox Hotkey:', 'Screenshot Key:', 'Crane Grab Key']
+Controls = ['Move Up:', 'Move Left:', 'Move Down:', 'Move Right:', 'Jump:', 'Action Key:', 'Options Hotkey:', 'Chatbox Hotkey:', 'Screenshot Key:']
 OptionsTabTitle = 'Options\n& Codes'
 OptionsPagePurchase = 'Subscribe'
 OptionsPageLogout = 'Logout'
@@ -5530,6 +5531,7 @@ AnimalToSpecies = {'dog': 'Dog',
  'horse': 'Horse',
  'rabbit': 'Rabbit',
  'duck': 'Duck',
+ 'chicken': 'Chicken',
  'monkey': 'Monkey',
  'bear': 'Bear',
  'pig': 'Pig'}
@@ -5689,7 +5691,7 @@ CagedToonBattleThreeMaxAdvice = 106
 CashbotBossHadEnough = "That's it.  I've had enough of these pesky Toons!"
 CashbotBossOuttaHere = "I've got a train to catch!"
 ResistanceToonName = 'Mata Hairy'
-ResistanceToonCongratulations = "You did it!  Congratulations!\x07You're an asset to the Resistance!"
+ResistanceToonCongratulations = "You did it!  Congratulations!\x07You're an asset to the Resistance!\x07Here's a special phrase you can use in a tight spot:\x07%s\x07When you say it, %s.\x07But you can only use it once, so choose that time well!"
 ResistanceToonToonupInstructions = 'all the Toons near you will gain %s Laff points'
 ResistanceToonToonupAllInstructions = 'all the Toons near you will gain full Laff points'
 ResistanceToonMoneyInstructions = 'all the Toons near you will gain %s jellybeans'
@@ -9541,8 +9543,7 @@ ElevatorBossBotBoss = 'C.E.O Battle'
 ElevatorBossBotCourse0 = 'The Front Three'
 ElevatorBossBotCourse1 = 'The Middle Six'
 ElevatorBossBotCourse2 = 'The Back Nine'
-ElevatorCashBotBoss = 'Crane Practice'
-ElevatorCashBotBossCLMatch = 'Crane League'
+ElevatorCashBotBoss = 'C.F.O Battle'
 ElevatorCashBotMint0 = 'Coin Mint'
 ElevatorCashBotMint1 = 'Dollar Mint'
 ElevatorCashBotMint2 = 'Bullion Mint'

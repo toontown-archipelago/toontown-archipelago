@@ -236,7 +236,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
         return
 
     def delete(self):
-        DistributedLevel.notify.debug('delete')
+        DistributedLevel.notify.debug(base.ACTION_BUTTON)
         DistributedObject.DistributedObject.delete(self)
         self.stopOuch()
 

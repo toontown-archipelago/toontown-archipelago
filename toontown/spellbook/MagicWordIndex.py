@@ -11,9 +11,7 @@ from otp.otpbase import OTPGlobals
 
 from toontown.battle import SuitBattleGlobals
 from toontown.char import CharDNA
-from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
-from toontown.coghq.ActivityLog import ActivityLog
-from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
+from toontown.coghq import CogDisguiseGlobals
 from toontown.effects import FireworkShows
 from toontown.estate import GardenGlobals
 from toontown.fishing import FishGlobals
@@ -36,10 +34,6 @@ import MagicWordConfig
 import time
 import random
 import json
-
-DEBUG_SCOREBOARD = None
-DEBUG_HEAT = None
-DEBUG_LOG = None
 
 magicWordIndex = collections.OrderedDict()
 
@@ -195,82 +189,6 @@ class SetMaxHP(MagicWord):
         toon.toonUp(maxhp)
         return "{}'s max laff has been set to {}.".format(toon.getName(), maxhp)
 
-class scoreboard(MagicWord):
-    aliases = ['sb']
-    desc = 'make scoreboard appear'
-    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-
-    def handleWord(self, invoker, avId, toon, *args):
-
-        global DEBUG_SCOREBOARD
-        global DEBUG_HEAT
-
-        if not DEBUG_SCOREBOARD:
-            from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
-            DEBUG_SCOREBOARD = CashbotBossScoreboard()
-            DEBUG_HEAT = CraneLeagueHeatDisplay()
-            # DEBUG_SCOREBOARD.addToon(avId)  # No longer works
-            return "scoreboard created!"
-
-        n = random.randint(100, 1500)
-        DEBUG_HEAT.set_heat(n)
-
-        return "set heat to " + str(n)
-
-class activityLog(MagicWord):
-    aliases=['log']
-    desc = 'make debug log appear'
-    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-
-    CHOICES = [
-        'ye',
-        'as;lkdfj;laksdfj;lkasdjf;lkasdfl;kasdljk;fasdf',
-        'aaaaaaaaaaaaaaaaaaaaa',
-        'words words words words words words words words words words words',
-        'msg_labelmsg_labelmsg_labelmsg_labelmsg_labelmsg_label msg_label msg_labelmsg_label msg_label'
-
-    ]
-
-    def handleWord(self, invoker, avId, toon, *args):
-        global DEBUG_LOG
-
-        if not DEBUG_LOG:
-            DEBUG_LOG = ActivityLog()
-
-
-        DEBUG_LOG.addToLog(random.choice(self.CHOICES))
-
-        return 'modified log'
-
-
-class StartHoliday(MagicWord):
-    aliases = ["startH"]
-    desc = "Starts a specified holiday ID."
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("id", int, True)]
-
-    def handleWord(self, invoker, avId, toon, *args):
-        id = args[0]
-        try:
-            self.air.holidayManager.startHoliday(id)
-            return "Started holiday %d" % (id)
-        except:
-            return "Invalid holiday ID: %d" % (id)
-
-class EndHoliday(MagicWord):
-    aliases = ["endH"]
-    desc = "Ends a specified holiday ID."
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("id", int, True)]
-
-    def handleWord(self, invoker, avId, toon, *args):
-        id = args[0]
-        try:
-            self.air.holidayManager.endHoliday(id)
-            return "Ended holiday %d" % (id)
-        except:
-            return "Invalid holiday ID: %d" % (id)
-
 
 class ToggleOobe(MagicWord):
     aliases = ["oobe"]
@@ -419,7 +337,7 @@ class UnlockEmotes(MagicWord):
             emoteAccess = [0] * len(OTPLocalizer.EmoteFuncDict)
 
         for emoteId in OTPLocalizer.EmoteFuncDict.values():
-            if emoteId > 24 or emoteId in [17, 18, 19]:
+            if emoteId > 25 or emoteId in [17, 18, 19]:
                 continue
             emoteAccess[emoteId] = 1
 
@@ -1446,6 +1364,7 @@ class SetGM(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         gmId = args[0]
+        name = args[1]
 
         #if gmId == 1:
         #    return 'This GM is reserved for the Toon Council. Use ~setGM 2 instead.'
@@ -1461,11 +1380,11 @@ class SetGM(MagicWord):
                 return "Your access level is too low to use this GM icon."
 
         if toon.isGM() and gmId != 0:
-            toon.b_setGM(0)
+            toon.b_setGM(0, name)
         elif toon.isGM and gmId == 0:
-            toon.b_setGM(0)
+            toon.b_setGM(0, True)
 
-        toon.b_setGM(gmId)
+        toon.b_setGM(gmId, name)
 
         if __debug__:
             pass
@@ -1686,6 +1605,7 @@ class LeaveRace(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         messenger.send('leaveRace')
 
+
 class SkipCFO(MagicWord):
     desc = "Skips to the indicated round of the CFO."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
@@ -1764,207 +1684,11 @@ class rcr(MagicWord):
         if not boss:
             return "You aren't in a CFO!"
 
-        if boss.state == 'Elevator':
-            boss.sendUpdate('setState', ['Introduction'])
-
         battle = battle.lower()
         boss.exitIntroduction()
         boss.b_setState('PrepareBattleThree')
         boss.b_setState('BattleThree')
         return "Restarting Crane Round"
-
-class spectate(MagicWord):
-    desc = "Spectates in the crane round"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
-
-    def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in simbase.air.doId2do.values():
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-
-        if not boss:
-            return "You aren't in a CFO!"
-
-        isSpectating = avId in boss.spectators
-
-        if not isSpectating:
-            boss.enableSpectator(toon)
-        else:
-            boss.disableSpectator(toon)
-
-        return "%s spectator mode for %s" % ('Disabled' if isSpectating else 'Enabled', toon.getName())
-
-class modifiers(MagicWord):
-    desc = "Dynamically tweak modifiers mid CFO"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
-    VALID_SUBCOMMANDS = ['debug', 'amount', 'random', 'clear', 'add', 'remove']
-    arguments = [
-        ('subcommand', str, False, 'debug'),  # subcommand
-        ('mod-id/yes/no', str, False, 'debug'),  # modifier id/on/off/int
-        ('tier', int, False, 1),  # tier
-    ]
-
-    def handleWord(self, invoker, avId, toon, *args):
-
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in simbase.air.doId2do.values():
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-
-        if not boss:
-            return "You aren't in a CFO!"
-
-        # Handle if no arguments given
-        if args[0].lower() == self.VALID_SUBCOMMANDS[0]:
-            return 'Valid subcommands: ' + ', '.join(self.VALID_SUBCOMMANDS)
-
-        # Handle if setting amount of mods wanted
-        if args[0].lower() == self.VALID_SUBCOMMANDS[1]:
-
-            try:
-                n = int(args[1])
-            except:
-                return "Please specify a number!"
-
-            range = (0, len(CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.values()))
-
-            if n < range[0] or n > range[1]:
-                return "Number of modifiers must be in between %s and %s" % (range[0], range[1])
-
-            boss.numModsWanted = n
-            return "Set desired amount of modifiers to %s" % n
-
-        # Handle if we wanna randomize mods
-        if args[0].lower() == self.VALID_SUBCOMMANDS[2]:
-
-            response = args[1].lower()
-            valid_responses = ('yes', 'no')
-
-            if response not in valid_responses:
-                return "Please say yes or no! ex: ~modifiers random yes"
-
-            map = {'yes': True, 'no': False}
-            boss.rollModsOnStart = map[response]
-            return 'Randomize modifiers on restart set to: %s' % response
-
-        # Handle if we want to clear the mods for the next round
-        if args[0].lower() == self.VALID_SUBCOMMANDS[3]:
-            ret = "Cleared modifiers, ~rcr to have changes take effect"
-            if boss.rollModsOnStart:
-                ret += ' warning: roll modifers on rcr active, use ~modifiers random off'
-            boss.modifiers = []
-            return ret
-
-        # Handle if we want to add a modifier
-        if args[0].lower() == self.VALID_SUBCOMMANDS[4]:
-
-            try:
-                mod_id = int(args[1])
-            except:
-                return "Please provide a number for modifier ID"
-
-
-            mod = CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.get(mod_id)
-            if not mod:
-                return "Invalid modifier ID provided"
-
-            tier = args[2]
-            if boss.ruleset.MODIFIER_TIER_RANGE[0] > tier or boss.ruleset.MODIFIER_TIER_RANGE[1] < tier:
-                return "Tier must be in range %s" % boss.ruleset.MODIFIER_TIER_RANGE
-
-            m_instance = mod(tier)
-
-            for m in list(boss.modifiers):
-                if m.MODIFIER_ENUM == m_instance.MODIFIER_ENUM:
-                    boss.modifiers.remove(m)
-
-            boss.modifiers.append(m_instance)
-            s =  "Added modifier %s, ~rcr to take effect" % m_instance.getName()
-            if boss.rollModsOnStart:
-                s += ' warning: roll modifiers on rcr active, use ~modifiers random off'
-
-            return s
-
-        # Handle if we want to remove a modifier
-        if args[0].lower() == self.VALID_SUBCOMMANDS[5]:
-
-            try:
-                mod_id = int(args[1])
-            except:
-                return "Please provide a number for modifier ID"
-
-            mod = CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.get(mod_id)
-            if not mod:
-                return "Invalid modifier ID provided"
-
-            for m in list(boss.modifiers):
-                if m.MODIFIER_ENUM == mod_id:
-                    boss.modifiers.remove(m)
-
-            s = "Removed modifier %s, ~rcr to take effect" % mod_id
-            if boss.rollModsOnStart:
-                s += ' warning: roll modifiers on rcr active, use ~modifiers random off'
-
-            return s
-
-
-class dumpCraneAI(MagicWord):
-    desc = "Dumps info about crane on AI side"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
-
-    def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in simbase.air.doId2do.values():
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-        if not boss:
-            return "You aren't in a CFO!"
-
-        retString = ''
-        for crane in boss.cranes:
-            retString += 'Crane: ' + str(crane.index) + '\n'
-            retString += 'Current AvId: ' + str(crane.avId) + '\n'
-            retString += 'Current object held: ' + str(crane.objectId) + '\n'
-            retString += 'state: ' + str(crane.state) + '\n'
-            retString += '\n'
-        return retString
-
-class dumpCraneClient(MagicWord):
-    desc = "Dumps info about crane on Client side"
-    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-    accessLevel = "MODERATOR"
-
-    def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedCashbotBoss import DistributedCashbotBoss
-        boss = None
-        for do in base.cr.doId2do.values():
-            if isinstance(do, DistributedCashbotBoss):
-                boss = do
-
-        if not boss:
-            return "You aren't in a CFO!"
-
-        retString = ''
-        for crane in boss.cranes.values():
-            retString += 'Crane: ' + str(crane.index) + '\n'
-            retString += 'Current AvId: ' + str(crane.avId) + '\n'
-            retString += 'Current object held: ' + str(crane.heldObject.doId) if crane.heldObject else 'nothing' + '\n'
-            retString += 'state: ' + str(crane.state) + '\n'
-            retString += '\n'
-        return retString
 
 class setCraneSpawn(MagicWord):
     desc = "Sets the craning spawn point of a certain toon"
@@ -2013,40 +1737,7 @@ class safeRush(MagicWord):
             boss.wantSafeRushPractice = True
             return ("Safe Rush => ON")
 
-        
-class aim(MagicWord):
-    desc = "Resets the locations of the safes"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("safes", int, False, 5)]
-    accessLevel = "MODERATOR"
-
-    def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in simbase.air.doId2do.values():
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-        if not boss:
-            return "You aren't in a CFO!"
-
-        safes = args[0]
-        if not (0 <= safes <= 8):
-            return "Invalid # of safes, try a number between 0 and 8 :)"
-        
-        if boss.state not in ('PrepareBattleThree', 'BattleThree'):
-            return "Need to be in a crane round to use!"
-
-        if boss.wantAimPractice:
-            boss.wantAimPractice = False
-            boss.stopCheckNearby()
-            return ("Aim Practice => OFF")
-        else:
-            boss.safesWanted = safes
-            boss.wantAimPractice = True
-            boss.checkNearby()
-            return ("Aim Practice => ON")
+        return ("Error, nothing happened :(" )
 
 class DisableGoons(MagicWord):
     desc = "Stuns all of the goons in an area."
@@ -2407,13 +2098,10 @@ class SpawnCog(MagicWord):
 
         sp = simbase.air.suitPlanners.get(zoneId - (zoneId % 100))
         if not sp:
-            return "Unable to spawn a level %d %s in current zone." % (level, name)
+            return "Unable to spawn %s in current zone." % name
         pointmap = sp.streetPointList
-        try:
-            sp.createNewSuit([], pointmap, suitName=name, suitLevel=level)
-            return "Spawned a level %d %s in current zone." % (level, name)
-        except IndexError:
-            return "Level %d is out of range for %s." % (level, name)
+        sp.createNewSuit([], pointmap, suitName=name, suitLevel=level)
+        return "Spawned %s in current zone." % name
 
 
 class SpawnInvasion(MagicWord):

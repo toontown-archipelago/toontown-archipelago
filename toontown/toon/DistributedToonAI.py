@@ -208,7 +208,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.modulelist = ModuleListAI.ModuleList()
         self.unlimitedGags = False
         self.instaKill = False
-        self.instantDelivery = False
         self.alwaysHitSuits = False
         return
 
@@ -220,7 +219,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         DistributedPlayerAI.DistributedPlayerAI.announceGenerate(self)
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.announceGenerate(self)
         if self.isPlayerControlled():
-            self.doLoginChecks()
             if self.WantOldGMNameBan:
                 self._checkOldGMName()
             messenger.send('avatarEntered', [self])
@@ -244,10 +242,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         from toontown.toon.DistributedNPCToonBaseAI import DistributedNPCToonBaseAI
         if not isinstance(self, DistributedNPCToonBaseAI):
             self.sendUpdate('setDefaultShard', [self.air.districtId])
-
-    def doLoginChecks(self):
-        if self.hp <= 0:
-            self.b_setHp(1)
 
     def setLocation(self, parentId, zoneId):
         DistributedPlayerAI.DistributedPlayerAI.setLocation(self, parentId, zoneId)
@@ -818,12 +812,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.setShoesList(clothesList)
         self.d_setShoesList(clothesList)
 
-    def b_setMuzzle(self, muzzle):
-        self.setMuzzle = muzzle
-     
-    def b_setEyes(self, eyes):
-        self.setEyes = type
-
     def getShoesList(self):
         return self.shoesList
 
@@ -1107,6 +1095,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             if hpLost > 0 and self.hp > 0:
                 self.hp -= hpLost
                 if self.hp <= 0:
+                    self.hp = -1
                     messenger.send(self.getGoneSadMessage())
         if not self.hpOwnedByBattle:
             self.hp = min(self.hp, self.maxHp)
@@ -4142,7 +4131,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             if self._gmType > MaxGMType:
                 self.notify.warning('toon %s has invalid GM type: %s' % (self.doId, self._gmType))
                 self._gmType = MaxGMType
-        #self._updateGMName(formerType) - looks much better without this to be honest
+        self._updateGMName(formerType)
         return
 
     def isGM(self):

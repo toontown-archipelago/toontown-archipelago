@@ -1,7 +1,4 @@
-from toontown.coghq import CraneLeagueGlobals
-from toontown.safezone import DistributedSZTreasureAI, DistributedTreasureAI
-from toontown.toonbase import ToontownGlobals
-
+from toontown.safezone import DistributedSZTreasureAI
 
 class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTreasureAI):
 
@@ -50,39 +47,3 @@ class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTrea
 
     def d_setFinalPosition(self, x, y, z):
         self.sendUpdate('setFinalPosition', [x, y, z])
-
-    def d_setGrab(self, avId):
-        DistributedTreasureAI.DistributedTreasureAI.d_setGrab(self, avId)
-        if avId in self.air.doId2do:
-            av = self.air.doId2do[avId]
-            if av.hp > 0 and av.hp < av.maxHp:
-
-                goon = self.air.doId2do.get(self.goonId)
-                if not goon:
-                    av.toonUp(self.healAmount)
-                    return
-
-                boss = goon.boss
-
-                # Reset combo
-                if boss.ruleset.TREASURE_GRAB_RESETS_COMBO:
-                    boss.comboTrackers[avId].resetCombo()
-
-                # Are we deducting points?
-                if boss.ruleset.TREASURE_POINT_PENALTY:
-
-                    # check if we are tooning up less than heal amount
-                    amount = self.healAmount
-                    laffMissing = av.maxHp - av.hp
-                    if laffMissing < amount:
-                        amount = laffMissing
-
-                    # Is there just a flat rate defined?
-                    if boss.ruleset.TREASURE_POINT_PENALTY_FLAT_RATE > 0:
-                        amount = boss.ruleset.TREASURE_POINT_PENALTY_FLAT_RATE
-
-                    self.sendUpdate('deductScoreboardPoints', [avId, -amount])
-
-                av.toonUp(self.healAmount)
-
-

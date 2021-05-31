@@ -587,7 +587,7 @@ class DistributedLawbotCannon(DistributedObject.DistributedObject):
                 if pos:
                     base.localAvatar.setPos(pos)
                 camera.reparentTo(avatar)
-                camera.setPos(localAvatar.getOldCameraPos())
+                camera.setPos(self.av.cameraPositions[0][0])
                 place = base.cr.playGame.getPlace()
                 if place:
                     place.setState('finalBattle')

@@ -221,7 +221,7 @@ class CreateAvatarOperation(GameOperation):
         # We will now construct a new Toon with the given values.
         dna = ToonDNA()
         dna.makeFromNetString(self.dna)
-        colorString = 'Colorful'
+        colorString = TTLocalizer.NumToColor[dna.headColor]
         animalType = TTLocalizer.AnimalToSpecies[dna.getAnimal()]
         name = ' '.join((colorString, animalType))
         toonFields = {'setName': (name,),

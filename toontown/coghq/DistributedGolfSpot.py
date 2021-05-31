@@ -225,7 +225,9 @@ class DistributedGolfSpot(DistributedObject.DistributedObject, FSM.FSM):
         if self.avId == localAvatar.doId:
             self.__disableControlInterface()
             if not self.goingToReward:
-                base.localAvatar.orbitalCamera.start()
+                camera.reparentTo(base.localAvatar)
+                camera.setPos(base.localAvatar.cameraPositions[0][0])
+                camera.setHpr(0, 0, 0)
         self.stopAdjustClubTask()
         self.releaseTrack.start()
         self.enableControlKey()

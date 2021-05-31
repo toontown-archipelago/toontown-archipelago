@@ -553,7 +553,9 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
             if self.avId == localAvatar.doId:
                 localAvatar.wrtReparentTo(render)
                 self.__disableControlInterface()
-                base.localAvatar.orbitalCamera.start()
+                camera.reparentTo(base.localAvatar)
+                camera.setPos(base.localAvatar.cameraPositions[0][0])
+                camera.setHpr(0, 0, 0)
                 self.goToFinalBattle()
                 self.safeBossToFinalBattleMode()
             else:

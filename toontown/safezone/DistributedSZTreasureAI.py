@@ -5,10 +5,7 @@ class DistributedSZTreasureAI(DistributedTreasureAI.DistributedTreasureAI):
 
     def __init__(self, air, treasurePlanner, x, y, z):
         DistributedTreasureAI.DistributedTreasureAI.__init__(self, air, treasurePlanner, x, y, z)
-        if hasattr(treasurePlanner, 'healAmount'):
-            self.healAmount = treasurePlanner.healAmount
-        else:
-            self.healAmount = 1
+        self.healAmount = treasurePlanner.healAmount
 
     def validAvatar(self, av):
         return av.hp > 0 and av.hp < av.maxHp

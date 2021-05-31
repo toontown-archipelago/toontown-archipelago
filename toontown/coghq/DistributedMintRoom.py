@@ -10,7 +10,6 @@ import FactoryEntityCreator
 import MintRoomSpecs
 from otp.level import LevelSpec, LevelConstants
 from toontown.toonbase import TTLocalizer
-from libotp import CFThought, CFTimeout
 if __dev__:
     from otp.level import EditorGlobals
 

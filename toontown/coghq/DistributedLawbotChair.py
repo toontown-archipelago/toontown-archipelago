@@ -66,7 +66,7 @@ class DistributedLawbotChair(DistributedObject.DistributedObject, FSM.FSM):
         DistributedObject.DistributedObject.delete(self)
         loader.unloadModel(self.modelPath)
         self.unloadSounds()
-        self.nodePath.cleanup()
+        self.nodePath.removeNode()
 
     def loadModel(self, modelPath, modelFindString = None):
         if self.nodePath == None:

@@ -7,7 +7,7 @@ import GoonGlobals
 from direct.task.Task import Task
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
-from toontown.coghq import DistributedCashbotBossObject, CraneLeagueGlobals
+from toontown.coghq import DistributedCashbotBossObject
 from direct.showbase import PythonUtil
 import DistributedGoon
 
@@ -33,9 +33,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.wiggleSfx = loader.loadSfx('phase_5/audio/sfx/SA_finger_wag.ogg')
         return
 
-    def _doDebug(self, _=None):
-        self.boss.goonStatesDebug(doId=self.doId, content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
-
     def generate(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.generate(self)
         DistributedGoon.DistributedGoon.generate(self)
@@ -48,8 +45,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.setName(self.name)
         self.setTag('doId', str(self.doId))
         self.collisionNode.setName('goon')
-        #cs = CollisionSphere(0, 0, 4, 4) #TTR Collisions
-        cs = CollisionCapsule(0, 0, 4, 0, 0, 4, 4) #TTCC Collisions
+        cs = CollisionCapsule(0, 0, 4, 0, 0, 4, 4)
         self.collisionNode.addSolid(cs)
         self.collisionNode.setIntoCollideMask(ToontownGlobals.PieBitmask | ToontownGlobals.CashbotBossObjectBitmask)
         self.wiggleTaskName = self.uniqueName('wiggleTask')
@@ -58,9 +54,8 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.reparentTo(render)
 
     def disable(self):
-        if self in self.boss.goons:
-            i = self.boss.goons.index(self)
-            del self.boss.goons[i]
+        i = self.boss.goons.index(self)
+        del self.boss.goons[i]
         DistributedGoon.DistributedGoon.disable(self)
         DistributedCashbotBossObject.DistributedCashbotBossObject.disable(self)
 
@@ -75,13 +70,11 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.dropShadow.show()
 
     def getMinImpact(self):
-        return self.boss.ruleset.MIN_GOON_IMPACT
+        return ToontownGlobals.CashbotBossGoonImpact
 
     def doHitBoss(self, impact, craneId):
         self.d_hitBoss(impact, craneId)
-
-        if impact >= self.getMinImpact():
-            self.b_destroyGoon()
+        self.b_destroyGoon()
 
     def __startWalk(self):
         self.__stopWalk()
@@ -134,7 +127,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
 
     def prepareGrab(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.prepareGrab(self)
-        if self.isStunned:
+        if self.isStunned or self.boss.localToonIsSafe:
             self.pose('collapse', 48)
             self.grabPos = (0, 0, self.stunGrabZ * self.scale)
         else:
@@ -159,8 +152,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     def setObjectState(self, state, avId, craneId):
         self.crane = self.cr.doId2do.get(craneId)
         if state == 'W':
-            if not self.craneId:
-                self.demand('Walk')
+            self.demand('Walk')
         elif state == 'B':
             if self.state != 'Battle':
                 self.demand('Battle')
@@ -197,8 +189,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         if not self.isDead:
             self.playCrushMovie(None, None)
         self.demand('Off')
-        if self in self.boss.goons:
-            self.boss.goons.remove(self)
         return
 
     def enterOff(self):
@@ -266,6 +256,3 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     def enterRecovery(self, ts = 0, pauseTime = 0):
         DistributedGoon.DistributedGoon.enterRecovery(self, ts, pauseTime)
         self.unstashCollisions()
-
-    def d_requestWalk(self):
-        self.sendUpdate('requestWalk')

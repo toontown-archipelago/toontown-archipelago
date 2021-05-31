@@ -3,7 +3,6 @@ ELEVATOR_NORMAL = 0
 ELEVATOR_VP = 1
 ELEVATOR_MINT = 2
 ELEVATOR_CFO = 3
-ELEVATOR_CFO_CL = 33
 ELEVATOR_CJ = 4
 ELEVATOR_OFFICE = 5
 ELEVATOR_STAGE = 6
@@ -58,12 +57,6 @@ ElevatorData = {ELEVATOR_NORMAL: {'openTime': 2.0,
                 'countdown': bboard.get('elevatorCountdown', 5.0),
                 'sfxVolume': 0.7,
                 'collRadius': 7.5},
- ELEVATOR_CFO_CL: {'openTime': 3.0,
-                   'closeTime': 3.0,
-                   'width': 8.166,
-                   'countdown': bboard.get('elevatorCountdown', 5.0),
-                   'sfxVolume': 0.7,
-                   'collRadius': 7.5},
  ELEVATOR_CJ: {'openTime': 4.0,
                'closeTime': 4.0,
                'width': 15.8,

@@ -370,14 +370,14 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
             self.notify.info('Goon deleted and still trying to call handleToonDetect()')
 
     def __handleStun(self, collEntry):
-        self.doLocalStun()
-
-    def doLocalStun(self):
-
-        if base.localAvatar.getHp() <= 0:
-            return
-
-        self.request('Stunned')
+        toon = base.localAvatar
+        if toon:
+            toonDistance = self.getPos(toon).length()
+            if toonDistance > self.attackRadius:
+                self.notify.warning('Stunned a good, but outside of attack radius')
+                return
+            else:
+                self.request('Stunned')
         if self.walkTrack:
             self.pauseTime = self.walkTrack.pause()
             self.paused = 1

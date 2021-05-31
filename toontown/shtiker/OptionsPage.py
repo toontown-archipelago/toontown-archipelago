@@ -80,12 +80,42 @@ class OptionsPage(ShtikerPage.ShtikerPage):
         rolloverColor = (0.15, 0.82, 1.0, 1)
         diabledColor = (1.0, 0.98, 0.15, 1)
         gui = loader.loadModel('phase_3.5/models/gui/fishingBook')
-        self.optionsTab2 = DirectButton(parent=self, relief=None, text=TTLocalizer.OptionsPageTitle2, text_scale=0.06, text_align=TextNode.ALeft, image=gui.find('**/tabs/polySurface1'), image_pos=(0.55, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.NewOptions], pos=(0.92, 0, 0.55))
-        self.optionsTab = DirectButton(parent=self, relief=None, text=TTLocalizer.OptionsPageTitle, text_scale=0.06, text_align=TextNode.ALeft, image=gui.find('**/tabs/polySurface2'), image_pos=(0.12, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Options], pos=(0.92, 0, 0.1))
-        self.codesTab = DirectButton(parent=self, relief=None, text=TTLocalizer.OptionsPageCodesTab, text_scale=0.06, text_align=TextNode.ALeft, image=gui.find('**/tabs/polySurface3'), image_pos=(-0.28, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Codes], pos=(0.92, 0, -0.3))
-        self.optionsTab2.setPos(-0.55, 0, 0.775)
-        self.optionsTab.setPos(-0.13, 0, 0.775)
-        self.codesTab.setPos(0.28, 0, 0.775)
+        self.optionsTab = DirectButton(
+            parent=self, relief=None, text=TTLocalizer.OptionsPageTitle, text_scale=TTLocalizer.OPoptionsTab, 
+            text_align=TextNode.ALeft, 
+            text_pos=(0.01, 0.0, 0.0), 
+            image=gui.find('**/tabs/polySurface1'), 
+            image_pos=(0.55, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), 
+            image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, 
+            text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Options], pos=(-0.36, 0, 0.77))
+        self.codesTab = DirectButton(
+            parent=self, relief=None, text=TTLocalizer.OptionsPageCodesTab, text_scale=TTLocalizer.OPoptionsTab, 
+            text_align=TextNode.ALeft, 
+            text_pos=(-0.035, 0.0, 0.0), 
+            image=gui.find('**/tabs/polySurface2'), 
+            image_pos=(0.12, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), 
+            image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, 
+            text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Codes], pos=(0.11, 0, 0.77))
+        self.optionsTab2 = DirectButton(
+            parent=self, 
+            relief=None, 
+            text=TTLocalizer.OptionsPageTitle2,
+            text_scale=0.06, 
+            text_align=TextNode.ALeft,
+            text_pos=(-0.71, 0.0, 0.0),
+            image=gui.find('**/tabs/polySurface2'), 
+            image_pos=(-0.3, 1, -0.91),
+            image_hpr=(0, 0, -90), 
+            image_scale=(0.033, 0.033, 0.035),
+            image_color=normalColor, 
+            image1_color=clickColor,
+            image2_color=rolloverColor, 
+            image3_color=diabledColor,
+            text_fg=Vec4(0.2, 0.1, 0, 1), 
+            command=self.setMode,
+            extraArgs=[PageMode.NewOptions], 
+            pos=(0.11, 0, 0.77)
+        )
         return
 
     def enter(self):
@@ -683,77 +713,10 @@ class OptionsTabPage2(DirectFrame):
             pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight * 2 + 0.025),
             command=self.__openKeybindRemapDialog,
         )
-
-        coolbutton = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
-
-        self.sensXLabel = DirectLabel(
-            parent=self,
-            relief=None,
-            text="Camera X Sensitivity: 0",
-            text_align=TextNode.ALeft,
-            text_scale=options_text_scale,
-            pos=(leftMargin, 0, -.12),
-        )
-
-        self.sensXSlider = DirectSlider(
-
-            parent=self, range=(1, 100),
-            scale=.3, pos=(0.42, 0, -0.12),
-            pageSize=1, orientation=DGG.HORIZONTAL, command=self.__adjustXSens,
-            thumb_geom=(coolbutton.find('**/QuitBtn_UP'),
-                        coolbutton.find('**/QuitBtn_DN'),
-                        coolbutton.find('**/QuitBtn_RLVR'),
-                        coolbutton.find('**/QuitBtn_UP')),
-            thumb_relief=None, thumb_geom_scale=(.5, 1, 1)
-
-        )
-
-        self.sensXSlider.setValue(self.__actualSensToDisplayNum(base.settings.getFloat('game', 'camSensitivityX', .25)))
-        self.sensXLabel.setText("Camera X Sensitivity: " + str(round(self.sensXSlider.getValue(), 2)))
-
-        self.sensYLabel = DirectLabel(
-            parent=self,
-            relief=None,
-            text="Camera Y Sensitivity: 0",
-            text_align=TextNode.ALeft,
-            text_scale=options_text_scale,
-            pos=(leftMargin, 0, -.22),
-        )
-
-        self.sensYSlider = DirectSlider(
-
-            parent=self, range=(1, 100),
-            scale=.3, pos=(0.42, 0, -0.22),
-            pageSize=1, orientation=DGG.HORIZONTAL, command=self.__adjustYSens,
-            thumb_geom=(coolbutton.find('**/QuitBtn_UP'),
-                        coolbutton.find('**/QuitBtn_DN'),
-                        coolbutton.find('**/QuitBtn_RLVR'),
-                        coolbutton.find('**/QuitBtn_UP')),
-            thumb_relief=None, thumb_geom_scale=(.5, 1, 1)
-
-        )
-
-        self.sensYSlider.setValue(self.__actualSensToDisplayNum(base.settings.getFloat('game', 'camSensitivityY', .25)))
-        self.sensYLabel.setText("Camera Y Sensitivity: " + str(round(self.sensYSlider.getValue(), 2)))
-
         self.keybindDialogButton.setScale(0.8)
         self.keybindDialogButton.hide()
         guiButton.removeNode()
         gui.removeNode()
-
-    def __displayNumToActualSens(self, num):
-        return .01 * num
-
-    def __actualSensToDisplayNum(self, num):
-        return 100 * num
-
-    def __adjustXSens(self):
-        self.sensXLabel.setText("Camera X Sensitivity: " + str(round(self.sensXSlider.getValue(), 2)))
-        base.settings.updateSetting('game', 'camSensitivityX', self.__displayNumToActualSens(self.sensXSlider.getValue()))
-
-    def __adjustYSens(self):
-        self.sensYLabel.setText("Camera Y Sensitivity: " + str(round(self.sensYSlider.getValue(), 2)))
-        base.settings.updateSetting('game', 'camSensitivityY', self.__displayNumToActualSens(self.sensYSlider.getValue()))
 
     def enter(self):
         self.show()
