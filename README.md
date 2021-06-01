@@ -20,8 +20,8 @@ Credits:
 # Panda3D
 This source code requires a customized version of Panda3D to run. Here are links to the 32 and 64 bit Windows executables. Please contact the teachers on our Discord server for instructions on the Linux Panda3D setup.
 
-[Panda3D SDK for Windows (32-bit)](https://drive.google.com/file/d/1RnW18VRW7Jdw_oJwWlQx1cgAEN4jvWAd/view?usp=sharing)
-[Panda3D SDK for Windows (64-bit)](https://drive.google.com/file/d/1hWFXGN9d6xt12qWuZ9bHR6AEK2PUUhyY/view?usp=sharing)
+[Panda3D SDK for Windows (32-bit)] (Unavailable)
+[Panda3D SDK for Windows (64-bit)](https://drive.google.com/file/d/1GIU2yhzY2bkOVUXsncH0rtBFiitMLXOk/view)
 
 
 # Libuv 
