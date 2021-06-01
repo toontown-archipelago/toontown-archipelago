@@ -799,6 +799,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
         taskMgr.add(self.__doPhysics, self.uniqueName('physics'), priority=25)
         self.bossHealthBar.initialize(self.bossMaxDamage - self.bossDamage, self.bossMaxDamage)
+        self.bossSpeedrunTimer.reset()
+        self.bossSpeedrunTimer.start_updating()
+        self.bossSpeedrunTimer.show()
 
     def exitBattleThree(self):
         DistributedBossCog.DistributedBossCog.exitBattleThree(self)
@@ -838,6 +841,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossHealthBar.deinitialize()
         if self.oldState != 'BattleThree':
             base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
+        self.bossSpeedrunTimer.stop_updating()
 
     def __continueVictory(self):
         self.doneBarrier('Victory')

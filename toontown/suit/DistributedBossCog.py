@@ -4,6 +4,7 @@ from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
 from direct.directnotify import DirectNotifyGlobal
 from otp.avatar import DistributedAvatar
+from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimer
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.battle import BattleExperience
@@ -66,6 +67,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def announceGenerate(self):
         DistributedAvatar.DistributedAvatar.announceGenerate(self)
         self.bossHealthBar = BossHealthBar.BossHealthBar(self.style.dept)
+        self.bossSpeedrunTimer = BossSpeedrunTimer()
+        self.bossSpeedrunTimer.hide()
         self.prevCogSuitLevel = localAvatar.getCogLevels()[CogDisguiseGlobals.dept2deptIndex(self.style.dept)]
         nearBubble = CollisionSphere(0, 0, 0, 50)
         nearBubble.setTangible(0)
@@ -120,6 +123,10 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bubbleF.setTag('attackCode', str(ToontownGlobals.BossCogFrontAttack))
         self.bubbleF.stash()
 
+    def updateTimer(self, secs):
+        self.bossSpeedrunTimer.override_time(secs)
+        self.bossSpeedrunTimer.update_time()
+
     def disable(self):
         DistributedAvatar.DistributedAvatar.disable(self)
         self.battleAId = None
@@ -136,6 +143,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.disableLocalToonSimpleCollisions()
         self.ignoreAll()
         self.bossHealthBar.cleanup()
+        self.bossSpeedrunTimer.cleanup()
         return
 
     def delete(self):
