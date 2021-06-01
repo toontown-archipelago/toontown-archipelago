@@ -363,7 +363,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.__makeBattleThreeObjects()
         return
 
-    def recordHit(self, damage, impact, craneId):
+    def recordHit(self, damage, impact=0, craneId=-1):
         avId = self.air.getAvatarIdFromSender()
         crane = simbase.air.doId2do.get(craneId)
         if not self.validate(avId, avId in self.involvedToons, 'recordHit from unknown avatar'):
@@ -520,9 +520,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def enterVictory(self):
         #Whisper out the time from the start of CFO until end of CFO
         self.craneTime = globalClock.getFrameTime()
+        actualTime = self.craneTime - self.battleThreeTimeStarted
         for doId, do in simbase.air.doId2do.items():
             if str(doId)[0] != str(simbase.air.districtId)[0]:
-                do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(self.craneTime - self.battleThreeTimeStarted))
+                do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
+        self.d_updateTimer(actualTime)
         self.resetBattles()
         self.suitsKilled.append({'type': None,
          'level': None,
@@ -536,6 +538,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
          'activeToons': self.involvedToons[:]})
         self.barrier = self.beginBarrier('Victory', self.involvedToons, 30, self.__doneVictory)
         return
+
+    def d_updateTimer(self, time):
+        self.sendUpdate('updateTimer', [time])
 
     def __doneVictory(self, avIds):
         self.d_setBattleExperience()
