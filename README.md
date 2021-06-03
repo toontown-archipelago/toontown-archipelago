@@ -5,7 +5,7 @@ Toontown School House is a course dedicated to teaching members of the Toontown 
 
 
 # Source Code
-This source code is based on a March 2019 fork of Toontown Offline v1.0.0.0. It has been stripped of all Toontown Offline exclusive features, save one. The brand new Magic Words system made for Toontown Offline has been left alone, and upgraded to the most recent build. This feature will allow users to easily navigate around Toontown without any hassle.
+This source code is based on a March 2019 fork of Toontown Offline v1.0.0.0 used for Toontown School House. It has been stripped of all Toontown Offline exclusive features, save one. The brand new Magic Words system made for Toontown Offline has been left alone, and upgraded to the most recent build. This feature will allow users to easily navigate around Toontown without any hassle.
 
 Credits:
 * [The Toontown Offline Team](https://ttoffline.com)
@@ -18,8 +18,7 @@ Credits:
 
 
 # Panda3D
-This source code requires a customized version of Panda3D to run. Here are links to the 32 and 64 bit Windows executables. Please contact the teachers on our Discord server for instructions on the Linux Panda3D setup.
-
+This source code requires a customized version of Panda3D to run. Here are links to the 32 and 64 bit Windows executables.
 [Panda3D SDK for Windows (32-bit)] (Unavailable)
 [Panda3D SDK for Windows (64-bit)](https://drive.google.com/file/d/1GIU2yhzY2bkOVUXsncH0rtBFiitMLXOk/view)
 
@@ -29,5 +28,3 @@ This source code requires libuv.dll in the astrond folder to run. Here are links
 [Libuv.dll (32-bit)](https://cdn.discordapp.com/attachments/638485243560460309/640339222682664973/libuv.dll)
 [Libuv.dll(64-bit)](https://cdn.discordapp.com/attachments/638485243560460309/640339153346887696/libuv.dll)
 After downloading the file just drop it in the astron folder
-# Test
-Ignore this! It's a test!!
