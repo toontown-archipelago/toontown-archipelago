@@ -38,7 +38,15 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
             elif self.boss.acceptHelmetFrom(avId):
                 self.demand('Grabbed', self.boss.doId, self.boss.doId)
                 self.boss.heldObject = self
+                if avId in self.boss.safesPutOn:
+                    self.boss.safesPutOn[avId] -= 10
+                else:
+                    self.boss.safesPutOn[avId] = -10
         elif impact >= ToontownGlobals.CashbotBossSafeKnockImpact:
+            if avId in self.boss.safesPutOff:
+                self.boss.safesPutOff[avId] += 10
+            else:
+                self.boss.safesPutOff[avId] = 10
             self.boss.heldObject.demand('Dropped', avId, self.boss.doId)
             self.boss.heldObject.avoidHelmet = 1
             self.boss.heldObject = None

@@ -55,6 +55,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.toonStunsDict = {}
         self.toonGoonStompsDict = {}
         self.participantPoints = {}
+        self.safesPutOn = {}
+        self.safesPutOff = {}
         return
 
     def generate(self):
@@ -505,6 +507,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.toonStunsDict = {}
         self.toonGoonStompsDict = {}
         self.participantPoints = {}
+        self.safesPutOn = {}
+        self.safesPutOff = {}
 
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
@@ -527,13 +531,21 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         #Whisper out the time from the start of CFO until end of CFO
         self.craneTime = globalClock.getFrameTime()
         actualTime = self.craneTime - self.battleThreeTimeStarted
+        avPoints = 0
         resultsString = ""
         for avId in self.involvedToons:
             av = self.air.doId2do.get(avId)
-            avPoints = (self.toonDamagesDict[avId] + self.toonStunsDict[avId]*10)
+            if (avId in self.toonDamagesDict):
+                avPoints += self.toonDamagesDict[avId]
+            if (avId in self.toonStunsDict):
+                avPoints += self.toonStunsDict[avId]*10
+            if (avId in self.safesPutOff):
+                avPoints += self.safesPutOff[avId]
+            if (avId in self.safesPutOn):
+                avPoints += self.safesPutOn[avId]
             self.participantPoints[av.getName()] = avPoints
             resultsString = ("%s: %s\n" % (av.getName(), avPoints))
-        resultsString = resultString[:-1]
+        resultsString = resultsString[:-1]
         for doId, do in simbase.air.doId2do.items():
             if str(doId)[0] != str(simbase.air.districtId)[0]:
                 if isinstance(do, DistributedToonAI.DistributedToonAI):
