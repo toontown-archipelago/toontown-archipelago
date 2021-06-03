@@ -393,9 +393,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     
                     self.d_updateStunCount(avId)
                     if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 0.5
+                        self.toonStunsDict[avId] += 5
                     else:
-                        self.toonStunsDict[avId] = 0.5
+                        self.toonStunsDict[avId] = 5
 
                     self.stopHelmets()
 
@@ -410,9 +410,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
                     self.d_updateStunCount(avId)
                     if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 1
+                        self.toonStunsDict[avId] += 10
                     else:
-                        self.toonStunsDict[avId] = 1
+                        self.toonStunsDict[avId] = 10
                     self.stopHelmets()
                 else:
                     self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
@@ -538,7 +538,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             if (avId in self.toonDamagesDict):
                 avPoints += self.toonDamagesDict[avId]
             if (avId in self.toonStunsDict):
-                avPoints += self.toonStunsDict[avId]*10
+                avPoints += self.toonStunsDict[avId]
             if (avId in self.safesPutOff):
                 avPoints += self.safesPutOff[avId]
             if (avId in self.safesPutOn):
