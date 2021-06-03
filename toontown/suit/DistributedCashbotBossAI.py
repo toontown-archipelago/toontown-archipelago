@@ -531,7 +531,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for avId in self.involvedToons:
             av = self.air.doId2do.get(avId)
             avPoints = (self.toonDamagesDict[avId] + self.toonStunsDict[avId]*10)
-            participantPoints[av.getName()] = avPoints
+            self.participantPoints[av.getName()] = avPoints
             resultsString = ("%s: %s\n" % (av.getName(), avPoints))
         resultsString = resultString[:-1]
         for doId, do in simbase.air.doId2do.items():
