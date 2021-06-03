@@ -8,6 +8,7 @@ from toontown.suit import DistributedCashbotBossGoonAI
 from toontown.coghq import DistributedCashbotBossTreasureAI
 from toontown.battle import BattleExperienceAI
 from toontown.chat import ResistanceChat
+from toontown.toon import DistributedToonAI
 from direct.fsm import FSM
 import DistributedBossCogAI
 import SuitDNA
@@ -53,6 +54,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.toonDamagesDict = {}
         self.toonStunsDict = {}
         self.toonGoonStompsDict = {}
+        self.participantPoints = {}
         return
 
     def generate(self):
@@ -499,6 +501,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         taskMgr.remove(taskName)
         taskMgr.doMethodLater(2, self.__doInitialGoons, taskName)
         self.battleThreeTimeStarted = globalClock.getFrameTime()
+        self.toonDamagesDict = {}
+        self.toonStunsDict = {}
+        self.toonGoonStompsDict = {}
+        self.participantPoints = {}
 
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
@@ -521,9 +527,18 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         #Whisper out the time from the start of CFO until end of CFO
         self.craneTime = globalClock.getFrameTime()
         actualTime = self.craneTime - self.battleThreeTimeStarted
+        resultsString = ""
+        for avId in self.involvedToons:
+            av = self.air.doId2do.get(avId)
+            avPoints = (self.toonDamagesDict[avId] + self.toonStunsDict[avId]*10)
+            participantPoints[av.getName()] = avPoints
+            resultsString = ("%s: %s\n" % (av.getName(), avPoints))
+        resultsString = resultString[:-1]
         for doId, do in simbase.air.doId2do.items():
             if str(doId)[0] != str(simbase.air.districtId)[0]:
-                do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
+                if isinstance(do, DistributedToonAI.DistributedToonAI):
+                    do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
+                    do.d_setSystemMessage(0, resultsString)
         self.d_updateTimer(actualTime)
         self.resetBattles()
         self.suitsKilled.append({'type': None,
