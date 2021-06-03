@@ -544,7 +544,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             if (avId in self.safesPutOn):
                 avPoints += self.safesPutOn[avId]
             self.participantPoints[av.getName()] = avPoints
-            resultsString = ("%s: %s\n" % (av.getName(), avPoints))
+            resultsString += ("%s: %s\n" % (av.getName(), avPoints))
         resultsString = resultsString[:-1]
         for doId, do in simbase.air.doId2do.items():
             if str(doId)[0] != str(simbase.air.districtId)[0]:
