@@ -127,3 +127,9 @@ if autoRun and launcher.isDummy() and (not Thread.isTrueThreads() or __name__ ==
         from otp.otpbase import PythonUtil
         print PythonUtil.describeException()
         raise
+
+from panda3d.core import TextNode
+
+font = loader.loadFont('phase_3/models/fonts/ImpressBT.ttf')
+
+TextNode.setDefaultFont(font)
