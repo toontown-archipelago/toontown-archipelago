@@ -80,42 +80,12 @@ class OptionsPage(ShtikerPage.ShtikerPage):
         rolloverColor = (0.15, 0.82, 1.0, 1)
         diabledColor = (1.0, 0.98, 0.15, 1)
         gui = loader.loadModel('phase_3.5/models/gui/fishingBook')
-        self.optionsTab = DirectButton(
-            parent=self, relief=None, text=TTLocalizer.OptionsPageTitle, text_scale=TTLocalizer.OPoptionsTab, 
-            text_align=TextNode.ALeft, 
-            text_pos=(0.01, 0.0, 0.0), 
-            image=gui.find('**/tabs/polySurface1'), 
-            image_pos=(0.55, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), 
-            image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, 
-            text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Options], pos=(-0.36, 0, 0.77))
-        self.codesTab = DirectButton(
-            parent=self, relief=None, text=TTLocalizer.OptionsPageCodesTab, text_scale=TTLocalizer.OPoptionsTab, 
-            text_align=TextNode.ALeft, 
-            text_pos=(-0.035, 0.0, 0.0), 
-            image=gui.find('**/tabs/polySurface2'), 
-            image_pos=(0.12, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), 
-            image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, 
-            text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Codes], pos=(0.11, 0, 0.77))
-        self.optionsTab2 = DirectButton(
-            parent=self, 
-            relief=None, 
-            text=TTLocalizer.OptionsPageTitle2,
-            text_scale=0.06, 
-            text_align=TextNode.ALeft,
-            text_pos=(-0.71, 0.0, 0.0),
-            image=gui.find('**/tabs/polySurface2'), 
-            image_pos=(-0.3, 1, -0.91),
-            image_hpr=(0, 0, -90), 
-            image_scale=(0.033, 0.033, 0.035),
-            image_color=normalColor, 
-            image1_color=clickColor,
-            image2_color=rolloverColor, 
-            image3_color=diabledColor,
-            text_fg=Vec4(0.2, 0.1, 0, 1), 
-            command=self.setMode,
-            extraArgs=[PageMode.NewOptions], 
-            pos=(0.11, 0, 0.77)
-        )
+        self.optionsTab2 = DirectButton(parent=self, relief=None, text=TTLocalizer.OptionsPageTitle2, text_scale=0.06, text_align=TextNode.ALeft, image=gui.find('**/tabs/polySurface1'), image_pos=(0.55, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.NewOptions], pos=(0.92, 0, 0.55))
+        self.optionsTab = DirectButton(parent=self, relief=None, text=TTLocalizer.OptionsPageTitle, text_scale=0.06, text_align=TextNode.ALeft, image=gui.find('**/tabs/polySurface2'), image_pos=(0.12, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Options], pos=(0.92, 0, 0.1))
+        self.codesTab = DirectButton(parent=self, relief=None, text=TTLocalizer.OptionsPageCodesTab, text_scale=0.06, text_align=TextNode.ALeft, image=gui.find('**/tabs/polySurface3'), image_pos=(-0.28, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Codes], pos=(0.92, 0, -0.3))
+        self.optionsTab2.setPos(-0.55, 0, 0.775)
+        self.optionsTab.setPos(-0.13, 0, 0.775)
+        self.codesTab.setPos(0.28, 0, 0.775)
         return
 
     def enter(self):

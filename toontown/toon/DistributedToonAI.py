@@ -812,6 +812,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.setShoesList(clothesList)
         self.d_setShoesList(clothesList)
 
+    def b_setMuzzle(self, muzzle):
+        self.setMuzzle = muzzle
+     
+    def b_setEyes(self, eyes):
+        self.setEyes = type
+
     def getShoesList(self):
         return self.shoesList
 

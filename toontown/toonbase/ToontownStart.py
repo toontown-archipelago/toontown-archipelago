@@ -86,6 +86,9 @@ if base.musicManagerIsValid:
     DirectGuiGlobals.setDefaultClickSound(base.loader.loadSfx('phase_3/audio/sfx/GUI_create_toon_fwd.ogg'))
 else:
     music = None
+from panda3d.core import TextNode
+font = loader.loadFont('phase_3/models/fonts/ImpressBT.ttf')
+TextNode.setDefaultFont(font)
 import ToontownLoader
 from direct.gui.DirectGui import *
 serverVersion = base.config.GetString('server-version', 'no_version_set')
