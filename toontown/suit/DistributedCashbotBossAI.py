@@ -340,7 +340,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if then == None or now - then > 300:
             self.avatarHelmets[avId] = now
             return 1
-        return 0
+        return 1
 
     def magicWordHit(self, damage, avId):
         if self.heldObject:
@@ -531,9 +531,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         #Whisper out the time from the start of CFO until end of CFO
         self.craneTime = globalClock.getFrameTime()
         actualTime = self.craneTime - self.battleThreeTimeStarted
-        avPoints = 0
         resultsString = ""
         for avId in self.involvedToons:
+            avPoints = 0
             av = self.air.doId2do.get(avId)
             if (avId in self.toonDamagesDict):
                 avPoints += self.toonDamagesDict[avId]
