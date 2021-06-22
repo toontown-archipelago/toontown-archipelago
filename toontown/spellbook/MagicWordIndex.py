@@ -1684,6 +1684,9 @@ class rcr(MagicWord):
         if not boss:
             return "You aren't in a CFO!"
 
+        if boss.state == 'Elevator':
+            boss.sendUpdate('setState', ['Introduction'])
+
         battle = battle.lower()
         boss.exitIntroduction()
         boss.b_setState('PrepareBattleThree')
