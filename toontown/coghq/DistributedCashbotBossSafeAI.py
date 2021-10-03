@@ -98,3 +98,7 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
     def enterFree(self):
         DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI.enterFree(self)
         self.avoidHelmet = 0
+        
+    def move(self, x, y, z, rotation):
+        self.setPosHpr(x, y, z, rotation, 0, 0)
+        self.sendUpdate('move', [x, y, z, rotation])

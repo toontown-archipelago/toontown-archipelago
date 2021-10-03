@@ -89,3 +89,6 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
     def exitInitial(self):
         if self.index == 0:
             self.unstash()
+            
+    def move(self, x, y, z, rotation):
+        self.setPosHpr(x, y, z, rotation, 0, 0)
