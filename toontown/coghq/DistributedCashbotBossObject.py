@@ -187,12 +187,6 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         return (0, 0)
 
     def d_requestGrab(self):
-        avId = base.localAvatar.doId
-        if self.state != 'Grabbed' and self.state != 'Off':
-            craneId, objectId = self.__getCraneAndObject(avId)
-            if (craneId != 0 and objectId == 0):
-                self.demand('LocalGrabbed', avId, craneId)
-                return
         self.sendUpdate('requestGrab')
 
     def rejectGrab(self):
@@ -200,12 +194,6 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.demand('LocalDropped', self.avId, self.craneId)
 
     def d_requestDrop(self):
-        avId = base.localAvatar.doId
-        if avId == self.avId and (self.state == 'Grabbed' or self.state == 'LocalGrabbed'):
-            craneId, objectId = self.__getCraneAndObject(avId)
-            crane = self.cr.doId2do.get(craneId)
-            if (craneId != 0 and objectId == self.doId):
-                self.demand('LocalDropped', avId, craneId)
         self.sendUpdate('requestDrop')
 
     def d_hitFloor(self):

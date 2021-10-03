@@ -59,9 +59,6 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
         self.goonShield.reparentTo(self.boss.scene)
 
     def enterControlled(self, avId):
-        if self.objectId:
-            obj = self.air.doId2do[self.objectId]
-            obj.demand('Dropped', self.avId, self.doId)
         self.avId = avId
         self.d_setState('C', avId)
 
