@@ -1741,6 +1741,40 @@ class safeRush(MagicWord):
             return ("Safe Rush => ON")
 
         return ("Error, nothing happened :(" )
+        
+class aim(MagicWord):
+    desc = "Resets the locations of the safes"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("safes", int, False, 5)]
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "You aren't in a CFO!"
+
+        safes = args[0]
+        if not (0 <= safes <= 8):
+            return "Invalid # of safes, try a number between 0 and 8 :)"
+        
+        if boss.state not in ('PrepareBattleThree', 'BattleThree'):
+            return "Need to be in a crane round to use!"
+
+        if boss.wantAimPractice:
+            boss.wantAimPractice = False
+            boss.stopCheckNearby()
+            return ("Aim Practice => OFF")
+        else:
+            boss.safesWanted = safes
+            boss.wantAimPractice = True
+            boss.checkNearby()
+            return ("Aim Practice => ON")
 
 class DisableGoons(MagicWord):
     desc = "Stuns all of the goons in an area."
