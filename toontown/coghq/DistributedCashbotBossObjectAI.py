@@ -47,20 +47,6 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         return self.boss.doId
 
     def d_setObjectState(self, state, avId, craneId):
-        if not self.air:
-            return
-        crane = self.air.doId2do.get(craneId)
-        if (state == 'D' or state == 'G'):
-            if not (self == self.boss.heldObject):
-                if isinstance(crane, DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI):
-                    if crane.index <= 3:
-                        for toonId in self.boss.involvedToons:
-                            if avId == toonId:
-                                #print("Update to %s will be skipped" % (avId))
-                                continue
-                            #print("UPDATING %s" % (toonId))
-                            self.sendUpdateToAvatarId(toonId, 'setObjectState', [state, avId, craneId])
-                        return
         self.sendUpdate('setObjectState', [state, avId, craneId])
 
     def requestGrab(self):
