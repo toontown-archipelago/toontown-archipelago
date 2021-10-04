@@ -1605,32 +1605,6 @@ class LeaveRace(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         messenger.send('leaveRace')
 
-class cfo(MagicWord):
-    desc = "Starts a CFO"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
-    
-    def handleWord(self, invoker, avId, toon, *args):
-        from toontown.building.DistributedCFOElevatorAI import DistributedCFOElevatorAI
-        
-        # Find the CFO elevator object
-        elevator = simbase.air.doFindAllInstances(DistributedCFOElevatorAI)[0]
-        
-        # If they're in the CBHQ lobby, send them using the elevator
-        if toon.zoneId == ToontownGlobals.CashbotLobby:
-            elevator.sendAvatarsToDestination([avId])
-        
-        # If they're in CBHQ (lobby is loaded), but not in the lobby, teleport them first and send the elevator once the teleport is finished
-        elif ZoneUtil.getHoodId(toon.zoneId) == ToontownGlobals.CashbotHQ:
-            toon.d_doTeleport('cashbotLobby')
-            taskMgr.doMethodLater(5.8, elevator.sendAvatarsToDestination, elevator.uniqueName('magicWordStartBoss'), extraArgs=([avId],))
-        
-        # If they're not in CBHQ the lobby won't be loaded and we can't start a CFO
-        else:
-            return 'Must be in CBHQ to use!'
-        
-        return 'Starting a CFO!'
-
 class SkipCFO(MagicWord):
     desc = "Skips to the indicated round of the CFO."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
