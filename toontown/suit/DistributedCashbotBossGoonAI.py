@@ -226,6 +226,12 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
 
     def destroyGoon(self):
         self.demand('Off')
+        print("///////////")
+        print(self)
+        print(self.boss.goons)
+        print("///////////")
+        if self in self.boss.goons:
+            self.boss.goons.remove(self)
 
     def enterOff(self):
         self.tubeNodePath.stash()
@@ -237,9 +243,6 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
 
     def enterGrabbed(self, avId, craneId):
         crane = simbase.air.doId2do.get(craneId)
-        if crane:
-            if crane.getIndex() > 3: #check if side crane
-                self.d_setObjectState('W', 0, craneId) #wake goon up
         DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI.enterGrabbed(self, avId, craneId)
         taskMgr.remove(self.taskName('recovery'))
         taskMgr.remove(self.taskName('resumeWalk'))
@@ -315,3 +318,10 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
     def exitRecovery(self):
         self.__stopWalk()
         taskMgr.remove(self.uniqueName('recoverWalk'))
+
+    def requestWalk(self):
+        avId = self.air.getAvatarIdFromSender()
+        if avId == self.avId and self.state == 'Stunned':
+            craneId, objectId = self.__getCraneAndObject(avId)
+            if craneId != 0 and objectId == self.doId:
+                self.demand('Walk', avId, craneId)
