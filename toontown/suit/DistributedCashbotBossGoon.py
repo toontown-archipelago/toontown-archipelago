@@ -152,7 +152,8 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     def setObjectState(self, state, avId, craneId):
         self.crane = self.cr.doId2do.get(craneId)
         if state == 'W':
-            self.demand('Walk')
+            if not self.craneId:
+                self.demand('Walk')
         elif state == 'B':
             if self.state != 'Battle':
                 self.demand('Battle')
@@ -189,6 +190,12 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         if not self.isDead:
             self.playCrushMovie(None, None)
         self.demand('Off')
+        print("///////////")
+        print(self)
+        print(self.boss.goons)
+        print("///////////")
+        if self in self.boss.goons:
+            self.boss.goons.remove(self)
         return
 
     def enterOff(self):
@@ -256,3 +263,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     def enterRecovery(self, ts = 0, pauseTime = 0):
         DistributedGoon.DistributedGoon.enterRecovery(self, ts, pauseTime)
         self.unstashCollisions()
+
+    def d_requestWalk(self):
+        self.sendUpdate('requestWalk')

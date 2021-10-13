@@ -1416,6 +1416,7 @@ dclass DistributedCashbotBossSafe : DistributedCashbotBossObject {
 dclass DistributedCashbotBossGoon : DistributedCashbotBossObject {
   requestBattle(int16/10) airecv clsend;
   requestStunned(int16/10) airecv clsend;
+  requestWalk() airecv clsend;
   setVelocity(uint8/10) broadcast ram;
   setHFov(uint8) broadcast ram;
   setAttackRadius(uint8) broadcast ram;

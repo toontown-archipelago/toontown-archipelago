@@ -276,11 +276,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.goonMovementTime = globalClock.getFrameTime()
         if side == None:
             side = random.choice(['EmergeA', 'EmergeB'])
-        goon = self.__chooseOldGoon()
-        if goon == None:
+        goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
+        if goon != None:
             if len(self.goons) >= self.getMaxGoons():
                 return
-            goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
             goon.generateWithRequired(self.zoneId)
             self.goons.append(goon)
         if self.getBattleThreeTime() > 1.0:
