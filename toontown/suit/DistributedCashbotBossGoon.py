@@ -190,10 +190,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         if not self.isDead:
             self.playCrushMovie(None, None)
         self.demand('Off')
-        print("///////////")
-        print(self)
-        print(self.boss.goons)
-        print("///////////")
         if self in self.boss.goons:
             self.boss.goons.remove(self)
         return
