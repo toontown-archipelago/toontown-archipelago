@@ -205,7 +205,6 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         if self.state == 'Dropped' or self.state == 'Grabbed':
             if not self.boss.heldObject:
                 damage = int(impact * 25 * self.scale)
-                print("Goon Size: %s" % self.scale)
                 self.boss.recordHit(max(damage, 2), impact, craneId)
                 if damage >= 15:
                     avatar.d_setSystemMessage(0, str(impact))
@@ -226,10 +225,6 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
 
     def destroyGoon(self):
         self.demand('Off')
-        print("///////////")
-        print(self)
-        print(self.boss.goons)
-        print("///////////")
         if self in self.boss.goons:
             self.boss.goons.remove(self)
 
