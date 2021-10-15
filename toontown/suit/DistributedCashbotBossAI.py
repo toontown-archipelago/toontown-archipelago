@@ -511,6 +511,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.participantPoints = {}
         self.safesPutOn = {}
         self.safesPutOff = {}
+        self.perfectImpactThrows = {}
 
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
