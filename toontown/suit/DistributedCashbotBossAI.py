@@ -57,6 +57,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.participantPoints = {}
         self.safesPutOn = {}
         self.safesPutOff = {}
+        self.perfectImpactThrows = {}
         self.wantAimPractice = False
         self.safesWanted = 5
         return
@@ -394,9 +395,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     
                     self.d_updateStunCount(avId)
                     if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 5
+                        self.toonStunsDict[avId] += 20
                     else:
-                        self.toonStunsDict[avId] = 5
+                        self.toonStunsDict[avId] = 20
 
                     self.stopHelmets()
 
@@ -411,9 +412,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
                     self.d_updateStunCount(avId)
                     if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 10
+                        self.toonStunsDict[avId] += 20
                     else:
-                        self.toonStunsDict[avId] = 10
+                        self.toonStunsDict[avId] = 20
                     self.stopHelmets()
                 else:
                     self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
@@ -544,14 +545,16 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 avPoints += self.safesPutOff[avId]
             if (avId in self.safesPutOn):
                 avPoints += self.safesPutOn[avId]
+            if (avId in self.perfectImpactThrows):
+                avPoints += self.perfectImpactThrows[avId]
             self.participantPoints[av.getName()] = avPoints
             resultsString += ("%s: %s\n" % (av.getName(), avPoints))
         resultsString = resultsString[:-1]
-        for doId, do in simbase.air.doId2do.items():
-            if str(doId)[0] != str(simbase.air.districtId)[0]:
-                if isinstance(do, DistributedToonAI.DistributedToonAI):
-                    do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
-                    do.d_setSystemMessage(0, resultsString)
+        #for doId, do in simbase.air.doId2do.items():
+        #    if str(doId)[0] != str(simbase.air.districtId)[0]:
+        #        if isinstance(do, DistributedToonAI.DistributedToonAI):
+        #            do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
+        #            do.d_setSystemMessage(0, resultsString)
         self.d_updateTimer(actualTime)
         self.resetBattles()
         self.suitsKilled.append({'type': None,

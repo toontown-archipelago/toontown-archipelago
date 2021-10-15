@@ -205,9 +205,12 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         if self.state == 'Dropped' or self.state == 'Grabbed':
             if not self.boss.heldObject:
                 damage = int(impact * 25 * self.scale)
+                if damage == int(1 * 25 * self.scale):
+                    if avId in self.boss.perfectImpactThrows:
+                        self.boss.perfectImpactThrows[avId] += 20
+                    else:
+                        self.boss.perfectImpactThrows[avId] = 20
                 self.boss.recordHit(max(damage, 2), impact, craneId)
-                if damage >= 15:
-                    avatar.d_setSystemMessage(0, str(impact))
         self.b_destroyGoon()
 
     def d_setTarget(self, x, y, h, arrivalTime):

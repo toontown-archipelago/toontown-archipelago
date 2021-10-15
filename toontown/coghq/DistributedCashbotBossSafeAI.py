@@ -34,14 +34,19 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         if self.boss.heldObject == None:
             if self.boss.attackCode == ToontownGlobals.BossCogDizzy:
                 damage = int(impact * 50)
+                if damage == int(1 * 50):
+                    if avId in self.boss.perfectImpactThrows:
+                        self.boss.perfectImpactThrows[avId] += 20
+                    else:
+                        self.boss.perfectImpactThrows[avId] = 20
                 self.boss.recordHit(max(damage, 2), impact, craneId)
             elif self.boss.acceptHelmetFrom(avId):
                 self.demand('Grabbed', self.boss.doId, self.boss.doId)
                 self.boss.heldObject = self
                 if avId in self.boss.safesPutOn:
-                    self.boss.safesPutOn[avId] -= 10
+                    self.boss.safesPutOn[avId] -= 20
                 else:
-                    self.boss.safesPutOn[avId] = -10
+                    self.boss.safesPutOn[avId] = -20
         elif impact >= ToontownGlobals.CashbotBossSafeKnockImpact:
             if avId in self.boss.safesPutOff:
                 self.boss.safesPutOff[avId] += 10
