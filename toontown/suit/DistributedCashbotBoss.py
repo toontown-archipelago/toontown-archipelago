@@ -604,9 +604,6 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossHealthBar.update(self.bossMaxDamage - bossDamage, self.bossMaxDamage)
 
     def setCraneSpawn(self, want, spawn, toonId):
-        print(want)
-        print(spawn)
-        print(toonId)
         self.wantCustomCraneSpawns = want
         self.customSpawnPositions[toonId] = spawn
 
