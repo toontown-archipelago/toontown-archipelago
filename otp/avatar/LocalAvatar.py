@@ -351,6 +351,14 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
 
     def detachCamera(self):
         base.disableMouse()
+    
+    def getOldCameraPos(self):
+        height = self.getClampedAvatarHeight()
+        return Point3(0.0, -9.0 * height * 0.3333333333, height)
+    
+    def getOldCameraPosTwo(self):
+        height = self.getClampedAvatarHeight()
+        return Point3(5.7 * (height * 0.3333333333), 7.65 * (height * 0.3333333333), height + .25)
 
     def stopJumpLandTask(self):
         if self.jumpLandAnimFixTask:
