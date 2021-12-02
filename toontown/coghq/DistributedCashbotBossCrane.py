@@ -855,8 +855,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.__deactivatePhysics()
             self.tube.unstash()
             localAvatar.orbitalCamera.stop()
-            camera.setPos(base.localAvatar.cameraPositions[0][0])
-            camera.setHpr(0, 0, 0)
             if self.cr:
                 place = self.cr.playGame.getPlace()
                 if place and hasattr(place, 'fsm'):
