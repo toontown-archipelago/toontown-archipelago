@@ -485,5 +485,5 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
     def isActive(self):
         return self.state == "Active"
     
-    def oobeEnabled()(self):
+    def oobeEnabled(self):
         return hasattr(base, "oobeMode") and base.oobeMode
