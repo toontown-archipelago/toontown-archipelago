@@ -1361,7 +1361,7 @@ class Toon(Avatar.Avatar, ToonHead):
             self.jar = None
         return
     
-    def setGeomNodeH(self, h: int) -> None:
+    def setGeomNodeH(self, h):
         self.getGeomNode().setH(h)
         if self.isDisguised:
             self.suit.getGeomNode().setH(h)

@@ -63,7 +63,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         NodePath.remove_node(self)
         ParamObj.destroy(self)
     
-    def initializeCollisions(self) -> None:
+    def initializeCollisions(self):
         self.cTravOnFloor = CollisionTraverser("CamMode.cTravOnFloor")
         self.camFloorRayNode = self.attachNewNode("camFloorRayNode")
         self.ccRay2 = CollisionRay(0.0, 0.0, 0.0, 0.0, 0.0, -1.0)
@@ -84,7 +84,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
             self.ccRay2NodePath, self.camFloorCollisionBroadcaster
         )
     
-    def destroyCollisions(self) -> None:
+    def destroyCollisions(self):
         del self.cTravOnFloor
         del self.ccRay2
         del self.ccRay2Node
@@ -127,7 +127,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.ignore("InputState-RMB")
         self.accept("InputState-RMB", self.disableMouseControl)
 
-        if self.oobeEnabled:
+        if self.oobeEnabled():
             return
 
         self.mouseControl = True
@@ -148,7 +148,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.ignore("InputState-RMB")
         self.accept("InputState-RMB", self.enableMouseControl)
 
-        if self.oobeEnabled:
+        if self.oobeEnabled():
             return
 
         if self.mouseControl:
@@ -166,7 +166,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
 
         self.subject.controlManager.setTurn(1)
     
-    def setCursor(self, cursor: bool) -> None:
+    def setCursor(self, cursor):
         wp = WindowProperties()
         wp.setCursorHidden(cursor)
         base.win.requestProperties(wp)
@@ -190,7 +190,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
                     ("forward", "reverse", "turnRight", "turnLeft", "slideRight", "slideLeft")])
 
     def _avatarFacingTask(self, task):
-        if self.oobeEnabled:
+        if self.oobeEnabled():
             return task.cont
 
         if self.isSubjectMoving():  # or self.subject.isAimingPie:
@@ -202,7 +202,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         return task.cont
 
     def _mouseUpdateTask(self, task):
-        if self.oobeEnabled:
+        if self.oobeEnabled():
             return task.cont
 
         subjectMoving = self.isSubjectMoving()
@@ -249,13 +249,13 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.ignore("page_down")
         self._resetWheel()
     
-    def acceptTab(self) -> None:
+    def acceptTab(self):
         self.accept("tab", self.toggleFirstPerson)
     
-    def ignoreTab(self) -> None:
+    def ignoreTab(self):
         self.ignore("tab")
     
-    def toggleFirstPerson(self) -> None:
+    def toggleFirstPerson(self):
         self.firstPerson = not self.firstPerson
         if self.firstPerson:
             self._handleSetWheel(0)
@@ -265,7 +265,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
             self.setPresetPos(0, transition=False)
             # self.disableMouseControl(True)
     
-    def _handleSetWheel(self, y: int) -> None:
+    def _handleSetWheel(self, y):
         self._collSolid.setPointB(0, y + 1, 0)
         self.camOffset.setY(y)
         t = (-14 - y) / -12
@@ -332,7 +332,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         if not self.collisionTaskCount:
             yield Task.cont
 
-        if self.oobeEnabled:
+        if self.oobeEnabled():
             return Task.cont
 
         self._cTrav.traverse(self.subject.getGeom())
@@ -434,7 +434,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         )
 
     def _mouseReadTask(self, task):
-        if (self.oobeEnabled) or not base.mouseWatcherNode.hasMouse():
+        if (self.oobeEnabled()) or not base.mouseWatcherNode.hasMouse():
             self.mouseDelta = (0, 0)
         else:
             winSize = (base.win.getXSize(), base.win.getYSize())
@@ -485,6 +485,5 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
     def isActive(self):
         return self.state == "Active"
     
-    @property
-    def oobeEnabled(self) -> bool:
+    def oobeEnabled()(self):
         return hasattr(base, "oobeMode") and base.oobeMode
