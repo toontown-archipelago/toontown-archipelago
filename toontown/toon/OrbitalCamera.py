@@ -63,7 +63,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         NodePath.remove_node(self)
         ParamObj.destroy(self)
     
-    def initializeCollisions(self):
+    def initializeCollisions(self) -> None:
         self.cTravOnFloor = CollisionTraverser("CamMode.cTravOnFloor")
         self.camFloorRayNode = self.attachNewNode("camFloorRayNode")
         self.ccRay2 = CollisionRay(0.0, 0.0, 0.0, 0.0, 0.0, -1.0)
@@ -84,7 +84,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
             self.ccRay2NodePath, self.camFloorCollisionBroadcaster
         )
     
-    def destroyCollisions(self):
+    def destroyCollisions(self) -> None:
         del self.cTravOnFloor
         del self.ccRay2
         del self.ccRay2Node
@@ -102,13 +102,12 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
 
         self._initMaxDistance()
         self._startCollisionCheck()
-        if not self.firstPerson:
-            self.acceptWheel()
+        self.acceptWheel()
         self.acceptTab()
         self.reparentTo(self.subject)
         base.camera.reparentTo(self)
         self.setPos(0, 0, self.subject.getHeight())
-        camera.setPosHpr(self.camOffset[0], self.camOffset[1], 10, 0, 0, 0)
+        camera.setPosHpr(self.camOffset[0], self.camOffset[1], 0, 0, 0, 0)
 
     def _initMaxDistance(self):
         self._maxDistance = abs(self.camOffset[1])
@@ -128,7 +127,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.ignore("InputState-RMB")
         self.accept("InputState-RMB", self.disableMouseControl)
 
-        if self.oobeEnabled():
+        if self.oobeEnabled:
             return
 
         self.mouseControl = True
@@ -143,13 +142,13 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         
         self.setCursor(True)
 
-        self.subject.controlManager.setWASDTurn(0)
+        self.subject.controlManager.setTurn(0)
 
     def disableMouseControl(self, pressed, disabledByMouse=True):
         self.ignore("InputState-RMB")
         self.accept("InputState-RMB", self.enableMouseControl)
 
-        if self.oobeEnabled():
+        if self.oobeEnabled:
             return
 
         if self.mouseControl:
@@ -165,9 +164,9 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
             )
             self.setCursor(False)
 
-        self.subject.controlManager.setWASDTurn(1)
+        self.subject.controlManager.setTurn(1)
     
-    def setCursor(self, cursor):
+    def setCursor(self, cursor: bool) -> None:
         wp = WindowProperties()
         wp.setCursorHidden(cursor)
         base.win.requestProperties(wp)
@@ -191,7 +190,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
                     ("forward", "reverse", "turnRight", "turnLeft", "slideRight", "slideLeft")])
 
     def _avatarFacingTask(self, task):
-        if self.oobeEnabled():
+        if self.oobeEnabled:
             return task.cont
 
         if self.isSubjectMoving():  # or self.subject.isAimingPie:
@@ -203,7 +202,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         return task.cont
 
     def _mouseUpdateTask(self, task):
-        if self.oobeEnabled():
+        if self.oobeEnabled:
             return task.cont
 
         subjectMoving = self.isSubjectMoving()
@@ -213,17 +212,13 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
             hNode = self.subject
         else:
             hNode = self
-        
-        camSensitivityX = base.settings.getFloat("game", "camSensitivityX", .25)
-        camSensitivityY = base.settings.getFloat("game", "camSensitivityY", .1)
-
         if self.mouseDelta[0] or self.mouseDelta[1]:
             (dx, dy) = self.mouseDelta
             if subjectTurning:
                 dx = +dx
-            hNode.setH(hNode, -dx * camSensitivityX)
+            hNode.setH(hNode, -dx * 0.31)
             curP = self.getP()
-            newP = curP + -dy * camSensitivityY
+            newP = curP + -dy * 0.21
             newP = min(max(newP, self.MinP), self.MaxP)
             self.setP(newP)
             if self.baseH:
@@ -254,25 +249,23 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.ignore("page_down")
         self._resetWheel()
     
-    def acceptTab(self):
+    def acceptTab(self) -> None:
         self.accept("tab", self.toggleFirstPerson)
     
-    def ignoreTab(self):
+    def ignoreTab(self) -> None:
         self.ignore("tab")
     
-    def toggleFirstPerson(self):
+    def toggleFirstPerson(self) -> None:
         self.firstPerson = not self.firstPerson
         if self.firstPerson:
             self._handleSetWheel(0)
-            self.ignoreWheel()
             # self.enableMouseControl(True)
             # self.ignore("InputState-RMB")
         else:
             self.setPresetPos(0, transition=False)
-            self.acceptWheel()
             # self.disableMouseControl(True)
     
-    def _handleSetWheel(self, y):
+    def _handleSetWheel(self, y: int) -> None:
         self._collSolid.setPointB(0, y + 1, 0)
         self.camOffset.setY(y)
         t = (-14 - y) / -12
@@ -336,8 +329,10 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
 
     def _collisionCheckTask(self, task=None):
         self.collisionTaskCount = (self.collisionTaskCount + 1) % 5
+        if not self.collisionTaskCount:
+            yield Task.cont
 
-        if self.oobeEnabled():
+        if self.oobeEnabled:
             return Task.cont
 
         self._cTrav.traverse(self.subject.getGeom())
@@ -435,11 +430,11 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
     def _startMouseReadTask(self):
         self._stopMouseReadTask()
         taskMgr.add(
-            self._mouseReadTask, self.TopNodeName + "-MouseRead", priority=-29
+            self._mouseReadTask, f"{self.TopNodeName}-MouseRead", priority=-29
         )
 
     def _mouseReadTask(self, task):
-        if (self.oobeEnabled()) or not base.mouseWatcherNode.hasMouse():
+        if (self.oobeEnabled) or not base.mouseWatcherNode.hasMouse():
             self.mouseDelta = (0, 0)
         else:
             winSize = (base.win.getXSize(), base.win.getYSize())
@@ -459,24 +454,24 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         return task.cont
 
     def _stopMouseReadTask(self):
-        taskMgr.remove(self.TopNodeName + "-MouseRead")
+        taskMgr.remove(f"{self.TopNodeName}-MouseRead")
 
     def _startMouseUpdateTask(self):
         self._stopMouseUpdateTask()
         taskMgr.add(
             self._avatarFacingTask,
-            self.TopNodeName + "-AvatarFacing",
+            f"{self.TopNodeName}-AvatarFacing",
             priority=23,
         )
         taskMgr.add(
             self._mouseUpdateTask,
-            self.TopNodeName + "-MouseUpdate",
+            f"{self.TopNodeName}-MouseUpdate",
             priority=40,
         )
 
     def _stopMouseUpdateTask(self):
-        taskMgr.remove(self.TopNodeName + "-MouseUpdate")
-        taskMgr.remove(self.TopNodeName + "-AvatarFacing")
+        taskMgr.remove(f"{self.TopNodeName}-MouseUpdate")
+        taskMgr.remove(f"{self.TopNodeName}-AvatarFacing")
 
     def start(self):
         if not self.isActive():
@@ -490,5 +485,6 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
     def isActive(self):
         return self.state == "Active"
     
-    def oobeEnabled(self):
+    @property
+    def oobeEnabled(self) -> bool:
         return hasattr(base, "oobeMode") and base.oobeMode

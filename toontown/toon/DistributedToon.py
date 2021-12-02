@@ -1267,7 +1267,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def doSmoothTask(self, task):
         self.smoother.computeAndApplySmoothPosHpr(self, self)
-        self.setSpeed(self.smoother.getSmoothForwardVelocity(), self.smoother.getSmoothRotationalVelocity())
+        self.setSpeed(self.smoother.getSmoothForwardVelocity(),
+                      self.smoother.getSmoothRotationalVelocity(),
+                      self.smoother.getSmoothLateralVelocity())
         return Task.cont
 
     def d_setParent(self, parentToken):
