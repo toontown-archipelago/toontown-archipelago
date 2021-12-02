@@ -429,7 +429,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
             return
         self.avatarControlsEnabled = 0
         self.ignoreAnimationEvents()
-        self.controlManager.setTurn(1)
+        self.controlManager.setWASDTurn(1)
         self.controlManager.disable()
         self.clearPageUpDown()
 
