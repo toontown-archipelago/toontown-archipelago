@@ -102,7 +102,8 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
 
         self._initMaxDistance()
         self._startCollisionCheck()
-        self.acceptWheel()
+        if not self.firstPerson:
+            self.acceptWheel()
         self.acceptTab()
         self.reparentTo(self.subject)
         base.camera.reparentTo(self)
@@ -263,10 +264,12 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.firstPerson = not self.firstPerson
         if self.firstPerson:
             self._handleSetWheel(0)
+            self.ignoreWheel()
             # self.enableMouseControl(True)
             # self.ignore("InputState-RMB")
         else:
             self.setPresetPos(0, transition=False)
+            self.acceptWheel()
             # self.disableMouseControl(True)
     
     def _handleSetWheel(self, y):
