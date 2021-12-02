@@ -331,6 +331,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.collisionTaskCount = (self.collisionTaskCount + 1) % 5
         if not self.collisionTaskCount:
             yield Task.cont
+            return
 
         if self.oobeEnabled():
             return Task.cont
