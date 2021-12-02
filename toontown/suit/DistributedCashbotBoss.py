@@ -790,6 +790,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.evWalls.unstash()
         self.midVault.stash()
         self.__hideResistanceToon()
+        localAvatar.orbitalCamera.start()
         localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
         self.generateHealthBar()
         self.updateHealthBar()

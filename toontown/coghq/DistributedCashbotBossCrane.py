@@ -828,6 +828,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.boss.toCraneMode()
             camera.reparentTo(self.hinge)
             camera.setPosHpr(0, -20, -5, 0, -20, 0)
+            localAvatar.orbitalCamera.start()
             self.tube.stash()
             localAvatar.setPosHpr(self.controls, 0, 0, 0, 0, 0, 0)
             localAvatar.sendCurrentPosition()
@@ -857,7 +858,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.__disableControlInterface()
             self.__deactivatePhysics()
             self.tube.unstash()
-            camera.reparentTo(base.localAvatar)
+            localAvatar.orbitalCamera.stop()
             camera.setPos(base.localAvatar.cameraPositions[0][0])
             camera.setHpr(0, 0, 0)
             if self.cr:
