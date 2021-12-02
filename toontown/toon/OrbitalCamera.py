@@ -212,13 +212,17 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
             hNode = self.subject
         else:
             hNode = self
+        
+        camSensitivityX = base.settings.getFloat("game", "camSensitivityX", .31)
+        camSensitivityY = base.settings.getFloat("game", "camSensitivityY", .23)
+
         if self.mouseDelta[0] or self.mouseDelta[1]:
             (dx, dy) = self.mouseDelta
             if subjectTurning:
                 dx = +dx
-            hNode.setH(hNode, -dx * 0.31)
+            hNode.setH(hNode, -dx * camSensitivityX)
             curP = self.getP()
-            newP = curP + -dy * 0.21
+            newP = curP + -dy * camSensitivityY
             newP = min(max(newP, self.MinP), self.MaxP)
             self.setP(newP)
             if self.baseH:
