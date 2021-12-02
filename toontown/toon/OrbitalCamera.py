@@ -430,7 +430,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
     def _startMouseReadTask(self):
         self._stopMouseReadTask()
         taskMgr.add(
-            self._mouseReadTask, f"{self.TopNodeName}-MouseRead", priority=-29
+            self._mouseReadTask, self.TopNodeName + "-MouseRead", priority=-29
         )
 
     def _mouseReadTask(self, task):
@@ -454,24 +454,24 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         return task.cont
 
     def _stopMouseReadTask(self):
-        taskMgr.remove(f"{self.TopNodeName}-MouseRead")
+        taskMgr.remove(self.TopNodeName + "-MouseRead")
 
     def _startMouseUpdateTask(self):
         self._stopMouseUpdateTask()
         taskMgr.add(
             self._avatarFacingTask,
-            f"{self.TopNodeName}-AvatarFacing",
+            self.TopNodeName + "-AvatarFacing",
             priority=23,
         )
         taskMgr.add(
             self._mouseUpdateTask,
-            f"{self.TopNodeName}-MouseUpdate",
+            self.TopNodeName + "-MouseUpdate",
             priority=40,
         )
 
     def _stopMouseUpdateTask(self):
-        taskMgr.remove(f"{self.TopNodeName}-MouseUpdate")
-        taskMgr.remove(f"{self.TopNodeName}-AvatarFacing")
+        taskMgr.remove(self.TopNodeName + "-MouseUpdate")
+        taskMgr.remove(self.TopNodeName + "-AvatarFacing")
 
     def start(self):
         if not self.isActive():
