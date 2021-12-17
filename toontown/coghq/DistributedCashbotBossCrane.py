@@ -826,6 +826,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.grabTrack = self.makeToonGrabInterval(toon)
         if avId == localAvatar.doId:
             self.boss.toCraneMode()
+            localAvatar.orbitalCamera.stop()
             camera.reparentTo(self.hinge)
             camera.setPosHpr(0, -20, -5, 0, -20, 0)
             self.tube.stash()
@@ -857,9 +858,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.__disableControlInterface()
             self.__deactivatePhysics()
             self.tube.unstash()
-            camera.reparentTo(base.localAvatar)
-            camera.setPos(base.localAvatar.cameraPositions[0][0])
-            camera.setHpr(0, 0, 0)
+            localAvatar.orbitalCamera.start()
             if self.cr:
                 place = self.cr.playGame.getPlace()
                 if place and hasattr(place, 'fsm'):

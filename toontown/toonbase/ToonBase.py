@@ -131,8 +131,6 @@ class ToonBase(OTPBase.OTPBase):
         del tpMgr
         self.lastScreenShotTime = globalClock.getRealTime()
         self.accept('InputState-forward', self.__walking)
-        self.accept('shift', self.setSprinting)
-        self.accept('shift-up', self.exitSprinting)
         self.isSprinting = 0
         self.canScreenShot = 1
         self.glitchCount = 0
@@ -141,6 +139,8 @@ class ToonBase(OTPBase.OTPBase):
         self.oldY = max(1, base.win.getYSize())
         self.aspectRatio = float(self.oldX) / self.oldY
         self.aspect2d.setAntialias(AntialiasAttrib.MMultisample)
+
+        self.oldSprint = ""
 
         self.wantCustomKeybinds = self.settings.getBool('game', 'customKeybinds', False)
 
@@ -506,5 +506,14 @@ class ToonBase(OTPBase.OTPBase):
             self.MOVE_RIGHT = "arrow_right"
             self.JUMP = "control"
             self.ACTION_BUTTON = "delete"
+        
+        if self.oldSprint:
+            self.ignore(self.oldSprint)
+            self.ignore(self.oldSprint + "-up")
+
+        sprint = keymap.get("SPRINT", "shift")
+        self.accept(sprint, self.setSprinting)
+        self.accept(sprint + '-up', self.exitSprinting)
+        self.oldSprint = sprint
 
         self.accept(self.SCREENSHOT_KEY, self.takeScreenShot)
