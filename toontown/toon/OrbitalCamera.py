@@ -108,7 +108,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.reparentTo(self.subject)
         base.camera.reparentTo(self)
         self.setPos(0, 0, self.subject.getHeight())
-        camera.setPosHpr(self.camOffset[0], self.camOffset[1], 0, 0, 0, 0)
+        camera.setPosHpr(self.camOffset[0], self.camOffset[1], 10, 0, 0, 0)
 
     def _initMaxDistance(self):
         self._maxDistance = abs(self.camOffset[1])
@@ -214,8 +214,8 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         else:
             hNode = self
         
-        camSensitivityX = base.settings.getFloat("game", "camSensitivityX", .31)
-        camSensitivityY = base.settings.getFloat("game", "camSensitivityY", .23)
+        camSensitivityX = base.settings.getFloat("game", "camSensitivityX", .25)
+        camSensitivityY = base.settings.getFloat("game", "camSensitivityY", .1)
 
         if self.mouseDelta[0] or self.mouseDelta[1]:
             (dx, dy) = self.mouseDelta
