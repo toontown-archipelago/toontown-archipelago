@@ -27,6 +27,7 @@ import math
 OneBossCog = None
 TTL = TTLocalizer
 from toontown.coghq import BossHealthBar
+from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
 
 class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBoss')
@@ -77,6 +78,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         fn.addForce(gravity)
         self.physicsMgr.addLinearForce(gravity)
         localAvatar.chatMgr.chatInputSpeedChat.addCFOMenu()
+        # The crane round scoreboard
+        self.scoreboard = CashbotBossScoreboard()
+        self.scoreboard.hide()
         global OneBossCog
         if OneBossCog != None:
             self.notify.warning('Multiple BossCogs visible.')
@@ -95,6 +99,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.battleThreeMusic.stop()
         self.epilogueMusic.stop()
         localAvatar.chatMgr.chatInputSpeedChat.removeCFOMenu()
+        self.scoreboard.cleanup()
         if OneBossCog == self:
             OneBossCog = None
         return
@@ -804,6 +809,11 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossSpeedrunTimer.start_updating()
         self.bossSpeedrunTimer.show()
 
+        # Setup the scoreboard
+        self.scoreboard.clearToons()
+        for avId in self.involvedToons:
+            self.scoreboard.addToon(avId)
+
     def exitBattleThree(self):
         DistributedBossCog.DistributedBossCog.exitBattleThree(self)
         bossDoneEventName = self.uniqueName('DestroyedBoss')
@@ -982,9 +992,11 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
     def updateDamageDealt(self, avId, damageDealt):
         self.bossHealthBar.updateDamageDealt(avId, damageDealt)
+        self.scoreboard.addScore(avId, damageDealt)
         
     def updateStunCount(self, avId):
         self.bossHealthBar.updateStunCount(avId)
+        self.scoreboard.addScore(avId, 50, 'STUN!')
         
     def updateGoonsStomped(self, avId):
         self.bossHealthBar.updateGoonsStomped(avId)

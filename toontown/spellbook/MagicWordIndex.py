@@ -35,6 +35,8 @@ import time
 import random
 import json
 
+DEBUG_SCOREBOARD = None
+
 magicWordIndex = collections.OrderedDict()
 
 def getMagicWord(name):
@@ -188,6 +190,30 @@ class SetMaxHP(MagicWord):
         toon.b_setMaxHp(maxhp)
         toon.toonUp(maxhp)
         return "{}'s max laff has been set to {}.".format(toon.getName(), maxhp)
+
+class scoreboard(MagicWord):
+    aliases = ['sb']
+    desc = 'make scoreboard appear'
+    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        global DEBUG_SCOREBOARD
+
+        if not DEBUG_SCOREBOARD:
+            from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
+            DEBUG_SCOREBOARD = CashbotBossScoreboard()
+            return "scoreboard created!"
+
+        if toon.doId not in DEBUG_SCOREBOARD.getToons():
+            DEBUG_SCOREBOARD.addToon(toon.doId)
+            return "added " + toon.getName() + " to the scoreboard!"
+
+        r = random.randint(-50, 50)
+        if r == 0:
+            r = 100
+        DEBUG_SCOREBOARD.addScore(toon.doId, r)
+        return "added " + str(r) + " points to " + str(toon.doId)
 
 
 class ToggleOobe(MagicWord):
