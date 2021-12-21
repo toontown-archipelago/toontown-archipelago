@@ -17,41 +17,45 @@ LABEL_Y_POS = .55
 # TEXT COLORS
 RED = (1, 0, 0, 1)
 GREEN = (0, 1, 0, 1)
-GOLD = (1, float(225) / float(255), float(128) / float(255), 1)
+GOLD = (1, 235.0 / 255.0, 165.0 / 255.0, 1)
 WHITE = (1, 1, 1, 1)
+CYAN = (0, 1, 240.0 / 255.0, 1)
 
 def doGainAnimation(pointText, amount, reason='', localAvFlag=False):
-    reasonFlag = True if reason == '' else False
 
+    reasonFlag = len(reason) > 0  # reason flag is true if there is a reason
     pointTextColor = GOLD if localAvFlag else WHITE
-
-    randomRoll = random.randint(5, 15) + 10 if not reason else 5
-
+    randomRoll = random.randint(5, 15) + 10 if reasonFlag else 5
     textToShow = '+' + str(amount) + ' ' + reason
-    popup = OnscreenText(parent=pointText, text=textToShow, style=3, fg=GREEN if reasonFlag else GOLD, align=TextNode.ACenter, scale=.042, pos=(.03, .03), roll=-randomRoll)
+    popup = OnscreenText(parent=pointText, text=textToShow, style=3, fg=GOLD if reasonFlag else GREEN, align=TextNode.ACenter, scale=.042, pos=(.03, .03), roll=-randomRoll)
 
     def cleanup():
         popup.cleanup()
 
-    xOffset = .065 if reasonFlag else .015
+    # points with a reason go towards the right to see easier
+    xOffset = .075 if reasonFlag else .01
+    zOffset = .02 if reasonFlag else .055
+    reasonTimeAdd = .35 if reasonFlag else 0
+    popupStartColor = CYAN if reasonFlag else GREEN
+    popupFadedColor = (CYAN[0], CYAN[1], CYAN[2], 0) if reasonFlag else (GREEN[0], GREEN[1], GREEN[2], 0)
 
-    targetPos = Point3(pointText.getX()+xOffset, 0, pointText.getZ()+.055)
+    targetPos = Point3(pointText.getX()+xOffset, 0, pointText.getZ()+zOffset)
     startPos = Point3(popup.getX(), popup.getY(), popup.getZ())
     Sequence(
         Parallel(
-            LerpColorScaleInterval(popup, duration=.5, colorScale=(0, 1, 0, 0), startColorScale=GREEN, blendType='easeInOut'),
-            LerpPosInterval(popup, duration=.5, pos=targetPos, startPos=startPos, blendType='easeInOut'),
+            LerpColorScaleInterval(popup, duration=.65+reasonTimeAdd, colorScale=popupFadedColor, startColorScale=popupStartColor, blendType='easeInOut'),
+            LerpPosInterval(popup, duration=.65+reasonTimeAdd, pos=targetPos, startPos=startPos, blendType='easeInOut'),
             Sequence(
                 Parallel(
-                    LerpScaleInterval(pointText, duration=.25, scale=1 + .15,
+                    LerpScaleInterval(pointText, duration=.25, scale=1 + .2,
                                       startScale=1, blendType='easeInOut'),
-                    LerpColorScaleInterval(pointText, duration=.25, colorScale=GREEN, startColorScale=GOLD if localAvFlag else WHITE,
+                    LerpColorScaleInterval(pointText, duration=.25, colorScale=GREEN, startColorScale=pointTextColor,
                                            blendType='easeInOut'),
                 ),
                 Parallel(
-                    LerpScaleInterval(pointText, duration=.25, startScale=1 + .15,
+                    LerpScaleInterval(pointText, duration=.25, startScale=1 + .2,
                                       scale=1, blendType='easeInOut'),
-                    LerpColorScaleInterval(pointText, duration=.25, startColorScale=GREEN, colorScale=GOLD if localAvFlag else WHITE,
+                    LerpColorScaleInterval(pointText, duration=.25, startColorScale=GREEN, colorScale=pointTextColor,
                                            blendType='easeInOut')
                 )
 
@@ -64,8 +68,13 @@ def doGainAnimation(pointText, amount, reason='', localAvFlag=False):
 
 def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
 
+    reasonFlag = True if len(reason) > 0 else False  # reason flag is true if there is a reason
     pointTextColor = GOLD if localAvFlag else WHITE
-    randomRoll = random.randint(5, 15) + 10
+    randomRoll = random.randint(5, 15) + 15 if reasonFlag else 5
+    # points with a reason go towards the right to see easier
+    xOffset = .065 if not reasonFlag else .015
+    zOffset = .045 if not reasonFlag else .055
+
 
     textToShow = str(amount) + ' ' + reason
     popup = OnscreenText(parent=pointText, text=textToShow, style=3, fg=RED, align=TextNode.ACenter, scale=.042, pos=(.03, .03), roll=-randomRoll)
@@ -73,23 +82,23 @@ def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
     def cleanup():
         popup.cleanup()
 
-    targetPos = Point3(pointText.getX()+.065, 0, pointText.getZ()+.055)
+    targetPos = Point3(pointText.getX()+xOffset, 0, pointText.getZ()+zOffset)
     startPos = Point3(popup.getX(), popup.getY(), popup.getZ())
     Sequence(
         Parallel(
-            LerpColorScaleInterval(popup, duration=.5, colorScale=(0, 1, 0, 0), startColorScale=RED, blendType='easeInOut'),
-            LerpPosInterval(popup, duration=.5, pos=targetPos, startPos=startPos, blendType='easeInOut'),
+            LerpColorScaleInterval(popup, duration=.8, colorScale=(1, 0, 0, 0), startColorScale=RED, blendType='easeInOut'),
+            LerpPosInterval(popup, duration=.8, pos=targetPos, startPos=startPos, blendType='easeInOut'),
             Sequence(
                 Parallel(
-                    LerpScaleInterval(pointText, duration=.25, scale=1 - .15,
+                    LerpScaleInterval(pointText, duration=.25, scale=1 - .2,
                                       startScale=1, blendType='easeInOut'),
-                    LerpColorScaleInterval(pointText, duration=.25, colorScale=RED, startColorScale=GOLD if localAvFlag else WHITE,
+                    LerpColorScaleInterval(pointText, duration=.25, colorScale=RED, startColorScale=pointTextColor,
                                            blendType='easeInOut'),
                 ),
                 Parallel(
-                    LerpScaleInterval(pointText, duration=.25, startScale=1 - .15,
+                    LerpScaleInterval(pointText, duration=.25, startScale=1 - .2,
                                       scale=1, blendType='easeInOut'),
-                    LerpColorScaleInterval(pointText, duration=.25, startColorScale=RED, colorScale=GOLD if localAvFlag else WHITE,
+                    LerpColorScaleInterval(pointText, duration=.25, startColorScale=RED, colorScale=pointTextColor,
                                            blendType='easeInOut')
                 )
 
