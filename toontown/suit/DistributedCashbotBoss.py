@@ -989,6 +989,10 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def exitFrolic(self):
         self.door3.setZ(0)
         self.door2.setZ(0)
+
+    def toonDied(self, avId):
+        self.scoreboard.addScore(avId, -50, 'DIED!')
+        DistributedBossCog.DistributedBossCog.toonDied(self, avId)
         
     def updateDamageDealt(self, avId, damageDealt):
         self.bossHealthBar.updateDamageDealt(avId, damageDealt)
@@ -996,7 +1000,14 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
     def updateStunCount(self, avId):
         self.bossHealthBar.updateStunCount(avId)
-        self.scoreboard.addScore(avId, 50, 'STUN!')
+        self.scoreboard.addScore(avId, 15, 'STUN!')
         
     def updateGoonsStomped(self, avId):
         self.bossHealthBar.updateGoonsStomped(avId)
+        self.scoreboard.addScore(avId, 2, 'GOON!')
+
+    def updateSafePoints(self, avId, points):
+        self.scoreboard.addScore(avId, points, 'SAFED!' if points < 0 else 'DESAFE!')
+
+    def updateMaxImpactHits(self, avId):
+        self.scoreboard.addScore(avId, 10, 'IMPACT!')
