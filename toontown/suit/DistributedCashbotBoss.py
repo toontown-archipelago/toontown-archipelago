@@ -812,7 +812,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         # Setup the scoreboard
         self.scoreboard.clearToons()
         for avId in self.involvedToons:
-            self.scoreboard.addToon(avId)
+            if avId in base.cr.doId2do:
+                self.scoreboard.addToon(avId)
 
     def exitBattleThree(self):
         DistributedBossCog.DistributedBossCog.exitBattleThree(self)
