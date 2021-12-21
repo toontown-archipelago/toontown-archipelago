@@ -415,7 +415,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if self.state != 'BattleThree':
             return
         self.b_setBossDamage(self.bossDamage + damage)
-        if impact >= .996:
+        if impact == 1.0:
             self.d_updateMaxImpactHits(avId)
         if avId in self.toonDamagesDict:
             self.toonDamagesDict[avId] += damage
