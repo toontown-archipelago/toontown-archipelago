@@ -415,6 +415,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if self.state != 'BattleThree':
             return
         self.b_setBossDamage(self.bossDamage + damage)
+        if impact >= .996:
+            self.d_updateMaxImpactHits(avId)
         if avId in self.toonDamagesDict:
             self.toonDamagesDict[avId] += damage
         else:
@@ -478,6 +480,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 		
     def d_updateGoonsStomped(self, avId):
         self.sendUpdate('updateGoonsStomped', [avId])
+
+    # call with 10 when we take a safe off, -20 when we put a safe on
+    def d_updateSafePoints(self, avId, amount):
+        self.sendUpdate('updateSafePoints', [avId, amount])
+
+    def d_updateMaxImpactHits(self, avId):
+        self.sendUpdate('updateMaxImpactHits', [avId])
 
     def d_setCraneSpawn(self, want, spawn, toonId):
         self.sendUpdate('setCraneSpawn', [want, spawn, toonId])
