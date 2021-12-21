@@ -57,12 +57,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.participantPoints = {}
         self.safesPutOn = {}
         self.safesPutOff = {}
-        self.perfectImpactThrows = {}
         self.wantAimPractice = False
         self.safesWanted = 5
-        self.want4ManPractice = True
-        self.wantMovementModification = True
-        self.wantOpeningModifications = True
         return
 
     def generate(self):
@@ -279,21 +275,12 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def makeGoon(self, side = None):
         self.goonMovementTime = globalClock.getFrameTime()
         if side == None:
-            if not self.wantOpeningModifications:
-                side = random.choice(['EmergeA', 'EmergeB'])
-            else:
-                for t in self.involvedToons:
-                    avId = t
-                toon = self.air.doId2do.get(avId)
-                pos = toon.getPos()[1]
-                if pos < -315:
-                    side = 'EmergeB'
-                else:
-                    side = 'EmergeA'
-        goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
-        if goon != None:
+            side = random.choice(['EmergeA', 'EmergeB'])
+        goon = self.__chooseOldGoon()
+        if goon == None:
             if len(self.goons) >= self.getMaxGoons():
                 return
+            goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
             goon.generateWithRequired(self.zoneId)
             self.goons.append(goon)
         if self.getBattleThreeTime() > 1.0:
@@ -301,9 +288,47 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             goon.b_setupGoon(velocity=8, hFov=90, attackRadius=20, strength=self.goonMaxStrength, scale=1.8)
         else:
             goon.STUN_TIME = self.progressValue(30, 8)
-            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7), hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(self.goonMinStrength, self.goonMaxStrength)), scale=self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=True))
+            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7), hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(self.goonMinStrength, self.goonMaxStrength)), scale=self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=False))
         goon.request(side)
         return
+        
+    # def makeGoon(self, side = None):
+    #     self.goonMovementTime = globalClock.getFrameTime()
+    #     if len(self.involvedToons) > 1:
+    #         self.wantMovementModification = False
+    #     else:
+    #         self.wantMovementModification = True
+    #     if side == None:
+    #         if not self.wantOpeningModifications:
+    #             side = random.choice(['EmergeA', 'EmergeB'])
+    #         else:
+    #             for t in self.involvedToons:
+    #                 avId = t
+    #             toon = self.air.doId2do.get(avId)
+    #             pos = toon.getPos()[1]
+    #             if pos < -315:
+    #                 side = 'EmergeB'
+    #             else:
+    #                 side = 'EmergeA'
+	#
+    #     goon = self.__chooseOldGoon()
+    #     if goon == None:
+    #         if len(self.goons) >= self.getMaxGoons():
+    #             return
+    #         goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
+    #         goon.generateWithRequired(self.zoneId)
+    #         self.goons.append(goon)
+    #     if self.getBattleThreeTime() > 1.0:
+    #         goon.STUN_TIME = 4
+    #         goon.b_setupGoon(velocity=8, hFov=90, attackRadius=20, strength=30, scale=1.8)
+    #     else:
+    #         goon.STUN_TIME = self.progressValue(30, 8)
+    #         if self.want4ManPractice and (self.bossDamage > 20 and self.bossDamage < 50):
+    #            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7), hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(5, 25)), scale=0.61)
+    #         else:
+    #            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7), hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(5, 25)), scale=self.progressRandomValue(0.5, 1.5, noRandom=True))
+    #     goon.request(side)
+    #     return
 
     def __chooseOldGoon(self):
         for goon in self.goons:
@@ -408,9 +433,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     
                     self.d_updateStunCount(avId)
                     if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 20
+                        self.toonStunsDict[avId] += 5
                     else:
-                        self.toonStunsDict[avId] = 20
+                        self.toonStunsDict[avId] = 5
 
                     self.stopHelmets()
 
@@ -425,9 +450,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
                     self.d_updateStunCount(avId)
                     if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 20
+                        self.toonStunsDict[avId] += 10
                     else:
-                        self.toonStunsDict[avId] = 20
+                        self.toonStunsDict[avId] = 10
                     self.stopHelmets()
                 else:
                     self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
@@ -524,7 +549,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.participantPoints = {}
         self.safesPutOn = {}
         self.safesPutOff = {}
-        self.perfectImpactThrows = {}
 
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
@@ -559,15 +583,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 avPoints += self.safesPutOff[avId]
             if (avId in self.safesPutOn):
                 avPoints += self.safesPutOn[avId]
-            if (avId in self.perfectImpactThrows):
-                avPoints += self.perfectImpactThrows[avId]
             self.participantPoints[av.getName()] = avPoints
             resultsString += ("%s: %s\n" % (av.getName(), avPoints))
         resultsString = resultsString[:-1]
         for doId, do in simbase.air.doId2do.items():
             if str(doId)[0] != str(simbase.air.districtId)[0]:
                 if isinstance(do, DistributedToonAI.DistributedToonAI):
-                    #do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
+                    do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
                     do.d_setSystemMessage(0, resultsString)
         self.d_updateTimer(actualTime)
         self.resetBattles()
