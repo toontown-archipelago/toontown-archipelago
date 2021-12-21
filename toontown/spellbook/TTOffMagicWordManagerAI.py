@@ -103,9 +103,9 @@ class TTOffMagicWordManagerAI(DistributedObjectAI.DistributedObjectAI):
             targetToon = self.air.doId2do.get(targetId)
             if not targetToon:
                 continue
-            if targetToon.getAccessLevel() >= toon.getAccessLevel():
-                targetIds.remove(targetId)
-                continue
+            # if targetToon.getAccessLevel() >= toon.getAccessLevel():
+            #     targetIds.remove(targetId)
+            #     continue
 
         if len(targetIds) == 0:
             self.generateResponse(avId=avId, responseType = "NoAccessToTarget")
