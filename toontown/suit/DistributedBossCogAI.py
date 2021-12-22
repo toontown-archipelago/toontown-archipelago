@@ -196,7 +196,6 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             # empty = InventoryBase.InventoryBase(toon)
             # toon.b_setInventory(empty.makeNetString())
             self.removeToon(toon.doId)
-            toon.b_setImmortalMode(True)
 
     def healToon(self, toon, increment):
         toon.toonUp(increment)

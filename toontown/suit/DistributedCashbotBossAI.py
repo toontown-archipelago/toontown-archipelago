@@ -561,7 +561,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for avId in self.involvedToons:
             if avId in self.air.doId2do:
                 av = self.air.doId2do[avId]
-                av.b_setImmortalMode(False)
                 av.b_setHp(av.getMaxHp())
 
     def __doInitialGoons(self, task):
