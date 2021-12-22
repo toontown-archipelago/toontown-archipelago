@@ -30,7 +30,11 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
 
     def requestControl(self):
         avId = self.air.getAvatarIdFromSender()
-        if avId in self.boss.involvedToons and self.avId == 0:
+        if avId not in self.air.doId2do:
+            return
+
+        av = self.air.doId2do[avId]
+        if av.getHp() > 0 and avId in self.boss.involvedToons and self.avId == 0:
             craneId = self.__getCraneId(avId)
             if craneId == 0:
                 self.request('Controlled', avId)

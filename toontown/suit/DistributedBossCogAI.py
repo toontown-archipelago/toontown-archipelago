@@ -98,11 +98,11 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         except:
             pass
 
-        try:
-            self.involvedToons.remove(avId)
-            resendIds = 1
-        except:
-            pass
+        # try:
+        #     self.involvedToons.remove(avId)
+        #     resendIds = 1
+        # except:
+        #     pass
 
         try:
             self.toonsA.remove(avId)
@@ -186,12 +186,17 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.sendUpdate('setToonIds', [self.involvedToons, self.toonsA, self.toonsB])
 
     def damageToon(self, toon, deduction):
+
+        if toon.getHp() <= 0:
+            return
+
         toon.takeDamage(deduction)
         if toon.getHp() <= 0:
             self.sendUpdate('toonDied', [toon.doId])
-            empty = InventoryBase.InventoryBase(toon)
-            toon.b_setInventory(empty.makeNetString())
+            # empty = InventoryBase.InventoryBase(toon)
+            # toon.b_setInventory(empty.makeNetString())
             self.removeToon(toon.doId)
+            toon.b_setImmortalMode(True)
 
     def healToon(self, toon, increment):
         toon.toonUp(increment)

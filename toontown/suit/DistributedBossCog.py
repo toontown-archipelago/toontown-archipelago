@@ -620,14 +620,14 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def localToonDied(self):
         target_sz = ZoneUtil.getSafeZoneId(localAvatar.defaultZone)
         place = self.cr.playGame.getPlace()
-        place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
-          'where': ZoneUtil.getWhereName(target_sz, 1),
-          'how': 'teleportIn',
-          'hoodId': target_sz,
-          'zoneId': target_sz,
-          'shardId': None,
-          'avId': -1,
-          'battle': 1}])
+        # place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
+        #   'where': ZoneUtil.getWhereName(target_sz, 1),
+        #   'how': 'teleportIn',
+        #   'hoodId': target_sz,
+        #   'zoneId': target_sz,
+        #   'shardId': None,
+        #   'avId': -1,
+        #   'battle': 1}])
         return
 
     def toonsToBattlePosition(self, toonIds, battleNode):
