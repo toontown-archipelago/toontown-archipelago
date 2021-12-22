@@ -133,8 +133,8 @@ class CashbotBossScoreboardToonRow:
         self.frame.setZ(self.getYFromPlaceOffset(self.FRAME_Y_FIRST_PLACE))
         self.toon_head.reparentTo(self.frame)
         self.toon_head.setPos(self.FIRST_PLACE_HEAD_X, 0, 0)
-        self.toon_head.setScale(.1)
         self.toon_head.setH(180)
+        self.toon_head.startBlink()
         self.points_text = OnscreenText(parent=self.frame, text=str(self.points), style=3, fg=WHITE, align=TextNode.ACenter, scale=.09, pos=(self.FIRST_PLACE_TEXT_X, 0))
         self.combo_text = OnscreenText(parent=self.frame, text='x' + '0', style=3, fg=CYAN,align=TextNode.ACenter, scale=.055, pos=(self.FIRST_PLACE_HEAD_X+.1, +.06))
         self.combo_text.hide()
@@ -151,6 +151,7 @@ class CashbotBossScoreboardToonRow:
         head = ToonHead()
         av = base.cr.doId2do[avId]
         head.setupHead(av.style, forGui=1)
+        head.fitAndCenterHead(.14, forGui=1)
         return head
 
     def addScore(self, amount, reason=''):
