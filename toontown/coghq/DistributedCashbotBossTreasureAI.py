@@ -61,4 +61,7 @@ class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTrea
                 if laffMissing < amount:
                     amount = laffMissing
                 av.toonUp(self.healAmount)
+                goon = self.air.doId2do.get(self.goonId)
+                if goon:
+                    goon.boss.comboTrackers[avId].resetCombo()
                 self.sendUpdate('deductScoreboardPoints', [avId, -amount])

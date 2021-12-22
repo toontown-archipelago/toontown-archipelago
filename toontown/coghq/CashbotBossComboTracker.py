@@ -1,7 +1,6 @@
-from toontown.coghq import CraneLeagueGlobals
-
-
 class CashbotBossComboTracker:
+
+    COMBO_TIME = 2.0  # Length that combos should be allowed to sustain
 
     def __init__(self, boss, avId):
         self.boss = boss
@@ -14,7 +13,7 @@ class CashbotBossComboTracker:
 
     def __expireComboLater(self):
         taskMgr.remove(self.__getTaskName())  # cancel the task if it already exists
-        taskMgr.doMethodLater(self.boss.ruleset.COMBO_DURATION, self.__expireCombo, self.__getTaskName())
+        taskMgr.doMethodLater(self.COMBO_TIME, self.__expireCombo, self.__getTaskName())
 
     def __expireCombo(self, task):
         if self.combo >= 2:
