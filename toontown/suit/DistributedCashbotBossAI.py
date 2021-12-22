@@ -558,6 +558,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.participantPoints = {}
         self.safesPutOn = {}
         self.safesPutOff = {}
+        for avId in self.involvedToons:
+            if avId in self.air.doId2do:
+                av = self.air.doId2do[avId]
+                av.b_setImmortalMode(False)
+                av.b_setHp(av.getMaxHp())
 
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
