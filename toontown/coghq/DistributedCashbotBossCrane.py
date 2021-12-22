@@ -13,7 +13,6 @@ from direct.task import Task
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from otp.otpbase import OTPGlobals
-from toontown.suit import DistributedCashbotBossGoon
 import random
 
 class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
@@ -68,7 +67,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.armSmoother.setSmoothMode(SmoothMover.SMOn)
         self.linkSmoothers = []
         self.smoothStarted = 0
-        self.__broadcastPeriod = 0.2
+        self.__broadcastPeriod = 0.05
         self.cable.node().setFinal(1)
         self.crane.setPos(*self.initialArmPosition)
         self.heldObject = None
@@ -370,7 +369,9 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         cnp = anp.attachNewNode(cn)
         self.handler.addCollider(cnp, anp)
         self.activeLinks.append((an, anp, cnp))
-        self.linkSmoothers.append(SmoothMover())
+        sm = SmoothMover()
+        sm.setSmoothMode(SmoothMover.SMOn)
+        self.linkSmoothers.append(sm)
         anp.reparentTo(self.cable)
         z = float(linkNum + 1) / float(self.numLinks) * self.cableLength
         anp.setPos(self.crane.getPos())
@@ -620,14 +621,11 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             return
         self.notify.debug('__sniffedSomething %d' % doId)
         obj = base.cr.doId2do.get(doId)
-        if obj.state == 'Grabbed':
+        if obj.state == 'Grabbed' or obj.state == 'LocalGrabbed':
             return
-        if obj and (obj.state != 'Dropped' or obj.craneId != self.doId):
+        if obj and obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
             obj.d_requestGrab()
-            if self.index > 3 and isinstance(obj, DistributedCashbotBossGoon.DistributedCashbotBossGoon): #check if side crane
-                obj.d_requestWalk()
-                obj.setObjectState('W', 0, obj.craneId) #wake goon up
-            obj.demand('Grabbed', localAvatar.doId, self.doId)
+            obj.demand('LocalGrabbed', localAvatar.doId, self.doId)
 
     def grabObject(self, obj):
         if self.state == 'Off':
@@ -669,7 +667,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             obj = self.heldObject
             obj.d_requestDrop()
             if (obj.state == 'Grabbed'):
-                obj.demand('Dropped', localAvatar.doId, self.doId)
+                obj.demand('LocalDropped', localAvatar.doId, self.doId)
 
     def __hitTrigger(self, event):
         self.d_requestControl()
