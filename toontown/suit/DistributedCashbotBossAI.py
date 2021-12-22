@@ -1,5 +1,6 @@
 from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
+from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCashbotBossCraneAI
 from toontown.coghq import DistributedCashbotBossSideCraneAI
@@ -59,6 +60,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.safesPutOff = {}
         self.wantAimPractice = False
         self.safesWanted = 5
+        self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
         return
 
     def generate(self):
@@ -291,44 +293,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             goon.b_setupGoon(velocity=self.progressRandomValue(3, 7), hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(self.goonMinStrength, self.goonMaxStrength)), scale=self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=False))
         goon.request(side)
         return
-        
-    # def makeGoon(self, side = None):
-    #     self.goonMovementTime = globalClock.getFrameTime()
-    #     if len(self.involvedToons) > 1:
-    #         self.wantMovementModification = False
-    #     else:
-    #         self.wantMovementModification = True
-    #     if side == None:
-    #         if not self.wantOpeningModifications:
-    #             side = random.choice(['EmergeA', 'EmergeB'])
-    #         else:
-    #             for t in self.involvedToons:
-    #                 avId = t
-    #             toon = self.air.doId2do.get(avId)
-    #             pos = toon.getPos()[1]
-    #             if pos < -315:
-    #                 side = 'EmergeB'
-    #             else:
-    #                 side = 'EmergeA'
-	#
-    #     goon = self.__chooseOldGoon()
-    #     if goon == None:
-    #         if len(self.goons) >= self.getMaxGoons():
-    #             return
-    #         goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
-    #         goon.generateWithRequired(self.zoneId)
-    #         self.goons.append(goon)
-    #     if self.getBattleThreeTime() > 1.0:
-    #         goon.STUN_TIME = 4
-    #         goon.b_setupGoon(velocity=8, hFov=90, attackRadius=20, strength=30, scale=1.8)
-    #     else:
-    #         goon.STUN_TIME = self.progressValue(30, 8)
-    #         if self.want4ManPractice and (self.bossDamage > 20 and self.bossDamage < 50):
-    #            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7), hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(5, 25)), scale=0.61)
-    #         else:
-    #            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7), hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(5, 25)), scale=self.progressRandomValue(0.5, 1.5, noRandom=True))
-    #     goon.request(side)
-    #     return
 
     def __chooseOldGoon(self):
         for goon in self.goons:
@@ -422,6 +386,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         else:
             self.toonDamagesDict[avId] = damage
         self.d_updateDamageDealt(avId, damage)
+        self.comboTrackers[avId].incrementCombo(damage*.2)
         if self.wantSafeRushPractice:
             self.knockoutDamage = 2
         else:
@@ -558,8 +523,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.participantPoints = {}
         self.safesPutOn = {}
         self.safesPutOff = {}
+
+        # heal all toons and setup a combo tracker for them
         for avId in self.involvedToons:
             if avId in self.air.doId2do:
+                self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
                 av = self.air.doId2do[avId]
                 av.b_setHp(av.getMaxHp())
 
@@ -569,6 +537,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.waitForNextGoon(10)
 
     def exitBattleThree(self):
+        for comboTracker in self.comboTrackers.values():
+            comboTracker.cleanup()
         helmetName = self.uniqueName('helmet')
         taskMgr.remove(helmetName)
         if self.newState != 'Victory':
@@ -724,3 +694,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             return False
 
         return True
+
+    def d_updateCombo(self, avId, comboLength):
+        self.sendUpdate('updateCombo', [avId, comboLength])
+
+    def d_awardCombo(self, avId, comboLength, amount):
+        self.sendUpdate('awardCombo', [avId, comboLength, amount])

@@ -1005,10 +1005,16 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
     def updateGoonsStomped(self, avId):
         self.bossHealthBar.updateGoonsStomped(avId)
-        self.scoreboard.addScore(avId, 2, 'GOON!')
+        self.scoreboard.addScore(avId, 1, 'GOON!')
 
     def updateSafePoints(self, avId, points):
         self.scoreboard.addScore(avId, points, 'SAFED!' if points < 0 else 'DESAFE!')
 
     def updateMaxImpactHits(self, avId):
         self.scoreboard.addScore(avId, 10, 'IMPACT!')
+
+    def updateCombo(self, avId, comboLength):
+        self.scoreboard.setCombo(avId, comboLength)
+
+    def awardCombo(self, avId, comboLength, amount):
+        self.scoreboard.addScore(avId, amount, reason='COMBO x' + str(comboLength) + '!')

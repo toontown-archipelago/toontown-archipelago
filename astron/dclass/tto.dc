@@ -1344,6 +1344,8 @@ dclass DistributedCashbotBoss : DistributedBossCog {
   updateGoonsStomped(uint32 avId) broadcast ram;
   updateSafePoints(uint32 avId, int32) broadcast ram;
   updateMaxImpactHits(uint32 avId) broadcast ram;
+  updateCombo(uint32 avId, uint8) broadcast ram;
+  awardCombo(uint32 avId, uint8, int32) broadcast ram;
 };
 
 struct LinkPosition {

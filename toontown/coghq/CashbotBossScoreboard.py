@@ -136,6 +136,8 @@ class CashbotBossScoreboardToonRow:
         self.toon_head.setScale(.1)
         self.toon_head.setH(180)
         self.points_text = OnscreenText(parent=self.frame, text=str(self.points), style=3, fg=WHITE, align=TextNode.ACenter, scale=.09, pos=(self.FIRST_PLACE_TEXT_X, 0))
+        self.combo_text = OnscreenText(parent=self.frame, text='x' + '0', style=3, fg=CYAN,align=TextNode.ACenter, scale=.055, pos=(self.FIRST_PLACE_HEAD_X+.1, +.06))
+        self.combo_text.hide()
         if self.avId == base.localAvatar.doId:
             self.points_text.setColorScale(*GOLD)
 
@@ -176,20 +178,26 @@ class CashbotBossScoreboardToonRow:
     def reset(self):
         self.points = 0
         self.points_text.setText('0')
+        self.combo_text.setText('COMBO x0')
+        self.combo_text.hide()
 
     def cleanup(self):
         self.toon_head.cleanup()
         del self.toon_head
         self.points_text.cleanup()
         del self.points_text
+        self.combo_text.cleanup()
+        del self.combo_text
 
     def show(self):
         self.points_text.show()
         self.toon_head.show()
 
+
     def hide(self):
         self.points_text.hide()
         self.toon_head.hide()
+        self.combo_text.hide()
 
 
 
@@ -273,4 +281,24 @@ class CashbotBossScoreboard:
         self.v_divider.hide()
         for row in self.rows.values():
             row.hide()
+
+    # updates combo text
+    def setCombo(self, avId, amount):
+
+        row = self.rows.get(avId)
+        if not row:
+            return
+
+        row.combo_text.setText('x' + str(amount))
+
+        if amount < 2:
+            row.combo_text.hide()
+            return
+
+        row.combo_text.show()
+
+        Sequence(
+            LerpScaleInterval(row.combo_text, duration=.25, scale=1.07, startScale=1, blendType='easeInOut'),
+            LerpScaleInterval(row.combo_text, duration=.25, startScale=1.07, scale=1, blendType='easeInOut')
+        ).start()
 
