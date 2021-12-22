@@ -1,4 +1,6 @@
-from toontown.safezone import DistributedSZTreasureAI
+from toontown.safezone import DistributedSZTreasureAI, DistributedTreasureAI
+from toontown.toonbase import ToontownGlobals
+
 
 class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTreasureAI):
 
@@ -47,3 +49,16 @@ class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTrea
 
     def d_setFinalPosition(self, x, y, z):
         self.sendUpdate('setFinalPosition', [x, y, z])
+
+    def d_setGrab(self, avId):
+        DistributedTreasureAI.DistributedTreasureAI.d_setGrab(self, avId)
+        if avId in self.air.doId2do:
+            av = self.air.doId2do[avId]
+            if av.hp > 0 and av.hp < av.maxHp:
+                # check if we are tooning up less than heal amount
+                amount = self.healAmount
+                laffMissing = av.maxHp - av.hp
+                if laffMissing < amount:
+                    amount = laffMissing
+                av.toonUp(self.healAmount)
+                self.sendUpdate('deductScoreboardPoints', [avId, -amount])

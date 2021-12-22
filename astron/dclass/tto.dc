@@ -2100,6 +2100,7 @@ dclass DistributedCashbotBossTreasure : DistributedTreasure {
   setGoonId(uint32) required broadcast ram;
   setFinalPosition(int16/10, int16/10, int16/10) required broadcast ram;
   setStyle(uint16) required broadcast ram;
+  deductScoreboardPoints(uint32 avId, int32) broadcast ram;
 };
 
 dclass DistributedLargeBlobSender : DistributedObject {

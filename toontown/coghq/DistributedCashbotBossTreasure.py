@@ -14,6 +14,7 @@ class DistributedCashbotBossTreasure(DistributedSZTreasure.DistributedSZTreasure
     def __init__(self, cr):
         DistributedSZTreasure.DistributedSZTreasure.__init__(self, cr)
         self.grabSoundPath = 'phase_4/audio/sfx/SZ_DD_treasure.ogg'
+        self.boss = None
 
     def setStyle(self, hoodId):
         newModel = Models[hoodId]
@@ -24,6 +25,10 @@ class DistributedCashbotBossTreasure(DistributedSZTreasure.DistributedSZTreasure
 
     def setGoonId(self, goonId):
         self.goonId = goonId
+        # lazy hacks xd set boss reference when we set goon id
+        goon = self.cr.doId2do.get(goonId)
+        if goon:
+            self.boss = goon.boss
 
     def setFinalPosition(self, x, y, z):
         if not self.nodePath:
@@ -39,3 +44,7 @@ class DistributedCashbotBossTreasure(DistributedSZTreasure.DistributedSZTreasure
         self.treasureFlyTrack = Sequence(Func(self.collNodePath.stash), Parallel(ProjectileInterval(self.treasure, startPos=Point3(0, 0, 0), endPos=Point3(0, 0, 0), duration=lerpTime, gravityMult=2.0), LerpPosInterval(self.nodePath, lerpTime, Point3(x, y, z), startPos=startPos)), Func(self.collNodePath.unstash))
         self.treasureFlyTrack.start()
         return
+
+    def deductScoreboardPoints(self, avId, amount):
+        if self.boss:
+            self.boss.scoreboard.addScore(avId, amount, 'TREASURE!')
