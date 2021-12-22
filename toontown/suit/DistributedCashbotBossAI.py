@@ -62,7 +62,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.safesWanted = 5
         self.want4ManPractice = True
         self.wantMovementModification = True
-        self.wantOpeningModifications = True
+        self.wantOpeningModifications = False
         return
 
     def generate(self):
