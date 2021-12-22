@@ -372,6 +372,10 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
     def __handleStun(self, collEntry):
         toon = base.localAvatar
         if toon:
+
+            if toon.getHp() <= 0:
+                return
+
             toonDistance = self.getPos(toon).length()
             if toonDistance > self.attackRadius:
                 self.notify.warning('Stunned a good, but outside of attack radius')

@@ -183,6 +183,13 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
 
     def requestStunned(self, pauseTime):
         avId = self.air.getAvatarIdFromSender()
+
+        if avId not in self.air.doId2do:
+            return
+
+        av = self.air.doId2do[avId]
+        if av.getHp() <= 0:
+            return
         if avId not in self.boss.involvedToons:
             return
         if self.state == 'Stunned' or self.state == 'Grabbed':
