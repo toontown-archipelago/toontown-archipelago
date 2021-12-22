@@ -33,9 +33,9 @@ def doGainAnimation(pointText, amount, reason='', localAvFlag=False):
         popup.cleanup()
 
     # points with a reason go towards the right to see easier
-    xOffset = .075 if reasonFlag else .01
+    xOffset = .095 if reasonFlag else .01
     zOffset = .02 if reasonFlag else .055
-    reasonTimeAdd = .35 if reasonFlag else 0
+    reasonTimeAdd = .45 if reasonFlag else 0
     popupStartColor = CYAN if reasonFlag else GREEN
     popupFadedColor = (CYAN[0], CYAN[1], CYAN[2], 0) if reasonFlag else (GREEN[0], GREEN[1], GREEN[2], 0)
 
@@ -43,7 +43,7 @@ def doGainAnimation(pointText, amount, reason='', localAvFlag=False):
     startPos = Point3(popup.getX(), popup.getY(), popup.getZ())
     Sequence(
         Parallel(
-            LerpColorScaleInterval(popup, duration=.65+reasonTimeAdd, colorScale=popupFadedColor, startColorScale=popupStartColor, blendType='easeInOut'),
+            LerpColorScaleInterval(popup, duration=.85+reasonTimeAdd, colorScale=popupFadedColor, startColorScale=popupStartColor, blendType='easeInOut'),
             LerpPosInterval(popup, duration=.65+reasonTimeAdd, pos=targetPos, startPos=startPos, blendType='easeInOut'),
             Sequence(
                 Parallel(
@@ -72,7 +72,7 @@ def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
     pointTextColor = GOLD if localAvFlag else WHITE
     randomRoll = random.randint(5, 15) + 15 if reasonFlag else 5
     # points with a reason go towards the right to see easier
-    xOffset = .065 if not reasonFlag else .015
+    xOffset = .095 if not reasonFlag else .015
     zOffset = .045 if not reasonFlag else .055
 
 
@@ -86,8 +86,8 @@ def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
     startPos = Point3(popup.getX(), popup.getY(), popup.getZ())
     Sequence(
         Parallel(
-            LerpColorScaleInterval(popup, duration=.8, colorScale=(1, 0, 0, 0), startColorScale=RED, blendType='easeInOut'),
-            LerpPosInterval(popup, duration=.8, pos=targetPos, startPos=startPos, blendType='easeInOut'),
+            LerpColorScaleInterval(popup, duration=1.2, colorScale=(1, 0, 0, 0), startColorScale=RED, blendType='easeInOut'),
+            LerpPosInterval(popup, duration=1.2, pos=targetPos, startPos=startPos, blendType='easeInOut'),
             Sequence(
                 Parallel(
                     LerpScaleInterval(pointText, duration=.25, scale=1 - .2,
@@ -135,7 +135,9 @@ class CashbotBossScoreboardToonRow:
         self.toon_head.setPos(self.FIRST_PLACE_HEAD_X, 0, 0)
         self.toon_head.setScale(.1)
         self.toon_head.setH(180)
-        self.points_text = OnscreenText(parent=self.frame, text=str(self.points), style=3, fg=GOLD if base.localAvatar.doId == self.avId else WHITE, align=TextNode.ACenter, scale=.09, pos=(self.FIRST_PLACE_TEXT_X, 0))
+        self.points_text = OnscreenText(parent=self.frame, text=str(self.points), style=3, fg=WHITE, align=TextNode.ACenter, scale=.09, pos=(self.FIRST_PLACE_TEXT_X, 0))
+        if self.avId == base.localAvatar.doId:
+            self.points_text.setColorScale(*GOLD)
 
         self.currHeadAnim = None
         self.currTextAnim = None
