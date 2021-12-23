@@ -680,6 +680,27 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
             safe.move(newX, newY, 0, 360 * random.random())
 
+    def __restartCraneRoundTask(self, task):
+        self.exitIntroduction()
+        self.b_setState('PrepareBattleThree')
+        self.b_setState('BattleThree')
+
+    def toonDied(self, toon):
+        DistributedBossCogAI.DistributedBossCogAI.toonDied(self, toon)
+
+        # have all toons involved died?
+        aliveToons = 0
+        for toonId in self.involvedToons:
+            toon = self.air.doId2do.get(toonId)
+            if toon and toon.getHp() > 0:
+                aliveToons += 1
+
+        if not aliveToons:
+            taskMgr.doMethodLater(5.0, self.__restartCraneRoundTask, self.uniqueName('failedCraneRound'))
+            self.sendUpdate('announceCraneRestart', [])
+
+
+
     # Probably a better way to do this but o well
     # Checking each line of the octogon to see if the location is outside
     def isLocationInBounds(self, x, y):

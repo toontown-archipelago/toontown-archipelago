@@ -1,3 +1,4 @@
+from direct.gui.OnscreenText import OnscreenText
 from direct.interval.IntervalGlobal import *
 from direct.task.TaskManagerGlobal import *
 from direct.directnotify import DirectNotifyGlobal
@@ -1024,3 +1025,24 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def awardCombo(self, avId, comboLength, amount):
         self.scoreboard.addScore(avId, amount, reason='COMBO x' + str(comboLength) + '!')
+
+    def announceCraneRestart(self):
+        title = OnscreenText(parent=aspect2d, text='All toons are sad!', style=3, fg=(.8, .2, .2, 1), align=TextNode.ACenter, scale=.15, pos=(0, .35))
+        sub = OnscreenText(parent=aspect2d, text='Restarting crane round in 10 seconds...', style=3, fg=(.8, .8, .8, 1), align=TextNode.ACenter, scale=.09, pos=(0, .2))
+
+        Parallel(
+            Sequence(
+                LerpColorScaleInterval(title, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0), blendType='easeInOut'),
+                Wait(9.75),
+                LerpColorScaleInterval(title, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1), blendType='easeInOut'),
+                Func(lambda: title.cleanup())
+            ),
+            Sequence(
+                LerpColorScaleInterval(sub, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0),
+                                       blendType='easeInOut'),
+                Wait(9.75),
+                LerpColorScaleInterval(sub, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1),
+                                       blendType='easeInOut'),
+                Func(lambda: sub.cleanup())
+            ),
+        ).start()
