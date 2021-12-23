@@ -1,3 +1,4 @@
+from toontown.coghq import CraneLeagueGlobals
 from toontown.safezone import DistributedSZTreasure
 from toontown.toonbase import ToontownGlobals
 from direct.interval.IntervalGlobal import *
@@ -47,4 +48,4 @@ class DistributedCashbotBossTreasure(DistributedSZTreasure.DistributedSZTreasure
 
     def deductScoreboardPoints(self, avId, amount):
         if self.boss:
-            self.boss.scoreboard.addScore(avId, amount, 'TREASURE!')
+            self.boss.scoreboard.addScore(avId, amount, CraneLeagueGlobals.PENALTY_TREASURE_TEXT)
