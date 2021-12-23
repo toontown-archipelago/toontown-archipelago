@@ -538,6 +538,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.safesPutOff = {}
         self.oldMaxLaffs = {}
 
+        taskMgr.remove(self.uniqueName('failedCraneRound'))
+
         # heal all toons and setup a combo tracker for them
         for avId in self.involvedToons:
             if avId in self.air.doId2do:
@@ -714,7 +716,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # Restart the crane round if toons are dead and we want to restart
         if CraneLeagueGlobals.RESTART_CRANE_ROUND_ON_FAIL and not aliveToons:
-            taskMgr.doMethodLater(5.0, self.__restartCraneRoundTask, self.uniqueName('failedCraneRound'))
+            taskMgr.doMethodLater(10.0, self.__restartCraneRoundTask, self.uniqueName('failedCraneRound'))
             self.sendUpdate('announceCraneRestart', [])
 
 
