@@ -809,6 +809,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossSpeedrunTimer.start_updating()
         self.bossSpeedrunTimer.show()
 
+        self.localToonIsSafe = 0 if base.localAvatar.doId in self.involvedToons else 1
+
         # Setup the scoreboard
         self.scoreboard.clearToons()
         for avId in self.involvedToons:
@@ -994,6 +996,10 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def toonDied(self, avId):
         self.scoreboard.addScore(avId, -50, 'DIED!')
         DistributedBossCog.DistributedBossCog.toonDied(self, avId)
+
+    def localToonDied(self):
+        DistributedBossCog.DistributedBossCog.localToonDied(self)
+        self.localToonIsSafe = 1
         
     def updateDamageDealt(self, avId, damageDealt):
         self.bossHealthBar.updateDamageDealt(avId, damageDealt)
