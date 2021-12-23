@@ -172,22 +172,30 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return
 
     def __doDirectedAttack(self):
-        if self.toonsToAttack:
-            toonId = self.toonsToAttack.pop(0)
-            while toonId not in self.involvedToons:
-                if not self.toonsToAttack:
-                    self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
-                    return
-                toonId = self.toonsToAttack.pop(0)
 
-            self.toonsToAttack.append(toonId)
-            self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonId)
+        # Check if we ran out of targets, if so reset the list back to everyone involved
+        if len(self.toonsToAttack) <= 0:
+            self.toonsToAttack = self.involvedToons[:]
+            # remove people who are dead or gone
+            for id in self.toonsToAttack[:]:
+                toon = self.air.doId2do.get(id)
+                if not toon or toon.getHp() <= 0:
+                    self.toonsToAttack.remove(id)
 
-    def reprieveToon(self, avId):
-        if avId in self.toonsToAttack:
-            i = self.toonsToAttack.index(avId)
-            del self.toonsToAttack[i]
-            self.toonsToAttack.append(avId)
+        # are there no valid targets even after resetting? i.e. is everyone sad
+        if len(self.toonsToAttack) <= 0:
+            self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
+            return
+
+        # pop toon off list and set as target
+        toonToAttack = self.toonsToAttack.pop(0)
+        # is toon here and alive? if not skip over and try the next toon
+        toon = self.air.doId2do.get(toonToAttack)
+        if not toon or toon.getHp() <= 0:
+            return self.__doDirectedAttack()  # next toon
+
+        # we have a toon to attack
+        self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonToAttack)
 
     def makeTreasure(self, goon):
         if self.state != 'BattleThree':
@@ -505,7 +513,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.__resetBattleThreeObjects()
         self.reportToonHealth()
         self.toonsToAttack = self.involvedToons[:]
-        random.shuffle(self.toonsToAttack)
+        # random.shuffle(self.toonsToAttack)  # Disabled for crane league
         self.b_setBossDamage(0)
         self.battleThreeStart = globalClock.getFrameTime()
         self.resetBattles()
