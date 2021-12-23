@@ -5,6 +5,7 @@ from panda3d.core import *
 from toontown.suit.Suit import *
 from direct.task.Task import Task
 from direct.interval.IntervalGlobal import *
+from toontown.toon import ToonDNA, AccessoryGlobals
 
 from toontown.toon.ToonHead import ToonHead
 
@@ -150,9 +151,70 @@ class CashbotBossScoreboardToonRow:
     def createToonHead(self, avId):
         head = ToonHead()
         av = base.cr.doId2do[avId]
+
         head.setupHead(av.style, forGui=1)
-        head.fitAndCenterHead(.14, forGui=1)
+
+        self.__setupToonHeadHat(av, head)
+        self.__setupToonHeadGlasses(av, head)
+
+        head.fitAndCenterHead(.15, forGui=1)
         return head
+
+    # Hacky bs to get a hat to show up on the scoreboard
+    def __setupToonHeadHat(self, av, head):
+        hat = av.getHat()
+        if hat[0] != 0:
+            hatGeom = loader.loadModel(ToonDNA.HatModels[hat[0]], okMissing=True)
+            if hatGeom:
+                if hat[1] != 0:
+                    texName = ToonDNA.HatTextures[hat[1]]
+                    tex = loader.loadTexture(texName, okMissing=True)
+                    tex.setMinfilter(Texture.FTLinearMipmapLinear)
+                    tex.setMagfilter(Texture.FTLinear)
+                    hatGeom.setTexture(tex, 1)
+                transOffset = None
+                if AccessoryGlobals.ExtendedHatTransTable.get(hat[0]):
+                    transOffset = AccessoryGlobals.ExtendedHatTransTable[hat[0]].get(av.style.head[:2])
+                if transOffset is None:
+                    transOffset = AccessoryGlobals.HatTransTable.get(av.style.head[:2])
+                    if transOffset is None:
+                        return
+                hatGeom.setPos(transOffset[0][0], transOffset[0][1], transOffset[0][2])
+                hatGeom.setHpr(transOffset[1][0], transOffset[1][1], transOffset[1][2])
+                hatGeom.setScale(transOffset[2][0], transOffset[2][1], transOffset[2][2])
+                headNodes = head.findAllMatches('**/__Actor_head')
+                for headNode in headNodes:
+                    hatNode = headNode.attachNewNode('hatNode')
+                    hatGeom.instanceTo(hatNode)
+
+    # Hacky bys to get glasses to show up on the scoreboard
+    def __setupToonHeadGlasses(self, av, head):
+        glasses = av.getGlasses()
+
+        if glasses[0] != 0:
+            glassesGeom = loader.loadModel(ToonDNA.GlassesModels[glasses[0]], okMissing=True)
+            if glassesGeom:
+                if glasses[1] != 0:
+                    texName = ToonDNA.GlassesTextures[glasses[1]]
+                    tex = loader.loadTexture(texName, okMissing=True)
+                    if tex:
+                        tex.setMinfilter(Texture.FTLinearMipmapLinear)
+                        tex.setMagfilter(Texture.FTLinear)
+                        glassesGeom.setTexture(tex, 1)
+                transOffset = None
+                if AccessoryGlobals.ExtendedGlassesTransTable.get(glasses[0]):
+                    transOffset = AccessoryGlobals.ExtendedGlassesTransTable[glasses[0]].get(av.style.head[:2])
+                if transOffset is None:
+                    transOffset = AccessoryGlobals.GlassesTransTable.get(av.style.head[:2])
+                    if transOffset is None:
+                        return
+                glassesGeom.setPos(transOffset[0][0], transOffset[0][1], transOffset[0][2])
+                glassesGeom.setHpr(transOffset[1][0], transOffset[1][1], transOffset[1][2])
+                glassesGeom.setScale(transOffset[2][0], transOffset[2][1], transOffset[2][2])
+                headNodes = head.findAllMatches('**/__Actor_head')
+                for headNode in headNodes:
+                    glassesNode = headNode.attachNewNode('glassesNode')
+                    glassesGeom.instanceTo(glassesNode)
 
     def addScore(self, amount, reason=''):
 
