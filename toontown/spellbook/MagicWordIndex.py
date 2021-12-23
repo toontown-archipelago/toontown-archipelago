@@ -1718,6 +1718,55 @@ class rcr(MagicWord):
         boss.b_setState('BattleThree')
         return "Restarting Crane Round"
 
+class dumpCraneAI(MagicWord):
+    desc = "Dumps info about crane on AI side"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "You aren't in a CFO!"
+
+        retString = ''
+        for crane in boss.cranes:
+            retString += 'Crane: ' + str(crane.index) + '\n'
+            retString += 'Current AvId: ' + str(crane.avId) + '\n'
+            retString += 'Current object held: ' + str(crane.objectId) + '\n'
+            retString += 'state: ' + str(crane.state) + '\n'
+            retString += '\n'
+        return retString
+
+class dumpCraneClient(MagicWord):
+    desc = "Dumps info about crane on Client side"
+    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBoss import DistributedCashbotBoss
+        boss = None
+        for do in base.cr.doId2do.values():
+            if isinstance(do, DistributedCashbotBoss):
+                boss = do
+
+        if not boss:
+            return "You aren't in a CFO!"
+
+        retString = ''
+        for crane in boss.cranes.values():
+            retString += 'Crane: ' + str(crane.index) + '\n'
+            retString += 'Current AvId: ' + str(crane.avId) + '\n'
+            retString += 'Current object held: ' + str(crane.heldObject.doId) if crane.heldObject else 'nothing' + '\n'
+            retString += 'state: ' + str(crane.state) + '\n'
+            retString += '\n'
+        return retString
+
 class setCraneSpawn(MagicWord):
     desc = "Sets the craning spawn point of a certain toon"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
