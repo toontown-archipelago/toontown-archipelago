@@ -56,19 +56,28 @@ class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTrea
         if avId in self.air.doId2do:
             av = self.air.doId2do[avId]
             if av.hp > 0 and av.hp < av.maxHp:
-                av.toonUp(self.healAmount)
+
+                # Reset combo
+                if CraneLeagueGlobals.TREASURE_GRAB_RESETS_COMBO:
+                    goon = self.air.doId2do.get(self.goonId)
+                    if goon:
+                        goon.boss.comboTrackers[avId].resetCombo()
 
                 # Are we deducting points?
                 if CraneLeagueGlobals.TREASURE_POINT_PENALTY:
+
                     # check if we are tooning up less than heal amount
                     amount = self.healAmount
                     laffMissing = av.maxHp - av.hp
                     if laffMissing < amount:
                         amount = laffMissing
-                    goon = self.air.doId2do.get(self.goonId)
-                    if goon:
-                        goon.boss.comboTrackers[avId].resetCombo()
 
+                    # Is there just a flat rate defined?
                     if CraneLeagueGlobals.TREASURE_POINT_PENALTY_FLAT_RATE > 0:
                         amount = CraneLeagueGlobals.TREASURE_POINT_PENALTY_FLAT_RATE
+
                     self.sendUpdate('deductScoreboardPoints', [avId, -amount])
+
+                av.toonUp(self.healAmount)
+
+

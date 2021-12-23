@@ -28,8 +28,11 @@ IMPACT_TEXT = "IMPACT!"
 DESAFE_TEXT = "DESAFE!"
 
 PENALTY_SAFEHEAD_TEXT = "SAFED!"
+PENALTY_TREASURE_TEXT = 'TREASURE!'
 PENALTY_GO_SAD_TEXT = "DIED!"
 
 # Combo values
 COMBO_DURATION = 2.0  # How long should combos last?
 COMBO_DAMAGE_PERCENTAGE = .2  # Percentage to add to our running combo when doing damage (basically 20% bonus per hits when in a combo)
+TREASURE_GRAB_RESETS_COMBO = True  # Should picking up a treasure reset a toon's combo?
+
