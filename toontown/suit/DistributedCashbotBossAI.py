@@ -536,12 +536,18 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.participantPoints = {}
         self.safesPutOn = {}
         self.safesPutOff = {}
+        self.oldMaxLaffs = {}
 
         # heal all toons and setup a combo tracker for them
         for avId in self.involvedToons:
             if avId in self.air.doId2do:
                 self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
                 av = self.air.doId2do[avId]
+
+                if CraneLeagueGlobals.FORCE_MAX_LAFF:
+                    self.oldMaxLaffs[avId] = av.getMaxHp()
+                    av.b_setMaxHp(CraneLeagueGlobals.FORCE_MAX_LAFF_AMOUNT)
+
                 if CraneLeagueGlobals.HEAL_TOONS_ON_START:
                     av.b_setHp(av.getMaxHp())
 
@@ -570,6 +576,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         actualTime = self.craneTime - self.battleThreeTimeStarted
         resultsString = ""
         for avId in self.involvedToons:
+
+            av = self.air.doId2do.get(avId)
+            if av and avId in self.oldMaxLaffs:
+                av.b_setMaxHp(self.oldMaxLaffs[avId])
+
             avPoints = 0
             av = self.air.doId2do.get(avId)
             if (avId in self.toonDamagesDict):
