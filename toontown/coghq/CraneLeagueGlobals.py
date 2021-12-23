@@ -1,7 +1,10 @@
 # A file to put all crane league settings in one place for easy adjustment
 
 # Ruleset
+FORCE_MAX_LAFF = False  # Should we force a laff limit for this crane round?
+FORCE_MAX_LAFF_AMOUNT = 100  # The laff that we are going to force all toons participating to have
 HEAL_TOONS_ON_START = True  # Should we set all toons to full laff when starting the round?
+
 RESTART_CRANE_ROUND_ON_FAIL = True  # Should we restart the crane round if all toons die?
 
 RANDOM_GEAR_THROW_ORDER = False  # Should the order in which CFO throw gears at toons be random?
