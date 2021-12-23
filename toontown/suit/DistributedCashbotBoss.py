@@ -18,7 +18,7 @@ from toontown.battle import MovieToonVictory
 from toontown.battle import RewardPanel
 from toontown.distributed import DelayDelete
 from toontown.chat import ResistanceChat
-from toontown.coghq import CogDisguiseGlobals
+from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
 from panda3d.core import *
 from panda3d.physics import *
 from panda3d.direct import *
@@ -995,7 +995,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.door2.setZ(0)
 
     def toonDied(self, avId):
-        self.scoreboard.addScore(avId, -50, 'DIED!')
+        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT)
         DistributedBossCog.DistributedBossCog.toonDied(self, avId)
 
     def localToonDied(self):
@@ -1008,17 +1008,17 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
     def updateStunCount(self, avId):
         self.bossHealthBar.updateStunCount(avId)
-        self.scoreboard.addScore(avId, 15, 'STUN!')
+        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_STUN, CraneLeagueGlobals.STUN_TEXT)
         
     def updateGoonsStomped(self, avId):
         self.bossHealthBar.updateGoonsStomped(avId)
-        self.scoreboard.addScore(avId, 1, 'GOON!')
+        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_GOON_STOMP, CraneLeagueGlobals.GOON_STOMP_TEXT)
 
     def updateSafePoints(self, avId, points):
-        self.scoreboard.addScore(avId, points, 'SAFED!' if points < 0 else 'DESAFE!')
+        self.scoreboard.addScore(avId, points, CraneLeagueGlobals.PENALTY_SAFEHEAD_TEXT if points < 0 else CraneLeagueGlobals.DESAFE_TEXT)
 
     def updateMaxImpactHits(self, avId):
-        self.scoreboard.addScore(avId, 10, 'IMPACT!')
+        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_IMPACT, CraneLeagueGlobals.IMPACT_TEXT)
 
     def updateCombo(self, avId, comboLength):
         self.scoreboard.setCombo(avId, comboLength)
