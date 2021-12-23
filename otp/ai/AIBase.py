@@ -33,7 +33,7 @@ class AIBase:
         else:
             vfs = None
         self.wantTk = self.config.GetBool('want-tk', 0)
-        self.AISleep = self.config.GetFloat('ai-sleep', 0.04)
+        self.AISleep = self.config.GetFloat('ai-sleep', 0.005)
         self.AIRunningNetYield = self.config.GetBool('ai-running-net-yield', 0)
         self.AIForceSleep = self.config.GetBool('ai-force-sleep', 0)
         self.eventMgr = eventMgr
