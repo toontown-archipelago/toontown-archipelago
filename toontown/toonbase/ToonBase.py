@@ -151,6 +151,7 @@ class ToonBase(OTPBase.OTPBase):
         self.JUMP = 'control'
         self.ACTION_BUTTON = 'delete'
         self.SCREENSHOT_KEY = 'f9'
+        self.CRANE_GRAB_KEY = 'control'
         self.reloadControls()
         return
 
@@ -496,6 +497,7 @@ class ToonBase(OTPBase.OTPBase):
             self.MOVE_RIGHT = keymap.get("MOVE_RIGHT", self.MOVE_RIGHT)
             self.JUMP = keymap.get("JUMP", self.JUMP)
             self.ACTION_BUTTON = keymap.get("ACTION_BUTTON", self.ACTION_BUTTON)
+            self.CRANE_GRAB_KEY = keymap.get('CRANE_GRAB_KEY', self.CRANE_GRAB_KEY)
             ToontownGlobals.OptionsPageHotkey = keymap.get(
                 "OPTIONS-PAGE", ToontownGlobals.OptionsPageHotkey
             )
@@ -506,6 +508,7 @@ class ToonBase(OTPBase.OTPBase):
             self.MOVE_RIGHT = "arrow_right"
             self.JUMP = "control"
             self.ACTION_BUTTON = "delete"
+            self.CRANE_GRAB_KEY = 'control'
         
         if self.oldSprint:
             self.ignore(self.oldSprint)
