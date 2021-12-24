@@ -671,7 +671,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             obj = self.heldObject
             obj.d_requestDrop()
             if (obj.state == 'Grabbed'):
-                obj.demand('LocalDropped', localAvatar.doId, self.doId)
+                obj.demand('Dropped', localAvatar.doId, self.doId)
 
     def __hitTrigger(self, event):
         self.d_requestControl()
