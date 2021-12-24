@@ -17,6 +17,7 @@ class KeybindRemap:
     OPTIONS_PAGE_HOTKEY = 6
     CHAT_HOTKEY = 7
     SCREENSHOT_KEY = 8
+    CRANE_GRAB_KEY = 9
 
     def __init__(self):
         self.dialog = TTDialog.TTGlobalDialog(
@@ -142,6 +143,18 @@ class KeybindRemap:
             labelText=TTLocalizer.Controls[8],
         )
 
+        self.craneGrabKey = OptionButton(
+            parent=self.dialog,
+            text=base.CRANE_GRAB_KEY,
+            pos=(button_x + 1.2, 0.0, button_y - 0.6),
+            command=self.enterWaitForKey,
+            extraArgs=[self.CRANE_GRAB_KEY],
+            wantLabel=True,
+            labelOrientation="top",
+            labelPos=labelPos,
+            labelText=TTLocalizer.Controls[9],
+        )
+
         self.controlsToBeSaved = {
             self.UP: base.MOVE_UP,
             self.LEFT: base.MOVE_LEFT,
@@ -152,6 +165,7 @@ class KeybindRemap:
             self.OPTIONS_PAGE_HOTKEY: OptionsPageHotkey,
             self.CHAT_HOTKEY: base.CHAT_HOTKEY,
             self.SCREENSHOT_KEY: base.SCREENSHOT_KEY,
+            self.CRANE_GRAB_KEY: base.CRANE_GRAB_KEY
         }
 
         self.popupDialog = None
@@ -227,6 +241,8 @@ class KeybindRemap:
             self.chatHotkey["text"] = keyName
         elif controlNum == self.SCREENSHOT_KEY:
             self.screenshotKey["text"] = keyName
+        elif controlNum == self.CRANE_GRAB_KEY:
+            self.craneGrabKey['text'] = keyName
         self.dialog.show()
         self.exitWaitForKey(controlNum, keyName)
 
@@ -249,7 +265,7 @@ class KeybindRemap:
         keymap["ACTION_BUTTON"] = self.controlsToBeSaved[self.ACTION_BUTTON]
         keymap["OPTIONS_PAGE_HOTKEY"] = self.controlsToBeSaved[self.OPTIONS_PAGE_HOTKEY]
         keymap["CHAT_HOTKEY"] = self.controlsToBeSaved[self.CHAT_HOTKEY]
-        keymap["SCREENSHOT_KEY"] = self.controlsToBeSaved[self.SCREENSHOT_KEY]
+        keymap["CRANE_GRAB_KEY"] = self.controlsToBeSaved[self.CRANE_GRAB_KEY]
         base.settings.updateSetting('game', 'keymap', keymap)
 
         base.reloadControls()
