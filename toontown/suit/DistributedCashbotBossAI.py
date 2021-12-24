@@ -1,11 +1,13 @@
 from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
+from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCashbotBossCraneAI
 from toontown.coghq import DistributedCashbotBossSideCraneAI
 from toontown.coghq import DistributedCashbotBossSafeAI
 from toontown.suit import DistributedCashbotBossGoonAI
 from toontown.coghq import DistributedCashbotBossTreasureAI
+from toontown.coghq import CraneLeagueGlobals
 from toontown.battle import BattleExperienceAI
 from toontown.chat import ResistanceChat
 from toontown.toon import DistributedToonAI
@@ -63,6 +65,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.want4ManPractice = True
         self.wantMovementModification = True
         self.wantOpeningModifications = False
+        self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
         return
 
     def generate(self):
@@ -174,22 +177,33 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return
 
     def __doDirectedAttack(self):
-        if self.toonsToAttack:
-            toonId = self.toonsToAttack.pop(0)
-            while toonId not in self.involvedToons:
-                if not self.toonsToAttack:
-                    self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
-                    return
-                toonId = self.toonsToAttack.pop(0)
 
-            self.toonsToAttack.append(toonId)
-            self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonId)
+        # Check if we ran out of targets, if so reset the list back to everyone involved
+        if len(self.toonsToAttack) <= 0:
+            self.toonsToAttack = self.involvedToons[:]
+            # Shuffle the toons if we want random gear throws
+            if CraneLeagueGlobals.RANDOM_GEAR_THROW_ORDER:
+                random.shuffle(self.toonsToAttack)
+            # remove people who are dead or gone
+            for id in self.toonsToAttack[:]:
+                toon = self.air.doId2do.get(id)
+                if not toon or toon.getHp() <= 0:
+                    self.toonsToAttack.remove(id)
 
-    def reprieveToon(self, avId):
-        if avId in self.toonsToAttack:
-            i = self.toonsToAttack.index(avId)
-            del self.toonsToAttack[i]
-            self.toonsToAttack.append(avId)
+        # are there no valid targets even after resetting? i.e. is everyone sad
+        if len(self.toonsToAttack) <= 0:
+            self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
+            return
+
+        # pop toon off list and set as target
+        toonToAttack = self.toonsToAttack.pop(0)
+        # is toon here and alive? if not skip over and try the next toon
+        toon = self.air.doId2do.get(toonToAttack)
+        if not toon or toon.getHp() <= 0:
+            return self.__doDirectedAttack()  # next toon
+
+        # we have a toon to attack
+        self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonToAttack)
 
     def makeTreasure(self, goon):
         if self.state != 'BattleThree':
@@ -397,6 +411,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         else:
             self.toonDamagesDict[avId] = damage
         self.d_updateDamageDealt(avId, damage)
+        self.comboTrackers[avId].incrementCombo(damage*CraneLeagueGlobals.COMBO_DAMAGE_PERCENTAGE)
         if self.wantSafeRushPractice:
             self.knockoutDamage = 2
         else:
@@ -515,7 +530,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.__resetBattleThreeObjects()
         self.reportToonHealth()
         self.toonsToAttack = self.involvedToons[:]
-        random.shuffle(self.toonsToAttack)
+        if CraneLeagueGlobals.RANDOM_GEAR_THROW_ORDER:
+            random.shuffle(self.toonsToAttack)
         self.b_setBossDamage(0)
         self.battleThreeStart = globalClock.getFrameTime()
         self.resetBattles()
@@ -534,10 +550,22 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.safesPutOn = {}
         self.safesPutOff = {}
         self.perfectImpactThrows = {}
+        self.oldMaxLaffs = {}
+
+        taskMgr.remove(self.uniqueName('failedCraneRound'))
+
+        # heal all toons and setup a combo tracker for them
         for avId in self.involvedToons:
             if avId in self.air.doId2do:
+                self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
                 av = self.air.doId2do[avId]
-                av.b_setHp(av.getMaxHp())
+
+                if CraneLeagueGlobals.FORCE_MAX_LAFF:
+                    self.oldMaxLaffs[avId] = av.getMaxHp()
+                    av.b_setMaxHp(CraneLeagueGlobals.FORCE_MAX_LAFF_AMOUNT)
+
+                if CraneLeagueGlobals.HEAL_TOONS_ON_START:
+                    av.b_setHp(av.getMaxHp())
 
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
@@ -545,6 +573,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.waitForNextGoon(10)
 
     def exitBattleThree(self):
+        for comboTracker in self.comboTrackers.values():
+            comboTracker.cleanup()
         helmetName = self.uniqueName('helmet')
         taskMgr.remove(helmetName)
         if self.newState != 'Victory':
@@ -562,6 +592,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         actualTime = self.craneTime - self.battleThreeTimeStarted
         resultsString = ""
         for avId in self.involvedToons:
+
+            av = self.air.doId2do.get(avId)
+            if av and avId in self.oldMaxLaffs:
+                av.b_setMaxHp(self.oldMaxLaffs[avId])
+
             avPoints = 0
             av = self.air.doId2do.get(avId)
             if (avId in self.toonDamagesDict):
@@ -680,6 +715,28 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
             safe.move(newX, newY, 0, 360 * random.random())
 
+    def __restartCraneRoundTask(self, task):
+        self.exitIntroduction()
+        self.b_setState('PrepareBattleThree')
+        self.b_setState('BattleThree')
+
+    def toonDied(self, toon):
+        DistributedBossCogAI.DistributedBossCogAI.toonDied(self, toon)
+
+        # have all toons involved died?
+        aliveToons = 0
+        for toonId in self.involvedToons:
+            toon = self.air.doId2do.get(toonId)
+            if toon and toon.getHp() > 0:
+                aliveToons += 1
+
+        # Restart the crane round if toons are dead and we want to restart
+        if CraneLeagueGlobals.RESTART_CRANE_ROUND_ON_FAIL and not aliveToons:
+            taskMgr.doMethodLater(10.0, self.__restartCraneRoundTask, self.uniqueName('failedCraneRound'))
+            self.sendUpdate('announceCraneRestart', [])
+
+
+
     # Probably a better way to do this but o well
     # Checking each line of the octogon to see if the location is outside
     def isLocationInBounds(self, x, y):
@@ -702,3 +759,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             return False
 
         return True
+
+    def d_updateCombo(self, avId, comboLength):
+        self.sendUpdate('updateCombo', [avId, comboLength])
+
+    def d_awardCombo(self, avId, comboLength, amount):
+        self.sendUpdate('awardCombo', [avId, comboLength, amount])

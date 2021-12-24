@@ -201,6 +201,8 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         else:
             self.boss.toonGoonStompsDict[avId] = 1
         self.boss.d_updateGoonsStomped(avId)
+        comboTracker = self.boss.comboTrackers[avId]
+        comboTracker.incrementCombo(comboTracker.combo+1)
         DistributedGoonAI.DistributedGoonAI.requestStunned(self, pauseTime)
 
     def hitBoss(self, impact, craneId):

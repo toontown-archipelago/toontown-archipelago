@@ -192,10 +192,13 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
         toon.takeDamage(deduction)
         if toon.getHp() <= 0:
-            self.sendUpdate('toonDied', [toon.doId])
-            # empty = InventoryBase.InventoryBase(toon)
-            # toon.b_setInventory(empty.makeNetString())
-            self.removeToon(toon.doId)
+            self.toonDied(toon)
+
+    def toonDied(self, toon):
+        self.sendUpdate('toonDied', [toon.doId])
+        # empty = InventoryBase.InventoryBase(toon)
+        # toon.b_setInventory(empty.makeNetString())
+        self.removeToon(toon.doId)
 
     def healToon(self, toon, increment):
         toon.toonUp(increment)

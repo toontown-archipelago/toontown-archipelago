@@ -1344,6 +1344,9 @@ dclass DistributedCashbotBoss : DistributedBossCog {
   updateGoonsStomped(uint32 avId) broadcast ram;
   updateSafePoints(uint32 avId, int32) broadcast ram;
   updateMaxImpactHits(uint32 avId) broadcast ram;
+  updateCombo(uint32 avId, uint8) broadcast ram;
+  awardCombo(uint32 avId, uint8, int32) broadcast ram;
+  announceCraneRestart() broadcast ram;
 };
 
 struct LinkPosition {
@@ -2100,6 +2103,7 @@ dclass DistributedCashbotBossTreasure : DistributedTreasure {
   setGoonId(uint32) required broadcast ram;
   setFinalPosition(int16/10, int16/10, int16/10) required broadcast ram;
   setStyle(uint16) required broadcast ram;
+  deductScoreboardPoints(uint32 avId, int32) broadcast ram;
 };
 
 dclass DistributedLargeBlobSender : DistributedObject {

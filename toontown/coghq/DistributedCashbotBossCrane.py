@@ -68,7 +68,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.armSmoother.setSmoothMode(SmoothMover.SMOn)
         self.linkSmoothers = []
         self.smoothStarted = 0
-        self.__broadcastPeriod = 0.2
+        self.__broadcastPeriod = 0.05
         self.cable.node().setFinal(1)
         self.crane.setPos(*self.initialArmPosition)
         self.heldObject = None
@@ -370,7 +370,9 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         cnp = anp.attachNewNode(cn)
         self.handler.addCollider(cnp, anp)
         self.activeLinks.append((an, anp, cnp))
-        self.linkSmoothers.append(SmoothMover())
+        sm = SmoothMover()
+        sm.setSmoothMode(SmoothMover.SMOn)
+        self.linkSmoothers.append(sm)
         anp.reparentTo(self.cable)
         z = float(linkNum + 1) / float(self.numLinks) * self.cableLength
         anp.setPos(self.crane.getPos())
@@ -669,7 +671,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             obj = self.heldObject
             obj.d_requestDrop()
             if (obj.state == 'Grabbed'):
-                obj.demand('Dropped', localAvatar.doId, self.doId)
+                obj.demand('LocalDropped', localAvatar.doId, self.doId)
 
     def __hitTrigger(self, event):
         self.d_requestControl()

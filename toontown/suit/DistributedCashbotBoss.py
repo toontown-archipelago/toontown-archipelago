@@ -1,3 +1,4 @@
+from direct.gui.OnscreenText import OnscreenText
 from direct.interval.IntervalGlobal import *
 from direct.task.TaskManagerGlobal import *
 from direct.directnotify import DirectNotifyGlobal
@@ -17,7 +18,7 @@ from toontown.battle import MovieToonVictory
 from toontown.battle import RewardPanel
 from toontown.distributed import DelayDelete
 from toontown.chat import ResistanceChat
-from toontown.coghq import CogDisguiseGlobals
+from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
 from panda3d.core import *
 from panda3d.physics import *
 from panda3d.direct import *
@@ -806,6 +807,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossSpeedrunTimer.start_updating()
         self.bossSpeedrunTimer.show()
 
+        self.localToonIsSafe = 0 if base.localAvatar.doId in self.involvedToons else 1
+
         # Setup the scoreboard
         self.scoreboard.clearToons()
         for avId in self.involvedToons:
@@ -989,8 +992,12 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.door2.setZ(0)
 
     def toonDied(self, avId):
-        self.scoreboard.addScore(avId, -50, 'DIED!')
+        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT)
         DistributedBossCog.DistributedBossCog.toonDied(self, avId)
+
+    def localToonDied(self):
+        DistributedBossCog.DistributedBossCog.localToonDied(self)
+        self.localToonIsSafe = 1
         
     def updateDamageDealt(self, avId, damageDealt):
         self.bossHealthBar.updateDamageDealt(avId, damageDealt)
@@ -998,14 +1005,41 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
     def updateStunCount(self, avId):
         self.bossHealthBar.updateStunCount(avId)
-        self.scoreboard.addScore(avId, 15, 'STUN!')
+        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_STUN, CraneLeagueGlobals.STUN_TEXT)
         
     def updateGoonsStomped(self, avId):
         self.bossHealthBar.updateGoonsStomped(avId)
-        self.scoreboard.addScore(avId, 2, 'GOON!')
+        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_GOON_STOMP, CraneLeagueGlobals.GOON_STOMP_TEXT)
 
     def updateSafePoints(self, avId, points):
-        self.scoreboard.addScore(avId, points, 'SAFED!' if points < 0 else 'DESAFE!')
+        self.scoreboard.addScore(avId, points, CraneLeagueGlobals.PENALTY_SAFEHEAD_TEXT if points < 0 else CraneLeagueGlobals.DESAFE_TEXT)
 
     def updateMaxImpactHits(self, avId):
-        self.scoreboard.addScore(avId, 10, 'IMPACT!')
+        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_IMPACT, CraneLeagueGlobals.IMPACT_TEXT)
+
+    def updateCombo(self, avId, comboLength):
+        self.scoreboard.setCombo(avId, comboLength)
+
+    def awardCombo(self, avId, comboLength, amount):
+        self.scoreboard.addScore(avId, amount, reason='COMBO x' + str(comboLength) + '!')
+
+    def announceCraneRestart(self):
+        title = OnscreenText(parent=aspect2d, text='All toons are sad!', style=3, fg=(.8, .2, .2, 1), align=TextNode.ACenter, scale=.15, pos=(0, .35))
+        sub = OnscreenText(parent=aspect2d, text='Restarting crane round in 10 seconds...', style=3, fg=(.8, .8, .8, 1), align=TextNode.ACenter, scale=.09, pos=(0, .2))
+
+        Parallel(
+            Sequence(
+                LerpColorScaleInterval(title, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0), blendType='easeInOut'),
+                Wait(9.75),
+                LerpColorScaleInterval(title, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1), blendType='easeInOut'),
+                Func(lambda: title.cleanup())
+            ),
+            Sequence(
+                LerpColorScaleInterval(sub, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0),
+                                       blendType='easeInOut'),
+                Wait(9.75),
+                LerpColorScaleInterval(sub, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1),
+                                       blendType='easeInOut'),
+                Func(lambda: sub.cleanup())
+            ),
+        ).start()
