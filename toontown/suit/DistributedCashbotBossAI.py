@@ -554,6 +554,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         taskMgr.remove(self.uniqueName('failedCraneRound'))
 
+        for comboTracker in self.comboTrackers.values():
+            comboTracker.cleanup()
+
         # heal all toons and setup a combo tracker for them
         for avId in self.involvedToons:
             if avId in self.air.doId2do:
@@ -573,8 +576,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.waitForNextGoon(10)
 
     def exitBattleThree(self):
-        for comboTracker in self.comboTrackers.values():
-            comboTracker.cleanup()
         helmetName = self.uniqueName('helmet')
         taskMgr.remove(helmetName)
         if self.newState != 'Victory':
@@ -636,6 +637,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.sendUpdate('updateTimer', [time])
 
     def __doneVictory(self, avIds):
+        for comboTracker in self.comboTrackers.values():
+            comboTracker.cleanup()
         self.d_setBattleExperience()
         self.b_setState('Reward')
         BattleExperienceAI.assignRewards(self.involvedToons, self.toonSkillPtsGained, self.suitsKilled, ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
