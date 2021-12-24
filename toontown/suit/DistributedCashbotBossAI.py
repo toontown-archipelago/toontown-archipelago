@@ -59,8 +59,12 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.participantPoints = {}
         self.safesPutOn = {}
         self.safesPutOff = {}
+        self.perfectImpactThrows = {}
         self.wantAimPractice = False
         self.safesWanted = 5
+        self.want4ManPractice = True
+        self.wantMovementModification = True
+        self.wantOpeningModifications = False
         self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
         return
 
@@ -289,12 +293,21 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def makeGoon(self, side = None):
         self.goonMovementTime = globalClock.getFrameTime()
         if side == None:
-            side = random.choice(['EmergeA', 'EmergeB'])
-        goon = self.__chooseOldGoon()
-        if goon == None:
+            if not self.wantOpeningModifications:
+                side = random.choice(['EmergeA', 'EmergeB'])
+            else:
+                for t in self.involvedToons:
+                    avId = t
+                toon = self.air.doId2do.get(avId)
+                pos = toon.getPos()[1]
+                if pos < -315:
+                    side = 'EmergeB'
+                else:
+                    side = 'EmergeA'
+        goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
+        if goon != None:
             if len(self.goons) >= self.getMaxGoons():
                 return
-            goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
             goon.generateWithRequired(self.zoneId)
             self.goons.append(goon)
         if self.getBattleThreeTime() > 1.0:
@@ -412,9 +425,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     
                     self.d_updateStunCount(avId)
                     if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 5
+                        self.toonStunsDict[avId] += 20
                     else:
-                        self.toonStunsDict[avId] = 5
+                        self.toonStunsDict[avId] = 20
 
                     self.stopHelmets()
 
@@ -429,9 +442,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
                     self.d_updateStunCount(avId)
                     if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 10
+                        self.toonStunsDict[avId] += 20
                     else:
-                        self.toonStunsDict[avId] = 10
+                        self.toonStunsDict[avId] = 20
                     self.stopHelmets()
                 else:
                     self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
@@ -536,6 +549,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.participantPoints = {}
         self.safesPutOn = {}
         self.safesPutOff = {}
+        self.perfectImpactThrows = {}
         self.oldMaxLaffs = {}
 
         taskMgr.remove(self.uniqueName('failedCraneRound'))
@@ -593,13 +607,15 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 avPoints += self.safesPutOff[avId]
             if (avId in self.safesPutOn):
                 avPoints += self.safesPutOn[avId]
+            if (avId in self.perfectImpactThrows):
+                avPoints += self.perfectImpactThrows[avId]
             self.participantPoints[av.getName()] = avPoints
             resultsString += ("%s: %s\n" % (av.getName(), avPoints))
         resultsString = resultsString[:-1]
         for doId, do in simbase.air.doId2do.items():
             if str(doId)[0] != str(simbase.air.districtId)[0]:
                 if isinstance(do, DistributedToonAI.DistributedToonAI):
-                    do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
+                    #do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
                     do.d_setSystemMessage(0, resultsString)
         self.d_updateTimer(actualTime)
         self.resetBattles()
