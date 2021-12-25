@@ -7,7 +7,7 @@ import GoonGlobals
 from direct.task.Task import Task
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
-from toontown.coghq import DistributedCashbotBossObject
+from toontown.coghq import DistributedCashbotBossObject, CraneLeagueGlobals
 from direct.showbase import PythonUtil
 import DistributedGoon
 
@@ -71,11 +71,13 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.dropShadow.show()
 
     def getMinImpact(self):
-        return ToontownGlobals.CashbotBossGoonImpact
+        return CraneLeagueGlobals.MIN_GOON_IMPACT
 
     def doHitBoss(self, impact, craneId):
         self.d_hitBoss(impact, craneId)
-        self.b_destroyGoon()
+
+        if impact >= self.getMinImpact():
+            self.b_destroyGoon()
 
     def __startWalk(self):
         self.__stopWalk()
