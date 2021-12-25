@@ -268,8 +268,21 @@ class CashbotBossScoreboard:
 
         self.hide()
 
+    def __addScoreLater(self, avId, amount, task=None):
+        self.addScore(avId, amount, reason=CraneLeagueGlobals.LOW_LAFF_BONUS_TEXT, ignoreLaff=True)
+
     # Positive/negative amount of points to add to a player
-    def addScore(self, avId, amount, reason=''):
+    def addScore(self, avId, amount, reason='', ignoreLaff=False):
+
+        # If we don't want to include penalties for low laff bonuses and the amount is negative ignore laff
+        if not CraneLeagueGlobals.LOW_LAFF_BONUS_INCLUDE_PENALTIES and amount <= 0:
+            ignoreLaff=True
+
+        # Should we consider a low laff bonus?
+        if not ignoreLaff and CraneLeagueGlobals.WANT_LOW_LAFF_BONUS:
+            av = base.cr.doId2do.get(avId)
+            if av and av.getHp() <= CraneLeagueGlobals.LOW_LAFF_BONUS_THRESHOLD:
+                taskMgr.doMethodLater(.75, self.__addScoreLater, 'delayedScore', extraArgs=[avId, int(amount*CraneLeagueGlobals.LOW_LAFF_BONUS)])
 
         # If we don't get an integer
         if not isinstance(amount, int):
