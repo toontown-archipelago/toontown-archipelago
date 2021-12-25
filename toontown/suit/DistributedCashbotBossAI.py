@@ -209,6 +209,12 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if not toon:
             return
 
+        # Is the cfo stunned?
+        isStunned = self.attackCode == ToontownGlobals.BossCogDizzy
+        # Are we setting to swat?
+        if isStunned and attackCode == ToontownGlobals.BossCogElectricFence:
+            self.d_updateUnstun(avId)
+
         self.d_showZapToon(avId, x, y, z, h, p, r, attackCode, timestamp)
 
         damage = CraneLeagueGlobals.CFO_ATTACKS_BASE_DAMAGE.get(attackCode)
@@ -744,3 +750,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def d_updateGoonKilledBySafe(self, avId):
         self.sendUpdate('goonKilledBySafe', [avId])
+
+    def d_updateUnstun(self, avId):
+        self.sendUpdate('updateUnstun', [avId])
