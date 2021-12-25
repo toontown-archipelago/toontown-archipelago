@@ -153,6 +153,10 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.setPlayRate(self.animMultiplier, 'walk')
 
     def setObjectState(self, state, avId, craneId):
+
+        if self.crane:
+            return
+        
         self.crane = self.cr.doId2do.get(craneId)
         if state == 'W':
             if not self.craneId:
