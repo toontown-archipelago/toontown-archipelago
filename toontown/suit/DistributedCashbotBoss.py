@@ -971,7 +971,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.door2.setZ(0)
 
     def toonDied(self, avId):
-        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT)
+        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT, ignoreLaff=True)
         self.scoreboard.toonDied(avId)
         DistributedBossCog.DistributedBossCog.toonDied(self, avId)
 
