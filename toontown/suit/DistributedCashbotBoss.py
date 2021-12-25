@@ -972,6 +972,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def toonDied(self, avId):
         self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT)
+        self.scoreboard.toonDied(avId)
         DistributedBossCog.DistributedBossCog.toonDied(self, avId)
 
     def localToonDied(self):
@@ -1025,3 +1026,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
                 Func(lambda: sub.cleanup())
             ),
         ).start()
+
+    def revivedToon(self, avId):
+        self.scoreboard.toonRevived(avId)
+        if avId == base.localAvatar.doId:
+            self.localToonIsSafe = False

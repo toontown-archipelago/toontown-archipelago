@@ -1348,6 +1348,7 @@ dclass DistributedCashbotBoss : DistributedBossCog {
   updateCombo(uint32 avId, uint8) broadcast ram;
   awardCombo(uint32 avId, uint8, int32) broadcast ram;
   announceCraneRestart() broadcast ram;
+  revivedToon(uint32 avId) broadcast ram;
 };
 
 struct LinkPosition {
