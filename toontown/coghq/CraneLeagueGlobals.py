@@ -12,6 +12,25 @@ MAX_GOON_DAMAGE = 50  # What is the highest amount of damage a goon should do? (
 MAX_GOON_AMOUNT_START = 8
 MAX_GOON_AMOUNT_END = 16
 
+REALLY_WEAK_TREASURE_HEAL_AMOUNT = 2  # How much should the treasures from very small goons heal?
+WEAK_TREASURE_HEAL_AMOUNT = 5  # How much should the treasures from small goons heal?
+AVERAGE_TREASURE_HEAL_AMOUNT = 8  # How much should the treasures from med goons heal?
+STRONG_TREASURE_HEAL_AMOUNT = 10  # How much should the treasures from the big goons heal?
+
+# Doesn't need to be modified, just used for math
+GOON_HEALS = [
+    REALLY_WEAK_TREASURE_HEAL_AMOUNT,
+    WEAK_TREASURE_HEAL_AMOUNT,
+    AVERAGE_TREASURE_HEAL_AMOUNT,
+    STRONG_TREASURE_HEAL_AMOUNT,
+]
+
+TREASURE_STYLES = [
+    [ToontownGlobals.ToontownCentral, ToontownGlobals.DonaldsDock],
+    [ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens],
+    [ToontownGlobals.MinniesMelodyland, ToontownGlobals.TheBrrrgh],
+    [ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland],
+]
 
 # A dict that maps attack codes to base damage values from the CFO
 CFO_ATTACKS_BASE_DAMAGE = {
@@ -34,7 +53,10 @@ CFO_ATTACKS_BASE_DAMAGE = {
     # ToontownGlobals.BossCogGearDirectedAttack: 15,
     # ToontownGlobals.BossCogOvertimeAttack: 10
 }
+
 SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
+
+
 FORCE_MAX_LAFF = False  # Should we force a laff limit for this crane round?
 FORCE_MAX_LAFF_AMOUNT = 100  # The laff that we are going to force all toons participating to have
 HEAL_TOONS_ON_START = True  # Should we set all toons to full laff when starting the round?
