@@ -711,7 +711,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
          bp2d[1],
          attackCode,
          timestamp])
-        if self.attackCode == ToontownGlobals.BossCogSlowDirectedAttack:
+        if attackCode == ToontownGlobals.BossCogSlowDirectedAttack:
             toon.stunToon()
         self.doZapToon(toon, fling=fling, shake=shake)
         return
