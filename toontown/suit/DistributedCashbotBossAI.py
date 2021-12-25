@@ -19,7 +19,6 @@ import math
 
 class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossAI')
-    maxGoons = 8
 
     def __init__(self, air):
         DistributedBossCogAI.DistributedBossCogAI.__init__(self, air, 'm')
@@ -269,19 +268,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.recycledTreasures = []
 
     def getMaxGoons(self):
-        t = self.getBattleThreeTime()
-        if t <= 1.0:
-            return self.maxGoons
-        elif t <= 1.1:
-            return self.maxGoons + 1
-        elif t <= 1.2:
-            return self.maxGoons + 2
-        elif t <= 1.3:
-            return self.maxGoons + 3
-        elif t <= 1.4:
-            return self.maxGoons + 4
-        else:
-            return self.maxGoons + 8
+        return self.progressValue(CraneLeagueGlobals.MAX_GOON_AMOUNT_START, CraneLeagueGlobals.MAX_GOON_AMOUNT_END)
 
     def makeGoon(self, side = None):
         self.goonMovementTime = globalClock.getFrameTime()
