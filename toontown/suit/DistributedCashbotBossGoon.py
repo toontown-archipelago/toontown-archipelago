@@ -31,6 +31,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.hitFloorSfx = loader.loadSfx('phase_5/audio/sfx/AA_drop_flowerpot.ogg')
         self.hitFloorSoundInterval = SoundInterval(self.hitFloorSfx, duration=1.0, node=self)
         self.wiggleSfx = loader.loadSfx('phase_5/audio/sfx/SA_finger_wag.ogg')
+        self.crane = None
         return
 
     def generate(self):
@@ -156,7 +157,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
 
         if self.crane:
             return
-        
+
         self.crane = self.cr.doId2do.get(craneId)
         if state == 'W':
             if not self.craneId:
