@@ -3,6 +3,7 @@ from panda3d.physics import *
 from direct.interval.IntervalGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed import DistributedSmoothNode
+from toontown.coghq import CraneLeagueGlobals
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 from direct.fsm import FSM
@@ -133,7 +134,9 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
                 self.touchedBossSoundInterval.start()
 
             impact = max(0, impact)
-            base.localAvatar.setSystemMessage(0, "impact: " + str(impact))
+
+            if CraneLeagueGlobals.VERBOSE_IMPACT:
+                base.localAvatar.setSystemMessage(0, "impact: " + str(impact))
 
             self.doHitBoss(impact, self.craneId)
 

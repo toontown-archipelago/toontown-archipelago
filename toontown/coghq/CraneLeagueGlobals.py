@@ -46,7 +46,7 @@ CFO_ATTACKS_BASE_DAMAGE = {
 
 # How much should attacks be multiplied by by the time we are towards the end?
 CFO_ATTACKS_MULTIPLIER = 3
-CFO_ATTACKS_MULTIPLIER_INTERPOLATE = False  # should multiplier gradually scale or go up by integers?  True means 1x then 2x then 3x, False gradually increases
+CFO_ATTACKS_MULTIPLIER_INTERPOLATE = False  # should multiplier gradually scale or go up by integers?  False means 1x then 2x then 3x, True gradually increases
 
 SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 
@@ -89,4 +89,7 @@ PENALTY_SANDBAG_TEXT = 'SLOPPY!'
 COMBO_DURATION = 2.0  # How long should combos last?
 COMBO_DAMAGE_PERCENTAGE = .2  # Percentage to add to our running combo when doing damage (basically 20% bonus per hits when in a combo)
 TREASURE_GRAB_RESETS_COMBO = True  # Should picking up a treasure reset a toon's combo?
+
+# Debug
+VERBOSE_IMPACT = False  # Print impact of cfo objects
 
