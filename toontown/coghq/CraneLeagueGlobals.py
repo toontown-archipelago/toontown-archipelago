@@ -41,22 +41,12 @@ CFO_ATTACKS_BASE_DAMAGE = {
     ToontownGlobals.BossCogElectricFence: 1,  # The actual bump
     ToontownGlobals.BossCogSwatLeft: 7,  # Swats from bumping
     ToontownGlobals.BossCogSwatRight: 7,
-    # ToontownGlobals.BossCogAreaAttack: 10,
-    # ToontownGlobals.BossCogFrontAttack: 3,
-    # ToontownGlobals.BossCogRecoverDizzyAttack: 3,
-    # ToontownGlobals.BossCogDirectedAttack: 3,
-    # ToontownGlobals.BossCogStrafeAttack: 2,
-    # ToontownGlobals.BossCogGoonZap: 5,
     ToontownGlobals.BossCogSlowDirectedAttack: 25,  # Gear throw
-    # ToontownGlobals.BossCogGavelStomp: 20,
-    # ToontownGlobals.BossCogGavelHandle: 2,
-    # ToontownGlobals.BossCogLawyerAttack: 5,
-    # ToontownGlobals.BossCogMoveAttack: 20,
-    # ToontownGlobals.BossCogGolfAttack: 15,
-    # ToontownGlobals.BossCogGolfAreaAttack: 15,
-    # ToontownGlobals.BossCogGearDirectedAttack: 15,
-    # ToontownGlobals.BossCogOvertimeAttack: 10
 }
+
+# How much should attacks be multiplied by by the time we are towards the end?
+CFO_ATTACKS_MULTIPLIER = 3
+CFO_ATTACKS_MULTIPLIER_INTERPOLATE = False  # should multiplier gradually scale or go up by integers?  True means 1x then 2x then 3x, False gradually increases
 
 SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 
