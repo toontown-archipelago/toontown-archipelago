@@ -267,7 +267,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.crane.dropObject(self)
         self.prepareRelease()
         self.showShadows()
-        del self.crane
+        self.crane = None
 
     def enterLocalDropped(self, avId, craneId):
         self.avId = avId
@@ -306,7 +306,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
                 self.stopPosHprBroadcast()
         else:
             self.stopSmooth()
-        del self.crane
+        self.crane = None
         self.showShadows()
 
     def enterSlidingFloor(self, avId):
