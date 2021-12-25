@@ -193,8 +193,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonToAttack)
 
 
-    def getDamageMultiplier(self):
-        return int(self.progressValue(1, 4))  # Mult of 1-3 depending on how far we are in the battle
+    def getDamageMultiplier(self, allowFloat=False):
+        mult = self.progressValue(1, CraneLeagueGlobals.CFO_ATTACKS_MULTIPLIER + 1)
+        if not allowFloat:
+            mult = int(mult)
+        return mult
 
     def zapToon(self, x, y, z, h, p, r, bpx, bpy, attackCode, timestamp):
 
@@ -214,7 +217,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             damage = 5
             raise KeyError('No damage listed for attack code %s' % attackCode)  # temp
 
-        damage *= self.getDamageMultiplier()
+        damage *= self.getDamageMultiplier(allowFloat=CraneLeagueGlobals.CFO_ATTACKS_MULTIPLIER_INTERPOLATE)
         # Clamp the damage to make sure it at least does 1
         damage = max(int(damage), 1)
 
