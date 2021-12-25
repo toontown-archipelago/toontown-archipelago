@@ -29,9 +29,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.treasures = {}
         self.grabbingTreasures = {}
         self.recycledTreasures = []
-        self.healAmount = 0
         self.rewardId = ResistanceChat.getRandomId()
         self.rewardedToons = []
+        # self.healAmount = 0
         self.scene = NodePath('scene')
         self.reparentTo(self.scene)
         cn = CollisionNode('walls')
@@ -233,28 +233,30 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     self.b_setAttackCode(ToontownGlobals.BossCogSwatLeft)
 
     def makeTreasure(self, goon):
+
         if self.state != 'BattleThree':
             return
-        avId = self.air.getAvatarIdFromSender()
+
         pos = goon.getPos(self)
         v = Vec3(pos[0], pos[1], 0.0)
         if not v.normalize():
             v = Vec3(1, 0, 0)
+
         v = v * 27
         angle = random.uniform(0.0, 2.0 * math.pi)
         radius = 10
         dx = radius * math.cos(angle)
         dy = radius * math.sin(angle)
         fpos = self.scene.getRelativePoint(self, Point3(v[0] + dx, v[1] + dy, 0))
-        if goon.strength <= 10:
-            style = random.choice([ToontownGlobals.ToontownCentral, ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens, ToontownGlobals.MinniesMelodyland, ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland])
-            healAmount = 4
-        elif goon.strength <= 15:
-            style = random.choice([ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens, ToontownGlobals.MinniesMelodyland])
-            healAmount = 10
-        else:
-            style = random.choice([ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland])
-            healAmount = 12
+
+        # Find an index based on the goon strength we should use
+        treasureHealIndex = 1.0*(goon.strength-CraneLeagueGlobals.MIN_GOON_DAMAGE) / (CraneLeagueGlobals.MAX_GOON_DAMAGE-CraneLeagueGlobals.MIN_GOON_DAMAGE)
+        treasureHealIndex *= len(CraneLeagueGlobals.GOON_HEALS)
+        treasureHealIndex = clamp(treasureHealIndex, 0, len(CraneLeagueGlobals.GOON_HEALS)-1)
+        healAmount = CraneLeagueGlobals.GOON_HEALS[treasureHealIndex]
+
+        style = random.choice(CraneLeagueGlobals.TREASURE_STYLES[treasureHealIndex])
+
         if self.recycledTreasures:
             treasure = self.recycledTreasures.pop(0)
             treasure.d_setGrab(0)
