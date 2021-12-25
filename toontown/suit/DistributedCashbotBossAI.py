@@ -53,13 +53,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.goonMaxStrength = 43
         self.goonMinScale = 0.8
         self.goonMaxScale = 2.6
-        self.toonDamagesDict = {}
-        self.toonStunsDict = {}
-        self.toonGoonStompsDict = {}
-        self.participantPoints = {}
-        self.safesPutOn = {}
-        self.safesPutOff = {}
-        self.perfectImpactThrows = {}
         self.wantAimPractice = False
         self.safesWanted = 5
         self.want4ManPractice = True
@@ -406,10 +399,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setBossDamage(self.bossDamage + damage)
         if impact == 1.0:
             self.d_updateMaxImpactHits(avId)
-        if avId in self.toonDamagesDict:
-            self.toonDamagesDict[avId] += damage
-        else:
-            self.toonDamagesDict[avId] = damage
         self.d_updateDamageDealt(avId, damage)
         self.comboTrackers[avId].incrementCombo(damage*CraneLeagueGlobals.COMBO_DAMAGE_PERCENTAGE)
         if self.wantSafeRushPractice:
@@ -424,10 +413,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
                     
                     self.d_updateStunCount(avId)
-                    if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 20
-                    else:
-                        self.toonStunsDict[avId] = 20
 
                     self.stopHelmets()
 
@@ -441,10 +426,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 elif crane.getIndex() > 3 and (impact >= 0.8 or damage >= self.knockoutDamage):
                     self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
                     self.d_updateStunCount(avId)
-                    if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 20
-                    else:
-                        self.toonStunsDict[avId] = 20
                     self.stopHelmets()
                 else:
                     self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
@@ -543,13 +524,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         taskMgr.remove(taskName)
         taskMgr.doMethodLater(2, self.__doInitialGoons, taskName)
         self.battleThreeTimeStarted = globalClock.getFrameTime()
-        self.toonDamagesDict = {}
-        self.toonStunsDict = {}
-        self.toonGoonStompsDict = {}
-        self.participantPoints = {}
-        self.safesPutOn = {}
-        self.safesPutOff = {}
-        self.perfectImpactThrows = {}
+
         self.oldMaxLaffs = {}
 
         taskMgr.remove(self.uniqueName('failedCraneRound'))
@@ -588,36 +563,15 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return
 
     def enterVictory(self):
-        #Whisper out the time from the start of CFO until end of CFO
-        self.craneTime = globalClock.getFrameTime()
-        actualTime = self.craneTime - self.battleThreeTimeStarted
-        resultsString = ""
-        for avId in self.involvedToons:
 
+        # Restore old max HPs
+        for avId in self.involvedToons:
             av = self.air.doId2do.get(avId)
             if av and avId in self.oldMaxLaffs:
                 av.b_setMaxHp(self.oldMaxLaffs[avId])
 
-            avPoints = 0
-            av = self.air.doId2do.get(avId)
-            if (avId in self.toonDamagesDict):
-                avPoints += self.toonDamagesDict[avId]
-            if (avId in self.toonStunsDict):
-                avPoints += self.toonStunsDict[avId]
-            if (avId in self.safesPutOff):
-                avPoints += self.safesPutOff[avId]
-            if (avId in self.safesPutOn):
-                avPoints += self.safesPutOn[avId]
-            if (avId in self.perfectImpactThrows):
-                avPoints += self.perfectImpactThrows[avId]
-            self.participantPoints[av.getName()] = avPoints
-            resultsString += ("%s: %s\n" % (av.getName(), avPoints))
-        resultsString = resultsString[:-1]
-        for doId, do in simbase.air.doId2do.items():
-            if str(doId)[0] != str(simbase.air.districtId)[0]:
-                if isinstance(do, DistributedToonAI.DistributedToonAI):
-                    #do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
-                    do.d_setSystemMessage(0, resultsString)
+        craneTime = globalClock.getFrameTime()
+        actualTime = craneTime - self.battleThreeTimeStarted
         self.d_updateTimer(actualTime)
         self.resetBattles()
         self.suitsKilled.append({'type': None,

@@ -196,10 +196,6 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
             return
         self.__stopWalk(pauseTime)
         self.boss.makeTreasure(self)
-        if avId in self.boss.toonGoonStompsDict:
-            self.boss.toonGoonStompsDict[avId] += 1
-        else:
-            self.boss.toonGoonStompsDict[avId] = 1
         self.boss.d_updateGoonsStomped(avId)
         comboTracker = self.boss.comboTrackers[avId]
         comboTracker.incrementCombo(comboTracker.combo+1)
@@ -214,11 +210,6 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         if self.state == 'Dropped' or self.state == 'Grabbed':
             if not self.boss.heldObject:
                 damage = int(impact * 25 * self.scale)
-                if damage == int(1 * 25 * self.scale):
-                    if avId in self.boss.perfectImpactThrows:
-                        self.boss.perfectImpactThrows[avId] += 20
-                    else:
-                        self.boss.perfectImpactThrows[avId] = 20
                 self.boss.recordHit(max(damage, 2), impact, craneId)
         self.b_destroyGoon()
 
