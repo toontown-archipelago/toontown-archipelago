@@ -42,7 +42,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.cranes = {}
         self.safes = {}
         self.goons = []
-        self.bossMaxDamage = ToontownGlobals.CashbotBossMaxDamage
+        self.bossMaxDamage = CraneLeagueGlobals.CFO_MAX_HP
         self.elevatorType = ElevatorConstants.ELEVATOR_CFO
         base.boss = self
         self.wantCustomCraneSpawns = False
@@ -1031,3 +1031,6 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.scoreboard.toonRevived(avId)
         if avId == base.localAvatar.doId:
             self.localToonIsSafe = False
+
+    def goonKilledBySafe(self, avId):
+        self.scoreboard.addScore(avId, amount=CraneLeagueGlobals.POINTS_GOON_KILLED_BY_SAFE, reason=CraneLeagueGlobals.GOON_KILLED_BY_SAFE_TEXT)

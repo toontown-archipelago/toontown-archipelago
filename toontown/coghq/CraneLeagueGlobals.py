@@ -36,6 +36,9 @@ MAX_GOON_DAMAGE = 50  # What is the highest amount of damage a goon should do? (
 MAX_GOON_AMOUNT_START = 8
 MAX_GOON_AMOUNT_END = 16
 
+# How many treasures should we allow to spawn?
+MAX_TREASURE_AMOUNT = 15
+
 REALLY_WEAK_TREASURE_HEAL_AMOUNT = 2  # How much should the treasures from very small goons heal?
 WEAK_TREASURE_HEAL_AMOUNT = 5  # How much should the treasures from small goons heal?
 AVERAGE_TREASURE_HEAL_AMOUNT = 8  # How much should the treasures from med goons heal?

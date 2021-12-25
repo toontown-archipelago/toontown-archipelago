@@ -110,3 +110,8 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
     def move(self, x, y, z, rotation):
         self.setPosHpr(x, y, z, rotation, 0, 0)
         self.sendUpdate('move', [x, y, z, rotation])
+
+    # Called from client when a safe destroys a goon
+    def destroyedGoon(self):
+        avId = self.air.getAvatarIdFromSender()
+        self.boss.d_updateGoonKilledBySafe(avId)
