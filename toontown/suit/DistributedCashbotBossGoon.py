@@ -54,8 +54,9 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.reparentTo(render)
 
     def disable(self):
-        i = self.boss.goons.index(self)
-        del self.boss.goons[i]
+        if self in self.boss.goons:
+            i = self.boss.goons.index(self)
+            del self.boss.goons[i]
         DistributedGoon.DistributedGoon.disable(self)
         DistributedCashbotBossObject.DistributedCashbotBossObject.disable(self)
 

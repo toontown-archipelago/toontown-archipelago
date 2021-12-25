@@ -921,26 +921,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         camera.setPos(self.resistanceToon, -9, 12, 6)
         camera.lookAt(self.resistanceToon, 0, 0, 3)
         intervalName = 'EpilogueMovie'
-        text = ResistanceChat.getChatText(self.rewardId)
-        menuIndex, itemIndex = ResistanceChat.decodeId(self.rewardId)
-        value = ResistanceChat.getItemValue(self.rewardId)
-        if menuIndex == ResistanceChat.RESISTANCE_TOONUP:
-            if value == -1:
-                instructions = TTLocalizer.ResistanceToonToonupAllInstructions
-            else:
-                instructions = TTLocalizer.ResistanceToonToonupInstructions % value
-        elif menuIndex == ResistanceChat.RESISTANCE_MONEY:
-            if value == -1:
-                instructions = TTLocalizer.ResistanceToonMoneyAllInstructions
-            else:
-                instructions = TTLocalizer.ResistanceToonMoneyInstructions % value
-        elif menuIndex == ResistanceChat.RESISTANCE_RESTOCK:
-            if value == -1:
-                instructions = TTLocalizer.ResistanceToonRestockAllInstructions
-            else:
-                trackName = TTLocalizer.BattleGlobalTracks[value]
-                instructions = TTLocalizer.ResistanceToonRestockInstructions % trackName
-        speech = TTLocalizer.ResistanceToonCongratulations % (text, instructions)
+
+        speech = TTLocalizer.ResistanceToonCongratulations
         speech = self.__talkAboutPromotion(speech)
         self.resistanceToon.setLocalPageChat(speech, 0)
         self.accept('nextChatPage', self.__epilogueChatNext)
@@ -955,9 +937,6 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             intervalName = 'EpilogueMovieToonAnim'
             self.storeInterval(track, intervalName)
             track.start()
-        elif pageNumber == 3:
-            self.d_applyReward()
-            ResistanceChat.doEffect(self.rewardId, self.resistanceToon, self.involvedToons)
 
     def __epilogueChatDone(self, elapsed):
         self.resistanceToon.setChatAbsolute(TTLocalizer.CagedToonGoodbye, CFSpeech)

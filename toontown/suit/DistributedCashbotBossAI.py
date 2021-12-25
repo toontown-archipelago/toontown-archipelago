@@ -29,9 +29,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.treasures = {}
         self.grabbingTreasures = {}
         self.recycledTreasures = []
-        # self.healAmount = 0
-        # self.rewardId = ResistanceChat.getRandomId()
-        # self.rewardedToons = []
         self.scene = NodePath('scene')
         self.reparentTo(self.scene)
         cn = CollisionNode('walls')
@@ -42,7 +39,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.attachNewNode(cn)
         self.heldObject = None
         self.waitingForHelmet = 0
-        self.avatarHelmets = {}
         self.bossMaxDamage = CraneLeagueGlobals.CFO_MAX_HP
         self.wantSafeRushPractice = False
         self.wantCustomCraneSpawns = False
@@ -68,7 +64,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return ToontownGlobals.CashbotHQ
 
     def formatReward(self):
-        return str(self.rewardId)
+        return 'No rewards here :)'
 
     def makeBattleOneBattles(self):
         self.postBattleState = 'PrepareBattleThree'
@@ -252,10 +248,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Find an index based on the goon strength we should use
         treasureHealIndex = 1.0*(goon.strength-CraneLeagueGlobals.MIN_GOON_DAMAGE) / (CraneLeagueGlobals.MAX_GOON_DAMAGE-CraneLeagueGlobals.MIN_GOON_DAMAGE)
         treasureHealIndex *= len(CraneLeagueGlobals.GOON_HEALS)
-        treasureHealIndex = clamp(treasureHealIndex, 0, len(CraneLeagueGlobals.GOON_HEALS)-1)
+        treasureHealIndex = int(clamp(treasureHealIndex, 0, len(CraneLeagueGlobals.GOON_HEALS)-1))
         healAmount = CraneLeagueGlobals.GOON_HEALS[treasureHealIndex]
-
-        style = random.choice(CraneLeagueGlobals.TREASURE_STYLES[treasureHealIndex])
+        availStyles = CraneLeagueGlobals.TREASURE_STYLES[treasureHealIndex]
+        style = random.choice(availStyles)
 
         if self.recycledTreasures:
             treasure = self.recycledTreasures.pop(0)
@@ -381,13 +377,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         taskMgr.remove(taskName)
 
     def acceptHelmetFrom(self, avId):
-        return True  # Temp changed to always accept helmets for comp purposes
-        # now = globalClock.getFrameTime()
-        # then = self.avatarHelmets.get(avId, None)
-        # if then == None or now - then > 300:
-        #     self.avatarHelmets[avId] = now
-        #     return 1
-        # return 1
+        return True
 
     def magicWordHit(self, damage, avId):
         if self.heldObject:
@@ -480,16 +470,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.sendUpdate('setRewardId', [rewardId])
 
     def applyReward(self):
-        avId = self.air.getAvatarIdFromSender()
-        if avId in self.involvedToons and avId not in self.rewardedToons:
-            self.rewardedToons.append(avId)
-            toon = self.air.doId2do.get(avId)
-            if toon:
-                toon.doResistanceEffect(self.rewardId)
+        pass
 
     def enterOff(self):
         DistributedBossCogAI.DistributedBossCogAI.enterOff(self)
-        self.rewardedToons = []
 
     def exitOff(self):
         DistributedBossCogAI.DistributedBossCogAI.exitOff(self)
@@ -606,8 +590,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def enterEpilogue(self):
         DistributedBossCogAI.DistributedBossCogAI.enterEpilogue(self)
-        self.d_setRewardId(self.rewardId)
-        
+
     def checkNearby(self, task=None):
         # Prevent helmets, stun CFO, destroy goons
         self.stopHelmets()
