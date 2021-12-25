@@ -532,6 +532,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.oldMaxLaffs = {}
 
         taskMgr.remove(self.uniqueName('failedCraneRound'))
+        self.cancelReviveTasks()
 
         for comboTracker in self.comboTrackers.values():
             comboTracker.cleanup()
@@ -564,6 +565,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.stopGoons()
         self.stopHelmets()
         self.heldObject = None
+        self.cancelReviveTasks()
         return
 
     def enterVictory(self):
@@ -665,8 +667,33 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setState('PrepareBattleThree')
         self.b_setState('BattleThree')
 
+    def __reviveToonLater(self, toon):
+        taskMgr.doMethodLater(CraneLeagueGlobals.REVIVE_TOONS_TIME, self.__reviveToon, self.uniqueName('revive-toon-' + str(toon.doId)), extraArgs=[toon])
+
+    def __reviveToon(self, toon, task=None):
+
+        if toon.getHp() > 0:
+            return
+
+        hpToGive = CraneLeagueGlobals.REVIVE_TOONS_LAFF_PERCENTAGE * toon.getMaxHp()
+        toon.b_setHp(hpToGive)
+        self.sendUpdate('revivedToon', [toon.doId])
+
+    def cancelReviveTasks(self):
+        for avId in self.involvedToons:
+            taskMgr.remove(self.uniqueName('revive-toon-' + str(avId)))
+
     def toonDied(self, toon):
         DistributedBossCogAI.DistributedBossCogAI.toonDied(self, toon)
+
+        # Reset the toon's combo
+        ct = self.comboTrackers.get(toon.doId)
+        if ct:
+            ct.resetCombo()
+
+        if CraneLeagueGlobals.REVIVE_TOONS_UPON_DEATH and toon.doId in self.involvedToons:
+            self.__reviveToonLater(toon)
+            return
 
         # have all toons involved died?
         aliveToons = 0

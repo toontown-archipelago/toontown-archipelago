@@ -2,6 +2,8 @@ from datetime import datetime
 
 from direct.gui.DirectGui import *
 from panda3d.core import *
+
+from toontown.coghq import CraneLeagueGlobals
 from toontown.suit.Suit import *
 from direct.task.Task import Task
 from direct.interval.IntervalGlobal import *
@@ -138,12 +140,13 @@ class CashbotBossScoreboardToonRow:
         self.toon_head.startBlink()
         self.points_text = OnscreenText(parent=self.frame, text=str(self.points), style=3, fg=WHITE, align=TextNode.ACenter, scale=.09, pos=(self.FIRST_PLACE_TEXT_X, 0))
         self.combo_text = OnscreenText(parent=self.frame, text='x' + '0', style=3, fg=CYAN,align=TextNode.ACenter, scale=.055, pos=(self.FIRST_PLACE_HEAD_X+.1, +.06))
+        self.sad_text = OnscreenText(parent=self.frame, text='SAD!', style=3, fg=RED,align=TextNode.ACenter, scale=.065, pos=(self.FIRST_PLACE_HEAD_X, 0), roll=-15)
         self.combo_text.hide()
+        self.sad_text.hide()
         if self.avId == base.localAvatar.doId:
             self.points_text.setColorScale(*GOLD)
 
-        self.currHeadAnim = None
-        self.currTextAnim = None
+        self.sadSecondsLeft = CraneLeagueGlobals.REVIVE_TOONS_TIME
 
     def getYFromPlaceOffset(self, y):
         return y - (self.PLACE_Y_OFFSET*self.place)
@@ -187,6 +190,9 @@ class CashbotBossScoreboardToonRow:
         self.points_text.setText('0')
         self.combo_text.setText('COMBO x0')
         self.combo_text.hide()
+        taskMgr.remove('sadtimer-' + str(self.avId))
+        self.sad_text.hide()
+        self.sad_text.setText('SAD!')
 
     def cleanup(self):
         self.toon_head.cleanup()
@@ -195,16 +201,42 @@ class CashbotBossScoreboardToonRow:
         del self.points_text
         self.combo_text.cleanup()
         del self.combo_text
+        taskMgr.remove('sadtimer-' + str(self.avId))
+        self.sad_text.cleanup()
+        del self.sad_text
 
     def show(self):
         self.points_text.show()
         self.toon_head.show()
 
-
     def hide(self):
         self.points_text.hide()
         self.toon_head.hide()
         self.combo_text.hide()
+        self.sad_text.hide()
+
+    def toonDied(self):
+        self.toon_head.sadEyes()
+        self.sad_text.show()
+        self.sadSecondsLeft = CraneLeagueGlobals.REVIVE_TOONS_TIME
+
+        if CraneLeagueGlobals.REVIVE_TOONS_UPON_DEATH:
+            taskMgr.remove('sadtimer-' + str(self.avId))
+            taskMgr.add(self.__updateSadTimeLeft, 'sadtimer-' + str(self.avId))
+
+    def toonRevived(self):
+        self.toon_head.normalEyes()
+        self.sad_text.hide()
+
+    def __updateSadTimeLeft(self, task):
+
+        if self.sadSecondsLeft < 0:
+            return Task.done
+
+        self.sad_text.setText(str(self.sadSecondsLeft))
+        self.sadSecondsLeft -= 1
+        task.delayTime = 1
+        return Task.again
 
 
 
@@ -311,10 +343,25 @@ class CashbotBossScoreboard:
             row.combo_text.hide()
             return
 
+        row.combo_text['fg'] = CYAN
         row.combo_text.show()
 
         Sequence(
             LerpScaleInterval(row.combo_text, duration=.25, scale=1.07, startScale=1, blendType='easeInOut'),
             LerpScaleInterval(row.combo_text, duration=.25, startScale=1.07, scale=1, blendType='easeInOut')
         ).start()
+
+    def toonDied(self, avId):
+        row = self.rows.get(avId)
+        if not row:
+            return
+
+        row.toonDied()
+
+    def toonRevived(self, avId):
+        row = self.rows.get(avId)
+        if not row:
+            return
+
+        row.toonRevived()
 
