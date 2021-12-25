@@ -846,6 +846,8 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.grabTrack.start()
 
     def exitControlled(self):
+        if self.heldObject:
+            self.releaseObject()
         self.ignore('exitCrane')
         self.grabTrack.finish()
         del self.grabTrack
