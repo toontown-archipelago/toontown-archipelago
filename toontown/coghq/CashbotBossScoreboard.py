@@ -238,6 +238,15 @@ class CashbotBossScoreboard:
 
     # Positive/negative amount of points to add to a player
     def addScore(self, avId, amount, reason=''):
+
+        # If we don't get an integer
+        if not isinstance(amount, int):
+            raise Exception("amount should be an int! got " + type(amount))
+
+        # If it is 0 (could be set by developer) don't do anything
+        if amount == 0:
+            return
+
         if avId in self.rows:
             self.rows[avId].addScore(amount, reason=reason)
             self.updatePlacements()
