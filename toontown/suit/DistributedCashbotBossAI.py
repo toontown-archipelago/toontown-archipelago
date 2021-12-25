@@ -43,8 +43,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.heldObject = None
         self.waitingForHelmet = 0
         self.avatarHelmets = {}
-        self.knockoutDamage = ToontownGlobals.CashbotBossKnockoutDamage
-        self.bossMaxDamage = ToontownGlobals.CashbotBossMaxDamage
+        self.bossMaxDamage = CraneLeagueGlobals.CFO_MAX_HP
         self.wantSafeRushPractice = False
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
@@ -381,43 +380,32 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         crane = simbase.air.doId2do.get(craneId)
         if not self.validate(avId, avId in self.involvedToons, 'recordHit from unknown avatar'):
             return
+
         if self.state != 'BattleThree':
             return
+
         self.b_setBossDamage(self.bossDamage + damage)
         if impact == 1.0:
             self.d_updateMaxImpactHits(avId)
         self.d_updateDamageDealt(avId, damage)
+
         self.comboTrackers[avId].incrementCombo(damage*CraneLeagueGlobals.COMBO_DAMAGE_PERCENTAGE)
-        if self.wantSafeRushPractice:
-            self.knockoutDamage = 2
-        else:
-            self.knockoutDamage = ToontownGlobals.CashbotBossKnockoutDamage
+
         if self.bossDamage >= self.bossMaxDamage:
             self.b_setState('Victory')
-        elif self.attackCode != ToontownGlobals.BossCogDizzy:
-            if crane:
-                if damage >= self.knockoutDamage:
-                    self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
-                    
-                    self.d_updateStunCount(avId)
+            return
 
-                    self.stopHelmets()
+        if self.attackCode == ToontownGlobals.BossCogDizzy or not crane:
+            return
 
-                    #Whisper out the time from the start of CFO
-                    #self.stunTime = globalClock.getFrameTime()
-                    #for doId, do in simbase.air.doId2do.items():
-                        #if str(doId)[0] != str(simbase.air.districtId)[0]:
-                            #do.d_setSystemMessage(0, "CFO Stunned From Start: {0:.3f}s".format(self.stunTime - self.battleThreeTimeStarted))
-                            
-                            
-                elif crane.getIndex() > 3 and (impact >= 0.8 or damage >= self.knockoutDamage):
-                    self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
-                    self.d_updateStunCount(avId)
-                    self.stopHelmets()
-                else:
-                    self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
-                    self.stopHelmets()
-                    self.waitForNextHelmet()
+        self.stopHelmets()
+
+        if damage >= CraneLeagueGlobals.CFO_STUN_THRESHOLD or (crane.getIndex() > 3 and impact >= CraneLeagueGlobals.SIDECRANE_IMPACT_STUN_THRESHOLD):
+            self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
+            self.d_updateStunCount(avId)
+        else:
+            self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
+            self.waitForNextHelmet()
 
     def b_setBossDamage(self, bossDamage):
         self.d_setBossDamage(bossDamage)
