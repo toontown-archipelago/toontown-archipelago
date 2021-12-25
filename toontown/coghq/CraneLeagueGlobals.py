@@ -1,10 +1,14 @@
 # A file to put all crane league settings in one place for easy adjustment
 
 # Ruleset
+CFO_MAX_HP = 1500  # How much HP should the CFO have?
+CFO_STUN_THRESHOLD = 30  # How much damage should a goon do to stun?
 
 # How many goons should we allow to spawn? This will scale up towards the end of the fight to the 2nd var
 MAX_GOON_AMOUNT_START = 8
 MAX_GOON_AMOUNT_END = 16
+
+SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 FORCE_MAX_LAFF = False  # Should we force a laff limit for this crane round?
 FORCE_MAX_LAFF_AMOUNT = 100  # The laff that we are going to force all toons participating to have
 HEAL_TOONS_ON_START = True  # Should we set all toons to full laff when starting the round?
