@@ -47,8 +47,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.wantSafeRushPractice = False
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
-        self.goonMinStrength = 10
-        self.goonMaxStrength = 43
+        self.goonMinStrength = CraneLeagueGlobals.MIN_GOON_DAMAGE
+        self.goonMaxStrength = CraneLeagueGlobals.MAX_GOON_DAMAGE
         self.goonMinScale = 0.8
         self.goonMaxScale = 2.6
         self.wantAimPractice = False
