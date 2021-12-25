@@ -79,6 +79,7 @@ POINTS_GOON_KILLED_BY_SAFE = 5  # Points for killing a goon with a safe
 POINTS_PENALTY_SAFEHEAD = -20  # Deduction for putting a safe on the CFOs head
 POINTS_PENALTY_GO_SAD = -50  # Point deduction for dying (can happen multiple times if revive setting is on)
 POINTS_PENALTY_SANDBAG = -5  # Point deduction for hitting a very low impact hit
+POINTS_PENALTY_UNSTUN = -20
 
 TREASURE_POINT_PENALTY = True  # Should we deduct points for picking up treasures?
 TREASURE_POINT_PENALTY_FLAT_RATE = 0  # How much should we deduct? set to 0 or less to make it 1 to 1 with laff gained
@@ -99,6 +100,7 @@ PENALTY_SAFEHEAD_TEXT = "SAFED!"
 PENALTY_TREASURE_TEXT = 'TREASURE!'
 PENALTY_GO_SAD_TEXT = "DIED!"
 PENALTY_SANDBAG_TEXT = 'SLOPPY!'
+PENALTY_UNSTUN_TEXT = 'UN-STUN!'
 
 # Debug
 VERBOSE_IMPACT = False  # Print impact of cfo objects

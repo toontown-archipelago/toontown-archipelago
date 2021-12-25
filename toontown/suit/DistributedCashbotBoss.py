@@ -1034,3 +1034,6 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def goonKilledBySafe(self, avId):
         self.scoreboard.addScore(avId, amount=CraneLeagueGlobals.POINTS_GOON_KILLED_BY_SAFE, reason=CraneLeagueGlobals.GOON_KILLED_BY_SAFE_TEXT)
+
+    def updateUnstun(self, avId):
+        self.scoreboard.addScore(avId, amount=CraneLeagueGlobals.POINTS_PENALTY_UNSTUN, reason=CraneLeagueGlobals.PENALTY_UNSTUN_TEXT)
