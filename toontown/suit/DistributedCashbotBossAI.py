@@ -1,5 +1,6 @@
 from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
+from direct.showbase.PythonUtil import clamp
 from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCashbotBossCraneAI
@@ -13,7 +14,6 @@ from toontown.chat import ResistanceChat
 from toontown.toon import DistributedToonAI
 from direct.fsm import FSM
 import DistributedBossCogAI
-import SuitDNA
 import random
 import math
 
@@ -29,9 +29,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.treasures = {}
         self.grabbingTreasures = {}
         self.recycledTreasures = []
-        self.rewardId = ResistanceChat.getRandomId()
-        self.rewardedToons = []
         # self.healAmount = 0
+        # self.rewardId = ResistanceChat.getRandomId()
+        # self.rewardedToons = []
         self.scene = NodePath('scene')
         self.reparentTo(self.scene)
         cn = CollisionNode('walls')
@@ -588,16 +588,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         actualTime = craneTime - self.battleThreeTimeStarted
         self.d_updateTimer(actualTime)
         self.resetBattles()
-        self.suitsKilled.append({'type': None,
-         'level': None,
-         'track': self.dna.dept,
-         'isSkelecog': 0,
-         'isForeman': 0,
-         'isVP': 0,
-         'isCFO': 1,
-         'isSupervisor': 0,
-         'isVirtual': 0,
-         'activeToons': self.involvedToons[:]})
         self.barrier = self.beginBarrier('Victory', self.involvedToons, 30, self.__doneVictory)
         return
 
@@ -609,12 +599,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             comboTracker.cleanup()
         self.d_setBattleExperience()
         self.b_setState('Reward')
-        BattleExperienceAI.assignRewards(self.involvedToons, self.toonSkillPtsGained, self.suitsKilled, ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
-        for toonId in self.involvedToons:
-            toon = self.air.doId2do.get(toonId)
-            if toon:
-                toon.addResistanceMessage(self.rewardId)
-                toon.b_promote(self.deptIndex)
+        # BattleExperienceAI.assignRewards(self.involvedToons, self.toonSkillPtsGained, self.suitsKilled, ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
 
     def exitVictory(self):
         self.__deleteBattleThreeObjects()
