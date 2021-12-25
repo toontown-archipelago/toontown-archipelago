@@ -1,3 +1,5 @@
+from toontown.toonbase import ToontownGlobals
+
 # A file to put all crane league settings in one place for easy adjustment
 
 # Ruleset
@@ -10,6 +12,28 @@ MAX_GOON_DAMAGE = 50  # What is the highest amount of damage a goon should do? (
 MAX_GOON_AMOUNT_START = 8
 MAX_GOON_AMOUNT_END = 16
 
+
+# A dict that maps attack codes to base damage values from the CFO
+CFO_ATTACKS_BASE_DAMAGE = {
+    ToontownGlobals.BossCogElectricFence: 1,  # The actual bump
+    ToontownGlobals.BossCogSwatLeft: 7,  # Swats from bumping
+    ToontownGlobals.BossCogSwatRight: 7,
+    # ToontownGlobals.BossCogAreaAttack: 10,
+    # ToontownGlobals.BossCogFrontAttack: 3,
+    # ToontownGlobals.BossCogRecoverDizzyAttack: 3,
+    # ToontownGlobals.BossCogDirectedAttack: 3,
+    # ToontownGlobals.BossCogStrafeAttack: 2,
+    # ToontownGlobals.BossCogGoonZap: 5,
+    ToontownGlobals.BossCogSlowDirectedAttack: 25,  # Gear throw
+    # ToontownGlobals.BossCogGavelStomp: 20,
+    # ToontownGlobals.BossCogGavelHandle: 2,
+    # ToontownGlobals.BossCogLawyerAttack: 5,
+    # ToontownGlobals.BossCogMoveAttack: 20,
+    # ToontownGlobals.BossCogGolfAttack: 15,
+    # ToontownGlobals.BossCogGolfAreaAttack: 15,
+    # ToontownGlobals.BossCogGearDirectedAttack: 15,
+    # ToontownGlobals.BossCogOvertimeAttack: 10
+}
 SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 FORCE_MAX_LAFF = False  # Should we force a laff limit for this crane round?
 FORCE_MAX_LAFF_AMOUNT = 100  # The laff that we are going to force all toons participating to have
