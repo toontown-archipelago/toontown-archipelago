@@ -24,15 +24,27 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
     def getIndex(self):
         return self.index
 
+    def getMinImpact(self):
+        if self.boss.heldObject:
+            return CraneLeagueGlobals.MIN_DEHELMET_IMPACT
+        else:
+            return CraneLeagueGlobals.MIN_SAFE_IMPACT
+
     def hitBoss(self, impact, craneId):
+
         avId = self.air.getAvatarIdFromSender()
-        self.validate(avId, impact <= 1.0, 'invalid hitBoss impact %s' % impact)
+        self.validate(avId, 1.0 >= impact >= 0, 'invalid hitBoss impact %s' % impact)
         if avId not in self.boss.involvedToons:
             return
         if self.state != 'Dropped' and self.state != 'Grabbed':
             return
         if self.avoidHelmet or self == self.boss.heldObject:
             return
+
+        if impact <= self.getMinImpact():
+            self.boss.d_updateLowImpactHits(avId)
+            return
+
         if self.boss.heldObject == None:
             if self.boss.attackCode == ToontownGlobals.BossCogDizzy:
                 damage = int(impact * 50)

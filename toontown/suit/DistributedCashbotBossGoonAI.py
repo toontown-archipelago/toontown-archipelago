@@ -6,7 +6,7 @@ import GoonGlobals
 from direct.task.Task import Task
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
-from toontown.coghq import DistributedCashbotBossObjectAI
+from toontown.coghq import DistributedCashbotBossObjectAI, CraneLeagueGlobals
 from direct.showbase import PythonUtil
 import DistributedGoonAI
 import math
@@ -201,11 +201,19 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         comboTracker.incrementCombo(comboTracker.combo+1)
         DistributedGoonAI.DistributedGoonAI.requestStunned(self, pauseTime)
 
+    def getMinImpact(self):
+        return CraneLeagueGlobals.MIN_GOON_IMPACT
+
     def hitBoss(self, impact, craneId):
         avId = self.air.getAvatarIdFromSender()
-        self.validate(avId, impact <= 1.0, 'invalid hitBoss impact %s' % impact)
+        self.validate(avId, 1.0 >= impact >= 0, 'invalid hitBoss impact %s' % impact)
         if avId not in self.boss.involvedToons:
             return
+
+        if impact <= self.getMinImpact():
+            self.boss.d_updateLowImpactHits(avId)
+            return
+
         avatar = self.air.doId2do.get(avId)
         if self.state == 'Dropped' or self.state == 'Grabbed':
             if not self.boss.heldObject:

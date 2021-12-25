@@ -996,6 +996,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def updateMaxImpactHits(self, avId):
         self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_IMPACT, CraneLeagueGlobals.IMPACT_TEXT)
 
+    def updateLowImpactHits(self, avId):
+        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_PENALTY_SANDBAG, CraneLeagueGlobals.PENALTY_SANDBAG_TEXT)
+
     def updateCombo(self, avId, comboLength):
         self.scoreboard.setCombo(avId, comboLength)
 

@@ -463,6 +463,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def d_updateMaxImpactHits(self, avId):
         self.sendUpdate('updateMaxImpactHits', [avId])
 
+    def d_updateLowImpactHits(self, avId):
+        self.sendUpdate('updateLowImpactHits', [avId])
+
     def d_setCraneSpawn(self, want, spawn, toonId):
         self.sendUpdate('setCraneSpawn', [want, spawn, toonId])
 

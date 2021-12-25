@@ -12,6 +12,10 @@ MAX_GOON_DAMAGE = 50  # What is the highest amount of damage a goon should do? (
 MAX_GOON_AMOUNT_START = 8
 MAX_GOON_AMOUNT_END = 16
 
+MIN_GOON_IMPACT = 0.1  # How much impact should a goon hit need to register?
+MIN_SAFE_IMPACT = 0.0  # How much impact should a safe hit need to register?
+MIN_DEHELMET_IMPACT = 0.5  # How much impact should a safe hit need to desafe the CFO?
+
 REALLY_WEAK_TREASURE_HEAL_AMOUNT = 2  # How much should the treasures from very small goons heal?
 WEAK_TREASURE_HEAL_AMOUNT = 5  # How much should the treasures from small goons heal?
 AVERAGE_TREASURE_HEAL_AMOUNT = 8  # How much should the treasures from med goons heal?
@@ -77,6 +81,7 @@ POINTS_GOON_KILLED_BY_SAFE = 5
 
 POINTS_PENALTY_SAFEHEAD = -20
 POINTS_PENALTY_GO_SAD = -50
+POINTS_PENALTY_SANDBAG = -5
 
 # Text to display in popup text for misc point gains
 GOON_STOMP_TEXT = 'GOON!'
@@ -88,6 +93,7 @@ GOON_KILLED_BY_SAFE_TEXT = "DESTRUCTION!"
 PENALTY_SAFEHEAD_TEXT = "SAFED!"
 PENALTY_TREASURE_TEXT = 'TREASURE!'
 PENALTY_GO_SAD_TEXT = "DIED!"
+PENALTY_SANDBAG_TEXT = 'SLOPPY!'
 
 # Combo values
 COMBO_DURATION = 2.0  # How long should combos last?

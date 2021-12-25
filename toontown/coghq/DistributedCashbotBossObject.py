@@ -126,13 +126,16 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             vel = self.crane.root.getRelativeVector(render, vel)
             vel.normalize()
             impact = vel[1]
+
             if impact >= self.getMinImpact():
-                print 'hit! %s' % impact
                 self.hitBossSoundInterval.start()
-                self.doHitBoss(impact, self.craneId)
             else:
                 self.touchedBossSoundInterval.start()
-                print '--not hard enough: %s' % impact
+
+            impact = max(0, impact)
+            base.localAvatar.setSystemMessage(0, "impact: " + str(impact))
+
+            self.doHitBoss(impact, self.craneId)
 
     def doHitBoss(self, impact, craneId):
         self.d_hitBoss(impact, craneId)
