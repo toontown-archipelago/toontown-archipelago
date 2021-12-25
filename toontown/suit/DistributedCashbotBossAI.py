@@ -196,6 +196,42 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # we have a toon to attack
         self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonToAttack)
 
+
+    def getDamageMultiplier(self):
+        return int(self.progressValue(1, 4))  # Mult of 1-3 depending on how far we are in the battle
+
+    def zapToon(self, x, y, z, h, p, r, bpx, bpy, attackCode, timestamp):
+
+        avId = self.air.getAvatarIdFromSender()
+        if not self.validate(avId, avId in self.involvedToons, 'zapToon from unknown avatar'):
+            return
+
+        toon = simbase.air.doId2do.get(avId)
+        if not toon:
+            return
+
+        self.d_showZapToon(avId, x, y, z, h, p, r, attackCode, timestamp)
+
+        damage = CraneLeagueGlobals.CFO_ATTACKS_BASE_DAMAGE.get(attackCode)
+        if damage == None:
+            self.notify.warning('No damage listed for attack code %s' % attackCode)
+            damage = 5
+            raise KeyError('No damage listed for attack code %s' % attackCode)  # temp
+
+        damage *= self.getDamageMultiplier()
+        # Clamp the damage to make sure it at least does 1
+        damage = max(int(damage), 1)
+
+        self.damageToon(toon, damage)
+        currState = self.getCurrentOrNextState()
+
+        if attackCode == ToontownGlobals.BossCogElectricFence and (currState == 'RollToBattleTwo' or currState == 'BattleThree'):
+            if bpy < 0 and abs(bpx / bpy) > 0.5:
+                if bpx < 0:
+                    self.b_setAttackCode(ToontownGlobals.BossCogSwatRight)
+                else:
+                    self.b_setAttackCode(ToontownGlobals.BossCogSwatLeft)
+
     def makeTreasure(self, goon):
         if self.state != 'BattleThree':
             return
