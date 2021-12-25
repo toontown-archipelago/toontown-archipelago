@@ -60,7 +60,7 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
 
     def doHitGoon(self, goon):
         goon.b_destroyGoon()
-        self.boss.scoreboard.addScore(self.avId, CraneLeagueGlobals.POINTS_GOON_KILLED_BY_SAFE, CraneLeagueGlobals.GOON_KILLED_BY_SAFE_TEXT)
+        self.sendUpdate('destroyedGoon', [])
 
     def resetToInitialPosition(self):
         posHpr = ToontownGlobals.CashbotBossSafePosHprs[self.index]

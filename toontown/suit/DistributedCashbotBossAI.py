@@ -236,6 +236,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if self.state != 'BattleThree':
             return
 
+        # Too many treasures on the field?
+        if len(self.treasures) >= CraneLeagueGlobals.MAX_TREASURE_AMOUNT:
+            return
+
         pos = goon.getPos(self)
         v = Vec3(pos[0], pos[1], 0.0)
         if not v.normalize():
@@ -737,3 +741,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def d_awardCombo(self, avId, comboLength, amount):
         self.sendUpdate('awardCombo', [avId, comboLength, amount])
+
+    def d_updateGoonKilledBySafe(self, avId):
+        self.sendUpdate('goonKilledBySafe', [avId])
