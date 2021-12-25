@@ -381,12 +381,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         taskMgr.remove(taskName)
 
     def acceptHelmetFrom(self, avId):
-        now = globalClock.getFrameTime()
-        then = self.avatarHelmets.get(avId, None)
-        if then == None or now - then > 300:
-            self.avatarHelmets[avId] = now
-            return 1
-        return 1
+        return True  # Temp changed to always accept helmets for comp purposes
+        # now = globalClock.getFrameTime()
+        # then = self.avatarHelmets.get(avId, None)
+        # if then == None or now - then > 300:
+        #     self.avatarHelmets[avId] = now
+        #     return 1
+        # return 1
 
     def magicWordHit(self, damage, avId):
         if self.heldObject:
