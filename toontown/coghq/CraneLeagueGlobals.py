@@ -3,6 +3,8 @@
 # Ruleset
 CFO_MAX_HP = 1500  # How much HP should the CFO have?
 CFO_STUN_THRESHOLD = 30  # How much damage should a goon do to stun?
+MIN_GOON_DAMAGE = 10  # What is the lowest amount of damage a goon should do? (beginning of CFO)
+MAX_GOON_DAMAGE = 50  # What is the highest amount of damage a goon should do? (end of CFO)
 
 # How many goons should we allow to spawn? This will scale up towards the end of the fight to the 2nd var
 MAX_GOON_AMOUNT_START = 8
