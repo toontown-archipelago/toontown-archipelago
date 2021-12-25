@@ -5,7 +5,7 @@ from toontown.toonbase import ToontownGlobals
 # Ruleset
 
 # CFO SETTINGS
-CFO_MAX_HP = 1500  # How much HP should the CFO have?
+CFO_MAX_HP = 3000  # How much HP should the CFO have?
 CFO_STUN_THRESHOLD = 30  # How much damage should a goon do to stun?
 SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 
@@ -61,8 +61,8 @@ FORCE_MAX_LAFF_AMOUNT = 100  # The laff that we are going to force all toons par
 HEAL_TOONS_ON_START = True  # Should we set all toons to full laff when starting the round?
 
 # note: restarting on fail and reviving on death enabled at the same time will NOT work correctly
-RESTART_CRANE_ROUND_ON_FAIL = True  # Should we restart the crane round if all toons die?
-REVIVE_TOONS_UPON_DEATH = False  # Should we revive a toon that dies after a certain amount of time? (essentially a stun)
+RESTART_CRANE_ROUND_ON_FAIL = False  # Should we restart the crane round if all toons die?
+REVIVE_TOONS_UPON_DEATH = True  # Should we revive a toon that dies after a certain amount of time? (essentially a stun)
 REVIVE_TOONS_TIME = 10  # Time in seconds to revive a toon after death
 REVIVE_TOONS_LAFF_PERCENTAGE = 0.50  # How much laff should we give back to the toon when revived?
 
