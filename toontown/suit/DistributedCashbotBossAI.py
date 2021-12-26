@@ -53,6 +53,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.wantMovementModification = True
         self.wantOpeningModifications = False
         self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
+        self.toonsWon = False
         return
 
     def generate(self):
@@ -434,6 +435,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.comboTrackers[avId].incrementCombo(damage*CraneLeagueGlobals.COMBO_DAMAGE_PERCENTAGE)
 
         if self.bossDamage >= self.bossMaxDamage:
+            self.toonsWon = True
             self.b_setState('Victory')
             return
 
@@ -560,6 +562,39 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 if CraneLeagueGlobals.HEAL_TOONS_ON_START:
                     av.b_setHp(av.getMaxHp())
 
+        self.toonsWon = False
+        taskMgr.remove(self.uniqueName('times-up-task'))
+        taskMgr.remove(self.uniqueName('post-times-up-task'))
+        # If timer mode is active, end the crane round later
+        if CraneLeagueGlobals.TIMER_MODE:
+            taskMgr.doMethodLater(CraneLeagueGlobals.TIMER_MODE_TIME_LIMIT, self.__timesUp, self.uniqueName('times-up-task'))
+
+    # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
+    def __timesUp(self, task=None):
+        self.__donHelmet(None)
+        for avId in self.involvedToons:
+            av = self.air.doId2do.get(avId)
+            if av:
+                av.takeDamage(av.getMaxHp())
+
+        self.sendUpdate('timesUp', [])
+
+        self.toonsWon = False
+        taskMgr.remove(self.uniqueName('times-up-task'))
+        taskMgr.doMethodLater(10.0, self.__handlePostTimesUp, self.uniqueName('post-times-up-task'))
+
+
+    # Called a small amount of time later after we run out of time
+    def __handlePostTimesUp(self, task=None):
+        taskMgr.remove(self.uniqueName('times-up-task'))
+        taskMgr.remove(self.uniqueName('post-times-up-task'))
+
+        if CraneLeagueGlobals.RESTART_CRANE_ROUND_ON_FAIL:
+            self.__restartCraneRoundTask(None)
+        else:
+            self.b_setState('Victory')
+
+
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
         self.makeGoon(side='EmergeB')
@@ -586,9 +621,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             if av and avId in self.oldMaxLaffs:
                 av.b_setMaxHp(self.oldMaxLaffs[avId])
 
+        taskMgr.remove(self.uniqueName('times-up-task'))
+        taskMgr.remove(self.uniqueName('post-times-up-task'))
+
         craneTime = globalClock.getFrameTime()
         actualTime = craneTime - self.battleThreeTimeStarted
-        self.d_updateTimer(actualTime)
+        timeToSend = 0.0 if CraneLeagueGlobals.TIMER_MODE and not self.toonsWon else actualTime
+        self.d_updateTimer(timeToSend)
         self.resetBattles()
         self.barrier = self.beginBarrier('Victory', self.involvedToons, 30, self.__doneVictory)
         return
@@ -701,6 +740,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if ct:
             ct.resetCombo()
 
+        # If we want to revive toons, revive this toon later and don't do anything else past this point
         if CraneLeagueGlobals.REVIVE_TOONS_UPON_DEATH and toon.doId in self.involvedToons:
             self.__reviveToonLater(toon)
             return
@@ -714,9 +754,17 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # Restart the crane round if toons are dead and we want to restart
         if CraneLeagueGlobals.RESTART_CRANE_ROUND_ON_FAIL and not aliveToons:
+            taskMgr.remove(self.uniqueName('times-up-task'))
+            taskMgr.remove(self.uniqueName('post-times-up-task'))
             taskMgr.doMethodLater(10.0, self.__restartCraneRoundTask, self.uniqueName('failedCraneRound'))
             self.sendUpdate('announceCraneRestart', [])
 
+        # End the crane round if all toons are dead and we aren't reviving them
+        elif not aliveToons and not CraneLeagueGlobals.REVIVE_TOONS_UPON_DEATH:
+            taskMgr.remove(self.uniqueName('times-up-task'))
+            taskMgr.remove(self.uniqueName('post-times-up-task'))
+            taskMgr.doMethodLater(10.0, lambda _: self.b_setState('Victory'), self.uniqueName('failedCraneRound'))
+            self.sendUpdate('announceCraneRestart', [])
 
 
     # Probably a better way to do this but o well
