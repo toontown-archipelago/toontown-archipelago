@@ -5,6 +5,9 @@ from toontown.toonbase import ToontownGlobals
 # Ruleset
 
 # CFO SETTINGS
+TIMER_MODE = False  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
+TIMER_MODE_TIME_LIMIT = 600  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
+
 CFO_MAX_HP = 3000  # How much HP should the CFO have?
 CFO_STUN_THRESHOLD = 30  # How much damage should a goon do to stun?
 SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
@@ -18,15 +21,15 @@ RANDOM_GEAR_THROW_ORDER = False  # Should the order in which CFO throw gears at 
 # A dict that maps attack codes to base damage values from the CFO
 CFO_ATTACKS_BASE_DAMAGE = {
     ToontownGlobals.BossCogElectricFence: 1,  # The actual bump
-    ToontownGlobals.BossCogSwatLeft: 7,  # Swats from bumping
-    ToontownGlobals.BossCogSwatRight: 7,
-    ToontownGlobals.BossCogSlowDirectedAttack: 25,  # Gear throw
+    ToontownGlobals.BossCogSwatLeft: 10,  # Swats from bumping
+    ToontownGlobals.BossCogSwatRight: 10,
+    ToontownGlobals.BossCogSlowDirectedAttack: 20,  # Gear throw
 }
 
 # How much should attacks be multiplied by by the time we are towards the end?
-CFO_ATTACKS_MULTIPLIER = 3
+CFO_ATTACKS_MULTIPLIER = 4
 # should multiplier gradually scale or go up by integers?  False means 1x then 2x then 3x, True gradually increases
-CFO_ATTACKS_MULTIPLIER_INTERPOLATE = False
+CFO_ATTACKS_MULTIPLIER_INTERPOLATE = True
 
 # GOON/TREASURE SETTINGS
 MIN_GOON_DAMAGE = 10  # What is the lowest amount of damage a goon should do? (beginning of CFO)
@@ -59,8 +62,8 @@ TREASURE_STYLES = [
 ]
 
 # TOON SETTINGS
-FORCE_MAX_LAFF = False  # Should we force a laff limit for this crane round?
-FORCE_MAX_LAFF_AMOUNT = 100  # The laff that we are going to force all toons participating to have
+FORCE_MAX_LAFF = True  # Should we force a laff limit for this crane round?
+FORCE_MAX_LAFF_AMOUNT = 120  # The laff that we are going to force all toons participating to have
 HEAL_TOONS_ON_START = True  # Should we set all toons to full laff when starting the round?
 
 WANT_LOW_LAFF_BONUS = True  # Should we award toons with low laff bonus points?
@@ -69,10 +72,10 @@ LOW_LAFF_BONUS_THRESHOLD = 25  # How much laff or less should a toon have to be 
 LOW_LAFF_BONUS_TEXT = "UBER BONUS"  # Text to display alongside a low laff bonus
 LOW_LAFF_BONUS_INCLUDE_PENALTIES = True  # Should penalties also be increased when low on laff?
 
-# note: restarting on fail and reviving on death enabled at the same time will NOT work correctly
-RESTART_CRANE_ROUND_ON_FAIL = False  # Should we restart the crane round if all toons die?
+# note: When REVIVE_TOONS_UPON_DEATH is True, the only fail condition is if we run out of time
+RESTART_CRANE_ROUND_ON_FAIL = True  # Should we restart the crane round if all toons die?
 REVIVE_TOONS_UPON_DEATH = True  # Should we revive a toon that dies after a certain amount of time? (essentially a stun)
-REVIVE_TOONS_TIME = 10  # Time in seconds to revive a toon after death
+REVIVE_TOONS_TIME = 15  # Time in seconds to revive a toon after death
 REVIVE_TOONS_LAFF_PERCENTAGE = 0.50  # How much laff should we give back to the toon when revived?
 
 # POINTS SETTINGS
