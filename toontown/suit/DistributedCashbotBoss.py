@@ -1032,6 +1032,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.scoreboard.toonRevived(avId)
         if avId == base.localAvatar.doId:
             self.localToonIsSafe = False
+            base.localAvatar.stunToon()
 
     def goonKilledBySafe(self, avId):
         self.scoreboard.addScore(avId, amount=CraneLeagueGlobals.POINTS_GOON_KILLED_BY_SAFE, reason=CraneLeagueGlobals.GOON_KILLED_BY_SAFE_TEXT)
