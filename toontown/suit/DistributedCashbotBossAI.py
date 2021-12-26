@@ -195,7 +195,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
 
     def getDamageMultiplier(self, allowFloat=False):
-        mult = self.progressValue(1, CraneLeagueGlobals.CFO_ATTACKS_MULTIPLIER + 1)
+        mult = self.progressValue(1, CraneLeagueGlobals.CFO_ATTACKS_MULTIPLIER + (0 if allowFloat else 1))
         if not allowFloat:
             mult = int(mult)
         return mult
