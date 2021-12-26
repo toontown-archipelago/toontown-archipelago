@@ -91,18 +91,19 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             event = self.air.getAvatarExitEvent(avId)
             self.acceptOnce(event, self.__handleUnexpectedExit, extraArgs=[avId])
 
-    def removeToon(self, avId):
+    def removeToon(self, avId, died=False):
         resendIds = 0
         try:
             self.looseToons.remove(avId)
         except:
             pass
 
-        # try:
-        #     self.involvedToons.remove(avId)
-        #     resendIds = 1
-        # except:
-        #     pass
+        if not died:
+            try:
+                self.involvedToons.remove(avId)
+                resendIds = 1
+            except:
+                pass
 
         try:
             self.toonsA.remove(avId)
@@ -198,7 +199,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.sendUpdate('toonDied', [toon.doId])
         # empty = InventoryBase.InventoryBase(toon)
         # toon.b_setInventory(empty.makeNetString())
-        self.removeToon(toon.doId)
+        self.removeToon(toon.doId, died=True)
 
     def healToon(self, toon, increment):
         toon.toonUp(increment)

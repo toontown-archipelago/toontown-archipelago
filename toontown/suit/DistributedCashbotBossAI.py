@@ -88,7 +88,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return {'activeSuits': activeSuits,
          'reserveSuits': reserveSuits}
 
-    def removeToon(self, avId):
+    def removeToon(self, avId, died=False):
         if self.cranes != None:
             for crane in self.cranes:
                 crane.removeToon(avId)
@@ -101,7 +101,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             for goon in self.goons:
                 goon.removeToon(avId)
 
-        DistributedBossCogAI.DistributedBossCogAI.removeToon(self, avId)
+        DistributedBossCogAI.DistributedBossCogAI.removeToon(self, avId, died=died)
         return
 
     def __makeBattleThreeObjects(self):
