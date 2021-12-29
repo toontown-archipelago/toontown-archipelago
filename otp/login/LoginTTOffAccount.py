@@ -11,8 +11,6 @@ class LoginTTOffAccount(LoginBase):
         self.cr.whiteListChatEnabled = 1  # Should this be set by the server instead?
 
     def supportsRelogin(self):
-        if __debug__:
-            return 1
         return 0
 
     def supportsAuthenticateDelete(self):
