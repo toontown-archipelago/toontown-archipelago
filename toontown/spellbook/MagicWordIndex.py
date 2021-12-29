@@ -190,6 +190,35 @@ class SetMaxHP(MagicWord):
         return "{}'s max laff has been set to {}.".format(toon.getName(), maxhp)
 
 
+class StartHoliday(MagicWord):
+    aliases = ["startH"]
+    desc = "Starts a specified holiday ID."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("id", int, True)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        id = args[0]
+        try:
+            self.air.holidayManager.startHoliday(id)
+            return "Started holiday %d" % (id)
+        except:
+            return "Invalid holiday ID: %d" % (id)
+
+class EndHoliday(MagicWord):
+    aliases = ["endH"]
+    desc = "Ends a specified holiday ID."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("id", int, True)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        id = args[0]
+        try:
+            self.air.holidayManager.endHoliday(id)
+            return "Ended holiday %d" % (id)
+        except:
+            return "Invalid holiday ID: %d" % (id)
+
+
 class ToggleOobe(MagicWord):
     aliases = ["oobe"]
     desc = "Toggles the out of body experience mode, which lets you move the camera freely."
@@ -1364,7 +1393,6 @@ class SetGM(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         gmId = args[0]
-        name = args[1]
 
         #if gmId == 1:
         #    return 'This GM is reserved for the Toon Council. Use ~setGM 2 instead.'
@@ -1380,11 +1408,11 @@ class SetGM(MagicWord):
                 return "Your access level is too low to use this GM icon."
 
         if toon.isGM() and gmId != 0:
-            toon.b_setGM(0, name)
+            toon.b_setGM(0)
         elif toon.isGM and gmId == 0:
-            toon.b_setGM(0, True)
+            toon.b_setGM(0)
 
-        toon.b_setGM(gmId, name)
+        toon.b_setGM(gmId)
 
         if __debug__:
             pass
@@ -1739,7 +1767,6 @@ class safeRush(MagicWord):
             boss.wantSafeRushPractice = True
             return ("Safe Rush => ON")
 
-        return ("Error, nothing happened :(" )
         
 class aim(MagicWord):
     desc = "Resets the locations of the safes"
@@ -2134,10 +2161,13 @@ class SpawnCog(MagicWord):
 
         sp = simbase.air.suitPlanners.get(zoneId - (zoneId % 100))
         if not sp:
-            return "Unable to spawn %s in current zone." % name
+            return "Unable to spawn a level %d %s in current zone." % (level, name)
         pointmap = sp.streetPointList
-        sp.createNewSuit([], pointmap, suitName=name, suitLevel=level)
-        return "Spawned %s in current zone." % name
+        try:
+            sp.createNewSuit([], pointmap, suitName=name, suitLevel=level)
+            return "Spawned a level %d %s in current zone." % (level, name)
+        except IndexError:
+            return "Level %d is out of range for %s." % (level, name)
 
 
 class SpawnInvasion(MagicWord):
