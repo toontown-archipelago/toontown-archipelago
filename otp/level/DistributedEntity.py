@@ -46,5 +46,5 @@ class DistributedEntity(DistributedObject.DistributedObject, Entity.Entity):
         DistributedObject.DistributedObject.disable(self)
 
     def delete(self):
-        DistributedEntity.notify.debug(base.ACTION_BUTTON)
+        DistributedEntity.notify.debug('delete')
         DistributedObject.DistributedObject.delete(self)
