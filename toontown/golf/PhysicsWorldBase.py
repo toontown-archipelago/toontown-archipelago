@@ -12,6 +12,7 @@ from direct.distributed.ClockDelta import *
 import BuildGeometry
 from toontown.golf import GolfGlobals
 import random, time
+from panda3d.ode import *
 
 def scalp(vec, scal):
     vec0 = vec[0] * scal
