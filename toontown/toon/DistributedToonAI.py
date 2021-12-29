@@ -4137,7 +4137,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             if self._gmType > MaxGMType:
                 self.notify.warning('toon %s has invalid GM type: %s' % (self.doId, self._gmType))
                 self._gmType = MaxGMType
-        self._updateGMName(formerType)
+        #self._updateGMName(formerType) - looks much better without this to be honest
         return
 
     def isGM(self):
