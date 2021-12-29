@@ -13,6 +13,7 @@ from otp.level import LevelConstants
 from toontown.toonbase import TTLocalizer
 from toontown.coghq import FactoryCameraViews
 from direct.controls.ControlManager import CollisionHandlerRayStart
+from libotp import CFThought, CFTimeout
 if __dev__:
     from otp.level import EditorGlobals
 
