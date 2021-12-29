@@ -12,6 +12,7 @@ from otp.level import LevelSpec
 from otp.level import LevelConstants
 from toontown.toonbase import TTLocalizer
 from toontown.coghq import FactoryCameraViews
+from libotp import CFThought
 if __dev__:
     from otp.level import EditorGlobals
 
