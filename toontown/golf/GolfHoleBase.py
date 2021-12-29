@@ -8,6 +8,7 @@ from toontown.ai.ToonBarrier import *
 from toontown.golf import GolfGlobals
 import random
 import math
+from panda3d.ode import *
 
 class GolfHoleBase:
 
