@@ -11,7 +11,8 @@ class StreetSign(DistributedObject.DistributedObject):
     RedownloadTaskName = 'RedownloadStreetSign'
     StreetSignFileName = config.GetString('street-sign-filename', 'texture.jpg')
     StreetSignBaseDir = config.GetString('street-sign-base-dir', 'sign')
-    StreetSignUrl = base.config.GetString('street-sign-url', 'https://ttoffline.com/images/')
+    StreetSignUrl = base.config.GetString('street-sign-url', 'http://cdn.toontown.disney.go.com/toontown/en/street-signs/img/')
+    #DO NOT revert this to the ttoffline link it was previously, it was causing people to be unable to load onto streets
     notify = DirectNotifyGlobal.directNotify.newCategory('StreetSign')
 
     def __init__(self):

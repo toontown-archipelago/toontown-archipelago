@@ -14,6 +14,7 @@ from toontown.toon import NPCToons
 import MovieNPCSOS
 from toontown.effects import Splash
 from direct.task import Task
+from libotp import CFSpeech, CFTimeout
 notify = DirectNotifyGlobal.directNotify.newCategory('MovieHeal')
 soundFiles = ('AA_heal_tickle.ogg', 'AA_heal_telljoke.ogg', 'AA_heal_smooch.ogg', 'AA_heal_happydance.ogg', 'AA_heal_pixiedust.ogg', 'AA_heal_juggle.ogg', 'AA_heal_High_Dive.ogg')
 healPos = Point3(0, 0, 0)
