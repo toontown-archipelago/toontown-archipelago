@@ -5,6 +5,8 @@ from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 import DistributedCashbotBossObject
 
+from toontown.coghq import CraneLeagueGlobals
+
 class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbotBossObject):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossSafe')
     grabPos = (0, 0, -8.2)
@@ -52,12 +54,13 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
 
     def getMinImpact(self):
         if self.boss.heldObject:
-            return ToontownGlobals.CashbotBossSafeKnockImpact
+            return CraneLeagueGlobals.MIN_DEHELMET_IMPACT
         else:
-            return ToontownGlobals.CashbotBossSafeNewImpact
+            return CraneLeagueGlobals.MIN_SAFE_IMPACT
 
     def doHitGoon(self, goon):
         goon.b_destroyGoon()
+        self.sendUpdate('destroyedGoon', [])
 
     def resetToInitialPosition(self):
         posHpr = ToontownGlobals.CashbotBossSafePosHprs[self.index]

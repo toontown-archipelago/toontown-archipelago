@@ -281,11 +281,11 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         else:
             return self.invokeSuitPlanner(13, 1)
 
-    def removeToon(self, avId):
+    def removeToon(self, avId, died=False):
         toon = simbase.air.doId2do.get(avId)
         if toon:
             toon.b_setNumPies(0)
-        DistributedBossCogAI.DistributedBossCogAI.removeToon(self, avId)
+        DistributedBossCogAI.DistributedBossCogAI.removeToon(self, avId, died=died)
 
     def enterOff(self):
         self.notify.debug('enterOff')

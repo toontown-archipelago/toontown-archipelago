@@ -751,6 +751,9 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         self.nextState = requestStatus.get('nextState', 'walk')
         base.localAvatar.attachCamera()
         base.localAvatar.startUpdateSmartCamera()
+
+        base.localAvatar.orbitalCamera.setPresetPos(base.localAvatar.orbitalCamera.presetPos, transition=False)
+
         base.localAvatar.startPosHprBroadcast()
         globalClock.tick()
         base.localAvatar.b_setAnimState('TeleportIn', 1, callback=self.teleportInDone)

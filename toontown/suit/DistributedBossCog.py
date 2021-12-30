@@ -4,14 +4,14 @@ from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
 from direct.directnotify import DirectNotifyGlobal
 from otp.avatar import DistributedAvatar
-from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimer
+from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimer, BossSpeedrunTimedTimer
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.battle import BattleExperience
 from toontown.battle import BattleBase
 import BossCog
 import SuitDNA
-from toontown.coghq import CogDisguiseGlobals
+from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
 from toontown.coghq import BossHealthBar
 from direct.showbase import Transitions
 from toontown.hood import ZoneUtil
@@ -67,7 +67,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def announceGenerate(self):
         DistributedAvatar.DistributedAvatar.announceGenerate(self)
         self.bossHealthBar = BossHealthBar.BossHealthBar(self.style.dept)
-        self.bossSpeedrunTimer = BossSpeedrunTimer()
+        self.bossSpeedrunTimer = BossSpeedrunTimedTimer(time_limit=CraneLeagueGlobals.TIMER_MODE_TIME_LIMIT) if CraneLeagueGlobals.TIMER_MODE else BossSpeedrunTimer()
         self.bossSpeedrunTimer.hide()
         self.prevCogSuitLevel = localAvatar.getCogLevels()[CogDisguiseGlobals.dept2deptIndex(self.style.dept)]
         nearBubble = CollisionSphere(0, 0, 0, 50)
@@ -620,14 +620,14 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def localToonDied(self):
         target_sz = ZoneUtil.getSafeZoneId(localAvatar.defaultZone)
         place = self.cr.playGame.getPlace()
-        place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
-          'where': ZoneUtil.getWhereName(target_sz, 1),
-          'how': 'teleportIn',
-          'hoodId': target_sz,
-          'zoneId': target_sz,
-          'shardId': None,
-          'avId': -1,
-          'battle': 1}])
+        # place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
+        #   'where': ZoneUtil.getWhereName(target_sz, 1),
+        #   'how': 'teleportIn',
+        #   'hoodId': target_sz,
+        #   'zoneId': target_sz,
+        #   'shardId': None,
+        #   'avId': -1,
+        #   'battle': 1}])
         return
 
     def toonsToBattlePosition(self, toonIds, battleNode):
@@ -711,6 +711,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
          bp2d[1],
          attackCode,
          timestamp])
+        if attackCode == ToontownGlobals.BossCogSlowDirectedAttack:
+            toon.stunToon()
         self.doZapToon(toon, fling=fling, shake=shake)
         return
 

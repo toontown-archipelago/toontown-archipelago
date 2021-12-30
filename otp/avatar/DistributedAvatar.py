@@ -118,7 +118,6 @@ class DistributedAvatar(DistributedActor, Avatar):
             return
         oldHp = self.hp
         self.hp = max(self.hp - hpLost, 0)
-        hpLost = oldHp - self.hp
         if hpLost > 0:
             self.showHpText(-hpLost, bonus)
             self.hpChange(quietly=0)

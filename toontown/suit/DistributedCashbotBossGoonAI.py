@@ -6,7 +6,7 @@ import GoonGlobals
 from direct.task.Task import Task
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
-from toontown.coghq import DistributedCashbotBossObjectAI
+from toontown.coghq import DistributedCashbotBossObjectAI, CraneLeagueGlobals
 from direct.showbase import PythonUtil
 import DistributedGoonAI
 import math
@@ -183,32 +183,42 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
 
     def requestStunned(self, pauseTime):
         avId = self.air.getAvatarIdFromSender()
+
+        if avId not in self.air.doId2do:
+            return
+
+        av = self.air.doId2do[avId]
+        if av.getHp() <= 0:
+            return
         if avId not in self.boss.involvedToons:
             return
         if self.state == 'Stunned' or self.state == 'Grabbed':
             return
         self.__stopWalk(pauseTime)
         self.boss.makeTreasure(self)
-        if avId in self.boss.toonGoonStompsDict:
-            self.boss.toonGoonStompsDict[avId] += 1
-        else:
-            self.boss.toonGoonStompsDict[avId] = 1
         self.boss.d_updateGoonsStomped(avId)
+        comboTracker = self.boss.comboTrackers[avId]
+        comboTracker.incrementCombo(comboTracker.combo+1)
         DistributedGoonAI.DistributedGoonAI.requestStunned(self, pauseTime)
+
+    def getMinImpact(self):
+        return CraneLeagueGlobals.MIN_GOON_IMPACT
 
     def hitBoss(self, impact, craneId):
         avId = self.air.getAvatarIdFromSender()
-        self.validate(avId, impact <= 1.0, 'invalid hitBoss impact %s' % impact)
+        self.validate(avId, 1.0 >= impact >= 0, 'invalid hitBoss impact %s' % impact)
         if avId not in self.boss.involvedToons:
             return
+
+        if impact <= self.getMinImpact():
+            self.boss.d_updateLowImpactHits(avId)
+            return
+
         avatar = self.air.doId2do.get(avId)
         if self.state == 'Dropped' or self.state == 'Grabbed':
             if not self.boss.heldObject:
                 damage = int(impact * 25 * self.scale)
-                print("Goon Size: %s" % self.scale)
                 self.boss.recordHit(max(damage, 2), impact, craneId)
-                if damage >= 15:
-                    avatar.d_setSystemMessage(0, str(impact))
         self.b_destroyGoon()
 
     def d_setTarget(self, x, y, h, arrivalTime):
@@ -226,6 +236,8 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
 
     def destroyGoon(self):
         self.demand('Off')
+        if self in self.boss.goons:
+            self.boss.goons.remove(self)
 
     def enterOff(self):
         self.tubeNodePath.stash()
@@ -237,9 +249,6 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
 
     def enterGrabbed(self, avId, craneId):
         crane = simbase.air.doId2do.get(craneId)
-        if crane:
-            if crane.getIndex() > 3: #check if side crane
-                self.d_setObjectState('W', 0, craneId) #wake goon up
         DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI.enterGrabbed(self, avId, craneId)
         taskMgr.remove(self.taskName('recovery'))
         taskMgr.remove(self.taskName('resumeWalk'))
@@ -315,3 +324,10 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
     def exitRecovery(self):
         self.__stopWalk()
         taskMgr.remove(self.uniqueName('recoverWalk'))
+
+    def requestWalk(self):
+        avId = self.air.getAvatarIdFromSender()
+        if avId == self.avId and self.state == 'Stunned':
+            craneId, objectId = self.__getCraneAndObject(avId)
+            if craneId != 0 and objectId == self.doId:
+                self.demand('Walk', avId, craneId)

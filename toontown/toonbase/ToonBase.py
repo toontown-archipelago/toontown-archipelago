@@ -131,8 +131,6 @@ class ToonBase(OTPBase.OTPBase):
         del tpMgr
         self.lastScreenShotTime = globalClock.getRealTime()
         self.accept('InputState-forward', self.__walking)
-        self.accept('shift', self.setSprinting)
-        self.accept('shift-up', self.exitSprinting)
         self.isSprinting = 0
         self.canScreenShot = 1
         self.glitchCount = 0
@@ -141,6 +139,8 @@ class ToonBase(OTPBase.OTPBase):
         self.oldY = max(1, base.win.getYSize())
         self.aspectRatio = float(self.oldX) / self.oldY
         self.aspect2d.setAntialias(AntialiasAttrib.MMultisample)
+
+        self.oldSprint = ""
 
         self.wantCustomKeybinds = self.settings.getBool('game', 'customKeybinds', False)
 
@@ -151,6 +151,7 @@ class ToonBase(OTPBase.OTPBase):
         self.JUMP = 'control'
         self.ACTION_BUTTON = 'delete'
         self.SCREENSHOT_KEY = 'f9'
+        self.CRANE_GRAB_KEY = 'control'
         self.reloadControls()
         return
 
@@ -496,6 +497,7 @@ class ToonBase(OTPBase.OTPBase):
             self.MOVE_RIGHT = keymap.get("MOVE_RIGHT", self.MOVE_RIGHT)
             self.JUMP = keymap.get("JUMP", self.JUMP)
             self.ACTION_BUTTON = keymap.get("ACTION_BUTTON", self.ACTION_BUTTON)
+            self.CRANE_GRAB_KEY = keymap.get('CRANE_GRAB_KEY', self.CRANE_GRAB_KEY)
             ToontownGlobals.OptionsPageHotkey = keymap.get(
                 "OPTIONS-PAGE", ToontownGlobals.OptionsPageHotkey
             )
@@ -506,5 +508,15 @@ class ToonBase(OTPBase.OTPBase):
             self.MOVE_RIGHT = "arrow_right"
             self.JUMP = "control"
             self.ACTION_BUTTON = "delete"
+            self.CRANE_GRAB_KEY = 'control'
+        
+        if self.oldSprint:
+            self.ignore(self.oldSprint)
+            self.ignore(self.oldSprint + "-up")
+
+        sprint = keymap.get("SPRINT", "shift")
+        self.accept(sprint, self.setSprinting)
+        self.accept(sprint + '-up', self.exitSprinting)
+        self.oldSprint = sprint
 
         self.accept(self.SCREENSHOT_KEY, self.takeScreenShot)

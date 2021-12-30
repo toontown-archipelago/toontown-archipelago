@@ -694,15 +694,15 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if self.isLocal():
             target_sz = ZoneUtil.getSafeZoneId(self.defaultZone)
             place = self.cr.playGame.getPlace()
-            if place and place.fsm:
-                place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
-                  'where': ZoneUtil.getWhereName(target_sz, 1),
-                  'how': 'teleportIn',
-                  'hoodId': target_sz,
-                  'zoneId': target_sz,
-                  'shardId': None,
-                  'avId': -1,
-                  'battle': 1}])
+            # if place and place.fsm:
+            #     place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
+            #       'where': ZoneUtil.getWhereName(target_sz, 1),
+            #       'how': 'teleportIn',
+            #       'hoodId': target_sz,
+            #       'zoneId': target_sz,
+            #       'shardId': None,
+            #       'avId': -1,
+            #       'battle': 1}])
         return
 
     def setInterface(self, string):
@@ -1267,7 +1267,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def doSmoothTask(self, task):
         self.smoother.computeAndApplySmoothPosHpr(self, self)
-        self.setSpeed(self.smoother.getSmoothForwardVelocity(), self.smoother.getSmoothRotationalVelocity())
+        self.setSpeed(self.smoother.getSmoothForwardVelocity(),
+                      self.smoother.getSmoothRotationalVelocity(),
+                      self.smoother.getSmoothLateralVelocity())
         return Task.cont
 
     def d_setParent(self, parentToken):

@@ -683,10 +683,77 @@ class OptionsTabPage2(DirectFrame):
             pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight * 2 + 0.025),
             command=self.__openKeybindRemapDialog,
         )
+
+        coolbutton = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
+
+        self.sensXLabel = DirectLabel(
+            parent=self,
+            relief=None,
+            text="Camera X Sensitivity: 0",
+            text_align=TextNode.ALeft,
+            text_scale=options_text_scale,
+            pos=(leftMargin, 0, -.12),
+        )
+
+        self.sensXSlider = DirectSlider(
+
+            parent=self, range=(1, 100),
+            scale=.3, pos=(0.42, 0, -0.12),
+            pageSize=1, orientation=DGG.HORIZONTAL, command=self.__adjustXSens,
+            thumb_geom=(coolbutton.find('**/QuitBtn_UP'),
+                        coolbutton.find('**/QuitBtn_DN'),
+                        coolbutton.find('**/QuitBtn_RLVR'),
+                        coolbutton.find('**/QuitBtn_UP')),
+            thumb_relief=None, thumb_geom_scale=(.5, 1, 1)
+
+        )
+
+        self.sensXSlider.setValue(self.__actualSensToDisplayNum(base.settings.getFloat('game', 'camSensitivityX', .25)))
+        self.sensXLabel.setText("Camera X Sensitivity: " + str(round(self.sensXSlider.getValue(), 2)))
+
+        self.sensYLabel = DirectLabel(
+            parent=self,
+            relief=None,
+            text="Camera Y Sensitivity: 0",
+            text_align=TextNode.ALeft,
+            text_scale=options_text_scale,
+            pos=(leftMargin, 0, -.22),
+        )
+
+        self.sensYSlider = DirectSlider(
+
+            parent=self, range=(1, 100),
+            scale=.3, pos=(0.42, 0, -0.22),
+            pageSize=1, orientation=DGG.HORIZONTAL, command=self.__adjustYSens,
+            thumb_geom=(coolbutton.find('**/QuitBtn_UP'),
+                        coolbutton.find('**/QuitBtn_DN'),
+                        coolbutton.find('**/QuitBtn_RLVR'),
+                        coolbutton.find('**/QuitBtn_UP')),
+            thumb_relief=None, thumb_geom_scale=(.5, 1, 1)
+
+        )
+
+        self.sensYSlider.setValue(self.__actualSensToDisplayNum(base.settings.getFloat('game', 'camSensitivityY', .25)))
+        self.sensYLabel.setText("Camera Y Sensitivity: " + str(round(self.sensYSlider.getValue(), 2)))
+
         self.keybindDialogButton.setScale(0.8)
         self.keybindDialogButton.hide()
         guiButton.removeNode()
         gui.removeNode()
+
+    def __displayNumToActualSens(self, num):
+        return .01 * num
+
+    def __actualSensToDisplayNum(self, num):
+        return 100 * num
+
+    def __adjustXSens(self):
+        self.sensXLabel.setText("Camera X Sensitivity: " + str(round(self.sensXSlider.getValue(), 2)))
+        base.settings.updateSetting('game', 'camSensitivityX', self.__displayNumToActualSens(self.sensXSlider.getValue()))
+
+    def __adjustYSens(self):
+        self.sensYLabel.setText("Camera Y Sensitivity: " + str(round(self.sensYSlider.getValue(), 2)))
+        base.settings.updateSetting('game', 'camSensitivityY', self.__displayNumToActualSens(self.sensYSlider.getValue()))
 
     def enter(self):
         self.show()

@@ -1315,7 +1315,8 @@ dclass DistributedBossCog : DistributedNode {
   zapToon(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, int8/100, int8/100, uint8, int16) airecv clsend;
   showZapToon(uint32, int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, uint8, int16) broadcast;
   setAttackCode(uint8, uint32) broadcast;
-  updateTimer(uint32/100) broadcast ram;
+  updateTimer(uint32/255) broadcast ram;
+  timesUp() broadcast ram;
 };
 
 dclass DistributedSellbotBoss : DistributedBossCog {
@@ -1342,6 +1343,15 @@ dclass DistributedCashbotBoss : DistributedBossCog {
   updateDamageDealt(uint32 avId, uint16) broadcast ram;
   updateStunCount(uint32 avId) broadcast ram;
   updateGoonsStomped(uint32 avId) broadcast ram;
+  updateSafePoints(uint32 avId, int32) broadcast ram;
+  updateMaxImpactHits(uint32 avId) broadcast ram;
+  updateLowImpactHits(uint32 avId) broadcast ram;
+  updateCombo(uint32 avId, uint8) broadcast ram;
+  awardCombo(uint32 avId, uint8, int32) broadcast ram;
+  announceCraneRestart() broadcast ram;
+  revivedToon(uint32 avId) broadcast ram;
+  goonKilledBySafe(uint32 avId) broadcast ram;
+  updateUnstun(uint32 avId) broadcast ram;
 };
 
 struct LinkPosition {
@@ -1411,11 +1421,13 @@ dclass DistributedCashbotBossSafe : DistributedCashbotBossObject {
   setIndex(uint8) required broadcast ram;
   requestInitial() airecv clsend;
   move(int16/10, int16/10, int16/10, int16/10) broadcast ram clsend airecv;
+  destroyedGoon()  airecv clsend;
 };
 
 dclass DistributedCashbotBossGoon : DistributedCashbotBossObject {
   requestBattle(int16/10) airecv clsend;
   requestStunned(int16/10) airecv clsend;
+  requestWalk() airecv clsend;
   setVelocity(uint8/10) broadcast ram;
   setHFov(uint8) broadcast ram;
   setAttackRadius(uint8) broadcast ram;
@@ -2097,6 +2109,7 @@ dclass DistributedCashbotBossTreasure : DistributedTreasure {
   setGoonId(uint32) required broadcast ram;
   setFinalPosition(int16/10, int16/10, int16/10) required broadcast ram;
   setStyle(uint16) required broadcast ram;
+  deductScoreboardPoints(uint32 avId, int32) broadcast ram;
 };
 
 dclass DistributedLargeBlobSender : DistributedObject {

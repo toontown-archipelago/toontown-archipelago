@@ -1,4 +1,6 @@
 from panda3d.core import *
+
+from toontown.coghq import CraneLeagueGlobals
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 import DistributedCashbotBossObjectAI
@@ -22,15 +24,27 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
     def getIndex(self):
         return self.index
 
+    def getMinImpact(self):
+        if self.boss.heldObject:
+            return CraneLeagueGlobals.MIN_DEHELMET_IMPACT
+        else:
+            return CraneLeagueGlobals.MIN_SAFE_IMPACT
+
     def hitBoss(self, impact, craneId):
+
         avId = self.air.getAvatarIdFromSender()
-        self.validate(avId, impact <= 1.0, 'invalid hitBoss impact %s' % impact)
+        self.validate(avId, 1.0 >= impact >= 0, 'invalid hitBoss impact %s' % impact)
         if avId not in self.boss.involvedToons:
             return
         if self.state != 'Dropped' and self.state != 'Grabbed':
             return
         if self.avoidHelmet or self == self.boss.heldObject:
             return
+
+        if impact <= self.getMinImpact():
+            self.boss.d_updateLowImpactHits(avId)
+            return
+
         if self.boss.heldObject == None:
             if self.boss.attackCode == ToontownGlobals.BossCogDizzy:
                 damage = int(impact * 50)
@@ -38,15 +52,9 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
             elif self.boss.acceptHelmetFrom(avId):
                 self.demand('Grabbed', self.boss.doId, self.boss.doId)
                 self.boss.heldObject = self
-                if avId in self.boss.safesPutOn:
-                    self.boss.safesPutOn[avId] -= 10
-                else:
-                    self.boss.safesPutOn[avId] = -10
+                self.boss.d_updateSafePoints(avId, CraneLeagueGlobals.POINTS_PENALTY_SAFEHEAD)
         elif impact >= ToontownGlobals.CashbotBossSafeKnockImpact:
-            if avId in self.boss.safesPutOff:
-                self.boss.safesPutOff[avId] += 10
-            else:
-                self.boss.safesPutOff[avId] = 10
+            self.boss.d_updateSafePoints(avId, CraneLeagueGlobals.POINTS_DESAFE)
             self.boss.heldObject.demand('Dropped', avId, self.boss.doId)
             self.boss.heldObject.avoidHelmet = 1
             self.boss.heldObject = None
@@ -102,3 +110,8 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
     def move(self, x, y, z, rotation):
         self.setPosHpr(x, y, z, rotation, 0, 0)
         self.sendUpdate('move', [x, y, z, rotation])
+
+    # Called from client when a safe destroys a goon
+    def destroyedGoon(self):
+        avId = self.air.getAvatarIdFromSender()
+        self.boss.d_updateGoonKilledBySafe(avId)

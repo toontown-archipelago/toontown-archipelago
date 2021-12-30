@@ -35,6 +35,8 @@ import time
 import random
 import json
 
+DEBUG_SCOREBOARD = None
+
 magicWordIndex = collections.OrderedDict()
 
 def getMagicWord(name):
@@ -188,6 +190,30 @@ class SetMaxHP(MagicWord):
         toon.b_setMaxHp(maxhp)
         toon.toonUp(maxhp)
         return "{}'s max laff has been set to {}.".format(toon.getName(), maxhp)
+
+class scoreboard(MagicWord):
+    aliases = ['sb']
+    desc = 'make scoreboard appear'
+    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        global DEBUG_SCOREBOARD
+
+        if not DEBUG_SCOREBOARD:
+            from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
+            DEBUG_SCOREBOARD = CashbotBossScoreboard()
+            return "scoreboard created!"
+
+        if toon.doId not in DEBUG_SCOREBOARD.getToons():
+            DEBUG_SCOREBOARD.addToon(toon.doId)
+            return "added " + toon.getName() + " to the scoreboard!"
+
+        r = random.randint(-50, 50)
+        if r == 0:
+            r = 100
+        DEBUG_SCOREBOARD.addScore(toon.doId, r)
+        return "added " + str(r) + " points to " + str(toon.doId)
 
 
 class StartHoliday(MagicWord):
@@ -1719,6 +1745,55 @@ class rcr(MagicWord):
         boss.b_setState('PrepareBattleThree')
         boss.b_setState('BattleThree')
         return "Restarting Crane Round"
+
+class dumpCraneAI(MagicWord):
+    desc = "Dumps info about crane on AI side"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "You aren't in a CFO!"
+
+        retString = ''
+        for crane in boss.cranes:
+            retString += 'Crane: ' + str(crane.index) + '\n'
+            retString += 'Current AvId: ' + str(crane.avId) + '\n'
+            retString += 'Current object held: ' + str(crane.objectId) + '\n'
+            retString += 'state: ' + str(crane.state) + '\n'
+            retString += '\n'
+        return retString
+
+class dumpCraneClient(MagicWord):
+    desc = "Dumps info about crane on Client side"
+    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBoss import DistributedCashbotBoss
+        boss = None
+        for do in base.cr.doId2do.values():
+            if isinstance(do, DistributedCashbotBoss):
+                boss = do
+
+        if not boss:
+            return "You aren't in a CFO!"
+
+        retString = ''
+        for crane in boss.cranes.values():
+            retString += 'Crane: ' + str(crane.index) + '\n'
+            retString += 'Current AvId: ' + str(crane.avId) + '\n'
+            retString += 'Current object held: ' + str(crane.heldObject.doId) if crane.heldObject else 'nothing' + '\n'
+            retString += 'state: ' + str(crane.state) + '\n'
+            retString += '\n'
+        return retString
 
 class setCraneSpawn(MagicWord):
     desc = "Sets the craning spawn point of a certain toon"

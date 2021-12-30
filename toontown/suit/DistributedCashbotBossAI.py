@@ -1,23 +1,24 @@
 from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
+from direct.showbase.PythonUtil import clamp
+from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCashbotBossCraneAI
 from toontown.coghq import DistributedCashbotBossSideCraneAI
 from toontown.coghq import DistributedCashbotBossSafeAI
 from toontown.suit import DistributedCashbotBossGoonAI
 from toontown.coghq import DistributedCashbotBossTreasureAI
+from toontown.coghq import CraneLeagueGlobals
 from toontown.battle import BattleExperienceAI
 from toontown.chat import ResistanceChat
 from toontown.toon import DistributedToonAI
 from direct.fsm import FSM
 import DistributedBossCogAI
-import SuitDNA
 import random
 import math
 
 class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossAI')
-    maxGoons = 8
 
     def __init__(self, air):
         DistributedBossCogAI.DistributedBossCogAI.__init__(self, air, 'm')
@@ -28,9 +29,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.treasures = {}
         self.grabbingTreasures = {}
         self.recycledTreasures = []
-        self.healAmount = 0
-        self.rewardId = ResistanceChat.getRandomId()
-        self.rewardedToons = []
         self.scene = NodePath('scene')
         self.reparentTo(self.scene)
         cn = CollisionNode('walls')
@@ -41,24 +39,21 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.attachNewNode(cn)
         self.heldObject = None
         self.waitingForHelmet = 0
-        self.avatarHelmets = {}
-        self.knockoutDamage = ToontownGlobals.CashbotBossKnockoutDamage
-        self.bossMaxDamage = ToontownGlobals.CashbotBossMaxDamage
+        self.bossMaxDamage = CraneLeagueGlobals.CFO_MAX_HP
         self.wantSafeRushPractice = False
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
-        self.goonMinStrength = 10
-        self.goonMaxStrength = 43
+        self.goonMinStrength = CraneLeagueGlobals.MIN_GOON_DAMAGE
+        self.goonMaxStrength = CraneLeagueGlobals.MAX_GOON_DAMAGE
         self.goonMinScale = 0.8
         self.goonMaxScale = 2.6
-        self.toonDamagesDict = {}
-        self.toonStunsDict = {}
-        self.toonGoonStompsDict = {}
-        self.participantPoints = {}
-        self.safesPutOn = {}
-        self.safesPutOff = {}
         self.wantAimPractice = False
         self.safesWanted = 5
+        self.want4ManPractice = True
+        self.wantMovementModification = True
+        self.wantOpeningModifications = False
+        self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
+        self.toonsWon = False
         return
 
     def generate(self):
@@ -70,7 +65,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return ToontownGlobals.CashbotHQ
 
     def formatReward(self):
-        return str(self.rewardId)
+        return 'No rewards here :)'
 
     def makeBattleOneBattles(self):
         self.postBattleState = 'PrepareBattleThree'
@@ -93,7 +88,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return {'activeSuits': activeSuits,
          'reserveSuits': reserveSuits}
 
-    def removeToon(self, avId):
+    def removeToon(self, avId, died=False):
         if self.cranes != None:
             for crane in self.cranes:
                 crane.removeToon(avId)
@@ -106,7 +101,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             for goon in self.goons:
                 goon.removeToon(avId)
 
-        DistributedBossCogAI.DistributedBossCogAI.removeToon(self, avId)
+        DistributedBossCogAI.DistributedBossCogAI.removeToon(self, avId, died=died)
         return
 
     def __makeBattleThreeObjects(self):
@@ -170,46 +165,108 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return
 
     def __doDirectedAttack(self):
-        if self.toonsToAttack:
-            toonId = self.toonsToAttack.pop(0)
-            while toonId not in self.involvedToons:
-                if not self.toonsToAttack:
-                    self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
-                    return
-                toonId = self.toonsToAttack.pop(0)
 
-            self.toonsToAttack.append(toonId)
-            self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonId)
+        # Check if we ran out of targets, if so reset the list back to everyone involved
+        if len(self.toonsToAttack) <= 0:
+            self.toonsToAttack = self.involvedToons[:]
+            # Shuffle the toons if we want random gear throws
+            if CraneLeagueGlobals.RANDOM_GEAR_THROW_ORDER:
+                random.shuffle(self.toonsToAttack)
+            # remove people who are dead or gone
+            for id in self.toonsToAttack[:]:
+                toon = self.air.doId2do.get(id)
+                if not toon or toon.getHp() <= 0:
+                    self.toonsToAttack.remove(id)
 
-    def reprieveToon(self, avId):
-        if avId in self.toonsToAttack:
-            i = self.toonsToAttack.index(avId)
-            del self.toonsToAttack[i]
-            self.toonsToAttack.append(avId)
+        # are there no valid targets even after resetting? i.e. is everyone sad
+        if len(self.toonsToAttack) <= 0:
+            self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
+            return
+
+        # pop toon off list and set as target
+        toonToAttack = self.toonsToAttack.pop(0)
+        # is toon here and alive? if not skip over and try the next toon
+        toon = self.air.doId2do.get(toonToAttack)
+        if not toon or toon.getHp() <= 0:
+            return self.__doDirectedAttack()  # next toon
+
+        # we have a toon to attack
+        self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonToAttack)
+
+
+    def getDamageMultiplier(self, allowFloat=False):
+        mult = self.progressValue(1, CraneLeagueGlobals.CFO_ATTACKS_MULTIPLIER + (0 if allowFloat else 1))
+        if not allowFloat:
+            mult = int(mult)
+        return mult
+
+    def zapToon(self, x, y, z, h, p, r, bpx, bpy, attackCode, timestamp):
+
+        avId = self.air.getAvatarIdFromSender()
+        if not self.validate(avId, avId in self.involvedToons, 'zapToon from unknown avatar'):
+            return
+
+        toon = simbase.air.doId2do.get(avId)
+        if not toon:
+            return
+
+        # Is the cfo stunned?
+        isStunned = self.attackCode == ToontownGlobals.BossCogDizzy
+        # Are we setting to swat?
+        if isStunned and attackCode == ToontownGlobals.BossCogElectricFence:
+            self.d_updateUnstun(avId)
+
+        self.d_showZapToon(avId, x, y, z, h, p, r, attackCode, timestamp)
+
+        damage = CraneLeagueGlobals.CFO_ATTACKS_BASE_DAMAGE.get(attackCode)
+        if damage == None:
+            self.notify.warning('No damage listed for attack code %s' % attackCode)
+            damage = 5
+            raise KeyError('No damage listed for attack code %s' % attackCode)  # temp
+
+        damage *= self.getDamageMultiplier(allowFloat=CraneLeagueGlobals.CFO_ATTACKS_MULTIPLIER_INTERPOLATE)
+        # Clamp the damage to make sure it at least does 1
+        damage = max(int(damage), 1)
+
+        self.damageToon(toon, damage)
+        currState = self.getCurrentOrNextState()
+
+        if attackCode == ToontownGlobals.BossCogElectricFence and (currState == 'RollToBattleTwo' or currState == 'BattleThree'):
+            if bpy < 0 and abs(bpx / bpy) > 0.5:
+                if bpx < 0:
+                    self.b_setAttackCode(ToontownGlobals.BossCogSwatRight)
+                else:
+                    self.b_setAttackCode(ToontownGlobals.BossCogSwatLeft)
 
     def makeTreasure(self, goon):
+
         if self.state != 'BattleThree':
             return
-        avId = self.air.getAvatarIdFromSender()
+
+        # Too many treasures on the field?
+        if len(self.treasures) >= CraneLeagueGlobals.MAX_TREASURE_AMOUNT:
+            return
+
         pos = goon.getPos(self)
         v = Vec3(pos[0], pos[1], 0.0)
         if not v.normalize():
             v = Vec3(1, 0, 0)
+
         v = v * 27
         angle = random.uniform(0.0, 2.0 * math.pi)
         radius = 10
         dx = radius * math.cos(angle)
         dy = radius * math.sin(angle)
         fpos = self.scene.getRelativePoint(self, Point3(v[0] + dx, v[1] + dy, 0))
-        if goon.strength <= 10:
-            style = random.choice([ToontownGlobals.ToontownCentral, ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens, ToontownGlobals.MinniesMelodyland, ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland])
-            healAmount = 4
-        elif goon.strength <= 15:
-            style = random.choice([ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens, ToontownGlobals.MinniesMelodyland])
-            healAmount = 10
-        else:
-            style = random.choice([ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland])
-            healAmount = 12
+
+        # Find an index based on the goon strength we should use
+        treasureHealIndex = 1.0*(goon.strength-CraneLeagueGlobals.MIN_GOON_DAMAGE) / (CraneLeagueGlobals.MAX_GOON_DAMAGE-CraneLeagueGlobals.MIN_GOON_DAMAGE)
+        treasureHealIndex *= len(CraneLeagueGlobals.GOON_HEALS)
+        treasureHealIndex = int(clamp(treasureHealIndex, 0, len(CraneLeagueGlobals.GOON_HEALS)-1))
+        healAmount = CraneLeagueGlobals.GOON_HEALS[treasureHealIndex]
+        availStyles = CraneLeagueGlobals.TREASURE_STYLES[treasureHealIndex]
+        style = random.choice(availStyles)
+
         if self.recycledTreasures:
             treasure = self.recycledTreasures.pop(0)
             treasure.d_setGrab(0)
@@ -258,29 +315,26 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.recycledTreasures = []
 
     def getMaxGoons(self):
-        t = self.getBattleThreeTime()
-        if t <= 1.0:
-            return self.maxGoons
-        elif t <= 1.1:
-            return self.maxGoons + 1
-        elif t <= 1.2:
-            return self.maxGoons + 2
-        elif t <= 1.3:
-            return self.maxGoons + 3
-        elif t <= 1.4:
-            return self.maxGoons + 4
-        else:
-            return self.maxGoons + 8
+        return self.progressValue(CraneLeagueGlobals.MAX_GOON_AMOUNT_START, CraneLeagueGlobals.MAX_GOON_AMOUNT_END)
 
     def makeGoon(self, side = None):
         self.goonMovementTime = globalClock.getFrameTime()
         if side == None:
-            side = random.choice(['EmergeA', 'EmergeB'])
-        goon = self.__chooseOldGoon()
-        if goon == None:
+            if not self.wantOpeningModifications:
+                side = random.choice(['EmergeA', 'EmergeB'])
+            else:
+                for t in self.involvedToons:
+                    avId = t
+                toon = self.air.doId2do.get(avId)
+                pos = toon.getPos()[1]
+                if pos < -315:
+                    side = 'EmergeB'
+                else:
+                    side = 'EmergeA'
+        goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
+        if goon != None:
             if len(self.goons) >= self.getMaxGoons():
                 return
-            goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
             goon.generateWithRequired(self.zoneId)
             self.goons.append(goon)
         if self.getBattleThreeTime() > 1.0:
@@ -337,12 +391,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         taskMgr.remove(taskName)
 
     def acceptHelmetFrom(self, avId):
-        now = globalClock.getFrameTime()
-        then = self.avatarHelmets.get(avId, None)
-        if then == None or now - then > 300:
-            self.avatarHelmets[avId] = now
-            return 1
-        return 1
+        return True
 
     def magicWordHit(self, damage, avId):
         if self.heldObject:
@@ -374,52 +423,33 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         crane = simbase.air.doId2do.get(craneId)
         if not self.validate(avId, avId in self.involvedToons, 'recordHit from unknown avatar'):
             return
+
         if self.state != 'BattleThree':
             return
+
         self.b_setBossDamage(self.bossDamage + damage)
-        if avId in self.toonDamagesDict:
-            self.toonDamagesDict[avId] += damage
-        else:
-            self.toonDamagesDict[avId] = damage
+        if impact == 1.0:
+            self.d_updateMaxImpactHits(avId)
         self.d_updateDamageDealt(avId, damage)
-        if self.wantSafeRushPractice:
-            self.knockoutDamage = 2
-        else:
-            self.knockoutDamage = ToontownGlobals.CashbotBossKnockoutDamage
+
+        self.comboTrackers[avId].incrementCombo(damage*CraneLeagueGlobals.COMBO_DAMAGE_PERCENTAGE)
+
         if self.bossDamage >= self.bossMaxDamage:
+            self.toonsWon = True
             self.b_setState('Victory')
-        elif self.attackCode != ToontownGlobals.BossCogDizzy:
-            if crane:
-                if damage >= self.knockoutDamage:
-                    self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
-                    
-                    self.d_updateStunCount(avId)
-                    if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 5
-                    else:
-                        self.toonStunsDict[avId] = 5
+            return
 
-                    self.stopHelmets()
+        if self.attackCode == ToontownGlobals.BossCogDizzy or not crane:
+            return
 
-                    #Whisper out the time from the start of CFO
-                    #self.stunTime = globalClock.getFrameTime()
-                    #for doId, do in simbase.air.doId2do.items():
-                        #if str(doId)[0] != str(simbase.air.districtId)[0]:
-                            #do.d_setSystemMessage(0, "CFO Stunned From Start: {0:.3f}s".format(self.stunTime - self.battleThreeTimeStarted))
-                            
-                            
-                elif crane.getIndex() > 3 and (impact >= 0.8 or damage >= self.knockoutDamage):
-                    self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
-                    self.d_updateStunCount(avId)
-                    if avId in self.toonStunsDict:
-                        self.toonStunsDict[avId] += 10
-                    else:
-                        self.toonStunsDict[avId] = 10
-                    self.stopHelmets()
-                else:
-                    self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
-                    self.stopHelmets()
-                    self.waitForNextHelmet()
+        self.stopHelmets()
+
+        if damage >= CraneLeagueGlobals.CFO_STUN_THRESHOLD or (crane.getIndex() > 3 and impact >= CraneLeagueGlobals.SIDECRANE_IMPACT_STUN_THRESHOLD):
+            self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
+            self.d_updateStunCount(avId)
+        else:
+            self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
+            self.waitForNextHelmet()
 
     def b_setBossDamage(self, bossDamage):
         self.d_setBossDamage(bossDamage)
@@ -441,6 +471,16 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def d_updateGoonsStomped(self, avId):
         self.sendUpdate('updateGoonsStomped', [avId])
 
+    # call with 10 when we take a safe off, -20 when we put a safe on
+    def d_updateSafePoints(self, avId, amount):
+        self.sendUpdate('updateSafePoints', [avId, amount])
+
+    def d_updateMaxImpactHits(self, avId):
+        self.sendUpdate('updateMaxImpactHits', [avId])
+
+    def d_updateLowImpactHits(self, avId):
+        self.sendUpdate('updateLowImpactHits', [avId])
+
     def d_setCraneSpawn(self, want, spawn, toonId):
         self.sendUpdate('setCraneSpawn', [want, spawn, toonId])
 
@@ -448,16 +488,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.sendUpdate('setRewardId', [rewardId])
 
     def applyReward(self):
-        avId = self.air.getAvatarIdFromSender()
-        if avId in self.involvedToons and avId not in self.rewardedToons:
-            self.rewardedToons.append(avId)
-            toon = self.air.doId2do.get(avId)
-            if toon:
-                toon.doResistanceEffect(self.rewardId)
+        pass
 
     def enterOff(self):
         DistributedBossCogAI.DistributedBossCogAI.enterOff(self)
-        self.rewardedToons = []
 
     def exitOff(self):
         DistributedBossCogAI.DistributedBossCogAI.exitOff(self)
@@ -493,7 +527,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.__resetBattleThreeObjects()
         self.reportToonHealth()
         self.toonsToAttack = self.involvedToons[:]
-        random.shuffle(self.toonsToAttack)
+        if CraneLeagueGlobals.RANDOM_GEAR_THROW_ORDER:
+            random.shuffle(self.toonsToAttack)
         self.b_setBossDamage(0)
         self.battleThreeStart = globalClock.getFrameTime()
         self.resetBattles()
@@ -505,12 +540,60 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         taskMgr.remove(taskName)
         taskMgr.doMethodLater(2, self.__doInitialGoons, taskName)
         self.battleThreeTimeStarted = globalClock.getFrameTime()
-        self.toonDamagesDict = {}
-        self.toonStunsDict = {}
-        self.toonGoonStompsDict = {}
-        self.participantPoints = {}
-        self.safesPutOn = {}
-        self.safesPutOff = {}
+
+        self.oldMaxLaffs = {}
+
+        taskMgr.remove(self.uniqueName('failedCraneRound'))
+        self.cancelReviveTasks()
+
+        for comboTracker in self.comboTrackers.values():
+            comboTracker.cleanup()
+
+        # heal all toons and setup a combo tracker for them
+        for avId in self.involvedToons:
+            if avId in self.air.doId2do:
+                self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
+                av = self.air.doId2do[avId]
+
+                if CraneLeagueGlobals.FORCE_MAX_LAFF:
+                    self.oldMaxLaffs[avId] = av.getMaxHp()
+                    av.b_setMaxHp(CraneLeagueGlobals.FORCE_MAX_LAFF_AMOUNT)
+
+                if CraneLeagueGlobals.HEAL_TOONS_ON_START:
+                    av.b_setHp(av.getMaxHp())
+
+        self.toonsWon = False
+        taskMgr.remove(self.uniqueName('times-up-task'))
+        taskMgr.remove(self.uniqueName('post-times-up-task'))
+        # If timer mode is active, end the crane round later
+        if CraneLeagueGlobals.TIMER_MODE:
+            taskMgr.doMethodLater(CraneLeagueGlobals.TIMER_MODE_TIME_LIMIT, self.__timesUp, self.uniqueName('times-up-task'))
+
+    # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
+    def __timesUp(self, task=None):
+        self.__donHelmet(None)
+        for avId in self.involvedToons:
+            av = self.air.doId2do.get(avId)
+            if av:
+                av.takeDamage(av.getMaxHp())
+
+        self.sendUpdate('timesUp', [])
+
+        self.toonsWon = False
+        taskMgr.remove(self.uniqueName('times-up-task'))
+        taskMgr.doMethodLater(10.0, self.__handlePostTimesUp, self.uniqueName('post-times-up-task'))
+
+
+    # Called a small amount of time later after we run out of time
+    def __handlePostTimesUp(self, task=None):
+        taskMgr.remove(self.uniqueName('times-up-task'))
+        taskMgr.remove(self.uniqueName('post-times-up-task'))
+
+        if CraneLeagueGlobals.RESTART_CRANE_ROUND_ON_FAIL:
+            self.__restartCraneRoundTask(None)
+        else:
+            self.b_setState('Victory')
+
 
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
@@ -527,44 +610,25 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.stopGoons()
         self.stopHelmets()
         self.heldObject = None
+        self.cancelReviveTasks()
         return
 
     def enterVictory(self):
-        #Whisper out the time from the start of CFO until end of CFO
-        self.craneTime = globalClock.getFrameTime()
-        actualTime = self.craneTime - self.battleThreeTimeStarted
-        resultsString = ""
+
+        # Restore old max HPs
         for avId in self.involvedToons:
-            avPoints = 0
             av = self.air.doId2do.get(avId)
-            if (avId in self.toonDamagesDict):
-                avPoints += self.toonDamagesDict[avId]
-            if (avId in self.toonStunsDict):
-                avPoints += self.toonStunsDict[avId]
-            if (avId in self.safesPutOff):
-                avPoints += self.safesPutOff[avId]
-            if (avId in self.safesPutOn):
-                avPoints += self.safesPutOn[avId]
-            self.participantPoints[av.getName()] = avPoints
-            resultsString += ("%s: %s\n" % (av.getName(), avPoints))
-        resultsString = resultsString[:-1]
-        for doId, do in simbase.air.doId2do.items():
-            if str(doId)[0] != str(simbase.air.districtId)[0]:
-                if isinstance(do, DistributedToonAI.DistributedToonAI):
-                    do.d_setSystemMessage(0, "Crane Round Ended In {0:.5f}s".format(actualTime))
-                    do.d_setSystemMessage(0, resultsString)
-        self.d_updateTimer(actualTime)
+            if av and avId in self.oldMaxLaffs:
+                av.b_setMaxHp(self.oldMaxLaffs[avId])
+
+        taskMgr.remove(self.uniqueName('times-up-task'))
+        taskMgr.remove(self.uniqueName('post-times-up-task'))
+
+        craneTime = globalClock.getFrameTime()
+        actualTime = craneTime - self.battleThreeTimeStarted
+        timeToSend = 0.0 if CraneLeagueGlobals.TIMER_MODE and not self.toonsWon else actualTime
+        self.d_updateTimer(timeToSend)
         self.resetBattles()
-        self.suitsKilled.append({'type': None,
-         'level': None,
-         'track': self.dna.dept,
-         'isSkelecog': 0,
-         'isForeman': 0,
-         'isVP': 0,
-         'isCFO': 1,
-         'isSupervisor': 0,
-         'isVirtual': 0,
-         'activeToons': self.involvedToons[:]})
         self.barrier = self.beginBarrier('Victory', self.involvedToons, 30, self.__doneVictory)
         return
 
@@ -572,22 +636,18 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.sendUpdate('updateTimer', [time])
 
     def __doneVictory(self, avIds):
+        for comboTracker in self.comboTrackers.values():
+            comboTracker.cleanup()
         self.d_setBattleExperience()
         self.b_setState('Reward')
-        BattleExperienceAI.assignRewards(self.involvedToons, self.toonSkillPtsGained, self.suitsKilled, ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
-        for toonId in self.involvedToons:
-            toon = self.air.doId2do.get(toonId)
-            if toon:
-                toon.addResistanceMessage(self.rewardId)
-                toon.b_promote(self.deptIndex)
+        # BattleExperienceAI.assignRewards(self.involvedToons, self.toonSkillPtsGained, self.suitsKilled, ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
 
     def exitVictory(self):
         self.__deleteBattleThreeObjects()
 
     def enterEpilogue(self):
         DistributedBossCogAI.DistributedBossCogAI.enterEpilogue(self)
-        self.d_setRewardId(self.rewardId)
-        
+
     def checkNearby(self, task=None):
         # Prevent helmets, stun CFO, destroy goons
         self.stopHelmets()
@@ -651,6 +711,62 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
             safe.move(newX, newY, 0, 360 * random.random())
 
+    def __restartCraneRoundTask(self, task):
+        self.exitIntroduction()
+        self.b_setState('PrepareBattleThree')
+        self.b_setState('BattleThree')
+
+    def __reviveToonLater(self, toon):
+        taskMgr.doMethodLater(CraneLeagueGlobals.REVIVE_TOONS_TIME, self.__reviveToon, self.uniqueName('revive-toon-' + str(toon.doId)), extraArgs=[toon])
+
+    def __reviveToon(self, toon, task=None):
+
+        if toon.getHp() > 0:
+            return
+
+        hpToGive = CraneLeagueGlobals.REVIVE_TOONS_LAFF_PERCENTAGE * toon.getMaxHp()
+        toon.b_setHp(hpToGive)
+        self.sendUpdate('revivedToon', [toon.doId])
+
+    def cancelReviveTasks(self):
+        for avId in self.involvedToons:
+            taskMgr.remove(self.uniqueName('revive-toon-' + str(avId)))
+
+    def toonDied(self, toon):
+        DistributedBossCogAI.DistributedBossCogAI.toonDied(self, toon)
+
+        # Reset the toon's combo
+        ct = self.comboTrackers.get(toon.doId)
+        if ct:
+            ct.resetCombo()
+
+        # If we want to revive toons, revive this toon later and don't do anything else past this point
+        if CraneLeagueGlobals.REVIVE_TOONS_UPON_DEATH and toon.doId in self.involvedToons:
+            self.__reviveToonLater(toon)
+            return
+
+        # have all toons involved died?
+        aliveToons = 0
+        for toonId in self.involvedToons:
+            toon = self.air.doId2do.get(toonId)
+            if toon and toon.getHp() > 0:
+                aliveToons += 1
+
+        # Restart the crane round if toons are dead and we want to restart
+        if CraneLeagueGlobals.RESTART_CRANE_ROUND_ON_FAIL and not aliveToons:
+            taskMgr.remove(self.uniqueName('times-up-task'))
+            taskMgr.remove(self.uniqueName('post-times-up-task'))
+            taskMgr.doMethodLater(10.0, self.__restartCraneRoundTask, self.uniqueName('failedCraneRound'))
+            self.sendUpdate('announceCraneRestart', [])
+
+        # End the crane round if all toons are dead and we aren't reviving them
+        elif not aliveToons and not CraneLeagueGlobals.REVIVE_TOONS_UPON_DEATH:
+            taskMgr.remove(self.uniqueName('times-up-task'))
+            taskMgr.remove(self.uniqueName('post-times-up-task'))
+            taskMgr.doMethodLater(10.0, lambda _: self.b_setState('Victory'), self.uniqueName('failedCraneRound'))
+            self.sendUpdate('announceCraneRestart', [])
+
+
     # Probably a better way to do this but o well
     # Checking each line of the octogon to see if the location is outside
     def isLocationInBounds(self, x, y):
@@ -673,3 +789,15 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             return False
 
         return True
+
+    def d_updateCombo(self, avId, comboLength):
+        self.sendUpdate('updateCombo', [avId, comboLength])
+
+    def d_awardCombo(self, avId, comboLength, amount):
+        self.sendUpdate('awardCombo', [avId, comboLength, amount])
+
+    def d_updateGoonKilledBySafe(self, avId):
+        self.sendUpdate('goonKilledBySafe', [avId])
+
+    def d_updateUnstun(self, avId):
+        self.sendUpdate('updateUnstun', [avId])

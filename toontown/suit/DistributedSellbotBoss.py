@@ -423,7 +423,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         if hasLocalToon:
             seq += [Func(self.show),
              Func(camera.reparentTo, localAvatar),
-             Func(camera.setPos, localAvatar.cameraPositions[0][0]),
+             Func(camera.setPos, localAvatar.getOldCameraPos()),
              Func(camera.setHpr, 0, 0, 0)]
         self.cageIndex += 1
         return seq

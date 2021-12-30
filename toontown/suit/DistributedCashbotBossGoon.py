@@ -7,7 +7,7 @@ import GoonGlobals
 from direct.task.Task import Task
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
-from toontown.coghq import DistributedCashbotBossObject
+from toontown.coghq import DistributedCashbotBossObject, CraneLeagueGlobals
 from direct.showbase import PythonUtil
 import DistributedGoon
 
@@ -54,8 +54,9 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.reparentTo(render)
 
     def disable(self):
-        i = self.boss.goons.index(self)
-        del self.boss.goons[i]
+        if self in self.boss.goons:
+            i = self.boss.goons.index(self)
+            del self.boss.goons[i]
         DistributedGoon.DistributedGoon.disable(self)
         DistributedCashbotBossObject.DistributedCashbotBossObject.disable(self)
 
@@ -70,11 +71,13 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.dropShadow.show()
 
     def getMinImpact(self):
-        return ToontownGlobals.CashbotBossGoonImpact
+        return CraneLeagueGlobals.MIN_GOON_IMPACT
 
     def doHitBoss(self, impact, craneId):
         self.d_hitBoss(impact, craneId)
-        self.b_destroyGoon()
+
+        if impact >= self.getMinImpact():
+            self.b_destroyGoon()
 
     def __startWalk(self):
         self.__stopWalk()
@@ -152,7 +155,8 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     def setObjectState(self, state, avId, craneId):
         self.crane = self.cr.doId2do.get(craneId)
         if state == 'W':
-            self.demand('Walk')
+            if not self.craneId:
+                self.demand('Walk')
         elif state == 'B':
             if self.state != 'Battle':
                 self.demand('Battle')
@@ -189,6 +193,8 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         if not self.isDead:
             self.playCrushMovie(None, None)
         self.demand('Off')
+        if self in self.boss.goons:
+            self.boss.goons.remove(self)
         return
 
     def enterOff(self):
@@ -256,3 +262,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     def enterRecovery(self, ts = 0, pauseTime = 0):
         DistributedGoon.DistributedGoon.enterRecovery(self, ts, pauseTime)
         self.unstashCollisions()
+
+    def d_requestWalk(self):
+        self.sendUpdate('requestWalk')

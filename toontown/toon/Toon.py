@@ -474,6 +474,7 @@ class Toon(Avatar.Avatar, ToonHead):
         ToonHead.__init__(self)
         self.forwardSpeed = 0.0
         self.rotateSpeed = 0.0
+        self.strafeSpeed = 0.0
         self.avatarType = 'toon'
         self.motion = Motion.Motion(self)
         self.standWalkRunReverse = None
@@ -1359,10 +1360,16 @@ class Toon(Avatar.Avatar, ToonHead):
             self.jar.removeNode()
             self.jar = None
         return
+    
+    def setGeomNodeH(self, h):
+        self.getGeomNode().setH(h)
+        if self.isDisguised:
+            self.suit.getGeomNode().setH(h)
 
-    def setSpeed(self, forwardSpeed, rotateSpeed):
+    def setSpeed(self, forwardSpeed, rotateSpeed, strafeSpeed):
         self.forwardSpeed = forwardSpeed
         self.rotateSpeed = rotateSpeed
+        self.strafeSpeed = strafeSpeed
         action = None
         if self.standWalkRunReverse != None:
             if forwardSpeed >= ToontownGlobals.RunCutOff:
@@ -1373,11 +1380,30 @@ class Toon(Avatar.Avatar, ToonHead):
                 action = OTPGlobals.REVERSE_INDEX
             elif rotateSpeed != 0.0:
                 action = OTPGlobals.WALK_INDEX
+            elif strafeSpeed < -8:
+                action = OTPGlobals.STRAFE_LEFT_INDEX
+            elif strafeSpeed > 8:
+                action = OTPGlobals.STRAFE_RIGHT_INDEX
             else:
                 action = OTPGlobals.STAND_INDEX
             anim, rate = self.standWalkRunReverse[action]
             self.motion.enter()
             self.motion.setState(anim, rate)
+
+            if action == OTPGlobals.STRAFE_LEFT_INDEX:
+                self.setGeomNodeH(90)
+            elif action == OTPGlobals.STRAFE_RIGHT_INDEX:
+                self.setGeomNodeH(-90)
+            elif action == OTPGlobals.RUN_INDEX:
+                if strafeSpeed < -8:
+                    self.setGeomNodeH(45)
+                elif strafeSpeed > 8:
+                    self.setGeomNodeH(-45)
+                else:
+                    self.setGeomNodeH(0)
+            else:
+                self.setGeomNodeH(0)
+
             if anim != self.playingAnim:
                 self.playingAnim = anim
                 self.playingRate = rate
@@ -1443,11 +1469,16 @@ class Toon(Avatar.Avatar, ToonHead):
     def enterHappy(self, animMultiplier = 1, ts = 0, callback = None, extraArgs = []):
         self.playingAnim = None
         self.playingRate = None
-        self.standWalkRunReverse = (('neutral', 1.0),
-         ('walk', 1.0),
-         ('run', 1.0),
-         ('walk', -1.0))
-        self.setSpeed(self.forwardSpeed, self.rotateSpeed)
+        self.standWalkRunReverse = (
+            ('neutral', 1.0),
+            ('walk', 1.0),
+            ('run', 1.0),
+            ('walk', -1.0),
+            ('run', 1.0),
+            ('run', 1.0),
+            ('run', 1.25)
+            )
+        self.setSpeed(self.forwardSpeed, self.rotateSpeed, self.strafeSpeed)
         self.setActiveShadow(1)
         return
 
@@ -1460,11 +1491,16 @@ class Toon(Avatar.Avatar, ToonHead):
     def enterSad(self, animMultiplier = 1, ts = 0, callback = None, extraArgs = []):
         self.playingAnim = 'sad'
         self.playingRate = None
-        self.standWalkRunReverse = (('sad-neutral', 1.0),
-         ('sad-walk', 1.2),
-         ('sad-walk', 1.2),
-         ('sad-walk', -1.0))
-        self.setSpeed(0, 0)
+        self.standWalkRunReverse = (
+            ('sad-neutral', 1.0),
+            ('sad-walk', 1.2),
+            ('sad-walk', 1.2),
+            ("sad-walk", -1.0),
+            ('sad-walk', 1.0),
+            ('sad-walk', 1.0),
+            ('sad-walk', 1.0)
+        )
+        self.setSpeed(0, 0, 0)
         Emote.globalEmote.disableBody(self, 'toon, enterSad')
         self.setActiveShadow(1)
         if self.isLocal():
@@ -1486,8 +1522,11 @@ class Toon(Avatar.Avatar, ToonHead):
         self.standWalkRunReverse = (('catch-neutral', 1.0),
          ('catch-run', 1.0),
          ('catch-run', 1.0),
-         ('catch-run', -1.0))
-        self.setSpeed(self.forwardSpeed, self.rotateSpeed)
+         ("catch-run", -1.0),
+            ('run', 1.0),
+            ('run', 1.0),
+            ('run', 1.25))
+        self.setSpeed(self.forwardSpeed, self.rotateSpeed, self.strafeSpeed)
         self.setActiveShadow(1)
         return
 
@@ -1503,8 +1542,11 @@ class Toon(Avatar.Avatar, ToonHead):
         self.standWalkRunReverse = (('catch-eatneutral', 1.0),
          ('catch-eatnrun', 1.0),
          ('catch-eatnrun', 1.0),
-         ('catch-eatnrun', -1.0))
-        self.setSpeed(self.forwardSpeed, self.rotateSpeed)
+         ("catch-eatnrun", -1.0),
+            ('catch-eatnrun', 1.0),
+            ('catch-eatnrun', 1.0),
+            ('catch-eatnrun', 1.0))
+        self.setSpeed(self.forwardSpeed, self.rotateSpeed, self.strafeSpeed)
         self.setActiveShadow(0)
         return
 
@@ -2088,8 +2130,11 @@ class Toon(Avatar.Avatar, ToonHead):
         self.standWalkRunReverse = (('neutral', 1.0),
          ('walk', 1.0),
          ('run', 1.0),
-         ('walk', -1.0))
-        self.setSpeed(self.forwardSpeed, self.rotateSpeed)
+         ("walk", -1.0),
+            ('run', 1.0),
+            ('run', 1.0),
+            ('run', 1.25))
+        self.setSpeed(self.forwardSpeed, self.rotateSpeed, self.strafeSpeed)
         if self.isLocal() and emoteIndex != Emote.globalEmote.EmoteSleepIndex:
             if self.sleepFlag:
                 self.b_setAnimState('Happy', self.animMultiplier)
@@ -3003,8 +3048,11 @@ class Toon(Avatar.Avatar, ToonHead):
         self.standWalkRunReverse = (('neutral', 1.0),
          ('run', 1.0),
          ('run', 1.0),
-         ('run', -1.0))
-        self.setSpeed(self.forwardSpeed, self.rotateSpeed)
+         ('run', -1.0),
+            ('run', 1.0),
+            ('run', 1.0),
+            ('run', 1.25))
+        self.setSpeed(self.forwardSpeed, self.rotateSpeed, self.strafeSpeed)
         self.setActiveShadow(1)
         return
 
