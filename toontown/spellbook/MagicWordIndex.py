@@ -245,35 +245,6 @@ class EndHoliday(MagicWord):
             return "Invalid holiday ID: %d" % (id)
 
 
-class StartHoliday(MagicWord):
-    aliases = ["startH"]
-    desc = "Starts a specified holiday ID."
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("id", int, True)]
-
-    def handleWord(self, invoker, avId, toon, *args):
-        id = args[0]
-        try:
-            self.air.holidayManager.startHoliday(id)
-            return "Started holiday %d" % (id)
-        except:
-            return "Invalid holiday ID: %d" % (id)
-
-class EndHoliday(MagicWord):
-    aliases = ["endH"]
-    desc = "Ends a specified holiday ID."
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("id", int, True)]
-
-    def handleWord(self, invoker, avId, toon, *args):
-        id = args[0]
-        try:
-            self.air.holidayManager.endHoliday(id)
-            return "Ended holiday %d" % (id)
-        except:
-            return "Invalid holiday ID: %d" % (id)
-
-
 class ToggleOobe(MagicWord):
     aliases = ["oobe"]
     desc = "Toggles the out of body experience mode, which lets you move the camera freely."

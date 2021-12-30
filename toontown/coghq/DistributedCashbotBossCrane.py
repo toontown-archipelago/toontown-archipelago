@@ -13,6 +13,7 @@ from direct.task import Task
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from otp.otpbase import OTPGlobals
+from toontown.suit import DistributedCashbotBossGoon
 import random
 
 class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
@@ -621,11 +622,14 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             return
         self.notify.debug('__sniffedSomething %d' % doId)
         obj = base.cr.doId2do.get(doId)
-        if obj.state == 'Grabbed' or obj.state == 'LocalGrabbed':
+        if obj.state == 'Grabbed':
             return
-        if obj and obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
+        if obj and (obj.state != 'Dropped' or obj.craneId != self.doId):
             obj.d_requestGrab()
-            obj.demand('LocalGrabbed', localAvatar.doId, self.doId)
+            if self.index > 3 and isinstance(obj, DistributedCashbotBossGoon.DistributedCashbotBossGoon): #check if side crane
+                obj.d_requestWalk()
+                obj.setObjectState('W', 0, obj.craneId) #wake goon up
+            obj.demand('Grabbed', localAvatar.doId, self.doId)
 
     def grabObject(self, obj):
         if self.state == 'Off':
