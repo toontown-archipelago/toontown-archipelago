@@ -737,6 +737,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         return self.__geom
 
     def startUpdateSmartCamera(self, push = 1):
+        self.initCameraPositions()
         self.setCameraPositionByIndex(self.cameraIndex)
         self.orbitalCamera.start()
         return
