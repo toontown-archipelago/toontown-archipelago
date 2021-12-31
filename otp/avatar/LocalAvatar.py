@@ -643,7 +643,13 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.updateSmartCameraCollisionLineSegment()
 
     def getIdealCameraPos(self):
-        return Point3(self.__idealCameraPos)
+        try:
+            return Point3(self.__idealCameraPos)
+        except AttributeError:
+            height = self.getClampedAvatarHeight()
+            point = Point3(height * (7 / 3.0), height * (-7 / 3.0), height)
+            self.setIdealCameraPos(point)
+            return Point3(self.__idealCameraPos)
 
     def setCameraPositionByIndex(self, index):
         self.notify.debug('switching to camera position %s' % index)
@@ -731,6 +737,8 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         return self.__geom
 
     def startUpdateSmartCamera(self, push = 1):
+        self.initCameraPositions()
+        self.setCameraPositionByIndex(self.cameraIndex)
         self.orbitalCamera.start()
         return
         if self._smartCamEnabled:
