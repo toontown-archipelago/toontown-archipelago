@@ -5,6 +5,7 @@ from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCashbotBossCraneAI
 from toontown.coghq import DistributedCashbotBossSideCraneAI
+from toontown.coghq import DistributedCashbotBossHeavyCraneAI
 from toontown.coghq import DistributedCashbotBossSafeAI
 from toontown.suit import DistributedCashbotBossGoonAI
 from toontown.coghq import DistributedCashbotBossTreasureAI
@@ -110,8 +111,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             for index in xrange(len(ToontownGlobals.CashbotBossCranePosHprs)):
                 if index <= 3:
                     crane = DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI(self.air, self, index)
-                else:
+                elif index <= 5:
                     crane = DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI(self.air, self, index)
+                else:
+                    crane = DistributedCashbotBossHeavyCraneAI.DistributedCashbotBossHeavyCraneAI(self.air, self, index)
                 crane.generateWithRequired(self.zoneId)
                 self.cranes.append(crane)
 
@@ -444,7 +447,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         self.stopHelmets()
 
-        if damage >= CraneLeagueGlobals.CFO_STUN_THRESHOLD or (crane.getIndex() > 3 and impact >= CraneLeagueGlobals.SIDECRANE_IMPACT_STUN_THRESHOLD):
+        if damage >= CraneLeagueGlobals.CFO_STUN_THRESHOLD or (crane.getIndex() > 3 and crane.getIndex() < 6 and impact >= CraneLeagueGlobals.SIDECRANE_IMPACT_STUN_THRESHOLD):
             self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
             self.d_updateStunCount(avId)
         else:

@@ -65,6 +65,7 @@ from toontown.suit import DistributedCashbotBoss/AI
 from toontown.coghq import DistributedCashbotBossSafe/AI
 from toontown.coghq import DistributedCashbotBossCrane/AI
 from toontown.coghq import DistributedCashbotBossSideCrane/AI
+from toontown.coghq import DistributedCashbotBossHeavyCrane/AI
 from toontown.suit import DistributedCashbotBossGoon/AI
 from toontown.battle import DistributedBattleBase/AI
 from toontown.battle import DistributedBattle/AI
@@ -1371,6 +1372,9 @@ dclass DistributedCashbotBossCrane : DistributedObject {
 };
 
 dclass DistributedCashbotBossSideCrane : DistributedCashbotBossCrane {
+};
+
+dclass DistributedCashbotBossHeavyCrane : DistributedCashbotBossCrane {
 };
 
 dclass DistributedCashbotBossObject : DistributedObject {

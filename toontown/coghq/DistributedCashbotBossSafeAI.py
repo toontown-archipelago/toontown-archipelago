@@ -4,6 +4,7 @@ from toontown.coghq import CraneLeagueGlobals
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 import DistributedCashbotBossObjectAI
+import math
 
 class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI):
     wantsWatchDrift = 0
@@ -48,6 +49,9 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         if self.boss.heldObject == None:
             if self.boss.attackCode == ToontownGlobals.BossCogDizzy:
                 damage = int(impact * 50)
+                crane = simbase.air.doId2do.get(craneId)
+                if crane.index >= 6:
+                    damage = math.ceil(damage * 1.2)
                 self.boss.recordHit(max(damage, 2), impact, craneId)
             elif self.boss.acceptHelmetFrom(avId):
                 self.demand('Grabbed', self.boss.doId, self.boss.doId)
@@ -74,7 +78,7 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
             crane = simbase.air.doId2do.get(craneId)
             if crane:
                 if craneId != 0 and objectId == 0:
-                    if crane.getIndex() > 3:
+                    if crane.getIndex() > 3 and crane.getIndex() < 6:
                         self.sendUpdateToAvatarId(avId, 'rejectGrab', [])
                         return
                     self.demand('Grabbed', avId, craneId)
