@@ -5,11 +5,13 @@ from toontown.coghq import DistributedCashbotBossSafe
 from panda3d.core import *
 
 class DistributedCashbotBossHeavyCrane(DistributedCashbotBossCrane.DistributedCashbotBossCrane, FSM.FSM):
-    notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossHeavyCrane')
+    notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossCrane')
+    firstMagnetBit = 21
     craneMinY = 8
     craneMaxY = 28
     armMinH = -25
     armMaxH = 25
+    shadowOffset = 1
     emptyFrictionCoef = 0.1
     emptySlideSpeed = 5
     emptyRotateSpeed = 15
@@ -21,6 +23,3 @@ class DistributedCashbotBossHeavyCrane(DistributedCashbotBossCrane.DistributedCa
     def __init__(self, cr):
         DistributedCashbotBossCrane.DistributedCashbotBossCrane.__init__(self, cr)
         FSM.FSM.__init__(self, 'DistributedCashbotBossHeavyCrane')
-
-    def getName(self):
-        return 'HeavyCrane-%s' % self.index

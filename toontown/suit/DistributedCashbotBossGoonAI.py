@@ -218,6 +218,9 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         if self.state == 'Dropped' or self.state == 'Grabbed':
             if not self.boss.heldObject:
                 damage = int(impact * 25 * self.scale)
+                crane = simbase.air.doId2do.get(craneId)
+                if crane.index >= 6:
+                    damage = math.ceil(damage * 1.2)
                 self.boss.recordHit(max(damage, 2), impact, craneId)
         self.b_destroyGoon()
 
