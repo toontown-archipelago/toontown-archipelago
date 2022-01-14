@@ -45,7 +45,8 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.setName(self.name)
         self.setTag('doId', str(self.doId))
         self.collisionNode.setName('goon')
-        cs = CollisionCapsule(0, 0, 4, 0, 0, 4, 4)
+        #cs = CollisionSphere(0, 0, 4, 4) #TTR Collisions
+        cs = CollisionCapsule(0, 0, 4, 0, 0, 4, 4) #TTCC Collisions
         self.collisionNode.addSolid(cs)
         self.collisionNode.setIntoCollideMask(ToontownGlobals.PieBitmask | ToontownGlobals.CashbotBossObjectBitmask)
         self.wiggleTaskName = self.uniqueName('wiggleTask')
