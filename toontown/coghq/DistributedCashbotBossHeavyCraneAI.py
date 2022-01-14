@@ -1,4 +1,4 @@
-from toontown.coghq import DistributedCashbotBossCraneAI
+from toontown.coghq import DistributedCashbotBossCraneAI, CraneLeagueGlobals
 from direct.fsm import FSM
 
 class DistributedCashbotBossHeavyCraneAI(DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI, FSM.FSM):
@@ -6,3 +6,6 @@ class DistributedCashbotBossHeavyCraneAI(DistributedCashbotBossCraneAI.Distribut
     def __init__(self, air, boss, index):
         DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI.__init__(self, air, boss, index)
         FSM.FSM.__init__(self, 'DistributedCashbotBossHeavyCraneAI')
+
+    def getDamageMultiplier(self):
+        return CraneLeagueGlobals.HEAVY_CRANE_DAMAGE_MULTIPLIER
