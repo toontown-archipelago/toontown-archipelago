@@ -219,8 +219,8 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
             if not self.boss.heldObject:
                 damage = int(impact * 25 * self.scale)
                 crane = simbase.air.doId2do.get(craneId)
-                if crane.index >= 6:
-                    damage = math.ceil(damage * 1.2)
+                # Apply a multiplier if needed (heavy cranes)
+                damage = math.ceil(damage * crane.getDamageMultiplier())
                 self.boss.recordHit(max(damage, 2), impact, craneId)
         self.b_destroyGoon()
 

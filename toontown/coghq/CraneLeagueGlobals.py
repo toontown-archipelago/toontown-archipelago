@@ -10,7 +10,30 @@ TIMER_MODE_TIME_LIMIT = 600  # How many seconds do we give the CFO crane round i
 
 CFO_MAX_HP = 3000  # How much HP should the CFO have?
 CFO_STUN_THRESHOLD = 30  # How much damage should a goon do to stun?
+
+NORMAL_CRANE_POSHPR = [
+    (97.4, -337.6, 0, - 45, 0, 0),
+    (97.4, -292.4, 0, - 135, 0, 0),
+    (142.6, -292.4, 0, 135, 0, 0),
+    (142.6, -337.6, 0, 45, 0, 0)
+]
+
+SIDE_CRANE_POSHPR = [
+    (81, -315, 0, -90, 0, 0),
+    (160, -315, 0, 90, 0, 0)
+]
+HEAVY_CRANE_POSHPR = [
+    (120, -280, 0, 180, 0, 0),
+    (120, -350, 0, 0, 0, 0)
+]
+
+ALL_CRANE_POSHPR = NORMAL_CRANE_POSHPR + SIDE_CRANE_POSHPR + HEAVY_CRANE_POSHPR
+
+WANT_SIDECRANES = True  # Spawn sidecranes? side cranes can stun based off of high impact hits
+WANT_HEAVY_CRANES = True  # Spawn heavy cranes? 7th and 8th crane that are harder to control, but hit harder
+
 SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
+HEAVY_CRANE_DAMAGE_MULTIPLIER = 1.25  # How much of a bonus should heavy cranes have for damage done?
 
 MIN_GOON_IMPACT = 0.1  # How much impact should a goon hit need to register?
 MIN_SAFE_IMPACT = 0.0  # How much impact should a safe hit need to register?
@@ -113,4 +136,3 @@ PENALTY_UNSTUN_TEXT = 'UN-STUN!'
 
 # Debug
 VERBOSE_IMPACT = False  # Print impact of cfo objects
-
