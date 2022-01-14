@@ -27,6 +27,18 @@ HEAVY_CRANE_POSHPR = [
     (120, -350, 0, 0, 0, 0)
 ]
 
+SAFE_POSHPR = [
+    (120, -315, 30, 0, 0, 0),
+    (77.2, -329.3, 0, -90, 0, 0),
+    (77.1, -302.7, 0, -90, 0, 0),
+    (165.7, -326.4, 0, 90, 0, 0),
+    (165.5, -302.4, 0, 90, 0, 0),
+    (107.8, -359.1, 0, 0, 0, 0),
+    (133.9, -359.1, 0, 0, 0, 0),
+    (107.0, -274.7, 0, 180, 0, 0),
+    (134.2, -274.7, 0, 180, 0, 0)
+]
+
 ALL_CRANE_POSHPR = NORMAL_CRANE_POSHPR + SIDE_CRANE_POSHPR + HEAVY_CRANE_POSHPR
 
 WANT_SIDECRANES = True  # Spawn sidecranes? side cranes can stun based off of high impact hits

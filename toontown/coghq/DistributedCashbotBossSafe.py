@@ -64,7 +64,7 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         self.sendUpdate('destroyedGoon', [])
 
     def resetToInitialPosition(self):
-        posHpr = ToontownGlobals.CashbotBossSafePosHprs[self.index]
+        posHpr = CraneLeagueGlobals.SAFE_POSHPR[self.index]
         self.setPosHpr(*posHpr)
         self.physicsObject.setVelocity(0, 0, 0)
 
