@@ -21,7 +21,7 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         self.attachNewNode(cn)
 
     def resetToInitialPosition(self):
-        posHpr = ToontownGlobals.CashbotBossSafePosHprs[self.index]
+        posHpr = CraneLeagueGlobals.SAFE_POSHPR[self.index]
         self.setPosHpr(*posHpr)
 
     def getIndex(self):
