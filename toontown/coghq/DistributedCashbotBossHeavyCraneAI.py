@@ -8,4 +8,4 @@ class DistributedCashbotBossHeavyCraneAI(DistributedCashbotBossCraneAI.Distribut
         FSM.FSM.__init__(self, 'DistributedCashbotBossHeavyCraneAI')
 
     def getDamageMultiplier(self):
-        return CraneLeagueGlobals.HEAVY_CRANE_DAMAGE_MULTIPLIER
+        return self.boss.ruleset.HEAVY_CRANE_DAMAGE_MULTIPLIER

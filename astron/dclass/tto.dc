@@ -1364,7 +1364,7 @@ struct CraneLeagueRuleset {
 };
 
 dclass DistributedCashbotBoss : DistributedBossCog {
-  setRawRuleset(CraneLeagueRuleset[]) required broadcast ram;
+  setRawRuleset(CraneLeagueRuleset) required broadcast ram;
   setState(string) broadcast ram;
   setBossDamage(uint16) broadcast ram;
   setCraneSpawn(bool, uint8, uint32) broadcast ram;

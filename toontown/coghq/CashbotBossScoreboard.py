@@ -146,7 +146,7 @@ class CashbotBossScoreboardToonRow:
         if self.avId == base.localAvatar.doId:
             self.points_text.setColorScale(*GOLD)
 
-        self.sadSecondsLeft = CraneLeagueGlobals.REVIVE_TOONS_TIME
+        self.sadSecondsLeft = base.boss.ruleset.REVIVE_TOONS_TIME
 
     def getYFromPlaceOffset(self, y):
         return y - (self.PLACE_Y_OFFSET*self.place)
@@ -218,9 +218,9 @@ class CashbotBossScoreboardToonRow:
     def toonDied(self):
         self.toon_head.sadEyes()
         self.sad_text.show()
-        self.sadSecondsLeft = CraneLeagueGlobals.REVIVE_TOONS_TIME
+        self.sadSecondsLeft = base.boss.ruleset.REVIVE_TOONS_TIME
 
-        if CraneLeagueGlobals.REVIVE_TOONS_UPON_DEATH:
+        if base.boss.ruleset.REVIVE_TOONS_UPON_DEATH:
             taskMgr.remove('sadtimer-' + str(self.avId))
             taskMgr.add(self.__updateSadTimeLeft, 'sadtimer-' + str(self.avId))
 
@@ -275,14 +275,14 @@ class CashbotBossScoreboard:
     def addScore(self, avId, amount, reason='', ignoreLaff=False):
 
         # If we don't want to include penalties for low laff bonuses and the amount is negative ignore laff
-        if not CraneLeagueGlobals.LOW_LAFF_BONUS_INCLUDE_PENALTIES and amount <= 0:
+        if not base.boss.ruleset.LOW_LAFF_BONUS_INCLUDE_PENALTIES and amount <= 0:
             ignoreLaff=True
 
         # Should we consider a low laff bonus?
-        if not ignoreLaff and CraneLeagueGlobals.WANT_LOW_LAFF_BONUS:
+        if not ignoreLaff and base.boss.ruleset.WANT_LOW_LAFF_BONUS:
             av = base.cr.doId2do.get(avId)
-            if av and av.getHp() <= CraneLeagueGlobals.LOW_LAFF_BONUS_THRESHOLD:
-                taskMgr.doMethodLater(.75, self.__addScoreLater, 'delayedScore', extraArgs=[avId, int(amount*CraneLeagueGlobals.LOW_LAFF_BONUS)])
+            if av and av.getHp() <= base.boss.ruleset.LOW_LAFF_BONUS_THRESHOLD:
+                taskMgr.doMethodLater(.75, self.__addScoreLater, 'delayedScore', extraArgs=[avId, int(amount*base.boss.ruleset.LOW_LAFF_BONUS)])
 
         # If we don't get an integer
         if not isinstance(amount, int):

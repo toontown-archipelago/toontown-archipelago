@@ -62,6 +62,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.activeIntervals = {}
         self.flashInterval = None
         self.elevatorType = ElevatorConstants.ELEVATOR_VP
+        self.bossSpeedrunTimer = BossSpeedrunTimer()
+        self.bossSpeedrunTimer.hide()
         return
 
     def announceGenerate(self):

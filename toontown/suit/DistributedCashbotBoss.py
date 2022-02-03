@@ -92,6 +92,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         OneBossCog = self
         return
 
+    def getBossMaxDamage(self):
+        return self.ruleset.CFO_MAX_HP
+
     def updateRequiredElements(self):
         self.bossSpeedrunTimer.cleanup()
         self.bossSpeedrunTimer = BossSpeedrunTimedTimer(time_limit=self.ruleset.TIMER_MODE_TIME_LIMIT) if self.ruleset.TIMER_MODE else BossSpeedrunTimer()
@@ -991,7 +994,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.door2.setZ(0)
 
     def toonDied(self, avId):
-        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT, ignoreLaff=True)
+        self.scoreboard.addScore(avId, self.ruleset.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT, ignoreLaff=True)
         self.scoreboard.toonDied(avId)
         DistributedBossCog.DistributedBossCog.toonDied(self, avId)
 
@@ -1005,20 +1008,20 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
     def updateStunCount(self, avId):
         self.bossHealthBar.updateStunCount(avId)
-        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_STUN, CraneLeagueGlobals.STUN_TEXT)
+        self.scoreboard.addScore(avId, self.ruleset.POINTS_STUN, CraneLeagueGlobals.STUN_TEXT)
         
     def updateGoonsStomped(self, avId):
         self.bossHealthBar.updateGoonsStomped(avId)
-        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_GOON_STOMP, CraneLeagueGlobals.GOON_STOMP_TEXT)
+        self.scoreboard.addScore(avId, self.ruleset.POINTS_GOON_STOMP, CraneLeagueGlobals.GOON_STOMP_TEXT)
 
     def updateSafePoints(self, avId, points):
         self.scoreboard.addScore(avId, points, CraneLeagueGlobals.PENALTY_SAFEHEAD_TEXT if points < 0 else CraneLeagueGlobals.DESAFE_TEXT)
 
     def updateMaxImpactHits(self, avId):
-        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_IMPACT, CraneLeagueGlobals.IMPACT_TEXT)
+        self.scoreboard.addScore(avId, self.ruleset.POINTS_IMPACT, CraneLeagueGlobals.IMPACT_TEXT)
 
     def updateLowImpactHits(self, avId):
-        self.scoreboard.addScore(avId, CraneLeagueGlobals.POINTS_PENALTY_SANDBAG, CraneLeagueGlobals.PENALTY_SANDBAG_TEXT)
+        self.scoreboard.addScore(avId, self.ruleset.POINTS_PENALTY_SANDBAG, CraneLeagueGlobals.PENALTY_SANDBAG_TEXT)
 
     def updateCombo(self, avId, comboLength):
         self.scoreboard.setCombo(avId, comboLength)
@@ -1027,7 +1030,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.scoreboard.addScore(avId, amount, reason='COMBO x' + str(comboLength) + '!')
 
     def announceCraneRestart(self):
-        restartingOrEnding = 'Restarting ' if CraneLeagueGlobals.RESTART_CRANE_ROUND_ON_FAIL else 'Ending '
+        restartingOrEnding = 'Restarting ' if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL else 'Ending '
         title = OnscreenText(parent=aspect2d, text='All toons are sad!', style=3, fg=(.8, .2, .2, 1), align=TextNode.ACenter, scale=.15, pos=(0, .35))
         sub = OnscreenText(parent=aspect2d, text=restartingOrEnding + 'crane round in 10 seconds...', style=3, fg=(.8, .8, .8, 1), align=TextNode.ACenter, scale=.09, pos=(0, .2))
 
@@ -1055,14 +1058,14 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             base.localAvatar.stunToon()
 
     def goonKilledBySafe(self, avId):
-        self.scoreboard.addScore(avId, amount=CraneLeagueGlobals.POINTS_GOON_KILLED_BY_SAFE, reason=CraneLeagueGlobals.GOON_KILLED_BY_SAFE_TEXT)
+        self.scoreboard.addScore(avId, amount=self.ruleset.POINTS_GOON_KILLED_BY_SAFE, reason=CraneLeagueGlobals.GOON_KILLED_BY_SAFE_TEXT)
 
     def updateUnstun(self, avId):
-        self.scoreboard.addScore(avId, amount=CraneLeagueGlobals.POINTS_PENALTY_UNSTUN, reason=CraneLeagueGlobals.PENALTY_UNSTUN_TEXT)
+        self.scoreboard.addScore(avId, amount=self.ruleset.POINTS_PENALTY_UNSTUN, reason=CraneLeagueGlobals.PENALTY_UNSTUN_TEXT)
 
     def timesUp(self):
 
-        restartingOrEnding = 'Restarting ' if CraneLeagueGlobals.RESTART_CRANE_ROUND_ON_FAIL else 'Ending '
+        restartingOrEnding = 'Restarting ' if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL else 'Ending '
 
 
         for avId in self.involvedToons:

@@ -52,10 +52,17 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.toonsWon = False
         return
 
+    def progressValue(self, fromValue, toValue):
+        t0 = float(self.bossDamage) / float(self.ruleset.CFO_MAX_HP)
+        elapsed = globalClock.getFrameTime() - self.battleThreeStart
+        t1 = elapsed / float(self.battleThreeDuration)
+        t = max(t0, t1)
+        return fromValue + (toValue - fromValue) * min(t, 1)
+
     # Any time you change the ruleset, you should call this to sync the clients
     def d_setRawRuleset(self):
-        self.sendUpdate('setRawRuleset', self.getRawRuleset())
-        print('updating ruleset: ' + str(self.ruleset))
+        print('updating ruleset: ' + str(self.getRawRuleset()))
+        self.sendUpdate('setRawRuleset', [self.getRawRuleset()])
 
     def getRawRuleset(self):
         return self.ruleset.asStruct()
@@ -123,7 +130,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 ind += 1
 
             # Generate the sidecranes if wanted
-            if CraneLeagueGlobals.WANT_SIDECRANES:
+            if self.ruleset.WANT_SIDECRANES:
                 for _ in CraneLeagueGlobals.SIDE_CRANE_POSHPR:
                     crane = DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI(self.air, self, ind)
                     crane.generateWithRequired(self.zoneId)
@@ -131,7 +138,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     ind += 1
 
             # Generate the heavy cranes if wanted
-            if CraneLeagueGlobals.WANT_HEAVY_CRANES:
+            if self.ruleset.WANT_HEAVY_CRANES:
                 for _ in CraneLeagueGlobals.HEAVY_CRANE_POSHPR:
                     crane = DistributedCashbotBossHeavyCraneAI.DistributedCashbotBossHeavyCraneAI(self.air, self, ind)
                     crane.generateWithRequired(self.zoneId)
@@ -193,7 +200,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if len(self.toonsToAttack) <= 0:
             self.toonsToAttack = self.involvedToons[:]
             # Shuffle the toons if we want random gear throws
-            if CraneLeagueGlobals.RANDOM_GEAR_THROW_ORDER:
+            if self.ruleset.RANDOM_GEAR_THROW_ORDER:
                 random.shuffle(self.toonsToAttack)
             # remove people who are dead or gone
             for id in self.toonsToAttack[:]:
@@ -218,7 +225,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
 
     def getDamageMultiplier(self, allowFloat=False):
-        mult = self.progressValue(1, CraneLeagueGlobals.CFO_ATTACKS_MULTIPLIER + (0 if allowFloat else 1))
+        mult = self.progressValue(1, self.ruleset.CFO_ATTACKS_MULTIPLIER + (0 if allowFloat else 1))
         if not allowFloat:
             mult = int(mult)
         return mult
@@ -241,13 +248,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         self.d_showZapToon(avId, x, y, z, h, p, r, attackCode, timestamp)
 
-        damage = CraneLeagueGlobals.CFO_ATTACKS_BASE_DAMAGE.get(attackCode)
+        damage = self.ruleset.CFO_ATTACKS_BASE_DAMAGE.get(attackCode)
         if damage == None:
             self.notify.warning('No damage listed for attack code %s' % attackCode)
             damage = 5
             raise KeyError('No damage listed for attack code %s' % attackCode)  # temp
 
-        damage *= self.getDamageMultiplier(allowFloat=CraneLeagueGlobals.CFO_ATTACKS_MULTIPLIER_INTERPOLATE)
+        damage *= self.getDamageMultiplier(allowFloat=self.ruleset.CFO_ATTACKS_MULTIPLIER_INTERPOLATE)
         # Clamp the damage to make sure it at least does 1
         damage = max(int(damage), 1)
 
@@ -267,7 +274,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             return
 
         # Too many treasures on the field?
-        if len(self.treasures) >= CraneLeagueGlobals.MAX_TREASURE_AMOUNT:
+        if len(self.treasures) >= self.ruleset.MAX_TREASURE_AMOUNT:
             return
 
         pos = goon.getPos(self)
@@ -283,11 +290,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         fpos = self.scene.getRelativePoint(self, Point3(v[0] + dx, v[1] + dy, 0))
 
         # Find an index based on the goon strength we should use
-        treasureHealIndex = 1.0*(goon.strength-CraneLeagueGlobals.MIN_GOON_DAMAGE) / (CraneLeagueGlobals.MAX_GOON_DAMAGE-CraneLeagueGlobals.MIN_GOON_DAMAGE)
-        treasureHealIndex *= len(CraneLeagueGlobals.GOON_HEALS)
-        treasureHealIndex = int(clamp(treasureHealIndex, 0, len(CraneLeagueGlobals.GOON_HEALS)-1))
-        healAmount = CraneLeagueGlobals.GOON_HEALS[treasureHealIndex]
-        availStyles = CraneLeagueGlobals.TREASURE_STYLES[treasureHealIndex]
+        treasureHealIndex = 1.0*(goon.strength-self.ruleset.MIN_GOON_DAMAGE) / (self.ruleset.MAX_GOON_DAMAGE-self.ruleset.MIN_GOON_DAMAGE)
+        treasureHealIndex *= len(self.ruleset.GOON_HEALS)
+        treasureHealIndex = int(clamp(treasureHealIndex, 0, len(self.ruleset.GOON_HEALS)-1))
+        healAmount = self.ruleset.GOON_HEALS[treasureHealIndex]
+        availStyles = self.ruleset.TREASURE_STYLES[treasureHealIndex]
         style = random.choice(availStyles)
 
         if self.recycledTreasures:
@@ -338,7 +345,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.recycledTreasures = []
 
     def getMaxGoons(self):
-        return self.progressValue(CraneLeagueGlobals.MAX_GOON_AMOUNT_START, CraneLeagueGlobals.MAX_GOON_AMOUNT_END)
+        return self.progressValue(self.ruleset.MAX_GOON_AMOUNT_START, self.ruleset.MAX_GOON_AMOUNT_END)
 
     def makeGoon(self, side = None):
         self.goonMovementTime = globalClock.getFrameTime()
@@ -446,7 +453,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.d_updateMaxImpactHits(avId)
         self.d_updateDamageDealt(avId, damage)
 
-        self.comboTrackers[avId].incrementCombo(damage*CraneLeagueGlobals.COMBO_DAMAGE_PERCENTAGE)
+        self.comboTrackers[avId].incrementCombo(damage*self.ruleset.COMBO_DAMAGE_PERCENTAGE)
 
         if self.bossDamage >= self.ruleset.CFO_MAX_HP:
             self.toonsWon = True
@@ -459,7 +466,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.stopHelmets()
 
         # Is the damage high enough to stun? or did a side crane hit a high impact hit?
-        if damage >= CraneLeagueGlobals.CFO_STUN_THRESHOLD or (isinstance(crane, DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI) and impact >= CraneLeagueGlobals.SIDECRANE_IMPACT_STUN_THRESHOLD):
+        if damage >= self.ruleset.CFO_STUN_THRESHOLD or (isinstance(crane, DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI) and impact >= self.ruleset.SIDECRANE_IMPACT_STUN_THRESHOLD):
             self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
             self.d_updateStunCount(avId)
         else:
@@ -542,7 +549,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.__resetBattleThreeObjects()
         self.reportToonHealth()
         self.toonsToAttack = self.involvedToons[:]
-        if CraneLeagueGlobals.RANDOM_GEAR_THROW_ORDER:
+        if self.ruleset.RANDOM_GEAR_THROW_ORDER:
             random.shuffle(self.toonsToAttack)
         self.b_setBossDamage(0)
         self.battleThreeStart = globalClock.getFrameTime()
@@ -570,11 +577,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
                 av = self.air.doId2do[avId]
 
-                if CraneLeagueGlobals.FORCE_MAX_LAFF:
+                if self.ruleset.FORCE_MAX_LAFF:
                     self.oldMaxLaffs[avId] = av.getMaxHp()
-                    av.b_setMaxHp(CraneLeagueGlobals.FORCE_MAX_LAFF_AMOUNT)
+                    av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
 
-                if CraneLeagueGlobals.HEAL_TOONS_ON_START:
+                if self.ruleset.HEAL_TOONS_ON_START:
                     av.b_setHp(av.getMaxHp())
 
         self.toonsWon = False
@@ -604,7 +611,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         taskMgr.remove(self.uniqueName('times-up-task'))
         taskMgr.remove(self.uniqueName('post-times-up-task'))
 
-        if CraneLeagueGlobals.RESTART_CRANE_ROUND_ON_FAIL:
+        if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL:
             self.__restartCraneRoundTask(None)
         else:
             self.b_setState('Victory')
@@ -732,14 +739,14 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setState('BattleThree')
 
     def __reviveToonLater(self, toon):
-        taskMgr.doMethodLater(CraneLeagueGlobals.REVIVE_TOONS_TIME, self.__reviveToon, self.uniqueName('revive-toon-' + str(toon.doId)), extraArgs=[toon])
+        taskMgr.doMethodLater(self.ruleset.REVIVE_TOONS_TIME, self.__reviveToon, self.uniqueName('revive-toon-' + str(toon.doId)), extraArgs=[toon])
 
     def __reviveToon(self, toon, task=None):
 
         if toon.getHp() > 0:
             return
 
-        hpToGive = CraneLeagueGlobals.REVIVE_TOONS_LAFF_PERCENTAGE * toon.getMaxHp()
+        hpToGive = self.ruleset.REVIVE_TOONS_LAFF_PERCENTAGE * toon.getMaxHp()
         toon.b_setHp(hpToGive)
         self.sendUpdate('revivedToon', [toon.doId])
 
@@ -756,7 +763,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             ct.resetCombo()
 
         # If we want to revive toons, revive this toon later and don't do anything else past this point
-        if CraneLeagueGlobals.REVIVE_TOONS_UPON_DEATH and toon.doId in self.involvedToons:
+        if self.ruleset.REVIVE_TOONS_UPON_DEATH and toon.doId in self.involvedToons:
             self.__reviveToonLater(toon)
             return
 
@@ -768,14 +775,14 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 aliveToons += 1
 
         # Restart the crane round if toons are dead and we want to restart
-        if CraneLeagueGlobals.RESTART_CRANE_ROUND_ON_FAIL and not aliveToons:
+        if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL and not aliveToons:
             taskMgr.remove(self.uniqueName('times-up-task'))
             taskMgr.remove(self.uniqueName('post-times-up-task'))
             taskMgr.doMethodLater(10.0, self.__restartCraneRoundTask, self.uniqueName('failedCraneRound'))
             self.sendUpdate('announceCraneRestart', [])
 
         # End the crane round if all toons are dead and we aren't reviving them
-        elif not aliveToons and not CraneLeagueGlobals.REVIVE_TOONS_UPON_DEATH:
+        elif not aliveToons and not self.ruleset.REVIVE_TOONS_UPON_DEATH:
             taskMgr.remove(self.uniqueName('times-up-task'))
             taskMgr.remove(self.uniqueName('post-times-up-task'))
             taskMgr.doMethodLater(10.0, lambda _: self.b_setState('Victory'), self.uniqueName('failedCraneRound'))

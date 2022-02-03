@@ -202,7 +202,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         DistributedGoonAI.DistributedGoonAI.requestStunned(self, pauseTime)
 
     def getMinImpact(self):
-        return CraneLeagueGlobals.MIN_GOON_IMPACT
+        return self.boss.ruleset.MIN_GOON_IMPACT
 
     def hitBoss(self, impact, craneId):
         avId = self.air.getAvatarIdFromSender()

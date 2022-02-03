@@ -72,7 +72,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.dropShadow.show()
 
     def getMinImpact(self):
-        return CraneLeagueGlobals.MIN_GOON_IMPACT
+        return self.boss.ruleset.MIN_GOON_IMPACT
 
     def doHitBoss(self, impact, craneId):
         self.d_hitBoss(impact, craneId)
