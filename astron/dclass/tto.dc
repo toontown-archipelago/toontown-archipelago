@@ -1337,7 +1337,34 @@ dclass DistributedSellbotBoss : DistributedBossCog {
   toonPromoted(uint8(0-1));
 };
 
+struct CraneLeagueRuleset {
+  bool TIMER_MODE;
+  int32 TIMER_MODE_TIME_LIMIT;
+  int32 CFO_MAX_HP;
+  int16/100 MIN_GOON_IMPACT;
+  int16/100 MIN_SAFE_IMPACT;
+  int16/100 MIN_DEHELMET_IMPACT;
+  bool WANT_LOW_LAFF_BONUS;
+  int16/100 LOW_LAFF_BONUS;
+  int32 LOW_LAFF_BONUS_THRESHOLD;
+  bool LOW_LAFF_BONUS_INCLUDE_PENALTIES;
+  bool RESTART_CRANE_ROUND_ON_FAIL;
+  bool REVIVE_TOONS_UPON_DEATH;
+  int32 REVIVE_TOONS_TIME;
+  int32 POINTS_GOON_STOMP;
+  int32 POINTS_STUN;
+  int32 POINTS_IMPACT;
+  int32 POINTS_DESAFE;
+  int32 POINTS_GOON_KILLED_BY_SAFE;
+  int32 POINTS_PENALTY_SAFEHEAD;
+  int32 POINTS_PENALTY_GO_SAD;
+  int32 POINTS_PENALTY_SANDBAG;
+  int32 POINTS_PENALTY_UNSTUN;
+  int16/100 COMBO_DURATION;
+};
+
 dclass DistributedCashbotBoss : DistributedBossCog {
+  setRawRuleset(CraneLeagueRuleset[]) required broadcast ram;
   setState(string) broadcast ram;
   setBossDamage(uint16) broadcast ram;
   setCraneSpawn(bool, uint8, uint32) broadcast ram;

@@ -2,6 +2,7 @@ from direct.gui.OnscreenText import OnscreenText
 from direct.interval.IntervalGlobal import *
 from direct.task.TaskManagerGlobal import *
 from direct.directnotify import DirectNotifyGlobal
+from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimedTimer, BossSpeedrunTimer
 from toontown.toonbase import TTLocalizer
 import DistributedBossCog
 from direct.task.Task import Task
@@ -42,15 +43,18 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.cranes = {}
         self.safes = {}
         self.goons = []
-        self.bossMaxDamage = CraneLeagueGlobals.CFO_MAX_HP
         self.elevatorType = ElevatorConstants.ELEVATOR_CFO
         base.boss = self
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
+        self.ruleset = CraneLeagueGlobals.CFORuleset()  # Setup a default ruleset as a fallback
         return
 
     def announceGenerate(self):
         DistributedBossCog.DistributedBossCog.announceGenerate(self)
+        self.bossSpeedrunTimer = BossSpeedrunTimedTimer(
+            time_limit=self.ruleset.TIMER_MODE_TIME_LIMIT) if self.ruleset.TIMER_MODE else BossSpeedrunTimer()
+        self.bossSpeedrunTimer.hide()
         base.cr.forbidCheesyEffects(1)
         self.setName(TTLocalizer.CashbotBossName)
         nameInfo = TTLocalizer.BossCogNameWithDept % {'name': self._name,
@@ -87,6 +91,22 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.notify.warning('Multiple BossCogs visible.')
         OneBossCog = self
         return
+
+    def updateRequiredElements(self):
+        self.bossSpeedrunTimer.cleanup()
+        self.bossSpeedrunTimer = BossSpeedrunTimedTimer(time_limit=self.ruleset.TIMER_MODE_TIME_LIMIT) if self.ruleset.TIMER_MODE else BossSpeedrunTimer()
+        self.bossSpeedrunTimer.hide()
+
+    def setRawRuleset(self, attrs):
+        self.ruleset = CraneLeagueGlobals.CFORuleset.fromStruct(attrs)
+        self.updateRequiredElements()
+        print('ruleset updated: ' + str(self.ruleset))
+
+    def getRawRuleset(self):
+        return self.ruleset.asStruct()
+
+    def getRuleset(self):
+        return self.ruleset
 
     def disable(self):
         global OneBossCog
@@ -607,7 +627,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.showHpText(-delta, scale=5)
         self.bossDamage = bossDamage
         self.updateHealthBar()
-        self.bossHealthBar.update(self.bossMaxDamage - bossDamage, self.bossMaxDamage)
+        self.bossHealthBar.update(self.ruleset.CFO_MAX_HP - bossDamage, self.ruleset.CFO_MAX_HP)
 
     def setCraneSpawn(self, want, spawn, toonId):
         self.wantCustomCraneSpawns = want
@@ -802,7 +822,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.updateHealthBar()
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
         taskMgr.add(self.__doPhysics, self.uniqueName('physics'), priority=25)
-        self.bossHealthBar.initialize(self.bossMaxDamage - self.bossDamage, self.bossMaxDamage)
+        self.bossHealthBar.initialize(self.ruleset.CFO_MAX_HP - self.bossDamage, self.ruleset.CFO_MAX_HP)
         self.bossSpeedrunTimer.reset()
         self.bossSpeedrunTimer.start_updating()
         self.bossSpeedrunTimer.show()

@@ -24,6 +24,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def __init__(self, air):
         DistributedBossCogAI.DistributedBossCogAI.__init__(self, air, 'm')
         FSM.FSM.__init__(self, 'DistributedCashbotBossAI')
+        self.ruleset = CraneLeagueGlobals.CFORuleset()
         self.cranes = None
         self.safes = None
         self.goons = None
@@ -40,22 +41,27 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.attachNewNode(cn)
         self.heldObject = None
         self.waitingForHelmet = 0
-        self.bossMaxDamage = CraneLeagueGlobals.CFO_MAX_HP
         self.wantSafeRushPractice = False
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
-        self.goonMinStrength = CraneLeagueGlobals.MIN_GOON_DAMAGE
-        self.goonMaxStrength = CraneLeagueGlobals.MAX_GOON_DAMAGE
         self.goonMinScale = 0.8
         self.goonMaxScale = 2.6
         self.wantAimPractice = False
         self.safesWanted = 5
-        self.want4ManPractice = True
-        self.wantMovementModification = True
-        self.wantOpeningModifications = False
         self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
         self.toonsWon = False
         return
+
+    # Any time you change the ruleset, you should call this to sync the clients
+    def d_setRawRuleset(self):
+        self.sendUpdate('setRawRuleset', self.getRawRuleset())
+        print('updating ruleset: ' + str(self.ruleset))
+
+    def getRawRuleset(self):
+        return self.ruleset.asStruct()
+
+    def getRuleset(self):
+        return self.ruleset
 
     def generate(self):
         DistributedBossCogAI.DistributedBossCogAI.generate(self)
@@ -337,17 +343,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def makeGoon(self, side = None):
         self.goonMovementTime = globalClock.getFrameTime()
         if side == None:
-            if not self.wantOpeningModifications:
-                side = random.choice(['EmergeA', 'EmergeB'])
-            else:
-                for t in self.involvedToons:
-                    avId = t
-                toon = self.air.doId2do.get(avId)
-                pos = toon.getPos()[1]
-                if pos < -315:
-                    side = 'EmergeB'
-                else:
-                    side = 'EmergeA'
+            side = random.choice(['EmergeA', 'EmergeB'])
+
         goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
         if goon != None:
             if len(self.goons) >= self.getMaxGoons():
@@ -356,10 +353,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.goons.append(goon)
         if self.getBattleThreeTime() > 1.0:
             goon.STUN_TIME = 4
-            goon.b_setupGoon(velocity=8, hFov=90, attackRadius=20, strength=self.goonMaxStrength, scale=1.8)
+            goon.b_setupGoon(velocity=8, hFov=90, attackRadius=20, strength=self.ruleset.MAX_GOON_DAMAGE, scale=1.8)
         else:
             goon.STUN_TIME = self.progressValue(30, 8)
-            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7), hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(self.goonMinStrength, self.goonMaxStrength)), scale=self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=False))
+            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7), hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(self.ruleset.MIN_GOON_DAMAGE, self.ruleset.MAX_GOON_DAMAGE)), scale=self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=False))
         goon.request(side)
         return
 
@@ -451,7 +448,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         self.comboTrackers[avId].incrementCombo(damage*CraneLeagueGlobals.COMBO_DAMAGE_PERCENTAGE)
 
-        if self.bossDamage >= self.bossMaxDamage:
+        if self.bossDamage >= self.ruleset.CFO_MAX_HP:
             self.toonsWon = True
             self.b_setState('Victory')
             return
@@ -479,13 +476,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def d_setBossDamage(self, bossDamage):
         self.sendUpdate('setBossDamage', [bossDamage])
-        
+
     def d_updateDamageDealt(self, avId, damageDealt):
         self.sendUpdate('updateDamageDealt', [avId, damageDealt])
-		
+
     def d_updateStunCount(self, avId):
         self.sendUpdate('updateStunCount', [avId])
-		
+
     def d_updateGoonsStomped(self, avId):
         self.sendUpdate('updateGoonsStomped', [avId])
 
@@ -584,8 +581,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         taskMgr.remove(self.uniqueName('times-up-task'))
         taskMgr.remove(self.uniqueName('post-times-up-task'))
         # If timer mode is active, end the crane round later
-        if CraneLeagueGlobals.TIMER_MODE:
-            taskMgr.doMethodLater(CraneLeagueGlobals.TIMER_MODE_TIME_LIMIT, self.__timesUp, self.uniqueName('times-up-task'))
+        if self.ruleset.TIMER_MODE:
+            taskMgr.doMethodLater(self.ruleset.TIMER_MODE_TIME_LIMIT, self.__timesUp, self.uniqueName('times-up-task'))
 
     # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
     def __timesUp(self, task=None):
@@ -644,7 +641,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         craneTime = globalClock.getFrameTime()
         actualTime = craneTime - self.battleThreeTimeStarted
-        timeToSend = 0.0 if CraneLeagueGlobals.TIMER_MODE and not self.toonsWon else actualTime
+        timeToSend = 0.0 if self.ruleset.TIMER_MODE and not self.toonsWon else actualTime
         self.d_updateTimer(timeToSend)
         self.resetBattles()
         self.barrier = self.beginBarrier('Victory', self.involvedToons, 30, self.__doneVictory)
@@ -675,12 +672,12 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             goon.requestDelete()
 
         nearbyDistance = 22
-    
+
         # Get the toon's position
         toon = self.air.doId2do.get(self.involvedToons[0])
         toonX = toon.getPos().x
         toonY = toon.getPos().y
-        
+
         # Count nearby safes
         nearbySafes = []
         farSafes = []
@@ -689,7 +686,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             # Safe on his head doesn't count and is not a valid target to move
             if self.heldObject is safe:
                 continue
-        
+
             safeX = safe.getPos().x
             safeY = safe.getPos().y
 
@@ -706,7 +703,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # If there's not enough nearby safes, relocate far ones
         if len(nearbySafes) < self.safesWanted:
             self.relocateSafes(farSafes, self.safesWanted - len(nearbySafes), toonX, toonY)
-    
+
         # Schedule this to be done again in 1s unless the user stops it
         taskName = self.uniqueName('CheckNearbySafes')
         taskMgr.doMethodLater(4, self.checkNearby, taskName)
@@ -796,7 +793,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             return False
         if y < -359.1:
             return False
-        
+
         if y - 0.936455 * x > -374.901:
             return False
         if y + 0.973856 * x < -254.118:
