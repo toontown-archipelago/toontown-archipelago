@@ -62,6 +62,7 @@ from toontown.suit import DistributedMintSuit/AI
 from toontown.suit import DistributedStageSuit/AI
 from toontown.suit import DistributedSellbotBoss/AI
 from toontown.suit import DistributedCashbotBoss/AI
+from toontown.suit import DistributedCashbotBossCL/AI
 from toontown.coghq import DistributedCashbotBossSafe/AI
 from toontown.coghq import DistributedCashbotBossCrane/AI
 from toontown.coghq import DistributedCashbotBossSideCrane/AI
@@ -161,6 +162,7 @@ from toontown.building import DistributedElevatorFloor/AI
 from toontown.building import DistributedBossElevator/AI
 from toontown.building import DistributedVPElevator/AI
 from toontown.building import DistributedCFOElevator/AI
+from toontown.building import DistributedCFOCLMatchElevator/AI
 from toontown.building import DistributedCJElevator/AI
 from toontown.building import DistributedBBElevator/AI
 from toontown.building import DistributedBoardingParty/AI
@@ -1353,6 +1355,9 @@ dclass DistributedCashbotBoss : DistributedBossCog {
   revivedToon(uint32 avId) broadcast ram;
   goonKilledBySafe(uint32 avId) broadcast ram;
   updateUnstun(uint32 avId) broadcast ram;
+};
+
+dclass DistributedCashbotBossCL : DistributedCashbotBoss {
 };
 
 struct LinkPosition {
@@ -2573,6 +2578,9 @@ dclass DistributedVPElevator : DistributedBossElevator {
 };
 
 dclass DistributedCFOElevator : DistributedBossElevator {
+};
+
+dclass DistributedCFOCLMatchElevator : DistributedBossElevator {
 };
 
 dclass DistributedCJElevator : DistributedBossElevator {
