@@ -92,7 +92,7 @@ def getCloseInterval(distObj, leftDoor, rightDoor, closeSfx, finalCloseSfx, type
 
 
 def getRideElevatorInterval(type = ELEVATOR_NORMAL):
-    if type == ELEVATOR_VP or type == ELEVATOR_CFO or type == ELEVATOR_CJ:
+    if type in (ELEVATOR_VP, ELEVATOR_CFO, ELEVATOR_CFO_CL, ELEVATOR_CJ):
         yValue = 30
         zMin = 7.8
         zMid = 8
@@ -103,7 +103,7 @@ def getRideElevatorInterval(type = ELEVATOR_NORMAL):
         zMid = 7.2
         zMax = 7.4
     if type in (ELEVATOR_VP,
-     ELEVATOR_CFO,
+     ELEVATOR_CFO, ELEVATOR_CFO_CL,
      ELEVATOR_CJ,
      ELEVATOR_BB):
         base.camLens.setFov(ToontownGlobals.CogHQCameraFov)
