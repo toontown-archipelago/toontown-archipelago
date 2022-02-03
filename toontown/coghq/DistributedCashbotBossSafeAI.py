@@ -1,9 +1,12 @@
 from panda3d.core import *
 
 from toontown.coghq import CraneLeagueGlobals
+from toontown.coghq.DistributedCashbotBossHeavyCraneAI import DistributedCashbotBossHeavyCraneAI
+from toontown.coghq.DistributedCashbotBossSideCraneAI import DistributedCashbotBossSideCraneAI
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 import DistributedCashbotBossObjectAI
+import math
 
 class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI):
     wantsWatchDrift = 0
@@ -18,7 +21,7 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         self.attachNewNode(cn)
 
     def resetToInitialPosition(self):
-        posHpr = ToontownGlobals.CashbotBossSafePosHprs[self.index]
+        posHpr = CraneLeagueGlobals.SAFE_POSHPR[self.index]
         self.setPosHpr(*posHpr)
 
     def getIndex(self):
@@ -48,6 +51,9 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         if self.boss.heldObject == None:
             if self.boss.attackCode == ToontownGlobals.BossCogDizzy:
                 damage = int(impact * 50)
+                crane = simbase.air.doId2do.get(craneId)
+                # Apply a multiplier if needed (heavy cranes)
+                damage = math.ceil(damage * crane.getDamageMultiplier())
                 self.boss.recordHit(max(damage, 2), impact, craneId)
             elif self.boss.acceptHelmetFrom(avId):
                 self.demand('Grabbed', self.boss.doId, self.boss.doId)
@@ -74,7 +80,8 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
             crane = simbase.air.doId2do.get(craneId)
             if crane:
                 if craneId != 0 and objectId == 0:
-                    if crane.getIndex() > 3:
+                    # If it is a sidecrane, dont pick up the safe
+                    if isinstance(crane, DistributedCashbotBossSideCraneAI):
                         self.sendUpdateToAvatarId(avId, 'rejectGrab', [])
                         return
                     self.demand('Grabbed', avId, craneId)

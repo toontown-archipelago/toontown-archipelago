@@ -1,5 +1,6 @@
 from panda3d.core import *
 from direct.distributed import DistributedObjectAI
+from toontown.coghq import CraneLeagueGlobals
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 from direct.fsm import FSM
@@ -15,9 +16,13 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
         cs = CollisionSphere(0, -6, 0, 6)
         cn.addSolid(cs)
         self.goonShield = NodePath(cn)
-        self.goonShield.setPosHpr(*ToontownGlobals.CashbotBossCranePosHprs[self.index])
+        self.goonShield.setPosHpr(*CraneLeagueGlobals.ALL_CRANE_POSHPR[self.index])
         self.avId = 0
         self.objectId = 0
+
+    # Should we multiply any damage done from this crane?
+    def getDamageMultiplier(self):
+        return 1.0
 
     def getBossCogId(self):
         return self.boss.doId

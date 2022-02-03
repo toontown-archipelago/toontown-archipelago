@@ -5,6 +5,7 @@ from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCashbotBossCraneAI
 from toontown.coghq import DistributedCashbotBossSideCraneAI
+from toontown.coghq import DistributedCashbotBossHeavyCraneAI
 from toontown.coghq import DistributedCashbotBossSafeAI
 from toontown.suit import DistributedCashbotBossGoonAI
 from toontown.coghq import DistributedCashbotBossTreasureAI
@@ -107,17 +108,33 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def __makeBattleThreeObjects(self):
         if self.cranes == None:
             self.cranes = []
-            for index in xrange(len(ToontownGlobals.CashbotBossCranePosHprs)):
-                if index <= 3:
-                    crane = DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI(self.air, self, index)
-                else:
-                    crane = DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI(self.air, self, index)
+            ind = 0
+
+            for _ in CraneLeagueGlobals.NORMAL_CRANE_POSHPR:
+                crane = DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI(self.air, self, ind)
                 crane.generateWithRequired(self.zoneId)
                 self.cranes.append(crane)
+                ind += 1
+
+            # Generate the sidecranes if wanted
+            if CraneLeagueGlobals.WANT_SIDECRANES:
+                for _ in CraneLeagueGlobals.SIDE_CRANE_POSHPR:
+                    crane = DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI(self.air, self, ind)
+                    crane.generateWithRequired(self.zoneId)
+                    self.cranes.append(crane)
+                    ind += 1
+
+            # Generate the heavy cranes if wanted
+            if CraneLeagueGlobals.WANT_HEAVY_CRANES:
+                for _ in CraneLeagueGlobals.HEAVY_CRANE_POSHPR:
+                    crane = DistributedCashbotBossHeavyCraneAI.DistributedCashbotBossHeavyCraneAI(self.air, self, ind)
+                    crane.generateWithRequired(self.zoneId)
+                    self.cranes.append(crane)
+                    ind += 1
 
         if self.safes == None:
             self.safes = []
-            for index in xrange(len(ToontownGlobals.CashbotBossSafePosHprs)):
+            for index in xrange(len(CraneLeagueGlobals.SAFE_POSHPR)):
                 safe = DistributedCashbotBossSafeAI.DistributedCashbotBossSafeAI(self.air, self, index)
                 safe.generateWithRequired(self.zoneId)
                 self.safes.append(safe)
@@ -444,7 +461,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         self.stopHelmets()
 
-        if damage >= CraneLeagueGlobals.CFO_STUN_THRESHOLD or (crane.getIndex() > 3 and impact >= CraneLeagueGlobals.SIDECRANE_IMPACT_STUN_THRESHOLD):
+        # Is the damage high enough to stun? or did a side crane hit a high impact hit?
+        if damage >= CraneLeagueGlobals.CFO_STUN_THRESHOLD or (isinstance(crane, DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI) and impact >= CraneLeagueGlobals.SIDECRANE_IMPACT_STUN_THRESHOLD):
             self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
             self.d_updateStunCount(avId)
         else:

@@ -33,7 +33,8 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         self.boss.safe.copyTo(self)
         self.shadow = self.find('**/shadow')
         self.collisionNode.setName('safe')
-        cs = CollisionCapsule(0, 0, 4, 0, 0, 4, 4)
+        #cs = CollisionSphere(0, 0, 4, 4) #TTR Collisions
+        cs = CollisionCapsule(0, 0, 4, 0, 0, 4, 4) #TTCC Collisions
         self.collisionNode.addSolid(cs)
         if self.index == 0:
             self.collisionNode.setIntoCollideMask(ToontownGlobals.PieBitmask | OTPGlobals.WallBitmask)
@@ -63,7 +64,7 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         self.sendUpdate('destroyedGoon', [])
 
     def resetToInitialPosition(self):
-        posHpr = ToontownGlobals.CashbotBossSafePosHprs[self.index]
+        posHpr = CraneLeagueGlobals.SAFE_POSHPR[self.index]
         self.setPosHpr(*posHpr)
         self.physicsObject.setVelocity(0, 0, 0)
 
