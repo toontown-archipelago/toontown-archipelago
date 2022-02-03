@@ -49,8 +49,6 @@ PENALTY_GO_SAD_TEXT = "DIED!"
 PENALTY_SANDBAG_TEXT = 'SLOPPY!'
 PENALTY_UNSTUN_TEXT = 'UN-STUN!'
 
-LOW_LAFF_BONUS_TEXT = "UBER BONUS"  # Text to display alongside a low laff bonus
-
 
 # Ruleset
 # Instance attached to cfo boss instances, so we can easily modify stuff dynamically
@@ -66,6 +64,8 @@ class CFORuleset:
 
         self.WANT_SIDECRANES = True
         self.WANT_HEAVY_CRANES = True
+
+        self.HEAVY_CRANE_DAMAGE_MULTIPLIER = 1.25
 
         self.MIN_GOON_IMPACT = 0.1  # How much impact should a goon hit need to register?
         self.MIN_SAFE_IMPACT = 0.0  # How much impact should a safe hit need to register?

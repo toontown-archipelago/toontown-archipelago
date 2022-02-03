@@ -29,9 +29,9 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
 
     def getMinImpact(self):
         if self.boss.heldObject:
-            return CraneLeagueGlobals.MIN_DEHELMET_IMPACT
+            return self.boss.ruleset.MIN_DEHELMET_IMPACT
         else:
-            return CraneLeagueGlobals.MIN_SAFE_IMPACT
+            return self.boss.ruleset.MIN_SAFE_IMPACT
 
     def hitBoss(self, impact, craneId):
 
@@ -58,9 +58,9 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
             elif self.boss.acceptHelmetFrom(avId):
                 self.demand('Grabbed', self.boss.doId, self.boss.doId)
                 self.boss.heldObject = self
-                self.boss.d_updateSafePoints(avId, CraneLeagueGlobals.POINTS_PENALTY_SAFEHEAD)
+                self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_PENALTY_SAFEHEAD)
         elif impact >= ToontownGlobals.CashbotBossSafeKnockImpact:
-            self.boss.d_updateSafePoints(avId, CraneLeagueGlobals.POINTS_DESAFE)
+            self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_DESAFE)
             self.boss.heldObject.demand('Dropped', avId, self.boss.doId)
             self.boss.heldObject.avoidHelmet = 1
             self.boss.heldObject = None

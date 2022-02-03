@@ -14,7 +14,7 @@ class CashbotBossComboTracker:
 
     def __expireComboLater(self):
         taskMgr.remove(self.__getTaskName())  # cancel the task if it already exists
-        taskMgr.doMethodLater(CraneLeagueGlobals.COMBO_DURATION, self.__expireCombo, self.__getTaskName())
+        taskMgr.doMethodLater(self.boss.ruleset.COMBO_DURATION, self.__expireCombo, self.__getTaskName())
 
     def __expireCombo(self, task):
         if self.combo >= 2:

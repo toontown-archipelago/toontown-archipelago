@@ -55,9 +55,9 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
 
     def getMinImpact(self):
         if self.boss.heldObject:
-            return CraneLeagueGlobals.MIN_DEHELMET_IMPACT
+            return self.boss.ruleset.MIN_DEHELMET_IMPACT
         else:
-            return CraneLeagueGlobals.MIN_SAFE_IMPACT
+            return self.boss.ruleset.MIN_SAFE_IMPACT
 
     def doHitGoon(self, goon):
         goon.b_destroyGoon()

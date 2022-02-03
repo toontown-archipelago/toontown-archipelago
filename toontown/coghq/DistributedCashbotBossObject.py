@@ -135,7 +135,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
             impact = max(0, impact)
 
-            if CraneLeagueGlobals.VERBOSE_IMPACT:
+            if self.boss.ruleset.VERBOSE_IMPACT:
                 base.localAvatar.setSystemMessage(0, "impact: " + str(impact))
 
             self.doHitBoss(impact, self.craneId)
