@@ -67,8 +67,6 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def announceGenerate(self):
         DistributedAvatar.DistributedAvatar.announceGenerate(self)
         self.bossHealthBar = BossHealthBar.BossHealthBar(self.style.dept)
-        self.bossSpeedrunTimer = BossSpeedrunTimedTimer(time_limit=CraneLeagueGlobals.TIMER_MODE_TIME_LIMIT) if CraneLeagueGlobals.TIMER_MODE else BossSpeedrunTimer()
-        self.bossSpeedrunTimer.hide()
         self.prevCogSuitLevel = localAvatar.getCogLevels()[CogDisguiseGlobals.dept2deptIndex(self.style.dept)]
         nearBubble = CollisionSphere(0, 0, 0, 50)
         nearBubble.setTangible(0)
