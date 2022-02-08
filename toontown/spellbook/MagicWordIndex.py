@@ -12,6 +12,7 @@ from otp.otpbase import OTPGlobals
 from toontown.battle import SuitBattleGlobals
 from toontown.char import CharDNA
 from toontown.coghq import CogDisguiseGlobals
+from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 from toontown.effects import FireworkShows
 from toontown.estate import GardenGlobals
 from toontown.fishing import FishGlobals
@@ -36,6 +37,7 @@ import random
 import json
 
 DEBUG_SCOREBOARD = None
+DEBUG_HEAT = None
 
 magicWordIndex = collections.OrderedDict()
 
@@ -199,22 +201,19 @@ class scoreboard(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
 
         global DEBUG_SCOREBOARD
+        global DEBUG_HEAT
 
         if not DEBUG_SCOREBOARD:
             from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
             DEBUG_SCOREBOARD = CashbotBossScoreboard()
+            DEBUG_HEAT = CraneLeagueHeatDisplay()
+            # DEBUG_SCOREBOARD.addToon(avId)  # No longer works
             return "scoreboard created!"
 
-        if toon.doId not in DEBUG_SCOREBOARD.getToons():
-            DEBUG_SCOREBOARD.addToon(toon.doId)
-            return "added " + toon.getName() + " to the scoreboard!"
+        n = random.randint(100, 1500)
+        DEBUG_HEAT.set_heat(n)
 
-        r = random.randint(-50, 50)
-        if r == 0:
-            r = 100
-        DEBUG_SCOREBOARD.addScore(toon.doId, r)
-        return "added " + str(r) + " points to " + str(toon.doId)
-
+        return "set heat to " + str(n)
 
 class StartHoliday(MagicWord):
     aliases = ["startH"]

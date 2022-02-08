@@ -113,9 +113,9 @@ def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
 
 class CashbotBossScoreboardToonRow:
 
-    FIRST_PLACE_HEAD_X = -.28
+    FIRST_PLACE_HEAD_X = 1.52
     FIRST_PLACE_HEAD_Y = LABEL_Y_POS-.15
-    FIRST_PLACE_TEXT_X = 0
+    FIRST_PLACE_TEXT_X = 1.78
 
     FRAME_Y_FIRST_PLACE = .4
 
@@ -244,13 +244,13 @@ class CashbotBossScoreboard:
 
     def __init__(self):
 
-        self.frame = DirectFrame()
+        self.frame = DirectFrame(parent=base.a2dLeftCenter, pos=(0, 0, 0))
 
-        self.toon_text = OnscreenText(parent=self.frame, text='Toon', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=0.1, pos=(-1.7, LABEL_Y_POS))
+        self.toon_text = OnscreenText(parent=self.frame, text='Toon', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=0.1, pos=(.1, LABEL_Y_POS))
         self.pts_text = OnscreenText(parent=self.frame, text='Pts.', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft,
-                                      scale=0.1, pos=(-1.4, LABEL_Y_POS))
-        self.h_divider = OnscreenText(parent=self.frame, text='|', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=(.1, .5), pos=(-1.35, .5), roll=90)
-        self.v_divider = OnscreenText(parent=self.frame, text='|', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=(.1, 1), pos=(-1.45, -0.1))
+                                      scale=0.1, pos=(.4, LABEL_Y_POS))
+        self.h_divider = OnscreenText(parent=self.frame, text='|', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=(.1, .5), pos=(.45, 0.5), roll=90)
+        self.v_divider = OnscreenText(parent=self.frame, text='|', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=(.1, 1), pos=(.35, -0.1))
 
         self.rows = {}   # maps avId -> ScoreboardToonRow object
 

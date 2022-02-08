@@ -30,10 +30,13 @@ OneBossCog = None
 TTL = TTLocalizer
 from toontown.coghq import BossHealthBar
 from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
+from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 
 class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBoss')
     numFakeGoons = 3
+
+    BASE_HEAT = 500
 
     def __init__(self, cr):
         DistributedBossCog.DistributedBossCog.__init__(self, cr)
@@ -48,6 +51,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
         self.ruleset = CraneLeagueGlobals.CFORuleset()  # Setup a default ruleset as a fallback
+        self.modifiers = []
+        self.heatDisplay = CraneLeagueHeatDisplay()
+        self.heatDisplay.hide()
         return
 
     def announceGenerate(self):
@@ -95,10 +101,19 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def getBossMaxDamage(self):
         return self.ruleset.CFO_MAX_HP
 
+    def calculateHeat(self):
+        bonusHeat = 0
+        # Loop through all modifiers present and calculate the bonus heat
+        for modifier in self.modifiers:
+            bonusHeat += modifier.getHeat()
+
+        return self.BASE_HEAT + bonusHeat
+
     def updateRequiredElements(self):
         self.bossSpeedrunTimer.cleanup()
         self.bossSpeedrunTimer = BossSpeedrunTimedTimer(time_limit=self.ruleset.TIMER_MODE_TIME_LIMIT) if self.ruleset.TIMER_MODE else BossSpeedrunTimer()
         self.bossSpeedrunTimer.hide()
+        self.heatDisplay.update(self.calculateHeat(), self.modifiers)
 
     def setRawRuleset(self, attrs):
         self.ruleset = CraneLeagueGlobals.CFORuleset.fromStruct(attrs)
@@ -110,6 +125,13 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def getRuleset(self):
         return self.ruleset
+
+    def setModifiers(self, mods):
+        modsToSet = []  # A list of CFORulesetModifierBase subclass instances
+        for modStruct in mods:
+            modsToSet.append(CraneLeagueGlobals.CFORulesetModifierBase.fromStruct(modStruct))
+
+        self.modifiers = modsToSet
 
     def disable(self):
         global OneBossCog
@@ -124,6 +146,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.epilogueMusic.stop()
         localAvatar.chatMgr.chatInputSpeedChat.removeCFOMenu()
         self.scoreboard.cleanup()
+        self.heatDisplay.cleanup()
         if OneBossCog == self:
             OneBossCog = None
         return
@@ -829,6 +852,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossSpeedrunTimer.reset()
         self.bossSpeedrunTimer.start_updating()
         self.bossSpeedrunTimer.show()
+        self.heatDisplay.update(self.calculateHeat(), self.modifiers)
+        self.heatDisplay.show()
 
         self.localToonIsSafe = 0 if base.localAvatar.doId in self.involvedToons else 1
 

@@ -4,7 +4,6 @@ from direct.gui.DirectGui import *
 from panda3d.core import *
 
 from toontown.coghq import CraneLeagueGlobals
-from toontown.toonbase import ToontownGlobals
 
 LOWEST_HEAT_H_VALUE = 80
 HIGHEST_HEAT_H_VALUE = 0
@@ -17,23 +16,18 @@ V_HEAT_VALUE = .83
 LOWEST_HEAT = 150
 HIGHEST_HEAT = 1000
 
-TITLE_FONT_SIZE = 1.05
-DESCRIPTION_TITLE_FONT_SIZE = 0.85
-DESCRIPTION_BODY_FONT_SIZE = 0.65
-DESCRIPTION_WORD_WRAP = 25
-
 
 class CraneLeagueHeatDisplay:
 
-    FLAME_POS = (-.48, 0, .74)
-    HEAT_NUM_POS = (-.43, .72)
+    FLAME_POS = (-.48, 0, .58)
+    HEAT_NUM_POS = (-.43, .55)
     MODIFIERS_TEXT_POS = (-.6, 0, .35)
 
     # TextProperties shit to make life easier
     text_properties_manager = TextPropertiesManager.getGlobalPtr()
     text_properties_default_color = TextProperties()
     text_properties_default_color.setTextColor(1, 1, 1, 1)
-    text_properties_default_color.setTextScale(TITLE_FONT_SIZE)
+    text_properties_default_color.setTextScale(1.5)
     text_properties_manager.setProperties("default_mod_color", text_properties_default_color)
 
     def __init__(self):
@@ -42,9 +36,9 @@ class CraneLeagueHeatDisplay:
         self.flame_image = OnscreenImage(parent=self.frame, image='phase_10/maps/heat.png', pos=self.FLAME_POS, scale=.05)
         self.flame_image.setTransparency(TransparencyAttrib.MAlpha)
 
-        self.heat_number = OnscreenText(parent=self.frame, text='500', style=3, fg=self.calculate_color(), align=TextNode.ALeft, scale=.1, pos=self.HEAT_NUM_POS, font=ToontownGlobals.getSuitFont())
+        self.heat_number = OnscreenText(parent=self.frame, text='500', style=3, fg=self.calculate_color(), align=TextNode.ALeft, scale=.1, pos=self.HEAT_NUM_POS)
 
-        self.hover_button = DirectButton(parent=self.frame, pos=(-.38, 0, .74), scale=(1.5, 1, .5))
+        self.hover_button = DirectButton(parent=self.frame, pos=(-.38, 0, .58), scale=(1.5, 1, .5))
         self.hover_button.setTransparency(TransparencyAttrib.MAlpha)
         self.hover_button.setColorScale(1, 1, 1, 0)
 
@@ -61,11 +55,10 @@ class CraneLeagueHeatDisplay:
         self.modifiers_desc.setCardColor(.2, .2, .2, .75)
         self.modifiers_desc.setCardAsMargin(0.38, 0.38, 0.19, 0.19)
         self.modifiers_desc.setCardDecal(True)
-        self.modifiers_desc.setWordwrap(DESCRIPTION_WORD_WRAP)
+        self.modifiers_desc.setWordwrap(20)
         self.modifiers_desc.setShadow(0.05, 0.05)
         self.modifiers_desc.setShadowColor(0, 0, 0, 1)
         self.modifiers_desc.setTextColor(.7, .7, .7, 1)
-        self.modifiers_desc.setTextScale(DESCRIPTION_BODY_FONT_SIZE)
         self.modifiers_desc_path = base.a2dRightCenter.attachNewNode(self.modifiers_desc)
         self.modifiers_desc_path.setScale(.055)
         self.modifiers_desc_path.setPos(self.MODIFIERS_TEXT_POS)
@@ -83,7 +76,7 @@ class CraneLeagueHeatDisplay:
             return "\1default_mod_color\1No modifiers :(\2"
 
         # First the title of the box
-        s = '\1default_mod_color\1Active Modifiers\2'
+        s = '\1default_mod_color\1Active Modifiers\2\n'
 
         # Now loop through all the modifiers, and add the required text
         for mod in modifiers:
@@ -94,10 +87,9 @@ class CraneLeagueHeatDisplay:
             # Define text prop objs
             title_text_properties = TextProperties()
             title_text_properties.setTextColor(mod.TITLE_COLOR)
-            title_text_properties.setTextScale(DESCRIPTION_TITLE_FONT_SIZE)
+            title_text_properties.setTextScale(1.2)
             desc_text_properties = TextProperties()
             desc_text_properties.setTextColor(mod.DESCRIPTION_COLOR)
-            desc_text_properties.setTextScale(DESCRIPTION_BODY_FONT_SIZE)
 
             title_key = 'mod-title-' + str(title)
             desc_key = 'mod-desc-' + str(title)
@@ -111,6 +103,7 @@ class CraneLeagueHeatDisplay:
 
         # The entire string should now be built, return it
         return s
+
 
     # What color should the number be based on the heat?
     def calculate_color(self):
@@ -146,5 +139,5 @@ class CraneLeagueHeatDisplay:
         self.modifiers_desc.setFrameColor(self.calculate_color())
 
     def cleanup(self):
-        self.frame.destroy()
+        self.frame.cleanup()
         self.modifiers_desc_path.removeNode()

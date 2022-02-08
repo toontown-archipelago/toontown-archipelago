@@ -1363,8 +1363,14 @@ struct CraneLeagueRuleset {
   int16/100 COMBO_DURATION;
 };
 
+struct CraneLeagueModifier {
+  int32 ENUM;
+  int32 TIER;
+};
+
 dclass DistributedCashbotBoss : DistributedBossCog {
   setRawRuleset(CraneLeagueRuleset) required broadcast ram;
+  setModifiers(CraneLeagueModifier[]) broadcast ram;
   setState(string) broadcast ram;
   setBossDamage(uint16) broadcast ram;
   setCraneSpawn(bool, uint8, uint32) broadcast ram;
