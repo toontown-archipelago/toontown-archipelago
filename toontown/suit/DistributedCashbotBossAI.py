@@ -25,6 +25,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         DistributedBossCogAI.DistributedBossCogAI.__init__(self, air, 'm')
         FSM.FSM.__init__(self, 'DistributedCashbotBossAI')
         self.ruleset = CraneLeagueGlobals.CFORuleset()
+        self.rulesetFallback = self.ruleset  # A fallback ruleset for when we rcr, or change mods mid round
+        self.modifiers = []  # A list of CFORulesetModifierBase instances
         self.cranes = None
         self.safes = None
         self.goons = None
@@ -64,11 +66,58 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         print('updating ruleset: ' + str(self.getRawRuleset()))
         self.sendUpdate('setRawRuleset', [self.getRawRuleset()])
 
+    def __getRawModifierList(self):
+        mods = []
+        for modifier in self.modifiers:
+            mods.append(modifier.asStruct())
+
+        return mods
+
+    def d_setModifiers(self):
+        self.sendUpdate('setModifiers', [self.__getRawModifierList()])
+
+    # Call to update the ruleset with the modifiers active, note calling more than once can cause unexpected behavior
+    # if the ruleset doesn't fallback to an initial value, for example if a cfo hp increasing modifier is active and we
+    # call this multiply times, his hp will be 1500 * 1.5 * 1.5 * 1.5 etc etc
+    def applyModifiers(self, updateClient=False):
+        for modifier in self.modifiers:
+            modifier.apply(self.ruleset)
+
+        if updateClient:
+            self.d_setRawRuleset()
+
+    # Clears all current modifiers and restores the ruleset before modifiers were applied
+    def resetModifiers(self):
+        self.modifiers = []
+        self.ruleset = self.rulesetFallback
+        self.d_setRawRuleset()
+
     def getRawRuleset(self):
         return self.ruleset.asStruct()
 
     def getRuleset(self):
         return self.ruleset
+
+    def setupRuleset(self):
+        self.ruleset = CraneLeagueGlobals.CFORuleset()
+        self.rulesetFallback = self.ruleset
+
+        # this section is debug
+        pool = [CraneLeagueGlobals.ModifierComboShortener(random.randint(1, 3)),
+                CraneLeagueGlobals.ModifierComboExtender(random.randint(1, 3)),
+                CraneLeagueGlobals.ModifierCFOHPDecreaser(random.randint(1, 3)),
+                CraneLeagueGlobals.ModifierCFOHPIncreaser(random.randint(1, 3)),
+                CraneLeagueGlobals.ModifierExample()]
+        random.shuffle(pool)
+        r = random.randint(0, len(pool)-1)
+        self.modifiers = [pool.pop() for x in range(r)]
+        self.applyModifiers()
+        # end debug
+
+        # Update the client
+        self.d_setRawRuleset()
+        self.d_setModifiers()
+
 
     def generate(self):
         DistributedBossCogAI.DistributedBossCogAI.generate(self)
@@ -542,6 +591,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.ignoreBarrier(self.barrier)
 
     def enterBattleThree(self):
+
+        self.setupRuleset()
+
         if self.attackCode == ToontownGlobals.BossCogDizzy or self.attackCode == ToontownGlobals.BossCogDizzyNow:
             self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
         self.setPosHpr(*ToontownGlobals.CashbotBossBattleThreePosHpr)

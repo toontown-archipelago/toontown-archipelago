@@ -216,6 +216,7 @@ class CFORuleset:
         return repr(self.__dict__)
 
 
+# Some other default rulesets to choose from
 class SemiFinalsCFORuleset(CFORuleset):
 
     def __init__(self):
@@ -230,3 +231,231 @@ class FinalsCFORuleset(CFORuleset):
         CFORuleset.__init__(self)
         self.TIMER_MODE_TIME_LIMIT = 60*15
         self.CFO_MAX_HP = 3000
+
+
+# This is where we define modifiers, all modifiers alter a ruleset instance in some way to tweak cfo behavior
+# dynamically, first the base class that any modifiers should extend from
+class CFORulesetModifierBase(object):
+
+    # This should also be overridden, used so that the client knows which class to use when instantiating modifiers
+    MODIFIER_ENUM = -1
+
+    # Maps the above modifier enums to the classes that extend this one
+    MODIFIER_SUBCLASSES = {}
+
+    # Some colors to use for titles and percentages etc
+    DARK_RED = (230.0/255.0, 20/255.0, 20/255.0, 1)
+    RED = (255.0/255.0, 85.0/255.0, 85.0/255.0, 1)
+
+    DARK_GREEN = (0, 180/255.0, 0, 1)
+    GREEN = (85.0/255.0, 255.0/255.0, 85.0/255.0, 1)
+
+    DARK_PURPLE = (170.0/255.0, 0, 170.0/255.0, 1)
+    PURPLE = (255.0/255.0, 85.0/255.0, 255.0/255.0, 1)
+
+    DARK_CYAN = (0, 0, 170.0 / 170.0, 1)
+    CYAN = (85.0 / 255.0, 255.0 / 255.0, 255.0 / 255.0, 1)
+
+    # The color that should be used for the title of this modifier
+    TITLE_COLOR = DARK_GREEN
+    # The color of the alternate color in the description, eg cfo has '+50%' more hp
+    DESCRIPTION_COLOR = GREEN
+
+    # Tier represents modifiers that have multiple tiers to them, like tier 3 modifiers giving cfo +100% hp instead of
+    # +50% in tier 1
+    def __init__(self, tier=1):
+        self.tier = tier
+
+    # Copied from google bc cba
+    @staticmethod
+    def numToRoman(n):
+        NUM = [1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000]
+        SYM = ["I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M"]
+        i = 12
+
+        romanString = ''
+
+        while n:
+            div = n // NUM[i]
+            n %= NUM[i]
+
+            while div:
+                romanString += SYM[i]
+                div -= 1
+            i -= 1
+        return romanString
+
+    # lazy method to translate ints to percentages since i think percents are cleaner to display
+    @staticmethod
+    def additivePercent(n):
+        return 1.0 + n / 100.0
+
+    # lazy method to translate ints to percentages since i think percents are cleaner to display
+    @staticmethod
+    def subtractivePercent(n):
+        return 1.0 - n / 100.0
+
+    # The name of this modifier to display to the client
+    def getName(self):
+        raise NotImplementedError('Please override the getName method from the parent class!')
+
+    # The description of this modifier to display to the client
+    def getDescription(self):
+        raise NotImplementedError('Please override the getName method from the parent class!')
+
+    # Returns an integer to change the total 'heat' of the cfo based on this modifier, heat is an arbitrary measurement
+    # of difficulty of a cfo round based on modifiers applied
+    def getHeat(self):
+        raise NotImplementedError("Please override the getHeat method from the parent class!")
+
+    # This method is called to apply this modifiers effect to a CFORuleset instance
+    def apply(self, cfoRuleset):
+        raise NotImplementedError('Please override the apply method from the parent class!')
+
+    # Same as ruleset, used to send to the client in an astron friendly way
+    def asStruct(self):
+        return [
+            self.MODIFIER_ENUM,
+            self.tier
+        ]
+
+    # Used to construct modifier instances when received from astron using the asStruct method
+    @classmethod
+    def fromStruct(cls, attrs):
+        # Extract the info from the list
+        modifierEnum, tier = attrs
+        # Check if the enum isn't garbage
+        if modifierEnum not in cls.MODIFIER_SUBCLASSES:
+            raise Exception('Invalid modifier %s given from astron' % modifierEnum)
+
+        # Extract the registered constructor and instantiate a modifier instance
+        cls_constructor = cls.MODIFIER_SUBCLASSES[modifierEnum]
+        modifier = cls_constructor(tier)
+        return modifier
+
+
+# An example implementation of a modifier, can be copied and modified
+class ModifierExample(CFORulesetModifierBase):
+
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 69
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_PURPLE
+    DESCRIPTION_COLOR = CFORulesetModifierBase.PURPLE
+
+    def getName(self):
+        return 'Funny Number'
+
+    def getDescription(self):
+        return "This modifier sets the CFO's hp to %(color_start)s69%(color_end)s"
+
+    def getHeat(self):
+        return 69
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.CFO_MAX_HP = 69  # Give the cfo 69 hp
+
+
+# Now here is where we can actually define our modifiers
+class ModifierComboExtender(CFORulesetModifierBase):
+
+    MODIFIER_ENUM = 0
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+
+    # The combo percentage increase per tier
+    COMBO_DURATION_PER_TIER = [0, 50, 100, 200]
+
+    def getName(self):
+        return 'Chains of Finesse %s' % self.numToRoman(self.tier)
+
+    def getDescription(self):
+        perc = self.COMBO_DURATION_PER_TIER[self.tier]
+        return 'Increases combo length by %(color_start)s+' + str(perc) + '%%%(color_end)s'
+
+    def getHeat(self):
+        return -10 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.COMBO_DURATION *= self.additivePercent(self.COMBO_DURATION_PER_TIER[self.tier])
+
+
+class ModifierComboShortener(CFORulesetModifierBase):
+
+    MODIFIER_ENUM = 1
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+
+    # The combo percentage increase per tier
+    COMBO_DURATION_PER_TIER = [0, 30, 50, 75]
+
+    def getName(self):
+        return 'Chain Locker %s' % self.numToRoman(self.tier)
+
+    def getDescription(self):
+        perc = self.COMBO_DURATION_PER_TIER[self.tier]
+        return 'Decreases combo length by %(color_start)s-' + str(perc) + '%%%(color_end)s'
+
+    def getHeat(self):
+        return 10 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.COMBO_DURATION *= self.subtractivePercent(self.COMBO_DURATION_PER_TIER[self.tier])
+
+
+# Now here is where we can actually define our modifiers
+class ModifierCFOHPIncreaser(CFORulesetModifierBase):
+
+    MODIFIER_ENUM = 2
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.DARK_GREEN
+
+    # The combo percentage increase per tier
+    CFO_INCREASE_PER_TIER = [0, 25, 50, 100]
+
+    def getName(self):
+        return 'Financial Aid %s' % self.numToRoman(self.tier)
+
+    def getDescription(self):
+        perc = self.CFO_INCREASE_PER_TIER[self.tier]
+        return 'The CFO has %(color_start)s+' + str(perc) + '%%%(color_end)s more HP'
+
+    def getHeat(self):
+        return 200 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.CFO_MAX_HP *= self.additivePercent(self.CFO_INCREASE_PER_TIER[self.tier])
+
+
+# Now here is where we can actually define our modifiers
+class ModifierCFOHPDecreaser(CFORulesetModifierBase):
+
+    MODIFIER_ENUM = 3
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+
+    # The combo percentage increase per tier
+    CFO_DECREASE_PER_TIER = [0, 20, 35, 50]
+
+    def getName(self):
+        return 'Financial Drain %s' % self.numToRoman(self.tier)
+
+    def getDescription(self):
+        perc = self.CFO_DECREASE_PER_TIER[self.tier]
+        return 'The CFO has %(color_start)s-' + str(perc) + '%%%(color_end)s less HP'
+
+    def getHeat(self):
+        return -50 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.CFO_MAX_HP *= self.subtractivePercent(self.CFO_DECREASE_PER_TIER[self.tier])
+
+
+# Any implemented subclasses of CFORulesetModifierBase cannot go past this point
+# Loop through all the classes that extend the base modifier class and map an enum to the class for easier construction
+for subclass in CFORulesetModifierBase.__subclasses__():
+    CFORulesetModifierBase.MODIFIER_SUBCLASSES[subclass.MODIFIER_ENUM] = subclass
