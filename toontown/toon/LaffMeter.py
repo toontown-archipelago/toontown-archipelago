@@ -210,6 +210,10 @@ class LaffMeter(DirectFrame):
         return
 
     def startFlash(self):
+
+        if not self.av:
+            return
+
         self.stopFlash()
         self.flashName = self.av.uniqueName('laffMeterFlash')
         self.flashIval = ToontownIntervals.getFlashIval(self, self.flashName)
