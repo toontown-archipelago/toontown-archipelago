@@ -63,7 +63,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     # Any time you change the ruleset, you should call this to sync the clients
     def d_setRawRuleset(self):
-        print('updating ruleset: ' + str(self.getRawRuleset()))
         self.sendUpdate('setRawRuleset', [self.getRawRuleset()])
 
     def __getRawModifierList(self):
@@ -577,6 +576,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.__deleteBattleThreeObjects()
 
     def enterPrepareBattleThree(self):
+        self.setupRuleset()
         self.resetBattles()
         self.__makeBattleThreeObjects()
         self.__resetBattleThreeObjects()
@@ -591,8 +591,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.ignoreBarrier(self.barrier)
 
     def enterBattleThree(self):
-
-        self.setupRuleset()
 
         if self.attackCode == ToontownGlobals.BossCogDizzy or self.attackCode == ToontownGlobals.BossCogDizzyNow:
             self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
