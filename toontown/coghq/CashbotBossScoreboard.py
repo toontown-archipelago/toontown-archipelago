@@ -3,6 +3,7 @@ from datetime import datetime
 from direct.gui.DirectGui import *
 from panda3d.core import *
 
+from direct.showbase.DirectObject import DirectObject
 from toontown.coghq import CraneLeagueGlobals
 from toontown.suit.Suit import *
 from direct.task.Task import Task
@@ -111,7 +112,8 @@ def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
         Func(cleanup)
     ).start()
 
-class CashbotBossScoreboardToonRow:
+
+class CashbotBossScoreboardToonRow(DirectObject):
 
     INSTANCES = []
 
@@ -187,17 +189,37 @@ class CashbotBossScoreboardToonRow:
             localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
             base.localAvatar.startUpdateSmartCamera()
             self.isBeingSpectated = False
+            # Not spectating anymore, no need to watch for crane events any more
+            self.ignore('crane-enter-exit')
             return
 
+        # Check all the cranes
+        crane = None
+        for c in base.boss.cranes.values():
+            # Our toon is on a crane
+            if c.avId == self.avId:
+                crane = c
+                break
+
         # Spectate them
+        self.__change_camera_angle(t, crane)
+        self.isBeingSpectated = True
+
+        # Listen for when the toon hops on/off the crane
+        self.accept('crane-enter-exit', self.__change_camera_angle)
+
+    def __change_camera_angle(self, toon, crane, _=None):
         base.localAvatar.stopUpdateSmartCamera()
         base.camera.reparentTo(render)
-        base.camera.reparentTo(t)
-        base.camera.setY(base.camera.getY()-6)
-        base.camera.setZ(6)
-        print(base.camera.getPos())
-        base.camera.setP(-10)
-        self.isBeingSpectated = True
+        # if crane is not None, then parent the camera to the crane, otherwise the toon
+        if not crane:
+            base.camera.reparentTo(toon)
+            base.camera.setY(-12)
+            base.camera.setZ(5)
+            base.camera.setP(-5)
+        else:
+            base.camera.reparentTo(crane.hinge)
+            camera.setPosHpr(0, -20, -5, 0, -20, 0)
 
     def getYFromPlaceOffset(self, y):
         return y - (self.PLACE_Y_OFFSET*self.place)
