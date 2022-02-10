@@ -139,5 +139,5 @@ class CraneLeagueHeatDisplay:
         self.modifiers_desc.setFrameColor(self.calculate_color())
 
     def cleanup(self):
-        self.frame.cleanup()
+        self.frame.destroy()
         self.modifiers_desc_path.removeNode()

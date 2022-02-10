@@ -113,6 +113,8 @@ def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
 
 class CashbotBossScoreboardToonRow:
 
+    INSTANCES = []
+
     FIRST_PLACE_HEAD_X = -.28
     FIRST_PLACE_HEAD_Y = LABEL_Y_POS-.15
     FIRST_PLACE_TEXT_X = 0
@@ -121,17 +123,35 @@ class CashbotBossScoreboardToonRow:
 
     PLACE_Y_OFFSET = .15
 
+    # Called when a button on a row is clicked, instance is the actual instance that clicked this
+    @classmethod
+    def _clicked(cls, instance, _=None):
 
+        # Loop through all instances
+        for ins in cls.INSTANCES:
+            # Skip the instance that clicked
+            if ins is instance:
+                continue
+
+            # Another thing was clicked, force spectate to be false
+            ins.isBeingSpectated = False
+
+        # Spec
+        instance.__attempt_spectate()
 
     def __init__(self, scoreboard_frame, avId, place=0):
+
+        self.INSTANCES.append(self)
 
         # 0 based index based on what place they are in, y should be adjusted downwards
         self.place = place
         self.avId = avId
         self.points = 0
-
-        self.toon_head = self.createToonHead(avId)
         self.frame = DirectFrame(parent=scoreboard_frame)
+        self.toon_head = self.createToonHead(avId)
+        self.toon_head_button = DirectButton(parent=self.frame, pos=(self.FIRST_PLACE_HEAD_X, 0, .035), scale=.6, command=CashbotBossScoreboardToonRow._clicked, extraArgs=[self])
+        self.toon_head_button.setTransparency(TransparencyAttrib.MAlpha)
+        self.toon_head_button.setColorScale(1, 1, 1, 0)
         self.frame.setX(-1.30)
         self.frame.setZ(self.getYFromPlaceOffset(self.FRAME_Y_FIRST_PLACE))
         self.toon_head.reparentTo(self.frame)
@@ -147,6 +167,36 @@ class CashbotBossScoreboardToonRow:
             self.points_text.setColorScale(*GOLD)
 
         self.sadSecondsLeft = base.boss.ruleset.REVIVE_TOONS_TIME
+
+        self.isBeingSpectated = False
+
+    def __attempt_spectate(self):
+        # Is the toon spectating?
+        if not base.boss.localToonSpectating:
+            return
+
+        # Toon exists?
+        t = base.cr.doId2do.get(self.avId)
+        if not t:
+            return
+
+        # Already spectating?
+        if self.isBeingSpectated:
+            localAvatar.attachCamera()
+            localAvatar.orbitalCamera.start()
+            localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
+            base.localAvatar.startUpdateSmartCamera()
+            self.isBeingSpectated = False
+            return
+
+        # Spectate them
+        base.localAvatar.stopUpdateSmartCamera()
+        base.camera.reparentTo(render)
+        base.camera.reparentTo(t)
+        base.camera.setZ(5)
+        print(base.camera.getPos())
+        base.camera.setP(-10)
+        self.isBeingSpectated = True
 
     def getYFromPlaceOffset(self, y):
         return y - (self.PLACE_Y_OFFSET*self.place)
@@ -204,6 +254,9 @@ class CashbotBossScoreboardToonRow:
         taskMgr.remove('sadtimer-' + str(self.avId))
         self.sad_text.cleanup()
         del self.sad_text
+        self.toon_head_button.destroy()
+        del self.toon_head_button
+        self.INSTANCES.remove(self)
 
     def show(self):
         self.points_text.show()

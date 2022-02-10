@@ -52,7 +52,43 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.safesWanted = 5
         self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
         self.toonsWon = False
+
+        # A list of toon ids that are spectating
+        self.spectators = []
         return
+
+    def getInvolvedToonsNotSpectating(self):
+        toons = list(self.involvedToons)
+        for s in self.spectators:
+            if s in toons:
+                toons.remove(s)
+
+        return toons
+
+    # Put a toon in the required state to be a spectator
+    def enableSpectator(self, av):
+        print('before')
+        print(self.spectators)
+        if av.doId not in self.spectators:
+            self.spectators.append(av.doId)
+            av.b_setGhostMode(True)
+            av.b_setImmortalMode(True)
+            self.d_updateSpectators()
+
+        print()
+        print('after')
+        print(self.spectators)
+
+    # Put a toon in the required state to be participant
+    def disableSpectator(self, av):
+        if av.doId in self.spectators:
+            self.spectators.remove(av.doId)
+            av.b_setGhostMode(False)
+            av.b_setImmortalMode(False)
+            self.d_updateSpectators()
+
+    def d_updateSpectators(self):
+        self.sendUpdate('updateSpectators', [self.spectators])
 
     def progressValue(self, fromValue, toValue):
         t0 = float(self.bossDamage) / float(self.ruleset.CFO_MAX_HP)
@@ -246,7 +282,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # Check if we ran out of targets, if so reset the list back to everyone involved
         if len(self.toonsToAttack) <= 0:
-            self.toonsToAttack = self.involvedToons[:]
+            self.toonsToAttack = self.getInvolvedToonsNotSpectating()
             # Shuffle the toons if we want random gear throws
             if self.ruleset.RANDOM_GEAR_THROW_ORDER:
                 random.shuffle(self.toonsToAttack)
@@ -490,7 +526,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def recordHit(self, damage, impact=0, craneId=-1):
         avId = self.air.getAvatarIdFromSender()
         crane = simbase.air.doId2do.get(craneId)
-        if not self.validate(avId, avId in self.involvedToons, 'recordHit from unknown avatar'):
+        if not self.validate(avId, avId in self.getInvolvedToonsNotSpectating(), 'recordHit from unknown avatar'):
             return
 
         if self.state != 'BattleThree':
@@ -580,6 +616,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.resetBattles()
         self.__makeBattleThreeObjects()
         self.__resetBattleThreeObjects()
+        self.d_updateSpectators()
         self.barrier = self.beginBarrier('PrepareBattleThree', self.involvedToons, 55, self.__donePrepareBattleThree)
 
     def __donePrepareBattleThree(self, avIds):
@@ -598,7 +635,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.__makeBattleThreeObjects()
         self.__resetBattleThreeObjects()
         self.reportToonHealth()
-        self.toonsToAttack = self.involvedToons[:]
+        self.toonsToAttack = self.getInvolvedToonsNotSpectating()
         if self.ruleset.RANDOM_GEAR_THROW_ORDER:
             random.shuffle(self.toonsToAttack)
         self.b_setBossDamage(0)
@@ -622,7 +659,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             comboTracker.cleanup()
 
         # heal all toons and setup a combo tracker for them
-        for avId in self.involvedToons:
+        for avId in self.getInvolvedToonsNotSpectating():
             if avId in self.air.doId2do:
                 self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
                 av = self.air.doId2do[avId]
@@ -644,7 +681,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
     def __timesUp(self, task=None):
         self.__donHelmet(None)
-        for avId in self.involvedToons:
+        for avId in self.getInvolvedToonsNotSpectating():
             av = self.air.doId2do.get(avId)
             if av:
                 av.takeDamage(av.getMaxHp())
@@ -688,7 +725,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def enterVictory(self):
 
         # Restore old max HPs
-        for avId in self.involvedToons:
+        for avId in self.getInvolvedToonsNotSpectating():
             av = self.air.doId2do.get(avId)
             if av and avId in self.oldMaxLaffs:
                 av.b_setMaxHp(self.oldMaxLaffs[avId])
@@ -813,13 +850,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             ct.resetCombo()
 
         # If we want to revive toons, revive this toon later and don't do anything else past this point
-        if self.ruleset.REVIVE_TOONS_UPON_DEATH and toon.doId in self.involvedToons:
+        if self.ruleset.REVIVE_TOONS_UPON_DEATH and toon.doId in self.getInvolvedToonsNotSpectating():
             self.__reviveToonLater(toon)
             return
 
         # have all toons involved died?
         aliveToons = 0
-        for toonId in self.involvedToons:
+        for toonId in self.getInvolvedToonsNotSpectating():
             toon = self.air.doId2do.get(toonId)
             if toon and toon.getHp() > 0:
                 aliveToons += 1

@@ -54,7 +54,40 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.modifiers = []
         self.heatDisplay = CraneLeagueHeatDisplay()
         self.heatDisplay.hide()
+        self.spectators = []
+        self.localToonSpectating = False
         return
+
+    def updateSpectators(self, specs):
+        self.spectators = specs
+        if not self.localToonSpectating and localAvatar.doId in self.spectators:
+            self.setLocalToonSpectating()
+        elif self.localToonSpectating and localAvatar.doId not in self.spectators:
+            self.disableLocalToonSpectating()
+
+        for toonId in self.involvedToons:
+            t = base.cr.doId2do.get(toonId)
+            if t:
+                if toonId in self.spectators:
+                    t.hide()
+                elif toonId in self.getInvolvedToonsNotSpectating():
+                    t.show()
+
+    def setLocalToonSpectating(self):
+        self.localToonSpectating = True
+        self.localToonIsSafe = True
+
+    def disableLocalToonSpectating(self):
+        self.localToonSpectating = False
+        self.localToonIsSafe = False
+
+    def getInvolvedToonsNotSpectating(self):
+        toons = list(self.involvedToons)
+        for s in self.spectators:
+            if s in toons:
+                toons.remove(s)
+
+        return toons
 
     def announceGenerate(self):
         DistributedBossCog.DistributedBossCog.announceGenerate(self)
@@ -528,7 +561,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             Func(self.__hideFakeGoons),
             Func(crane.request, 'Free'),
             Func(self.getGeomNode().setH, 0),
-            self.moveToonsToBattleThreePos(self.involvedToons),
+            self.moveToonsToBattleThreePos(self.getInvolvedToonsNotSpectating()),
             Func(self.__showToons))
         return Sequence(Func(camera.reparentTo, self), Func(camera.setPosHpr, 0, -27, 25, 0, -18, 0), track)
 
@@ -696,13 +729,25 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         return Task.cont
 
     def __hideToons(self):
-        for toonId in self.involvedToons:
+        for toonId in self.getInvolvedToonsNotSpectating():
             toon = self.cr.doId2do.get(toonId)
             if toon:
                 toon.hide()
 
+    def __hideSpectators(self):
+        for s in self.spectators:
+            toon = self.cr.doId2do.get(s)
+            if toon:
+                toon.hide()
+
+    def __showSpectators(self):
+        for s in self.spectators:
+            toon = self.cr.doId2do.get(s)
+            if toon:
+                toon.show()
+
     def __showToons(self):
-        for toonId in self.involvedToons:
+        for toonId in self.getInvolvedToonsNotSpectating():
             toon = self.cr.doId2do.get(toonId)
             if toon:
                 toon.show()
@@ -791,6 +836,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         DistributedBossCog.DistributedBossCog.exitBattleOne(self)
 
     def enterPrepareBattleThree(self):
+        self.__hideSpectators()
         self.controlToons()
         NametagGlobals.setMasterArrowsOn(0)
         intervalName = 'PrepareBattleThreeMovie'
@@ -855,11 +901,11 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.heatDisplay.update(self.calculateHeat(), self.modifiers)
         self.heatDisplay.show()
 
-        self.localToonIsSafe = 0 if base.localAvatar.doId in self.involvedToons else 1
+        self.localToonIsSafe = 0 if base.localAvatar.doId in self.getInvolvedToonsNotSpectating() else 1
 
         # Setup the scoreboard
         self.scoreboard.clearToons()
-        for avId in self.involvedToons:
+        for avId in self.getInvolvedToonsNotSpectating():
             if avId in base.cr.doId2do:
                 self.scoreboard.addToon(avId)
 
@@ -902,6 +948,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         if self.oldState != 'BattleThree':
             base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
         self.bossSpeedrunTimer.stop_updating()
+        self.__showSpectators()
 
     def __continueVictory(self):
         self.doneBarrier('Victory')
@@ -925,7 +972,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.controlToons()
         panelName = self.uniqueName('reward')
         self.rewardPanel = RewardPanel.RewardPanel(panelName)
-        victory, camVictory, skipper = MovieToonVictory.doToonVictory(1, self.involvedToons, self.toonRewardIds, self.toonRewardDicts, self.deathList, self.rewardPanel, allowGroupShot=0, uberList=self.uberList, noSkip=True)
+        victory, camVictory, skipper = MovieToonVictory.doToonVictory(1, self.getInvolvedToonsNotSpectating(), self.toonRewardIds, self.toonRewardDicts, self.deathList, self.rewardPanel, allowGroupShot=0, uberList=self.uberList, noSkip=True)
         ival = Sequence(Parallel(victory, camVictory), Func(self.__doneReward))
         intervalName = 'RewardMovie'
         delayDeletes = []
@@ -1093,7 +1140,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         restartingOrEnding = 'Restarting ' if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL else 'Ending '
 
 
-        for avId in self.involvedToons:
+        for avId in self.getInvolvedToonsNotSpectating():
             av = base.cr.doId2do.get(avId)
             if av:
                 if avId == base.localAvatar.doId:
