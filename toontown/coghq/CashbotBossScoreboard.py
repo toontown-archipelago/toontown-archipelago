@@ -193,7 +193,8 @@ class CashbotBossScoreboardToonRow:
         base.localAvatar.stopUpdateSmartCamera()
         base.camera.reparentTo(render)
         base.camera.reparentTo(t)
-        base.camera.setZ(5)
+        base.camera.setY(base.camera.getY()-6)
+        base.camera.setZ(6)
         print(base.camera.getPos())
         base.camera.setP(-10)
         self.isBeingSpectated = True
