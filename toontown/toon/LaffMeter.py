@@ -285,6 +285,7 @@ class LaffMeter(DirectFrame):
             self.adjustFace(self.hp, self.maxHp, 1)
             if self.av:
                 self.accept(self.av.uniqueName('hpChange'), self.adjustFace)
+                self.accept('uberThreshold', self.setFlashThreshold)
 
     def stop(self):
         if self.isToon:

@@ -901,6 +901,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.heatDisplay.update(self.calculateHeat(), self.modifiers)
         self.heatDisplay.show()
 
+        # Make all laff meters blink when in uber mode
+        messenger.send('uberThreshold', [self.ruleset.LOW_LAFF_BONUS_THRESHOLD])
+
         self.localToonIsSafe = 0 if base.localAvatar.doId in self.getInvolvedToonsNotSpectating() else 1
 
         # Setup the scoreboard

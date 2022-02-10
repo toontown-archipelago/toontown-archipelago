@@ -4,6 +4,7 @@ from direct.gui.DirectGui import *
 from panda3d.core import *
 
 from toontown.coghq import CraneLeagueGlobals
+from toontown.toonbase import ToontownGlobals
 
 LOWEST_HEAT_H_VALUE = 80
 HIGHEST_HEAT_H_VALUE = 0
@@ -19,8 +20,8 @@ HIGHEST_HEAT = 1000
 
 class CraneLeagueHeatDisplay:
 
-    FLAME_POS = (-.48, 0, .58)
-    HEAT_NUM_POS = (-.43, .55)
+    FLAME_POS = (-.48, 0, .74)
+    HEAT_NUM_POS = (-.43, .72)
     MODIFIERS_TEXT_POS = (-.6, 0, .35)
 
     # TextProperties shit to make life easier
@@ -36,9 +37,9 @@ class CraneLeagueHeatDisplay:
         self.flame_image = OnscreenImage(parent=self.frame, image='phase_10/maps/heat.png', pos=self.FLAME_POS, scale=.05)
         self.flame_image.setTransparency(TransparencyAttrib.MAlpha)
 
-        self.heat_number = OnscreenText(parent=self.frame, text='500', style=3, fg=self.calculate_color(), align=TextNode.ALeft, scale=.1, pos=self.HEAT_NUM_POS)
+        self.heat_number = OnscreenText(parent=self.frame, text='500', style=3, fg=self.calculate_color(), align=TextNode.ALeft, scale=.1, pos=self.HEAT_NUM_POS, font=ToontownGlobals.getSuitFont())
 
-        self.hover_button = DirectButton(parent=self.frame, pos=(-.38, 0, .58), scale=(1.5, 1, .5))
+        self.hover_button = DirectButton(parent=self.frame, pos=(-.38, 0, .74), scale=(1.5, 1, .5))
         self.hover_button.setTransparency(TransparencyAttrib.MAlpha)
         self.hover_button.setColorScale(1, 1, 1, 0)
 

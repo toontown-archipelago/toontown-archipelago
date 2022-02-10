@@ -136,7 +136,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 CraneLeagueGlobals.ModifierComboExtender(random.randint(1, 3)),
                 CraneLeagueGlobals.ModifierCFOHPDecreaser(random.randint(1, 3)),
                 CraneLeagueGlobals.ModifierCFOHPIncreaser(random.randint(1, 3)),
-                CraneLeagueGlobals.ModifierExample()]
+                CraneLeagueGlobals.ModifierDesafeImpactIncreaser(random.randint(1, 3)),
+                # CraneLeagueGlobals.ModifierExample()
+                ]
         random.shuffle(pool)
         r = random.randint(0, len(pool)-1)
         self.modifiers = [pool.pop() for x in range(r)]

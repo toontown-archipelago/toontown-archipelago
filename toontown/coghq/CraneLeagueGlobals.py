@@ -454,6 +454,34 @@ class ModifierCFOHPDecreaser(CFORulesetModifierBase):
     def apply(self, cfoRuleset):
         cfoRuleset.CFO_MAX_HP *= self.subtractivePercent(self.CFO_DECREASE_PER_TIER[self.tier])
 
+# (-) Strong/Tough/Reinforced Bindings
+# --------------------------------
+# - required impact to desafe increased by 20/40/75%
+# An example implementation of a modifier, can be copied and modified
+class ModifierDesafeImpactIncreaser(CFORulesetModifierBase):
+
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 4
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+
+    TIER_NAMES = ['', 'Strong', 'Tough', 'Reinforced']
+    CFO_IMPACT_INC_PER_TIER = [0, 20, 40, 75]
+
+    def getName(self):
+        return '%s Bindings' % self.TIER_NAMES[self.tier]
+
+    def getDescription(self):
+        perc = self.CFO_IMPACT_INC_PER_TIER[self.tier]
+        return "Increases the impact required to remove the CFO's helmet by %(color_start)s" + str(perc) + "%%%(color_end)s"
+
+    def getHeat(self):
+        return 120 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.MIN_DEHELMET_IMPACT *= self.additivePercent(self.CFO_IMPACT_INC_PER_TIER[self.tier])  # Give the cfo 69 hp
+
 
 # Any implemented subclasses of CFORulesetModifierBase cannot go past this point
 # Loop through all the classes that extend the base modifier class and map an enum to the class for easier construction
