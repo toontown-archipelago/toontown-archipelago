@@ -1,16 +1,18 @@
 from direct.gui.DirectGui import *
 from panda3d.core import *
+
+from otp.otpbase import OTPGlobals
 from toontown.suit.Suit import *
 from direct.task.Task import Task
 from direct.interval.IntervalGlobal import *
 
 class BossHealthBar:
-    bossBarColors = (Vec4(0, 1, 0, 0.8),
-                          Vec4(1, 1, 0, 0.8),
-                          Vec4(1, 0.5, 0, 0.8),
-                          Vec4(1, 0, 0, 0.8),
-                          Vec4(0.3, 0.3, 0.3, 0.8))
-    colorThresholds = (0.65, 0.4, 0.2, 0.1, 0.05)
+    bossBarColors = (Vec4(.1, .8, .1, 0.5),
+                          Vec4(.9, .9, .1, 0.5),
+                          Vec4(.9, 0.3, 0, 0.5),
+                          Vec4(.9, .1, .1, 0.5),
+                          Vec4(0.2, 0.2, 0.2, 0.5))
+    colorThresholds = (0.75, 0.5, 0.25, 0.1, 0.05)
     bossBarStartPosZ = 1.5
     bossBarEndPosZ = 0.88
     bossBarIncrementAmt = 2
@@ -20,9 +22,11 @@ class BossHealthBar:
         self.bossBarFrameBg = loader.loadTexture('phase_9/maps/HealthBarBosses.png')
         self.bossBarFrame = DirectFrame(pos=(1, 0, self.bossBarStartPosZ), scale=1.8*0.8, sortOrder=20)
         self.gui = loader.loadModel('phase_9/models/gui/HealthBarBosses')
+        self.gui.setScale(1, 1, .75)
+        self.gui.setColorScale(.4, .4, .4, 1)
         self.gui.setTexture(self.bossBarFrameBg)
         self.gui.setTransparency(1)
-        self.bossBar = DirectWaitBar(relief=DGG.SUNKEN, scale=(0.197, 0, 0.135), value=100, pos=(-0.005, 0, 0.002), frameSize=(-2.0, 2.0, -0.2, 0.2), borderWidth=(0.02, 0.02), range=100, sortOrder=50, frameColor=(0.5, 0.5, 0.5, 0.6), barColor=(0.75, 0.75, 1.0, 0.7), text='0 / 0', text_scale=(0.3, 0.4), text_fg=(1, 1, 1, 1), text_align=TextNode.ACenter, text_pos=(0, -0.12), text_shadow=(0, 0, 0, 1))
+        self.bossBar = DirectWaitBar(relief=None, scale=(0.195, 0, 0.077), value=100, pos=(-0.005, 0, 0.0015), frameSize=(-2.0, 2.0, -0.2, 0.2), borderWidth=(0.005, 0.005), range=100, sortOrder=50, frameColor=(0.1, 0.1, 0.1, .9), barColor=(0.2, 0.2, .9, 0.7), text='0 / 0', text_scale=(0.14, 0.30), text_fg=(.9, .9, .9, .85), text_align=TextNode.ACenter, text_pos=(0, -0.12), text_shadow=(0, 0, 0, 1), text_font=ToontownGlobals.getMinnieFont())
         self.gui.hide()
         self.bossBar.hide()
         self.gui.reparentTo(self.bossBarFrame)
@@ -56,12 +60,12 @@ class BossHealthBar:
         self.__checkUpdateColor(hp, maxhp)
         self.bossBar.show()
         self.gui.show()
-        self.damageDealtText = OnscreenText(parent=self.gui, text='Damage Dealt: ' + str(self.damageDealt), style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=0.05, pos=(-0.4, -0.1))
-        self.stunCountText = OnscreenText(parent=self.gui, text='Stuns: ' + str(self.stunCount), style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=0.05, pos=(-0.4, -0.16))
+        self.damageDealtText = OnscreenText(parent=self.bossBarFrame, text='Damage Dealt: ' + str(self.damageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.42, -0.19))
+        self.stunCountText = OnscreenText(parent=self.bossBarFrame, text='Stuns: ' + str(self.stunCount), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.42, -0.24))
         if self.dept == 'c':
-            self.speedDamageDealtText = OnscreenText(parent=self.gui, text='Golf: ' + str(self.speedDamageDealt), style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=0.05, pos=(-0.4, -0.22))
+            self.speedDamageDealtText = OnscreenText(parent=self.bossBarFrame, text='Golf: ' + str(self.speedDamageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.42, -0.29))
         if self.dept == 'm':
-            self.goonsStompedText = OnscreenText(parent=self.gui, text='Goons Stomped: ' + str(self.speedDamageDealt), style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=0.05, pos=(-0.4, -0.22))
+            self.goonsStompedText = OnscreenText(parent=self.bossBarFrame, text='Goons Stomped: ' + str(self.speedDamageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.42, -0.29))
         Sequence(self.bossBarFrame.posInterval(1.0, Point3(1, 0, self.bossBarEndPosZ), blendType='easeOut')).start()
 
     def update(self, hp, maxHp):
