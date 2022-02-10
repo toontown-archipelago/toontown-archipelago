@@ -1,10 +1,17 @@
-from panda3d.core import Vec4
+import random
+
+from panda3d.core import *
 from direct.gui.DirectGui import DirectFrame, DirectLabel
+from direct.interval.FunctionInterval import Func, Wait
+from direct.interval.MetaInterval import Sequence, Parallel
+from otp.otpbase import OTPGlobals
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownIntervals
 
+
 class LaffMeter(DirectFrame):
     deathColor = Vec4(0.58039216, 0.80392157, 0.34117647, 1.0)
+    flyoutLabelGenerator = TextNode('flyoutLabelGenerator')
 
     def __init__(self, avdna, hp, maxHp):
         DirectFrame.__init__(self, relief=None, sortOrder=50)
@@ -20,7 +27,70 @@ class LaffMeter(DirectFrame):
         else:
             self.isToon = 0
         self.load()
+        self.flashName = None
+        self.flashIval = None
+        self.flashThreshold = 1  # The laff at which the laff meter starts flashing
+        self.overhead = False
         return
+
+    def fixOverhead(self):
+        self.container.setDepthTest(1)
+        self.container.setDepthWrite(1)
+        self.container.setY(.01)
+        self.frown.setY(-.02)
+        self.smile.setY(-.01)
+        self.eyes.setY(-.01)
+        self.openSmile.setY(-.02)
+        self.maxLabel.setY(-.01)
+        self.hpLabel.setY(-.01)
+        for t in self.teeth:
+            t.setY(-.01)
+
+        self.overhead = True
+
+    # Called when we take damage or get laff, makes a number fly out of the meter
+    def makeDeltaNumber(self, delta):
+
+        def cleanup(node):
+            node.removeNode()
+
+        if delta == 0:
+            return
+
+        numString = '+' if delta > 0 else ''
+        numColor = (0, .9, 0, 1) if delta > 0 else (.9, 0, 0, 1)
+        numString += str(delta)
+
+        self.flyoutLabelGenerator.setFont(OTPGlobals.getSignFont())
+        self.flyoutLabelGenerator.setText(numString)
+        self.flyoutLabelGenerator.clearShadow()
+        self.flyoutLabelGenerator.setAlign(TextNode.ACenter)
+        self.flyoutLabelGenerator.setTextColor(numColor)
+        node = self.flyoutLabelGenerator.generate()
+        hptextnode = self.attachNewNode(node)
+        hptextnode.setScale(.1)
+        hptextnode.setBillboardPointEye()
+        if self.overhead:
+            hptextnode.setBin('fixed', 100)
+        ypos = -1.01 + random.random()  # Used to mitigate z fighting
+        hptextnode.setPos(0, ypos, 0)
+        hptextnode.setR(9)
+        xgoal = random.random() + 1.4
+        zgoal = random.random() + 1.4
+        sgoal = 1.4
+        if self.overhead:
+            sgoal *= 1.5
+        Sequence(
+            Parallel(
+                hptextnode.scaleInterval(.2, sgoal),
+                hptextnode.posInterval(1.3, Point3(xgoal, ypos, zgoal), blendType='easeInOut'),
+                hptextnode.colorScaleInterval(1.3, Vec4(numColor[0], numColor[1], numColor[2], 0))
+            ),
+            Func(cleanup, hptextnode)
+        ).start()
+
+    def setFlashThreshold(self, num):
+        self.flashThreshold = num
 
     def obscure(self, obscured):
         self.__obscured = obscured
@@ -69,20 +139,22 @@ class LaffMeter(DirectFrame):
             self.tooth4 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_4'))
             self.tooth5 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_5'))
             self.tooth6 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_6'))
-            self.maxLabel = DirectLabel(parent=self.eyes, relief=None, pos=(0.442, 0, 0.051), text='120', text_scale=0.4, text_font=ToontownGlobals.getInterfaceFont())
-            self.hpLabel = DirectLabel(parent=self.eyes, relief=None, pos=(-0.398, 0, 0.051), text='120', text_scale=0.4, text_font=ToontownGlobals.getInterfaceFont())
+            self.maxLabel = DirectLabel(parent=self.eyes, relief=None, pos=(0.442, 0, 0.051), text='120',
+                                        text_scale=0.4, text_font=ToontownGlobals.getInterfaceFont())
+            self.hpLabel = DirectLabel(parent=self.eyes, relief=None, pos=(-0.398, 0, 0.051), text='120',
+                                       text_scale=0.4, text_font=ToontownGlobals.getInterfaceFont())
             self.teeth = [self.tooth6,
-             self.tooth5,
-             self.tooth4,
-             self.tooth3,
-             self.tooth2,
-             self.tooth1]
+                          self.tooth5,
+                          self.tooth4,
+                          self.tooth3,
+                          self.tooth2,
+                          self.tooth1]
             self.fractions = [0.0,
-             0.166666,
-             0.333333,
-             0.5,
-             0.666666,
-             0.833333]
+                              0.166666,
+                              0.333333,
+                              0.5,
+                              0.666666,
+                              0.833333]
         gui.removeNode()
         return
 
@@ -90,6 +162,7 @@ class LaffMeter(DirectFrame):
         if self.av:
             ToontownIntervals.cleanup(self.av.uniqueName('laffMeterBoing') + '-' + str(self.this))
             ToontownIntervals.cleanup(self.av.uniqueName('laffMeterBoing') + '-' + str(self.this) + '-play')
+            self.stopFlash()
             self.ignore(self.av.uniqueName('hpChange'))
         del self.style
         del self.av
@@ -131,12 +204,28 @@ class LaffMeter(DirectFrame):
         name = self.av.uniqueName('laffMeterBoing') + '-' + str(self.this)
         ToontownIntervals.cleanup(name)
         if delta > 0:
-            ToontownIntervals.start(ToontownIntervals.getPulseLargerIval(self.container, name))
+            ToontownIntervals.start(ToontownIntervals.getPulseLargerIval(self, name))
         else:
-            ToontownIntervals.start(ToontownIntervals.getPulseSmallerIval(self.container, name))
+            ToontownIntervals.start(ToontownIntervals.getPulseSmallerIval(self, name))
         return
 
-    def adjustFace(self, hp, maxHp, quietly = 0):
+    def startFlash(self):
+        self.stopFlash()
+        self.flashName = self.av.uniqueName('laffMeterFlash')
+        self.flashIval = ToontownIntervals.getFlashIval(self, self.flashName)
+        ToontownIntervals.loop(self.flashIval)
+
+    def stopFlash(self):
+        if not self.flashIval:
+            return
+
+        self.flashIval.finish()
+        ToontownIntervals.cleanup(self.flashName)
+        self.flashIval = None
+
+    def adjustFace(self, hp, maxHp, quietly=0):
+
+        self.stopFlash()
         if self.isToon and self.hp != None:
             self.frown.hide()
             self.smile.hide()
@@ -146,6 +235,15 @@ class LaffMeter(DirectFrame):
                 tooth.hide()
 
             delta = hp - self.hp
+            deltaIgnoringNegative = hp - max(0, self.hp)
+            numToShow = deltaIgnoringNegative
+
+            # If laff is negative, and new laff is also negative dont show
+            if hp < 0 and self.hp < 0:
+                numToShow = 0
+
+            self.makeDeltaNumber(numToShow)
+
             self.hp = hp
             self.maxHp = maxHp
             if self.hp < 1:
@@ -165,12 +263,17 @@ class LaffMeter(DirectFrame):
             self.adjustText()
             if not quietly:
                 self.animatedEffect(delta)
+
+            if self.hp <= self.flashThreshold:
+                self.startFlash()
+
         return
 
     def start(self):
         if self.av:
             self.hp = self.av.hp
             self.maxHp = self.av.maxHp
+            # self.flashThreshold = self.av.maxHp * .166666
         if self.isToon:
             if not self.__obscured:
                 self.show()
@@ -188,3 +291,4 @@ class LaffMeter(DirectFrame):
         if self.av:
             self.ignore(self.av.uniqueName('hpChange'))
         self.av = av
+        self.flashName = self.av.uniqueName('laffMeterFlash') + '-' + str(self.this)

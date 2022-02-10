@@ -109,7 +109,7 @@ class DistributedAvatar(DistributedActor, Avatar):
             self.hp = min(max(self.hp, 0) + hpGained, self.maxHp)
         hpGained = self.hp - max(oldHp, 0)
         if hpGained > 0:
-            self.showHpText(hpGained)
+            # self.showHpText(hpGained)  # Commented out since we are using laff meters instead
             self.hpChange(quietly=0)
         return
 
@@ -117,9 +117,9 @@ class DistributedAvatar(DistributedActor, Avatar):
         if self.hp == None or hpLost < 0:
             return
         oldHp = self.hp
-        self.hp = max(self.hp - hpLost, 0)
+        self.hp = self.hp - hpLost
         if hpLost > 0:
-            self.showHpText(-hpLost, bonus)
+            # self.showHpText(-hpLost, bonus)  # Commented out since we are using laff meters instead
             self.hpChange(quietly=0)
             if self.hp <= 0 and oldHp > 0:
                 self.died()
