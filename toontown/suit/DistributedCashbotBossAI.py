@@ -142,6 +142,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         random.shuffle(pool)
         r = random.randint(0, len(pool)-1)
         self.modifiers = [pool.pop() for x in range(r)]
+
+        # Just for play testing purposes, override this to just have the hp increaser
+        self.modifiers = [CraneLeagueGlobals.ModifierCFOHPIncreaser(3)]
+
         self.applyModifiers()
         # end debug
 
