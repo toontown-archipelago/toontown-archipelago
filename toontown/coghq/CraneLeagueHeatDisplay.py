@@ -77,7 +77,7 @@ class CraneLeagueHeatDisplay:
             return "\1default_mod_color\1No modifiers :(\2"
 
         # First the title of the box
-        s = '\1default_mod_color\1Active Modifiers\2\n'
+        s = '\1default_mod_color\1Active Modifiers\2'
 
         # Now loop through all the modifiers, and add the required text
         for mod in modifiers:
@@ -88,7 +88,7 @@ class CraneLeagueHeatDisplay:
             # Define text prop objs
             title_text_properties = TextProperties()
             title_text_properties.setTextColor(mod.TITLE_COLOR)
-            title_text_properties.setTextScale(1.2)
+            title_text_properties.setTextScale(1.35)
             desc_text_properties = TextProperties()
             desc_text_properties.setTextColor(mod.DESCRIPTION_COLOR)
 
@@ -104,7 +104,6 @@ class CraneLeagueHeatDisplay:
 
         # The entire string should now be built, return it
         return s
-
 
     # What color should the number be based on the heat?
     def calculate_color(self):

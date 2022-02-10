@@ -21,7 +21,7 @@ LABEL_Y_POS = .55
 RED = (1, 0, 0, 1)
 GREEN = (0, 1, 0, 1)
 GOLD = (1, 235.0 / 255.0, 165.0 / 255.0, 1)
-WHITE = (1, 1, 1, 1)
+WHITE = (.9, .9, .9, .85)
 CYAN = (0, 1, 240.0 / 255.0, 1)
 
 def doGainAnimation(pointText, amount, reason='', localAvFlag=False):
@@ -299,11 +299,11 @@ class CashbotBossScoreboard:
 
         self.frame = DirectFrame()
 
-        self.toon_text = OnscreenText(parent=self.frame, text='Toon', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=0.1, pos=(-1.7, LABEL_Y_POS))
-        self.pts_text = OnscreenText(parent=self.frame, text='Pts.', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft,
+        self.toon_text = OnscreenText(parent=self.frame, text='Toon', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft, scale=0.1, pos=(-1.7, LABEL_Y_POS))
+        self.pts_text = OnscreenText(parent=self.frame, text='Pts.', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft,
                                       scale=0.1, pos=(-1.4, LABEL_Y_POS))
-        self.h_divider = OnscreenText(parent=self.frame, text='|', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=(.1, .5), pos=(-1.35, .5), roll=90)
-        self.v_divider = OnscreenText(parent=self.frame, text='|', style=3, fg=(1, 1, 1, 1), align=TextNode.ALeft, scale=(.1, 1), pos=(-1.45, -0.1))
+        self.h_divider = OnscreenText(parent=self.frame, text='|', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft, scale=(.1, .5), pos=(-1.35, .5), roll=90)
+        self.v_divider = OnscreenText(parent=self.frame, text='|', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft, scale=(.1, 1), pos=(-1.45, -0.1))
 
         self.rows = {}   # maps avId -> ScoreboardToonRow object
 
