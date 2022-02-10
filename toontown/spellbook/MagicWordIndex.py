@@ -1745,6 +1745,32 @@ class rcr(MagicWord):
         boss.b_setState('BattleThree')
         return "Restarting Crane Round"
 
+class spectate(MagicWord):
+    desc = "Spectates in the crane round"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+
+        if not boss:
+            return "You aren't in a CFO!"
+
+        isSpectating = avId in boss.spectators
+
+        if not isSpectating:
+            boss.enableSpectator(toon)
+        else:
+            boss.disableSpectator(toon)
+
+        return "%s spectator mode for %s" % ('Disabled' if isSpectating else 'Enabled', toon.getName())
+
 class dumpCraneAI(MagicWord):
     desc = "Dumps info about crane on AI side"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER

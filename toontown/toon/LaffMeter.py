@@ -268,7 +268,8 @@ class LaffMeter(DirectFrame):
             if not quietly:
                 self.animatedEffect(delta)
 
-            if self.hp <= self.flashThreshold:
+            # Flash when low hp but not when dead
+            if self.flashThreshold >= self.hp > 0:
                 self.startFlash()
 
         return
