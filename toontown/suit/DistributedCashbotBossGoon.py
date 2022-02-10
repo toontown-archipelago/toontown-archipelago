@@ -131,7 +131,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
 
     def prepareGrab(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.prepareGrab(self)
-        if self.isStunned or self.boss.localToonIsSafe:
+        if self.isStunned:
             self.pose('collapse', 48)
             self.grabPos = (0, 0, self.stunGrabZ * self.scale)
         else:
