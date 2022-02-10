@@ -67,17 +67,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     # Put a toon in the required state to be a spectator
     def enableSpectator(self, av):
-        print('before')
-        print(self.spectators)
         if av.doId not in self.spectators:
             self.spectators.append(av.doId)
             av.b_setGhostMode(True)
             av.b_setImmortalMode(True)
             self.d_updateSpectators()
-
-        print()
-        print('after')
-        print(self.spectators)
 
     # Put a toon in the required state to be participant
     def disableSpectator(self, av):
