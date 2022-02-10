@@ -184,13 +184,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
         # Already spectating?
         if self.isBeingSpectated:
-            localAvatar.attachCamera()
-            localAvatar.orbitalCamera.start()
-            localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
-            base.localAvatar.startUpdateSmartCamera()
-            self.isBeingSpectated = False
-            # Not spectating anymore, no need to watch for crane events any more
-            self.ignore('crane-enter-exit')
+            self.__stop_spectating()
             return
 
         # Check all the cranes
@@ -213,6 +207,12 @@ class CashbotBossScoreboardToonRow(DirectObject):
         base.camera.reparentTo(render)
         # if crane is not None, then parent the camera to the crane, otherwise the toon
         if not crane:
+
+            # Fallback, if toon does not exist then just exit spectate
+            if not toon:
+                self.__stop_spectating()
+                return
+            
             base.camera.reparentTo(toon)
             base.camera.setY(-12)
             base.camera.setZ(5)
@@ -220,6 +220,15 @@ class CashbotBossScoreboardToonRow(DirectObject):
         else:
             base.camera.reparentTo(crane.hinge)
             camera.setPosHpr(0, -20, -5, 0, -20, 0)
+
+    def __stop_spectating(self):
+        localAvatar.attachCamera()
+        localAvatar.orbitalCamera.start()
+        localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
+        base.localAvatar.startUpdateSmartCamera()
+        self.isBeingSpectated = False
+        # Not spectating anymore, no need to watch for crane events any more
+        self.ignore('crane-enter-exit')
 
     def getYFromPlaceOffset(self, y):
         return y - (self.PLACE_Y_OFFSET*self.place)
