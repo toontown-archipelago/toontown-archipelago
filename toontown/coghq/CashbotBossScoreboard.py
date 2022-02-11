@@ -444,9 +444,12 @@ class CashbotBossScoreboard:
         row.combo_text['fg'] = CYAN
         row.combo_text.show()
 
-        Sequence(
-            LerpScaleInterval(row.combo_text, duration=.25, scale=1.07, startScale=1, blendType='easeInOut'),
-            LerpScaleInterval(row.combo_text, duration=.25, startScale=1.07, scale=1, blendType='easeInOut')
+        Parallel(
+            Sequence(
+                LerpScaleInterval(row.combo_text, duration=.25, scale=1.07, startScale=1, blendType='easeInOut'),
+                LerpScaleInterval(row.combo_text, duration=.25, startScale=1.07, scale=1, blendType='easeInOut')
+            ),
+            LerpColorScaleInterval(row.combo_text, duration=base.boss.ruleset.COMBO_DURATION, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1))
         ).start()
 
     def toonDied(self, avId):
