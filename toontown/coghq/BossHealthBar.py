@@ -64,6 +64,7 @@ class BossHealthBar:
         self.maxHp = maxhp
         self.newHp = hp
         self.currHp = hp
+        self.__finishUpdateDrainBar()
         self.bossBar['text'] = ('%s / %s' % (str(hp), str(maxhp)))
         self.bossBar['range'] = maxhp
         self.bossBar['value'] = hp
@@ -99,7 +100,10 @@ class BossHealthBar:
             taskMgr.doMethodLater(2, self.__drainDamageBar, 'drain-damage-bar-task')
 
     def __updateDrainBar(self, value):
-        self.damageBar['value'] = value
+        try:
+            self.damageBar['value'] = value
+        except:
+            pass
 
     def __finishUpdateDrainBar(self, task=None):
         if self.drainIval:
