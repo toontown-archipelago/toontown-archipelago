@@ -29,3 +29,6 @@ class DistributedCashbotBossSideCrane(DistributedCashbotBossCrane.DistributedCas
             return
         else:
             DistributedCashbotBossCrane.DistributedCashbotBossCrane.grabObject(self, obj)
+
+    def getPointsForStun(self):
+        return self.boss.ruleset.POINTS_SIDESTUN

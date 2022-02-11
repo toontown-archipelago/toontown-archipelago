@@ -552,7 +552,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Is the damage high enough to stun? or did a side crane hit a high impact hit?
         if damage >= self.ruleset.CFO_STUN_THRESHOLD or (isinstance(crane, DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI) and impact >= self.ruleset.SIDECRANE_IMPACT_STUN_THRESHOLD):
             self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
-            self.d_updateStunCount(avId)
+            self.d_updateStunCount(avId, craneId)
         else:
             self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
             self.waitForNextHelmet()
@@ -571,8 +571,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def d_updateDamageDealt(self, avId, damageDealt):
         self.sendUpdate('updateDamageDealt', [avId, damageDealt])
 
-    def d_updateStunCount(self, avId):
-        self.sendUpdate('updateStunCount', [avId])
+    def d_updateStunCount(self, avId, craneId):
+        self.sendUpdate('updateStunCount', [avId, craneId])
 
     def d_updateGoonsStomped(self, avId):
         self.sendUpdate('updateGoonsStomped', [avId])
