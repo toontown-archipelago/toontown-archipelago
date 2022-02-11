@@ -1081,9 +1081,11 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossHealthBar.updateDamageDealt(avId, damageDealt)
         self.scoreboard.addScore(avId, damageDealt)
         
-    def updateStunCount(self, avId):
-        self.bossHealthBar.updateStunCount(avId)
-        self.scoreboard.addScore(avId, self.ruleset.POINTS_STUN, CraneLeagueGlobals.STUN_TEXT)
+    def updateStunCount(self, avId, craneId):
+        crane = base.cr.doId2do.get(craneId)
+        if crane:
+            self.bossHealthBar.updateStunCount(avId)
+            self.scoreboard.addScore(avId, crane.getPointsForStun(), CraneLeagueGlobals.STUN_TEXT)
         
     def updateGoonsStomped(self, avId):
         self.bossHealthBar.updateGoonsStomped(avId)

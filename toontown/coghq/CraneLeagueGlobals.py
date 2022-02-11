@@ -135,6 +135,7 @@ class CFORuleset:
         # POINTS SETTINGS
         self.POINTS_GOON_STOMP = 1  # Points per goon stomp
         self.POINTS_STUN = 15  # Points per stun
+        self.POINTS_SIDESTUN = 20  # Points per stun on sidecrane
         self.POINTS_IMPACT = 10  # Points given when a max impact hit is achieved
         self.POINTS_DESAFE = 10  # Points for taking a safe helmet off
         self.POINTS_GOON_KILLED_BY_SAFE = 5  # Points for killing a goon with a safe
@@ -174,6 +175,7 @@ class CFORuleset:
             self.REVIVE_TOONS_TIME,
             self.POINTS_GOON_STOMP,
             self.POINTS_STUN,
+            self.POINTS_SIDESTUN,
             self.POINTS_IMPACT,
             self.POINTS_DESAFE,
             self.POINTS_GOON_KILLED_BY_SAFE,
@@ -202,14 +204,15 @@ class CFORuleset:
         rulesetInstance.REVIVE_TOONS_TIME = attrs[12]
         rulesetInstance.POINTS_GOON_STOMP = attrs[13]
         rulesetInstance.POINTS_STUN = attrs[14]
-        rulesetInstance.POINTS_IMPACT = attrs[15]
-        rulesetInstance.POINTS_DESAFE = attrs[16]
-        rulesetInstance.POINTS_GOON_KILLED_BY_SAFE = attrs[17]
-        rulesetInstance.POINTS_PENALTY_SAFEHEAD = attrs[18]
-        rulesetInstance.POINTS_PENALTY_GO_SAD = attrs[19]
-        rulesetInstance.POINTS_PENALTY_SANDBAG = attrs[20]
-        rulesetInstance.POINTS_PENALTY_UNSTUN = attrs[21]
-        rulesetInstance.COMBO_DURATION = attrs[22]
+        rulesetInstance.POINTS_SIDESTUN = attrs[15]
+        rulesetInstance.POINTS_IMPACT = attrs[16]
+        rulesetInstance.POINTS_DESAFE = attrs[17]
+        rulesetInstance.POINTS_GOON_KILLED_BY_SAFE = attrs[18]
+        rulesetInstance.POINTS_PENALTY_SAFEHEAD = attrs[19]
+        rulesetInstance.POINTS_PENALTY_GO_SAD = attrs[20]
+        rulesetInstance.POINTS_PENALTY_SANDBAG = attrs[21]
+        rulesetInstance.POINTS_PENALTY_UNSTUN = attrs[22]
+        rulesetInstance.COMBO_DURATION = attrs[23]
         return rulesetInstance
 
     def __str__(self):

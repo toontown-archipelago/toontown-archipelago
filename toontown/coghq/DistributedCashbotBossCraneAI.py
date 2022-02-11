@@ -24,6 +24,9 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
     def getDamageMultiplier(self):
         return 1.0
 
+    def getPointsForStun(self):
+        return self.boss.ruleset.POINTS_STUN
+
     def getBossCogId(self):
         return self.boss.doId
 

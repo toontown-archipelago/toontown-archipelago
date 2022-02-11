@@ -1353,6 +1353,7 @@ struct CraneLeagueRuleset {
   int32 REVIVE_TOONS_TIME;
   int32 POINTS_GOON_STOMP;
   int32 POINTS_STUN;
+  int32 POINTS_SIDESTUN;
   int32 POINTS_IMPACT;
   int32 POINTS_DESAFE;
   int32 POINTS_GOON_KILLED_BY_SAFE;
@@ -1378,7 +1379,7 @@ dclass DistributedCashbotBoss : DistributedBossCog {
   setRewardId(uint16) broadcast ram;
   applyReward() airecv clsend;
   updateDamageDealt(uint32 avId, uint16) broadcast ram;
-  updateStunCount(uint32 avId) broadcast ram;
+  updateStunCount(uint32 avId, uint32) broadcast ram;
   updateGoonsStomped(uint32 avId) broadcast ram;
   updateSafePoints(uint32 avId, int32) broadcast ram;
   updateMaxImpactHits(uint32 avId) broadcast ram;

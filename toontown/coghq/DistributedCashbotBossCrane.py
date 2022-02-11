@@ -143,6 +143,9 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.boss = None
         return
 
+    def getPointsForStun(self):
+        return self.boss.ruleset.POINTS_STUN
+
     def accomodateToon(self, toon):
         origScale = self.controlModel.getSz()
         origCcPos = self.cc.getPos()
