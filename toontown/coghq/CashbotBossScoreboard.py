@@ -212,7 +212,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
             if not toon:
                 self.__stop_spectating()
                 return
-            
+
             base.camera.reparentTo(toon)
             base.camera.setY(-12)
             base.camera.setZ(5)
