@@ -44,6 +44,8 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         if self.avoidHelmet or self == self.boss.heldObject:
             return
 
+        self.boss.debug(doId=avId, content='Safe hit with impact=%.2f' % impact)
+
         if impact <= self.getMinImpact():
             self.boss.d_updateLowImpactHits(avId)
             return
