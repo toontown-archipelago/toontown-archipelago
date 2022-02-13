@@ -17,8 +17,8 @@ class BossSpeedrunTimer:
 
     def __init__(self):
 
-        self.frame = DirectFrame(pos=(-0.15, 0, .9))
-        self.time_text = OnscreenText(parent=self.frame, text='0:00.00', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft, scale=0.1)
+        self.frame = DirectFrame(pos=(-0.22, 0, .9))
+        self.time_text = OnscreenText(parent=self.frame, text='00:00.00', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft, scale=0.1)
         self.reset()
         self.overridden_time = None
         self.start_updating()
@@ -45,7 +45,7 @@ class BossSpeedrunTimer:
         min = total_secs // 60
         sec = total_secs % 60
         frac = int((total_secs - int(total_secs)) * 100)
-        new_time = '{:01}:{:02}.{:02}'.format(int(min), int(sec), frac)
+        new_time = '{:02}:{:02}.{:02}'.format(int(min), int(sec), frac)
         self.time_text.setText(new_time)
 
     def override_time(self, secs):
@@ -88,7 +88,7 @@ class BossSpeedrunTimedTimer(BossSpeedrunTimer):
         if self.overridden_time is not None:
             self.time_text['fg'] = (0, .7, 0, 1) if self.overridden_time > 0.0 else (.7, 0, 0, 1)
             if self.overridden_time <= 0.0:
-                self.time_text.setText('0:00.00')
+                self.time_text.setText('00:00.00')
                 return
 
         if total_secs <= 10:
@@ -101,5 +101,5 @@ class BossSpeedrunTimedTimer(BossSpeedrunTimer):
         sec = total_secs % 60
         frac = int((total_secs - int(total_secs)) * 100)
 
-        new_time = '{:01}:{:02}.{:02}'.format(int(min), int(sec), frac)
+        new_time = '{:02}:{:02}.{:02}'.format(int(min), int(sec), frac)
         self.time_text.setText(new_time)
