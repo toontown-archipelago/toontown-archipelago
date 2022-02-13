@@ -56,6 +56,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.heatDisplay.hide()
         self.spectators = []
         self.localToonSpectating = False
+        self.endVault = None
         return
 
     def updateSpectators(self, specs):
@@ -147,6 +148,11 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossSpeedrunTimer = BossSpeedrunTimedTimer(time_limit=self.ruleset.TIMER_MODE_TIME_LIMIT) if self.ruleset.TIMER_MODE else BossSpeedrunTimer()
         self.bossSpeedrunTimer.hide()
         self.heatDisplay.update(self.calculateHeat(), self.modifiers)
+
+        if self.ruleset.WANT_BACKWALL:
+            self.enableBackWall()
+        else:
+            self.disableBackWall()
 
     def setRawRuleset(self, attrs):
         self.ruleset = CraneLeagueGlobals.CFORuleset.fromStruct(attrs)
@@ -254,6 +260,26 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             for goon in self.fakeGoons:
                 goon.request(state)
 
+    def disableBackWall(self):
+        if self.endVault is None:
+            return
+
+        try:
+            cn = self.endVault.find('**/wallsCollision').node()
+            cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask)  # TTCC No Back Wall
+        except:
+            pass
+
+    def enableBackWall(self):
+        if self.endVault is None:
+            return
+
+        try:
+            cn = self.endVault.find('**/wallsCollision').node()
+            cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask | BitMask32.lowerOn(3) << 21) #TTR Back Wall
+        except:
+            pass
+
     def loadEnvironment(self):
         DistributedBossCog.DistributedBossCog.loadEnvironment(self)
         self.midVault = loader.loadModel('phase_10/models/cogHQ/MidVault.bam')
@@ -277,9 +303,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.endVault.findAllMatches('**/MagnetArms').detach()
         self.endVault.findAllMatches('**/Safes').detach()
         self.endVault.findAllMatches('**/MagnetControlsAll').detach()
-        cn = self.endVault.find('**/wallsCollision').node()
-        #cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask | BitMask32.lowerOn(3) << 21) #TTR Back Wall
-        cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask) #TTCC No Back Wall
+        self.disableBackWall()
         self.door1 = self.midVault.find('**/SlidingDoor1/')
         self.door2 = self.midVault.find('**/SlidingDoor/')
         self.door3 = self.endVault.find('**/SlidingDoor/')
@@ -682,7 +706,10 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         if bossDamage > self.bossDamage:
             delta = bossDamage - self.bossDamage
             self.flashRed()
-            self.doAnimate('hit', now=1)
+
+            if self.ruleset.CFO_FLINCHES_ON_HIT or self.dizzy:
+                self.doAnimate('hit', now=1)
+
             self.showHpText(-delta, scale=5)
         self.bossDamage = bossDamage
         self.updateHealthBar()

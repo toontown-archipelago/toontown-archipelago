@@ -62,6 +62,7 @@ class CFORuleset:
         self.CFO_STUN_THRESHOLD = 30  # How much damage should a goon do to stun?
         self.SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 
+        self.WANT_BACKWALL = False
         self.WANT_SIDECRANES = True
         self.WANT_HEAVY_CRANES = True
 
@@ -71,7 +72,11 @@ class CFORuleset:
         self.MIN_SAFE_IMPACT = 0.0  # How much impact should a safe hit need to register?
         self.MIN_DEHELMET_IMPACT = 0.5  # How much impact should a safe hit need to desafe the CFO?
 
+        self.GOON_CFO_DAMAGE_MULTIPLIER = 1.0
+        self.SAFE_CFO_DAMAGE_MULTIPLIER = 1.0
+
         self.RANDOM_GEAR_THROW_ORDER = False  # Should the order in which CFO throw gears at toons be random?
+        self.CFO_FLINCHES_ON_HIT = True  # Should the CFO flinch when being hit?
 
         # A dict that maps attack codes to base damage values from the CFO
         self.CFO_ATTACKS_BASE_DAMAGE = {
@@ -89,13 +94,22 @@ class CFORuleset:
         # GOON/TREASURE SETTINGS
         self.MIN_GOON_DAMAGE = 10  # What is the lowest amount of damage a goon should do? (beginning of CFO)
         self.MAX_GOON_DAMAGE = 50  # What is the highest amount of damage a goon should do? (end of CFO)
+        self.GOON_SPEED_MULTIPLIER = 1.0  # How fast should goons move?
 
         # How many goons should we allow to spawn? This will scale up towards the end of the fight to the 2nd var
         self.MAX_GOON_AMOUNT_START = 8
         self.MAX_GOON_AMOUNT_END = 16
 
+        # Should goons get stunned instead of die on hit?
+        self.SAFES_STUN_GOONS = False
+        # Should ALL cranes wakeup goons when grabbed
+        self.GOONS_ALWAYS_WAKE_WHEN_GRABBED = False
+
         # How many treasures should we allow to spawn?
         self.MAX_TREASURE_AMOUNT = 15
+
+        # Should we have a drop chance?
+        self.GOON_TREASURE_DROP_CHANCE = 1.0
 
         self.REALLY_WEAK_TREASURE_HEAL_AMOUNT = 2  # How much should the treasures from very small goons heal?
         self.WEAK_TREASURE_HEAL_AMOUNT = 5  # How much should the treasures from small goons heal?
@@ -184,6 +198,10 @@ class CFORuleset:
             self.POINTS_PENALTY_SANDBAG,
             self.POINTS_PENALTY_UNSTUN,
             self.COMBO_DURATION,
+            self.WANT_BACKWALL,
+            self.CFO_FLINCHES_ON_HIT,
+            self.SAFES_STUN_GOONS,
+            self.GOONS_ALWAYS_WAKE_WHEN_GRABBED,
         ]
 
     @classmethod
@@ -213,6 +231,10 @@ class CFORuleset:
         rulesetInstance.POINTS_PENALTY_SANDBAG = attrs[21]
         rulesetInstance.POINTS_PENALTY_UNSTUN = attrs[22]
         rulesetInstance.COMBO_DURATION = attrs[23]
+        rulesetInstance.WANT_BACKWALL = attrs[24]
+        rulesetInstance.CFO_FLINCHES_ON_HIT = attrs[25]
+        rulesetInstance.SAFES_STUN_GOONS = attrs[26]
+        rulesetInstance.GOONS_ALWAYS_WAKE_WHEN_GRABBED = attrs[27]
         return rulesetInstance
 
     def __str__(self):
@@ -427,7 +449,7 @@ class ModifierCFOHPIncreaser(CFORulesetModifierBase):
         return 'The CFO has %(color_start)s+' + str(perc) + '%%%(color_end)s more HP'
 
     def getHeat(self):
-        return 200 * self.tier
+        return 100 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.CFO_MAX_HP *= self.additivePercent(self.CFO_INCREASE_PER_TIER[self.tier])
@@ -457,10 +479,10 @@ class ModifierCFOHPDecreaser(CFORulesetModifierBase):
     def apply(self, cfoRuleset):
         cfoRuleset.CFO_MAX_HP *= self.subtractivePercent(self.CFO_DECREASE_PER_TIER[self.tier])
 
+
 # (-) Strong/Tough/Reinforced Bindings
 # --------------------------------
 # - required impact to desafe increased by 20/40/75%
-# An example implementation of a modifier, can be copied and modified
 class ModifierDesafeImpactIncreaser(CFORulesetModifierBase):
 
     # The enum used by astron to know the type
@@ -480,10 +502,448 @@ class ModifierDesafeImpactIncreaser(CFORulesetModifierBase):
         return "Increases the impact required to remove the CFO's helmet by %(color_start)s" + str(perc) + "%%%(color_end)s"
 
     def getHeat(self):
-        return 120 * self.tier
+        return 60 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.MIN_DEHELMET_IMPACT *= self.additivePercent(self.CFO_IMPACT_INC_PER_TIER[self.tier])  # Give the cfo 69 hp
+
+
+# (+) Copper Plating
+# --------------------------------
+# - required general impact decreased by 25%
+class ModifierGeneralImpactDecreaser(CFORulesetModifierBase):
+
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 5
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+
+    PERC_REDUCTION = 25
+
+    def getName(self):
+        return 'Copper Plating'
+
+    def getDescription(self):
+        return "Decreases general impact required by %(color_start)s" + str(self.PERC_REDUCTION) + "%%%(color_end)s for goons and safes"
+
+    def getHeat(self):
+        return -30
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.MIN_DEHELMET_IMPACT *= self.subtractivePercent(self.PERC_REDUCTION)  # reduce min safe impact for helms
+        cfoRuleset.SIDECRANE_IMPACT_STUN_THRESHOLD *= self.subtractivePercent(self.PERC_REDUCTION)  # Reduce sidestun impact
+        cfoRuleset.MIN_GOON_IMPACT *= self.subtractivePercent(self.PERC_REDUCTION)  # Reduce goon impact
+        cfoRuleset.MIN_SAFE_IMPACT *= self.subtractivePercent(self.PERC_REDUCTION)  # Reduce safe impact
+
+
+# (-) Refined Plating
+# --------------------------------
+# - required general impact increased by 25%
+class ModifierGeneralImpactIncreaser(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 6
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+
+    PERC_REDUCTION = 25
+
+    def getName(self):
+        return 'Refined Plating'
+
+    def getDescription(self):
+        return "Increases general impact required by %(color_start)s" + str(self.PERC_REDUCTION) + "%%%(color_end)s for goons and safes"
+
+    def getHeat(self):
+        return 50
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.MIN_DEHELMET_IMPACT *= self.additivePercent(self.PERC_REDUCTION)  # reduce min safe impact for helms
+        cfoRuleset.SIDECRANE_IMPACT_STUN_THRESHOLD *= self.additivePercent(self.PERC_REDUCTION)  # Reduce sidestun impact
+        cfoRuleset.MIN_GOON_IMPACT *= self.additivePercent(self.PERC_REDUCTION)  # Reduce goon impact
+        cfoRuleset.MIN_SAFE_IMPACT *= self.additivePercent(self.PERC_REDUCTION)  # Reduce safe impact
+
+
+# (-) Devolution (Omega/Beta/Alpha)
+# --------------------------------
+# - heavy cranes disabled (Omega)
+# - sidecranes disabled (Beta)
+# - classic collisions and back wall (Alpha)
+class ModifierDevolution(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 7
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+
+    TIER_NAMES = ['', 'Omega', 'Beta', 'Alpha']
+    TIER_HEATS = [0, 20, 100, 130]
+
+    # Returns the part of the string that's colored, basically what is disabled
+    def _getDynamicString(self):
+        if self.tier >= 2:
+            return "Heavy cranes and Sidecranes"
+        elif self.tier >= 1:
+            return "Heavy cranes"
+
+        else:
+            return "no cranes?"
+
+    def getName(self):
+        return 'Devolution %s' % self.TIER_NAMES[self.tier]
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        ret = 'A trip down memory lane. %s%s%s are disabled.' % (_start, self._getDynamicString(), _end)
+        if self.tier >= 3:
+            ret += ' %s%s%s are enabled' % (_start, 'Back walls', _end)
+
+    def getHeat(self):
+        return self.TIER_HEATS[self.tier]
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.WANT_HEAVY_CRANES = False
+
+        if self.tier >= 2:
+            cfoRuleset.WANT_SIDECRANES = False
+
+        if self.tier >= 3:
+            cfoRuleset.WANT_BACKWALL = True
+
+
+# (-) Armor of Alloys
+# --------------------------------
+# - cfo does not flinch when getting hit
+class ModifierCFONoFlinch(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 8
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+
+    def getName(self):
+        return 'Armor of Alloys'
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'The CFO %sno longer flinches%s upon being damaged' % (_start, _end)
+
+    def getHeat(self):
+        return 50
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.CFO_FLINCHES_ON_HIT = False
+
+
+# (+) Hard(er/est) Hats
+# --------------------------------
+# + goons inflict 10/20/30% more damage to the cfo
+class ModifierGoonDamageInflictIncreaser(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 9
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+    TIER_SUFFIXES = ['', '', 'er', 'est']
+    TIER_PERCENT_AMOUNTS = [0, 10, 20, 30]
+
+    def getName(self):
+        return 'Hard%s Hats' % self.TIER_SUFFIXES[self.tier]
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'Increases damages inflicted to the CFO from goons by %s+%s%%%s' % (_start, self.TIER_PERCENT_AMOUNTS[self.tier], _end)
+
+    def getHeat(self):
+        return -10 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.GOON_CFO_DAMAGE_MULTIPLIER *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
+
+
+# (+) Safer Containers
+# --------------------------------
+# + safes inflict 10/20/30% more damage to the cfo
+class ModifierSafeDamageInflictIncreaser(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 10
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+    TIER_SUFFIXES = ['', '', 'er', 'est']
+    TIER_PERCENT_AMOUNTS = [0, 10, 20, 30]
+
+    def getName(self):
+        return 'Safe%s Containers' % self.TIER_SUFFIXES[self.tier]
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'Increases damages inflicted to the CFO from safes by %s+%s%%%s' % (_start, self.TIER_PERCENT_AMOUNTS[self.tier], _end)
+
+    def getHeat(self):
+        return -10 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.SAFE_CFO_DAMAGE_MULTIPLIER *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
+
+
+# (-) Fast(er/est) Security
+# --------------------------------
+# - goons move 25/50/75% faster
+class ModifierGoonSpeedIncreaser(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 11
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+    TIER_SUFFIXES = ['', '', 'er', 'est']
+    TIER_PERCENT_AMOUNTS = [0, 25, 50, 75]
+
+    def getName(self):
+        return 'Fast%s Security' % self.TIER_SUFFIXES[self.tier]
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'Goons move %s+%s%%%s faster' % (_start, self.TIER_PERCENT_AMOUNTS[self.tier], _end)
+
+    def getHeat(self):
+        return 30 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.GOON_SPEED_MULTIPLIER *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
+
+
+# (-) Overwhelming Security (I-III)
+# --------------------------------
+# - goon cap raised by 20/50/75%
+class ModifierGoonCapIncreaser(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 12
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+    TIER_PERCENT_AMOUNTS = [0, 25, 50, 75]
+
+    def getName(self):
+        return 'Overwhelming Security%s' % ' ' + self.numToRoman(self.tier) if self.tier > 1 else ''
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'The CFO spawns %s+%s%%%s more goons' % (_start, self.TIER_PERCENT_AMOUNTS[self.tier], _end)
+
+    def getHeat(self):
+        return 20 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.MAX_GOON_AMOUNT_START *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
+        cfoRuleset.MAX_GOON_AMOUNT_END *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
+
+
+# (-) Undying Security
+# --------------------------------
+# - safes can only stun goons
+class ModifierSafesStunGoons(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 13
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+
+    def getName(self):
+        return 'Undying Security'
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'Safes now %sstun goons instead of destroy%s them on impact' % (_start, _end)
+
+    def getHeat(self):
+        return 30
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.SAFES_STUN_GOONS = True
+
+
+# (-) Slippery Security
+# --------------------------------
+# - all cranes wake goons up when grabbed
+class ModifierGoonsGrabbedWakeup(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 14
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+
+    def getName(self):
+        return 'Slippery Security'
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'Goons %salways wakeup%s when grabbed by all cranes' % (_start, _end)
+
+    def getHeat(self):
+        return 70
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.GOONS_ALWAYS_WAKE_WHEN_GRABBED = True
+
+
+# (+) Sweet Treat
+# --------------------------------
+# + treasures heal an additional 50%
+class ModifierTreasureHealIncreaser(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 15
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+    INCREASE_PERC = 50
+
+    def getName(self):
+        return 'Sweet Treat'
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'Treasures heal %s+%s%%%s when grabbed' % (_start, self.INCREASE_PERC, _end)
+
+    def getHeat(self):
+        return -30
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.WEAK_TREASURE_HEAL_AMOUNT *= self.additivePercent(self.INCREASE_PERC)
+        cfoRuleset.AVERAGE_TREASURE_HEAL_AMOUNT *= self.additivePercent(self.INCREASE_PERC)
+        cfoRuleset.STRONG_TREASURE_HEAL_AMOUNT *= self.additivePercent(self.INCREASE_PERC)
+        cfoRuleset.REALLY_WEAK_TREASURE_HEAL_AMOUNT *= self.additivePercent(self.INCREASE_PERC)
+
+
+# (-) Tastebud Dullers (I-III)
+# --------------------------------
+# - treasures heal 25/50/80% less
+class ModifierTreasureHealDecreaser(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 16
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+    TIER_DECREASE_PERC = [0, 25, 50, 80]
+
+    def getName(self):
+        return 'Tastebud Dullers%s' % ' ' + self.numToRoman(self.tier) if self.tier > 1 else ''
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'Treasures heal %s-%s%%%s when grabbed' % (_start, self.TIER_DECREASE_PERC[self.tier], _end)
+
+    def getHeat(self):
+        return 30 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.WEAK_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self.TIER_DECREASE_PERC[self.tier])
+        cfoRuleset.AVERAGE_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self.TIER_DECREASE_PERC[self.tier])
+        cfoRuleset.STRONG_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self.TIER_DECREASE_PERC[self.tier])
+        cfoRuleset.REALLY_WEAK_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self.TIER_DECREASE_PERC[self.tier])
+
+
+# (-) Tasteless Goons (I-III)
+# --------------------------------
+# - treasures have a 50/25/10% chance to drop from a stunned goon
+class ModifierTreasureRNG(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 17
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+    TIER_DROP_PERCENT = [0, 50, 25, 10]
+
+    def getName(self):
+        return 'Tasteless Goons%s' % ' ' + self.numToRoman(self.tier) if self.tier > 1 else ''
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'Treasures have a %s-%s%%%s chance to drop from stunned goons' % (_start, self.TIER_DROP_PERCENT[self.tier], _end)
+
+    def getHeat(self):
+        return 30 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.GOON_TREASURE_DROP_CHANCE *= self.subtractivePercent(self.TIER_DROP_PERCENT[self.tier])
+
+
+# (-) Wealth Filter (I-III)
+# --------------------------------
+# - treasure cap reduced by 25/50/80%
+class ModifierTreasureCapDecreaser(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 18
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+    TIER_DROP_PERCENT = [0, 25, 50, 80]
+
+    def getName(self):
+        return 'Wealth Filter%s' % ' ' + self.numToRoman(self.tier) if self.tier > 1 else ''
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'Amount of treasures decreased by %s-%s%%%s' % (_start, self.TIER_DROP_PERCENT[self.tier], _end)
+
+    def getHeat(self):
+        return 25 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.MAX_TREASURE_AMOUNT *= self.subtractivePercent(self.TIER_DROP_PERCENT[self.tier])
+
+
+# (+) The Melancholic Bonus/Gift/Offering
+# --------------------------------
+# + UBER bonuses yield 100/200/300% more points
+class ModifierUberBonusIncreaser(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 19
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+    TIER_BONUS_PERC = [0, 100, 200, 300]
+    NAME_SUFFIXES = ['', 'Bonus', 'Gift', 'Offering']
+
+    def getName(self):
+        return 'The Melancholic %s' % self.NAME_SUFFIXES[self.tier]
+
+    def getDescription(self):
+        _start = '%(color_start)s'
+        _end = '%(color_end)s'
+
+        return 'Points gained from UBER BONUS increased by %s+%s%%%s' % (_start, self.TIER_BONUS_PERC[self.tier], _end)
+
+    def getHeat(self):
+        return -20 * self.tier
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.LOW_LAFF_BONUS *= self.additivePercent(self.TIER_BONUS_PERC[self.tier])
 
 
 # Any implemented subclasses of CFORulesetModifierBase cannot go past this point

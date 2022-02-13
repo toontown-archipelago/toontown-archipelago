@@ -1362,6 +1362,10 @@ struct CraneLeagueRuleset {
   int32 POINTS_PENALTY_SANDBAG;
   int32 POINTS_PENALTY_UNSTUN;
   int16/100 COMBO_DURATION;
+  bool WANT_BACKWALL;
+  bool CFO_FLINCHES_ON_HIT;
+  bool SAFES_STUN_GOONS;
+  bool GOONS_ALWAYS_WAKE_WHEN_GRABBED;
 };
 
 struct CraneLeagueModifier {

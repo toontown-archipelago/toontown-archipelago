@@ -630,10 +630,20 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             return
         if obj and (obj.state != 'Dropped' or obj.craneId != self.doId):
             obj.d_requestGrab()
-            if self.index > 3 and isinstance(obj, DistributedCashbotBossGoon.DistributedCashbotBossGoon): #check if side crane
-                obj.d_requestWalk()
-                obj.setObjectState('W', 0, obj.craneId) #wake goon up
             obj.demand('Grabbed', localAvatar.doId, self.doId)
+
+            # See if we should do anything with this object when sniffing it
+            self.considerObjectState(obj)
+
+    def considerObjectState(self, obj):
+
+        if not self.boss.ruleset.GOONS_ALWAYS_WAKE_WHEN_GRABBED:
+            return
+
+        # If this is a goon, wake it up
+        if isinstance(obj, DistributedCashbotBossGoon.DistributedCashbotBossGoon):
+            obj.d_requestWalk()
+            obj.setObjectState('W', 0, obj.craneId)  # wake goon up
 
     def grabObject(self, obj):
         if self.state == 'Off':

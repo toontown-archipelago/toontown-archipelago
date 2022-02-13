@@ -53,7 +53,9 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
                 damage = int(impact * 50)
                 crane = simbase.air.doId2do.get(craneId)
                 # Apply a multiplier if needed (heavy cranes)
-                damage = math.ceil(damage * crane.getDamageMultiplier())
+                damage *= crane.getDamageMultiplier()
+                damage *= self.boss.ruleset.SAFE_CFO_DAMAGE_MULTIPLIER
+                damage = math.ceil(damage)
                 self.boss.recordHit(max(damage, 2), impact, craneId)
             elif self.boss.acceptHelmetFrom(avId):
                 self.demand('Grabbed', self.boss.doId, self.boss.doId)
