@@ -12,6 +12,7 @@ from otp.otpbase import OTPGlobals
 from toontown.battle import SuitBattleGlobals
 from toontown.char import CharDNA
 from toontown.coghq import CogDisguiseGlobals
+from toontown.coghq.ActivityLog import ActivityLog
 from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 from toontown.effects import FireworkShows
 from toontown.estate import GardenGlobals
@@ -38,6 +39,7 @@ import json
 
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
+DEBUG_LOG = None
 
 magicWordIndex = collections.OrderedDict()
 
@@ -214,6 +216,32 @@ class scoreboard(MagicWord):
         DEBUG_HEAT.set_heat(n)
 
         return "set heat to " + str(n)
+
+class activityLog(MagicWord):
+    aliases=['log']
+    desc = 'make debug log appear'
+    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+
+    CHOICES = [
+        'ye',
+        'as;lkdfj;laksdfj;lkasdjf;lkasdfl;kasdljk;fasdf',
+        'aaaaaaaaaaaaaaaaaaaaa',
+        'words words words words words words words words words words words',
+        'msg_labelmsg_labelmsg_labelmsg_labelmsg_labelmsg_label msg_label msg_labelmsg_label msg_label'
+
+    ]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        global DEBUG_LOG
+
+        if not DEBUG_LOG:
+            DEBUG_LOG = ActivityLog()
+
+
+        DEBUG_LOG.addToLog(random.choice(self.CHOICES))
+
+        return 'modified log'
+
 
 class StartHoliday(MagicWord):
     aliases = ["startH"]

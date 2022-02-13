@@ -2,6 +2,7 @@ from direct.gui.OnscreenText import OnscreenText
 from direct.interval.IntervalGlobal import *
 from direct.task.TaskManagerGlobal import *
 from direct.directnotify import DirectNotifyGlobal
+from toontown.coghq.ActivityLog import ActivityLog
 from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimedTimer, BossSpeedrunTimer
 from toontown.toonbase import TTLocalizer
 import DistributedBossCog
@@ -57,7 +58,25 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.spectators = []
         self.localToonSpectating = False
         self.endVault = None
+
+        self.activityLog = ActivityLog()
         return
+
+    def addToActivityLog(self, doId, content):
+        doObj = base.cr.doId2do.get(doId)
+
+        try:
+            name = doObj.getName()
+        except:
+            name = doId
+
+        msg = '[%s]' % name
+        msg += ' %s' % content
+        self.activityLog.addToLog(msg)
+
+    def debug(self, doId='system', content='null'):
+        if self.ruleset.DEBUG:
+            self.addToActivityLog(doId, content)
 
     def updateSpectators(self, specs):
         self.spectators = specs

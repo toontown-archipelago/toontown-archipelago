@@ -57,6 +57,17 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.spectators = []
         return
 
+    def updateActivityLog(self, doId, content):
+        self.sendUpdate('addToActivityLog', [doId, content])
+
+    def debug(self, doId=None, content='null'):
+
+        if not doId:
+            doId = self.doId
+
+        if self.ruleset.DEBUG:
+            self.updateActivityLog(doId, content)
+
     def getInvolvedToonsNotSpectating(self):
         toons = list(self.involvedToons)
         for s in self.spectators:
@@ -148,6 +159,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.modifiers = [CraneLeagueGlobals.ModifierCFOHPIncreaser(3)]
 
         self.applyModifiers()
+        self.debug(content='Applied %s modifiers' % len(self.modifiers))
         # end debug
 
         # Update the client
@@ -208,6 +220,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             ind = 0
 
             for _ in CraneLeagueGlobals.NORMAL_CRANE_POSHPR:
+                self.debug(content='Generating normal crane index=%s' % ind)
                 crane = DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI(self.air, self, ind)
                 crane.generateWithRequired(self.zoneId)
                 self.cranes.append(crane)
@@ -216,6 +229,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             # Generate the sidecranes if wanted
             if self.ruleset.WANT_SIDECRANES:
                 for _ in CraneLeagueGlobals.SIDE_CRANE_POSHPR:
+                    self.debug(content='Generating sidecrane index=%s' % ind)
                     crane = DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI(self.air, self, ind)
                     crane.generateWithRequired(self.zoneId)
                     self.cranes.append(crane)
@@ -224,6 +238,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             # Generate the heavy cranes if wanted
             if self.ruleset.WANT_HEAVY_CRANES:
                 for _ in CraneLeagueGlobals.HEAVY_CRANE_POSHPR:
+                    self.debug(content='Generating heavy crane index=%s' % ind)
                     crane = DistributedCashbotBossHeavyCraneAI.DistributedCashbotBossHeavyCraneAI(self.air, self, ind)
                     crane.generateWithRequired(self.zoneId)
                     self.cranes.append(crane)
@@ -342,6 +357,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Clamp the damage to make sure it at least does 1
         damage = max(int(damage), 1)
 
+        self.debug(doId=avId, content='Damaged for %s' % damage)
+
         self.damageToon(toon, damage)
         currState = self.getCurrentOrNextState()
 
@@ -359,11 +376,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # Too many treasures on the field?
         if len(self.treasures) >= self.ruleset.MAX_TREASURE_AMOUNT:
+            self.debug(doId=goon.doId, content='Not spawning treasure, already %s present' % self.ruleset.MAX_TREASURE_AMOUNT)
             return
 
         # Drop chance?
         if self.ruleset.GOON_TREASURE_DROP_CHANCE < 1.0:
             r = random.random()
+            self.debug(doId=goon.doId, content='Rolling for treasure drop, need > %s, got %s' % (self.ruleset.GOON_TREASURE_DROP_CHANCE, r))
             if r < self.ruleset.GOON_TREASURE_DROP_CHANCE:
                 return
 
@@ -448,14 +467,33 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 return
             goon.generateWithRequired(self.zoneId)
             self.goons.append(goon)
-        if self.getBattleThreeTime() > 1.0:
-            goon.STUN_TIME = 4
-            goon.b_setupGoon(velocity=8 * self.ruleset.GOON_SPEED_MULTIPLIER, hFov=90, attackRadius=20, strength=self.ruleset.MAX_GOON_DAMAGE, scale=1.8)
-        else:
-            goon.STUN_TIME = self.progressValue(30, 8)
-            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7) * self.ruleset.GOON_SPEED_MULTIPLIER, hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(self.ruleset.MIN_GOON_DAMAGE, self.ruleset.MAX_GOON_DAMAGE)), scale=self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=False))
+
+        # Attributes for desperation mode goons
+        goon_stun_time = 4
+        goon_velocity = 8
+        goon_hfov = 90
+        goon_attack_radius = 20
+        goon_strength = self.ruleset.MAX_GOON_DAMAGE
+        goon_scale = 1.8
+
+        # If the battle isn't in desperation yet override the values to normal values
+        if self.getBattleThreeTime() <= 1.0:
+            goon_stun_time = self.progressValue(30, 8)
+            goon_velocity = self.progressRandomValue(3, 7)
+            goon_hfov = self.progressRandomValue(70, 80)
+            goon_attack_radius = self.progressRandomValue(6, 15)
+            goon_strength = int(self.progressRandomValue(self.ruleset.MIN_GOON_DAMAGE, self.ruleset.MAX_GOON_DAMAGE))
+            goon_scale = self.progressRandomValue(self.goonMinScale, self.goonMaxScale)
+
+        # Apply multipliers if necessary
+        goon_velocity *= self.ruleset.GOON_SPEED_MULTIPLIER
+
+        # Apply attributes to the goon
+        goon.STUN_TIME = goon_stun_time
+        goon.b_setupGoon(velocity=goon_velocity, hFov=goon_hfov, attackRadius=goon_attack_radius, strength=goon_strength, scale=goon_scale)
         goon.request(side)
-        return
+
+        self.debug(doId=goon.doId, content='Spawning on %s, stun=%.2f, vel=%.2f, hfov=%.2f, attRadius=%.2f, str=%s, scale=%.2f' % (side, goon_stun_time, goon_velocity, goon_hfov, goon_attack_radius, goon_strength, goon_scale))
 
     def __chooseOldGoon(self):
         for goon in self.goons:
@@ -468,6 +506,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             taskName = self.uniqueName('NextGoon')
             taskMgr.remove(taskName)
             taskMgr.doMethodLater(delayTime, self.doNextGoon, taskName)
+            self.debug(content='Spawning goon in %.2fs' % delayTime)
 
     def stopGoons(self):
         taskName = self.uniqueName('NextGoon')
@@ -486,6 +525,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             taskMgr.remove(taskName)
             delayTime = self.progressValue(45, 15)
             taskMgr.doMethodLater(delayTime, self.__donHelmet, taskName)
+            self.debug(content='Next auto-helmet in %s seconds' % delayTime)
             self.waitingForHelmet = 1
 
     def __donHelmet(self, task):
@@ -544,6 +584,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.d_updateDamageDealt(avId, damage)
 
         self.comboTrackers[avId].incrementCombo(damage*self.ruleset.COMBO_DAMAGE_PERCENTAGE)
+
+        self.debug(doId=avId, content='Damaged for %s with impact: %.2f' % (damage, impact))
 
         if self.bossDamage >= self.ruleset.CFO_MAX_HP:
             self.toonsWon = True
@@ -636,6 +678,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.__deleteBattleThreeObjects()
         self.ignoreBarrier(self.barrier)
 
+    def waitForNextAttack(self, delayTime):
+        DistributedBossCogAI.DistributedBossCogAI.waitForNextAttack(self, delayTime)
+        self.debug(content='Next attack in %.2fs' % delayTime)
+
     def enterBattleThree(self):
 
         if self.attackCode == ToontownGlobals.BossCogDizzy or self.attackCode == ToontownGlobals.BossCogDizzyNow:
@@ -676,9 +722,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 if self.ruleset.FORCE_MAX_LAFF:
                     self.oldMaxLaffs[avId] = av.getMaxHp()
                     av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
+                    self.debug(content='Forcing max laff to %s' % self.ruleset.FORCE_MAX_LAFF_AMOUNT)
 
                 if self.ruleset.HEAL_TOONS_ON_START:
                     av.b_setHp(av.getMaxHp())
+                    self.debug(content='Healing all toons')
 
         self.toonsWon = False
         taskMgr.remove(self.uniqueName('times-up-task'))
@@ -686,6 +734,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # If timer mode is active, end the crane round later
         if self.ruleset.TIMER_MODE:
             taskMgr.doMethodLater(self.ruleset.TIMER_MODE_TIME_LIMIT, self.__timesUp, self.uniqueName('times-up-task'))
+            self.debug(content='Time will run out in %ss' % self.ruleset.TIMER_MODE_TIME_LIMIT)
 
     # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
     def __timesUp(self, task=None):
@@ -745,6 +794,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         craneTime = globalClock.getFrameTime()
         actualTime = craneTime - self.battleThreeTimeStarted
         timeToSend = 0.0 if self.ruleset.TIMER_MODE and not self.toonsWon else actualTime
+        self.debug(content='Crane round over in %ss' % timeToSend)
         self.d_updateTimer(timeToSend)
         self.resetBattles()
         self.barrier = self.beginBarrier('Victory', self.involvedToons, 30, self.__doneVictory)
@@ -836,6 +886,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def __reviveToonLater(self, toon):
         taskMgr.doMethodLater(self.ruleset.REVIVE_TOONS_TIME, self.__reviveToon, self.uniqueName('revive-toon-' + str(toon.doId)), extraArgs=[toon])
+        self.debug(doId=toon.doId, content='Reviving in %ss' % self.ruleset.REVIVE_TOONS_TIME)
 
     def __reviveToon(self, toon, task=None):
 
@@ -845,6 +896,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         hpToGive = self.ruleset.REVIVE_TOONS_LAFF_PERCENTAGE * toon.getMaxHp()
         toon.b_setHp(hpToGive)
         self.sendUpdate('revivedToon', [toon.doId])
+        self.debug(doId=toon.doId, content='Revived')
 
     def cancelReviveTasks(self):
         for avId in self.involvedToons:

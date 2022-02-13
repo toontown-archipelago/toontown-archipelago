@@ -20,7 +20,7 @@ class ActivityLog(DirectFrame):
                                 text_shadow=(0, 0, 0, 1))
 
         Sequence(
-            Wait(10),
+            Wait(2.5),
             LerpColorScaleInterval(msg_label, duration=2.5, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1))
         ).start()
 

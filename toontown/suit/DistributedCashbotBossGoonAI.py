@@ -210,6 +210,8 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         if avId not in self.boss.involvedToons:
             return
 
+        self.boss.debug(doId=avId, content='Goon hit with impact=%.2f' % impact)
+
         if impact <= self.getMinImpact():
             self.boss.d_updateLowImpactHits(avId)
             return
