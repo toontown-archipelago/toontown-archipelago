@@ -370,6 +370,9 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
             self.notify.info('Goon deleted and still trying to call handleToonDetect()')
 
     def __handleStun(self, collEntry):
+        self.doLocalStun()
+
+    def doLocalStun(self):
         toon = base.localAvatar
         if toon:
 

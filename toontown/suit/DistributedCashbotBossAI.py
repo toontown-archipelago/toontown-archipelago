@@ -93,6 +93,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     # Any time you change the ruleset, you should call this to sync the clients
     def d_setRawRuleset(self):
+        print(self.getRawRuleset())
         self.sendUpdate('setRawRuleset', [self.getRawRuleset()])
 
     def __getRawModifierList(self):
@@ -152,7 +153,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Update the client
         self.d_setRawRuleset()
         self.d_setModifiers()
-
 
     def generate(self):
         DistributedBossCogAI.DistributedBossCogAI.generate(self)
@@ -361,6 +361,12 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if len(self.treasures) >= self.ruleset.MAX_TREASURE_AMOUNT:
             return
 
+        # Drop chance?
+        if self.ruleset.GOON_TREASURE_DROP_CHANCE < 1.0:
+            r = random.random()
+            if r < self.ruleset.GOON_TREASURE_DROP_CHANCE:
+                return
+
         pos = goon.getPos(self)
         v = Vec3(pos[0], pos[1], 0.0)
         if not v.normalize():
@@ -444,10 +450,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.goons.append(goon)
         if self.getBattleThreeTime() > 1.0:
             goon.STUN_TIME = 4
-            goon.b_setupGoon(velocity=8, hFov=90, attackRadius=20, strength=self.ruleset.MAX_GOON_DAMAGE, scale=1.8)
+            goon.b_setupGoon(velocity=8 * self.ruleset.GOON_SPEED_MULTIPLIER, hFov=90, attackRadius=20, strength=self.ruleset.MAX_GOON_DAMAGE, scale=1.8)
         else:
             goon.STUN_TIME = self.progressValue(30, 8)
-            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7), hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(self.ruleset.MIN_GOON_DAMAGE, self.ruleset.MAX_GOON_DAMAGE)), scale=self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=False))
+            goon.b_setupGoon(velocity=self.progressRandomValue(3, 7) * self.ruleset.GOON_SPEED_MULTIPLIER, hFov=self.progressRandomValue(70, 80), attackRadius=self.progressRandomValue(6, 15), strength=int(self.progressRandomValue(self.ruleset.MIN_GOON_DAMAGE, self.ruleset.MAX_GOON_DAMAGE)), scale=self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=False))
         goon.request(side)
         return
 
@@ -554,7 +560,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
             self.d_updateStunCount(avId, craneId)
         else:
-            self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
+
+            if self.ruleset.CFO_FLINCHES_ON_HIT:
+                self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
+
             self.waitForNextHelmet()
 
     def b_setBossDamage(self, bossDamage):

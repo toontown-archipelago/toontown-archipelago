@@ -60,8 +60,13 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
             return self.boss.ruleset.MIN_SAFE_IMPACT
 
     def doHitGoon(self, goon):
-        goon.b_destroyGoon()
-        self.sendUpdate('destroyedGoon', [])
+
+        # Should we disable or destroy?
+        if self.boss.ruleset.SAFES_STUN_GOONS:
+            goon.doLocalStun()
+        else:
+            goon.b_destroyGoon()
+            self.sendUpdate('destroyedGoon', [])
 
     def resetToInitialPosition(self):
         posHpr = CraneLeagueGlobals.SAFE_POSHPR[self.index]
