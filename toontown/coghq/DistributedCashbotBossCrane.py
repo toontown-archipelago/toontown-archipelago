@@ -637,7 +637,15 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         obj = base.cr.doId2do.get(doId)
         if obj.state == 'Grabbed':
             return
-        if obj and (obj.state != 'Dropped' or obj.craneId != self.doId):
+
+        if not obj:
+            return
+
+        objDropped = obj.state != 'Dropped'
+        heldByThisCrane = obj.craneId == self.doId
+
+        # if objDropped or not heldByThisCrane:
+        if not heldByThisCrane:
             obj.d_requestGrab()
             # See if we should do anything with this object when sniffing it
             self.considerObjectState(obj)
