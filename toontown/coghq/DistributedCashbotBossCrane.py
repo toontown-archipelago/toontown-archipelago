@@ -937,7 +937,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         if self.heldObject:
             obj = self.heldObject
             obj.d_requestDrop()
-            if (obj.state == 'Grabbed'):
+            if (obj.state == 'Grabbed' or obj.state == 'LocalGrabbed'):
                 # Go ahead and move the local object instance into the
                 # 'LocalDropped' state--presumably the AI will grant our
                 # request shortly anyway, and we can avoid a hitch by

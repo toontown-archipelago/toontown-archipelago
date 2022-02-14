@@ -238,9 +238,10 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
     def setObjectState(self, state, avId, craneId):
 
         if state == 'G':
-            self.demand('Grabbed', avId, craneId)
+            if self.boss.doId == avId or self.state != 'LocalDropped':
+                self.demand('Grabbed', avId, craneId)
         elif state == 'D':
-            if self.state != 'Dropped':
+            if self.state != 'Dropped' or self.state != 'LocalDropped':
                 self.demand('Dropped', avId, craneId)
         elif state == 's':
             if self.state != 'SlidingFloor':
@@ -263,7 +264,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
     def rejectGrab(self):
         # The server tells us we can't have it for whatever reason.
-        if self.state == 'LocalGrabbed':
+        if self.state == 'LocalGrabbed' or self.state == 'Grabbed':
             self.demand('LocalDropped', self.avId, self.craneId)
 
     def d_requestDrop(self):
@@ -325,10 +326,12 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
         self.hideShadows()
         self.prepareGrab()
-        self.crane.grabObject(self)
+        if self.crane:
+            self.crane.grabObject(self)
 
     def exitLocalGrabbed(self):
         if self.newState != 'Grabbed':
+            self.crane = self.cr.doId2do.get(self.craneId)
             self.crane.dropObject(self)
             self.prepareRelease()
             del self.crane
@@ -338,7 +341,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         # Grabbed by a crane, or by the boss for a helmet.  craneId is
         # the doId of the crane or the doId of the boss himself.
 
-        if self.oldState == 'LocalGrabbed':
+        if self.oldState == 'LocalGrabbed' or self.oldState == 'LocalDropped':
             if craneId == self.craneId:
                 # This is just the confirmation from the AI that we
                 # did, in fact, grab this object with the expected
