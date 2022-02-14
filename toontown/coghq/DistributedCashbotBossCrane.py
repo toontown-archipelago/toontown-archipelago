@@ -498,7 +498,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.__turnOffMagnet()
 
     def __turnOnMagnet(self):
-        self.boss.craneStatesDebug(doId=self.doId, content='Local magnet on, held obj %s' % self.heldObject)
+        self.boss.craneStatesDebug(doId=self.doId, content='Local magnet on, held obj %s' % self.heldObject.getName() if self.heldObject else "Nothing")
         if not self.magnetOn:
             self.__incrementChangeSeq()
             self.magnetOn = 1
@@ -654,7 +654,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             obj.setObjectState('W', 0, obj.craneId)  # wake goon up
 
     def grabObject(self, obj):
-        self.boss.craneStatesDebug(doId=self.doId, content='pre-Grabbing object %s, currently holding: %s' % (obj, self.heldObject))
+        self.boss.craneStatesDebug(doId=self.doId, content='pre-Grabbing object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
         if self.state == 'Off':
             return
         if self.heldObject != None:
@@ -672,11 +672,11 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         if self.avId == localAvatar.doId and not self.magnetOn:
             self.releaseObject()
         self.boss.craneStatesDebug(doId=self.doId,
-                                   content='post-Grabbing object %s, currently holding: %s' % (obj, self.heldObject))
+                                   content='post-Grabbing object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
 
     def dropObject(self, obj):
         self.boss.craneStatesDebug(doId=self.doId,
-                                   content='pre-Dropping object %s, currently holding: %s' % (obj, self.heldObject))
+                                   content='pre-Dropping object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
         if obj.lerpInterval:
             obj.lerpInterval.finish()
         obj.wrtReparentTo(render)
@@ -691,18 +691,18 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.slideSpeed = self.emptySlideSpeed
             self.rotateSpeed = self.emptyRotateSpeed
         self.boss.craneStatesDebug(doId=self.doId,
-                                   content='post-Dropping object %s, currently holding: %s' % (obj, self.heldObject))
+                                   content='post-Dropping object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
 
     def releaseObject(self):
         self.boss.craneStatesDebug(doId=self.doId,
-                                   content='pre-Releasing object %s, currently holding: %s' % (obj, self.heldObject))
+                                   content='pre-Releasing object, currently holding: %s' % self.heldObject.getName() if self.heldObject else "Nothing")
         if self.heldObject:
             obj = self.heldObject
             obj.d_requestDrop()
             if (obj.state == 'Grabbed'):
                 obj.demand('Dropped', localAvatar.doId, self.doId)
         self.boss.craneStatesDebug(doId=self.doId,
-                                   content='post-Releasing object %s, currently holding: %s' % (obj, self.heldObject))
+                                   content='post-Releasing object, currently holding: %s' % self.heldObject.getName() if self.heldObject else "Nothing")
 
     def __hitTrigger(self, event):
         self.d_requestControl()
