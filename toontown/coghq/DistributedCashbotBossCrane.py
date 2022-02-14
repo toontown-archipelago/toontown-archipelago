@@ -895,10 +895,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
     def dropObject(self, obj):
         # This is only called by DistributedCashbotBossObject.exitGrabbed().
-        assert(self.notify.debug('%s.dropObject(%s)' % (self.doId, obj.doId)))
-        assert(self.heldObject == obj)
-        assert(not self.snifferActivated)
-        
         self.boss.craneStatesDebug(doId=self.doId,
                                    content='pre-Dropping object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
         if obj.lerpInterval:

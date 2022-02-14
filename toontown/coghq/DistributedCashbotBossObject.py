@@ -349,6 +349,9 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         # Grabbed by a crane, or by the boss for a helmet.  craneId is
         # the doId of the crane or the doId of the boss himself.
 
+        self.deactivatePhysics()
+        self.stopPosHprBroadcast()
+
         if self.oldState == 'LocalGrabbed' or self.oldState == 'LocalDropped':
             if craneId == self.craneId:
                 # This is just the confirmation from the AI that we
