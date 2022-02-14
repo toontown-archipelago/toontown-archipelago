@@ -505,10 +505,9 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
                 self.__activateSniffer()
 
     def __turnOffMagnet(self):
-        self.__deactivateSniffer()
-        self.magnetOn = 0
-
-        if self.heldObject:
+        if self.magnetOn:
+            self.__deactivateSniffer()
+            self.magnetOn = 0
             self.releaseObject()
 
     def __upArrow(self, pressed):
@@ -634,22 +633,12 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.notify.warning("%s missing 'object' tag" % np)
             return
         self.notify.debug('__sniffedSomething %d' % doId)
+
         obj = base.cr.doId2do.get(doId)
         if obj.state == 'Grabbed':
             return
-
-        if not obj:
-            return
-
-        objDropped = obj.state != 'Dropped'
-        heldByThisCrane = obj.craneId == self.doId
-
-        # if objDropped or not heldByThisCrane:
-        if not heldByThisCrane:
-        
-            if obj.isPosHprBroadcasting:
-                obj.stopPosHprBroadcast()
-                obj.isPosHprBroadcasting = False
+   
+        if obj and obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
 
             self.boss.craneStatesDebug(doId=self.doId, content='Sniffed something, held obj %s' % (
                 self.heldObject.getName() if self.heldObject else "Nothing"))
@@ -657,7 +646,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             obj.d_requestGrab()
             # See if we should do anything with this object when sniffing it
             self.considerObjectState(obj)
-            obj.demand('Grabbed', localAvatar.doId, self.doId)
+            obj.demand('LocalGrabbed', localAvatar.doId, self.doId)
 
     def considerObjectState(self, obj):
 
@@ -713,10 +702,14 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         if self.boss:
             self.boss.craneStatesDebug(doId=self.doId,
                                    content='pre-Releasing object, currently holding: %s' % (self.heldObject.getName() if self.heldObject else "Nothing"))
-        obj = self.heldObject
-        obj.d_requestDrop()
-        if (obj.state == 'Grabbed'):
-            obj.demand('Dropped', localAvatar.doId, self.doId)
+        
+        assert(self.avId == localAvatar.doId)
+        
+        if self.heldObject:
+            obj = self.heldObject
+            obj.d_requestDrop()
+            if (obj.state == 'Grabbed'):
+                obj.demand('LocalDropped', localAvatar.doId, self.doId)
 
         if self.boss:
             self.boss.craneStatesDebug(doId=self.doId,
@@ -898,8 +891,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         messenger.send('crane-enter-exit', [self.avId, self])
 
     def exitControlled(self):
-        if self.heldObject:
-            self.releaseObject()
         self.ignore('exitCrane')
         self.grabTrack.finish()
         del self.grabTrack

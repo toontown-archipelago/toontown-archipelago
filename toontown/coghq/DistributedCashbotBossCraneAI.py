@@ -90,7 +90,7 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
     def exitControlled(self):
         if self.objectId:
             obj = self.air.doId2do[self.objectId]
-            obj.demand('Dropped', self.avId, self.doId)
+            obj.request('Dropped', self.avId, self.doId)
 
     def enterFree(self):
         self.avId = 0

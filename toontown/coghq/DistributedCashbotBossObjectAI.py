@@ -118,7 +118,7 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         self.avId = avId
         self.craneId = craneId
         self.d_setObjectState('D', avId, craneId)
-        self.startWaitFree(3)
+        self.startWaitFree(5)
 
     def exitDropped(self):
         self.stopWaitFree()
