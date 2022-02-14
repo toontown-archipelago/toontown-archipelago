@@ -498,6 +498,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.__turnOffMagnet()
 
     def __turnOnMagnet(self):
+        self.boss.craneStatesDebug(doId=self.doId, content='Local magnet on, held obj %s' % self.heldObject)
         if not self.magnetOn:
             self.__incrementChangeSeq()
             self.magnetOn = 1
@@ -653,6 +654,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             obj.setObjectState('W', 0, obj.craneId)  # wake goon up
 
     def grabObject(self, obj):
+        self.boss.craneStatesDebug(doId=self.doId, content='pre-Grabbing object %s, currently holding: %s' % (obj, self.heldObject))
         if self.state == 'Off':
             return
         if self.heldObject != None:
@@ -669,9 +671,12 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.rotateSpeed = obj.craneRotateSpeed
         if self.avId == localAvatar.doId and not self.magnetOn:
             self.releaseObject()
-        return
+        self.boss.craneStatesDebug(doId=self.doId,
+                                   content='post-Grabbing object %s, currently holding: %s' % (obj, self.heldObject))
 
     def dropObject(self, obj):
+        self.boss.craneStatesDebug(doId=self.doId,
+                                   content='pre-Dropping object %s, currently holding: %s' % (obj, self.heldObject))
         if obj.lerpInterval:
             obj.lerpInterval.finish()
         obj.wrtReparentTo(render)
@@ -685,14 +690,19 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.handler.setDynamicFrictionCoef(self.emptyFrictionCoef)
             self.slideSpeed = self.emptySlideSpeed
             self.rotateSpeed = self.emptyRotateSpeed
-        return
+        self.boss.craneStatesDebug(doId=self.doId,
+                                   content='post-Dropping object %s, currently holding: %s' % (obj, self.heldObject))
 
     def releaseObject(self):
+        self.boss.craneStatesDebug(doId=self.doId,
+                                   content='pre-Releasing object %s, currently holding: %s' % (obj, self.heldObject))
         if self.heldObject:
             obj = self.heldObject
             obj.d_requestDrop()
             if (obj.state == 'Grabbed'):
                 obj.demand('Dropped', localAvatar.doId, self.doId)
+        self.boss.craneStatesDebug(doId=self.doId,
+                                   content='post-Releasing object %s, currently holding: %s' % (obj, self.heldObject))
 
     def __hitTrigger(self, event):
         self.d_requestControl()

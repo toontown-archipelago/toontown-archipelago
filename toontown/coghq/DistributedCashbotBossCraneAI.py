@@ -29,6 +29,10 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
     def getName(self):
         return 'NormalCrane-%s' % self.index
 
+    def setObjectID(self, objId):
+        self.objectId = objId
+        self.boss.craneStatesDebug(doId=self.doId, content='(Server) grabbing object: %s' % objId)
+
     # Should we multiply any damage done from this crane?
     def getDamageMultiplier(self):
         return 1.0
