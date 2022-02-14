@@ -1,0 +1,43 @@
+Below are all mods implemented so far and their ids, note most mods have tiered effects from a tier from 1-3
+You can use the command '~modifiers add 2 3' so give the CFO 100% more hp instead of 25%
+
+(ID:0) Chains of Finesse I
+Increases combo length by +50%
+(ID:1) Chain Locker I
+Decreases combo length by -30%
+(ID:2) Financial Aid I
+The CFO has +25% more HP
+(ID:3) Financial Drain I
+The CFO has -20% less HP
+(ID:4) Strong Bindings
+Increases the impact required to remove the CFO's helmet by 20%
+(ID:5) Copper Plating
+Decreases general impact required by 25% for goons and safes
+(ID:6) Refined Plating
+Increases general impact required by 25% for goons and safes
+(ID:7) Devolution Omega
+A trip down memory lane. Heavy cranes are disabled
+(ID:8) Armor of Alloys
+The CFO no longer flinches upon being damaged
+(ID:9) Hard Hats
+Increases damages inflicted to the CFO from goons by +10%
+(ID:10) Safe Containers
+Increases damages inflicted to the CFO from safes by +10%
+(ID:11) Fast Security
+Goons move +25% faster
+(ID:12) Overwhelming Security
+The CFO spawns +25% more goons
+(ID:13) Undying Security
+Safes now stun goons instead of destroy them on impact
+(ID:14) Slippery Security
+Goons always wakeup when grabbed by all cranes
+(ID:15) Sweet Treat
+Treasures heal +50% when grabbed
+(ID:16) Tastebud Dullers
+Treasures heal -25% when grabbed
+(ID:17) Tasteless Goons
+Treasures have a -50% chance to drop from stunned goons
+(ID:18) Wealth Filter
+Amount of treasures decreased by -25%
+(ID:19) The Melancholic Bonus
+Points gained from UBER BONUS increased by +100%

@@ -55,6 +55,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # A list of toon ids that are spectating
         self.spectators = []
+
+        self.rollModsOnStart = True
+        self.numModsWanted = 5
         return
 
     def updateActivityLog(self, doId, content):
@@ -148,22 +151,27 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return self.ruleset
 
     def setupRuleset(self):
+
         self.ruleset = CraneLeagueGlobals.CFORuleset()
         self.rulesetFallback = self.ruleset
 
-        # this section is debug
-        pool = [c() for c in CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.values()]
-        random.shuffle(pool)
-        r = random.randint(0, len(pool)-1)
-        self.modifiers = [pool.pop() for x in range(r)]
+        # Should we randomize some modifiers?
+        if self.rollModsOnStart:
+            self.rollRandomModifiers()
 
         self.applyModifiers()
         self.debug(content='Applied %s modifiers' % len(self.modifiers))
-        # end debug
 
         # Update the client
         self.d_setRawRuleset()
         self.d_setModifiers()
+
+    def rollRandomModifiers(self):
+        tierLeftBound = self.ruleset.MODIFIER_TIER_RANGE[0]
+        tierRightBound = self.ruleset.MODIFIER_TIER_RANGE[0]
+        pool = [c(random.randint(tierLeftBound, tierRightBound)) for c in CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.values()]
+        random.shuffle(pool)
+        self.modifiers = [pool.pop() for _ in range(self.numModsWanted)]
 
     def generate(self):
         DistributedBossCogAI.DistributedBossCogAI.generate(self)
