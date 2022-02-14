@@ -498,7 +498,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.__turnOffMagnet()
 
     def __turnOnMagnet(self):
-        self.boss.craneStatesDebug(doId=self.doId, content='Local magnet on, held obj %s' % self.heldObject.getName() if self.heldObject else "Nothing")
         if not self.magnetOn:
             self.__incrementChangeSeq()
             self.magnetOn = 1
@@ -646,6 +645,10 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
         # if objDropped or not heldByThisCrane:
         if not heldByThisCrane:
+
+            self.boss.craneStatesDebug(doId=self.doId, content='Sniffed something, held obj %s' % (
+                self.heldObject.getName() if self.heldObject else "Nothing"))
+            
             obj.d_requestGrab()
             # See if we should do anything with this object when sniffing it
             self.considerObjectState(obj)
