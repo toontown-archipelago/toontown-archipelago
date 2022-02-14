@@ -34,7 +34,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         return
 
     def _doDebug(self, _=None):
-        self.boss.goonStatesDebug(doId=self.doId, content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
+        self.boss.goonStatesDebug(doId=self.doId, content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
 
     def generate(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.generate(self)
