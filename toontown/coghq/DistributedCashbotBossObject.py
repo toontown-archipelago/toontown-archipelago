@@ -235,9 +235,6 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.reparentTo(render)
 
     def enterGrabbed(self, avId, craneId):
-        if self.isPosHprBroadcasting:
-            self.stopPosHprBroadcast()
-            self.isPosHprBroadcasting = False
         self.crane = self.cr.doId2do.get(craneId)
         if self.oldState == 'LocalGrabbed':
             if craneId == self.craneId:
