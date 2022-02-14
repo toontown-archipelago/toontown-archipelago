@@ -836,6 +836,10 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
    
         if obj and obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
 
+            if obj.isPosHprBroadcasting:
+                obj.stopPosHprBroadcast()
+                obj.isPosHprBroadcasting = False
+                
             self.boss.craneStatesDebug(doId=self.doId, content='Sniffed something, held obj %s' % (
                 self.heldObject.getName() if self.heldObject else "Nothing"))
 

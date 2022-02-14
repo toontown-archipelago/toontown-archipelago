@@ -30,6 +30,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.avId = 0
         self.craneId = 0
         self.cleanedUp = 0
+        
+        self.deniableStates = ['LocalDropped', 'Off', 'Dropped']
             
         # A CollisionNode to keep me out of walls and floors, and to
         # keep others from bumping into me.  We use PieBitmask instead
@@ -56,6 +58,9 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         # Cranes will fill in this with the interval to lerp the
         # object to the crane.
         self.lerpInterval = None
+        
+        # A boolean used to check for posHprBroadcasting, init as False
+        self.isPosHprBroadcasting = False
         
         self.setBroadcastStateChanges(True)
         self.accept(self.getStateChangeEvent(), self._doDebug)
@@ -236,9 +241,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.boss = base.cr.doId2do[bossCogId]
 
     def setObjectState(self, state, avId, craneId):
-
         if state == 'G':
-            if self.boss.doId == avId or self.state != 'LocalDropped':
+            if self.boss.doId == avId or self.state not in self.deniableStates:
                 self.demand('Grabbed', avId, craneId)
         elif state == 'D':
             if self.state != 'Dropped' or self.state != 'LocalDropped':
@@ -386,7 +390,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
         assert(self.avId == base.localAvatar.doId)
         self.activatePhysics()
-        self.startPosHprBroadcast()
+        self.startPosHprBroadcast(period=.05)
+        self.isPosHprBroadcasting = True
         self.hideShadows()
 
         # Set slippery physics so it will slide off the boss.
@@ -398,6 +403,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         if self.newState != 'SlidingFloor' and self.newState != 'Dropped':
             self.deactivatePhysics()
             self.stopPosHprBroadcast()
+            self.isPosHprBroadcasting = False
         del self.crane
         self.showShadows()
 
@@ -414,7 +420,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
         if self.avId == base.localAvatar.doId:
             self.activatePhysics()
-            self.startPosHprBroadcast()
+            self.startPosHprBroadcast(period=.05)
+            self.isPosHprBroadcasting = True
 
             # Set slippery physics so it will slide off the boss.
             self.handler.setStaticFrictionCoef(0)
@@ -428,6 +435,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             if self.newState != 'SlidingFloor':
                 self.deactivatePhysics()
                 self.stopPosHprBroadcast()
+                self.isPosHprBroadcasting = False
         else:
             self.stopSmooth()
 
@@ -448,6 +456,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         if self.avId == base.localAvatar.doId:
             self.activatePhysics()
             self.startPosHprBroadcast(period=.05)
+            self.isPosHprBroadcasting = True
             
             self.handler.setStaticFrictionCoef(0.9)
             self.handler.setDynamicFrictionCoef(0.5)
@@ -467,6 +476,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             taskMgr.remove(self.watchDriftName)
             self.deactivatePhysics()
             self.stopPosHprBroadcast()
+            self.isPosHprBroadcasting = False
         else:
             self.stopSmooth()
 
