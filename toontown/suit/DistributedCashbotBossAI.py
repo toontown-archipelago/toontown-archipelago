@@ -73,15 +73,15 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def goonStatesDebug(self, doId='system', content='null'):
         if self.ruleset.GOON_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
+            self.updateActivityLog(doId, content)
 
     def safeStatesDebug(self, doId='system', content='null'):
         if self.ruleset.SAFE_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
+            self.updateActivityLog(doId, content)
 
     def craneStatesDebug(self, doId='system', content='null'):
         if self.ruleset.CRANE_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
+            self.updateActivityLog(doId, content)
 
     def getInvolvedToonsNotSpectating(self):
         toons = list(self.involvedToons)
