@@ -510,7 +510,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
         if self.heldObject:
             self.releaseObject()
-            self.dropObject(self.heldObject)
 
     def __upArrow(self, pressed):
         self.__incrementChangeSeq()
