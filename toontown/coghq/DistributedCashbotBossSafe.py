@@ -26,6 +26,9 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         self.hitFloorSoundInterval = SoundInterval(self.hitFloorSfx, node=self)
         return
 
+    def _doDebug(self, _=None):
+        self.boss.safeStatesDebug(doId=self.doId, content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
+
     def announceGenerate(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.announceGenerate(self)
         self.name = 'safe-%s' % self.doId

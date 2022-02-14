@@ -57,8 +57,10 @@ class CFORuleset:
     def __init__(self):
 
         # Enable for debugging
-        self.GENERAL_DEBUG = True
-        self.STATES_DEBUG = True
+        self.GENERAL_DEBUG = False
+        self.GOON_STATES_DEBUG = False
+        self.CRANE_STATES_DEBUG = False
+        self.SAFE_STATES_DEBUG = True
 
         self.TIMER_MODE = True  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
         self.TIMER_MODE_TIME_LIMIT = 60*15  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
