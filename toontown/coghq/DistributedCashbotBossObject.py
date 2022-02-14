@@ -111,12 +111,12 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.collisionNodePath.unstash()
 
     def __hitFloor(self, entry):
-        if self.state == 'Dropped':
+        if self.state == 'Dropped' or self.state == 'LocalDropped':
             self.d_hitFloor()
             self.demand('SlidingFloor', localAvatar.doId)
 
     def __hitGoon(self, entry):
-        if self.state == 'Dropped':
+        if self.state == 'Dropped' or self.state == 'LocalDropped':
             goonId = int(entry.getIntoNodePath().getNetTag('doId'))
             goon = self.cr.doId2do.get(goonId)
             if goon:
@@ -126,7 +126,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         pass
 
     def __hitBoss(self, entry):
-        if (self.state == 'Dropped') and self.craneId != self.boss.doId:
+        if (self.state == 'Dropped' or self.state == 'LocalDropped') and self.craneId != self.boss.doId:
             vel = self.physicsObject.getVelocity()
             vel = self.crane.root.getRelativeVector(render, vel)
             vel.normalize()
@@ -174,12 +174,10 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
     def setObjectState(self, state, avId, craneId):
 
         if state == 'G':
-            if self.boss.doId == avId or base.localAvatar.doId != avId:
-                self.demand('Grabbed', avId, craneId)
+            self.demand('Grabbed', avId, craneId)
         elif state == 'D':
-            if self.boss.doId == craneId or base.localAvatar.doId != avId:
+            if self.state != 'Dropped':
                 self.demand('Dropped', avId, craneId)
-            pass
         elif state == 's':
             if self.state != 'SlidingFloor':
                 self.demand('SlidingFloor', avId)
@@ -200,8 +198,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.sendUpdate('requestGrab')
 
     def rejectGrab(self):
-        if self.state == 'Grabbed':
-            self.demand('Dropped', self.avId, self.craneId)
+        if self.state == 'LocalGrabbed':
+            self.demand('LocalDropped', self.avId, self.craneId)
 
     def d_requestDrop(self):
         self.sendUpdate('requestDrop')
@@ -233,36 +231,109 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
     def exitOff(self):
         self.reparentTo(render)
 
-    def enterGrabbed(self, avId, craneId):
-        self.crane = self.cr.doId2do.get(craneId)
-        if self.oldState == 'LocalGrabbed':
-            if craneId == self.craneId:
-                return
-            else:
-                if self.crane:
-                    self.crane.dropObject(self)
-                self.prepareRelease()
+    def enterLocalGrabbed(self, avId, craneId):
+        # This state is like Grabbed, except that it is only triggered
+        # locally.  In this state, we have requested a grab, and we
+        # will act as if we have grabbed the object successfully, but
+        # we have not yet heard confirmation from the AI so we might
+        # later discover that we didn't grab it after all.
+
+        # We're not allowed to drop the object directly from this
+        # state.
+        
         self.avId = avId
         self.craneId = craneId
+
+        self.crane = self.cr.doId2do.get(craneId)
+        assert(self.crane != None)
+
         self.hideShadows()
         self.prepareGrab()
-        if self.crane:
-            self.crane.grabObject(self)
+        self.crane.grabObject(self)
+
+    def exitLocalGrabbed(self):
+        if self.newState != 'Grabbed':
+            self.crane.dropObject(self)
+            self.prepareRelease()
+            del self.crane
+            self.showShadows()
+
+    def enterGrabbed(self, avId, craneId):
+        # Grabbed by a crane, or by the boss for a helmet.  craneId is
+        # the doId of the crane or the doId of the boss himself.
+
+        if self.oldState == 'LocalGrabbed':
+            if craneId == self.craneId:
+                # This is just the confirmation from the AI that we
+                # did, in fact, grab this object with the expected
+                # crane; we don't need to do anything else in this
+                # state.
+                return
+            else:
+                # Whoops, we had previously grabbed it locally, but it
+                # turns out someone else grabbed it instead.
+                self.crane.dropObject(self)
+                self.prepareRelease()
+        
+        self.avId = avId
+        self.craneId = craneId
+
+        self.crane = self.cr.doId2do.get(craneId)
+        assert(self.crane != None)
+
+        # The "crane" might actually be the boss cog himself!  This
+        # happens when the boss takes a safe to wear as a helmet.
+
+        self.hideShadows()
+        self.prepareGrab()
+        self.crane.grabObject(self)
 
     def exitGrabbed(self):
-        if self.crane:
-            self.crane.dropObject(self)
+        self.crane.dropObject(self)
         self.prepareRelease()
         self.showShadows()
         del self.crane
 
-    def enterDropped(self, avId, craneId):
+    def enterLocalDropped(self, avId, craneId):
+        # As in LocalGrabbed, above, this state is entered locally
+        # when we drop the safe, but we have not yet received
+        # acknowledgement from the AI that we've dropped it.
+        
         self.avId = avId
         self.craneId = craneId
+
         self.crane = self.cr.doId2do.get(craneId)
+        
+        self.activatePhysics()
+        self.startPosHprBroadcast()
+        self.hideShadows()
+
+        # Set slippery physics so it will slide off the boss.
+        self.handler.setStaticFrictionCoef(0)
+        self.handler.setDynamicFrictionCoef(0)
+
+    def exitLocalDropped(self):
+        assert(self.avId == base.localAvatar.doId)
+        if self.newState != 'SlidingFloor' and self.newState != 'Dropped':
+            self.deactivatePhysics()
+            self.stopPosHprBroadcast()
+        del self.crane
+        self.showShadows()
+
+    def enterDropped(self, avId, craneId):
+        # Dropped (or flung) from a player's crane, or from the boss's
+        # head.  In this case, craneId is the crane we were dropped
+        # from (or the boss doId).
+        self.avId = avId
+        self.craneId = craneId
+
+        self.crane = self.cr.doId2do.get(craneId)
+
         if self.avId == base.localAvatar.doId:
             self.activatePhysics()
             self.startPosHprBroadcast(period=.05)
+
+            # Set slippery physics so it will slide off the boss.
             self.handler.setStaticFrictionCoef(0)
             self.handler.setDynamicFrictionCoef(0)
         else:
@@ -276,6 +347,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
                 self.stopPosHprBroadcast()
         else:
             self.stopSmooth()
+
         del self.crane
         self.showShadows()
 
