@@ -57,7 +57,8 @@ class CFORuleset:
     def __init__(self):
 
         # Enable for debugging
-        self.DEBUG = True
+        self.GENERAL_DEBUG = False
+        self.STATES_DEBUG = True
 
         self.TIMER_MODE = True  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
         self.TIMER_MODE_TIME_LIMIT = 60*15  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
@@ -362,25 +363,25 @@ class CFORulesetModifierBase(object):
 
 
 # An example implementation of a modifier, can be copied and modified
-class ModifierExample(CFORulesetModifierBase):
-
-    # The enum used by astron to know the type
-    MODIFIER_ENUM = 69
-
-    TITLE_COLOR = CFORulesetModifierBase.DARK_PURPLE
-    DESCRIPTION_COLOR = CFORulesetModifierBase.PURPLE
-
-    def getName(self):
-        return 'Funny Number'
-
-    def getDescription(self):
-        return "This modifier sets the CFO's hp to %(color_start)s69%(color_end)s"
-
-    def getHeat(self):
-        return 69
-
-    def apply(self, cfoRuleset):
-        cfoRuleset.CFO_MAX_HP = 69  # Give the cfo 69 hp
+# class ModifierExample(CFORulesetModifierBase):
+#
+#     # The enum used by astron to know the type
+#     MODIFIER_ENUM = 69
+#
+#     TITLE_COLOR = CFORulesetModifierBase.DARK_PURPLE
+#     DESCRIPTION_COLOR = CFORulesetModifierBase.PURPLE
+#
+#     def getName(self):
+#         return 'Funny Number'
+#
+#     def getDescription(self):
+#         return "This modifier sets the CFO's hp to %(color_start)s69%(color_end)s"
+#
+#     def getHeat(self):
+#         return 69
+#
+#     def apply(self, cfoRuleset):
+#         cfoRuleset.CFO_MAX_HP = 69  # Give the cfo 69 hp
 
 
 # Now here is where we can actually define our modifiers
@@ -395,7 +396,7 @@ class ModifierComboExtender(CFORulesetModifierBase):
     COMBO_DURATION_PER_TIER = [0, 50, 100, 200]
 
     def getName(self):
-        return 'Chains of Finesse %s' % self.numToRoman(self.tier)
+        return 'Chains of Finesse ' + self.numToRoman(self.tier)
 
     def getDescription(self):
         perc = self.COMBO_DURATION_PER_TIER[self.tier]
@@ -419,7 +420,7 @@ class ModifierComboShortener(CFORulesetModifierBase):
     COMBO_DURATION_PER_TIER = [0, 30, 50, 75]
 
     def getName(self):
-        return 'Chain Locker %s' % self.numToRoman(self.tier)
+        return 'Chain Locker ' + self.numToRoman(self.tier)
 
     def getDescription(self):
         perc = self.COMBO_DURATION_PER_TIER[self.tier]
@@ -438,13 +439,13 @@ class ModifierCFOHPIncreaser(CFORulesetModifierBase):
     MODIFIER_ENUM = 2
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
-    DESCRIPTION_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
 
     # The combo percentage increase per tier
     CFO_INCREASE_PER_TIER = [0, 25, 50, 100]
 
     def getName(self):
-        return 'Financial Aid %s' % self.numToRoman(self.tier)
+        return 'Financial Aid ' + self.numToRoman(self.tier)
 
     def getDescription(self):
         perc = self.CFO_INCREASE_PER_TIER[self.tier]
@@ -463,13 +464,13 @@ class ModifierCFOHPDecreaser(CFORulesetModifierBase):
     MODIFIER_ENUM = 3
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
-    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
 
     # The combo percentage increase per tier
     CFO_DECREASE_PER_TIER = [0, 20, 35, 50]
 
     def getName(self):
-        return 'Financial Drain %s' % self.numToRoman(self.tier)
+        return 'Financial Drain ' + self.numToRoman(self.tier)
 
     def getDescription(self):
         perc = self.CFO_DECREASE_PER_TIER[self.tier]
@@ -497,7 +498,7 @@ class ModifierDesafeImpactIncreaser(CFORulesetModifierBase):
     CFO_IMPACT_INC_PER_TIER = [0, 20, 40, 75]
 
     def getName(self):
-        return '%s Bindings' % self.TIER_NAMES[self.tier]
+        return self.TIER_NAMES[self.tier] + ' Bindings'
 
     def getDescription(self):
         perc = self.CFO_IMPACT_INC_PER_TIER[self.tier]
@@ -593,15 +594,15 @@ class ModifierDevolution(CFORulesetModifierBase):
             return "no cranes?"
 
     def getName(self):
-        return 'Devolution %s' % self.TIER_NAMES[self.tier]
+        return 'Devolution ' + self.TIER_NAMES[self.tier]
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
 
-        ret = 'A trip down memory lane. %s%s%s are disabled.' % (_start, self._getDynamicString(), _end)
+        ret = 'A trip down memory lane. %(color_start)s' + self._getDynamicString() + '%(color_end)s are disabled'
         if self.tier >= 3:
-            ret += ' %s%s%s are enabled' % (_start, 'Back walls', _end)
+            ret += '. %(color_start)sBack walls%(color_start)s are enabled'
+
+        return ret
 
     def getHeat(self):
         return self.TIER_HEATS[self.tier]
@@ -630,10 +631,7 @@ class ModifierCFONoFlinch(CFORulesetModifierBase):
         return 'Armor of Alloys'
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'The CFO %sno longer flinches%s upon being damaged' % (_start, _end)
+        return 'The CFO %(color_start)sno longer flinches%(color_end)s upon being damaged'
 
     def getHeat(self):
         return 50
@@ -655,13 +653,13 @@ class ModifierGoonDamageInflictIncreaser(CFORulesetModifierBase):
     TIER_PERCENT_AMOUNTS = [0, 10, 20, 30]
 
     def getName(self):
-        return 'Hard%s Hats' % self.TIER_SUFFIXES[self.tier]
+        return 'Hard'+self.TIER_SUFFIXES[self.tier]+' Hats'
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
+        _start = ''
+        _end = ''
 
-        return 'Increases damages inflicted to the CFO from goons by %s+%s%%%s' % (_start, self.TIER_PERCENT_AMOUNTS[self.tier], _end)
+        return 'Increases damages inflicted to the CFO from goons by %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) + '%%%(color_end)s'
 
     def getHeat(self):
         return -10 * self.tier
@@ -683,13 +681,10 @@ class ModifierSafeDamageInflictIncreaser(CFORulesetModifierBase):
     TIER_PERCENT_AMOUNTS = [0, 10, 20, 30]
 
     def getName(self):
-        return 'Safe%s Containers' % self.TIER_SUFFIXES[self.tier]
+        return 'Safe'+self.TIER_SUFFIXES[self.tier]+' Containers'
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'Increases damages inflicted to the CFO from safes by %s+%s%%%s' % (_start, self.TIER_PERCENT_AMOUNTS[self.tier], _end)
+        return 'Increases damages inflicted to the CFO from safes by %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) + '%%%(color_end)s'
 
     def getHeat(self):
         return -10 * self.tier
@@ -711,13 +706,10 @@ class ModifierGoonSpeedIncreaser(CFORulesetModifierBase):
     TIER_PERCENT_AMOUNTS = [0, 25, 50, 75]
 
     def getName(self):
-        return 'Fast%s Security' % self.TIER_SUFFIXES[self.tier]
+        return 'Fast'+self.TIER_SUFFIXES[self.tier]+' Security'
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'Goons move %s+%s%%%s faster' % (_start, self.TIER_PERCENT_AMOUNTS[self.tier], _end)
+        return 'Goons move %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) + '%%%(color_end)s faster'
 
     def getHeat(self):
         return 30 * self.tier
@@ -738,13 +730,13 @@ class ModifierGoonCapIncreaser(CFORulesetModifierBase):
     TIER_PERCENT_AMOUNTS = [0, 25, 50, 75]
 
     def getName(self):
-        return 'Overwhelming Security%s' % ' ' + self.numToRoman(self.tier) if self.tier > 1 else ''
+        n = "Overwhelming Security"
+        if self.tier > 1:
+            n += ' ' + self.numToRoman(self.tier)
+        return n
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'The CFO spawns %s+%s%%%s more goons' % (_start, self.TIER_PERCENT_AMOUNTS[self.tier], _end)
+        return 'The CFO spawns %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) +'%%%(color_end)s more goons'
 
     def getHeat(self):
         return 20 * self.tier
@@ -768,10 +760,7 @@ class ModifierSafesStunGoons(CFORulesetModifierBase):
         return 'Undying Security'
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'Safes now %sstun goons instead of destroy%s them on impact' % (_start, _end)
+        return 'Safes now %(color_start)sstun goons instead of destroy%(color_end)s them on impact'
 
     def getHeat(self):
         return 30
@@ -794,10 +783,7 @@ class ModifierGoonsGrabbedWakeup(CFORulesetModifierBase):
         return 'Slippery Security'
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'Goons %salways wakeup%s when grabbed by all cranes' % (_start, _end)
+        return 'Goons %(color_start)salways wakeup%(color_end)s when grabbed by all cranes'
 
     def getHeat(self):
         return 70
@@ -821,10 +807,7 @@ class ModifierTreasureHealIncreaser(CFORulesetModifierBase):
         return 'Sweet Treat'
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'Treasures heal %s+%s%%%s when grabbed' % (_start, self.INCREASE_PERC, _end)
+        return 'Treasures heal %(color_start)s+'+str(self.INCREASE_PERC)+'%%%(color_end)s when grabbed'
 
     def getHeat(self):
         return -30
@@ -848,13 +831,13 @@ class ModifierTreasureHealDecreaser(CFORulesetModifierBase):
     TIER_DECREASE_PERC = [0, 25, 50, 80]
 
     def getName(self):
-        return 'Tastebud Dullers%s' % ' ' + self.numToRoman(self.tier) if self.tier > 1 else ''
+        n = "Tastebud Dullers"
+        if self.tier > 1:
+            n += ' ' + self.numToRoman(self.tier)
+        return n
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'Treasures heal %s-%s%%%s when grabbed' % (_start, self.TIER_DECREASE_PERC[self.tier], _end)
+        return 'Treasures heal %(color_start)s-' + str(self.TIER_DECREASE_PERC[self.tier]) + '%%%(color_end)s when grabbed'
 
     def getHeat(self):
         return 30 * self.tier
@@ -878,13 +861,13 @@ class ModifierTreasureRNG(CFORulesetModifierBase):
     TIER_DROP_PERCENT = [0, 50, 25, 10]
 
     def getName(self):
-        return 'Tasteless Goons%s' % ' ' + self.numToRoman(self.tier) if self.tier > 1 else ''
+        n = "Tasteless Goons"
+        if self.tier > 1:
+            n += ' ' + self.numToRoman(self.tier)
+        return n
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'Treasures have a %s-%s%%%s chance to drop from stunned goons' % (_start, self.TIER_DROP_PERCENT[self.tier], _end)
+        return 'Treasures have a %(color_start)s-' + str(self.TIER_DROP_PERCENT[self.tier]) + '%%%(color_end)s chance to drop from stunned goons'
 
     def getHeat(self):
         return 30 * self.tier
@@ -905,13 +888,13 @@ class ModifierTreasureCapDecreaser(CFORulesetModifierBase):
     TIER_DROP_PERCENT = [0, 25, 50, 80]
 
     def getName(self):
-        return 'Wealth Filter%s' % ' ' + self.numToRoman(self.tier) if self.tier > 1 else ''
+        n = "Wealth Filter"
+        if self.tier > 1:
+            n += ' ' + self.numToRoman(self.tier)
+        return n
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'Amount of treasures decreased by %s-%s%%%s' % (_start, self.TIER_DROP_PERCENT[self.tier], _end)
+        return 'Amount of treasures decreased by %(color_start)s-' + str(self.TIER_DROP_PERCENT[self.tier]) + '%%%(color_end)s'
 
     def getHeat(self):
         return 25 * self.tier
@@ -933,13 +916,10 @@ class ModifierUberBonusIncreaser(CFORulesetModifierBase):
     NAME_SUFFIXES = ['', 'Bonus', 'Gift', 'Offering']
 
     def getName(self):
-        return 'The Melancholic %s' % self.NAME_SUFFIXES[self.tier]
+        return 'The Melancholic ' + self.NAME_SUFFIXES[self.tier]
 
     def getDescription(self):
-        _start = '%(color_start)s'
-        _end = '%(color_end)s'
-
-        return 'Points gained from UBER BONUS increased by %s+%s%%%s' % (_start, self.TIER_BONUS_PERC[self.tier], _end)
+        return 'Points gained from UBER BONUS increased by %(color_start)s+' + str(self.TIER_BONUS_PERC[self.tier]) + '%%%(color_end)s'
 
     def getHeat(self):
         return -20 * self.tier

@@ -18,6 +18,10 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         self.craneId = 0
         self.isHelmet = False
 
+    def __setState(self, newState, *args):
+        self.boss.statesDebug(doId=self.doId, content='(Server) changing states %s ---> %s' % (self.state, newState))
+        super(DistributedCashbotBossObjectAI, self).__setState(newState, *args)
+
     def cleanup(self):
         self.detachNode()
         self.stopWaitFree()

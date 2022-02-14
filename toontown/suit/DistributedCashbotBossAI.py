@@ -65,7 +65,15 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if not doId:
             doId = self.doId
 
-        if self.ruleset.DEBUG:
+        if self.ruleset.GENERAL_DEBUG:
+            self.updateActivityLog(doId, content)
+
+    def statesDebug(self, doId=None, content='null'):
+
+        if not doId:
+            doId = self.doId
+
+        if self.ruleset.STATES_DEBUG:
             self.updateActivityLog(doId, content)
 
     def getInvolvedToonsNotSpectating(self):
@@ -144,19 +152,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.rulesetFallback = self.ruleset
 
         # this section is debug
-        pool = [CraneLeagueGlobals.ModifierComboShortener(random.randint(1, 3)),
-                CraneLeagueGlobals.ModifierComboExtender(random.randint(1, 3)),
-                CraneLeagueGlobals.ModifierCFOHPDecreaser(random.randint(1, 3)),
-                CraneLeagueGlobals.ModifierCFOHPIncreaser(random.randint(1, 3)),
-                CraneLeagueGlobals.ModifierDesafeImpactIncreaser(random.randint(1, 3)),
-                # CraneLeagueGlobals.ModifierExample()
-                ]
+        pool = [c() for c in CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.values()]
         random.shuffle(pool)
         r = random.randint(0, len(pool)-1)
         self.modifiers = [pool.pop() for x in range(r)]
-
-        # Just for play testing purposes, override this to just have the hp increaser
-        self.modifiers = [CraneLeagueGlobals.ModifierCFOHPIncreaser(3)]
 
         self.applyModifiers()
         self.debug(content='Applied %s modifiers' % len(self.modifiers))

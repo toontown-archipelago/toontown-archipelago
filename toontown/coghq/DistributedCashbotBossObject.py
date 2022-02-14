@@ -168,6 +168,9 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.boss = base.cr.doId2do[bossCogId]
 
     def setObjectState(self, state, avId, craneId):
+
+        self.boss.statesDebug(doId=self.doId, content='(Client) attempting changing states %s ---> %s' % (self.state, state))
+        
         if state == 'G':
             if self.boss.doId == avId or base.localAvatar.doId != avId:
                 self.demand('Grabbed', avId, craneId)

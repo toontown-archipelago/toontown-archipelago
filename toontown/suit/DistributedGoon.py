@@ -373,18 +373,11 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
         self.doLocalStun()
 
     def doLocalStun(self):
-        toon = base.localAvatar
-        if toon:
 
-            if toon.getHp() <= 0:
-                return
+        if base.localAvatar.getHp() <= 0:
+            return
 
-            toonDistance = self.getPos(toon).length()
-            if toonDistance > self.attackRadius:
-                self.notify.warning('Stunned a good, but outside of attack radius')
-                return
-            else:
-                self.request('Stunned')
+        self.request('Stunned')
         if self.walkTrack:
             self.pauseTime = self.walkTrack.pause()
             self.paused = 1
