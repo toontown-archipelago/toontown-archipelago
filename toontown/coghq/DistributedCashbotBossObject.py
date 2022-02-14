@@ -247,6 +247,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             if self.boss.doId == avId or self.state not in self.deniableStates:
                 self.demand('Grabbed', avId, craneId)
         elif state == 'D':
+            if (base.localAvatar.doId == avId and self.state == 'LocalDropped'):
+                return
             if self.state != 'Dropped' or self.state != 'LocalDropped':
                 self.demand('Dropped', avId, craneId)
         elif state == 's':
@@ -357,7 +359,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             else:
                 # Whoops, we had previously grabbed it locally, but it
                 # turns out someone else grabbed it instead.
-                self.crane.dropObject(self)
+                if hasattr(self, 'crane'):
+                    self.crane.dropObject(self)
                 self.prepareRelease()
         
         self.avId = avId
