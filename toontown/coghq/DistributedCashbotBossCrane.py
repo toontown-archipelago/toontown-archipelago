@@ -507,7 +507,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
     def __turnOffMagnet(self):
         if self.magnetOn:
             self.magnetOn = 0
-            
+
         self.__deactivateSniffer()
         self.releaseObject()
 
@@ -710,14 +710,17 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
                                    content='post-Dropping object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
 
     def releaseObject(self):
-        self.boss.craneStatesDebug(doId=self.doId,
+        if self.boss:
+            self.boss.craneStatesDebug(doId=self.doId,
                                    content='pre-Releasing object, currently holding: %s' % (self.heldObject.getName() if self.heldObject else "Nothing"))
         if self.heldObject:
             obj = self.heldObject
             obj.d_requestDrop()
             if (obj.state == 'Grabbed'):
                 obj.demand('Dropped', localAvatar.doId, self.doId)
-        self.boss.craneStatesDebug(doId=self.doId,
+
+        if self.boss:
+            self.boss.craneStatesDebug(doId=self.doId,
                                    content='post-Releasing object, currently holding: %s' % (self.heldObject.getName() if self.heldObject else "Nothing"))
 
     def __hitTrigger(self, event):
