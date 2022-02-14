@@ -11,28 +11,52 @@ from direct.task import Task
 smileyDoId = 1
 
 class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, FSM.FSM):
+
+    """ This is an object that can be picked up an dropped in the
+    final battle scene with the Cashbot CFO.  In particular, it's a
+    safe or a goon.  """
+    
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossObject')
+
+    # This should be true for objects that will eventually transition
+    # from SlidingFloor to Free when they stop moving.
     wantsWatchDrift = 1
 
     def __init__(self, cr):
         DistributedSmoothNode.DistributedSmoothNode.__init__(self, cr)
         FSM.FSM.__init__(self, 'DistributedCashbotBossObject')
+        
         self.boss = None
         self.avId = 0
         self.craneId = 0
         self.cleanedUp = 0
+            
+        # A CollisionNode to keep me out of walls and floors, and to
+        # keep others from bumping into me.  We use PieBitmask instead
+        # of WallBitmask, to protect against objects (like goons)
+        # self-colliding.
         self.collisionNode = CollisionNode('object')
         self.collisionNode.setIntoCollideMask(ToontownGlobals.PieBitmask | OTPGlobals.WallBitmask | ToontownGlobals.CashbotBossObjectBitmask | OTPGlobals.CameraBitmask)
         self.collisionNode.setFromCollideMask(ToontownGlobals.PieBitmask | OTPGlobals.FloorBitmask)
         self.collisionNodePath = NodePath(self.collisionNode)
+        
         self.physicsActivated = 0
+        
         self.toMagnetSoundInterval = Sequence()
         self.hitFloorSoundInterval = Sequence()
+        
+        # A solid sound for when we get a good hit on the boss.
         self.hitBossSfx = loader.loadSfx('phase_5/audio/sfx/AA_drop_safe_miss.ogg')
         self.hitBossSoundInterval = SoundInterval(self.hitBossSfx)
+        
+        # A squishy sound for when we hit the boss, but not hard enough.
         self.touchedBossSfx = loader.loadSfx('phase_5/audio/sfx/AA_drop_sandbag.ogg')
         self.touchedBossSoundInterval = SoundInterval(self.touchedBossSfx, duration=0.8)
+        
+        # Cranes will fill in this with the interval to lerp the
+        # object to the crane.
         self.lerpInterval = None
+        
         self.setBroadcastStateChanges(True)
         self.accept(self.getStateChangeEvent(), self._doDebug)
 
@@ -45,12 +69,15 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         DistributedSmoothNode.DistributedSmoothNode.disable(self)
 
     def cleanup(self):
+        # is this being called twice?
         if self.cleanedUp:
             return
         else:
             self.cleanedUp = 1
+            
         self.demand('Off')
         self.detachNode()
+        
         self.toMagnetSoundInterval.finish()
         self.hitFloorSoundInterval.finish()
         self.hitBossSoundInterval.finish()
@@ -59,6 +86,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         del self.hitFloorSoundInterval
         del self.hitBossSoundInterval
         del self.touchedBossSoundInterval
+        
         self.boss = None
         return
 
@@ -67,15 +95,24 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         anp = NodePath(an)
         if not self.isEmpty():
             self.reparentTo(anp)
+
+        # It is important that there be no messenger hooks added on
+        # this object at the time we reassign the NodePath.
         NodePath.assign(self, anp)
+        
         self.physicsObject = an.getPhysicsObject()
         self.setTag('object', str(self.doId))
+        
         self.collisionNodePath.reparentTo(self)
         self.handler = PhysicsCollisionHandler()
         self.handler.addCollider(self.collisionNodePath, self)
+
+        # Set up a collision event so we know when the object hits the
+        # floor, or the boss's target.
         self.collideName = self.uniqueName('collide')
         self.handler.addInPattern(self.collideName + '-%in')
         self.handler.addAgainPattern(self.collideName + '-%in')
+        
         self.watchDriftName = self.uniqueName('watchDrift')
 
     def activatePhysics(self):
@@ -123,6 +160,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
                 self.doHitGoon(goon)
 
     def doHitGoon(self, goon):
+        # Override in a derived class to do something if the object is
+        # dropped on a goon.
         pass
 
     def __hitBoss(self, entry):
@@ -142,6 +181,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.doHitBoss(impact, self.craneId)
 
     def doHitBoss(self, impact, craneId):
+        # Derived classes can override this to do something specific
+        # when we successfully hit the boss.
         self.d_hitBoss(impact, craneId)
 
     def __hitDropPlane(self, entry):
@@ -149,26 +190,49 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.fellOut()
 
     def fellOut(self):
+        # Override in a derived class to do the right thing when the
+        # object falls out of the world.
         raise StandardError, 'fellOut unimplented'
 
     def getMinImpact(self):
+        # This method returns the minimum impact, in feet per second,
+        # with which the object should hit the boss before we bother
+        # to tell the server.
         return 0
 
     def __watchDrift(self, task):
+        # Checks the object for non-zero velocity.  When the velocity
+        # reaches zero in the XY plane, we tell the AI we're done
+        # moving it around.
         v = self.physicsObject.getVelocity()
+        
         if abs(v[0]) < 0.0001 and abs(v[1]) < 0.0001:
             self.d_requestFree()
             self.demand('Free')
+            
         return Task.cont
 
     def prepareGrab(self):
+        # Specialized classes will override this method to do
+        # something appropriate when the object is grabbed by a
+        # magnet.
         pass
 
     def prepareRelease(self):
         pass
 
+
+        
+    ##### Messages To/From The Server #####
+
     def setBossCogId(self, bossCogId):
         self.bossCogId = bossCogId
+
+        # This would be risky if we had toons entering the zone during
+        # a battle--but since all the toons are always there from the
+        # beginning, we can be confident that the BossCog has already
+        # been generated by the time we receive the generate for its
+        # associated objects.
         self.boss = base.cr.doId2do[bossCogId]
 
     def setObjectState(self, state, avId, craneId):
@@ -198,6 +262,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.sendUpdate('requestGrab')
 
     def rejectGrab(self):
+        # The server tells us we can't have it for whatever reason.
         if self.state == 'LocalGrabbed':
             self.demand('LocalDropped', self.avId, self.craneId)
 
@@ -217,12 +282,23 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.sendUpdate('hitBoss', [impact, craneId])
 
     def defaultFilter(self, request, args):
+        # We overload the default filter function to disallow *any*
+        # state transitions after the object has been disabled or
+        # deleted, or before it has been fully generated.
         if self.boss == None:
             raise FSM.RequestDenied, request
+            
         return FSM.FSM.defaultFilter(self, request, args)
 
+
+
+    ### FSM States ###
+
     def enterOff(self):
+        # In state Off, the object is not parented to the scene graph.
+        # In all other states, it is.
         self.detachNode()
+        
         if self.lerpInterval:
             self.lerpInterval.finish()
             self.lerpInterval = None
@@ -356,19 +432,30 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.showShadows()
 
     def enterSlidingFloor(self, avId):
+        # The object is now sliding across the floor under local
+        # control.  Crank up the friction so it will slow down more
+        # quickly.
+        
         self.avId = avId
+        
         if self.lerpInterval:
             self.lerpInterval.finish()
             self.lerpInterval = None
+            
         if self.avId == base.localAvatar.doId:
             self.activatePhysics()
             self.startPosHprBroadcast(period=.05)
+            
             self.handler.setStaticFrictionCoef(0.9)
             self.handler.setDynamicFrictionCoef(0.5)
+
+            # Start up a task to watch for it to actually stop drifting.
+            # When it does, we notify the AI.
             if self.wantsWatchDrift:
                 taskMgr.add(self.__watchDrift, self.watchDriftName)
         else:
             self.startSmooth()
+            
         self.hitFloorSoundInterval.start()
         return
 
