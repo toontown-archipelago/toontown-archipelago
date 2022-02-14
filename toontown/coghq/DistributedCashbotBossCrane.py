@@ -435,7 +435,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.__cleanupMagnetAdvice()
         self.ignore('escape')
         self.ignore(base.CRANE_GRAB_KEY)
-        self.ignore('control-up')
+        self.ignore(base.CRANE_GRAB_KEY + '-up')
         self.ignore('InputState-forward')
         self.ignore('InputState-reverse')
         self.ignore('InputState-turnLeft')
