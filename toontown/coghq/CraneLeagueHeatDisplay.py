@@ -17,6 +17,11 @@ V_HEAT_VALUE = .83
 LOWEST_HEAT = 150
 HIGHEST_HEAT = 1000
 
+TITLE_FONT_SIZE = 1.05
+DESCRIPTION_TITLE_FONT_SIZE = 0.85
+DESCRIPTION_BODY_FONT_SIZE = 0.65
+DESCRIPTION_WORD_WRAP = 25
+
 
 class CraneLeagueHeatDisplay:
 
@@ -28,7 +33,7 @@ class CraneLeagueHeatDisplay:
     text_properties_manager = TextPropertiesManager.getGlobalPtr()
     text_properties_default_color = TextProperties()
     text_properties_default_color.setTextColor(1, 1, 1, 1)
-    text_properties_default_color.setTextScale(1.5)
+    text_properties_default_color.setTextScale(TITLE_FONT_SIZE)
     text_properties_manager.setProperties("default_mod_color", text_properties_default_color)
 
     def __init__(self):
@@ -56,10 +61,11 @@ class CraneLeagueHeatDisplay:
         self.modifiers_desc.setCardColor(.2, .2, .2, .75)
         self.modifiers_desc.setCardAsMargin(0.38, 0.38, 0.19, 0.19)
         self.modifiers_desc.setCardDecal(True)
-        self.modifiers_desc.setWordwrap(20)
+        self.modifiers_desc.setWordwrap(DESCRIPTION_WORD_WRAP)
         self.modifiers_desc.setShadow(0.05, 0.05)
         self.modifiers_desc.setShadowColor(0, 0, 0, 1)
         self.modifiers_desc.setTextColor(.7, .7, .7, 1)
+        self.modifiers_desc.setTextScale(DESCRIPTION_BODY_FONT_SIZE)
         self.modifiers_desc_path = base.a2dRightCenter.attachNewNode(self.modifiers_desc)
         self.modifiers_desc_path.setScale(.055)
         self.modifiers_desc_path.setPos(self.MODIFIERS_TEXT_POS)
@@ -88,9 +94,10 @@ class CraneLeagueHeatDisplay:
             # Define text prop objs
             title_text_properties = TextProperties()
             title_text_properties.setTextColor(mod.TITLE_COLOR)
-            title_text_properties.setTextScale(1.35)
+            title_text_properties.setTextScale(DESCRIPTION_TITLE_FONT_SIZE)
             desc_text_properties = TextProperties()
             desc_text_properties.setTextColor(mod.DESCRIPTION_COLOR)
+            desc_text_properties.setTextScale(DESCRIPTION_BODY_FONT_SIZE)
 
             title_key = 'mod-title-' + str(title)
             desc_key = 'mod-desc-' + str(title)

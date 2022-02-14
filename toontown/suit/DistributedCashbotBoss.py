@@ -75,7 +75,11 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.activityLog.addToLog(msg)
 
     def debug(self, doId='system', content='null'):
-        if self.ruleset.DEBUG:
+        if self.ruleset.GENERAL_DEBUG:
+            self.addToActivityLog(doId, content)
+
+    def statesDebug(self, doId='system', content='null'):
+        if self.ruleset.STATES_DEBUG:
             self.addToActivityLog(doId, content)
 
     def updateSpectators(self, specs):
