@@ -103,7 +103,7 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         if self.air:
             crane = self.air.doId2do.get(craneId)
             if crane:
-                crane.objectId = objectId
+                crane.setObjectID(objectId)
 
     def enterGrabbed(self, avId, craneId):
         self.avId = avId
