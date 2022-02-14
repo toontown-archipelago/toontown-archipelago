@@ -26,6 +26,9 @@ class DistributedCashbotBossSideCrane(DistributedCashbotBossCrane.DistributedCas
     def __init__(self, cr):
         DistributedCashbotBossCrane.DistributedCashbotBossCrane.__init__(self, cr)
         FSM.FSM.__init__(self, 'DistributedCashbotBossSideCrane')
+
+    def getName(self):
+        return 'SideCrane-%s' % self.index
         
     def grabObject(self, obj):
         if isinstance(obj, DistributedCashbotBossSafe.DistributedCashbotBossSafe):

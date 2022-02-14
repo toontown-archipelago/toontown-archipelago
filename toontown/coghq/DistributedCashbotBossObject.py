@@ -33,7 +33,12 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.touchedBossSfx = loader.loadSfx('phase_5/audio/sfx/AA_drop_sandbag.ogg')
         self.touchedBossSoundInterval = SoundInterval(self.touchedBossSfx, duration=0.8)
         self.lerpInterval = None
-        return
+        self.setBroadcastStateChanges(True)
+        self.accept(self.getStateChangeEvent(), self._doDebug)
+
+    def _doDebug(self, _=None):
+        self.boss.statesDebug(doId=self.doId,
+                              content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
 
     def disable(self):
         self.cleanup()
@@ -169,8 +174,6 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
     def setObjectState(self, state, avId, craneId):
 
-        self.boss.statesDebug(doId=self.doId, content='(Client) attempting changing states %s ---> %s' % (self.state, state))
-        
         if state == 'G':
             if self.boss.doId == avId or base.localAvatar.doId != avId:
                 self.demand('Grabbed', avId, craneId)

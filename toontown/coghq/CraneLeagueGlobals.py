@@ -57,7 +57,7 @@ class CFORuleset:
     def __init__(self):
 
         # Enable for debugging
-        self.GENERAL_DEBUG = False
+        self.GENERAL_DEBUG = True
         self.STATES_DEBUG = True
 
         self.TIMER_MODE = True  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch

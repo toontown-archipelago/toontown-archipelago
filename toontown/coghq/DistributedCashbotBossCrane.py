@@ -82,7 +82,15 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.magnetSoundInterval = Parallel(SoundInterval(self.magnetOnSfx), Sequence(Wait(0.5), Func(base.playSfx, self.magnetLoopSfx, looping=1)))
         self.craneMoveSfx = base.loader.loadSfx('phase_9/audio/sfx/CHQ_FACT_elevator_up_down.ogg')
         self.fadeTrack = None
-        return
+        self.setBroadcastStateChanges(True)
+        self.accept(self.getStateChangeEvent(), self._doDebug)
+
+    def _doDebug(self, _=None):
+        self.boss.statesDebug(doId=self.doId,
+                              content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
+
+    def getName(self):
+        return 'NormalCrane-%s' % self.index
 
     def announceGenerate(self):
         DistributedObject.DistributedObject.announceGenerate(self)
