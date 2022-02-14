@@ -172,6 +172,9 @@ class CFORuleset:
         self.COMBO_DAMAGE_PERCENTAGE = .2  # Percentage to add to our running combo when doing damage (basically 20% bonus per hits when in a combo)
         self.TREASURE_GRAB_RESETS_COMBO = True  # Should picking up a treasure reset a toon's combo?
 
+        self.MODIFIER_TIER_RANGE = (1, 3)  # todo Perhaps refactor this into the modifier class
+
+
     # Sends an astron friendly array over, ONLY STUFF THE CLIENT NEEDS TO KNOW GOES HERE
     # ANY TIME YOU MAKE A NEW ATTRIBUTE IN THE INIT ABOVE, MAKE SURE TO ADD
     # THE ATTRIBUTE INTO THIS LIST BELOW, AND A PARAMETER FOR IT IN THE DC FILE IN THE CFORuleset STRUCT
@@ -932,3 +935,9 @@ class ModifierUberBonusIncreaser(CFORulesetModifierBase):
 # Loop through all the classes that extend the base modifier class and map an enum to the class for easier construction
 for subclass in CFORulesetModifierBase.__subclasses__():
     CFORulesetModifierBase.MODIFIER_SUBCLASSES[subclass.MODIFIER_ENUM] = subclass
+
+# Used for when i want to spit out a cheat sheet
+# for e, c in CFORulesetModifierBase.MODIFIER_SUBCLASSES.items():
+#     i = c()
+#     d = i.getDescription() % {'color_start': '', 'color_end': ''}
+#     print('(ID:%s) %s\n%s' % (e, i.getName(), d))

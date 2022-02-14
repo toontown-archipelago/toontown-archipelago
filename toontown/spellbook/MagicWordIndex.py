@@ -11,7 +11,7 @@ from otp.otpbase import OTPGlobals
 
 from toontown.battle import SuitBattleGlobals
 from toontown.char import CharDNA
-from toontown.coghq import CogDisguiseGlobals
+from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
 from toontown.coghq.ActivityLog import ActivityLog
 from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 from toontown.effects import FireworkShows
@@ -1798,6 +1798,124 @@ class spectate(MagicWord):
             boss.disableSpectator(toon)
 
         return "%s spectator mode for %s" % ('Disabled' if isSpectating else 'Enabled', toon.getName())
+
+class modifiers(MagicWord):
+    desc = "Dynamically tweak modifiers mid CFO"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+    VALID_SUBCOMMANDS = ['debug', 'amount', 'random', 'clear', 'add', 'remove']
+    arguments = [
+        ('subcommand', str, False, 'debug'),  # subcommand
+        ('mod-id/yes/no', str, False, 'debug'),  # modifier id/on/off/int
+        ('tier', int, False, 1),  # tier
+    ]
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+
+        if not boss:
+            return "You aren't in a CFO!"
+
+        # Handle if no arguments given
+        if args[0].lower() == self.VALID_SUBCOMMANDS[0]:
+            return 'Valid subcommands: ' + ', '.join(self.VALID_SUBCOMMANDS)
+
+        # Handle if setting amount of mods wanted
+        if args[0].lower() == self.VALID_SUBCOMMANDS[1]:
+
+            try:
+                n = int(args[1])
+            except:
+                return "Please specify a number!"
+
+            range = (0, len(CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.values()))
+
+            if n < range[0] or n > range[1]:
+                return "Number of modifiers must be in between %s and %s" % (range[0], range[1])
+
+            boss.numModsWanted = n
+            return "Set desired amount of modifiers to %s" % n
+
+        # Handle if we wanna randomize mods
+        if args[0].lower() == self.VALID_SUBCOMMANDS[2]:
+
+            response = args[1].lower()
+            valid_responses = ('yes', 'no')
+
+            if response not in valid_responses:
+                return "Please say yes or no! ex: ~modifiers random yes"
+
+            map = {'yes': True, 'no': False}
+            boss.rollModsOnStart = map[response]
+            return 'Randomize modifiers on restart set to: %s' % response
+
+        # Handle if we want to clear the mods for the next round
+        if args[0].lower() == self.VALID_SUBCOMMANDS[3]:
+            ret = "Cleared modifiers, ~rcr to have changes take effect"
+            if boss.rollModsOnStart:
+                ret += ' warning: roll modifers on rcr active, use ~modifiers random off'
+            boss.modifiers = []
+            return ret
+
+        # Handle if we want to add a modifier
+        if args[0].lower() == self.VALID_SUBCOMMANDS[4]:
+
+            try:
+                mod_id = int(args[1])
+            except:
+                return "Please provide a number for modifier ID"
+
+
+            mod = CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.get(mod_id)
+            if not mod:
+                return "Invalid modifier ID provided"
+
+            tier = args[2]
+            if boss.ruleset.MODIFIER_TIER_RANGE[0] > tier or boss.ruleset.MODIFIER_TIER_RANGE[1] < tier:
+                return "Tier must be in range %s" % boss.ruleset.MODIFIER_TIER_RANGE
+
+            m_instance = mod(tier)
+
+            for m in list(boss.modifiers):
+                if m.MODIFIER_ENUM == m_instance.MODIFIER_ENUM:
+                    boss.modifiers.remove(m)
+
+            boss.modifiers.append(m_instance)
+            s =  "Added modifier %s, ~rcr to take effect" % m_instance.getName()
+            if boss.rollModsOnStart:
+                s += ' warning: roll modifiers on rcr active, use ~modifiers random off'
+
+            return s
+
+        # Handle if we want to remove a modifier
+        if args[0].lower() == self.VALID_SUBCOMMANDS[5]:
+
+            try:
+                mod_id = int(args[1])
+            except:
+                return "Please provide a number for modifier ID"
+
+            mod = CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.get(mod_id)
+            if not mod:
+                return "Invalid modifier ID provided"
+
+            for m in list(boss.modifiers):
+                if m.MODIFIER_ENUM == mod_id:
+                    boss.modifiers.remove(m)
+
+            s = "Removed modifier %s, ~rcr to take effect" % mod_id
+            if boss.rollModsOnStart:
+                s += ' warning: roll modifiers on rcr active, use ~modifiers random off'
+
+            return s
+
 
 class dumpCraneAI(MagicWord):
     desc = "Dumps info about crane on AI side"
