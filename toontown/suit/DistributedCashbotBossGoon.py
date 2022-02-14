@@ -33,6 +33,9 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.wiggleSfx = loader.loadSfx('phase_5/audio/sfx/SA_finger_wag.ogg')
         return
 
+    def _doDebug(self, _=None):
+        self.boss.goonStatesDebug(doId=self.doId, content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
+
     def generate(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.generate(self)
         DistributedGoon.DistributedGoon.generate(self)

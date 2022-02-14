@@ -23,7 +23,7 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
         self.accept(self.getStateChangeEvent(), self._doDebug)
 
     def _doDebug(self, _=None):
-        self.boss.statesDebug(doId=self.doId,
+        self.boss.craneStatesDebug(doId=self.doId,
                               content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
 
     def getName(self):

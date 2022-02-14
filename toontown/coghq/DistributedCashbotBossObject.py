@@ -37,8 +37,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.accept(self.getStateChangeEvent(), self._doDebug)
 
     def _doDebug(self, _=None):
-        self.boss.statesDebug(doId=self.doId,
-                              content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
+        pass
 
     def disable(self):
         self.cleanup()

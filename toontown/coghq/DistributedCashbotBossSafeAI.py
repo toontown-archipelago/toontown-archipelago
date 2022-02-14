@@ -20,6 +20,9 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         cn.addSolid(cs)
         self.attachNewNode(cn)
 
+    def _doDebug(self, _=None):
+        self.boss.safeStatesDebug(doId=self.doId, content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
+
     def resetToInitialPosition(self):
         posHpr = CraneLeagueGlobals.SAFE_POSHPR[self.index]
         self.setPosHpr(*posHpr)
