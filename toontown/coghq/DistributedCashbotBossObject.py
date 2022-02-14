@@ -242,7 +242,9 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
     def setObjectState(self, state, avId, craneId):
         if state == 'G':
-            if self.boss.doId == avId or self.state not in self.deniableStates or (base.localAvatar.doId == avId and self.state == 'LocalGrabbed'):
+            if (base.localAvatar.doId == avId and self.state == 'LocalGrabbed'):
+                return
+            if self.boss.doId == avId or self.state not in self.deniableStates:
                 self.demand('Grabbed', avId, craneId)
         elif state == 'D':
             if self.state != 'Dropped' or self.state != 'LocalDropped':
