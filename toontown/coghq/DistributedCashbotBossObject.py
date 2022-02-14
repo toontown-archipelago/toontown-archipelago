@@ -258,6 +258,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         del self.crane
 
     def enterDropped(self, avId, craneId):
+
         self.avId = avId
         self.craneId = craneId
         self.crane = self.cr.doId2do.get(craneId)

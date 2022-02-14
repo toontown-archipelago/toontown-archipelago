@@ -506,9 +506,11 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
     def __turnOffMagnet(self):
         if self.magnetOn:
-            self.magnetOn = 0
             self.__deactivateSniffer()
             self.releaseObject()
+
+        self.magnetOn = 0
+        self.dropObject(self.heldObject)
 
     def __upArrow(self, pressed):
         self.__incrementChangeSeq()
