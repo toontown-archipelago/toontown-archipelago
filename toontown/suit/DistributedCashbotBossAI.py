@@ -539,6 +539,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.debug(content='Next auto-helmet in %s seconds' % delayTime)
             self.waitingForHelmet = 1
 
+    def setObjectID(self, objId):
+        self.objectId = objId
+
     def __donHelmet(self, task):
         self.waitingForHelmet = 0
         if self.heldObject == None:
