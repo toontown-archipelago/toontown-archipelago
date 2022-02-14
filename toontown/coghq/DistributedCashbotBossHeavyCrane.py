@@ -21,3 +21,6 @@ class DistributedCashbotBossHeavyCrane(DistributedCashbotBossCrane.DistributedCa
     def __init__(self, cr):
         DistributedCashbotBossCrane.DistributedCashbotBossCrane.__init__(self, cr)
         FSM.FSM.__init__(self, 'DistributedCashbotBossHeavyCrane')
+
+    def getName(self):
+        return 'HeavyCrane-%s' % self.index

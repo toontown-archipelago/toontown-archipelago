@@ -7,5 +7,8 @@ class DistributedCashbotBossSideCraneAI(DistributedCashbotBossCraneAI.Distribute
         DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI.__init__(self, air, boss, index)
         FSM.FSM.__init__(self, 'DistributedCashbotBossSideCraneAI')
 
+    def getName(self):
+        return 'SideCrane-%s' % self.index
+
     def getPointsForStun(self):
         return self.boss.ruleset.POINTS_SIDESTUN

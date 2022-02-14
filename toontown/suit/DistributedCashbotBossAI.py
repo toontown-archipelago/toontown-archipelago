@@ -218,8 +218,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.cranes = []
             ind = 0
 
+            self.debug(content='Generating %s normal cranes' % len(CraneLeagueGlobals.NORMAL_CRANE_POSHPR))
             for _ in CraneLeagueGlobals.NORMAL_CRANE_POSHPR:
-                self.debug(content='Generating normal crane index=%s' % ind)
                 crane = DistributedCashbotBossCraneAI.DistributedCashbotBossCraneAI(self.air, self, ind)
                 crane.generateWithRequired(self.zoneId)
                 self.cranes.append(crane)
@@ -227,8 +227,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
             # Generate the sidecranes if wanted
             if self.ruleset.WANT_SIDECRANES:
+                self.debug(content='Generating %s sidecranes' % len(CraneLeagueGlobals.SIDE_CRANE_POSHPR))
                 for _ in CraneLeagueGlobals.SIDE_CRANE_POSHPR:
-                    self.debug(content='Generating sidecrane index=%s' % ind)
                     crane = DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI(self.air, self, ind)
                     crane.generateWithRequired(self.zoneId)
                     self.cranes.append(crane)
@@ -236,8 +236,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
             # Generate the heavy cranes if wanted
             if self.ruleset.WANT_HEAVY_CRANES:
+                self.debug(content='Generating %s heavy cranes' % len(CraneLeagueGlobals.HEAVY_CRANE_POSHPR))
                 for _ in CraneLeagueGlobals.HEAVY_CRANE_POSHPR:
-                    self.debug(content='Generating heavy crane index=%s' % ind)
                     crane = DistributedCashbotBossHeavyCraneAI.DistributedCashbotBossHeavyCraneAI(self.air, self, ind)
                     crane.generateWithRequired(self.zoneId)
                     self.cranes.append(crane)

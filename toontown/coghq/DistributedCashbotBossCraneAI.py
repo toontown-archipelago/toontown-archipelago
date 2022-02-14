@@ -19,6 +19,15 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
         self.goonShield.setPosHpr(*CraneLeagueGlobals.ALL_CRANE_POSHPR[self.index])
         self.avId = 0
         self.objectId = 0
+        self.setBroadcastStateChanges(True)
+        self.accept(self.getStateChangeEvent(), self._doDebug)
+
+    def _doDebug(self, _=None):
+        self.boss.statesDebug(doId=self.doId,
+                              content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
+
+    def getName(self):
+        return 'NormalCrane-%s' % self.index
 
     # Should we multiply any damage done from this crane?
     def getDamageMultiplier(self):
