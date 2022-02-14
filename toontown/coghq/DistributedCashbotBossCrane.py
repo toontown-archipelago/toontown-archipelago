@@ -648,7 +648,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
             self.boss.craneStatesDebug(doId=self.doId, content='Sniffed something, held obj %s' % (
                 self.heldObject.getName() if self.heldObject else "Nothing"))
-            
+
             obj.d_requestGrab()
             # See if we should do anything with this object when sniffing it
             self.considerObjectState(obj)
@@ -706,14 +706,14 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
     def releaseObject(self):
         self.boss.craneStatesDebug(doId=self.doId,
-                                   content='pre-Releasing object, currently holding: %s' % self.heldObject.getName() if self.heldObject else "Nothing")
+                                   content='pre-Releasing object, currently holding: %s' % (self.heldObject.getName() if self.heldObject else "Nothing"))
         if self.heldObject:
             obj = self.heldObject
             obj.d_requestDrop()
             if (obj.state == 'Grabbed'):
                 obj.demand('Dropped', localAvatar.doId, self.doId)
         self.boss.craneStatesDebug(doId=self.doId,
-                                   content='post-Releasing object, currently holding: %s' % self.heldObject.getName() if self.heldObject else "Nothing")
+                                   content='post-Releasing object, currently holding: %s' % (self.heldObject.getName() if self.heldObject else "Nothing"))
 
     def __hitTrigger(self, event):
         self.d_requestControl()
