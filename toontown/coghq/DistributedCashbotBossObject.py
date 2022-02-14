@@ -35,6 +35,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.lerpInterval = None
         self.setBroadcastStateChanges(True)
         self.accept(self.getStateChangeEvent(), self._doDebug)
+        self.isPosHprBroadcasting = False
 
     def _doDebug(self, _=None):
         pass
@@ -234,6 +235,9 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.reparentTo(render)
 
     def enterGrabbed(self, avId, craneId):
+        if self.isPosHprBroadcasting:
+            self.stopPosHprBroadcast()
+            self.isPosHprBroadcasting = False
         self.crane = self.cr.doId2do.get(craneId)
         if self.oldState == 'LocalGrabbed':
             if craneId == self.craneId:
@@ -262,7 +266,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.crane = self.cr.doId2do.get(craneId)
         if self.avId == base.localAvatar.doId:
             self.activatePhysics()
-            self.startPosHprBroadcast()
+            self.startPosHprBroadcast(period=.05)
+            self.isPosHprBroadcasting = True
             self.handler.setStaticFrictionCoef(0)
             self.handler.setDynamicFrictionCoef(0)
         else:
@@ -274,6 +279,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             if self.newState != 'SlidingFloor':
                 self.deactivatePhysics()
                 self.stopPosHprBroadcast()
+                self.isPosHprBroadcasting = False
         else:
             self.stopSmooth()
         del self.crane
@@ -286,7 +292,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.lerpInterval = None
         if self.avId == base.localAvatar.doId:
             self.activatePhysics()
-            self.startPosHprBroadcast()
+            self.startPosHprBroadcast(period=.05)
+            self.isPosHprBroadcasting = True
             self.handler.setStaticFrictionCoef(0.9)
             self.handler.setDynamicFrictionCoef(0.5)
             if self.wantsWatchDrift:
@@ -301,6 +308,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             taskMgr.remove(self.watchDriftName)
             self.deactivatePhysics()
             self.stopPosHprBroadcast()
+            self.isPosHprBroadcasting = False
         else:
             self.stopSmooth()
 
