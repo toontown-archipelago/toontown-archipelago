@@ -321,7 +321,6 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.craneId = craneId
 
         self.crane = self.cr.doId2do.get(craneId)
-        assert(self.crane != None)
 
         self.hideShadows()
         self.prepareGrab()
@@ -329,7 +328,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
     def exitLocalGrabbed(self):
         if self.newState != 'Grabbed':
-            self.crane.dropObject(self)
+            if self.crane:
+                self.crane.dropObject(self)
             self.prepareRelease()
             del self.crane
             self.showShadows()
@@ -355,7 +355,6 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.craneId = craneId
 
         self.crane = self.cr.doId2do.get(craneId)
-        assert(self.crane != None)
 
         # The "crane" might actually be the boss cog himself!  This
         # happens when the boss takes a safe to wear as a helmet.
@@ -365,7 +364,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.crane.grabObject(self)
 
     def exitGrabbed(self):
-        self.crane.dropObject(self)
+        if self.crane:
+            self.crane.dropObject(self)
         self.prepareRelease()
         self.showShadows()
         del self.crane
@@ -389,7 +389,6 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.handler.setDynamicFrictionCoef(0)
 
     def exitLocalDropped(self):
-        assert(self.avId == base.localAvatar.doId)
         if self.newState != 'SlidingFloor' and self.newState != 'Dropped':
             self.deactivatePhysics()
             self.stopPosHprBroadcast()
