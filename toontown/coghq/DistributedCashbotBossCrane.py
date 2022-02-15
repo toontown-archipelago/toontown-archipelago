@@ -637,15 +637,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         if obj.state == 'Grabbed':
             return
 
-        if not obj:
-            return
-
-        objDropped = obj.state != 'Dropped'
-        heldByThisCrane = obj.craneId == self.doId
-
-        # if objDropped or not heldByThisCrane:
-        if not heldByThisCrane:
-
+        if obj and (obj.state != 'Dropped' or obj.craneId != self.doId):
             self.boss.craneStatesDebug(doId=self.doId, content='Sniffed something, held obj %s' % (
                 self.heldObject.getName() if self.heldObject else "Nothing"))
             
