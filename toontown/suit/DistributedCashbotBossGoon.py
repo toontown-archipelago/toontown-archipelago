@@ -12,20 +12,10 @@ from direct.showbase import PythonUtil
 import DistributedGoon
 
 class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCashbotBossObject.DistributedCashbotBossObject):
-    
-    """ This is a goon that walks around in the Cashbot CFO final
-    battle scene, tormenting Toons, and also providing ammo for
-    defeating the boss. """
-    
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossGoon')
-    
     walkGrabZ = -3.6
     stunGrabZ = -2.2
-    
-    # How long does it take for a live goon to wiggle free of the magnet?
     wiggleFreeTime = 2
-    
-    # What happens to the crane and its cable when this object is picked up?
     craneFrictionCoef = 0.15
     craneSlideSpeed = 10
     craneRotateSpeed = 20
@@ -33,10 +23,8 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     def __init__(self, cr):
         DistributedCashbotBossObject.DistributedCashbotBossObject.__init__(self, cr)
         DistributedGoon.DistributedGoon.__init__(self, cr)
-        
         self.target = None
         self.arrivalTime = None
-        
         self.flyToMagnetSfx = loader.loadSfx('phase_5/audio/sfx/TL_rake_throw_only.ogg')
         self.hitMagnetSfx = loader.loadSfx('phase_4/audio/sfx/AA_drop_anvil_miss.ogg')
         self.toMagnetSoundInterval = Sequence(SoundInterval(self.flyToMagnetSfx, duration=ToontownGlobals.CashbotBossToMagnetTime, node=self), SoundInterval(self.hitMagnetSfx, node=self))
@@ -54,32 +42,19 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
 
     def announceGenerate(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.announceGenerate(self)
-
-        # It is important to call setupPhysics() before we call
-        # DistributedGoon.announceGenerate(), since setupPhysics()
-        # will reassign our NodePath and thereby invalidate any
-        # messenger hooks already added.  In fact, it is important
-        # that we not have any outstanding messenger hooks at the time
-        # we call setupPhysics().
         self.setupPhysics('goon')
-        
         DistributedGoon.DistributedGoon.announceGenerate(self)
-        
         self.name = 'goon-%s' % self.doId
         self.setName(self.name)
-        
         self.setTag('doId', str(self.doId))
         self.collisionNode.setName('goon')
         #cs = CollisionSphere(0, 0, 4, 4) #TTR Collisions
         cs = CollisionCapsule(0, 0, 4, 0, 0, 4, 4) #TTCC Collisions
         self.collisionNode.addSolid(cs)
         self.collisionNode.setIntoCollideMask(ToontownGlobals.PieBitmask | ToontownGlobals.CashbotBossObjectBitmask)
-        
         self.wiggleTaskName = self.uniqueName('wiggleTask')
         self.wiggleFreeName = self.uniqueName('wiggleFree')
-        
         self.boss.goons.append(self)
-        
         self.reparentTo(render)
 
     def disable(self):
@@ -100,9 +75,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.dropShadow.show()
 
     def getMinImpact(self):
-        # This method returns the minimum impact, in feet per second,
-        # with which the object should hit the boss before we bother
-        # to tell the server.
         return self.boss.ruleset.MIN_GOON_IMPACT
 
     def doHitBoss(self, impact, craneId):
@@ -112,27 +84,19 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
             self.b_destroyGoon()
 
     def __startWalk(self):
-        # Generate an interval to walk the goon to his target square
-        # by the specified time.
         self.__stopWalk()
-        
         if self.target:
             now = globalClock.getFrameTime()
             availableTime = self.arrivalTime - now
             if availableTime > 0:
-                # How long will it take to rotate to position?
                 origH = self.getH()
                 h = PythonUtil.fitDestAngle2Src(origH, self.targetH)
                 delta = abs(h - origH)
                 turnTime = delta / (self.velocity * 5)
-                
-                # And how long will it take to walk to position?
                 dist = Vec3(self.target - self.getPos()).length()
                 walkTime = dist / self.velocity
-                
                 denom = turnTime + walkTime
                 if denom != 0:
-                    # Fit that within our available time.
                     timeCompress = availableTime / denom
                     self.walkTrack = Sequence(self.hprInterval(turnTime * timeCompress, VBase3(h, 0, 0)), self.posInterval(walkTime * timeCompress, self.target))
                     self.walkTrack.start()
@@ -141,15 +105,12 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
                 self.setH(self.targetH)
 
     def __stopWalk(self):
-        # Stop the walk interval.
         if self.walkTrack:
             self.walkTrack.pause()
             self.walkTrack = None
         return
 
     def __wiggleTask(self, task):
-        # If the unfortunate player picks up an active goon, the
-        # magnet should wiggle erratically to indicate instability.
         elapsed = globalClock.getFrameTime() - self.wiggleStart
         h = math.sin(elapsed * 17) * 5
         p = math.sin(elapsed * 29) * 10
@@ -158,16 +119,12 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         return Task.cont
 
     def __wiggleFree(self, task):
-        # We've successfully wiggled free after being picked up.
         if self.crane:
             self.crane.releaseObject()
-        
-        # And we can't be picked up again until we land.
         self.stashCollisions()
         return Task.done
 
     def fellOut(self):
-        # The goon fell out of the world. Just destroy him and move on.
         self.b_destroyGoon()
 
     def handleToonDetect(self, collEntry = None):
@@ -181,7 +138,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
             self.pose('collapse', 48)
             self.grabPos = (0, 0, self.stunGrabZ * self.scale)
         else:
-            # He's got a live one!
             self.setPlayRate(4, 'walk')
             self.loop('walk')
             self.grabPos = (0, 0, self.walkGrabZ * self.scale)
@@ -199,8 +155,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         taskMgr.remove(self.wiggleTaskName)
         taskMgr.remove(self.wiggleFreeName)
         self.setPlayRate(self.animMultiplier, 'walk')
-        
-    ##### Messages To/From The Server #####
 
     def setObjectState(self, state, avId, craneId):
         self.crane = self.cr.doId2do.get(craneId)
@@ -246,8 +200,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         if self in self.boss.goons:
             self.boss.goons.remove(self)
         return
-        
-    ### FSM States ###
 
     def enterOff(self):
         DistributedGoon.DistributedGoon.enterOff(self)
@@ -270,7 +222,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.stop()
 
     def enterEmergeA(self):
-        # The goon emerges from door a.
         self.undead()
         self.reparentTo(render)
         self.stopToonDetect()
@@ -286,7 +237,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.__stopWalk()
 
     def enterEmergeB(self):
-        # The goon emerges from door b.
         self.undead()
         self.reparentTo(render)
         self.stopToonDetect()
@@ -305,7 +255,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         DistributedGoon.DistributedGoon.enterBattle(self, avId, ts)
         avatar = base.cr.doId2do.get(avId)
         if avatar:
-            # Make the toon flash, and knock him off the crane.
             messenger.send('exitCrane')
             avatar.stunToon()
         self.unstashCollisions()
