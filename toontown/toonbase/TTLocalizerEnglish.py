@@ -12,6 +12,7 @@ SuitFont = 'phase_3/models/fonts/vtRemingtonPortable.ttf'
 SignFont = 'phase_3/models/fonts/MickeyFont'
 MinnieFont = 'phase_3/models/fonts/MinnieFont'
 FancyFont = 'phase_3/models/fonts/Comedy'
+CompetitionFont = 'phase_3/models/fonts/hemiheadreg.ttf'
 NametagFonts = ('phase_3/models/fonts/AnimGothic',
  'phase_3/models/fonts/Aftershock',
  'phase_3/models/fonts/JiggeryPokery',

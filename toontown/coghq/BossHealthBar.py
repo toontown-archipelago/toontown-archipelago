@@ -32,7 +32,7 @@ class BossHealthBar:
         self.gui.setTexture(self.bossBarFrameBg)
         self.gui.setTransparency(1)
         self.damageBar = DirectWaitBar(relief=None, scale=(0.195, 0, 0.077), value=100, pos=(-0.005, 0, 0.0015), frameSize=(-2.0, 2.0, -0.2, 0.2), borderWidth=(0.005, 0.005), range=100, sortOrder=50, frameColor=(0.1, 0.1, 0.1, .9), barColor=(0.5, 0.5, .5, 0.6))
-        self.bossBar = DirectWaitBar(relief=None, scale=(0.195, 0, 0.077), value=100, pos=(-0.005, 0, 0.0015), frameSize=(-2.0, 2.0, -0.2, 0.2), borderWidth=(0.005, 0.005), range=100, sortOrder=100, frameColor=(0.1, 0.1, 0.1, .9), barColor=(0.2, 0.2, .9, 0.95), text='0 / 0', text_scale=(0.14, 0.30), text_fg=(.9, .9, .9, 1), text_align=TextNode.ACenter, text_pos=(0, -0.12), text_shadow=(0, 0, 0, 1), text_font=ToontownGlobals.getMinnieFont())
+        self.bossBar = DirectWaitBar(relief=None, scale=(0.195, 0, 0.077), value=100, pos=(-0.005, 0, 0.0015), frameSize=(-2.0, 2.0, -0.2, 0.2), borderWidth=(0.005, 0.005), range=100, sortOrder=100, frameColor=(0.1, 0.1, 0.1, .9), barColor=(0.2, 0.2, .9, 0.95), text='0 / 0', text_scale=(0.14, 0.30), text_fg=(.9, .9, .9, 1), text_align=TextNode.ACenter, text_pos=(0, -0.12), text_shadow=(0, 0, 0, 1), text_font=ToontownGlobals.getCompetitionFont())
         self.gui.hide()
         self.bossBar.hide()
         self.damageBar.hide()
@@ -74,12 +74,12 @@ class BossHealthBar:
         self.bossBar.show()
         self.damageBar.show()
         self.gui.show()
-        self.damageDealtText = OnscreenText(parent=self.bossBarFrame, text='Damage Dealt: ' + str(self.damageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.19))
-        self.stunCountText = OnscreenText(parent=self.bossBarFrame, text='Stuns: ' + str(self.stunCount), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.24))
+        self.damageDealtText = OnscreenText(parent=self.bossBarFrame, text='Damage Dealt: ' + str(self.damageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.19), font=ToontownGlobals.getCompetitionFont())
+        self.stunCountText = OnscreenText(parent=self.bossBarFrame, text='Stuns: ' + str(self.stunCount), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.24), font=ToontownGlobals.getCompetitionFont())
         if self.dept == 'c':
-            self.speedDamageDealtText = OnscreenText(parent=self.bossBarFrame, text='Golf: ' + str(self.speedDamageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.29))
+            self.speedDamageDealtText = OnscreenText(parent=self.bossBarFrame, text='Golf: ' + str(self.speedDamageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.29), font=ToontownGlobals.getCompetitionFont())
         if self.dept == 'm':
-            self.goonsStompedText = OnscreenText(parent=self.bossBarFrame, text='Goons Stomped: ' + str(self.speedDamageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.29))
+            self.goonsStompedText = OnscreenText(parent=self.bossBarFrame, text='Goons Stomped: ' + str(self.speedDamageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.29), font=ToontownGlobals.getCompetitionFont())
         Sequence(self.bossBarFrame.posInterval(1.0, Point3(1, 0, self.bossBarEndPosZ), blendType='easeOut')).start()
 
     def update(self, hp, maxHp):

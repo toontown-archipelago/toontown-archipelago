@@ -1166,8 +1166,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def announceCraneRestart(self):
         restartingOrEnding = 'Restarting ' if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL else 'Ending '
-        title = OnscreenText(parent=aspect2d, text='All toons are sad!', style=3, fg=(.8, .2, .2, 1), align=TextNode.ACenter, scale=.15, pos=(0, .35))
-        sub = OnscreenText(parent=aspect2d, text=restartingOrEnding + 'crane round in 10 seconds...', style=3, fg=(.8, .8, .8, 1), align=TextNode.ACenter, scale=.09, pos=(0, .2))
+        title = OnscreenText(parent=aspect2d, text='All toons are sad!', style=3, fg=(.8, .2, .2, 1), align=TextNode.ACenter, scale=.15, pos=(0, .35), font=ToontownGlobals.getCompetitionFont())
+        sub = OnscreenText(parent=aspect2d, text=restartingOrEnding + 'crane round in 10 seconds...', style=3, fg=(.8, .8, .8, 1), align=TextNode.ACenter, scale=.09, pos=(0, .2), font=ToontownGlobals.getCompetitionFont())
 
         Parallel(
             Sequence(
@@ -1211,9 +1211,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
                 av.stunToon(knockdown=1)
 
         title = OnscreenText(parent=aspect2d, text='Times up!', style=3, fg=(.8, .2, .2, 1),
-                             align=TextNode.ACenter, scale=.15, pos=(0, .35))
+                             align=TextNode.ACenter, scale=.15, pos=(0, .35), font=ToontownGlobals.getCompetitionFont())
         sub = OnscreenText(parent=aspect2d, text=restartingOrEnding + 'crane round in 10 seconds...', style=3, fg=(.8, .8, .8, 1),
-                           align=TextNode.ACenter, scale=.09, pos=(0, .2))
+                           align=TextNode.ACenter, scale=.09, pos=(0, .2), font=ToontownGlobals.getCompetitionFont())
 
         Parallel(
             Sequence(

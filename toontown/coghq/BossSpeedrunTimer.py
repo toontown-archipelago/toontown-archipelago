@@ -18,7 +18,7 @@ class BossSpeedrunTimer:
     def __init__(self):
 
         self.frame = DirectFrame(pos=(-0.22, 0, .9))
-        self.time_text = OnscreenText(parent=self.frame, text='00:00.00', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft, scale=0.1)
+        self.time_text = OnscreenText(parent=self.frame, text='00:00.00', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft, scale=0.1, font=ToontownGlobals.getCompetitionFont())
         self.reset()
         self.overridden_time = None
         self.start_updating()

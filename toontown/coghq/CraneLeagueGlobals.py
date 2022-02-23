@@ -60,10 +60,10 @@ class CFORuleset:
         self.GENERAL_DEBUG = False
         self.GOON_STATES_DEBUG = False
         self.CRANE_STATES_DEBUG = False
-        self.SAFE_STATES_DEBUG = True
+        self.SAFE_STATES_DEBUG = False
 
         self.TIMER_MODE = True  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
-        self.TIMER_MODE_TIME_LIMIT = 60*15  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
+        self.TIMER_MODE_TIME_LIMIT = 15*60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
 
         self.CFO_MAX_HP = 1500  # How much HP should the CFO have?
         self.CFO_STUN_THRESHOLD = 30  # How much damage should a goon do to stun?

@@ -116,6 +116,7 @@ ToonFont = None
 BuildingNametagFont = None
 MinnieFont = None
 SuitFont = None
+CompetitionFont = None
 
 def getToonFont():
     global ToonFont
@@ -143,6 +144,14 @@ def getSuitFont():
     if SuitFont == None:
         SuitFont = loader.loadFont(TTLocalizer.SuitFont, pixelsPerUnit=40, spaceAdvance=0.25, lineHeight=1.0)
     return SuitFont
+
+
+def getCompetitionFont():
+    global CompetitionFont
+    if CompetitionFont is None:
+        CompetitionFont = loader.loadFont(TTLocalizer.CompetitionFont)
+
+    return CompetitionFont
 
 
 DonaldsDock = 1000

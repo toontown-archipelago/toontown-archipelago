@@ -66,6 +66,7 @@ class CraneLeagueHeatDisplay:
         self.modifiers_desc.setShadowColor(0, 0, 0, 1)
         self.modifiers_desc.setTextColor(.7, .7, .7, 1)
         self.modifiers_desc.setTextScale(DESCRIPTION_BODY_FONT_SIZE)
+        self.modifiers_desc.setFont(ToontownGlobals.getCompetitionFont())
         self.modifiers_desc_path = base.a2dRightCenter.attachNewNode(self.modifiers_desc)
         self.modifiers_desc_path.setScale(.055)
         self.modifiers_desc_path.setPos(self.MODIFIERS_TEXT_POS)
