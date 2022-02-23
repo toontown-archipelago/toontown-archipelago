@@ -507,7 +507,7 @@ class ModifierDesafeImpactIncreaser(CFORulesetModifierBase):
 
     def getDescription(self):
         perc = self.CFO_IMPACT_INC_PER_TIER[self.tier]
-        return "Increases the impact required to remove the CFO's helmet by %(color_start)s" + str(perc) + "%%%(color_end)s"
+        return "Increases the impact required to remove the CFO's helmet by %(color_start)s+" + str(perc) + "%%%(color_end)s"
 
     def getHeat(self):
         return 60 * self.tier
@@ -533,7 +533,7 @@ class ModifierGeneralImpactDecreaser(CFORulesetModifierBase):
         return 'Copper Plating'
 
     def getDescription(self):
-        return "Decreases general impact required by %(color_start)s" + str(self.PERC_REDUCTION) + "%%%(color_end)s for goons and safes"
+        return "Decreases general impact required by %(color_start)s-" + str(self.PERC_REDUCTION) + "%%%(color_end)s for goons and safes"
 
     def getHeat(self):
         return -30
@@ -561,7 +561,7 @@ class ModifierGeneralImpactIncreaser(CFORulesetModifierBase):
         return 'Refined Plating'
 
     def getDescription(self):
-        return "Increases general impact required by %(color_start)s" + str(self.PERC_REDUCTION) + "%%%(color_end)s for goons and safes"
+        return "Increases general impact required by %(color_start)s+" + str(self.PERC_REDUCTION) + "%%%(color_end)s for goons and safes"
 
     def getHeat(self):
         return 50
@@ -682,11 +682,11 @@ class ModifierSafeDamageInflictIncreaser(CFORulesetModifierBase):
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
-    TIER_SUFFIXES = ['', '', 'er', 'est']
+    TIER_SUFFIXES = ['e', 'e', 'er', 'est']
     TIER_PERCENT_AMOUNTS = [0, 10, 20, 30]
 
     def getName(self):
-        return 'Safe'+self.TIER_SUFFIXES[self.tier]+' Containers'
+        return 'Saf'+self.TIER_SUFFIXES[self.tier]+' Containers'
 
     def getDescription(self):
         return 'Increases damages inflicted to the CFO from safes by %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) + '%%%(color_end)s'
@@ -863,7 +863,7 @@ class ModifierTreasureRNG(CFORulesetModifierBase):
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
-    TIER_DROP_PERCENT = [0, 50, 25, 10]
+    TIER_DROP_PERCENT = [0, 25, 50, 90]
 
     def getName(self):
         n = "Tasteless Goons"
