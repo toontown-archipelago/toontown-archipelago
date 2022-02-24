@@ -162,8 +162,9 @@ class CashbotBossScoreboardToonRow(DirectObject):
             if ins is instance:
                 continue
 
-            # Another thing was clicked, force spectate to be false
-            ins.isBeingSpectated = False
+            # Another thing was clicked, force stop spectating if they were
+            if ins.isBeingSpectated:
+                ins.__stop_spectating()
 
         # Spec
         instance.__attempt_spectate()
@@ -241,13 +242,9 @@ class CashbotBossScoreboardToonRow(DirectObject):
         self.isBeingSpectated = True
 
         # Listen for when the toon hops on/off the crane
-        self.accept('crane-enter-exit', self.__change_camera_angle)
+        self.accept('crane-enter-exit-%s' % self.avId, self.__change_camera_angle)
 
     def __change_camera_angle(self, toon, crane, _=None):
-
-        # Don't listen to events that aren't related to our toon
-        if toon and toon.doId != self.avId:
-            return
 
         base.localAvatar.stopUpdateSmartCamera()
         base.camera.reparentTo(render)
@@ -274,7 +271,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
         base.localAvatar.startUpdateSmartCamera()
         self.isBeingSpectated = False
         # Not spectating anymore, no need to watch for crane events any more
-        self.ignore('crane-enter-exit')
+        self.ignore('crane-enter-exit-%s' % self.avId)
 
     def getYFromPlaceOffset(self, y):
         return y - (self.PLACE_Y_OFFSET * self.place)
@@ -336,6 +333,8 @@ class CashbotBossScoreboardToonRow(DirectObject):
         self.extra_stats_text.hide()
 
     def reset(self):
+        if self.isBeingSpectated:
+            self.__stop_spectating()
         self.points = 0
         self.damage = 0
         self.stuns = 0
@@ -349,6 +348,8 @@ class CashbotBossScoreboardToonRow(DirectObject):
         self.sad_text.setText('SAD!')
 
     def cleanup(self):
+        if self.isBeingSpectated:
+            self.__stop_spectating()
         self.toon_head.cleanup()
         del self.toon_head
         self.points_text.cleanup()

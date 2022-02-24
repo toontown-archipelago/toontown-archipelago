@@ -1193,7 +1193,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             toon.stopSmooth()
             self.grabTrack = Sequence(self.grabTrack, Func(toon.startSmooth))
         self.grabTrack.start()
-        messenger.send('crane-enter-exit', [self.avId, self])
+        messenger.send('crane-enter-exit-%s' % self.avId, [self.avId, self])
 
     def exitControlled(self):
         self.ignore('exitCrane')
@@ -1258,7 +1258,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             
         avLeaving = self.avId
         self.avId = 0
-        messenger.send('crane-enter-exit', [base.cr.doId2do.get(avLeaving), None])
+        messenger.send('crane-enter-exit-%s' % avLeaving, [base.cr.doId2do.get(avLeaving), None])
         return
 
     def __allowDetect(self, task):
