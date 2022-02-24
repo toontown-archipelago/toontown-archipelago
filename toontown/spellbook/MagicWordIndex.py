@@ -200,6 +200,15 @@ class scoreboard(MagicWord):
     desc = 'make scoreboard appear'
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
 
+    def getNearbyToons(self):
+        from toontown.toon.Toon import Toon
+        t = []
+        for disObj in base.cr.doId2do.values():
+            if isinstance(disObj, Toon):
+                t.append(disObj)
+
+        return t
+
     def handleWord(self, invoker, avId, toon, *args):
 
         global DEBUG_SCOREBOARD
@@ -208,12 +217,23 @@ class scoreboard(MagicWord):
         if not DEBUG_SCOREBOARD:
             from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
             DEBUG_SCOREBOARD = CashbotBossScoreboard()
+            DEBUG_SCOREBOARD.show()
             DEBUG_HEAT = CraneLeagueHeatDisplay()
-            # DEBUG_SCOREBOARD.addToon(avId)  # No longer works
+            # for toon in self.getNearbyToons():
+            #     DEBUG_SCOREBOARD.addToon(toon.getDoId())
+
             return "scoreboard created!"
 
         n = random.randint(100, 1500)
+        m = random.randint(5, 80)
+        if random.randint(0, 99) <= 50:
+            s = "BONUS!"
+        else:
+            s = ''
+
+
         DEBUG_HEAT.set_heat(n)
+        DEBUG_SCOREBOARD.addScore(avId, m, reason=s)
 
         return "set heat to " + str(n)
 

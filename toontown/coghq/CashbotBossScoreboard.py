@@ -1,4 +1,3 @@
-from datetime import datetime
 
 from direct.gui.DirectGui import *
 from panda3d.core import *
@@ -8,7 +7,6 @@ from toontown.coghq import CraneLeagueGlobals
 from toontown.suit.Suit import *
 from direct.task.Task import Task
 from direct.interval.IntervalGlobal import *
-from toontown.toon import ToonDNA, AccessoryGlobals
 
 from toontown.toon.ToonHead import ToonHead
 
@@ -26,7 +24,7 @@ WHITE = (.9, .9, .9, .85)
 CYAN = (0, 1, 240.0 / 255.0, 1)
 
 
-def doGainAnimation(pointText, amount, reason='', localAvFlag=False):
+def doGainAnimation(pointText, amount, old_amount, new_amount, reason='', localAvFlag=False):
     reasonFlag = len(reason) > 0  # reason flag is true if there is a reason
     pointTextColor = GOLD if localAvFlag else WHITE
     randomRoll = random.randint(5, 15) + 10 if reasonFlag else 5
@@ -36,6 +34,9 @@ def doGainAnimation(pointText, amount, reason='', localAvFlag=False):
 
     def cleanup():
         popup.cleanup()
+
+    def doTextUpdate(n):
+        pointText.setText(str(int(n)))
 
     # points with a reason go towards the right to see easier
     xOffset = .125 if reasonFlag else .01
@@ -48,6 +49,7 @@ def doGainAnimation(pointText, amount, reason='', localAvFlag=False):
     startPos = Point3(popup.getX(), popup.getY(), popup.getZ())
     Sequence(
         Parallel(
+            LerpFunc(doTextUpdate, fromData=old_amount, toData=new_amount, duration=.5, blendType='easeInOut'),
             LerpColorScaleInterval(popup, duration=.95 + reasonTimeAdd, colorScale=popupFadedColor,
                                    startColorScale=popupStartColor, blendType='easeInOut'),
             LerpPosInterval(popup, duration=.95 + reasonTimeAdd, pos=targetPos, startPos=startPos,
@@ -56,13 +58,13 @@ def doGainAnimation(pointText, amount, reason='', localAvFlag=False):
                 Parallel(
                     LerpScaleInterval(pointText, duration=.25, scale=1 + .2,
                                       startScale=1, blendType='easeInOut'),
-                    LerpColorScaleInterval(pointText, duration=.25, colorScale=GREEN, startColorScale=pointTextColor,
+                    LerpColorScaleInterval(pointText, duration=.25, colorScale=GREEN, startColorScale=(1, 1, 1, 1),
                                            blendType='easeInOut'),
                 ),
                 Parallel(
                     LerpScaleInterval(pointText, duration=.25, startScale=1 + .2,
                                       scale=1, blendType='easeInOut'),
-                    LerpColorScaleInterval(pointText, duration=.25, startColorScale=GREEN, colorScale=pointTextColor,
+                    LerpColorScaleInterval(pointText, duration=.25, startColorScale=GREEN, colorScale=(1, 1, 1, 1),
                                            blendType='easeInOut')
                 )
 
@@ -72,7 +74,7 @@ def doGainAnimation(pointText, amount, reason='', localAvFlag=False):
     ).start()
 
 
-def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
+def doLossAnimation(pointText, amount, old_amount, new_amount, reason='', localAvFlag=False):
     reasonFlag = True if len(reason) > 0 else False  # reason flag is true if there is a reason
     pointTextColor = GOLD if localAvFlag else WHITE
     randomRoll = random.randint(5, 15) + 15 if reasonFlag else 5
@@ -87,10 +89,14 @@ def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
     def cleanup():
         popup.cleanup()
 
+    def doTextUpdate(n):
+        pointText.setText(str(int(n)))
+
     targetPos = Point3(pointText.getX() + xOffset, 0, pointText.getZ() + zOffset)
     startPos = Point3(popup.getX(), popup.getY(), popup.getZ())
     Sequence(
         Parallel(
+            LerpFunc(doTextUpdate, fromData=old_amount, toData=new_amount, duration=.5, blendType='easeInOut'),
             LerpColorScaleInterval(popup, duration=2, colorScale=(1, 0, 0, 0), startColorScale=RED,
                                    blendType='easeInOut'),
             LerpPosInterval(popup, duration=2, pos=targetPos, startPos=startPos, blendType='easeInOut'),
@@ -98,13 +104,13 @@ def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
                 Parallel(
                     LerpScaleInterval(pointText, duration=.25, scale=1 - .2,
                                       startScale=1, blendType='easeInOut'),
-                    LerpColorScaleInterval(pointText, duration=.25, colorScale=RED, startColorScale=pointTextColor,
+                    LerpColorScaleInterval(pointText, duration=.25, colorScale=RED, startColorScale=(1, 1, 1, 1),
                                            blendType='easeInOut'),
                 ),
                 Parallel(
                     LerpScaleInterval(pointText, duration=.25, startScale=1 - .2,
                                       scale=1, blendType='easeInOut'),
-                    LerpColorScaleInterval(pointText, duration=.25, startColorScale=RED, colorScale=pointTextColor,
+                    LerpColorScaleInterval(pointText, duration=.25, startColorScale=RED, colorScale=(1, 1, 1, 1),
                                            blendType='easeInOut')
                 )
 
@@ -114,16 +120,37 @@ def doLossAnimation(pointText, amount, reason='', localAvFlag=False):
     ).start()
 
 
+def getScoreboardTextRow(scoreboard_frame, unique_id, default_text='', frame_color=(.5, .5, .5, .75), isToon=False):
+    n = TextNode(unique_id)
+    n.setText(default_text)
+    n.setAlign(TextNode.ALeft)
+    n.setFrameColor(frame_color)
+    y_margin_addition = .4 if isToon else 0
+    n.setFrameAsMargin(0.4, 0.4, 0.2+y_margin_addition, 0.2+y_margin_addition)
+    n.setCardColor(.2, .2, .2, .75)
+    n.setCardAsMargin(0.38, 0.38, 0.19, 0.19)
+    n.setCardDecal(True)
+    n.setShadow(0.05, 0.05)
+    n.setShadowColor(0, 0, 0, 1)
+    n.setTextColor(.7, .7, .7, 1)
+    n.setTextScale(1)
+    n.setFont(ToontownGlobals.getCompetitionFont())
+    p = scoreboard_frame.attachNewNode(n)
+    p.setScale(.05)
+    return n, p  # Modify n for actual text properties, p for scale/pos
+
+
 class CashbotBossScoreboardToonRow(DirectObject):
     INSTANCES = []
 
-    FIRST_PLACE_HEAD_X = -.28
-    FIRST_PLACE_HEAD_Y = LABEL_Y_POS - .15
+    FIRST_PLACE_HEAD_X = -.24
+    FIRST_PLACE_HEAD_Y = 0.013
     FIRST_PLACE_TEXT_X = 0
 
-    FRAME_Y_FIRST_PLACE = .4
+    FRAME_X = .31
+    FRAME_Y_FIRST_PLACE = -.12
 
-    PLACE_Y_OFFSET = .15
+    PLACE_Y_OFFSET = .125
 
     # Called when a button on a row is clicked, instance is the actual instance that clicked this
     @classmethod
@@ -143,34 +170,44 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
     def __init__(self, scoreboard_frame, avId, place=0):
 
+        DirectObject.__init__(self)
+
         self.INSTANCES.append(self)
 
         # 0 based index based on what place they are in, y should be adjusted downwards
         self.place = place
         self.avId = avId
         self.points = 0
+        self.damage, self.stuns, self.stomps = 0, 0, 0
         self.frame = DirectFrame(parent=scoreboard_frame)
-        self.toon_head = self.createToonHead(avId)
-        self.toon_head_button = DirectButton(parent=self.frame, pos=(self.FIRST_PLACE_HEAD_X, 0, .035), scale=.6,
+        self.toon_head = self.createToonHead(avId, scale=.125)
+        self.toon_head_button = DirectButton(parent=self.frame, pos=(self.FIRST_PLACE_HEAD_X, 0, self.FIRST_PLACE_HEAD_Y+.015), scale=.5,
                                              command=CashbotBossScoreboardToonRow._clicked, extraArgs=[self])
         self.toon_head_button.setTransparency(TransparencyAttrib.MAlpha)
         self.toon_head_button.setColorScale(1, 1, 1, 0)
-        self.frame.setX(-1.30)
+        self.frame.setX(self.FRAME_X)
         self.frame.setZ(self.getYFromPlaceOffset(self.FRAME_Y_FIRST_PLACE))
         self.toon_head.reparentTo(self.frame)
-        self.toon_head.setPos(self.FIRST_PLACE_HEAD_X, 0, 0)
+        self.toon_head.setPos(self.FIRST_PLACE_HEAD_X, 0, self.FIRST_PLACE_HEAD_Y)
         self.toon_head.setH(180)
         self.toon_head.startBlink()
         self.points_text = OnscreenText(parent=self.frame, text=str(self.points), style=3, fg=WHITE,
-                                        align=TextNode.ACenter, scale=.09, pos=(self.FIRST_PLACE_TEXT_X, 0), font=ToontownGlobals.getCompetitionFont())
+                                        align=TextNode.ABoxedCenter, scale=.09, pos=(self.FIRST_PLACE_TEXT_X, 0), font=ToontownGlobals.getCompetitionFont())
         self.combo_text = OnscreenText(parent=self.frame, text='x' + '0', style=3, fg=CYAN, align=TextNode.ACenter,
-                                       scale=.055, pos=(self.FIRST_PLACE_HEAD_X + .1, +.06), font=ToontownGlobals.getCompetitionFont())
+                                       scale=.055, pos=(self.FIRST_PLACE_HEAD_X + .1, +.055), font=ToontownGlobals.getCompetitionFont())
         self.sad_text = OnscreenText(parent=self.frame, text='SAD!', style=3, fg=RED, align=TextNode.ACenter,
                                      scale=.065, pos=(self.FIRST_PLACE_HEAD_X, 0), roll=-15, font=ToontownGlobals.getCompetitionFont())
+
+        self.extra_stats_text = OnscreenText(parent=self.frame, text='', style=3, fg=WHITE, align=TextNode.ABoxedCenter, scale=.09, pos=(self.FIRST_PLACE_TEXT_X+.47, 0), font=ToontownGlobals.getCompetitionFont())
+
+
         self.combo_text.hide()
         self.sad_text.hide()
         if self.avId == base.localAvatar.doId:
-            self.points_text.setColorScale(*GOLD)
+            self.points_text['fg'] = GOLD
+            self.extra_stats_text['fg'] = GOLD
+
+        self.extra_stats_text.hide()
 
         self.sadSecondsLeft = base.boss.ruleset.REVIVE_TOONS_TIME
 
@@ -237,7 +274,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
     def getYFromPlaceOffset(self, y):
         return y - (self.PLACE_Y_OFFSET * self.place)
 
-    def createToonHead(self, avId):
+    def createToonHead(self, avId, scale=.15):
         head = ToonHead()
         av = base.cr.doId2do[avId]
 
@@ -246,7 +283,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
         head.setupToonHeadHat(av.getHat(), av.style.head)
         head.setupToonHeadGlasses(av.getGlasses(), av.style.head)
 
-        head.fitAndCenterHead(.15, forGui=1)
+        head.fitAndCenterHead(scale, forGui=1)
         return head
 
     def addScore(self, amount, reason=''):
@@ -254,25 +291,51 @@ class CashbotBossScoreboardToonRow(DirectObject):
         # First update the amount
         old = self.points
         self.points += amount
-        self.points_text.setText(str(self.points))
 
         # find the difference
         diff = self.points - old
 
         # if we lost points make a red popup, if we gained green popup
         if diff > 0:
-            doGainAnimation(self.points_text, diff, localAvFlag=self.avId == base.localAvatar.doId, reason=reason)
+            doGainAnimation(self.points_text, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason)
         elif diff < 0:
-            doLossAnimation(self.points_text, diff, localAvFlag=self.avId == base.localAvatar.doId, reason=reason)
+            doLossAnimation(self.points_text, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason)
 
     def updatePosition(self):
         # Move to new position based on place
         oldPos = Point3(self.frame.getX(), self.frame.getY(), self.frame.getZ())
         newPos = Point3(self.frame.getX(), self.frame.getY(), self.getYFromPlaceOffset(self.FRAME_Y_FIRST_PLACE))
-        LerpPosInterval(self.frame, duration=1.0, pos=newPos, startPos=oldPos, blendType='easeInOut').start()
+        LerpPosInterval(self.frame, duration=.5, pos=newPos, startPos=oldPos, blendType='easeInOut').start()
+
+    def updateExtraStatsLabel(self):
+        s = '%-7s %-7s %-7s' % (self.damage, self.stuns, self.stomps)
+        self.extra_stats_text.setText(s)
+
+    def addDamage(self, n):
+        self.damage += n
+        self.updateExtraStatsLabel()
+
+    def addStun(self):
+        self.stuns += 1
+        self.updateExtraStatsLabel()
+
+    def addStomp(self):
+        self.stomps += 1
+        self.updateExtraStatsLabel()
+
+    def expand(self):
+        self.updateExtraStatsLabel()
+        self.extra_stats_text.show()
+
+    def collapse(self):
+        self.extra_stats_text.hide()
 
     def reset(self):
         self.points = 0
+        self.damage = 0
+        self.stuns = 0
+        self.stomps = 0
+        self.updateExtraStatsLabel()
         self.points_text.setText('0')
         self.combo_text.setText('COMBO x0')
         self.combo_text.hide()
@@ -292,6 +355,8 @@ class CashbotBossScoreboardToonRow(DirectObject):
         del self.sad_text
         self.toon_head_button.destroy()
         del self.toon_head_button
+        self.extra_stats_text.cleanup()
+        del self.extra_stats_text
         self.INSTANCES.remove(self)
 
     def show(self):
@@ -299,6 +364,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
         self.toon_head.show()
 
     def hide(self):
+        self.extra_stats_text.hide()
         self.points_text.hide()
         self.toon_head.hide()
         self.combo_text.hide()
@@ -328,31 +394,49 @@ class CashbotBossScoreboardToonRow(DirectObject):
         return Task.again
 
 
-class CashbotBossScoreboard:
+class CashbotBossScoreboard(DirectObject):
 
     def __init__(self):
+        DirectObject.__init__(self)
 
-        self.frame = DirectFrame()
+        self.frame = DirectFrame(parent=base.a2dLeftCenter)
+        self.frame.setPos(.2, 0, .5)
 
-        self.toon_text = OnscreenText(parent=self.frame, text='Toon', style=3, fg=(.9, .9, .9, .85),
-                                      align=TextNode.ALeft, scale=0.1, pos=(-1.7, LABEL_Y_POS),
-                                      font=ToontownGlobals.getCompetitionFont())
-        self.pts_text = OnscreenText(parent=self.frame, text='Pts.', style=3, fg=(.9, .9, .9, .85),
-                                     align=TextNode.ALeft,
-                                     scale=0.1, pos=(-1.4, LABEL_Y_POS), font=ToontownGlobals.getCompetitionFont())
-        self.h_divider = OnscreenText(parent=self.frame, text='|', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft,
-                                      scale=(.1, .5), pos=(-1.35, .5), roll=90)
-        self.v_divider = OnscreenText(parent=self.frame, text='|', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft,
-                                      scale=(.1, 1), pos=(-1.45, -0.1))
+        self.default_row, self.default_row_path = getScoreboardTextRow(self.frame, 'master-row', default_text='%-10s %-7s\0' % ('Toon', 'Pts'))
+        self.default_row_path.setScale(.06)
 
         self.rows = {}  # maps avId -> ScoreboardToonRow object
+        self.accept('f1', self._consider_expand)
+
+        self.is_expanded = False
+
+        self.expand_tip = OnscreenText(parent=self.frame, text="Press F1 to show more stats", style=3, fg=WHITE, align=TextNode.ACenter, scale=.05, pos=(0.22, 0.1), font=ToontownGlobals.getCompetitionFont())
+        self.expand_tip.hide()
+
+    def _consider_expand(self):
+
+        if self.is_expanded:
+            self.collapse()
+        else:
+            self.expand()
+
+    def expand(self):
+        self.is_expanded = True
+        self.default_row.setText('%-10s %-9s %-7s %-7s %-8s\0' % ('Toon', 'Pts', 'Dmg', 'Stuns', 'Stomps'))
+        for r in self.rows.values():
+            r.expand()
+
+    def collapse(self):
+        self.is_expanded = False
+        self.default_row.setText('%-10s %-7s\0' % ('Toon', 'Pts'))
+        for r in self.rows.values():
+            r.collapse()
 
     def addToon(self, avId):
         if avId not in self.rows:
             self.rows[avId] = CashbotBossScoreboardToonRow(self.frame, avId, len(self.rows))
 
-        if len(self.rows) > 1:
-            self.show()
+        self.show()
 
     def clearToons(self):
         for row in self.rows.values():
@@ -409,31 +493,40 @@ class CashbotBossScoreboard:
 
         self.clearToons()
 
-        self.toon_text.cleanup()
-        self.pts_text.cleanup()
-        self.h_divider.cleanup()
-        self.v_divider.cleanup()
+        self.default_row_path.destroy()
+        self.default_row.destroy()
+        self.ignore('f1')
+
+    def hide_tip_later(self):
+        taskMgr.remove('expand-tip')
+        taskMgr.doMethodLater(5.0, self.__hide_tip, 'expand-tip')
+
+    def __hide_tip(self, _=None):
+        taskMgr.remove('expand-tip')
+        LerpColorScaleInterval(self.expand_tip, 1.0, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1), blendType='easeInOut').start()
 
     def reset(self):
+        self.expand_tip.show()
+        self.expand_tip.setColorScale(1, 1, 1, 1)
+        self.hide_tip_later()
+        taskMgr.remove('expand-tip')
+        self.collapse()
         for row in self.rows.values():
             row.reset()
 
         self.updatePlacements()
 
     def show(self):
-        if len(self.rows) > 1:
-            self.toon_text.show()
-            self.pts_text.show()
-            self.h_divider.show()
-            self.v_divider.show()
+        self.expand_tip.show()
+        self.expand_tip.setColorScale(1, 1, 1, 1)
+        self.hide_tip_later()
+        self.default_row_path.show()
         for row in self.rows.values():
             row.show()
 
     def hide(self):
-        self.toon_text.hide()
-        self.pts_text.hide()
-        self.h_divider.hide()
-        self.v_divider.hide()
+        self.expand_tip.hide()
+        self.default_row_path.hide()
         for row in self.rows.values():
             row.hide()
 
@@ -475,3 +568,18 @@ class CashbotBossScoreboard:
             return
 
         row.toonRevived()
+
+    def addDamage(self, avId, n):
+        row = self.rows.get(avId)
+        if row:
+            row.addDamage(n)
+
+    def addStun(self, avId):
+        row = self.rows.get(avId)
+        if row:
+            row.addStun()
+
+    def addStomp(self, avId):
+        row = self.rows.get(avId)
+        if row:
+            row.addStomp()
