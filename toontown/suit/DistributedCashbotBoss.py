@@ -1136,19 +1136,16 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.localToonIsSafe = 1
         
     def updateDamageDealt(self, avId, damageDealt):
-        self.bossHealthBar.updateDamageDealt(avId, damageDealt)
         self.scoreboard.addScore(avId, damageDealt)
         self.scoreboard.addDamage(avId, damageDealt)
         
     def updateStunCount(self, avId, craneId):
         crane = base.cr.doId2do.get(craneId)
         if crane:
-            self.bossHealthBar.updateStunCount(avId)
             self.scoreboard.addScore(avId, crane.getPointsForStun(), CraneLeagueGlobals.STUN_TEXT)
             self.scoreboard.addStun(avId)
         
     def updateGoonsStomped(self, avId):
-        self.bossHealthBar.updateGoonsStomped(avId)
         self.scoreboard.addScore(avId, self.ruleset.POINTS_GOON_STOMP, CraneLeagueGlobals.GOON_STOMP_TEXT)
         self.scoreboard.addStomp(avId)
 

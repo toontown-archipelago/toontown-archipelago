@@ -47,11 +47,7 @@ class BossHealthBar:
         self.healthRatio = 0
         self.isUpdating = False
         self.isBlinking = False
-        
-        self.stunCountText = None
-        self.damageDealtText = None
-        self.speedDamageDealtText = None
-        self.goonsStompedText = None
+
         self.damageDealt = 0
         self.speedDamageDealt = 0
         self.stunCount = 0
@@ -74,12 +70,6 @@ class BossHealthBar:
         self.bossBar.show()
         self.damageBar.show()
         self.gui.show()
-        self.damageDealtText = OnscreenText(parent=self.bossBarFrame, text='Damage Dealt: ' + str(self.damageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.19), font=ToontownGlobals.getCompetitionFont())
-        self.stunCountText = OnscreenText(parent=self.bossBarFrame, text='Stuns: ' + str(self.stunCount), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.24), font=ToontownGlobals.getCompetitionFont())
-        if self.dept == 'c':
-            self.speedDamageDealtText = OnscreenText(parent=self.bossBarFrame, text='Golf: ' + str(self.speedDamageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.29), font=ToontownGlobals.getCompetitionFont())
-        if self.dept == 'm':
-            self.goonsStompedText = OnscreenText(parent=self.bossBarFrame, text='Goons Stomped: ' + str(self.speedDamageDealt), style=3, fg=(.9, .9, .9, .85), align=TextNode.ARight, scale=0.04, pos=(0.40, -0.29), font=ToontownGlobals.getCompetitionFont())
         Sequence(self.bossBarFrame.posInterval(1.0, Point3(1, 0, self.bossBarEndPosZ), blendType='easeOut')).start()
 
     def update(self, hp, maxHp):
@@ -222,23 +212,3 @@ class BossHealthBar:
                 self.__finishUpdateDrainBar()
                 self.damageBar.destroy()
                 del self.damageBar
-                
-    def updateDamageDealt(self, avId, damageDealt):
-        if avId == base.localAvatar.doId:
-            self.damageDealt += damageDealt
-            self.damageDealtText.setText('Damage Dealt: ' + str(self.damageDealt))
-
-    def updateSpeedDamageDealt(self, avId, speedDamageDealt):
-        if avId == base.localAvatar.doId:
-            self.speedDamageDealt += speedDamageDealt
-            self.speedDamageDealtText.setText('Golf: ' + str(self.speedDamageDealt))
-
-    def updateGoonsStomped(self, avId):
-        if avId == base.localAvatar.doId:
-            self.goonsStomped += 1
-            self.goonsStompedText.setText('Goons Stomped: ' + str(self.goonsStomped))
-
-    def updateStunCount(self, avId):
-        if avId == base.localAvatar.doId:
-            self.stunCount += 1
-            self.stunCountText.setText('Stuns: ' + str(self.stunCount))
