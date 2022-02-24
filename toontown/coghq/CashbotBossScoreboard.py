@@ -493,8 +493,7 @@ class CashbotBossScoreboard(DirectObject):
 
         self.clearToons()
 
-        self.default_row_path.destroy()
-        self.default_row.destroy()
+        self.default_row_path.removeNode()
         self.ignore('f1')
 
     def hide_tip_later(self):
@@ -510,11 +509,11 @@ class CashbotBossScoreboard(DirectObject):
         self.expand_tip.setColorScale(1, 1, 1, 1)
         self.hide_tip_later()
         taskMgr.remove('expand-tip')
-        self.collapse()
         for row in self.rows.values():
             row.reset()
 
         self.updatePlacements()
+        self.collapse()
 
     def show(self):
         self.expand_tip.show()
@@ -523,6 +522,8 @@ class CashbotBossScoreboard(DirectObject):
         self.default_row_path.show()
         for row in self.rows.values():
             row.show()
+
+        self.collapse()
 
     def hide(self):
         self.expand_tip.hide()

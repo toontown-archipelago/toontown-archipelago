@@ -20,14 +20,14 @@ HIGHEST_HEAT = 1000
 TITLE_FONT_SIZE = 1.05
 DESCRIPTION_TITLE_FONT_SIZE = 0.85
 DESCRIPTION_BODY_FONT_SIZE = 0.65
-DESCRIPTION_WORD_WRAP = 25
+DESCRIPTION_WORD_WRAP = 20
 
 
 class CraneLeagueHeatDisplay:
 
-    FLAME_POS = (-.48, 0, .74)
-    HEAT_NUM_POS = (-.43, .72)
-    MODIFIERS_TEXT_POS = (-.6, 0, .35)
+    FLAME_POS = (-.53, 0, .74)
+    HEAT_NUM_POS = (-.48, .72)
+    MODIFIERS_TEXT_POS = (-.64, 0, .6)
 
     # TextProperties shit to make life easier
     text_properties_manager = TextPropertiesManager.getGlobalPtr()
@@ -44,7 +44,7 @@ class CraneLeagueHeatDisplay:
 
         self.heat_number = OnscreenText(parent=self.frame, text='500', style=3, fg=self.calculate_color(), align=TextNode.ALeft, scale=.1, pos=self.HEAT_NUM_POS, font=ToontownGlobals.getSuitFont())
 
-        self.hover_button = DirectButton(parent=self.frame, pos=(-.38, 0, .74), scale=(1.5, 1, .5))
+        self.hover_button = DirectButton(parent=self.frame, pos=(-.43, 0, .74), scale=(1.5, 1, .5))
         self.hover_button.setTransparency(TransparencyAttrib.MAlpha)
         self.hover_button.setColorScale(1, 1, 1, 0)
 

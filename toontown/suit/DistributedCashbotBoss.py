@@ -299,7 +299,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             cn = self.endVault.find('**/wallsCollision').node()
             cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask)  # TTCC No Back Wall
         except:
-            pass
+            print('[Crane League] Failed to disable back wall.')
 
     def enableBackWall(self):
         if self.endVault is None:
@@ -309,7 +309,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             cn = self.endVault.find('**/wallsCollision').node()
             cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask | BitMask32.lowerOn(3) << 21) #TTR Back Wall
         except:
-            pass
+            print('[Crane League] Failed to enable back wall.')
 
     def loadEnvironment(self):
         DistributedBossCog.DistributedBossCog.loadEnvironment(self)

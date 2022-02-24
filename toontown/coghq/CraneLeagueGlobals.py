@@ -176,6 +176,15 @@ class CFORuleset:
 
         self.MODIFIER_TIER_RANGE = (1, 3)  # todo Perhaps refactor this into the modifier class
 
+    # Call to make sure certain attributes are within certain bounds, for example dont make required impacts > 100%
+    def validate(self):
+
+        # Ensure impact required isn't greater than 95%
+        self.MIN_SAFE_IMPACT = max(self.MIN_SAFE_IMPACT, .95)
+        self.MIN_DEHELMET_IMPACT = max(self.MIN_DEHELMET_IMPACT, .95)
+        self.MIN_GOON_IMPACT = max(self.MIN_GOON_IMPACT, .95)
+        self.SIDECRANE_IMPACT_STUN_THRESHOLD = max(self.MIN_GOON_IMPACT, .95)
+
 
     # Sends an astron friendly array over, ONLY STUFF THE CLIENT NEEDS TO KNOW GOES HERE
     # ANY TIME YOU MAKE A NEW ATTRIBUTE IN THE INIT ABOVE, MAKE SURE TO ADD
@@ -605,7 +614,7 @@ class ModifierDevolution(CFORulesetModifierBase):
 
         ret = 'A trip down memory lane. %(color_start)s' + self._getDynamicString() + '%(color_end)s are disabled'
         if self.tier >= 3:
-            ret += '. %(color_start)sBack walls%(color_start)s are enabled'
+            ret += '. %(color_start)sBack walls%(color_end)s are enabled'
 
         return ret
 

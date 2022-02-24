@@ -164,6 +164,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.rollRandomModifiers()
 
         self.applyModifiers()
+        # Make sure they didn't do anything bad
+        self.ruleset.validate()
         self.debug(content='Applied %s modifiers' % len(self.modifiers))
 
         # Update the client
