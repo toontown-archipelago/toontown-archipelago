@@ -244,6 +244,11 @@ class CashbotBossScoreboardToonRow(DirectObject):
         self.accept('crane-enter-exit', self.__change_camera_angle)
 
     def __change_camera_angle(self, toon, crane, _=None):
+
+        # Don't listen to events that aren't related to our toon
+        if toon and toon.doId != self.avId:
+            return
+
         base.localAvatar.stopUpdateSmartCamera()
         base.camera.reparentTo(render)
         # if crane is not None, then parent the camera to the crane, otherwise the toon
