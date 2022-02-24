@@ -180,10 +180,10 @@ class CFORuleset:
     def validate(self):
 
         # Ensure impact required isn't greater than 95%
-        self.MIN_SAFE_IMPACT = max(self.MIN_SAFE_IMPACT, .95)
-        self.MIN_DEHELMET_IMPACT = max(self.MIN_DEHELMET_IMPACT, .95)
-        self.MIN_GOON_IMPACT = max(self.MIN_GOON_IMPACT, .95)
-        self.SIDECRANE_IMPACT_STUN_THRESHOLD = max(self.MIN_GOON_IMPACT, .95)
+        self.MIN_SAFE_IMPACT = min(self.MIN_SAFE_IMPACT, .95)
+        self.MIN_DEHELMET_IMPACT = min(self.MIN_DEHELMET_IMPACT, .95)
+        self.MIN_GOON_IMPACT = min(self.MIN_GOON_IMPACT, .95)
+        self.SIDECRANE_IMPACT_STUN_THRESHOLD = min(self.MIN_GOON_IMPACT, .95)
 
 
     # Sends an astron friendly array over, ONLY STUFF THE CLIENT NEEDS TO KNOW GOES HERE
