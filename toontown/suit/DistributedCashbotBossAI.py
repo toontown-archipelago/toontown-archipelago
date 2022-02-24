@@ -535,10 +535,14 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if side == None:
             side = random.choice(['EmergeA', 'EmergeB'])
 
-        goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
-        if goon != None:
+        # First, look to see if we have a goon we can recycle.
+        goon = self.__chooseOldGoon()
+        if goon == None:
+            # No, no old goon; is there room for a new one?
             if len(self.goons) >= self.getMaxGoons():
                 return
+            # make a new one.
+            goon = DistributedCashbotBossGoonAI.DistributedCashbotBossGoonAI(self.air, self)
             goon.generateWithRequired(self.zoneId)
             self.goons.append(goon)
 
@@ -574,7 +578,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # if any of them have recently been deleted and can be
         # recycled.
         
-        # NOTE (by Lou): This was removed and no longer being used
         for goon in self.goons:
             if goon.state == 'Off':
                 return goon

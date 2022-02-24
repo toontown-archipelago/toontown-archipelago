@@ -205,8 +205,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     def setObjectState(self, state, avId, craneId):
         self.crane = self.cr.doId2do.get(craneId)
         if state == 'W':
-            if not self.craneId:
-                self.demand('Walk')
+            self.demand('Walk')
         elif state == 'B':
             if self.state != 'Battle':
                 self.demand('Battle')
