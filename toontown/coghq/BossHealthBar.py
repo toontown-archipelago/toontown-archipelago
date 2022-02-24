@@ -10,11 +10,11 @@ from direct.interval.IntervalGlobal import *
 class BossHealthBar:
 
     bossBarColors = (
-        Vec4(.25, .7, .25, 0.9),
-        Vec4(.7, .7, .4, 0.9),
-        Vec4(.8, 0.65, 0.2, 0.9),
-        Vec4(.65, .2, .2, 0.9),
-        Vec4(0.2, 0.2, 0.2, 0.9)
+        Vec4(.2, .5, .2, 1),
+        Vec4(.6, .6, .3, 1),
+        Vec4(.7, 0.55, 0.15, 1),
+        Vec4(.45, .15, .15, 1),
+        Vec4(0.2, 0.2, 0.2, 1)
         )
 
     colorThresholds = (0.75, 0.5, 0.25, 0.1, 0.05)
@@ -25,20 +25,20 @@ class BossHealthBar:
     def __init__(self, dept):
         self.dept = dept
         self.bossBarFrameBg = loader.loadTexture('phase_9/maps/HealthBarBosses.png')
-        self.bossBarFrame = DirectFrame(pos=(1, 0, self.bossBarEndPosZ), scale=1.8*0.8, sortOrder=20)
+        self.bossBarFrame = DirectFrame(pos=(1, 0, self.bossBarEndPosZ), scale=1.8*0.8)
         self.gui = loader.loadModel('phase_9/models/gui/HealthBarBosses')
         self.gui.setScale(1, 1, .75)
         self.gui.setColorScale(.4, .4, .4, 1)
         self.gui.setTexture(self.bossBarFrameBg)
         self.gui.setTransparency(1)
-        self.damageBar = DirectWaitBar(relief=None, scale=(0.195, 0, 0.077), value=100, pos=(-0.005, 0, 0.0015), frameSize=(-2.0, 2.0, -0.2, 0.2), borderWidth=(0.005, 0.005), range=100, sortOrder=50, frameColor=(0.1, 0.1, 0.1, .9), barColor=(0.5, 0.5, .5, 0.6))
-        self.bossBar = DirectWaitBar(relief=None, scale=(0.195, 0, 0.077), value=100, pos=(-0.005, 0, 0.0015), frameSize=(-2.0, 2.0, -0.2, 0.2), borderWidth=(0.005, 0.005), range=100, sortOrder=100, frameColor=(0.1, 0.1, 0.1, .9), barColor=(0.2, 0.2, .9, 0.95), text='0 / 0', text_scale=(0.14, 0.30), text_fg=(.9, .9, .9, 1), text_align=TextNode.ACenter, text_pos=(0, -0.12), text_shadow=(0, 0, 0, 1), text_font=ToontownGlobals.getCompetitionFont())
+        self.damageBar = DirectWaitBar(relief=None, scale=(0.195, 0, 0.077), value=100, pos=(-0.005, 0, 0.0015), frameSize=(-2.0, 2.0, -0.2, 0.2), borderWidth=(0.005, 0.005), range=100, frameColor=(0.1, 0.1, 0.1, 1), barColor=(0.5, 0.5, .5, 1))
+        self.bossBar = DirectWaitBar(relief=None, scale=(0.195, 0, 0.077), value=100, pos=(-0.005, 0, 0.0015), frameSize=(-2.0, 2.0, -0.2, 0.2), borderWidth=(0.005, 0.005), range=100, frameColor=(0.1, 0.1, 0.1, 1), barColor=(0.2, 0.2, .9, 1), text='0 / 0', text_scale=(0.16, 0.32), text_fg=(.9, .9, .9, 1), text_align=TextNode.ACenter, text_pos=(0, -0.1), text_shadow=(0, 0, 0, 1), text_font=ToontownGlobals.getCompetitionFont())
         self.gui.hide()
         self.bossBar.hide()
         self.damageBar.hide()
         self.gui.reparentTo(self.bossBarFrame)
-        self.bossBar.reparentTo(self.bossBarFrame)
         self.damageBar.reparentTo(self.bossBarFrame)
+        self.bossBar.reparentTo(self.bossBarFrame)
 
         self.healthCondition = 0
         self.currHp = 0
@@ -67,8 +67,8 @@ class BossHealthBar:
         self.damageBar['range'] = maxhp
         self.damageBar['value'] = hp
         self.__checkUpdateColor(self.__updateCondition(hp, maxhp))
-        self.bossBar.show()
         self.damageBar.show()
+        self.bossBar.show()
         self.gui.show()
         Sequence(self.bossBarFrame.posInterval(1.0, Point3(1, 0, self.bossBarEndPosZ), blendType='easeOut')).start()
 
