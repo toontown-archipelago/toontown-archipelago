@@ -11,6 +11,7 @@ from direct.interval.IntervalGlobal import *
 from toontown.toon.ToonHead import ToonHead
 
 import random
+import math
 
 POINTS_TEXT_SCALE = .09
 
@@ -24,10 +25,10 @@ WHITE = (.9, .9, .9, .85)
 CYAN = (0, 1, 240.0 / 255.0, 1)
 
 
-def doGainAnimation(pointText, amount, old_amount, new_amount, reason='', localAvFlag=False):
+def doGainAnimation(label, amount, old_amount, new_amount, reason='', localAvFlag=False):
+    pointText = label.points_text
     reasonFlag = len(reason) > 0  # reason flag is true if there is a reason
-    pointTextColor = GOLD if localAvFlag else WHITE
-    randomRoll = random.randint(5, 15) + 10 if reasonFlag else 5
+    randomRoll = random.randint(1, 20) + 10 if reasonFlag else 5
     textToShow = '+' + str(amount) + ' ' + reason
     popup = OnscreenText(parent=pointText, text=textToShow, style=3, fg=GOLD if reasonFlag else GREEN,
                          align=TextNode.ACenter, scale=.05, pos=(.03, .03), roll=-randomRoll, font=ToontownGlobals.getCompetitionFont())
@@ -36,20 +37,28 @@ def doGainAnimation(pointText, amount, old_amount, new_amount, reason='', localA
         popup.cleanup()
 
     def doTextUpdate(n):
-        pointText.setText(str(int(n)))
+        pointText.setText(str(int(math.ceil(n))))
 
     # points with a reason go towards the right to see easier
-    xOffset = .125 if reasonFlag else .01
-    zOffset = .02 if reasonFlag else .055
+    rx = random.random() / 5.0 - .1  # -.1-.1
+    rz = random.random() / 10.0  # 0-.1
+    xOffset = .125+rx if reasonFlag else .01+(rx/5.0)
+    zOffset = .02+rz if reasonFlag else .055+(rz/5.0)
     reasonTimeAdd = .85 if reasonFlag else 0
     popupStartColor = CYAN if reasonFlag else GREEN
     popupFadedColor = (CYAN[0], CYAN[1], CYAN[2], 0) if reasonFlag else (GREEN[0], GREEN[1], GREEN[2], 0)
 
     targetPos = Point3(pointText.getX() + xOffset, 0, pointText.getZ() + zOffset)
     startPos = Point3(popup.getX(), popup.getY(), popup.getZ())
+    label.cancel_inc_ival()
+
+    label.inc_ival = Sequence(
+        LerpFunctionInterval(doTextUpdate, fromData=old_amount, toData=new_amount, duration=.5, blendType='easeOut')
+    )
+    label.inc_ival.start()
+
     Sequence(
         Parallel(
-            LerpFunc(doTextUpdate, fromData=old_amount, toData=new_amount, duration=.5, blendType='easeInOut'),
             LerpColorScaleInterval(popup, duration=.95 + reasonTimeAdd, colorScale=popupFadedColor,
                                    startColorScale=popupStartColor, blendType='easeInOut'),
             LerpPosInterval(popup, duration=.95 + reasonTimeAdd, pos=targetPos, startPos=startPos,
@@ -74,13 +83,10 @@ def doGainAnimation(pointText, amount, old_amount, new_amount, reason='', localA
     ).start()
 
 
-def doLossAnimation(pointText, amount, old_amount, new_amount, reason='', localAvFlag=False):
+def doLossAnimation(label, amount, old_amount, new_amount, reason='', localAvFlag=False):
+    pointText = label.points_text
     reasonFlag = True if len(reason) > 0 else False  # reason flag is true if there is a reason
-    pointTextColor = GOLD if localAvFlag else WHITE
     randomRoll = random.randint(5, 15) + 15 if reasonFlag else 5
-    # points with a reason go towards the right to see easier
-    xOffset = .125 if not reasonFlag else .01
-    zOffset = .02 if not reasonFlag else .055
 
     textToShow = str(amount) + ' ' + reason
     popup = OnscreenText(parent=pointText, text=textToShow, style=3, fg=RED, align=TextNode.ACenter, scale=.05,
@@ -92,8 +98,18 @@ def doLossAnimation(pointText, amount, old_amount, new_amount, reason='', localA
     def doTextUpdate(n):
         pointText.setText(str(int(n)))
 
+    rx = random.random() / 5.0 - .1  # -.1-.1
+    rz = random.random() / 10.0  # 0-.1
+    xOffset = .125 + rx if reasonFlag else .01 + (rx / 5.0)
+    zOffset = .02 + rz if reasonFlag else .055 + (rz / 5.0)
     targetPos = Point3(pointText.getX() + xOffset, 0, pointText.getZ() + zOffset)
     startPos = Point3(popup.getX(), popup.getY(), popup.getZ())
+    label.cancel_inc_ival()
+
+    label.inc_ival = Sequence(
+        LerpFunctionInterval(doTextUpdate, fromData=old_amount, toData=new_amount, duration=.5, blendType='easeOut')
+    )
+    label.inc_ival.start()
     Sequence(
         Parallel(
             LerpFunc(doTextUpdate, fromData=old_amount, toData=new_amount, duration=.5, blendType='easeInOut'),
@@ -214,6 +230,8 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
         self.isBeingSpectated = False
 
+        self.inc_ival = None
+
     def __attempt_spectate(self):
         # Is the toon spectating?
         if not base.boss.localToonSpectating:
@@ -288,6 +306,12 @@ class CashbotBossScoreboardToonRow(DirectObject):
         head.fitAndCenterHead(scale, forGui=1)
         return head
 
+    def cancel_inc_ival(self):
+        if self.inc_ival:
+            self.inc_ival.finish()
+
+        self.inc_ival = None
+
     def addScore(self, amount, reason=''):
 
         # First update the amount
@@ -299,9 +323,9 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
         # if we lost points make a red popup, if we gained green popup
         if diff > 0:
-            doGainAnimation(self.points_text, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason)
+            doGainAnimation(self, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason)
         elif diff < 0:
-            doLossAnimation(self.points_text, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason)
+            doLossAnimation(self, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason)
 
     def updatePosition(self):
         # Move to new position based on place
