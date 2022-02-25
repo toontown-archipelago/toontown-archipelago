@@ -37,7 +37,10 @@ def doGainAnimation(label, amount, old_amount, new_amount, reason='', localAvFla
         popup.cleanup()
 
     def doTextUpdate(n):
-        pointText.setText(str(int(math.ceil(n))))
+        try:
+            pointText.setText(str(int(math.ceil(n))))
+        except AttributeError:
+            pass  # Monkey fix until i find exact cause
 
     # points with a reason go towards the right to see easier
     rx = random.random() / 5.0 - .1  # -.1-.1
@@ -96,7 +99,10 @@ def doLossAnimation(label, amount, old_amount, new_amount, reason='', localAvFla
         popup.cleanup()
 
     def doTextUpdate(n):
-        pointText.setText(str(int(n)))
+        try:
+            pointText.setText(str(int(n)))
+        except AttributeError:
+            pass  # Monkey fix until i find out exact cause
 
     rx = random.random() / 5.0 - .1  # -.1-.1
     rz = random.random() / 10.0  # 0-.1
