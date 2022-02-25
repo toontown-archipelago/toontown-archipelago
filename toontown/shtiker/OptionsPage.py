@@ -736,10 +736,47 @@ class OptionsTabPage2(DirectFrame):
         self.sensYSlider.setValue(self.__actualSensToDisplayNum(base.settings.getFloat('game', 'camSensitivityY', .25)))
         self.sensYLabel.setText("Camera Y Sensitivity: " + str(round(self.sensYSlider.getValue(), 2)))
 
+        self.movementStyleToggle = DirectButton(
+            parent=self,
+            relief=None,
+            image=(
+                guiButton.find("**/QuitBtn_UP"),
+                guiButton.find("**/QuitBtn_DN"),
+                guiButton.find("**/QuitBtn_RLVR"),
+            ),
+            image_scale=button_image_scale,
+            text='TTCC' if base.settings.getInt('game', 'movement_mode', 0) == 0 else 'TTR',
+            text_scale=options_text_scale,
+            text_pos=button_textpos,
+            pos=(0.42, 0.0, -0.32),
+            command=self.__doToggleMovementMode,
+        )
+
+        self.movementStyleLabel = DirectLabel(
+            parent=self,
+            relief=None,
+            text="Current Movement Style:",
+            text_align=TextNode.ALeft,
+            text_scale=options_text_scale,
+            pos=(leftMargin, 0, -.32),
+        )
+
         self.keybindDialogButton.setScale(0.8)
         self.keybindDialogButton.hide()
         guiButton.removeNode()
         gui.removeNode()
+
+    def __doToggleMovementMode(self):
+        CLASH = 0
+        TTR = 1
+        currSetting = base.settings.getInt('game', "movement_mode", CLASH)
+
+        # Invert
+        currSetting = TTR if currSetting == CLASH else CLASH
+        base.settings.updateSetting('game', 'movement_mode', currSetting)
+        self.movementStyleToggle['text'] = 'TTCC' if currSetting == CLASH else 'TTR'
+        mode = 'ttr' if currSetting == TTR else 'ttcc'
+        base.localAvatar.setSprintMode(mode)
 
     def __displayNumToActualSens(self, num):
         return .01 * num

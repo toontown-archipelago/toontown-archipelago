@@ -131,7 +131,6 @@ class ToonBase(OTPBase.OTPBase):
         del tpMgr
         self.lastScreenShotTime = globalClock.getRealTime()
         self.accept('InputState-forward', self.__walking)
-        self.isSprinting = 0
         self.canScreenShot = 1
         self.glitchCount = 0
         self.walking = 0
@@ -139,8 +138,6 @@ class ToonBase(OTPBase.OTPBase):
         self.oldY = max(1, base.win.getYSize())
         self.aspectRatio = float(self.oldX) / self.oldY
         self.aspect2d.setAntialias(AntialiasAttrib.MMultisample)
-
-        self.oldSprint = ""
 
         self.wantCustomKeybinds = self.settings.getBool('game', 'customKeybinds', False)
 
@@ -152,25 +149,10 @@ class ToonBase(OTPBase.OTPBase):
         self.ACTION_BUTTON = 'delete'
         self.SCREENSHOT_KEY = 'f9'
         self.CRANE_GRAB_KEY = 'control'
+
+        self.SPRINT = 'shift'
         self.reloadControls()
         return
-
-    def setSprinting(self):
-        if hasattr(base, 'localAvatar'):
-            base.localAvatar.currentSpeed = OTPGlobals.ToonForwardSprintSpeed
-            base.localAvatar.currentReverseSpeed = OTPGlobals.ToonReverseSprintSpeed
-            base.localAvatar.controlManager.setSpeeds(OTPGlobals.ToonForwardSprintSpeed, OTPGlobals.ToonJumpForce, OTPGlobals.ToonReverseSprintSpeed, OTPGlobals.ToonRotateSpeed)
-            self.isSprinting = 1
-        else:
-            if self.isSprinting == 1:
-                self.exitSprinting()
-
-    def exitSprinting(self):
-        if hasattr(base, 'localAvatar'):
-            base.localAvatar.currentSpeed = OTPGlobals.ToonForwardSpeed
-            base.localAvatar.currentReverseSpeed = OTPGlobals.ToonReverseSpeed
-            base.localAvatar.controlManager.setSpeeds(OTPGlobals.ToonForwardSpeed, OTPGlobals.ToonJumpForce, OTPGlobals.ToonReverseSpeed, OTPGlobals.ToonRotateSpeed)
-            self.isSprinting = 0
 
     def openMainWindow(self, *args, **kw):
         result = OTPBase.OTPBase.openMainWindow(self, *args, **kw)
@@ -509,14 +491,7 @@ class ToonBase(OTPBase.OTPBase):
             self.JUMP = "control"
             self.ACTION_BUTTON = "delete"
             self.CRANE_GRAB_KEY = 'control'
-        
-        if self.oldSprint:
-            self.ignore(self.oldSprint)
-            self.ignore(self.oldSprint + "-up")
 
-        sprint = keymap.get("SPRINT", "shift")
-        self.accept(sprint, self.setSprinting)
-        self.accept(sprint + '-up', self.exitSprinting)
-        self.oldSprint = sprint
+        self.SPRINT = 'shift'
 
         self.accept(self.SCREENSHOT_KEY, self.takeScreenShot)
