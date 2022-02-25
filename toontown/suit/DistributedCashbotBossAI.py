@@ -942,6 +942,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.stopHelmets()
         self.heldObject = None
         self.cancelReviveTasks()
+        taskMgr.remove(self.uniqueName('times-up-task'))
+        taskMgr.remove(self.uniqueName('post-times-up-task'))
         return
         
     ##### Victory state #####

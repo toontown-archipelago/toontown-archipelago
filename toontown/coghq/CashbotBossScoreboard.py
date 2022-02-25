@@ -370,6 +370,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
         taskMgr.remove('sadtimer-' + str(self.avId))
         self.sad_text.hide()
         self.sad_text.setText('SAD!')
+        self.cancel_inc_ival()
 
     def cleanup(self):
         if self.isBeingSpectated:
@@ -387,6 +388,8 @@ class CashbotBossScoreboardToonRow(DirectObject):
         del self.toon_head_button
         self.extra_stats_text.cleanup()
         del self.extra_stats_text
+        self.cancel_inc_ival()
+        del self.inc_ival
         self.INSTANCES.remove(self)
 
     def show(self):
