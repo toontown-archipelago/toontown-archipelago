@@ -52,6 +52,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self._rmbToken = inputState.watchWithModifiers("RMB", "mouse3")
         self.initializeCollisions()
         self.firstPerson = False
+        self.ignoreRMB = False
 
     def destroy(self):
         self.destroyCollisions()
@@ -122,7 +123,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.disableInput()
 
     def enableMouseControl(self, pressed):
-        if not pressed:
+        if not pressed or self.ignoreRMB:
             return
 
         self.ignore("InputState-RMB")
@@ -261,16 +262,20 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.ignore("tab")
     
     def toggleFirstPerson(self):
-        self.firstPerson = not self.firstPerson
-        if self.firstPerson:
-            self._handleSetWheel(0)
-            self.ignoreWheel()
-            # self.enableMouseControl(True)
-            # self.ignore("InputState-RMB")
-        else:
-            self.setPresetPos(0, transition=False)
-            self.acceptWheel()
-            # self.disableMouseControl(True)
+        # self.firstPerson = not self.firstPerson
+        # if self.firstPerson:
+        #     self._handleSetWheel(0)
+        #     self.ignoreWheel()
+        #     # self.enableMouseControl(True)
+        #     # self.ignore("InputState-RMB")
+        # else:
+        #     self.setPresetPos(0, transition=False)
+        #     self.acceptWheel()
+        #     # self.disableMouseControl(True)
+        self.presetPos += 1
+        if self.presetPos >= len(self.presets):
+            self.presetPos = 0
+        self.setPresetPos(self.presetPos)
     
     def _handleSetWheel(self, y):
         self._collSolid.setPointB(0, y + 1, 0)

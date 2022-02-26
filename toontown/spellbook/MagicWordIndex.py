@@ -2148,7 +2148,7 @@ class Stun(MagicWord):
         if not boss.state == 'BattleThree':
             return "You aren't in the evidence round."
         for suit in boss.lawyers:
-            suit.hitByToon()
+            suit.hitByToon(avIdOverride=avId)
 
         return "Stunned the lawyers!"
 

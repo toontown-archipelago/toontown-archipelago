@@ -191,9 +191,11 @@ class CashbotBossScoreboardToonRow(DirectObject):
         # Spec
         instance.__attempt_spectate()
 
-    def __init__(self, scoreboard_frame, avId, place=0):
+    def __init__(self, scoreboard_frame, avId, place=0, ruleset=None):
 
         DirectObject.__init__(self)
+
+        self.ruleset = ruleset
 
         self.INSTANCES.append(self)
 
@@ -232,13 +234,18 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
         self.extra_stats_text.hide()
 
-        self.sadSecondsLeft = base.boss.ruleset.REVIVE_TOONS_TIME
+        self.sadSecondsLeft = -1
 
         self.isBeingSpectated = False
 
         self.inc_ival = None
 
     def __attempt_spectate(self):
+
+        # If there is no base.boss attribute set don't do anything
+        if not hasattr(base, 'boss'):
+            return
+
         # Is the toon spectating?
         if not base.boss.localToonSpectating:
             return
@@ -412,9 +419,9 @@ class CashbotBossScoreboardToonRow(DirectObject):
     def toonDied(self):
         self.toon_head.sadEyes()
         self.sad_text.show()
-        self.sadSecondsLeft = base.boss.ruleset.REVIVE_TOONS_TIME
+        self.sadSecondsLeft = self.ruleset.REVIVE_TOONS_TIME
 
-        if base.boss.ruleset.REVIVE_TOONS_UPON_DEATH:
+        if self.ruleset.REVIVE_TOONS_UPON_DEATH:
             taskMgr.remove('sadtimer-' + str(self.avId))
             taskMgr.add(self.__updateSadTimeLeft, 'sadtimer-' + str(self.avId))
 
@@ -435,9 +442,10 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
 class CashbotBossScoreboard(DirectObject):
 
-    def __init__(self):
+    def __init__(self, ruleset=None):
         DirectObject.__init__(self)
 
+        self.ruleset = ruleset
         self.frame = DirectFrame(parent=base.a2dLeftCenter)
         self.frame.setPos(.2, 0, .5)
 
@@ -451,6 +459,11 @@ class CashbotBossScoreboard(DirectObject):
 
         self.expand_tip = OnscreenText(parent=self.frame, text="Press F1 to show more stats", style=3, fg=WHITE, align=TextNode.ACenter, scale=.05, pos=(0.22, 0.1), font=ToontownGlobals.getCompetitionFont())
         self.expand_tip.hide()
+
+    def set_ruleset(self, ruleset):
+        self.ruleset = ruleset
+        for r in self.rows.values():
+            r.ruleset = ruleset
 
     def _consider_expand(self):
 
@@ -473,7 +486,7 @@ class CashbotBossScoreboard(DirectObject):
 
     def addToon(self, avId):
         if avId not in self.rows:
-            self.rows[avId] = CashbotBossScoreboardToonRow(self.frame, avId, len(self.rows))
+            self.rows[avId] = CashbotBossScoreboardToonRow(self.frame, avId, len(self.rows), ruleset=self.ruleset)
 
         self.show()
 
@@ -491,15 +504,15 @@ class CashbotBossScoreboard(DirectObject):
     def addScore(self, avId, amount, reason='', ignoreLaff=False):
 
         # If we don't want to include penalties for low laff bonuses and the amount is negative ignore laff
-        if not base.boss.ruleset.LOW_LAFF_BONUS_INCLUDE_PENALTIES and amount <= 0:
+        if not self.ruleset.LOW_LAFF_BONUS_INCLUDE_PENALTIES and amount <= 0:
             ignoreLaff = True
 
         # Should we consider a low laff bonus?
-        if not ignoreLaff and base.boss.ruleset.WANT_LOW_LAFF_BONUS:
+        if not ignoreLaff and self.ruleset.WANT_LOW_LAFF_BONUS:
             av = base.cr.doId2do.get(avId)
-            if av and av.getHp() <= base.boss.ruleset.LOW_LAFF_BONUS_THRESHOLD:
+            if av and av.getHp() <= self.ruleset.LOW_LAFF_BONUS_THRESHOLD:
                 taskMgr.doMethodLater(.75, self.__addScoreLater, 'delayedScore',
-                                      extraArgs=[avId, int(amount * base.boss.ruleset.LOW_LAFF_BONUS)])
+                                      extraArgs=[avId, int(amount * self.ruleset.LOW_LAFF_BONUS)])
 
         # If we don't get an integer
         if not isinstance(amount, int):
@@ -591,7 +604,7 @@ class CashbotBossScoreboard(DirectObject):
                 LerpScaleInterval(row.combo_text, duration=.25, scale=1.07, startScale=1, blendType='easeInOut'),
                 LerpScaleInterval(row.combo_text, duration=.25, startScale=1.07, scale=1, blendType='easeInOut')
             ),
-            LerpColorScaleInterval(row.combo_text, duration=base.boss.ruleset.COMBO_DURATION, colorScale=(1, 1, 1, 0),
+            LerpColorScaleInterval(row.combo_text, duration=self.ruleset.COMBO_DURATION, colorScale=(1, 1, 1, 0),
                                    startColorScale=(1, 1, 1, 1))
         ).start()
 

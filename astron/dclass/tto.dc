@@ -1373,6 +1373,21 @@ struct CraneLeagueModifier {
   int32 TIER;
 };
 
+struct ScaleLeagueRuleset {
+  bool TIMER_MODE;
+  int32 TIMER_MODE_TIME_LIMIT;
+  int32 CJ_MAX_HP;
+  bool WANT_LOW_LAFF_BONUS;
+  int16/100 LOW_LAFF_BONUS;
+  int32 LOW_LAFF_BONUS_THRESHOLD;
+  bool LOW_LAFF_BONUS_INCLUDE_PENALTIES;
+  bool REVIVE_TOONS_UPON_DEATH;
+  int32 REVIVE_TOONS_TIME;
+  int32 POINTS_STUN;
+  int32 POINTS_PENALTY_GO_SAD;
+  int16/100 COMBO_DURATION;
+};
+
 dclass DistributedCashbotBoss : DistributedBossCog {
   addToActivityLog(uint32, string) broadcast;
   updateSpectators(uint32[]) broadcast ram;
@@ -3248,6 +3263,12 @@ dclass DistributedLawbotBoss : DistributedBossCog {
   toonGotHealed(uint32) broadcast;
   enteredBonusState() broadcast;
   setBattleDifficulty(uint8) broadcast ram;
+  setRawRuleset(ScaleLeagueRuleset) required broadcast ram;
+  damageDealt(uint32, uint32) broadcast;
+  updateCombo(uint32 avId, uint8) broadcast ram;
+  awardCombo(uint32 avId, uint8, int32) broadcast ram;
+  lawyerDisabled(uint32 avid) broadcast;
+  stunBonus(uint32 avId, uint32) broadcast;
 };
 
 dclass DistributedLawbotBossSuit : DistributedSuitBase {

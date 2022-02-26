@@ -1,3 +1,5 @@
+import time
+
 from panda3d.core import *
 from libotp import Nametag, WhisperPopup
 from direct.gui.DirectGui import *
@@ -82,13 +84,151 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.accept('wakeup', self.wakeUp)
         self.jumpLandAnimFixTask = None
         self.fov = OTPGlobals.DefaultCameraFov
+        self.fallbackFov = self.fov
         self.accept('avatarMoving', self.clearPageUpDown)
         self.nametag2dNormalContents = Nametag.CSpeech
         self.showNametag2d()
         self.setPickable(0)
         self.cameraLerp = None
         self.orbitalCamera = OrbitalCamera(self)
-        return
+
+        # Some enums to make switching control modes easier
+        self.NORMAL_SPEED_ENUM = 0
+        self.SPRINT_SPEED_ENUM = 1
+        self.REVERSE_NORMAL_SPEED_ENUM = 2
+        self.REVERSE_SPRINT_SPEED_ENUM = 3
+        self.ROTATE_NORMAL_SPEED_ENUM = 4
+        self.ROTATE_SPRINT_SPEED_ENUM = 5
+        self.FOV_INCREASE_ENUM = 6
+
+        self.TTCC_MOVEMENT_VALUES = {
+            self.NORMAL_SPEED_ENUM: OTPGlobals.ToonForwardSpeed,
+            self.SPRINT_SPEED_ENUM: OTPGlobals.ToonForwardSprintSpeed,
+            self.REVERSE_NORMAL_SPEED_ENUM: OTPGlobals.ToonReverseSpeed,
+            self.REVERSE_SPRINT_SPEED_ENUM: OTPGlobals.ToonReverseSprintSpeed,
+            self.ROTATE_SPRINT_SPEED_ENUM: OTPGlobals.ToonRotateSpeed,
+            self.ROTATE_NORMAL_SPEED_ENUM: OTPGlobals.ToonRotateSpeed,
+            self.FOV_INCREASE_ENUM: OTPGlobals.ToonSprintingFovIncrease
+        }
+
+        self.TTR_MOVEMENT_VALUES = {
+            self.NORMAL_SPEED_ENUM: OTPGlobals.TTRToonForwardSpeed,
+            self.SPRINT_SPEED_ENUM: OTPGlobals.TTRToonForwardSprintSpeed,
+            self.REVERSE_NORMAL_SPEED_ENUM: OTPGlobals.TTRToonReverseSpeed,
+            self.REVERSE_SPRINT_SPEED_ENUM: OTPGlobals.TTRToonReverseSprintSpeed,
+            self.ROTATE_SPRINT_SPEED_ENUM: OTPGlobals.TTRToonRotateSprintingSpeed,
+            self.ROTATE_NORMAL_SPEED_ENUM: OTPGlobals.TTRToonRotateSpeed,
+            self.FOV_INCREASE_ENUM: OTPGlobals.ToonDoubleTapFovIncrease
+        }
+
+        self.isSprinting = 0
+
+        self.currentMovementMode = self.TTCC_MOVEMENT_VALUES
+
+        move_setting = base.settings.getInt('game', 'movement_mode', 0)
+
+        if move_setting == 1:
+            self.setSprintMode('ttr')
+        else:
+            self.setSprintMode('ttcc')
+
+        self.lastForwardPress = 0
+        self.reloadSprintControls()
+
+        self.allowSprinting = False
+
+
+    def reloadSprintControls(self):
+        self.accept(base.MOVE_UP, self.__handleForwardPress)
+        self.accept(base.MOVE_UP + '-up', self.__handleForwardRelease)
+        self.accept(base.SPRINT, self.__handleSprintPress)
+        self.accept(base.SPRINT + '-up', self.__handleSprintRelease)
+
+    # Pass in either 'ttcc' or 'ttr'
+    def setSprintMode(self, game):
+        self.exitSprinting()
+        if game.lower() == 'ttcc':
+            self.currentMovementMode = self.TTCC_MOVEMENT_VALUES
+            self.orbitalCamera.ignoreRMB = False
+        elif game.lower() == 'ttr':
+            self.currentMovementMode = self.TTR_MOVEMENT_VALUES
+            self.orbitalCamera.ignoreRMB = True
+        else:
+            raise Exception("Please pass in either 'ttcc' or 'ttr', got %s" % game)
+
+    def __handleForwardPress(self):
+
+        if not self.allowSprinting or self.hp <= 0:
+            return
+
+        # If this isn't the ttr mode don't do anything
+        if self.currentMovementMode is not self.TTR_MOVEMENT_VALUES:
+            return
+
+        # See the time difference from when we last hit forward key
+        timeDif = time.time() - self.lastForwardPress
+        # If we hit the forward key a second or less ago set state to sprinting
+        if timeDif <= OTPGlobals.ToonDoubleTapSprintWindow:
+            self.setSprinting()
+
+        # Otherwise update last time we pressed sprint key
+        self.lastForwardPress = time.time()
+
+    def __handleForwardRelease(self):
+
+        # If this isn't the ttr mode don't do anything
+        if self.currentMovementMode is not self.TTR_MOVEMENT_VALUES:
+            return
+
+        self.exitSprinting()
+
+    def __handleSprintPress(self):
+
+        if not self.allowSprinting or self.hp <= 0:
+            return
+
+        # If this isn't the ttcc mode don't do anything
+        if self.currentMovementMode is not self.TTCC_MOVEMENT_VALUES:
+            return
+
+        self.setSprinting()
+
+    def __handleSprintRelease(self):
+
+        # If this isn't the ttcc mode don't do anything
+        if self.currentMovementMode is not self.TTCC_MOVEMENT_VALUES:
+            return
+
+        self.exitSprinting()
+
+    def __setFov(self, fov):
+        localAvatar.setCameraFov(fov, updateFallback=False)
+
+    def lerpFov(self, start, target):
+        LerpFunc(
+            self.__setFov, fromData=start, toData=target, duration=.3, blendType='easeInOut'
+        ).start()
+
+    def setSprinting(self):
+        self.currentSpeed = self.currentMovementMode[self.SPRINT_SPEED_ENUM]
+        self.currentReverseSpeed = self.currentMovementMode[self.REVERSE_SPRINT_SPEED_ENUM]
+        self.controlManager.setSpeeds(self.currentMovementMode[self.SPRINT_SPEED_ENUM], OTPGlobals.ToonJumpForce,
+                                      self.currentMovementMode[self.REVERSE_SPRINT_SPEED_ENUM], self.currentMovementMode[self.ROTATE_SPRINT_SPEED_ENUM])
+        self.isSprinting = 1
+        self.lerpFov(self.fov, self.fallbackFov + self.currentMovementMode[self.FOV_INCREASE_ENUM])
+
+    def exitSprinting(self):
+
+        if not self.isSprinting:
+            return
+
+        self.currentSpeed = self.currentMovementMode[self.NORMAL_SPEED_ENUM]
+        self.currentReverseSpeed = self.currentMovementMode[self.REVERSE_NORMAL_SPEED_ENUM]
+        self.controlManager.setSpeeds(self.currentMovementMode[self.NORMAL_SPEED_ENUM], OTPGlobals.ToonJumpForce,
+                                      self.currentMovementMode[self.REVERSE_NORMAL_SPEED_ENUM], self.currentMovementMode[self.ROTATE_NORMAL_SPEED_ENUM])
+
+        self.lerpFov(self.fov, self.fallbackFov)
+        self.isSprinting = 0
 
     def useSwimControls(self):
         self.controlManager.use('swim', self)
@@ -431,6 +571,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.avatarControlsEnabled = 1
         self.setupAnimationEvents()
         self.controlManager.enable()
+        self.allowSprinting = True
 
     def disableAvatarControls(self):
         if not self.avatarControlsEnabled:
@@ -440,6 +581,10 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.controlManager.setWASDTurn(1)
         self.controlManager.disable()
         self.clearPageUpDown()
+
+        self.allowSprinting = False
+        self.exitSprinting()
+
 
     def setWalkSpeedNormal(self):
         self.controlManager.setSpeeds(OTPGlobals.ToonForwardSpeed, OTPGlobals.ToonJumpForce, OTPGlobals.ToonReverseSpeed, OTPGlobals.ToonRotateSpeed)
@@ -879,7 +1024,9 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
             self.camLerpInterval = LerpFunctionInterval(setCamFov, fromData=oldFov, toData=fov, duration=time, name='cam-fov-lerp')
             self.camLerpInterval.start()
 
-    def setCameraFov(self, fov):
+    def setCameraFov(self, fov, updateFallback=True):
+        if updateFallback:
+            self.fallbackFov = fov
         self.fov = fov
         if not (self.isPageDown or self.isPageUp):
             base.camLens.setMinFov(self.fov / (4. / 3.))
@@ -982,6 +1129,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.ignore('alt-' + base.MOVE_UP + '-up')
         self.ignore('shift-' + base.MOVE_UP)
         self.ignore('shift-' + base.MOVE_UP + '-up')
+        self.exitSprinting()
 
     def startRunWatch(self):
 
