@@ -25,6 +25,8 @@ class DistributedLawbotBossSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
          State.State('Stunned', self.enterStunned, self.exitStunned, ['neutral'])], 'Off', 'Off')
         self.fsm.enterInitialState()
 
+        self.stunnedBy = None
+
     def delete(self):
         self.notify.debug('delete %s' % self.doId)
         self.ignoreAll()
@@ -82,7 +84,20 @@ class DistributedLawbotBossSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
         else:
             if not lawbotBoss.involvedToons:
                 return
-            toonToAttackId = random.choice(lawbotBoss.involvedToons)
+
+            availTargets = list(lawbotBoss.involvedToons)
+            for id in availTargets[:]:
+                t = self.air.doId2do.get(id)
+                if not t:
+                    availTargets.remove(id)
+                elif t.getHp() <= 0:
+                    availTargets.remove(id)
+
+            if len(availTargets) <= 0:
+                self.doProsecute()
+                return
+
+            toonToAttackId = random.choice(availTargets)
             toon = self.air.doId2do.get(toonToAttackId)
             if not toon:
                 self.doProsecute()
@@ -132,7 +147,12 @@ class DistributedLawbotBossSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
     def setBoss(self, lawbotBoss):
         self.boss = lawbotBoss
 
-    def hitByToon(self):
+    def hitByToon(self, avIdOverride=None):
+        if not avIdOverride:
+            avId = self.air.getAvatarIdFromSender()
+        else:
+            avId = avIdOverride
+
         self.notify.debug('I got hit by a toon')
         if not self.stunned:
             curTime = globalClockDelta.getRealNetworkTime()
@@ -144,6 +164,13 @@ class DistributedLawbotBossSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
                 taskMgr.remove(taskName)
             self.sendUpdate('doStun', [])
             self.setStun(True)
+            self.stunnedBy = avId
+
+            self.boss.d_lawyerDisable(avId)
+            ct = self.boss.comboTrackers.get(avId)
+            if ct:
+                ct.incrementCombo(int(round(ct.combo / 5) + 2))
+
             taskName = self.uniqueName('unstun')
             taskMgr.doMethodLater(ToontownGlobals.LawbotBossLawyerStunTime, self.unStun, taskName)
             if self.boss:
@@ -154,6 +181,7 @@ class DistributedLawbotBossSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
 
     def unStun(self, taskName):
         self.setStun(False)
+        self.stunnedBy = None
 
     def enterPreThrowProsecute(self):
         pass

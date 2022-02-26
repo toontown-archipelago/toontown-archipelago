@@ -6,6 +6,7 @@ from otp.avatar import DistributedAvatarAI
 import DistributedSuitAI
 from toontown.battle import BattleExperienceAI
 from direct.fsm import FSM
+from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
 from toontown.toonbase import ToontownGlobals
 from toontown.toon import InventoryBase
 from toontown.toonbase import TTLocalizer
@@ -14,7 +15,7 @@ from toontown.toon import NPCToons
 from toontown.building import SuitBuildingGlobals
 import SuitDNA
 import random
-from toontown.coghq import DistributedLawbotBossGavelAI
+from toontown.coghq import DistributedLawbotBossGavelAI, ScaleLeagueGlobals
 from toontown.suit import DistributedLawbotBossSuitAI
 from toontown.coghq import DistributedLawbotCannonAI
 from toontown.coghq import DistributedLawbotChairAI
@@ -56,7 +57,45 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.weightPerToon = {}
         self.cannonIndexPerToon = {}
         self.battleDifficulty = 0
+
+        self.comboTrackers = {}
+        self.ruleset = ScaleLeagueGlobals.CJRuleset()
         return
+
+    def toonDied(self, toon):
+        toon.b_setNumPies(0)
+        DistributedBossCogAI.DistributedBossCogAI.toonDied(self, toon)
+
+    def announceGenerate(self):
+        DistributedBossCogAI.DistributedBossCogAI.announceGenerate(self)
+        self.setupRuleset()
+
+    def d_updateTimer(self, time):
+        self.sendUpdate('updateTimer', [time])
+
+    def d_lawyerDisable(self, avId):
+        self.sendUpdate('lawyerDisabled', [avId])
+
+    def d_updateCombo(self, avId, comboLength):
+        self.sendUpdate('updateCombo', [avId, comboLength])
+
+    def d_awardCombo(self, avId, comboLength, amount):
+        self.sendUpdate('awardCombo', [avId, comboLength, amount])
+
+    def setupRuleset(self):
+        self.ruleset = ScaleLeagueGlobals.CJRuleset()
+        # Make sure they didn't do anything bad
+        self.ruleset.validate()
+        # Update the client
+        self.d_setRawRuleset()
+
+    # Any time you change the ruleset, you should call this to sync the clients
+    def d_setRawRuleset(self):
+        print(self.getRawRuleset())
+        self.sendUpdate('setRawRuleset', [self.getRawRuleset()])
+
+    def getRawRuleset(self):
+        return self.ruleset.asStruct()
 
     def delete(self):
         self.notify.debug('DistributedLawbotBossAI.delete')
@@ -93,14 +132,21 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
                 bossDamage = newWeight
         if self.bonusState and bossDamage <= 50:
             bossDamage *= ToontownGlobals.LawbotBossBonusWeightMultiplier
-        #if len(self.involvedToons) <= 1:
-        #    bossDamage += 2
+
+        dmgDealt = bossDamage
+
         bossDamage = min(self.getBossDamage() + bossDamage, self.bossMaxDamage)
         self.b_setBossDamage(bossDamage, 0, 0)
         if self.bossDamage >= self.bossMaxDamage:
             self.b_setState('Victory')
         else:
             self.__recordHit()
+
+        ct = self.comboTrackers.get(avId)
+        if ct:
+            ct.incrementCombo(int(round(ct.combo) / 5 + 1))
+
+        self.sendUpdate('damageDealt', [avId, dmgDealt])
 
     def healBoss(self, bossHeal):
         bossDamage = -bossHeal
@@ -150,6 +196,11 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
             toon.__touchedCage = 1
 
     def touchWitnessStand(self):
+        avId = self.air.getAvatarIdFromSender()
+        av = self.air.doId2do.get(avId)
+        if av and av.getHp() <= 0:
+            return
+
         self.touchCage()
 
     def finalPieSplat(self):
@@ -520,6 +571,21 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         if self.chairs != None:
              self.__deleteChairs()
 
+        for comboTracker in self.comboTrackers.values():
+            comboTracker.cleanup()
+
+        # heal all toons and setup a combo tracker for them
+        for avId in self.involvedToons:
+            if avId in self.air.doId2do:
+                self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
+                av = self.air.doId2do[avId]
+
+                if self.ruleset.FORCE_MAX_LAFF:
+                    av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
+
+                if self.ruleset.HEAL_TOONS_ON_START:
+                    av.b_setHp(av.getMaxHp())
+
     def getToonDifficulty(self):
         highestCogSuitLevel = 0
         totalCogSuitLevels = 0.0
@@ -639,9 +705,8 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
     def enterVictory(self):
         #Whisper out the time from the start of CJ until end of CJ
         self.scaleTime = globalClock.getFrameTime()
-        for doId, do in simbase.air.doId2do.items():
-            if str(doId)[0] != str(simbase.air.districtId)[0]:
-                do.d_setSystemMessage(0, "CJ Ended In {0:.3f}s".format(self.scaleTime - self.battleThreeTimeStarted))
+        timeToSend = self.scaleTime - self.battleThreeTimeStarted
+        self.sendUpdate('updateTimer', [timeToSend])
         self.resetBattles()
         self.suitsKilled.append({'type': None,
          'level': None,
@@ -668,6 +733,9 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
             if toon:
                 self.giveCogSummonReward(toon, preferredDept, preferredSummonType)
                 toon.b_promote(self.deptIndex)
+
+        for comboTracker in self.comboTrackers.values():
+            comboTracker.cleanup()
 
     def giveCogSummonReward(self, toon, prefDeptIndex, prefSummonType):
         cogLevel = int(self.toonLevels / self.maxToonLevels * SuitDNA.suitsPerDept)
@@ -852,6 +920,20 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
             toon = self.air.doId2do.get(toonId)
             if toon:
                 self.healToon(toon, ToontownGlobals.LawbotBossBonusToonup)
+
+        # Calculate point handouts for people who helped stunned
+        freq = {avId: 0 for avId in self.involvedToons}
+        # Loop through the lawyers and add 1 for the toon that stunned it
+        for lawyer in self.lawyers:
+            toonThatStunned = lawyer.stunnedBy
+            if toonThatStunned in freq:
+                freq[toonThatStunned] += 1
+
+        # Now with our frequency map, give a percentage of the points based on how many they had
+        for avId in freq:
+            percentageStunned = float(freq[avId]) / float(len(self.lawyers))
+            pointBonus = int(math.ceil(percentageStunned * 25))
+            self.sendUpdate('stunBonus', [avId, pointBonus])
 
         taskMgr.doMethodLater(ToontownGlobals.LawbotBossBonusDuration, self.clearBonus, self.uniqueName('clearBonus'))
         self.sendUpdate('enteredBonusState', [])

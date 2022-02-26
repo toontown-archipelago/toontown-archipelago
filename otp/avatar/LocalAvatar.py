@@ -135,6 +135,8 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.lastForwardPress = 0
         self.reloadSprintControls()
 
+        self.allowSprinting = False
+
 
     def reloadSprintControls(self):
         self.accept(base.MOVE_UP, self.__handleForwardPress)
@@ -155,6 +157,9 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
             raise Exception("Please pass in either 'ttcc' or 'ttr', got %s" % game)
 
     def __handleForwardPress(self):
+
+        if not self.allowSprinting or self.hp <= 0:
+            return
 
         # If this isn't the ttr mode don't do anything
         if self.currentMovementMode is not self.TTR_MOVEMENT_VALUES:
@@ -178,6 +183,9 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.exitSprinting()
 
     def __handleSprintPress(self):
+
+        if not self.allowSprinting or self.hp <= 0:
+            return
 
         # If this isn't the ttcc mode don't do anything
         if self.currentMovementMode is not self.TTCC_MOVEMENT_VALUES:
@@ -211,12 +219,15 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
 
     def exitSprinting(self):
 
+        if not self.isSprinting:
+            return
+
         self.currentSpeed = self.currentMovementMode[self.NORMAL_SPEED_ENUM]
         self.currentReverseSpeed = self.currentMovementMode[self.REVERSE_NORMAL_SPEED_ENUM]
         self.controlManager.setSpeeds(self.currentMovementMode[self.NORMAL_SPEED_ENUM], OTPGlobals.ToonJumpForce,
                                       self.currentMovementMode[self.REVERSE_NORMAL_SPEED_ENUM], self.currentMovementMode[self.ROTATE_NORMAL_SPEED_ENUM])
-        if self.isSprinting:
-            self.lerpFov(self.fov, self.fallbackFov)
+
+        self.lerpFov(self.fov, self.fallbackFov)
         self.isSprinting = 0
 
     def useSwimControls(self):
@@ -560,6 +571,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.avatarControlsEnabled = 1
         self.setupAnimationEvents()
         self.controlManager.enable()
+        self.allowSprinting = True
 
     def disableAvatarControls(self):
         if not self.avatarControlsEnabled:
@@ -569,6 +581,10 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.controlManager.setWASDTurn(1)
         self.controlManager.disable()
         self.clearPageUpDown()
+
+        self.allowSprinting = False
+        self.exitSprinting()
+
 
     def setWalkSpeedNormal(self):
         self.controlManager.setSpeeds(OTPGlobals.ToonForwardSpeed, OTPGlobals.ToonJumpForce, OTPGlobals.ToonReverseSpeed, OTPGlobals.ToonRotateSpeed)
@@ -1113,6 +1129,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.ignore('alt-' + base.MOVE_UP + '-up')
         self.ignore('shift-' + base.MOVE_UP)
         self.ignore('shift-' + base.MOVE_UP + '-up')
+        self.exitSprinting()
 
     def startRunWatch(self):
 

@@ -60,6 +60,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
         self.ruleset = CraneLeagueGlobals.CFORuleset()  # Setup a default ruleset as a fallback
+        self.scoreboard = None
         self.modifiers = []
         self.heatDisplay = CraneLeagueHeatDisplay()
         self.heatDisplay.hide()
@@ -190,7 +191,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         localAvatar.chatMgr.chatInputSpeedChat.addCFOMenu()
         
         # The crane round scoreboard
-        self.scoreboard = CashbotBossScoreboard()
+        self.scoreboard = CashbotBossScoreboard(ruleset=self.ruleset)
         self.scoreboard.hide()
         global OneBossCog
         if OneBossCog != None:
@@ -213,6 +214,10 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossSpeedrunTimer.cleanup()
         self.bossSpeedrunTimer = BossSpeedrunTimedTimer(time_limit=self.ruleset.TIMER_MODE_TIME_LIMIT) if self.ruleset.TIMER_MODE else BossSpeedrunTimer()
         self.bossSpeedrunTimer.hide()
+        # If the scoreboard was made then update the ruleset
+        if self.scoreboard:
+            self.scoreboard.set_ruleset(self.ruleset)
+
         self.heatDisplay.update(self.calculateHeat(), self.modifiers)
 
         if self.ruleset.WANT_BACKWALL:
@@ -258,6 +263,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.heatDisplay.cleanup()
         if OneBossCog == self:
             OneBossCog = None
+
+        del base.boss
         return
 
     def __makeResistanceToon(self):

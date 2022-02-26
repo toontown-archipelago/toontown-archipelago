@@ -27,6 +27,9 @@ class BossSpeedrunTimer:
         self.started = datetime.now()
         self.overridden_time = None
 
+    def set_pos(self, pos):
+        self.frame.setPos(pos)
+
     def stop_updating(self):
         taskMgr.remove('boss-timer-update-time')
 

@@ -38,6 +38,10 @@ class OTPTimer(DirectFrame):
         self.reparentTo(base.a2dTopRight)
         self.setPos(-0.173, 0, -0.17)
 
+    def posInTopRightBelowHealthBar(self):
+        self.reparentTo(base.a2dTopRight)
+        self.setPos(-0.173, 0, -0.45)
+
     def posBelowTopRightCorner(self):
         self.reparentTo(base.a2dTopRight)
         self.setPos(-0.173, 0, -0.42)
