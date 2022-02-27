@@ -209,7 +209,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def rollRandomModifiers(self):
         tierLeftBound = self.ruleset.MODIFIER_TIER_RANGE[0]
-        tierRightBound = self.ruleset.MODIFIER_TIER_RANGE[0]
+        tierRightBound = self.ruleset.MODIFIER_TIER_RANGE[1]
         pool = [c(random.randint(tierLeftBound, tierRightBound)) for c in CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.values()]
         random.shuffle(pool)
         self.modifiers = [pool.pop() for _ in range(self.numModsWanted)]

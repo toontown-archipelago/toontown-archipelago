@@ -466,7 +466,7 @@ class ModifierCFOHPIncreaser(CFORulesetModifierBase):
         return 'The CFO has %(color_start)s+' + str(perc) + '%%%(color_end)s more HP'
 
     def getHeat(self):
-        return 100 * self.tier
+        return 125 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.CFO_MAX_HP *= self.additivePercent(self.CFO_INCREASE_PER_TIER[self.tier])
@@ -491,7 +491,7 @@ class ModifierCFOHPDecreaser(CFORulesetModifierBase):
         return 'The CFO has %(color_start)s-' + str(perc) + '%%%(color_end)s less HP'
 
     def getHeat(self):
-        return -50 * self.tier
+        return -30 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.CFO_MAX_HP *= self.subtractivePercent(self.CFO_DECREASE_PER_TIER[self.tier])
@@ -519,7 +519,7 @@ class ModifierDesafeImpactIncreaser(CFORulesetModifierBase):
         return "Increases the impact required to remove the CFO's helmet by %(color_start)s+" + str(perc) + "%%%(color_end)s"
 
     def getHeat(self):
-        return 60 * self.tier
+        return 80 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.MIN_DEHELMET_IMPACT *= self.additivePercent(self.CFO_IMPACT_INC_PER_TIER[self.tier])  # Give the cfo 69 hp
@@ -595,7 +595,7 @@ class ModifierDevolution(CFORulesetModifierBase):
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
 
     TIER_NAMES = ['', 'Omega', 'Beta', 'Alpha']
-    TIER_HEATS = [0, 20, 100, 130]
+    TIER_HEATS = [0, 25, 200, 225]
 
     # Returns the part of the string that's colored, basically what is disabled
     def _getDynamicString(self):
@@ -648,7 +648,7 @@ class ModifierCFONoFlinch(CFORulesetModifierBase):
         return 'The CFO %(color_start)sno longer flinches%(color_end)s upon being damaged'
 
     def getHeat(self):
-        return 50
+        return 150
 
     def apply(self, cfoRuleset):
         cfoRuleset.CFO_FLINCHES_ON_HIT = False
@@ -726,7 +726,7 @@ class ModifierGoonSpeedIncreaser(CFORulesetModifierBase):
         return 'Goons move %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) + '%%%(color_end)s faster'
 
     def getHeat(self):
-        return 30 * self.tier
+        return 50 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.GOON_SPEED_MULTIPLIER *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
@@ -753,7 +753,7 @@ class ModifierGoonCapIncreaser(CFORulesetModifierBase):
         return 'The CFO spawns %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) +'%%%(color_end)s more goons'
 
     def getHeat(self):
-        return 20 * self.tier
+        return 40 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.MAX_GOON_AMOUNT_START *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
@@ -777,7 +777,7 @@ class ModifierSafesStunGoons(CFORulesetModifierBase):
         return 'Safes now %(color_start)sstun goons instead of destroy%(color_end)s them on impact'
 
     def getHeat(self):
-        return 30
+        return 50
 
     def apply(self, cfoRuleset):
         cfoRuleset.SAFES_STUN_GOONS = True
@@ -800,7 +800,7 @@ class ModifierGoonsGrabbedWakeup(CFORulesetModifierBase):
         return 'Goons %(color_start)salways wakeup%(color_end)s when grabbed by all cranes'
 
     def getHeat(self):
-        return 70
+        return 90
 
     def apply(self, cfoRuleset):
         cfoRuleset.GOONS_ALWAYS_WAKE_WHEN_GRABBED = True
@@ -824,7 +824,7 @@ class ModifierTreasureHealIncreaser(CFORulesetModifierBase):
         return 'Treasures heal %(color_start)s+'+str(self.INCREASE_PERC)+'%%%(color_end)s when grabbed'
 
     def getHeat(self):
-        return -30
+        return -50
 
     def apply(self, cfoRuleset):
         cfoRuleset.WEAK_TREASURE_HEAL_AMOUNT *= self.additivePercent(self.INCREASE_PERC)
@@ -854,7 +854,7 @@ class ModifierTreasureHealDecreaser(CFORulesetModifierBase):
         return 'Treasures heal %(color_start)s-' + str(self.TIER_DECREASE_PERC[self.tier]) + '%%%(color_end)s when grabbed'
 
     def getHeat(self):
-        return 30 * self.tier
+        return 40 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.WEAK_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self.TIER_DECREASE_PERC[self.tier])
@@ -884,7 +884,7 @@ class ModifierTreasureRNG(CFORulesetModifierBase):
         return 'Treasures have a %(color_start)s-' + str(self.TIER_DROP_PERCENT[self.tier]) + '%%%(color_end)s chance to drop from stunned goons'
 
     def getHeat(self):
-        return 30 * self.tier
+        return 50 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.GOON_TREASURE_DROP_CHANCE *= self.subtractivePercent(self.TIER_DROP_PERCENT[self.tier])
@@ -911,7 +911,7 @@ class ModifierTreasureCapDecreaser(CFORulesetModifierBase):
         return 'Amount of treasures decreased by %(color_start)s-' + str(self.TIER_DROP_PERCENT[self.tier]) + '%%%(color_end)s'
 
     def getHeat(self):
-        return 25 * self.tier
+        return 40 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.MAX_TREASURE_AMOUNT *= self.subtractivePercent(self.TIER_DROP_PERCENT[self.tier])
@@ -936,7 +936,7 @@ class ModifierUberBonusIncreaser(CFORulesetModifierBase):
         return 'Points gained from UBER BONUS increased by %(color_start)s+' + str(self.TIER_BONUS_PERC[self.tier]) + '%%%(color_end)s'
 
     def getHeat(self):
-        return -20 * self.tier
+        return -10 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.LOW_LAFF_BONUS *= self.additivePercent(self.TIER_BONUS_PERC[self.tier])
