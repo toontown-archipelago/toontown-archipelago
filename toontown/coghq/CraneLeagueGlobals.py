@@ -62,7 +62,7 @@ class CFORuleset:
         self.CRANE_STATES_DEBUG = False
         self.SAFE_STATES_DEBUG = False
 
-        self.TIMER_MODE = True  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
+        self.TIMER_MODE = False  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
         self.TIMER_MODE_TIME_LIMIT = 15*60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
 
         self.CFO_MAX_HP = 1500  # How much HP should the CFO have?

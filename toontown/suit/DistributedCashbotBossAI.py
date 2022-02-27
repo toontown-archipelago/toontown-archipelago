@@ -72,7 +72,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         self.rollModsOnStart = True
         self.numModsWanted = 5
-        return
+
+        # Some overrides from commands
+        self.doTimer = None  # If true, make timer run down instead of count up, modified from a command, if false, count up, if none, use the rule
+        self.timerOverride = self.ruleset.TIMER_MODE_TIME_LIMIT  # Amount of time to override in seconds
 
     def updateActivityLog(self, doId, content):
         self.sendUpdate('addToActivityLog', [doId, content])
@@ -168,9 +171,27 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def getRuleset(self):
         return self.ruleset
 
+    def setupTimer(self):
+        # If command says we should force the timer into a certain state
+        # Nothing changed, don't do anything
+        if self.doTimer is None:
+            return
+
+        # Timer should always count up
+        if not self.doTimer:
+            self.ruleset.TIMER_MODE = False
+            return
+
+        # Timer should always go down
+        self.ruleset.TIMER_MODE = True
+        self.ruleset.TIMER_MODE_TIME_LIMIT = self.timerOverride if self.timerOverride > 0 else self.ruleset.TIMER_MODE_TIME_LIMIT
+
     def setupRuleset(self):
 
         self.ruleset = CraneLeagueGlobals.CFORuleset()
+
+        self.setupTimer()
+
         self.rulesetFallback = self.ruleset
 
         # Should we randomize some modifiers?

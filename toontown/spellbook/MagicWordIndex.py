@@ -1937,6 +1937,62 @@ class modifiers(MagicWord):
             return s
 
 
+class timer(MagicWord):
+    desc = "Changes timer mode for CFO crane round"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+
+    arguments = [
+        ('subcommand', str, False, 'toggle'),  # subcommand
+    ]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "You aren't in a CFO!"
+
+        a = args[0].lower()
+
+        # If the arg was toggle
+        if a == 'toggle':
+            # If no mode is set we can't do anything
+            if boss.doTimer is None:
+                return "Cannot toggle timer if no override setting is set, please use ~timer <on/off>"
+
+            # Invert it
+            boss.doTimer = not boss.doTimer
+            return "Time limit set to %s" % ('on, use ~timer <seconds> to set the time limit' if boss.doTimer else 'off')
+
+        # If the arg was on or off
+        elif a in ('on', 'off'):
+            if a == 'on':
+                boss.doTimer = True
+                return "Time limit set to on, use ~timer <seconds> to set the time limit"
+            elif a == 'off':
+                boss.doTimer = False
+                return "Time limit set to off"
+
+        # If the arg was anything else
+        else:
+            # It should be a number
+            try:
+                n = int(a)
+                if n <= 0:
+                    raise Exception()
+            except:
+                return "Argument must be a number representing seconds to set the time limit to"
+
+            boss.doTimer = True
+            boss.timerOverride = n
+            return "Time limit for next crane rounds set to %s seconds" % n
+
+
 class dumpCraneAI(MagicWord):
     desc = "Dumps info about crane on AI side"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
