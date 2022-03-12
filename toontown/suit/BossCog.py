@@ -532,7 +532,17 @@ class BossCog(Avatar.Avatar):
                 self.doAnimate(None, raised=1, happy=0, queueNeutral=0)
             else:
                 self.doAnimate(None, raised=1, happy=1, queueNeutral=1)
-            ival = Parallel(ActorInterval(self, 'Fb_jump'), Sequence(SoundInterval(self.swishSfx, duration=1.1, node=self), SoundInterval(self.boomSfx, duration=1.9)), Sequence(Wait(1.21), Func(self.announceAreaAttack)))
+            ival = Parallel(
+                ActorInterval(self, 'Fb_jump'),
+                Sequence(
+                    SoundInterval(self.swishSfx, duration=1.1, node=self),
+                    SoundInterval(self.boomSfx, duration=1.9)
+                ),
+                Sequence(
+                    Wait(1.21),
+                    Func(self.announceAreaAttack)
+                )
+            )
             if self.twoFaced:
                 self.happy = 0
             else:

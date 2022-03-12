@@ -360,13 +360,18 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def doNextAttack(self, task):
         # Choose an attack and do it.
 
-        # For now, we only do the directed attack.
-        self.__doDirectedAttack()
-        
         # Make sure we're waiting for a helmet.
         if self.heldObject == None and not self.waitingForHelmet:
             self.waitForNextHelmet()
-        return
+
+        # Rare chance to do a jump attack if we want it
+        if self.ruleset.WANT_CFO_JUMP_ATTACK:
+            if random.randint(0, 99) < self.ruleset.CFO_JUMP_ATTACK_CHANCE:
+                self.__doAreaAttack()
+                return
+
+        # Do a directed attack.
+        self.__doDirectedAttack()
 
     def __doDirectedAttack(self):
         # Choose the next toon in line to get the assault.
@@ -398,6 +403,26 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # we have a toon to attack
         self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonToAttack)
 
+    def __doAreaAttack(self):
+        self.b_setAttackCode(ToontownGlobals.BossCogAreaAttack)
+
+    def setAttackCode(self, attackCode, avId=0):
+        self.attackCode = attackCode
+        self.attackAvId = avId
+
+        if attackCode in (ToontownGlobals.BossCogDizzy, ToontownGlobals.BossCogDizzyNow):
+            delayTime = self.progressValue(20, 5)
+            self.hitCount = 0
+        elif attackCode in (ToontownGlobals.BossCogSlowDirectedAttack,):
+            delayTime = ToontownGlobals.BossCogAttackTimes.get(attackCode)
+            delayTime += self.progressValue(10, 0)
+        elif attackCode in (ToontownGlobals.BossCogAreaAttack,):
+            delayTime = self.progressValue(20, 9)
+        else:
+            delayTime = ToontownGlobals.BossCogAttackTimes.get(attackCode, 5.0)
+
+        self.waitForNextAttack(delayTime)
+        return
 
     def getDamageMultiplier(self, allowFloat=False):
         mult = self.progressValue(1, self.ruleset.CFO_ATTACKS_MULTIPLIER + (0 if allowFloat else 1))

@@ -67,6 +67,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.spectators = []
         self.localToonSpectating = False
         self.endVault = None
+        self.warningSfx = None
 
         self.activityLog = ActivityLog()
         return
@@ -193,6 +194,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         # The crane round scoreboard
         self.scoreboard = CashbotBossScoreboard(ruleset=self.ruleset)
         self.scoreboard.hide()
+
+        self.warningSfx = loader.loadSfx('phase_9/audio/sfx/CHQ_GOON_tractor_beam_alarmed.ogg')
+
         global OneBossCog
         if OneBossCog != None:
             self.notify.warning('Multiple BossCogs visible.')
@@ -1244,6 +1248,24 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         for avId in self.getInvolvedToonsNotSpectating():
             if avId in base.cr.doId2do:
                 self.scoreboard.addToon(avId)
+
+    def saySomething(self, chatString):
+        intervalName = 'CFOTaunt'
+        seq = Sequence(name=intervalName)
+        seq.append(Func(self.setChatAbsolute, chatString, CFSpeech))
+        seq.append(Wait(4.0))
+        seq.append(Func(self.clearChat))
+        oldSeq = self.activeIntervals.get(intervalName)
+        if oldSeq:
+            oldSeq.finish()
+        seq.start()
+        self.storeInterval(seq, intervalName)
+
+    def setAttackCode(self, attackCode, avId = 0):
+        DistributedBossCog.DistributedBossCog.setAttackCode(self, attackCode, avId)
+        if attackCode == ToontownGlobals.BossCogAreaAttack:
+            self.saySomething(TTLocalizer.CashbotBossAreaAttackTaunt)
+            base.playSfx(self.warningSfx)
 
     def exitBattleThree(self):
         DistributedBossCog.DistributedBossCog.exitBattleThree(self)

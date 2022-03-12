@@ -82,6 +82,8 @@ class CFORuleset:
         self.GOON_CFO_DAMAGE_MULTIPLIER = 1.0
         self.SAFE_CFO_DAMAGE_MULTIPLIER = 1.0
 
+        self.WANT_CFO_JUMP_ATTACK = False
+        self.CFO_JUMP_ATTACK_CHANCE = 20  # Percent chance for the cfo to perform a AOE jump attack
         self.RANDOM_GEAR_THROW_ORDER = False  # Should the order in which CFO throw gears at toons be random?
         self.CFO_FLINCHES_ON_HIT = True  # Should the CFO flinch when being hit?
 
@@ -91,6 +93,7 @@ class CFORuleset:
             ToontownGlobals.BossCogSwatLeft: 10,  # Swats from bumping
             ToontownGlobals.BossCogSwatRight: 10,
             ToontownGlobals.BossCogSlowDirectedAttack: 20,  # Gear throw
+            ToontownGlobals.BossCogAreaAttack: 25,  # Jump
         }
 
         # How much should attacks be multiplied by by the time we are towards the end?
@@ -941,6 +944,28 @@ class ModifierUberBonusIncreaser(CFORulesetModifierBase):
     def apply(self, cfoRuleset):
         cfoRuleset.LOW_LAFF_BONUS *= self.additivePercent(self.TIER_BONUS_PERC[self.tier])
 
+
+# (-) Jumping for Joy
+# --------------------------------
+# - The CFO can now use the AOE jump attack
+class ModifierCFOJumpAttackEnabler(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 20
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+
+    def getName(self):
+        return 'Jumping for Joy'
+
+    def getDescription(self):
+        return 'The CFO can now perform an %(color_start)sAoE jump attack%(color_end)s!'
+
+    def getHeat(self):
+        return 250
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.WANT_CFO_JUMP_ATTACK = True
 
 # Any implemented subclasses of CFORulesetModifierBase cannot go past this point
 # Loop through all the classes that extend the base modifier class and map an enum to the class for easier construction
