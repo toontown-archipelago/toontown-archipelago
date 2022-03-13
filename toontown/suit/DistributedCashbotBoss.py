@@ -941,7 +941,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             delta = bossDamage - self.bossDamage
             self.flashRed()
 
-            if self.ruleset.CFO_FLINCHES_ON_HIT or self.dizzy:
+            # Animate the hit if the CFO should flinch
+            if self.ruleset.CFO_FLINCHES_ON_HIT:
                 self.doAnimate('hit', now=1)
 
             self.showHpText(-delta, scale=5)
