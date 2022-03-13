@@ -152,6 +152,8 @@ class ToonBase(OTPBase.OTPBase):
 
         self.SPRINT = 'shift'
         self.reloadControls()
+
+        self.WANT_FOV_EFFECTS = self.settings.getBool('game', 'fovEffects', True)
         return
 
     def openMainWindow(self, *args, **kw):

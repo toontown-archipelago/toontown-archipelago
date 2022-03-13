@@ -761,6 +761,31 @@ class OptionsTabPage2(DirectFrame):
             pos=(leftMargin, 0, -.32),
         )
 
+        self.wantFovEffectsToggle = DirectButton(
+            parent=self,
+            relief=None,
+            image=(
+                guiButton.find("**/QuitBtn_UP"),
+                guiButton.find("**/QuitBtn_DN"),
+                guiButton.find("**/QuitBtn_RLVR"),
+            ),
+            image_scale=button_image_scale,
+            text='On' if base.settings.getBool('game', 'fovEffects', True) else 'Off',
+            text_scale=options_text_scale,
+            text_pos=button_textpos,
+            pos=(0.42, 0.0, -0.45),
+            command=self.__toggleFOVEffects,
+        )
+
+        self.wantFovEffectsLabel = DirectLabel(
+            parent=self,
+            relief=None,
+            text="Spring FOV Effects",
+            text_align=TextNode.ALeft,
+            text_scale=options_text_scale,
+            pos=(leftMargin, 0, -.45),
+        )
+
         self.keybindDialogButton.setScale(0.8)
         self.keybindDialogButton.hide()
         guiButton.removeNode()
@@ -791,6 +816,13 @@ class OptionsTabPage2(DirectFrame):
     def __adjustYSens(self):
         self.sensYLabel.setText("Camera Y Sensitivity: " + str(round(self.sensYSlider.getValue(), 2)))
         base.settings.updateSetting('game', 'camSensitivityY', self.__displayNumToActualSens(self.sensYSlider.getValue()))
+
+    def __toggleFOVEffects(self):
+        curr = base.settings.getBool('game', 'fovEffects', True)
+        new = not curr
+        base.settings.updateSetting('game', 'fovEffects', new)
+        base.WANT_FOV_EFFECTS = new
+        self.wantFovEffectsToggle['text'] = 'On' if new else 'Off',
 
     def enter(self):
         self.show()
