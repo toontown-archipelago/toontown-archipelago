@@ -186,7 +186,7 @@ class CFORuleset:
         self.MIN_SAFE_IMPACT = min(self.MIN_SAFE_IMPACT, .95)
         self.MIN_DEHELMET_IMPACT = min(self.MIN_DEHELMET_IMPACT, .95)
         self.MIN_GOON_IMPACT = min(self.MIN_GOON_IMPACT, .95)
-        self.SIDECRANE_IMPACT_STUN_THRESHOLD = min(self.MIN_GOON_IMPACT, .95)
+        self.SIDECRANE_IMPACT_STUN_THRESHOLD = min(self.SIDECRANE_IMPACT_STUN_THRESHOLD, .95)
 
 
     # Sends an astron friendly array over, ONLY STUFF THE CLIENT NEEDS TO KNOW GOES HERE
