@@ -246,6 +246,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             modsToSet.append(CraneLeagueGlobals.CFORulesetModifierBase.fromStruct(modStruct))
 
         self.modifiers = modsToSet
+        self.modifiers.sort(key=lambda m: m.MODIFIER_TYPE)
 
     def disable(self):
         """

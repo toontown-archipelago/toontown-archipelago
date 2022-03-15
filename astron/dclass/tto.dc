@@ -1394,11 +1394,11 @@ dclass DistributedCashbotBoss : DistributedBossCog {
   setRawRuleset(CraneLeagueRuleset) required broadcast ram;
   setModifiers(CraneLeagueModifier[]) broadcast ram;
   setState(string) broadcast ram;
-  setBossDamage(uint16) broadcast ram;
+  setBossDamage(uint32) broadcast ram;
   setCraneSpawn(bool, uint8, uint32) broadcast ram;
   setRewardId(uint16) broadcast ram;
   applyReward() airecv clsend;
-  updateDamageDealt(uint32 avId, uint16) broadcast ram;
+  updateDamageDealt(uint32 avId, uint32) broadcast ram;
   updateStunCount(uint32 avId, uint32) broadcast ram;
   updateGoonsStomped(uint32 avId) broadcast ram;
   updateSafePoints(uint32 avId, int32) broadcast ram;

@@ -156,6 +156,9 @@ class CFORuleset:
         self.REVIVE_TOONS_TIME = 15  # Time in seconds to revive a toon after death
         self.REVIVE_TOONS_LAFF_PERCENTAGE = 0.50  # How much laff should we give back to the toon when revived?
 
+        # A for fun mechanic that makes toons have permanent damage buffs based on how much damage they do
+        self.WANT_MOMENTUM_MECHANIC = False
+
         # POINTS SETTINGS
         self.POINTS_GOON_STOMP = 1  # Points per goon stomp
         self.POINTS_STUN = 15  # Points per stun
@@ -284,6 +287,13 @@ class CFORulesetModifierBase(object):
 
     # This should also be overridden, used so that the client knows which class to use when instantiating modifiers
     MODIFIER_ENUM = -1
+    # This should also be overridden, use to define what type of modifier this is
+    UNDEFINED = -1
+    SPECIAL = 0
+    HELPFUL = 1
+    HURTFUL = 2
+    MODIFIER_TYPE = UNDEFINED
+    # Special, Helpful, Hurtful
 
     # Maps the above modifier enums to the classes that extend this one
     MODIFIER_SUBCLASSES = {}
@@ -353,7 +363,7 @@ class CFORulesetModifierBase(object):
     def getHeat(self):
         raise NotImplementedError("Please override the getHeat method from the parent class!")
 
-    # This method is called to apply this modifiers effect to a CFORuleset instance
+    # This method is called to apply this modifiers effect to a CFORuleset instance on the AI
     def apply(self, cfoRuleset):
         raise NotImplementedError('Please override the apply method from the parent class!')
 
@@ -405,6 +415,7 @@ class CFORulesetModifierBase(object):
 class ModifierComboExtender(CFORulesetModifierBase):
 
     MODIFIER_ENUM = 0
+    MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
@@ -429,6 +440,7 @@ class ModifierComboExtender(CFORulesetModifierBase):
 class ModifierComboShortener(CFORulesetModifierBase):
 
     MODIFIER_ENUM = 1
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -454,6 +466,7 @@ class ModifierComboShortener(CFORulesetModifierBase):
 class ModifierCFOHPIncreaser(CFORulesetModifierBase):
 
     MODIFIER_ENUM = 2
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
@@ -479,6 +492,7 @@ class ModifierCFOHPIncreaser(CFORulesetModifierBase):
 class ModifierCFOHPDecreaser(CFORulesetModifierBase):
 
     MODIFIER_ENUM = 3
+    MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -507,6 +521,7 @@ class ModifierDesafeImpactIncreaser(CFORulesetModifierBase):
 
     # The enum used by astron to know the type
     MODIFIER_ENUM = 4
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -535,6 +550,7 @@ class ModifierGeneralImpactDecreaser(CFORulesetModifierBase):
 
     # The enum used by astron to know the type
     MODIFIER_ENUM = 5
+    MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -563,6 +579,7 @@ class ModifierGeneralImpactDecreaser(CFORulesetModifierBase):
 class ModifierGeneralImpactIncreaser(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 6
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
@@ -593,6 +610,7 @@ class ModifierGeneralImpactIncreaser(CFORulesetModifierBase):
 class ModifierDevolution(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 7
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -640,6 +658,7 @@ class ModifierDevolution(CFORulesetModifierBase):
 class ModifierCFONoFlinch(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 8
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -663,6 +682,7 @@ class ModifierCFONoFlinch(CFORulesetModifierBase):
 class ModifierGoonDamageInflictIncreaser(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 9
+    MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
@@ -691,6 +711,7 @@ class ModifierGoonDamageInflictIncreaser(CFORulesetModifierBase):
 class ModifierSafeDamageInflictIncreaser(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 10
+    MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
@@ -716,6 +737,7 @@ class ModifierSafeDamageInflictIncreaser(CFORulesetModifierBase):
 class ModifierGoonSpeedIncreaser(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 11
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
@@ -741,6 +763,7 @@ class ModifierGoonSpeedIncreaser(CFORulesetModifierBase):
 class ModifierGoonCapIncreaser(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 12
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
@@ -769,6 +792,7 @@ class ModifierGoonCapIncreaser(CFORulesetModifierBase):
 class ModifierSafesStunGoons(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 13
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -792,6 +816,7 @@ class ModifierSafesStunGoons(CFORulesetModifierBase):
 class ModifierGoonsGrabbedWakeup(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 14
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -815,6 +840,7 @@ class ModifierGoonsGrabbedWakeup(CFORulesetModifierBase):
 class ModifierTreasureHealIncreaser(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 15
+    MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
@@ -842,6 +868,7 @@ class ModifierTreasureHealIncreaser(CFORulesetModifierBase):
 class ModifierTreasureHealDecreaser(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 16
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -872,6 +899,7 @@ class ModifierTreasureHealDecreaser(CFORulesetModifierBase):
 class ModifierTreasureRNG(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 17
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -899,6 +927,7 @@ class ModifierTreasureRNG(CFORulesetModifierBase):
 class ModifierTreasureCapDecreaser(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 18
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -926,6 +955,7 @@ class ModifierTreasureCapDecreaser(CFORulesetModifierBase):
 class ModifierUberBonusIncreaser(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 19
+    MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
@@ -951,6 +981,7 @@ class ModifierUberBonusIncreaser(CFORulesetModifierBase):
 class ModifierCFOJumpAttackEnabler(CFORulesetModifierBase):
     # The enum used by astron to know the type
     MODIFIER_ENUM = 20
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
@@ -966,6 +997,32 @@ class ModifierCFOJumpAttackEnabler(CFORulesetModifierBase):
 
     def apply(self, cfoRuleset):
         cfoRuleset.WANT_CFO_JUMP_ATTACK = True
+
+
+# (-) SPECIAL: Maximum Momentum
+# --------------------------------
+# - CFO has 1M HP, damage output increases upon every hit
+class ModifierMillionMomentum(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 21
+    MODIFIER_TYPE = CFORulesetModifierBase.SPECIAL
+
+    TITLE_COLOR = CFORulesetModifierBase.PURPLE
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+
+    def getName(self):
+        return 'Maximum Momentum'
+
+    def getDescription(self):
+        return 'The CFO has a %(color_start)smillion HP%(color_end)s, but toons gain %(color_start)spermanent damage buffs %(color_end)swhen inflicting damage!'
+
+    def getHeat(self):
+        return 1000
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.CFO_MAX_HP = 1000000
+        cfoRuleset.WANT_MOMENTUM_MECHANIC = True
+
 
 # Any implemented subclasses of CFORulesetModifierBase cannot go past this point
 # Loop through all the classes that extend the base modifier class and map an enum to the class for easier construction

@@ -77,6 +77,23 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.doTimer = None  # If true, make timer run down instead of count up, modified from a command, if false, count up, if none, use the rule
         self.timerOverride = self.ruleset.TIMER_MODE_TIME_LIMIT  # Amount of time to override in seconds
 
+        # Map of damage multipliers for toons
+        self.toonDmgMultipliers = {}
+
+    def getToonOutgoingMultiplier(self, avId):
+        n = self.toonDmgMultipliers.get(avId)
+        if not n:
+            n = 100
+            self.toonDmgMultipliers[avId] = n
+
+        return n
+
+    def increaseToonOutgoingMultiplier(self, avId, n):
+        # Makes sure theres something in the dict
+        old = self.getToonOutgoingMultiplier(avId)
+        self.toonDmgMultipliers[avId] = old + n
+        print("avId now does +" + str(old+n) + "% damage")
+
     def updateActivityLog(self, doId, content):
         self.sendUpdate('addToActivityLog', [doId, content])
 
@@ -743,6 +760,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if self.state != 'BattleThree':
             return
 
+        # Momentum mechanic?
+        if self.ruleset.WANT_MOMENTUM_MECHANIC:
+            damage *= (self.getToonOutgoingMultiplier(avId) / 100.0)
+            print('multiplying damage by ' + str(self.getToonOutgoingMultiplier(avId) / 100.0) + ' damage is now ' + str(damage))
+
         # Record a successful hit in battle three.
         self.b_setBossDamage(self.bossDamage + damage)
         
@@ -779,6 +801,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
 
             self.waitForNextHelmet()
+
+        # Now at the very end, if we have momentum mechanic on add some damage multiplier
+        if self.ruleset.WANT_MOMENTUM_MECHANIC:
+            self.increaseToonOutgoingMultiplier(avId, damage)
 
     def b_setBossDamage(self, bossDamage):
         self.d_setBossDamage(bossDamage)
@@ -917,6 +943,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.battleThreeTimeStarted = globalClock.getFrameTime()
 
         self.oldMaxLaffs = {}
+        self.toonDmgMultipliers = {}
 
         taskMgr.remove(self.uniqueName('failedCraneRound'))
         self.cancelReviveTasks()
