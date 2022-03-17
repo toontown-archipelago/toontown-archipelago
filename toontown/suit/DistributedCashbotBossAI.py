@@ -33,11 +33,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.treasures = {}
         self.grabbingTreasures = {}
         self.recycledTreasures = []
-        
+
         # We need a scene to do the collision detection in.
         self.scene = NodePath('scene')
         self.reparentTo(self.scene)
-        
+
         # And some solids to keep the goons constrained to our room.
         cn = CollisionNode('walls')
         cs = CollisionSphere(0, 0, 0, 13)
@@ -45,26 +45,26 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         cs = CollisionInvSphere(0, 0, 0, 42)
         cn.addSolid(cs)
         self.attachNewNode(cn)
-        
-        
+
+
         # By "heldObject", we mean the safe he's currently wearing as
         # a helmet, if any.  It's called a heldObject because this is
         # the way the cranes refer to the same thing, and we use the
         # same interface to manage this.
         self.heldObject = None
-        
+
         self.waitingForHelmet = 0
-        
+
         self.wantSafeRushPractice = False
         self.wantCustomCraneSpawns = False
         self.wantAimPractice = False
         self.toonsWon = False
-        
+
         self.customSpawnPositions = {}
         self.goonMinScale = 0.8
         self.goonMaxScale = 2.6
         self.safesWanted = 5
-        
+
         self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
 
         # A list of toon ids that are spectating
@@ -220,7 +220,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         other networked info in this function.
         """
         DistributedBossCogAI.DistributedBossCogAI.generate(self)
-        
+
         if __dev__:
             self.scene.reparentTo(self.getRender())
 
@@ -243,9 +243,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # come out mix-and-match.
         activeSuits = cogs['activeSuits'] + skelecogs['activeSuits']
         reserveSuits = cogs['reserveSuits'] + skelecogs['reserveSuits']
-        
+
         random.shuffle(activeSuits)
-        
+
         # We might have ended up with too many suits on the
         # activeSuits list.  If that happens, put the overflow suits
         # on the reserve list, with a 100% joinChance.
@@ -258,13 +258,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         def compareJoinChance(a, b):
             return cmp(a[1], b[1])
         reserveSuits.sort(compareJoinChance)
-        
+
         return {'activeSuits': activeSuits, 'reserveSuits': reserveSuits}
 
     def removeToon(self, avId, died=False):
         # The toon leaves the zone, either through disconnect, death,
         # or something else.  Tell all of the safes, cranes, and goons.
-        
+
         if self.cranes != None:
             for crane in self.cranes:
                 crane.removeToon(avId)
@@ -476,7 +476,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # least at the beginning of its current path.  Actually, we
         # ignore Z, and always place the treasure at Z == 0,
         # presumably the ground.
-        
+
         if self.state != 'BattleThree':
             return
 
@@ -489,13 +489,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if self.ruleset.GOON_TREASURE_DROP_CHANCE < 1.0:
             r = random.random()
             self.debug(doId=goon.doId, content='Rolling for treasure drop, need > %s, got %s' % (self.ruleset.GOON_TREASURE_DROP_CHANCE, r))
-            if r < self.ruleset.GOON_TREASURE_DROP_CHANCE:
+            if r > self.ruleset.GOON_TREASURE_DROP_CHANCE:
                 return
-                
+
         # The BossCog acts like a treasure planner as far as the
         # treasure is concerned.
         pos = goon.getPos(self)
-        
+
         # The treasure pops out and lands somewhere nearby.  Let's
         # start by choosing a point on a ring around the boss, based
         # on our current angle to the boss.
@@ -503,14 +503,14 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if not v.normalize():
             v = Vec3(1, 0, 0)
         v = v * 27
-        
+
         # Then perterb that point by a distance in some random
         # direction.
         angle = random.uniform(0.0, 2.0 * math.pi)
         radius = 10
         dx = radius * math.cos(angle)
         dy = radius * math.sin(angle)
-        
+
         fpos = self.scene.getRelativePoint(self, Point3(v[0] + dx, v[1] + dy, 0))
 
         # Find an index based on the goon strength we should use
@@ -623,7 +623,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Walks through the list of goons managed by the boss to see
         # if any of them have recently been deleted and can be
         # recycled.
-        
+
         for goon in self.goons:
             if goon.state == 'Off':
                 return goon
@@ -643,9 +643,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def doNextGoon(self, task):
         if self.attackCode != ToontownGlobals.BossCogDizzy:
             self.makeGoon()
-            
+
         # How long to wait for the next goon?
-            
+
         delayTime = self.progressValue(10, 2)
         self.waitForNextGoon(delayTime)
 
@@ -684,11 +684,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # minutes after giving us a helmet, so we don't accept too
         # many helmets from the same avatar--this cuts down on helmet
         # griefing.
-        
+
         # NOTE (by Lou): the block of code below completely eliminates
         # the cooldown on the ability to safe-on the CFO with helmets,
         # and was commented out for Crane League purposes:
-        
+
         '''
         now = globalClock.getFrameTime()
         then = self.avatarHelmets.get(avId, None)
@@ -698,7 +698,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         return 0
         '''
-        
+
         return True
 
     def magicWordHit(self, damage, avId):
@@ -709,7 +709,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.heldObject.avoidHelmet = 1
             self.heldObject = None
             self.waitForNextHelmet()
-            
+
         else:
             # Ouch!
             self.recordHit(damage)
@@ -745,7 +745,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # Record a successful hit in battle three.
         self.b_setBossDamage(self.bossDamage + damage)
-        
+
         # Award bonus points for hits with maximum impact
         if impact == 1.0:
             self.d_updateMaxImpactHits(avId)
@@ -819,21 +819,21 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def applyReward(self):
         # The client has reached that point in the movie where he
         # should have the reward applied to him.
-        
+
         # But Dev said NO.
         pass
 
 
     ####### FSM STATES ########
-    
-    
+
+
     ##### Off state #####
     def enterOff(self):
         DistributedBossCogAI.DistributedBossCogAI.enterOff(self)
 
     def exitOff(self):
         DistributedBossCogAI.DistributedBossCogAI.exitOff(self)
-    
+
     ##### Introduction state #####
     def enterIntroduction(self):
         DistributedBossCogAI.DistributedBossCogAI.enterIntroduction(self)
@@ -852,18 +852,18 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     ##### PrepareBattleThree state #####
     def enterPrepareBattleThree(self):
         self.setupRuleset()
-        
+
         self.resetBattles()
-        
+
         self.__makeBattleThreeObjects()
         self.__resetBattleThreeObjects()
-        
+
         self.d_updateSpectators()
-        
+
         # The clients will play a cutscene.  When they are done
         # watching the movie, we continue.
         self.barrier = self.beginBarrier('PrepareBattleThree', self.involvedToons, 55, self.__donePrepareBattleThree)
-        
+
     def __donePrepareBattleThree(self, avIds):
         self.b_setState('BattleThree')
 
@@ -882,31 +882,31 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Force unstun the CFO if he was stunned in a previous Battle Three round
         if self.attackCode == ToontownGlobals.BossCogDizzy or self.attackCode == ToontownGlobals.BossCogDizzyNow:
             self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
-            
+
         # It's important to set our position correctly even on the AI,
         # so the goons can orient to the center of the room.
         self.setPosHpr(*ToontownGlobals.CashbotBossBattleThreePosHpr)
 
-        # Just in case we didn't pass through PrepareBattleThree state.        
+        # Just in case we didn't pass through PrepareBattleThree state.
         self.__makeBattleThreeObjects()
         self.__resetBattleThreeObjects()
-        
+
         self.reportToonHealth()
-        
+
         # A list of toons to attack.  We start out with the list in
         # random order.
         self.toonsToAttack = self.getInvolvedToonsNotSpectating()
-        
+
         if self.ruleset.RANDOM_GEAR_THROW_ORDER:
             random.shuffle(self.toonsToAttack)
-            
+
         self.b_setBossDamage(0)
         self.battleThreeStart = globalClock.getFrameTime()
-        
+
         self.resetBattles()
         self.waitForNextAttack(15)
         self.waitForNextHelmet()
-        
+
         # Make four goons up front to keep things interesting from the
         # beginning.
         self.makeGoon(side='EmergeA')
@@ -991,7 +991,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         taskMgr.remove(self.uniqueName('times-up-task'))
         taskMgr.remove(self.uniqueName('post-times-up-task'))
         return
-        
+
     ##### Victory state #####
     def enterVictory(self):
 
@@ -1009,7 +1009,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         timeToSend = 0.0 if self.ruleset.TIMER_MODE and not self.toonsWon else actualTime
         self.debug(content='Crane round over in %ss' % timeToSend)
         self.d_updateTimer(timeToSend)
-        
+
         # add a suit-defeat entry for the VP
         # based on code in DistributedBattleBaseAI.__movieDone
         self.resetBattles()
@@ -1038,16 +1038,16 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # There is no race condition between AI and client here
         # because these messages are sent sequentially on the wire.
-        
+
         '''
         BattleExperienceAI.assignRewards(
-            self.involvedToons, self.toonSkillPtsGained, self.suitsKilled, 
+            self.involvedToons, self.toonSkillPtsGained, self.suitsKilled,
             ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
         '''
 
         # Don't forget to give the toon the resistance chat reward and the
         # promotion!
-        
+
         '''
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
@@ -1062,7 +1062,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     ##### Epilogue state #####
     def enterEpilogue(self):
         DistributedBossCogAI.DistributedBossCogAI.enterEpilogue(self)
-        
+
         # Tell the clients now what the reward Id will be.
         '''self.d_setRewardId(self.rewardId)'''
 
