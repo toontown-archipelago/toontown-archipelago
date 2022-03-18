@@ -299,27 +299,6 @@ class Playground(Place.Place):
     def hidePaths(self):
         self.hideDebugPointText()
 
-    def showPathPoints(self, paths, waypoints = None):
-        self.hideDebugPointText()
-        lines = LineSegs()
-        lines.setColor(1, 0, 0, 1)
-        from toontown.classicchars import CCharPaths
-        for name, pointDef in paths.items():
-            self.showDebugPointText(name, pointDef[0])
-            for connectTo in pointDef[1]:
-                toDef = paths[connectTo]
-                fromP = pointDef[0]
-                toP = toDef[0]
-                lines.moveTo(fromP[0], fromP[1], fromP[2] + 2.0)
-                wpList = CCharPaths.getWayPoints(name, connectTo, paths, waypoints)
-                for wp in wpList:
-                    lines.drawTo(wp[0], wp[1], wp[2] + 2.0)
-                    self.showDebugPointText('*', wp)
-
-                lines.drawTo(toP[0], toP[1], toP[2] + 2.0)
-
-        self.debugText.attachNewNode(lines.create())
-
     def hideDebugPointText(self):
         if hasattr(self, 'debugText'):
             children = self.debugText.getChildren()

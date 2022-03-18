@@ -32,25 +32,6 @@ from direct.distributed import DistributedObjectGlobal
 from toontown.ai import WelcomeValleyManager/AI
 from toontown.building import DistributedAnimatedProp/AI
 from toontown.toon import DistributedToon/AI/UD
-from toontown.classicchars import DistributedCCharBase/AI
-from toontown.classicchars import DistributedMickey/AI
-from toontown.classicchars import DistributedVampireMickey/AI
-from toontown.classicchars import DistributedMinnie/AI
-from toontown.classicchars import DistributedWitchMinnie/AI
-from toontown.classicchars import DistributedGoofy/AI
-from toontown.classicchars import DistributedSuperGoofy/AI
-from toontown.classicchars import DistributedDaisy/AI
-from toontown.classicchars import DistributedSockHopDaisy/AI
-from toontown.classicchars import DistributedChip/AI
-from toontown.classicchars import DistributedPoliceChip/AI
-from toontown.classicchars import DistributedDale/AI
-from toontown.classicchars import DistributedJailbirdDale/AI
-from toontown.classicchars import DistributedGoofySpeedway/AI
-from toontown.classicchars import DistributedDonald/AI
-from toontown.classicchars import DistributedFrankenDonald/AI
-from toontown.classicchars import DistributedDonaldDock/AI
-from toontown.classicchars import DistributedPluto/AI
-from toontown.classicchars import DistributedWesternPluto/AI
 from toontown.safezone import DistributedTrolley/AI
 from toontown.safezone import DistributedPartyGate/AI
 from toontown.suit import DistributedSuitPlanner/AI
@@ -1173,62 +1154,6 @@ dclass DistributedCCharBase : DistributedObject {
   setNearbyAvatarSC(uint16) airecv clsend;
   setNearbyAvatarSCCustom(uint16) airecv clsend;
   setNearbyAvatarSCToontask(uint32, uint32, uint32, uint8) airecv clsend;
-};
-
-dclass DistributedMickey : DistributedCCharBase {
-};
-
-dclass DistributedVampireMickey : DistributedMickey {
-};
-
-dclass DistributedWitchMinnie : DistributedMickey {
-};
-
-dclass DistributedMinnie : DistributedCCharBase {
-};
-
-dclass DistributedGoofy : DistributedCCharBase {
-};
-
-dclass DistributedDaisy : DistributedCCharBase {
-};
-
-dclass DistributedSockHopDaisy : DistributedDaisy {
-};
-
-dclass DistributedChip : DistributedCCharBase {
-};
-
-dclass DistributedPoliceChip : DistributedChip {
-};
-
-dclass DistributedDale : DistributedCCharBase {
-  setFollowChip(string, string, int16, int16/100, int16/100) broadcast ram;
-  setChipId(uint32) required broadcast ram;
-};
-
-dclass DistributedJailbirdDale : DistributedDale {
-};
-
-dclass DistributedDonald : DistributedCCharBase {
-};
-
-dclass DistributedFrankenDonald : DistributedDonald {
-};
-
-dclass DistributedDonaldDock : DistributedCCharBase {
-};
-
-dclass DistributedPluto : DistributedCCharBase {
-};
-
-dclass DistributedWesternPluto : DistributedPluto {
-};
-
-dclass DistributedGoofySpeedway : DistributedCCharBase {
-};
-
-dclass DistributedSuperGoofy : DistributedGoofySpeedway {
 };
 
 dclass DistributedPartyGate : DistributedObject {

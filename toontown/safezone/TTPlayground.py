@@ -49,6 +49,4 @@ class TTPlayground(Playground.Playground):
             self.dfa.enter(5)
 
     def showPaths(self):
-        from toontown.classicchars import CCharPaths
         from toontown.toonbase import TTLocalizer
-        self.showPathPoints(CCharPaths.getPaths(TTLocalizer.Mickey))
