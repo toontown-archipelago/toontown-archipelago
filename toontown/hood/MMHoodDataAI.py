@@ -3,7 +3,6 @@ import HoodDataAI
 from toontown.toonbase import ToontownGlobals
 from toontown.safezone import DistributedTrolleyAI
 from toontown.safezone import MMTreasurePlannerAI
-from toontown.classicchars import DistributedMinnieAI
 from toontown.safezone import DistributedMMPianoAI
 
 class MMHoodDataAI(HoodDataAI.HoodDataAI):
@@ -24,7 +23,3 @@ class MMHoodDataAI(HoodDataAI.HoodDataAI):
         self.addDistObj(trolley)
         self.treasurePlanner = MMTreasurePlannerAI.MMTreasurePlannerAI(self.zoneId)
         self.treasurePlanner.start()
-        self.classicChar = DistributedMinnieAI.DistributedMinnieAI(self.air)
-        self.classicChar.generateWithRequired(self.zoneId)
-        self.classicChar.start()
-        self.addDistObj(self.classicChar)

@@ -44,6 +44,4 @@ class MMPlayground(Playground.Playground):
         base.localAvatar.b_setParent(ToontownGlobals.SPRender)
 
     def showPaths(self):
-        from toontown.classicchars import CCharPaths
         from toontown.toonbase import TTLocalizer
-        self.showPathPoints(CCharPaths.getPaths(TTLocalizer.Minnie))

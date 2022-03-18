@@ -111,6 +111,4 @@ class GSPlayground(Playground.Playground):
             self.notify.error('Unknown mode: ' + where + ' in handleStartingBlockDone')
 
     def showPaths(self):
-        from toontown.classicchars import CCharPaths
         from toontown.toonbase import TTLocalizer
-        self.showPathPoints(CCharPaths.getPaths(TTLocalizer.Goofy, 1))

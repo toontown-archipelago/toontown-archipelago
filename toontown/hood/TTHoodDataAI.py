@@ -3,7 +3,6 @@ import HoodDataAI
 from toontown.toonbase import ToontownGlobals
 from toontown.safezone import DistributedTrolleyAI
 from toontown.safezone import TTTreasurePlannerAI
-from toontown.classicchars import DistributedMickeyAI
 from toontown.safezone import ButterflyGlobals
 from direct.task import Task
 
@@ -26,10 +25,6 @@ class TTHoodDataAI(HoodDataAI.HoodDataAI):
         self.trolley = trolley
         self.treasurePlanner = TTTreasurePlannerAI.TTTreasurePlannerAI(self.zoneId)
         self.treasurePlanner.start()
-        self.classicChar = DistributedMickeyAI.DistributedMickeyAI(self.air)
-        self.classicChar.generateWithRequired(self.zoneId)
-        self.classicChar.start()
-        self.addDistObj(self.classicChar)
         self.createButterflies(ButterflyGlobals.TTC)
         if simbase.blinkTrolley:
             taskMgr.doMethodLater(0.5, self._deleteTrolley, 'deleteTrolley')

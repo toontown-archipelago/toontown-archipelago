@@ -177,6 +177,4 @@ class OZPlayground(Playground.Playground):
             self.notify.error('Unknown mode: ' + mode + ' in handlePicnicBasketDone')
 
     def showPaths(self):
-        from toontown.classicchars import CCharPaths
         from toontown.toonbase import TTLocalizer
-        self.showPathPoints(CCharPaths.getPaths(TTLocalizer.Chip))
