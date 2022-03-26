@@ -760,6 +760,27 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.__makeBattleThreeObjects()
         return
 
+    # Given a crane, the damage dealt from the crane, and the impact of the hit, should we stun the CFO?
+    def considerStun(self, crane, damage, impact):
+
+        damage_stuns = damage >= self.ruleset.CFO_STUN_THRESHOLD
+        is_sidecrane = isinstance(crane, DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI)
+        hard_hit = impact >= self.ruleset.SIDECRANE_IMPACT_STUN_THRESHOLD
+
+        # Are we in safe rush practice mode? All hits stun in this mode
+        if self.wantSafeRushPractice:
+            return True
+
+        # Is the damage enough?
+        if damage_stuns:
+            return True
+
+        # Was this a knarbuckle sidecrane hit?
+        if is_sidecrane and hard_hit:
+            return True
+
+        return False
+
     def recordHit(self, damage, impact=0, craneId=-1):
         avId = self.air.getAvatarIdFromSender()
         crane = simbase.air.doId2do.get(craneId)
@@ -799,7 +820,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.stopHelmets()
 
         # Is the damage high enough to stun? or did a side crane hit a high impact hit?
-        if damage >= self.ruleset.CFO_STUN_THRESHOLD or (isinstance(crane, DistributedCashbotBossSideCraneAI.DistributedCashbotBossSideCraneAI) and impact >= self.ruleset.SIDECRANE_IMPACT_STUN_THRESHOLD):
+        hitMeetsStunRequirements = self.considerStun(crane, damage, impact)
+        if hitMeetsStunRequirements:
             # A particularly good hit (when he's not already
             # dizzy) will make the boss dizzy for a little while.
             self.b_setAttackCode(ToontownGlobals.BossCogDizzy)

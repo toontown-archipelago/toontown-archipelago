@@ -2080,8 +2080,10 @@ class safeRush(MagicWord):
                 if invoker.doId in do.involvedToons:
                     boss = do
                     break
+
         if not boss:
             return "You aren't in a CFO!"
+
         if boss.wantSafeRushPractice:
             boss.wantSafeRushPractice = False
             return ("Safe Rush => OFF")
