@@ -1898,8 +1898,8 @@ class modifiers(MagicWord):
                 return "Invalid modifier ID provided"
 
             tier = args[2]
-            if boss.ruleset.MODIFIER_TIER_RANGE[0] > tier or boss.ruleset.MODIFIER_TIER_RANGE[1] < tier:
-                return "Tier must be in range %s" % boss.ruleset.MODIFIER_TIER_RANGE
+            if tier <= 0:
+                return "Please provide a tier above 0!"
 
             m_instance = mod(tier)
 

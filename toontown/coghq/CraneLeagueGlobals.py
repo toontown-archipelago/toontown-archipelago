@@ -128,19 +128,8 @@ class CFORuleset:
         self.AVERAGE_TREASURE_HEAL_AMOUNT = 8  # How much should the treasures from med goons heal?
         self.STRONG_TREASURE_HEAL_AMOUNT = 10  # How much should the treasures from the big goons heal?
 
-        # Doesn't need to be modified, just used for math
-        self.GOON_HEALS = [
-            self.REALLY_WEAK_TREASURE_HEAL_AMOUNT,
-            self.WEAK_TREASURE_HEAL_AMOUNT,
-            self.AVERAGE_TREASURE_HEAL_AMOUNT,
-            self.STRONG_TREASURE_HEAL_AMOUNT,
-        ]
-        self.TREASURE_STYLES = [
-            [ToontownGlobals.ToontownCentral, ToontownGlobals.DonaldsDock],
-            [ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens],
-            [ToontownGlobals.MinniesMelodyland, ToontownGlobals.TheBrrrgh],
-            [ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland],
-        ]
+        # Applies treasure heal amounts
+        self.update_lists()
 
         # TOON SETTINGS
         self.FORCE_MAX_LAFF = True  # Should we force a laff limit for this crane round?
@@ -184,6 +173,22 @@ class CFORuleset:
 
         self.MODIFIER_TIER_RANGE = (1, 3)  # todo Perhaps refactor this into the modifier class
 
+    # Called to update various list values constructed from instance attributes
+    def update_lists(self):
+        # Doesn't need to be modified, just used for math
+        self.GOON_HEALS = [
+            self.REALLY_WEAK_TREASURE_HEAL_AMOUNT,
+            self.WEAK_TREASURE_HEAL_AMOUNT,
+            self.AVERAGE_TREASURE_HEAL_AMOUNT,
+            self.STRONG_TREASURE_HEAL_AMOUNT,
+        ]
+        self.TREASURE_STYLES = [
+            [ToontownGlobals.ToontownCentral, ToontownGlobals.DonaldsDock],
+            [ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens],
+            [ToontownGlobals.MinniesMelodyland, ToontownGlobals.TheBrrrgh],
+            [ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland],
+        ]
+
     # Call to make sure certain attributes are within certain bounds, for example dont make required impacts > 100%
     def validate(self):
 
@@ -192,7 +197,6 @@ class CFORuleset:
         self.MIN_DEHELMET_IMPACT = min(self.MIN_DEHELMET_IMPACT, .95)
         self.MIN_GOON_IMPACT = min(self.MIN_GOON_IMPACT, .95)
         self.SIDECRANE_IMPACT_STUN_THRESHOLD = min(self.SIDECRANE_IMPACT_STUN_THRESHOLD, .95)
-
 
     # Sends an astron friendly array over, ONLY STUFF THE CLIENT NEEDS TO KNOW GOES HERE
     # ANY TIME YOU MAKE A NEW ATTRIBUTE IN THE INIT ABOVE, MAKE SURE TO ADD
@@ -425,18 +429,25 @@ class ModifierComboExtender(CFORulesetModifierBase):
     # The combo percentage increase per tier
     COMBO_DURATION_PER_TIER = [0, 50, 100, 200]
 
+    def _duration(self):
+        if self.tier <= len(self.COMBO_DURATION_PER_TIER):
+            return self.COMBO_DURATION_PER_TIER[self.tier]
+
+        # tier 4 = 300, 5=400 ...
+        return (self.tier-1) * 100
+
     def getName(self):
         return 'Chains of Finesse ' + self.numToRoman(self.tier)
 
     def getDescription(self):
-        perc = self.COMBO_DURATION_PER_TIER[self.tier]
+        perc = self._duration()
         return 'Increases combo length by %(color_start)s+' + str(perc) + '%%%(color_end)s'
 
     def getHeat(self):
         return -10 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.COMBO_DURATION *= self.additivePercent(self.COMBO_DURATION_PER_TIER[self.tier])
+        cfoRuleset.COMBO_DURATION *= self.additivePercent(self._duration())
 
 
 class ModifierComboShortener(CFORulesetModifierBase):
@@ -448,20 +459,29 @@ class ModifierComboShortener(CFORulesetModifierBase):
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
 
     # The combo percentage increase per tier
-    COMBO_DURATION_PER_TIER = [0, 30, 50, 75]
+    COMBO_DURATION_PER_TIER = [0, 25, 50, 75]
+
+    def _duration(self):
+        if self.tier <= len(self.COMBO_DURATION_PER_TIER):
+            return self.COMBO_DURATION_PER_TIER[self.tier]
+
+        # tier 4 = 80, 5=85 ...
+        perc = 75 + ((self.tier-3) * 5)
+        # Don't let this go higher than 99
+        return min(perc, 99)
 
     def getName(self):
         return 'Chain Locker ' + self.numToRoman(self.tier)
 
     def getDescription(self):
-        perc = self.COMBO_DURATION_PER_TIER[self.tier]
+        perc = self._duration()
         return 'Decreases combo length by %(color_start)s-' + str(perc) + '%%%(color_end)s'
 
     def getHeat(self):
         return 10 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.COMBO_DURATION *= self.subtractivePercent(self.COMBO_DURATION_PER_TIER[self.tier])
+        cfoRuleset.COMBO_DURATION *= self.subtractivePercent(self._duration())
 
 
 # Now here is where we can actually define our modifiers
@@ -476,18 +496,25 @@ class ModifierCFOHPIncreaser(CFORulesetModifierBase):
     # The combo percentage increase per tier
     CFO_INCREASE_PER_TIER = [0, 25, 50, 100]
 
+    def _perc_increase(self):
+        if self.tier <= len(self.CFO_INCREASE_PER_TIER):
+            return self.CFO_INCREASE_PER_TIER[self.tier]
+
+        # tier 4 = 200, 5=300 ...
+        return (self.tier - 2) * 100
+
     def getName(self):
         return 'Financial Aid ' + self.numToRoman(self.tier)
 
     def getDescription(self):
-        perc = self.CFO_INCREASE_PER_TIER[self.tier]
+        perc = self._perc_increase()
         return 'The CFO has %(color_start)s+' + str(perc) + '%%%(color_end)s more HP'
 
     def getHeat(self):
         return 125 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.CFO_MAX_HP *= self.additivePercent(self.CFO_INCREASE_PER_TIER[self.tier])
+        cfoRuleset.CFO_MAX_HP *= self.additivePercent(self._perc_increase())
 
 
 # Now here is where we can actually define our modifiers
@@ -502,18 +529,32 @@ class ModifierCFOHPDecreaser(CFORulesetModifierBase):
     # The combo percentage increase per tier
     CFO_DECREASE_PER_TIER = [0, 20, 35, 50]
 
+    def _perc_decrease(self):
+        if self.tier <= len(self.CFO_DECREASE_PER_TIER):
+            return self.CFO_DECREASE_PER_TIER[self.tier]
+
+        # tier 4 = 65, 5=75 6=80...
+        # todo: grow some brain cells and find formula that does this
+        if self.tier == 4:
+            return 65
+        if self.tier == 5:
+            return 75
+
+        # Don't let it go higher than 99%
+        return min(99, self.tier * 5 + 50)
+
     def getName(self):
         return 'Financial Drain ' + self.numToRoman(self.tier)
 
     def getDescription(self):
-        perc = self.CFO_DECREASE_PER_TIER[self.tier]
+        perc = self._perc_decrease()
         return 'The CFO has %(color_start)s-' + str(perc) + '%%%(color_end)s less HP'
 
     def getHeat(self):
         return -30 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.CFO_MAX_HP *= self.subtractivePercent(self.CFO_DECREASE_PER_TIER[self.tier])
+        cfoRuleset.CFO_MAX_HP *= self.subtractivePercent(self._perc_decrease())
 
 
 # (-) Strong/Tough/Reinforced Bindings
@@ -529,20 +570,31 @@ class ModifierDesafeImpactIncreaser(CFORulesetModifierBase):
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
 
     TIER_NAMES = ['', 'Strong', 'Tough', 'Reinforced']
-    CFO_IMPACT_INC_PER_TIER = [0, 20, 40, 75]
+    CFO_DECREASE_PER_TIER = [0, 25, 50, 75]
+
+    def _perc_increase(self):
+        if self.tier <= len(self.CFO_DECREASE_PER_TIER):
+            return self.CFO_DECREASE_PER_TIER[self.tier]
+
+        # tier 4 = 80, 5=85 6=90...
+        return 5*self.tier + 60
 
     def getName(self):
-        return self.TIER_NAMES[self.tier] + ' Bindings'
+
+        if self.tier <= len(self.TIER_NAMES):
+            return self.TIER_NAMES[self.tier] + ' Bindings'
+
+        return 'Reinforced Bindings ' + self.numToRoman(self.tier)
 
     def getDescription(self):
-        perc = self.CFO_IMPACT_INC_PER_TIER[self.tier]
+        perc = self._perc_increase()
         return "Increases the impact required to remove the CFO's helmet by %(color_start)s+" + str(perc) + "%%%(color_end)s"
 
     def getHeat(self):
-        return 80 * self.tier
+        return 50 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.MIN_DEHELMET_IMPACT *= self.additivePercent(self.CFO_IMPACT_INC_PER_TIER[self.tier])  # Give the cfo 69 hp
+        cfoRuleset.MIN_DEHELMET_IMPACT *= self.additivePercent(self._perc_increase())
 
 
 # (+) Copper Plating
@@ -631,7 +683,8 @@ class ModifierDevolution(CFORulesetModifierBase):
             return "no cranes?"
 
     def getName(self):
-        return 'Devolution ' + self.TIER_NAMES[self.tier]
+        tier = min(self.tier, len(self.TIER_NAMES)-1)
+        return 'Devolution ' + self.TIER_NAMES[tier]
 
     def getDescription(self):
 
@@ -642,7 +695,10 @@ class ModifierDevolution(CFORulesetModifierBase):
         return ret
 
     def getHeat(self):
-        return self.TIER_HEATS[self.tier]
+        if self.tier <= len(self.TIER_HEATS):
+            return self.TIER_HEATS[self.tier]
+
+        return self.TIER_HEATS[-1]
 
     def apply(self, cfoRuleset):
         cfoRuleset.WANT_HEAVY_CRANES = False
@@ -689,22 +745,31 @@ class ModifierGoonDamageInflictIncreaser(CFORulesetModifierBase):
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
     TIER_SUFFIXES = ['', '', 'er', 'est']
-    TIER_PERCENT_AMOUNTS = [0, 10, 20, 30]
+    TIER_PERCENT_AMOUNTS = [0, 20, 50, 75]
+
+    def _perc_increase(self):
+        if self.tier <= len(self.TIER_PERCENT_AMOUNTS):
+            return self.TIER_PERCENT_AMOUNTS[self.tier]
+
+        return self.tier * 25
 
     def getName(self):
-        return 'Hard'+self.TIER_SUFFIXES[self.tier]+' Hats'
+        if self.tier <= len(self.TIER_PERCENT_AMOUNTS):
+            return 'Hard'+self.TIER_SUFFIXES[self.tier]+' Hats'
+
+        return 'Harder Hats ' + self.numToRoman(self.tier)
 
     def getDescription(self):
         _start = ''
         _end = ''
 
-        return 'Increases damages inflicted to the CFO from goons by %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) + '%%%(color_end)s'
+        return 'Increases damages inflicted to the CFO from goons by %(color_start)s+' + str(self._perc_increase()) + '%%%(color_end)s'
 
     def getHeat(self):
-        return -10 * self.tier
+        return -20 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.GOON_CFO_DAMAGE_MULTIPLIER *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
+        cfoRuleset.GOON_CFO_DAMAGE_MULTIPLIER *= self.additivePercent(self._perc_increase())
 
 
 # (+) Safer Containers
@@ -718,19 +783,28 @@ class ModifierSafeDamageInflictIncreaser(CFORulesetModifierBase):
     TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
     TIER_SUFFIXES = ['e', 'e', 'er', 'est']
-    TIER_PERCENT_AMOUNTS = [0, 10, 20, 30]
+    TIER_PERCENT_AMOUNTS = [0, 25, 50, 100]
+
+    def _perc_increase(self):
+        if self.tier <= len(self.TIER_PERCENT_AMOUNTS):
+            return self.TIER_PERCENT_AMOUNTS[self.tier]
+
+        return self.tier * 50 - 50
 
     def getName(self):
-        return 'Saf'+self.TIER_SUFFIXES[self.tier]+' Containers'
+        if self.tier <= len(self.TIER_PERCENT_AMOUNTS):
+            return 'Saf'+self.TIER_SUFFIXES[self.tier]+' Containers'
+
+        return "Safer Containers " + self.numToRoman(self.tier)
 
     def getDescription(self):
-        return 'Increases damages inflicted to the CFO from safes by %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) + '%%%(color_end)s'
+        return 'Increases damages inflicted to the CFO from safes by %(color_start)s+' + str(self._perc_increase()) + '%%%(color_end)s'
 
     def getHeat(self):
-        return -10 * self.tier
+        return -20 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.SAFE_CFO_DAMAGE_MULTIPLIER *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
+        cfoRuleset.SAFE_CFO_DAMAGE_MULTIPLIER *= self.additivePercent(self._perc_increase())
 
 
 # (-) Fast(er/est) Security
@@ -744,19 +818,28 @@ class ModifierGoonSpeedIncreaser(CFORulesetModifierBase):
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
     TIER_SUFFIXES = ['', '', 'er', 'est']
-    TIER_PERCENT_AMOUNTS = [0, 25, 50, 75]
+    TIER_PERCENT_AMOUNTS = [0, 10, 25, 50]
+
+    def _perc_increase(self):
+        if self.tier <= len(self.TIER_PERCENT_AMOUNTS):
+            return self.TIER_PERCENT_AMOUNTS[self.tier]
+
+        return self.tier * 25 - 25
 
     def getName(self):
-        return 'Fast'+self.TIER_SUFFIXES[self.tier]+' Security'
+        if self.tier <= len(self.TIER_PERCENT_AMOUNTS):
+            return 'Fast'+self.TIER_SUFFIXES[self.tier]+' Security'
+
+        return "Faster Security " + self.numToRoman(self.tier)
 
     def getDescription(self):
-        return 'Goons move %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) + '%%%(color_end)s faster'
+        return 'Goons move %(color_start)s+' + str(self._perc_increase()) + '%%%(color_end)s faster'
 
     def getHeat(self):
         return 50 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.GOON_SPEED_MULTIPLIER *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
+        cfoRuleset.GOON_SPEED_MULTIPLIER *= self.additivePercent(self._perc_increase())
 
 
 # (-) Overwhelming Security (I-III)
@@ -771,6 +854,12 @@ class ModifierGoonCapIncreaser(CFORulesetModifierBase):
     DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
     TIER_PERCENT_AMOUNTS = [0, 25, 50, 75]
 
+    def _perc_increase(self):
+        if self.tier <= len(self.TIER_PERCENT_AMOUNTS):
+            return self.TIER_PERCENT_AMOUNTS[self.tier]
+
+        return self.tier * 25
+
     def getName(self):
         n = "Overwhelming Security"
         if self.tier > 1:
@@ -778,14 +867,14 @@ class ModifierGoonCapIncreaser(CFORulesetModifierBase):
         return n
 
     def getDescription(self):
-        return 'The CFO spawns %(color_start)s+' + str(self.TIER_PERCENT_AMOUNTS[self.tier]) +'%%%(color_end)s more goons'
+        return 'The CFO spawns %(color_start)s+' + str(self._perc_increase()) +'%%%(color_end)s more goons'
 
     def getHeat(self):
         return 40 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.MAX_GOON_AMOUNT_START *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
-        cfoRuleset.MAX_GOON_AMOUNT_END *= self.additivePercent(self.TIER_PERCENT_AMOUNTS[self.tier])
+        cfoRuleset.MAX_GOON_AMOUNT_START *= self.additivePercent(self._perc_increase())
+        cfoRuleset.MAX_GOON_AMOUNT_END *= self.additivePercent(self._perc_increase())
 
 
 # (-) Undying Security
@@ -874,7 +963,13 @@ class ModifierTreasureHealDecreaser(CFORulesetModifierBase):
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
-    TIER_DECREASE_PERC = [0, 25, 50, 80]
+    TIER_DECREASE_PERC = [0, 20, 50, 75]
+
+    def _perc_decrease(self):
+        if self.tier <= len(self.TIER_DECREASE_PERC):
+            return self.TIER_DECREASE_PERC[self.tier]
+
+        return min(99, self.tier * 5 + 55)
 
     def getName(self):
         n = "Tastebud Dullers"
@@ -883,16 +978,17 @@ class ModifierTreasureHealDecreaser(CFORulesetModifierBase):
         return n
 
     def getDescription(self):
-        return 'Treasures heal %(color_start)s-' + str(self.TIER_DECREASE_PERC[self.tier]) + '%%%(color_end)s when grabbed'
+        return 'Treasures heal %(color_start)s-' + str(self._perc_decrease()) + '%%%(color_end)s when grabbed'
 
     def getHeat(self):
         return 40 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.WEAK_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self.TIER_DECREASE_PERC[self.tier])
-        cfoRuleset.AVERAGE_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self.TIER_DECREASE_PERC[self.tier])
-        cfoRuleset.STRONG_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self.TIER_DECREASE_PERC[self.tier])
-        cfoRuleset.REALLY_WEAK_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self.TIER_DECREASE_PERC[self.tier])
+        cfoRuleset.WEAK_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self._perc_decrease())
+        cfoRuleset.AVERAGE_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self._perc_decrease())
+        cfoRuleset.STRONG_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self._perc_decrease())
+        cfoRuleset.REALLY_WEAK_TREASURE_HEAL_AMOUNT *= self.subtractivePercent(self._perc_decrease())
+        cfoRuleset.update_lists()
 
 
 # (-) Tasteless Goons (I-III)
@@ -905,7 +1001,13 @@ class ModifierTreasureRNG(CFORulesetModifierBase):
 
     TITLE_COLOR = CFORulesetModifierBase.DARK_RED
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
-    TIER_DROP_PERCENT = [0, 25, 50, 90]
+    TIER_DROP_PERCENT = [0, 30, 50, 90]
+
+    def _get_decrease(self):
+        if self.tier <= len(self.TIER_DROP_PERCENT):
+            return self.TIER_DROP_PERCENT[self.tier]
+
+        return min(99, self.tier * 2 + 84)
 
     def getName(self):
         n = "Tasteless Goons"
@@ -914,13 +1016,13 @@ class ModifierTreasureRNG(CFORulesetModifierBase):
         return n
 
     def getDescription(self):
-        return 'Treasures have a %(color_start)s-' + str(self.TIER_DROP_PERCENT[self.tier]) + '%%%(color_end)s chance to drop from stunned goons'
+        return 'Treasures have a %(color_start)s-' + str(self._get_decrease()) + '%%%(color_end)s chance to drop from stunned goons'
 
     def getHeat(self):
-        return 50 * self.tier
+        return 30 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.GOON_TREASURE_DROP_CHANCE *= self.subtractivePercent(self.TIER_DROP_PERCENT[self.tier])
+        cfoRuleset.GOON_TREASURE_DROP_CHANCE *= self.subtractivePercent(self._get_decrease())
 
 
 # (-) Wealth Filter (I-III)
@@ -935,6 +1037,12 @@ class ModifierTreasureCapDecreaser(CFORulesetModifierBase):
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
     TIER_DROP_PERCENT = [0, 25, 50, 80]
 
+    def _get_decrease(self):
+        if self.tier <= len(self.TIER_DROP_PERCENT):
+            return self.TIER_DROP_PERCENT[self.tier]
+
+        return min(99, self.tier * 5 + 55)
+
     def getName(self):
         n = "Wealth Filter"
         if self.tier > 1:
@@ -942,13 +1050,13 @@ class ModifierTreasureCapDecreaser(CFORulesetModifierBase):
         return n
 
     def getDescription(self):
-        return 'Amount of treasures decreased by %(color_start)s-' + str(self.TIER_DROP_PERCENT[self.tier]) + '%%%(color_end)s'
+        return 'Amount of treasures decreased by %(color_start)s-' + str(self._get_decrease()) + '%%%(color_end)s'
 
     def getHeat(self):
         return 40 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.MAX_TREASURE_AMOUNT *= self.subtractivePercent(self.TIER_DROP_PERCENT[self.tier])
+        cfoRuleset.MAX_TREASURE_AMOUNT *= self.subtractivePercent(self._get_decrease())
 
 
 # (+) The Melancholic Bonus/Gift/Offering
@@ -964,17 +1072,26 @@ class ModifierUberBonusIncreaser(CFORulesetModifierBase):
     TIER_BONUS_PERC = [0, 100, 200, 300]
     NAME_SUFFIXES = ['', 'Bonus', 'Gift', 'Offering']
 
+    def _perc_increase(self):
+        if self.tier <= len(self.TIER_BONUS_PERC):
+            return self.TIER_BONUS_PERC[self.tier]
+
+        return self.tier * 100
+
     def getName(self):
-        return 'The Melancholic ' + self.NAME_SUFFIXES[self.tier]
+        if self.tier <= len(self.NAME_SUFFIXES):
+            return 'The Melancholic ' + self.NAME_SUFFIXES[self.tier]
+
+        return 'Melancholic Fever ' + self.numToRoman(self.tier)
 
     def getDescription(self):
-        return 'Points gained from UBER BONUS increased by %(color_start)s+' + str(self.TIER_BONUS_PERC[self.tier]) + '%%%(color_end)s'
+        return 'Points gained from UBER BONUS increased by %(color_start)s+' + str(self._perc_increase()) + '%%%(color_end)s'
 
     def getHeat(self):
         return -10 * self.tier
 
     def apply(self, cfoRuleset):
-        cfoRuleset.LOW_LAFF_BONUS *= self.additivePercent(self.TIER_BONUS_PERC[self.tier])
+        cfoRuleset.LOW_LAFF_BONUS *= self.additivePercent(self._perc_increase())
 
 
 # (-) Jumping for Joy
