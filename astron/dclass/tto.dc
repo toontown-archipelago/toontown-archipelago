@@ -1417,11 +1417,11 @@ dclass DistributedCashbotBossGoon : DistributedCashbotBossObject {
   requestBattle(int16/10) airecv clsend;
   requestStunned(int16/10) airecv clsend;
   requestWalk() airecv clsend;
-  setVelocity(uint8/10) broadcast ram;
+  setVelocity(uint32/10) broadcast ram;
   setHFov(uint8) broadcast ram;
   setAttackRadius(uint8) broadcast ram;
-  setStrength(uint8) broadcast ram;
-  setGoonScale(uint8/50) broadcast ram;
+  setStrength(uint32) broadcast ram;
+  setGoonScale(uint16/50) broadcast ram;
   setupGoon : setVelocity, setHFov, setAttackRadius, setStrength, setGoonScale;
   setTarget(int16/10, int16/10, uint16%360/100, int16) broadcast ram;
   destroyGoon() broadcast clsend airecv;
