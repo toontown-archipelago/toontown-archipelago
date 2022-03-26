@@ -227,9 +227,18 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def rollRandomModifiers(self):
         tierLeftBound = self.ruleset.MODIFIER_TIER_RANGE[0]
         tierRightBound = self.ruleset.MODIFIER_TIER_RANGE[1]
-        pool = [c(random.randint(tierLeftBound, tierRightBound)) for c in CraneLeagueGlobals.CFORulesetModifierBase.MODIFIER_SUBCLASSES.values()]
+        pool = [c(random.randint(tierLeftBound, tierRightBound)) for c in CraneLeagueGlobals.NON_SPECIAL_MODIFIER_CLASSES]
         random.shuffle(pool)
+
         self.modifiers = [pool.pop() for _ in range(self.numModsWanted)]
+
+        # If we roll a % roll, go ahead and make this a special cfo
+        # Doing this last also ensures any rules that the special mod needs to set override
+        if random.randint(0, 99) < CraneLeagueGlobals.SPECIAL_MODIFIER_CHANCE:
+            cls = random.choice(CraneLeagueGlobals.SPECIAL_MODIFIER_CLASSES)
+            tier = random.randint(tierLeftBound, tierRightBound)
+            mod_instance = cls(tier)
+            self.modifiers.append(mod_instance)
 
     def generate(self):
         """

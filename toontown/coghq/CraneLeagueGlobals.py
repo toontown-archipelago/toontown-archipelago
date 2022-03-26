@@ -1,6 +1,8 @@
 # A file to put all crane league settings in one place for easy adjustment
 from toontown.toonbase import ToontownGlobals
 
+SPECIAL_MODIFIER_CHANCE = 3  # % chance you want to roll a special modifier for a cfo  *** server side only
+
 # Ruleset
 
 NORMAL_CRANE_POSHPR = [
@@ -1029,8 +1031,28 @@ class ModifierMillionMomentum(CFORulesetModifierBase):
 for subclass in CFORulesetModifierBase.__subclasses__():
     CFORulesetModifierBase.MODIFIER_SUBCLASSES[subclass.MODIFIER_ENUM] = subclass
 
+
+# Given a modifier type enum, return a list of classes of this type
+def getModifiersOfType(mod_type_enum):
+    cls_list = []
+    # Loop through all the subclasses
+    for mod_subclass in CFORulesetModifierBase.MODIFIER_SUBCLASSES.values():
+        # If the type of this class matches the param we passed in
+        if mod_subclass.MODIFIER_TYPE == mod_type_enum:
+            cls_list.append(mod_subclass)
+
+    return tuple(cls_list)
+
+
+HURTFUL_MODIFIER_CLASSES = getModifiersOfType(CFORulesetModifierBase.HURTFUL)
+HELPFUL_MODIFIER_CLASSES = getModifiersOfType(CFORulesetModifierBase.HELPFUL)
+SPECIAL_MODIFIER_CLASSES = getModifiersOfType(CFORulesetModifierBase.SPECIAL)
+
+
+NON_SPECIAL_MODIFIER_CLASSES = HURTFUL_MODIFIER_CLASSES + HELPFUL_MODIFIER_CLASSES
+
 # Used for when i want to spit out a cheat sheet
 # for e, c in CFORulesetModifierBase.MODIFIER_SUBCLASSES.items():
 #     i = c()
 #     d = i.getDescription() % {'color_start': '', 'color_end': ''}
-#     print('(ID:%s) %s\n%s' % (e, i.getName(), d))
+#     print('(ID:%s) %s\n%s\n' % (e, i.getName(), d))
