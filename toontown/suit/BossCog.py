@@ -33,6 +33,7 @@ class BossCog(Avatar.Avatar):
         self.setFont(ToontownGlobals.getSuitFont())
         self.setPlayerType(NametagGroup.CCSuit)
         self.setPickable(0)
+        self.setBlend(frameBlend=True)
         self.doorA = None
         self.doorB = None
         self.bubbleL = None
@@ -352,6 +353,7 @@ class BossCog(Avatar.Avatar):
         return fsm
 
     def doAnimate(self, anim = None, now = 0, queueNeutral = 1, raised = None, forward = None, happy = None):
+        self.setBlend(frameBlend=True)
         if now:
             self.stopAnimate()
         if not self.twoFaced:

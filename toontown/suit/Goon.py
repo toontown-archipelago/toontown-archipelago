@@ -22,6 +22,7 @@ class Goon(Avatar.Avatar):
             self.Goon_initialized = 1
             Avatar.Avatar.__init__(self)
             self.ignore('nametagAmbientLightChanged')
+            self.setBlend(frameBlend=True)
             self.hFov = 70
             self.attackRadius = 15
             self.strength = 15

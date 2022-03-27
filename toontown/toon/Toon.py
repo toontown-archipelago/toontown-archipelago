@@ -2846,6 +2846,7 @@ class Toon(Avatar.Avatar, ToonHead):
              'dept': suitName,
              'level': self.cogLevels[suitDept] + 1})
             self.nametag.setNameWordwrap(9.0)
+        self.suit.setBlend(frameBlend=True)
 
     def takeOffSuit(self):
         if not self.isDisguised:
