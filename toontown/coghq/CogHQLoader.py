@@ -97,10 +97,13 @@ class CogHQLoader(StateData.StateData):
         base.cr.playGame.setPlace(self.place)
         return
 
-    def placeDone(self):
+    def placeDone(self, status=None):
+        if status:
+            self.place.doneStatus = status
+
         self.requestStatus = self.place.doneStatus
         status = self.place.doneStatus
-        if status.get('shardId') == None and self.isInThisHq(status):
+        if status.get('shardId') is None and self.isInThisHq(status):
             self.unloadPlaceGeom()
             zoneId = status['zoneId']
             self.loadPlaceGeom(zoneId)
