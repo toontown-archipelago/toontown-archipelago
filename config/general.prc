@@ -7,6 +7,10 @@ show-frame-rate-meter #t
 frame-rate-meter-text-pattern %0.f FPS
 frame-rate-meter-update-interval 0.001
 
+# Graphics settings
+framebuffer-multisample 1
+multisamples 8
+
 # Notify settings
 notify-level-collide warning
 notify-level-chan warning

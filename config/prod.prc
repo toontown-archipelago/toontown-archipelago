@@ -4,6 +4,10 @@
 # Window settings
 window-title Toontown Online
 
+# Graphics settings
+framebuffer-multisample 1
+multisamples 8
+
 # Notify settings
 console-output false
 
