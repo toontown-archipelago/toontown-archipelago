@@ -288,7 +288,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         # Update stats and add track combo for points
         self.boss.d_updateGoonsStomped(avId)
         comboTracker = self.boss.comboTrackers[avId]
-        comboTracker.incrementCombo(comboTracker.combo+1)
+        comboTracker.incrementCombo((comboTracker.combo+1) / 20 * 1)
         
         DistributedGoonAI.DistributedGoonAI.requestStunned(self, pauseTime)
 

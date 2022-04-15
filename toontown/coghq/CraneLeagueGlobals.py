@@ -168,7 +168,6 @@ class CFORuleset:
 
         # COMBO SETTINGS
         self.COMBO_DURATION = 2.0  # How long should combos last?
-        self.COMBO_DAMAGE_PERCENTAGE = .2  # Percentage to add to our running combo when doing damage (basically 20% bonus per hits when in a combo)
         self.TREASURE_GRAB_RESETS_COMBO = True  # Should picking up a treasure reset a toon's combo?
 
         self.MODIFIER_TIER_RANGE = (1, 3)  # todo Perhaps refactor this into the modifier class
