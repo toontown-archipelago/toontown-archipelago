@@ -840,8 +840,8 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             
             obj.d_requestGrab()
             # See if we should do anything with this object when sniffing it
-            self.considerObjectState(obj)
             obj.demand('LocalGrabbed', localAvatar.doId, self.doId)
+            self.considerObjectState(obj)
 
     def considerObjectState(self, obj):
 
