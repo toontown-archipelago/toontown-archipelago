@@ -70,7 +70,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # A list of toon ids that are spectating
         self.spectators = []
 
-        self.rollModsOnStart = True
+        self.rollModsOnStart = False
         self.numModsWanted = 5
 
         # Some overrides from commands

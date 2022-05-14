@@ -1823,7 +1823,7 @@ class modifiers(MagicWord):
     desc = "Dynamically tweak modifiers mid CFO"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     accessLevel = "MODERATOR"
-    VALID_SUBCOMMANDS = ['debug', 'amount', 'random', 'clear', 'add', 'remove']
+    VALID_SUBCOMMANDS = ['debug', 'amount', 'random', 'clear', 'add', 'remove', 'on', 'off']
     arguments = [
         ('subcommand', str, False, 'debug'),  # subcommand
         ('mod-id/yes/no', str, False, 'debug'),  # modifier id/on/off/int
@@ -1847,6 +1847,20 @@ class modifiers(MagicWord):
         if args[0].lower() == self.VALID_SUBCOMMANDS[0]:
             return 'Valid subcommands: ' + ', '.join(self.VALID_SUBCOMMANDS)
 
+        # Handle if they just want to turn them on or off
+        if args[0].lower() in ['on', 'off']:
+
+            if args[0].lower() == 'off':
+                boss.numModsWanted = 0
+                boss.rollModsOnStart = True
+                return 'Modifiers turned off!'
+            elif args[0].lower() == 'on':
+                boss.numModsWanted = 5
+                boss.rollModsOnStart = True
+                return 'Modifiers turned on! Defaulted to 5 modifiers'
+
+            return 'this should never happen lol'
+
         # Handle if setting amount of mods wanted
         if args[0].lower() == self.VALID_SUBCOMMANDS[1]:
 
@@ -1867,12 +1881,12 @@ class modifiers(MagicWord):
         if args[0].lower() == self.VALID_SUBCOMMANDS[2]:
 
             response = args[1].lower()
-            valid_responses = ('yes', 'no')
+            valid_responses = ('on', 'off')
 
             if response not in valid_responses:
-                return "Please say yes or no! ex: ~modifiers random yes"
+                return "Please say on or off! ex: ~modifiers random on"
 
-            map = {'yes': True, 'no': False}
+            map = {'on': True, 'off': False}
             boss.rollModsOnStart = map[response]
             return 'Randomize modifiers on restart set to: %s' % response
 
