@@ -3171,7 +3171,7 @@ class StartBoss(MagicWord):
         hood_zones = [ToontownGlobals.BossbotHQ, ToontownGlobals.LawbotHQ,
                       ToontownGlobals.CashbotHQ, ToontownGlobals.SellbotHQ]
         if toon.zoneId not in hood_zones:
-            return f'Toon is not in the correct zone! Expected a Cog HQ courtyard, got {toon.zoneId}.'
+            return 'Toon is not in the correct zone! Expected a Cog HQ courtyard, got {}.'.format(toon.zoneId)
 
         for hood in simbase.air.hoods:
             if hood.zoneId == toon.zoneId:
