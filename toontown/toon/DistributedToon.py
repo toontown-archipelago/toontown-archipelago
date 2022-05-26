@@ -2727,3 +2727,15 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def getTransitioning(self):
         return self.transitioning
+
+    def forceEnterBoss(self, hood, zone):
+        if not self.isLocal():
+            return
+
+        messenger.send('cogHQLoaderPlaceDone', [{
+            'hoodId': hood,
+            'zoneId': zone,
+            'loader': 'cogHQLoader',
+            'where': 'cogHQBossBattle',
+            'how': 'movie'
+        }])

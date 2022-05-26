@@ -1142,6 +1142,7 @@ dclass DistributedToon : DistributedPlayer {
   setInstaKill(uint8) broadcast ownrecv ram;
   setRun() broadcast ownrecv ram;
   doTeleport(string hood);
+  forceEnterBoss(uint16 zone, uint32 doId) ownrecv;
 };
 
 dclass DistributedCCharBase : DistributedObject {

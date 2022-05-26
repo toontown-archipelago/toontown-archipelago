@@ -3175,6 +3175,25 @@ class PrintChildren(MagicWord):
                 print child.getChildren()
 
 
+class StartBoss(MagicWord):
+    aliases = ['startvp', 'startcfo', 'startcj', 'startceo']
+    desc = 'Starts a boss battle.'
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'DEVELOPER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        hood_zones = [ToontownGlobals.BossbotHQ, ToontownGlobals.LawbotHQ,
+                      ToontownGlobals.CashbotHQ, ToontownGlobals.SellbotHQ]
+        if toon.zoneId not in hood_zones:
+            return 'Toon is not in the correct zone! Expected a Cog HQ courtyard, got {}.'.format(toon.zoneId)
+
+        for hood in simbase.air.hoods:
+            if hood.zoneId == toon.zoneId:
+                zone = hood.lobbyMgr.createBossOffice([avId])
+                toon.sendUpdate('forceEnterBoss', [toon.zoneId, zone])
+                return 'Successfully created a boss!'
+        return 'Cog HQ hood data not found!'
+
 
 # Instantiate all classes defined here to register them.
 # A bit hacky, but better than the old system
