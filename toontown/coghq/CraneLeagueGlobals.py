@@ -92,25 +92,25 @@ class CFORuleset:
         # A dict that maps attack codes to base damage values from the CFO
         self.CFO_ATTACKS_BASE_DAMAGE = {
             ToontownGlobals.BossCogElectricFence: 1,  # The actual bump
-            ToontownGlobals.BossCogSwatLeft: 10,  # Swats from bumping
-            ToontownGlobals.BossCogSwatRight: 10,
-            ToontownGlobals.BossCogSlowDirectedAttack: 20,  # Gear throw
-            ToontownGlobals.BossCogAreaAttack: 25,  # Jump
+            ToontownGlobals.BossCogSwatLeft: 5,  # Swats from bumping
+            ToontownGlobals.BossCogSwatRight: 5,
+            ToontownGlobals.BossCogSlowDirectedAttack: 15,  # Gear throw
+            ToontownGlobals.BossCogAreaAttack: 20,  # Jump
         }
 
         # How much should attacks be multiplied by by the time we are towards the end?
-        self.CFO_ATTACKS_MULTIPLIER = 4
+        self.CFO_ATTACKS_MULTIPLIER = 3
         # should multiplier gradually scale or go up by integers?  False means 1x then 2x then 3x, True gradually increases
         self.CFO_ATTACKS_MULTIPLIER_INTERPOLATE = True
 
         # GOON/TREASURE SETTINGS
-        self.MIN_GOON_DAMAGE = 10  # What is the lowest amount of damage a goon should do? (beginning of CFO)
-        self.MAX_GOON_DAMAGE = 50  # What is the highest amount of damage a goon should do? (end of CFO)
+        self.MIN_GOON_DAMAGE = 5  # What is the lowest amount of damage a goon should do? (beginning of CFO)
+        self.MAX_GOON_DAMAGE = 35  # What is the highest amount of damage a goon should do? (end of CFO)
         self.GOON_SPEED_MULTIPLIER = 1.0  # How fast should goons move?
 
         # How many goons should we allow to spawn? This will scale up towards the end of the fight to the 2nd var
-        self.MAX_GOON_AMOUNT_START = 8
-        self.MAX_GOON_AMOUNT_END = 16
+        self.MAX_GOON_AMOUNT_START = 6
+        self.MAX_GOON_AMOUNT_END = 12
 
         # Should goons get stunned instead of die on hit?
         self.SAFES_STUN_GOONS = False
@@ -123,9 +123,9 @@ class CFORuleset:
         # Should we have a drop chance?
         self.GOON_TREASURE_DROP_CHANCE = 1.0
 
-        self.REALLY_WEAK_TREASURE_HEAL_AMOUNT = 2  # How much should the treasures from very small goons heal?
+        self.REALLY_WEAK_TREASURE_HEAL_AMOUNT = 3  # How much should the treasures from very small goons heal?
         self.WEAK_TREASURE_HEAL_AMOUNT = 5  # How much should the treasures from small goons heal?
-        self.AVERAGE_TREASURE_HEAL_AMOUNT = 8  # How much should the treasures from med goons heal?
+        self.AVERAGE_TREASURE_HEAL_AMOUNT = 7  # How much should the treasures from med goons heal?
         self.STRONG_TREASURE_HEAL_AMOUNT = 10  # How much should the treasures from the big goons heal?
 
         # Applies treasure heal amounts
@@ -133,18 +133,18 @@ class CFORuleset:
 
         # TOON SETTINGS
         self.FORCE_MAX_LAFF = True  # Should we force a laff limit for this crane round?
-        self.FORCE_MAX_LAFF_AMOUNT = 120  # The laff that we are going to force all toons participating to have
+        self.FORCE_MAX_LAFF_AMOUNT = 100  # The laff that we are going to force all toons participating to have
         self.HEAL_TOONS_ON_START = True  # Should we set all toons to full laff when starting the round?
 
         self.WANT_LOW_LAFF_BONUS = True  # Should we award toons with low laff bonus points?
         self.LOW_LAFF_BONUS = .1  # How much will the bonus be worth? i.e. .1 = 10% bonus for ALL points
         self.LOW_LAFF_BONUS_THRESHOLD = 25  # How much laff or less should a toon have to be considered for a low laff bonus?
-        self.LOW_LAFF_BONUS_INCLUDE_PENALTIES = True  # Should penalties also be increased when low on laff?
+        self.LOW_LAFF_BONUS_INCLUDE_PENALTIES = False  # Should penalties also be increased when low on laff?
 
         # note: When REVIVE_TOONS_UPON_DEATH is True, the only fail condition is if we run out of time
         self.RESTART_CRANE_ROUND_ON_FAIL = True  # Should we restart the crane round if all toons die?
         self.REVIVE_TOONS_UPON_DEATH = True  # Should we revive a toon that dies after a certain amount of time? (essentially a stun)
-        self.REVIVE_TOONS_TIME = 15  # Time in seconds to revive a toon after death
+        self.REVIVE_TOONS_TIME = 10  # Time in seconds to revive a toon after death
         self.REVIVE_TOONS_LAFF_PERCENTAGE = 0.50  # How much laff should we give back to the toon when revived?
 
         # A for fun mechanic that makes toons have permanent damage buffs based on how much damage they do
@@ -152,19 +152,19 @@ class CFORuleset:
 
         # POINTS SETTINGS
         self.POINTS_GOON_STOMP = 1  # Points per goon stomp
-        self.POINTS_STUN = 15  # Points per stun
-        self.POINTS_SIDESTUN = 20  # Points per stun on sidecrane
-        self.POINTS_IMPACT = 10  # Points given when a max impact hit is achieved
+        self.POINTS_STUN = 10  # Points per stun
+        self.POINTS_SIDESTUN = 25  # Points per stun on sidecrane
+        self.POINTS_IMPACT = 15  # Points given when a max impact hit is achieved
         self.POINTS_DESAFE = 10  # Points for taking a safe helmet off
-        self.POINTS_GOON_KILLED_BY_SAFE = 5  # Points for killing a goon with a safe
+        self.POINTS_GOON_KILLED_BY_SAFE = 3  # Points for killing a goon with a safe
 
-        self.POINTS_PENALTY_SAFEHEAD = -20  # Deduction for putting a safe on the CFOs head
+        self.POINTS_PENALTY_SAFEHEAD = -25  # Deduction for putting a safe on the CFOs head
         self.POINTS_PENALTY_GO_SAD = -50  # Point deduction for dying (can happen multiple times if revive setting is on)
         self.POINTS_PENALTY_SANDBAG = -5  # Point deduction for hitting a very low impact hit
-        self.POINTS_PENALTY_UNSTUN = -20
+        self.POINTS_PENALTY_UNSTUN = -25
 
         self.TREASURE_POINT_PENALTY = True  # Should we deduct points for picking up treasures?
-        self.TREASURE_POINT_PENALTY_FLAT_RATE = 0  # How much should we deduct? set to 0 or less to make it 1 to 1 with laff gained
+        self.TREASURE_POINT_PENALTY_FLAT_RATE = 1  # How much should we deduct? set to 0 or less to make it 1 to 1 with laff gained
 
         # COMBO SETTINGS
         self.COMBO_DURATION = 2.0  # How long should combos last?
