@@ -1483,6 +1483,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def localToonDied(self):
         DistributedBossCog.DistributedBossCog.localToonDied(self)
         self.localToonIsSafe = 1
+
+    def killingBlowDealt(self, avId):
+        self.scoreboard.addScore(avId, self.ruleset.POINTS_KILLING_BLOW, CraneLeagueGlobals.KILLING_BLOW_TEXT)
         
     def updateDamageDealt(self, avId, damageDealt):
         self.scoreboard.addScore(avId, damageDealt)

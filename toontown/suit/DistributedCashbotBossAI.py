@@ -810,6 +810,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # The CFO has been defeated, proceed to Victory state
         if self.bossDamage >= self.ruleset.CFO_MAX_HP:
+            self.d_killingBlowDealt(avId)
             self.toonsWon = True
             self.b_setState('Victory')
             return
@@ -848,6 +849,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def d_setBossDamage(self, bossDamage):
         self.sendUpdate('setBossDamage', [bossDamage])
+
+    def d_killingBlowDealt(self, avId):
+        self.sendUpdate('killingBlowDealt', [avId])
 
     def d_updateDamageDealt(self, avId, damageDealt):
         self.sendUpdate('updateDamageDealt', [avId, damageDealt])
