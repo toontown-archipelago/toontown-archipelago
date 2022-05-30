@@ -137,7 +137,6 @@ class ToonBase(OTPBase.OTPBase):
         self.oldX = max(1, base.win.getXSize())
         self.oldY = max(1, base.win.getYSize())
         self.aspectRatio = float(self.oldX) / self.oldY
-        self.render.setAntialias(AntialiasAttrib.MMultisample)
         self.aspect2d.setAntialias(AntialiasAttrib.MMultisample)
 
         self.wantCustomKeybinds = self.settings.getBool('game', 'customKeybinds', False)
@@ -333,8 +332,8 @@ class ToonBase(OTPBase.OTPBase):
 
     def startShow(self, cr, launcherServer = None):
         self.cr = cr
-        # if base.config.GetBool('framebuffer-multisample', False):
-        #     render.setAntialias(AntialiasAttrib.MAuto)
+        if base.config.GetBool('framebuffer-multisample', False):
+            render.setAntialias(AntialiasAttrib.MAuto)
         base.graphicsEngine.renderFrame()
         self.downloadWatcher = ToontownDownloadWatcher.ToontownDownloadWatcher(TTLocalizer.LauncherPhaseNames)
         if launcher.isDownloadComplete():

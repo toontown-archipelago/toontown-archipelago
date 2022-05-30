@@ -4,10 +4,6 @@
 # Window settings
 window-title Toontown: Crane League Edition
 
-# Graphics settings
-framebuffer-multisample 1
-multisamples 8
-
 # Notify settings
 console-output true
 
