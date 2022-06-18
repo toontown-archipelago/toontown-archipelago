@@ -25,6 +25,7 @@ class CashbotBossComboTracker:
             self.resetCombo()
 
     def incrementCombo(self, amount):
+        amount = round(amount)
         self.combo += 1
         self.pointBonus += amount
         self.__expireComboLater()

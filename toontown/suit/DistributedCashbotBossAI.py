@@ -804,7 +804,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.d_updateDamageDealt(avId, damage)
 
         comboTracker = self.comboTrackers[avId]
-        comboTracker.incrementCombo((comboTracker.combo+1) / 10 * damage)
+        comboTracker.incrementCombo((comboTracker.combo+1.0) / 10.0 * damage)
 
         self.debug(doId=avId, content='Damaged for %s with impact: %.2f' % (damage, impact))
 
