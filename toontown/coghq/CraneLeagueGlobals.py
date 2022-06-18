@@ -23,14 +23,14 @@ HEAVY_CRANE_POSHPR = [
 
 SAFE_POSHPR = [
     (120, -315, 30, 0, 0, 0),
-    (77.2, -329.3, 0, -90, 0, 0),
-    (77.1, -302.7, 0, -90, 0, 0),
-    (165.7, -326.4, 0, 90, 0, 0),
-    (165.5, -302.4, 0, 90, 0, 0),
-    (107.8, -359.1, 0, 0, 0, 0),
-    (133.9, -359.1, 0, 0, 0, 0),
-    (107.0, -274.7, 0, 180, 0, 0),
-    (134.2, -274.7, 0, 180, 0, 0)
+    (77.1, -302.7, 0, -90, 0, 0),  # 1R
+    (165.7, -326.4, 0, 90, 0, 0),  # 2R
+    (134.2, -274.7, 0, 180, 0, 0),  # 3R
+    (107.8, -359.1, 0, 0, 0, 0),  # 4R
+    (107.0, -274.7, 0, 180, 0, 0),  # 1L
+    (133.9, -359.1, 0, 0, 0, 0),  # 2L
+    (165.5, -302.4, 0, 90, 0, 0),  # 3L
+    (77.2, -329.3, 0, -90, 0, 0),  # 4L
 ]
 
 ALL_CRANE_POSHPR = NORMAL_CRANE_POSHPR + SIDE_CRANE_POSHPR + HEAVY_CRANE_POSHPR
@@ -90,6 +90,7 @@ class CFORuleset:
         self.RANDOM_GEAR_THROW_ORDER = False  # Should the order in which CFO throw gears at toons be random?
         self.CFO_FLINCHES_ON_HIT = True  # Should the CFO flinch when being hit?
         self.DISABLE_SAFE_HELMETS = False  # Should the CFO be allowed to helmet?
+        self.SAFES_TO_SPAWN = len(SAFE_POSHPR)  # How many safes should we spawn?
 
         # A dict that maps attack codes to base damage values from the CFO
         self.CFO_ATTACKS_BASE_DAMAGE = {
@@ -1167,6 +1168,37 @@ class ModifierNoSafeHelmet(CFORulesetModifierBase):
 
     def apply(self, cfoRuleset):
         cfoRuleset.DISABLE_SAFE_HELMETS = True
+
+
+# (-) Safe Shortage
+# --------------------------------
+# - Less safes spawn
+class ModifierReducedSafes(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 23
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+
+    def _getSafesDecrement(self):
+        return min(max(0, self.tier * 2), len(SAFE_POSHPR))
+
+    def getName(self):
+        return 'Safe Shortage ' + self.numToRoman(self.tier)
+
+    def getDescription(self):
+        return 'Amount of safes %(color_start)sdecreased by ' + str(self._getSafesDecrement()) + '%(color_end)s!'
+
+    def getHeat(self):
+        return -50
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.SAFES_TO_SPAWN -= self._getSafesDecrement()
+
+        if cfoRuleset.SAFES_TO_SPAWN <= 1:
+            cfoRuleset.SAFES_TO_SPAWN = 1
+            cfoRuleset.DISABLE_SAFE_HELMETS = True
 
 
 # Any implemented subclasses of CFORulesetModifierBase cannot go past this point
