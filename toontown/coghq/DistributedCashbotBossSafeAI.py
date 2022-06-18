@@ -91,7 +91,10 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
                 
             elif self.boss.acceptHelmetFrom(avId):
                 # If he's not dizzy, he grabs the safe and makes a
-                # helmet out of it.
+                # helmet out of it only if he is allowed to safe helmet.
+                if self.boss.ruleset.DISABLE_SAFE_HELMETS:
+                    return
+
                 self.demand('Grabbed', self.boss.doId, self.boss.doId)
                 self.boss.heldObject = self
                 self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_PENALTY_SAFEHEAD)

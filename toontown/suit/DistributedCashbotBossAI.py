@@ -689,6 +689,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.objectId = objId
 
     def __donHelmet(self, task):
+
+        if self.ruleset.DISABLE_SAFE_HELMETS:
+            return
+
         self.waitingForHelmet = 0
         if self.heldObject == None:
             # Ok, the boss wants to put on a helmet now.  He can have
@@ -697,7 +701,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             safe = self.safes[0]
             safe.request('Grabbed', self.doId, self.doId)
             self.heldObject = safe
-        return
 
     def stopHelmets(self):
         self.waitingForHelmet = 0

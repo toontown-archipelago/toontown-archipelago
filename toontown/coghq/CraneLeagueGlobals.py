@@ -89,6 +89,7 @@ class CFORuleset:
         self.CFO_JUMP_ATTACK_CHANCE = 20  # Percent chance for the cfo to perform a AOE jump attack
         self.RANDOM_GEAR_THROW_ORDER = False  # Should the order in which CFO throw gears at toons be random?
         self.CFO_FLINCHES_ON_HIT = True  # Should the CFO flinch when being hit?
+        self.DISABLE_SAFE_HELMETS = False  # Should the CFO be allowed to helmet?
 
         # A dict that maps attack codes to base damage values from the CFO
         self.CFO_ATTACKS_BASE_DAMAGE = {
@@ -1142,6 +1143,30 @@ class ModifierMillionMomentum(CFORulesetModifierBase):
     def apply(self, cfoRuleset):
         cfoRuleset.CFO_MAX_HP = 1000000
         cfoRuleset.WANT_MOMENTUM_MECHANIC = True
+
+
+# (-) Hats Off (come up with better name later)
+# --------------------------------
+# - CFO cannot safe helmet
+class ModifierNoSafeHelmet(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 22
+    MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+
+    def getName(self):
+        return 'Hats Off'
+
+    def getDescription(self):
+        return 'The CFO can %(color_start)sno longer equip safe helmets%(color_end)s!'
+
+    def getHeat(self):
+        return -50
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.DISABLE_SAFE_HELMETS = True
 
 
 # Any implemented subclasses of CFORulesetModifierBase cannot go past this point
