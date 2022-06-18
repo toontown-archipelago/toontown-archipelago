@@ -158,7 +158,7 @@ class CFORuleset:
         self.POINTS_IMPACT = 15  # Points given when a max impact hit is achieved
         self.POINTS_DESAFE = 10  # Points for taking a safe helmet off
         self.POINTS_GOON_KILLED_BY_SAFE = 3  # Points for killing a goon with a safe
-        self.POINTS_KILLING_BLOW = 30  # Points for dealing the killing blow to the CFO
+        self.POINTS_KILLING_BLOW = 0  # Points for dealing the killing blow to the CFO
 
         self.POINTS_PENALTY_SAFEHEAD = -25  # Deduction for putting a safe on the CFOs head
         self.POINTS_PENALTY_GO_SAD = -50  # Point deduction for dying (can happen multiple times if revive setting is on)
