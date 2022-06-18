@@ -5,7 +5,7 @@ You can use the command '~modifiers add 2 3' so give the CFO 100% more hp instea
 Increases combo length by +50%
 
 (ID:1) Chain Locker I
-Decreases combo length by -30%
+Decreases combo length by -25%
 
 (ID:2) Financial Aid I
 The CFO has +25% more HP
@@ -14,7 +14,7 @@ The CFO has +25% more HP
 The CFO has -20% less HP
 
 (ID:4) Strong Bindings
-Increases the impact required to remove the CFO's helmet by +20%
+Increases the impact required to remove the CFO's helmet by +25%
 
 (ID:5) Copper Plating
 Decreases general impact required by -25% for goons and safes
@@ -29,13 +29,13 @@ A trip down memory lane. Heavy cranes are disabled
 The CFO no longer flinches upon being damaged
 
 (ID:9) Hard Hats
-Increases damages inflicted to the CFO from goons by +10%
+Increases damages inflicted to the CFO from goons by +20%
 
 (ID:10) Safe Containers
-Increases damages inflicted to the CFO from safes by +10%
+Increases damages inflicted to the CFO from safes by +25%
 
 (ID:11) Fast Security
-Goons move +25% faster
+Goons move +10% faster
 
 (ID:12) Overwhelming Security
 The CFO spawns +25% more goons
@@ -50,10 +50,10 @@ Goons always wakeup when grabbed by all cranes
 Treasures heal +50% when grabbed
 
 (ID:16) Tastebud Dullers
-Treasures heal -25% when grabbed
+Treasures heal -20% when grabbed
 
 (ID:17) Tasteless Goons
-Treasures have a -25% chance to drop from stunned goons
+Treasures have a -30% chance to drop from stunned goons
 
 (ID:18) Wealth Filter
 Amount of treasures decreased by -25%
@@ -66,3 +66,9 @@ The CFO can now perform an AoE jump attack!
 
 (ID:21) Maximum Momentum
 The CFO has a million HP, but toons gain permanent damage buffs when inflicting damage!
+
+(ID:22) Hats Off
+The CFO can no longer equip safe helmets!
+
+(ID:23) Safe Shortage I
+Amount of safes decreased by 2!

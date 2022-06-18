@@ -1191,7 +1191,7 @@ class ModifierReducedSafes(CFORulesetModifierBase):
         return 'Amount of safes %(color_start)sdecreased by ' + str(self._getSafesDecrement()) + '%(color_end)s!'
 
     def getHeat(self):
-        return -50
+        return 20 * self.tier
 
     def apply(self, cfoRuleset):
         cfoRuleset.SAFES_TO_SPAWN -= self._getSafesDecrement()
