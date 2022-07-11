@@ -18,6 +18,7 @@ class KeybindRemap:
     CHAT_HOTKEY = 7
     SCREENSHOT_KEY = 8
     CRANE_GRAB_KEY = 9
+    SPRINT_KEY = 10
 
     def __init__(self):
         self.dialog = TTDialog.TTGlobalDialog(
@@ -146,13 +147,25 @@ class KeybindRemap:
         self.craneGrabKey = OptionButton(
             parent=self.dialog,
             text=base.CRANE_GRAB_KEY,
-            pos=(button_x + 1.2, 0.0, button_y - 0.6),
+            pos=(button_x + 0.4, 0.0, button_y - 0.6),
             command=self.enterWaitForKey,
             extraArgs=[self.CRANE_GRAB_KEY],
             wantLabel=True,
             labelOrientation="top",
             labelPos=labelPos,
             labelText=TTLocalizer.Controls[9],
+        )
+
+        self.sprintKey = OptionButton(
+            parent=self.dialog,
+            text=base.SPRINT,
+            pos=(button_x + 0.8, 0.0, button_y - 0.6),
+            command=self.enterWaitForKey,
+            extraArgs=[self.SPRINT_KEY],
+            wantLabel=True,
+            labelOrientation="top",
+            labelPos=labelPos,
+            labelText=TTLocalizer.Controls[10],
         )
 
         self.controlsToBeSaved = {
@@ -165,7 +178,8 @@ class KeybindRemap:
             self.OPTIONS_PAGE_HOTKEY: OptionsPageHotkey,
             self.CHAT_HOTKEY: base.CHAT_HOTKEY,
             self.SCREENSHOT_KEY: base.SCREENSHOT_KEY,
-            self.CRANE_GRAB_KEY: base.CRANE_GRAB_KEY
+            self.CRANE_GRAB_KEY: base.CRANE_GRAB_KEY,
+            self.SPRINT_KEY: base.SPRINT
         }
 
         self.popupDialog = None
@@ -190,6 +204,9 @@ class KeybindRemap:
             base.localAvatar.chatMgr.disableBackgroundFocus()
         except:
             pass
+
+        for button in self.dialog.buttonList:
+            button.setZ(-0.5)
 
     def enterShow(self):
         pass
@@ -243,6 +260,8 @@ class KeybindRemap:
             self.screenshotKey["text"] = keyName
         elif controlNum == self.CRANE_GRAB_KEY:
             self.craneGrabKey['text'] = keyName
+        elif controlNum == self.SPRINT_KEY:
+            self.sprintKey['text'] = keyName
         self.dialog.show()
         self.exitWaitForKey(controlNum, keyName)
 
@@ -266,6 +285,7 @@ class KeybindRemap:
         keymap["OPTIONS_PAGE_HOTKEY"] = self.controlsToBeSaved[self.OPTIONS_PAGE_HOTKEY]
         keymap["CHAT_HOTKEY"] = self.controlsToBeSaved[self.CHAT_HOTKEY]
         keymap["CRANE_GRAB_KEY"] = self.controlsToBeSaved[self.CRANE_GRAB_KEY]
+        keymap["SPRINT_KEY"] = self.controlsToBeSaved[self.SPRINT_KEY]
         base.settings.updateSetting('game', 'keymap', keymap)
 
         base.reloadControls()
