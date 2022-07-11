@@ -70,7 +70,12 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.warningSfx = None
 
         self.activityLog = ActivityLog()
+
+        self.toonSpawnpointOrder = [i for i in range(8)]
         return
+
+    def setToonSpawnpoints(self, order):
+        self.toonSpawnpointOrder = order
 
     def addToActivityLog(self, doId, content):
         doObj = base.cr.doId2do.get(doId)
@@ -816,8 +821,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         else:
             for i in xrange(len(toons)):
                 toon = base.cr.doId2do.get(toons[i])
+                spawn_index = self.toonSpawnpointOrder[i]
                 if toon:
-                    posHpr = ToontownGlobals.CashbotToonsBattleThreeStartPosHpr[i]
+                    posHpr = CraneLeagueGlobals.TOON_SPAWN_POSITIONS[spawn_index]
                     pos = Point3(*posHpr[0:3])
                     hpr = VBase3(*posHpr[3:6])
                     track.append(toon.posHprInterval(0.2, pos, hpr))
