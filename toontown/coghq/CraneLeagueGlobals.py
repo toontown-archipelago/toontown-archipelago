@@ -126,6 +126,8 @@ class CFORuleset:
 
         # Should goons get stunned instead of die on hit?
         self.SAFES_STUN_GOONS = False
+        # Should stomps kill goons instead of stun?
+        self.GOONS_DIE_ON_STOMP = False
         # Should ALL cranes wakeup goons when grabbed
         self.GOONS_ALWAYS_WAKE_WHEN_GRABBED = False
 
@@ -1235,6 +1237,30 @@ class ModifierRandomSpawns(CFORulesetModifierBase):
 
     def apply(self, cfoRuleset):
         cfoRuleset.RANDOM_SPAWN_POSITIONS = True
+
+
+# (-) Goodbye Goons!
+# --------------------------------
+# - goons explode when stomped
+class ModifierInstakillGoons(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 25
+    MODIFIER_TYPE = CFORulesetModifierBase.HURTFUL
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_RED
+    DESCRIPTION_COLOR = CFORulesetModifierBase.RED
+
+    def getName(self):
+        return 'Goodbye Goons!'
+
+    def getDescription(self):
+        return 'Goons are %(color_start)sdestroyed%(color_end)s when stomped!'
+
+    def getHeat(self):
+        return 50
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.GOONS_DIE_ON_STOMP = True
 
 
 # Any implemented subclasses of CFORulesetModifierBase cannot go past this point

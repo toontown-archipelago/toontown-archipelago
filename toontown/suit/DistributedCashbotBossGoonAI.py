@@ -278,6 +278,11 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
             # Already stunned, or just picked up by a magnet; don't
             # stun again.
             return
+
+        if self.boss.ruleset.GOONS_DIE_ON_STOMP:
+            self.b_destroyGoon()
+            self.boss.d_updateGoonKilledBySafe(avId)
+            return
             
         # Stop the goon right where he is.
         self.__stopWalk(pauseTime)
