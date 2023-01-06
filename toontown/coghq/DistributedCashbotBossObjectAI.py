@@ -80,6 +80,9 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
 
     def d_setObjectState(self, state, avId, craneId):
         self.sendUpdate('setObjectState', [state, avId, craneId])
+        
+    def d_resetSpeedCaching(self):
+        self.sendUpdate('resetSpeedCaching')
 
     def requestGrab(self):
         # A client wants to pick up the object with his magnet.

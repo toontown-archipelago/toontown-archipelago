@@ -181,6 +181,7 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
     ### FSM States ###
     
     def enterInitial(self):
+        self.resetSpeedCaching()
         self.resetToInitialPosition()
         self.showShadows()
         

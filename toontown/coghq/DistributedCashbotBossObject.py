@@ -125,6 +125,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         
         self.watchDriftName = self.uniqueName('watchDrift')
         self.startCacheName = self.uniqueName('startSpeedCaching')
+        self.resetSpeedCaching()
         
     def startSpeedCaching(self, task):
 
@@ -136,11 +137,11 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         #lcs = self.physicsObject.getLcs()
         #print(lcs)
         
-        if len(self.speeds) > 5:
+        if len(self.speeds) > 6:
             self.speeds.pop(0)
         
         self.speeds.append(speed)
-        #print(self.speeds)
+        print(self.speeds)
         
         return Task.again
         
@@ -151,7 +152,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
     def activatePhysics(self):
         if not self.physicsActivated:
-            self.speeds = []
+            #self.speeds = []
             self.speeds.append(self.physicsObject.getVelocity().length())
             taskMgr.doMethodLater(0.1, self.startSpeedCaching, self.startCacheName)
             self.boss.physicsMgr.attachPhysicalNode(self.node())
@@ -232,7 +233,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
                 self.touchedBossSoundInterval.start()
 
             self.doHitBoss(impact, self.craneId)
-            #self.resetSpeedCaching()
+            self.resetSpeedCaching()
 
     def doHitBoss(self, impact, craneId):
         # Derived classes can override this to do something specific
@@ -506,7 +507,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.startSmooth()
             
         self.hitFloorSoundInterval.start()
-        self.resetSpeedCaching()
+        #self.resetSpeedCaching()
         #print("Enter sliding:")
         #print(self.getH())
         #print(self.physicsObject.getOrientation())
@@ -522,6 +523,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.stopSmooth()
 
     def enterFree(self):
+        self.resetSpeedCaching()
         self.avId = 0
         self.craneId = 0
 

@@ -259,6 +259,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         DistributedGoon.DistributedGoon.exitOff(self)
 
     def enterWalk(self, avId = None, ts = 0):
+        self.resetSpeedCaching()
         self.startToonDetect()
         self.isStunned = 0
         self.__startWalk()

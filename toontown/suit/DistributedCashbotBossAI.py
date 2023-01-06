@@ -120,6 +120,15 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def craneStatesDebug(self, doId='system', content='null'):
         if self.ruleset.CRANE_STATES_DEBUG:
             self.updateActivityLog(doId, content)
+            
+    def clearObjectSpeedCaching(self):
+        if self.safes:
+            for safe in self.safes:
+                safe.d_resetSpeedCaching()
+        
+        if self.goons:
+            for goon in self.goons:
+                goon.d_resetSpeedCaching()
 
     def getInvolvedToonsNotSpectating(self):
         toons = list(self.involvedToons)
