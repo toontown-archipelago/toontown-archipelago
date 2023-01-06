@@ -25,12 +25,48 @@ SAFE_POSHPR = [
     (120, -315, 30, 0, 0, 0),
     (77.1, -302.7, 0, -90, 0, 0),  # 1R
     (165.7, -326.4, 0, 90, 0, 0),  # 2R
-    (134.2, -274.7, 0, 180, 0, 0),  # 3R
-    (107.8, -359.1, 0, 0, 0, 0),  # 4R
+    (134.2, -274.7, 0, 180, 0, 0),  # 4R
+    (107.8, -359.1, 0, 0, 0, 0),  # 3R
     (107.0, -274.7, 0, 180, 0, 0),  # 1L
     (133.9, -359.1, 0, 0, 0, 0),  # 2L
-    (165.5, -302.4, 0, 90, 0, 0),  # 3L
-    (77.2, -329.3, 0, -90, 0, 0),  # 4L
+    (165.5, -302.4, 0, 90, 0, 0),  # 4L
+    (77.2, -329.3, 0, -90, 0, 0),  # 3L
+]
+
+SAFE_POSHPR_NEW = [
+    (120, -315, 30, 0, 0, 0),
+    (77.1, -302.7, 0, 180, 0, 0),  # 1R
+    (165.7, -326.4, 0, 180, 0, 0),  # 2R
+    (134.2, -274.7, 0, 180, 0, 0),  # 4R
+    (107.8, -359.1, 0, 180, 0, 0),  # 3R
+    (107.0, -274.7, 0, 180, 0, 0),  # 1L
+    (133.9, -359.1, 0, 180, 0, 0),  # 2L
+    (165.5, -302.4, 0, 180, 0, 0),  # 4L
+    (77.2, -329.3, 0, 180, 0, 0),  # 3L
+]
+
+SAFE_H = [
+    0,
+    -270,  # 1R
+    270,  # 2R
+    0,  # 4R
+    -180,  # 3R
+    0,  # 1L
+    -180,  # 2L
+    270,  # 4L
+    -270,  # 3L
+]
+
+SAFE_R = [
+    90,
+    180,  # 1R
+    0,  # 2R
+    -90,  # 4R
+    90,  # 3R
+    -90,  # 1L
+    90,  # 2L
+    0,  # 4L
+    180,  # 3L
 ]
 
 ALL_CRANE_POSHPR = NORMAL_CRANE_POSHPR + SIDE_CRANE_POSHPR + HEAVY_CRANE_POSHPR
@@ -69,7 +105,7 @@ class CFORuleset:
         self.TIMER_MODE_TIME_LIMIT = 15*60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
 
         self.CFO_MAX_HP = 1500  # How much HP should the CFO have?
-        self.CFO_STUN_THRESHOLD = 30  # How much damage should a goon do to stun?
+        self.CFO_STUN_THRESHOLD = 24  # How much damage should a goon do to stun?
         self.SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 
         self.WANT_BACKWALL = False

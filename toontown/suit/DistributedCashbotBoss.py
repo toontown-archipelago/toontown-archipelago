@@ -68,6 +68,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.localToonSpectating = False
         self.endVault = None
         self.warningSfx = None
+        
+        self.latency = 0.5 #default latency for updating object posHpr
 
         self.activityLog = ActivityLog()
         return
@@ -151,6 +153,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         targetNode.addSolid(target)
         targetNode.setCollideMask(ToontownGlobals.PieBitmask)
         self.headTarget = self.neck.attachNewNode(targetNode)
+        #self.headTarget.show()
 
         # And he gets a big bubble around his torso, just to keep
         # things from falling through him.  It's a big sphere so
@@ -201,6 +204,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         if OneBossCog != None:
             self.notify.warning('Multiple BossCogs visible.')
         OneBossCog = self
+        
         return
 
     def getBossMaxDamage(self):
@@ -1189,6 +1193,12 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         taskMgr.remove(self.uniqueName('physics'))
 
     def enterBattleThree(self):
+        # synchronize latency
+        # base.cr.timeManager.synchronize('cfo')
+        # print( "Latency = %0.3f " % base.cr.timeManager.getLatency())
+        # self.latency = min(base.cr.timeManager.getLatency() + 0.1, 0.5)
+        # self.latency = 0.2
+
         if self.bossHealthBar:
             self.bossHealthBar.cleanup()
             self.bossHealthBar = BossHealthBar.BossHealthBar(self.style.dept)

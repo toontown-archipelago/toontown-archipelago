@@ -43,6 +43,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.hitFloorSfx = loader.loadSfx('phase_5/audio/sfx/AA_drop_flowerpot.ogg')
         self.hitFloorSoundInterval = SoundInterval(self.hitFloorSfx, duration=1.0, node=self)
         self.wiggleSfx = loader.loadSfx('phase_5/audio/sfx/SA_finger_wag.ogg')
+        self.name = 'goon'
         return
 
     def _doDebug(self, _=None):
@@ -235,6 +236,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
 
     def b_destroyGoon(self):
         if not self.isDead:
+            self.resetSpeedCaching()
             self.d_destroyGoon()
             self.destroyGoon()
 
