@@ -77,7 +77,7 @@ LOW_LAFF_BONUS_TEXT = "UBER BONUS"  # Text to display alongside a low laff bonus
 # Text to display in popup text for misc point gains
 GOON_STOMP_TEXT = 'GOON!'
 STUN_TEXT = "STUN!"
-IMPACT_TEXT = "IMPACT!"
+IMPACT_TEXT = "PERFECT!"
 DESAFE_TEXT = "DESAFE!"
 GOON_KILLED_BY_SAFE_TEXT = "DESTRUCTION!"
 KILLING_BLOW_TEXT = 'KILLING BLOW!'
@@ -193,9 +193,9 @@ class CFORuleset:
         self.POINTS_GOON_STOMP = 1  # Points per goon stomp
         self.POINTS_STUN = 10  # Points per stun
         self.POINTS_SIDESTUN = 25  # Points per stun on sidecrane
-        self.POINTS_IMPACT = 15  # Points given when a max impact hit is achieved
+        self.POINTS_IMPACT = 3  # Points given when a max impact hit is achieved
         self.POINTS_DESAFE = 10  # Points for taking a safe helmet off
-        self.POINTS_GOON_KILLED_BY_SAFE = 3  # Points for killing a goon with a safe
+        self.POINTS_GOON_KILLED_BY_SAFE = 2  # Points for killing a goon with a safe
         self.POINTS_KILLING_BLOW = 0  # Points for dealing the killing blow to the CFO
 
         self.POINTS_PENALTY_SAFEHEAD = -25  # Deduction for putting a safe on the CFOs head
