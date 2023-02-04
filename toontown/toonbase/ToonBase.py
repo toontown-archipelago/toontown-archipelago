@@ -154,6 +154,7 @@ class ToonBase(OTPBase.OTPBase):
         self.reloadControls()
 
         self.WANT_FOV_EFFECTS = self.settings.getBool('game', 'fovEffects', True)
+        self.CAM_TOGGLE_LOCK = self.settings.getBool('game', 'cam-toggle-lock', False)
         return
 
     def openMainWindow(self, *args, **kw):
