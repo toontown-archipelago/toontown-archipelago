@@ -57,7 +57,7 @@ class TTOffMagicWordManager(DistributedObject.DistributedObject):
                          affectType=None, affectExtra=None, lastClickedAvId=None, extraMessageData = None):
         response = self.generateMagicWordResponse(responseType, magicWord, args, returnValue, affectRange, affectType,
                                                   affectExtra, lastClickedAvId, extraMessageData)
-        base.localAvatar.setSystemMessage(0, response, WhisperPopup.WTSystem)
+        base.localAvatar.setSystemMessage(0, response, WhisperPopup.WTMagicWord)
         self.notify.info(response)
 
     def generateMagicWordResponse(self, responseType, magicWord, args, returnValue, affectRange, affectType,
