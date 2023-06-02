@@ -958,9 +958,9 @@ class Toon(Avatar.Avatar, ToonHead):
             shirtTex.setMinfilter(Texture.FTLinearMipmapLinear)
             shirtTex.setMagfilter(Texture.FTLinear)
             try:
-                shirtColor = ToonDNA.ClothesColors[self.style.topTexColor]
+                shirtColor = ToonDNA.allColorsList[self.style.topTexColor]
             except:
-                shirtColor = ToonDNA.ClothesColors[0]
+                shirtColor = ToonDNA.allColorsList[0]
 
             try:
                 texName = ToonDNA.Sleeves[self.style.sleeveTex]
@@ -974,9 +974,9 @@ class Toon(Avatar.Avatar, ToonHead):
             sleeveTex.setMinfilter(Texture.FTLinearMipmapLinear)
             sleeveTex.setMagfilter(Texture.FTLinear)
             try:
-                sleeveColor = ToonDNA.ClothesColors[self.style.sleeveTexColor]
+                sleeveColor = ToonDNA.allColorsList[self.style.sleeveTexColor]
             except:
-                sleeveColor = ToonDNA.ClothesColors[0]
+                sleeveColor = ToonDNA.allColorsList[0]
 
             if self.style.getGender() == 'm':
                 try:
@@ -1000,9 +1000,9 @@ class Toon(Avatar.Avatar, ToonHead):
             bottomTex.setMinfilter(Texture.FTLinearMipmapLinear)
             bottomTex.setMagfilter(Texture.FTLinear)
             try:
-                bottomColor = ToonDNA.ClothesColors[self.style.botTexColor]
+                bottomColor = ToonDNA.allColorsList[self.style.botTexColor]
             except:
-                bottomColor = ToonDNA.ClothesColors[0]
+                bottomColor = ToonDNA.allColorsList[0]
 
             darkBottomColor = bottomColor * 0.5
             darkBottomColor.setW(1.0)

@@ -21,7 +21,14 @@ if not base.config.GetBool('want-new-anims', 1):
      'f': '/models/char/duck-heads-',
      'p': '/models/char/monkey-heads-',
      'b': '/models/char/bear-heads-',
-     's': '/models/char/pig-heads-'}
+     's': '/models/char/pig-heads-',
+     'x': '/models/char/deer-heads-',
+     'z': '/models/char/beaver-heads-',
+     'a': '/models/char/alligator-heads-',
+     'v': '/models/char/fox-heads-',
+     'n': '/models/char/bat-heads-',
+     't': '/models/char/raccoon-heads-',}
+
 else:
     HeadDict = {'dls': '/models/char/tt_a_chr_dgm_shorts_head_',
      'dss': '/models/char/tt_a_chr_dgm_skirt_head_',
@@ -34,7 +41,14 @@ else:
      'f': '/models/char/duck-heads-',
      'p': '/models/char/monkey-heads-',
      'b': '/models/char/bear-heads-',
-     's': '/models/char/pig-heads-'}
+     's': '/models/char/pig-heads-',
+     'x': '/models/char/deer-heads-',
+     'z': '/models/char/beaver-heads-',
+     'a': '/models/char/alligator-heads-',
+     'v': '/models/char/fox-heads-',
+     'n': '/models/char/bat-heads-',
+     't': '/models/char/raccoon-heads-',
+    }
 EyelashDict = {'d': '/models/char/dog-lashes',
  'c': '/models/char/cat-lashes',
  'h': '/models/char/horse-lashes',
@@ -43,33 +57,68 @@ EyelashDict = {'d': '/models/char/dog-lashes',
  'f': '/models/char/duck-lashes',
  'p': '/models/char/monkey-lashes',
  'b': '/models/char/bear-lashes',
- 's': '/models/char/pig-lashes'}
+ 's': '/models/char/pig-lashes',
+ 'x': '/models/char/deer-lashes',
+ 'z': '/models/char/beaver-lashes',
+ 'a': '/models/char/alligator-lashes',
+ 'v': '/models/char/fox-lashes',
+ 'n': '/models/char/bat-lashes',
+ 't': '/models/char/raccoon-lashes',
+               }
+
 DogMuzzleDict = {'dls': '/models/char/dogMM_Shorts-headMuzzles-',
  'dss': '/models/char/dogMM_Skirt-headMuzzles-',
  'dsl': '/models/char/dogSS_Shorts-headMuzzles-',
  'dll': '/models/char/dogLL_Shorts-headMuzzles-'}
 
+#tti preloader
+PreloadHeads = {}
+
+def preloadToonHeads():
+    global PreloadHeads
+    if not PreloadHeads:
+        print ('Preloading Toon heads...')
+
+        def preload(task):
+            for key in HeadDict.keys():
+                fileRoot = HeadDict[key]
+
+                PreloadHeads['phase_3' + fileRoot + '1000'] = loader.loadModel('phase_3' + fileRoot + '1000')
+                PreloadHeads['phase_3' + fileRoot + '1000'].flattenMedium()
+
+                PreloadHeads['phase_3' + fileRoot + '500'] = loader.loadModel('phase_3' + fileRoot + '500')
+                PreloadHeads['phase_3' + fileRoot + '500'].flattenMedium()
+
+                PreloadHeads['phase_3' + fileRoot + '250'] = loader.loadModel('phase_3' + fileRoot + '250')
+                PreloadHeads['phase_3' + fileRoot + '250'].flattenMedium()
+
+            return task.done
+
+        taskMgr.add(preload, 'reload-toon')
+
+preloadToonHeads()
+
 class ToonHead(Actor.Actor):
     notify = DirectNotifyGlobal.directNotify.newCategory('ToonHead')
-    EyesOpen = loader.loadTexture('phase_3/maps/eyes.jpg', 'phase_3/maps/eyes_a.rgb')
+    EyesOpen = loader.loadTexture('phase_3/maps/eyes.png')
     EyesOpen.setMinfilter(Texture.FTLinear)
     EyesOpen.setMagfilter(Texture.FTLinear)
-    EyesClosed = loader.loadTexture('phase_3/maps/eyesClosed.jpg', 'phase_3/maps/eyesClosed_a.rgb')
+    EyesClosed = loader.loadTexture('phase_3/maps/eyesClosed.png')
     EyesClosed.setMinfilter(Texture.FTLinear)
     EyesClosed.setMagfilter(Texture.FTLinear)
-    EyesSadOpen = loader.loadTexture('phase_3/maps/eyesSad.jpg', 'phase_3/maps/eyesSad_a.rgb')
+    EyesSadOpen = loader.loadTexture('phase_3/maps/eyesSad.png')
     EyesSadOpen.setMinfilter(Texture.FTLinear)
     EyesSadOpen.setMagfilter(Texture.FTLinear)
-    EyesSadClosed = loader.loadTexture('phase_3/maps/eyesSadClosed.jpg', 'phase_3/maps/eyesSadClosed_a.rgb')
+    EyesSadClosed = loader.loadTexture('phase_3/maps/eyesSadClosed.png')
     EyesSadClosed.setMinfilter(Texture.FTLinear)
     EyesSadClosed.setMagfilter(Texture.FTLinear)
-    EyesAngryOpen = loader.loadTexture('phase_3/maps/eyesAngry.jpg', 'phase_3/maps/eyesAngry_a.rgb')
+    EyesAngryOpen = loader.loadTexture('phase_3/maps/eyesAngry.png')
     EyesAngryOpen.setMinfilter(Texture.FTLinear)
     EyesAngryOpen.setMagfilter(Texture.FTLinear)
-    EyesAngryClosed = loader.loadTexture('phase_3/maps/eyesAngryClosed.jpg', 'phase_3/maps/eyesAngryClosed_a.rgb')
+    EyesAngryClosed = loader.loadTexture('phase_3/maps/eyesAngryClosed.png')
     EyesAngryClosed.setMinfilter(Texture.FTLinear)
     EyesAngryClosed.setMagfilter(Texture.FTLinear)
-    EyesSurprised = loader.loadTexture('phase_3/maps/eyesSurprised.jpg', 'phase_3/maps/eyesSurprised_a.rgb')
+    EyesSurprised = loader.loadTexture('phase_3/maps/eyesSurprised.png')
     EyesSurprised.setMinfilter(Texture.FTLinear)
     EyesSurprised.setMagfilter(Texture.FTLinear)
     Muzzle = loader.loadTexture('phase_3/maps/muzzleShrtGeneric.jpg')
@@ -224,6 +273,7 @@ class ToonHead(Actor.Actor):
         return
 
     def generateToonHead(self, copy, style, lods, forGui = 0):
+        global PreloadHeads
         headStyle = style.head
         fix = None
         if headStyle == 'dls':
@@ -277,6 +327,16 @@ class ToonHead(Actor.Actor):
         elif headStyle == 'mss':
             filePrefix = HeadDict['m']
             fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif (headStyle == 'msl'):
+            # mouse, short head, long muzzle
+            filePrefix = HeadDict['m']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.75
+        elif (headStyle == 'mll'):
+            # mouse, long head, long muzzle
+            filePrefix = HeadDict['m']
+            fix = self.__fixHeadLongLong
             headHeight = 0.5
         elif headStyle == 'rls':
             filePrefix = HeadDict['r']
@@ -358,10 +418,142 @@ class ToonHead(Actor.Actor):
             filePrefix = HeadDict['s']
             fix = self.__fixHeadLongLong
             headHeight = 0.75
+        # DEER
+        elif (headStyle == 'xls'):
+            # deer, long head, short muzzle
+            filePrefix = HeadDict['x']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif (headStyle == 'xss'):
+            # deer, short head, short muzzle
+            filePrefix = HeadDict['x']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif (headStyle == 'xsl'):
+            # deer, short head, long muzzle
+            filePrefix = HeadDict['x']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif (headStyle == 'xll'):
+            # deer. long head, long muzzle
+            filePrefix = HeadDict['x']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.75
+
+        # BEAVER
+        elif (headStyle == 'zls'):
+            # beaver, long head, short muzzle
+            filePrefix = HeadDict['z']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif (headStyle == 'zss'):
+            # beaver, short head, short muzzle
+            filePrefix = HeadDict['z']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif (headStyle == 'zsl'):
+            # beaver, short head, long muzzle
+            filePrefix = HeadDict['z']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif headStyle == 'zll':
+            # beaver, long head, long muzzle
+            filePrefix = HeadDict['z']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.75
+
+        # ALLIGATOR
+        elif headStyle == 'als':
+            # alligator, long head, short muzzle
+            filePrefix = HeadDict['a']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif headStyle == 'ass':
+            # alligator, short head, short muzzle
+            filePrefix = HeadDict['a']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif headStyle == 'asl':
+            # alligator, short head, long muzzle
+            filePrefix = HeadDict['a']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif headStyle == 'all':
+            # alligator, long head, long muzzle
+            filePrefix = HeadDict['a']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.75
+
+        # FOX
+        elif headStyle == 'vls':
+            # fox, long head, short muzzle
+            filePrefix = HeadDict['v']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif headStyle == 'vss':
+            # fox, short head, short muzzle
+            filePrefix = HeadDict['v']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif headStyle == 'vsl':
+            # fox, short head, long muzzle
+            filePrefix = HeadDict['v']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif headStyle == 'vll':
+            # fox, long head, long muzzle
+            filePrefix = HeadDict['v']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.75
+
+        # BAT
+        elif headStyle == 'nls':
+            # bat, long head, short muzzle
+            filePrefix = HeadDict['n']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif headStyle == 'nss':
+            # bat, short head, short muzzle
+            filePrefix = HeadDict['n']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif headStyle == 'nsl':
+            # bat, short head, long muzzle
+            filePrefix = HeadDict['n']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif headStyle == 'nll':
+            # bat, long head, long muzzle
+            filePrefix = HeadDict['n']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.75
+
+        # RACCOON
+        elif headStyle == 'tls':
+            # raccoon, long head, short muzzle
+            filePrefix = HeadDict['t']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif headStyle == 'tss':
+            # raccoon, short head, short muzzle
+            filePrefix = HeadDict['t']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif headStyle == 'tsl':
+            # raccoon, short head, long muzzle
+            filePrefix = HeadDict['t']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif headStyle == 'tll':
+            # raccoon, long head, long muzzle
+            filePrefix = HeadDict['t']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.5
         else:
             ToonHead.notify.error('unknown head style: %s' % headStyle)
         if len(lods) == 1:
-            self.loadModel('phase_3' + filePrefix + lods[0], 'head', 'lodRoot', copy)
+            filepath = 'phase_3' + filePrefix + lods[0]
+            self.loadModel(PreloadHeads[filepath], 'head', 'lodRoot', copy = True)
             if not forGui:
                 pLoaded = self.loadPumpkin(headStyle[1], None, copy)
                 self.loadSnowMan(headStyle[1], None, copy)
@@ -379,7 +571,8 @@ class ToonHead(Actor.Actor):
                     self.__copy = copy
         else:
             for lod in lods:
-                self.loadModel('phase_3' + filePrefix + lod, 'head', lod, copy)
+                filepath = 'phase_3' + filePrefix + lod
+                self.loadModel(PreloadHeads[filepath], 'head', lod, True)
                 if not forGui:
                     pLoaded = self.loadPumpkin(headStyle[1], lod, copy)
                     self.loadSnowMan(headStyle[1], lod, copy)
@@ -557,9 +750,21 @@ class ToonHead(Actor.Actor):
         parts = self.findAllMatches('**/head*')
         parts.setColor(style.getHeadColor())
         animalType = style.getAnimal()
-        if animalType == 'cat' or animalType == 'rabbit' or animalType == 'bear' or animalType == 'mouse' or animalType == 'pig':
+        if ((animalType == "cat") or
+            (animalType == "rabbit") or
+            (animalType == 'bear') or
+            (animalType == "mouse") or
+            (animalType == "pig") or
+            (animalType == "dog") or
+            (animalType == "horse") or
+            (animalType == "beaver") or
+            (animalType == "fox") or
+            (animalType == "bat") or
+            (animalType == "raccoon")):
             parts = self.findAllMatches('**/ear?-*')
             parts.setColor(style.getHeadColor())
+            dogears = self.findAllMatches('**/ear*')
+            dogears.setColor(style.getHeadColor())
 
     def __fixEyes(self, style, forGui = 0):
         mode = -3
@@ -789,7 +994,7 @@ class ToonHead(Actor.Actor):
             searchRoot = self
         else:
             searchRoot = self.find('**/' + str(lodName))
-        if animalType != 'duck' and animalType != 'horse':
+        if animalType != 'duck' and animalType != 'alligator':
             if animalType == 'rabbit':
                 if copy:
                     searchRoot.find('**/ears-long').removeNode()
@@ -799,11 +1004,11 @@ class ToonHead(Actor.Actor):
                 searchRoot.find('**/ears-short').removeNode()
             else:
                 searchRoot.find('**/ears-short').hide()
-        if animalType != 'rabbit':
-            if copy:
-                searchRoot.find('**/eyes-short').removeNode()
-            else:
-                searchRoot.find('**/eyes-short').hide()
+        # if animalType != 'rabbit':
+        if copy:
+            searchRoot.find('**/eyes-short').removeNode()
+        else:
+            searchRoot.find('**/eyes-short').hide()
         if animalType != 'dog':
             if copy:
                 searchRoot.find('**/joint_pupilL_short').removeNode()
@@ -842,7 +1047,7 @@ class ToonHead(Actor.Actor):
             searchRoot = self
         else:
             searchRoot = self.find('**/' + str(lodName))
-        if animalType != 'duck' and animalType != 'horse':
+        if animalType != 'duck' and animalType != 'alligator':
             if animalType == 'rabbit':
                 if copy:
                     searchRoot.find('**/ears-short').removeNode()
@@ -852,11 +1057,11 @@ class ToonHead(Actor.Actor):
                 searchRoot.find('**/ears-long').removeNode()
             else:
                 searchRoot.find('**/ears-long').hide()
-        if animalType != 'rabbit':
-            if copy:
-                searchRoot.find('**/eyes-long').removeNode()
-            else:
-                searchRoot.find('**/eyes-long').hide()
+        # if animalType != 'rabbit':
+        if copy:
+            searchRoot.find('**/eyes-long').removeNode()
+        else:
+            searchRoot.find('**/eyes-long').hide()
         if animalType != 'dog':
             if copy:
                 searchRoot.find('**/joint_pupilL_long').removeNode()
@@ -1197,6 +1402,7 @@ class ToonHead(Actor.Actor):
             self.__muzzle.setTexture(ToonHead.Muzzle, 1)
 
     def setupMuzzles(self, style):
+        self.__muzzle = self.find("**/1000/**/muzzle*")
         self.__muzzles = []
         self.__surpriseMuzzles = []
         self.__angryMuzzles = []

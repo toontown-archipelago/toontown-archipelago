@@ -6,49 +6,38 @@ from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 from otp.avatar import AvatarDNA
 notify = directNotify.newCategory('ToonDNA')
-toonSpeciesTypes = ['d',
- 'c',
- 'h',
- 'm',
- 'r',
- 'f',
- 'p',
- 'b',
- 's']
-toonHeadTypes = ['dls',
- 'dss',
- 'dsl',
- 'dll',
- 'cls',
- 'css',
- 'csl',
- 'cll',
- 'hls',
- 'hss',
- 'hsl',
- 'hll',
- 'mls',
- 'mss',
- 'rls',
- 'rss',
- 'rsl',
- 'rll',
- 'fls',
- 'fss',
- 'fsl',
- 'fll',
- 'pls',
- 'pss',
- 'psl',
- 'pll',
- 'bls',
- 'bss',
- 'bsl',
- 'bll',
- 'sls',
- 'sss',
- 'ssl',
- 'sll']
+toonSpeciesTypes = ['d',    # Dog
+                    'c',    # Cat
+                    'h',    # Horse
+                    'm',    # Mouse
+                    'r',    # Rabbit
+                    'f',    # Duck
+                    'p',    # Monkey
+                    'b',    # Bear
+                    's',    # Pig (swine)
+                    'x',    # Deer
+                    'z',    # Beaver
+                    'a',    # Alligator
+                    'v',    # Fox
+                    'n',    # Bat
+                    't',    # Raccoon
+                    ]
+toonHeadTypes = [ "dls", "dss", "dsl", "dll",  # Dog
+                  "cls", "css", "csl", "cll",  # Cat
+                  "hls", "hss", "hsl", "hll",  # Horse
+                  "mls", "mss", "msl", "mll",  # Mouse
+                  "rls", "rss", "rsl", "rll",  # Rabbit
+                  "fls", "fss", "fsl", "fll",  # Duck (Fowl)
+                  "pls", "pss", "psl", "pll",  # Monkey (Primate)
+                  "bls", "bss", "bsl", "bll",  # Bear
+                  "sls", "sss", "ssl", "sll",  # Pig (swine)
+                  "xls", "xss", "xsl", "xll",  # Deer
+                  "zls", "zss", "zsl", "zll",  # Beaver
+                  "als", "ass", "asl", "all",  # Alligator
+                  "vls", "vss", "vsl", "vll",  # Fox
+                  "nls", "nss", "nsl", "nll",  # Bat
+                  "tls", "tss", "tsl", "tll",  # Raccoon
+]
 
 def getHeadList(species):
     headList = []
@@ -91,80 +80,59 @@ def getSpeciesName(head):
         speciesName = 'bear'
     elif species == 's':
         speciesName = 'pig'
+    elif (species == 'x'):
+        speciesName = 'deer'
+    elif (species == 'z'):
+        speciesName = 'beaver'
+    elif (species == 'a'):
+        speciesName = 'alligator'
+    elif (species == 'v'):
+        speciesName = 'fox'
+    elif (species == 'n'):
+        speciesName = 'bat'
+    elif (species == 't'):
+        speciesName = 'raccoon'
     return speciesName
 
 
-toonHeadAnimalIndices = [0,
- 4,
- 8,
- 12,
- 14,
- 18,
- 22,
- 26,
- 30]
+toonHeadAnimalIndices = [ 0, # start of dog heads
+                          4, # start of cat heads
+                          8, # start of horse heads
+                          12, # start of mouse heads
+                          16, # start of rabbit heads
+                          20, # start of duck heads
+                          24, # start of monkey heads
+                          28, # start of bear heads
+                          32, # start of pig heads
+                          36, # start of deer heads
+                          40, # start of beaver heads
+                          44, # start of alligator heads
+                          48, # start of fox heads
+                          52, # start of bat heads
+                          56, # start of raccoon heads
+                          ]
 toonHeadAnimalIndicesTrial = [0,
  4,
  12,
  14,
  18,
  30]
-allToonHeadAnimalIndices = [0,
- 1,
- 2,
- 3,
- 4,
- 5,
- 6,
- 7,
- 8,
- 9,
- 10,
- 11,
- 12,
- 13,
- 14,
- 15,
- 16,
- 17,
- 18,
- 19,
- 20,
- 21,
- 22,
- 23,
- 24,
- 25,
- 26,
- 27,
- 28,
- 29,
- 30,
- 31,
- 32,
- 33]
-allToonHeadAnimalIndicesTrial = [0,
- 1,
- 2,
- 3,
- 4,
- 5,
- 6,
- 7,
- 12,
- 13,
- 14,
- 15,
- 16,
- 17,
- 18,
- 19,
- 20,
- 21,
- 30,
- 31,
- 32,
- 33]
+allToonHeadAnimalIndices = [ 0, 1, 2, 3,     # Dog
+                             4, 5, 6, 7,     # Cat
+                             8, 9, 10, 11,   # Horse
+                             12, 13, 14, 15,   # Mouse
+                             16, 17, 18, 19, # Rabbit
+                             20, 21, 22, 23, # Duck
+                             24, 25, 26, 27, # Monkey
+                             28, 29, 30, 31, # Bear
+                             32, 33, 34, 35, # Pig
+                             36, 37, 38, 39, # Deer
+                             40, 41, 42, 43,  # Beaver
+                             44, 45, 46, 47, # Alligator
+                             48, 49, 50, 51, # Fox
+                             52, 53, 54, 55,  # Bat
+                             56, 57, 58, 59,  # Raccoon
+                             ]
 toonTorsoTypes = ['ss',
  'ms',
  'ls',
@@ -1903,33 +1871,82 @@ def getAllBottoms(gender, output = 'both'):
     return bottoms
 
 
-allColorsList = [VBase4(1.0, 1.0, 1.0, 1.0),
- VBase4(0.96875, 0.691406, 0.699219, 1.0),
- VBase4(0.933594, 0.265625, 0.28125, 1.0),
- VBase4(0.863281, 0.40625, 0.417969, 1.0),
- VBase4(0.710938, 0.234375, 0.4375, 1.0),
- VBase4(0.570312, 0.449219, 0.164062, 1.0),
- VBase4(0.640625, 0.355469, 0.269531, 1.0),
- VBase4(0.996094, 0.695312, 0.511719, 1.0),
- VBase4(0.832031, 0.5, 0.296875, 1.0),
- VBase4(0.992188, 0.480469, 0.167969, 1.0),
- VBase4(0.996094, 0.898438, 0.320312, 1.0),
- VBase4(0.996094, 0.957031, 0.597656, 1.0),
- VBase4(0.855469, 0.933594, 0.492188, 1.0),
- VBase4(0.550781, 0.824219, 0.324219, 1.0),
- VBase4(0.242188, 0.742188, 0.515625, 1.0),
- VBase4(0.304688, 0.96875, 0.402344, 1.0),
- VBase4(0.433594, 0.90625, 0.835938, 1.0),
- VBase4(0.347656, 0.820312, 0.953125, 1.0),
- VBase4(0.191406, 0.5625, 0.773438, 1.0),
- VBase4(0.558594, 0.589844, 0.875, 1.0),
- VBase4(0.285156, 0.328125, 0.726562, 1.0),
- VBase4(0.460938, 0.378906, 0.824219, 1.0),
- VBase4(0.546875, 0.28125, 0.75, 1.0),
- VBase4(0.726562, 0.472656, 0.859375, 1.0),
- VBase4(0.898438, 0.617188, 0.90625, 1.0),
- VBase4(0.7, 0.7, 0.8, 1.0),
- VBase4(0.3, 0.3, 0.35, 1.0),
+allColorsList = [VBase4(1.0, 1.0, 1.0, 1.0), # 0, White
+ VBase4(0.96875, 0.691406, 0.699219, 1.0),   # 1, Peach 
+ VBase4(0.933594, 0.265625, 0.28125, 1.0),   # 2, Bright Red 
+ VBase4(0.863281, 0.40625, 0.417969, 1.0),   # 3, Red
+ VBase4(0.710938, 0.234375, 0.4375, 1.0),    # 4, Maroon
+ VBase4(0.570312, 0.449219, 0.164062, 1.0),  # 5, Sienna
+ VBase4(0.640625, 0.355469, 0.269531, 1.0),  # 6, Brown
+ VBase4(0.996094, 0.695312, 0.511719, 1.0),  # 7, Tan  
+ VBase4(0.832031, 0.5, 0.296875, 1.0),       # 8, Coral
+ VBase4(0.992188, 0.480469, 0.167969, 1.0),  # 9, Orange
+ VBase4(0.996094, 0.898438, 0.320312, 1.0),  # 10, Yellow
+ VBase4(0.996094, 0.957031, 0.597656, 1.0),  # 11, Cream
+ VBase4(0.855469, 0.933594, 0.492188, 1.0),  # 12, Citrine
+ VBase4(0.550781, 0.824219, 0.324219, 1.0),  # 13, Lime
+ VBase4(0.242188, 0.742188, 0.515625, 1.0),  # 14, Sea Green
+ VBase4(0.304688, 0.96875, 0.402344, 1.0),   # 15, Green
+ VBase4(0.433594, 0.90625, 0.835938, 1.0),   # 16, Light Blue
+ VBase4(0.347656, 0.820312, 0.953125, 1.0),  # 17, Aqua
+ VBase4(0.191406, 0.5625, 0.773438, 1.0),    # 18, Blue
+ VBase4(0.558594, 0.589844, 0.875, 1.0),     # 19, Periwinkle
+ VBase4(0.285156, 0.328125, 0.726562, 1.0),  # 20, Royal Blue
+ VBase4(0.460938, 0.378906, 0.824219, 1.0),  # 21, Slate Blue
+ VBase4(0.546875, 0.28125, 0.75, 1.0),       # 22, Purple
+ VBase4(0.726562, 0.472656, 0.859375, 1.0),  # 23, Lavender
+ VBase4(0.898438, 0.617188, 0.90625, 1.0),   # 24, Pink
+ VBase4(0.7, 0.7, 0.8, 1.0),                 # 25, Plum
+ VBase4(0.3, 0.3, 0.35, 1.0),                # 26, Black
+ ########################### NON TTO COLORS ##########################
+ VBase4(0.891, 0.439, 0.698, 1.0),           # 27
+ VBase4(0.741, 0.873, 0.957, 1.0),           # 28
+ VBase4(0.641, 0.857, 0.673, 1.0),           # 29
+ VBase4(0.039, 0.862, 0.654, 1.0),           # 30
+ VBase4(0.196, 0.725, 0.714, 1.0),           # 31
+ VBase4(0.984, 0.537, 0.396, 1.0),           # 32
+ VBase4(0.968, 0.749, 0.349, 1.0),           # 33
+ VBase4(0.658, 0.175, 0.258, 1.0),           # 34
+ VBase4(0.411, 0.644, 0.282, 1.0),           # 35
+ VBase4(0.325, 0.407, 0.601, 1.0),           # 36
+ VBase4(0.235, 0.573, 0.984, 1.0),           # 37
+ VBase4(0.0, 0.635294, 0.258823, 1.0),       # 38
+ VBase4(0.674509, 0.925490, 1.0, 1.0),       # 39
+ VBase4(0.988235, 0.894117, 0.745098, 1.0),  # 40
+ VBase4(0.749019, 1.0, 0.847058, 1.0),       # 41
+ VBase4(0.470588, 0.443137, 0.447058, 1.0),  # 42
+ VBase4(0.996078, 0.254901, 0.392156, 1.0),  # 43
+ VBase4(0.811764, 0.709803, 0.231372, 1.0),  # 44
+ VBase4(0.749019, 0.756862, 0.760784, 1.0),  # 45
+ VBase4(1.0, 0.639215, 0.262745, 1.0),       # 46
+ VBase4(0.0, 0.403921, 0.647058, 1.0),       # 47
+ VBase4(0.862745, 0.078431, 0.235294, 1.0),  # 48
+ VBase4(0.0, 0.635294, 0.513725, 1.0),       # 49
+ VBase4(0.803921, 0.498039, 0.196078, 1.0),  # 50
+ VBase4(0.70, 0.52, 0.75, 1.0),              # 51
+ VBase4(1.0, 0, 1.0, 1.0),                   # 52
+ VBase4(0.5764, 0.4392, 0.8588, 1.0),        # 53
+ VBase4(1.0, 1.0, 0.94117, 1.0),             # 54
+ VBase4(0.9333, 0.8235, 0.9333, 1.0),        # 55
+ VBase4(0.0, 1.0, 0.4980, 1.0),              # 56
+ VBase4(0.8549, 0.6470, 0.1254, 1.0),        # 57
+ VBase4(1.0, 0.59607, 0.0705, 1.0),          # 58
+ VBase4(0.8039, 0.6862, 0.5843, 1.0),        # 59
+ VBase4(0.2196, 0.5568, 0.5568, 1.0),        # 60
+ VBase4(0.7764, 0.4431, 0.4431, 1.0),        # 61
+ VBase4(0.8901, 0.8117, 0.3411, 1.0),        # 62
+ VBase4(0.4117, 0.4117, 0.4117, 1.0),        # 63
+ VBase4(1.0, 0.8431, 0.0, 1.0),              # 64
+ VBase4(0.9333, 0.7882, 0.0, 1.0),           # 65
+ VBase4(0.37, 0.3, 0.65, 1.0),               # 66
+ VBase4(0.62, 0.14, 0.14, 1.0),              # 67
+ VBase4(0.34, 0.51, 0.86, 1.0),              # 68
+ VBase4(0.2627, 0.1686, 0.5, 1.0)            # 69
+ ]
+ 
+ 
+### TT-CL COLORS ###
+"""
  VBase4(0.372549, 0, 0, 1.0),
  VBase4(1.0, 0.760784, 0.454901, 1.0),
  VBase4(0.278431, 0.0, 1.0, 1.0),
@@ -1981,6 +1998,8 @@ allColorsList = [VBase4(1.0, 1.0, 1.0, 1.0),
  VBase4(0.54118, 0.74902, 0.89804, 1.0),
  VBase4(1.0, 0.8431, 0.0, 1.0),
  VBase4(0.37, 0.3, 0.65, 1.0),]
+ """
+ 
 defaultBoyColorList = [0,
  1,
  2,
@@ -2051,14 +2070,7 @@ defaultBoyColorList = [0,
  67,
  68,
  69,
- 70,
- 71,
- 72,
- 73,
- 74,
- 75,
- 76,
- 77]
+]
 defaultGirlColorList = [0,
  1,
  2,
@@ -2129,14 +2141,7 @@ defaultGirlColorList = [0,
  67,
  68,
  69,
- 70,
- 71,
- 72,
- 73,
- 74,
- 75,
- 76,
- 77]
+]
 allColorsListApproximations = map(lambda x: VBase4(round(x[0], 3), round(x[1], 3), round(x[2], 3), round(x[3], 3)), allColorsList)
 allowedColors = set(map(lambda x: allColorsListApproximations[x], set(defaultBoyColorList + defaultGirlColorList + [26])))
 HatModels = [None,
@@ -2898,6 +2903,18 @@ class ToonDNA(AvatarDNA.AvatarDNA):
             return 'bear'
         elif self.head[0] == 's':
             return 'pig'
+        elif self.head[0] == 'x':
+            return 'deer'
+        elif self.head[0] == 'z':
+            return 'beaver'
+        elif self.head[0] == 'a':
+            return 'alligator'
+        elif self.head[0] == 'v':
+            return 'fox'
+        elif self.head[0] == 'n':
+            return 'bat'
+        elif self.head[0] == 't':
+            return 'raccoon'
         else:
             notify.error('unknown headStyle: ', self.head[0])
 

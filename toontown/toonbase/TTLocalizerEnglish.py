@@ -5534,7 +5534,15 @@ AnimalToSpecies = {'dog': 'Dog',
  'duck': 'Duck',
  'monkey': 'Monkey',
  'bear': 'Bear',
- 'pig': 'Pig'}
+ 'pig': 'Pig',
+ 'deer': 'Deer',
+ 'beaver': 'Beaver',
+ 'alligator': 'Alligator',
+ 'fox': 'Fox',
+ 'bat': 'Bat',
+ 'raccoon': 'Raccoon'
+ }
+
 NameTooLong = 'That name is too long. Please try again.'
 ToonAlreadyExists = 'You already have a toon named %s!'
 NameAlreadyInUse = 'That name is already used!'
