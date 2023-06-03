@@ -1402,7 +1402,6 @@ class ToonHead(Actor.Actor):
             self.__muzzle.setTexture(ToonHead.Muzzle, 1)
 
     def setupMuzzles(self, style):
-        self.__muzzle = self.find("**/1000/**/muzzle*")
         self.__muzzles = []
         self.__surpriseMuzzles = []
         self.__angryMuzzles = []
