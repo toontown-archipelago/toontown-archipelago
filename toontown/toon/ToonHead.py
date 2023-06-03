@@ -27,7 +27,8 @@ if not base.config.GetBool('want-new-anims', 1):
      'a': '/models/char/alligator-heads-',
      'v': '/models/char/fox-heads-',
      'n': '/models/char/bat-heads-',
-     't': '/models/char/raccoon-heads-',}
+     't': '/models/char/raccoon-heads-',
+    }
 
 else:
     HeadDict = {'dls': '/models/char/tt_a_chr_dgm_shorts_head_',
@@ -64,7 +65,7 @@ EyelashDict = {'d': '/models/char/dog-lashes',
  'v': '/models/char/fox-lashes',
  'n': '/models/char/bat-lashes',
  't': '/models/char/raccoon-lashes',
-               }
+    }
 
 DogMuzzleDict = {'dls': '/models/char/dogMM_Shorts-headMuzzles-',
  'dss': '/models/char/dogMM_Skirt-headMuzzles-',
