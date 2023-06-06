@@ -9,6 +9,13 @@ from direct.interval.IntervalGlobal import *
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.directnotify import DirectNotifyGlobal
+
+# HACKY FIX SO THAT BOTH TTO AND CC DOG HEADS CAN COEXIST
+DogAnimDict = {'dls': '/models/char/tt_a_chr_dgm_shorts_head_',
+     'dss': '/models/char/tt_a_chr_dgm_skirt_head_',
+     'dsl': '/models/char/tt_a_chr_dgs_shorts_head_',
+     'dll': '/models/char/tt_a_chr_dgl_shorts_head_'}
+
 if not base.config.GetBool('want-new-anims', 1):
     HeadDict = {'dls': '/models/char/dogMM_Shorts-head-',
      'dss': '/models/char/dogMM_Skirt-head-',
@@ -29,6 +36,52 @@ if not base.config.GetBool('want-new-anims', 1):
      'n': '/models/char/bat-heads-',
      't': '/models/char/raccoon-heads-',
     }
+
+elif base.config.GetBool('want-legacy-heads', 1):
+    HeadDict = {'dls': '/models/char/legacy/tt_a_chr_dgm_shorts_head_',
+                'dss': '/models/char/legacy/tt_a_chr_dgm_skirt_head_',
+                'dsl': '/models/char/legacy/tt_a_chr_dgs_shorts_head_',
+                'dll': '/models/char/legacy/tt_a_chr_dgl_shorts_head_',
+                'c': '/models/char/legacy/cat-heads-',
+                'h': '/models/char/legacy/horse-heads-',
+                'm': '/models/char/legacy/mouse-heads-',
+              # TODO: find a fix for legacy rabbit models
+                'r': '/models/char/rabbit-heads-',
+              # 'r': '/models/char/legacy/rabbit-heads-',
+                'f': '/models/char/legacy/duck-heads-',
+                'p': '/models/char/legacy/monkey-heads-',
+                'b': '/models/char/legacy/bear-heads-',
+                's': '/models/char/legacy/pig-heads-',
+                'x': '/models/char/deer-heads-',
+                'z': '/models/char/beaver-heads-',
+                'a': '/models/char/alligator-heads-',
+                'v': '/models/char/fox-heads-',
+                'n': '/models/char/bat-heads-',
+                't': '/models/char/raccoon-heads-',
+                }
+    EyelashDict = {'d': '/models/char/legacy/dog-lashes',
+                   'c': '/models/char/legacy/cat-lashes',
+                   'h': '/models/char/legacy/horse-lashes',
+                   'm': '/models/char/legacy/mouse-lashes',
+                   'r': '/models/char/rabbit-lashes',
+                 # 'r': '/models/char/legacy/rabbit-lashes',
+                   'f': '/models/char/legacy/duck-lashes',
+                   'p': '/models/char/legacy/monkey-lashes',
+                   'b': '/models/char/legacy/bear-lashes',
+                   's': '/models/char/legacy/pig-lashes',
+                   'x': '/models/deer-lashes',
+                   'z': '/models/char/beaver-lashes',
+                   'a': '/models/char/alligator-lashes',
+                   'v': '/models/char/fox-lashes',
+                   'n': '/models/char/bat-lashes',
+                   't': '/models/char/raccoon-lashes',
+                   }
+
+    DogMuzzleDict = {'dls': '/models/char/legacy/dogMM_Shorts-headMuzzles-',
+                     'dss': '/models/char/legacy/dogMM_Skirt-headMuzzles-',
+                     'dsl': '/models/char/legacy/dogSS_Shorts-headMuzzles-',
+                     'dll': '/models/char/legacy/dogLL_Shorts-headMuzzles-'}
+
 
 else:
     HeadDict = {'dls': '/models/char/tt_a_chr_dgm_shorts_head_',
@@ -333,11 +386,17 @@ class ToonHead(Actor.Actor):
             # mouse, short head, long muzzle
             filePrefix = HeadDict['m']
             fix = self.__fixHeadShortLong
+            if base.config.GetBool('want-legacy-heads', 1):
+                # TTO Mouse model fix
+                fix = self.__fixHeadShortShort
             headHeight = 0.75
         elif (headStyle == 'mll'):
             # mouse, long head, long muzzle
             filePrefix = HeadDict['m']
             fix = self.__fixHeadLongLong
+            if base.config.GetBool('want-legacy-heads', 1):
+                # TTO Mouse model fix
+                fix = self.__fixHeadLongShort
             headHeight = 0.5
         elif headStyle == 'rls':
             filePrefix = HeadDict['r']
@@ -765,7 +824,8 @@ class ToonHead(Actor.Actor):
             parts = self.findAllMatches('**/ear?-*')
             parts.setColor(style.getHeadColor())
             dogears = self.findAllMatches('**/ear*')
-            dogears.setColor(style.getHeadColor())
+            if not base.config.GetBool('want-legacy-heads', 1):
+                dogears.setColor(style.getHeadColor())
 
     def __fixEyes(self, style, forGui = 0):
         mode = -3
@@ -1005,6 +1065,7 @@ class ToonHead(Actor.Actor):
                 searchRoot.find('**/ears-short').removeNode()
             else:
                 searchRoot.find('**/ears-short').hide()
+        # Clash's rabbit model has 2 different eye nodes, TTO's has one
         # if animalType != 'rabbit':
         if copy:
             searchRoot.find('**/eyes-short').removeNode()
@@ -1058,6 +1119,7 @@ class ToonHead(Actor.Actor):
                 searchRoot.find('**/ears-long').removeNode()
             else:
                 searchRoot.find('**/ears-long').hide()
+        # Clash's rabbit model has 2 different eye nodes, TTO's has one
         # if animalType != 'rabbit':
         if copy:
             searchRoot.find('**/eyes-long').removeNode()

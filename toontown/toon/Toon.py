@@ -385,7 +385,9 @@ def compileGlobalAnimList():
             if string.find(key, 'd') >= 0:
                 HeadAnimDict.setdefault(key, {})
                 for anim in animList:
-                    file = phaseStr + HeadDict[key] + anim[1]
+                #   busy HACKING rn sorry mom
+                #   file = phaseStr + HeadDict[key] + anim[1]
+                    file = phaseStr + DogAnimDict[key] + anim[1]
                     HeadAnimDict[key][anim[0]] = file
 
 
