@@ -45,9 +45,7 @@ elif base.config.GetBool('want-legacy-heads', 1):
                 'c': '/models/char/legacy/cat-heads-',
                 'h': '/models/char/legacy/horse-heads-',
                 'm': '/models/char/legacy/mouse-heads-',
-              # TODO: find a fix for legacy rabbit models
-                'r': '/models/char/rabbit-heads-',
-              # 'r': '/models/char/legacy/rabbit-heads-',
+                'r': '/models/char/legacy/rabbit-heads-',
                 'f': '/models/char/legacy/duck-heads-',
                 'p': '/models/char/legacy/monkey-heads-',
                 'b': '/models/char/legacy/bear-heads-',
@@ -63,13 +61,12 @@ elif base.config.GetBool('want-legacy-heads', 1):
                    'c': '/models/char/legacy/cat-lashes',
                    'h': '/models/char/legacy/horse-lashes',
                    'm': '/models/char/legacy/mouse-lashes',
-                   'r': '/models/char/rabbit-lashes',
-                 # 'r': '/models/char/legacy/rabbit-lashes',
+                   'r': '/models/char/legacy/rabbit-lashes',
                    'f': '/models/char/legacy/duck-lashes',
                    'p': '/models/char/legacy/monkey-lashes',
                    'b': '/models/char/legacy/bear-lashes',
                    's': '/models/char/legacy/pig-lashes',
-                   'x': '/models/deer-lashes',
+                   'x': '/models/char/deer-lashes',
                    'z': '/models/char/beaver-lashes',
                    'a': '/models/char/alligator-lashes',
                    'v': '/models/char/fox-lashes',
@@ -103,22 +100,22 @@ else:
      'n': '/models/char/bat-heads-',
      't': '/models/char/raccoon-heads-',
     }
-EyelashDict = {'d': '/models/char/dog-lashes',
- 'c': '/models/char/cat-lashes',
- 'h': '/models/char/horse-lashes',
- 'm': '/models/char/mouse-lashes',
- 'r': '/models/char/rabbit-lashes',
- 'f': '/models/char/duck-lashes',
- 'p': '/models/char/monkey-lashes',
- 'b': '/models/char/bear-lashes',
- 's': '/models/char/pig-lashes',
- 'x': '/models/char/deer-lashes',
- 'z': '/models/char/beaver-lashes',
- 'a': '/models/char/alligator-lashes',
- 'v': '/models/char/fox-lashes',
- 'n': '/models/char/bat-lashes',
- 't': '/models/char/raccoon-lashes',
-    }
+    EyelashDict = {'d': '/models/char/dog-lashes',
+     'c': '/models/char/cat-lashes',
+     'h': '/models/char/horse-lashes',
+     'm': '/models/char/mouse-lashes',
+     'r': '/models/char/rabbit-lashes',
+     'f': '/models/char/duck-lashes',
+     'p': '/models/char/monkey-lashes',
+     'b': '/models/char/bear-lashes',
+     's': '/models/char/pig-lashes',
+     'x': '/models/char/deer-lashes',
+     'z': '/models/char/beaver-lashes',
+     'a': '/models/char/alligator-lashes',
+     'v': '/models/char/fox-lashes',
+     'n': '/models/char/bat-lashes',
+     't': '/models/char/raccoon-lashes',
+        }
 
 DogMuzzleDict = {'dls': '/models/char/dogMM_Shorts-headMuzzles-',
  'dss': '/models/char/dogMM_Skirt-headMuzzles-',
@@ -1066,8 +1063,13 @@ class ToonHead(Actor.Actor):
             else:
                 searchRoot.find('**/ears-short').hide()
         # Clash's rabbit model has 2 different eye nodes, TTO's has one
-        # if animalType != 'rabbit':
-        if copy:
+        if base.config.GetBool('want-legacy-heads', 1):
+            if animalType != 'rabbit':
+                if copy:
+                    searchRoot.find('**/eyes-short').removeNode()
+                else:
+                    searchRoot.find('**/eyes-short').hide()
+        elif copy:
             searchRoot.find('**/eyes-short').removeNode()
         else:
             searchRoot.find('**/eyes-short').hide()
@@ -1120,8 +1122,13 @@ class ToonHead(Actor.Actor):
             else:
                 searchRoot.find('**/ears-long').hide()
         # Clash's rabbit model has 2 different eye nodes, TTO's has one
-        # if animalType != 'rabbit':
-        if copy:
+        if base.config.GetBool('want-legacy-heads', 1):
+            if animalType != 'rabbit':
+                if copy:
+                    searchRoot.find('**/eyes-long').removeNode()
+                else:
+                    searchRoot.find('**/eyes-long').hide()
+        elif copy:
             searchRoot.find('**/eyes-long').removeNode()
         else:
             searchRoot.find('**/eyes-long').hide()
