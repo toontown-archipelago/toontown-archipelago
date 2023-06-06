@@ -3207,8 +3207,11 @@ class dna(MagicWord):
         value = args[1]
 
         part = part.lower()
-        if part.endswith('color') or part.endswith('tex') or part.endswith('size'):
-            value = int(value)
+        if part.endswith('color') or part.endswith('tex') or part.endswith('size') or part.endswith('gloves') or part.endswith('torso'):
+            try:
+                value = int(value)
+            except:
+                return 'Invalid value type for: ' + part
 
         if part == 'gender':
             if value not in ('m', 'f', 'male', 'female'):
@@ -3361,18 +3364,19 @@ class dna(MagicWord):
             invoker.b_setDNAString(dna.makeNetString())
             return 'Bottom texture color index set to: ' + str(dna.botTexColor)
 
-        if part == 'save':
-            backup = simbase.backups.load('toon', (invoker.doId,), default={})
-            backup.setdefault('dna', {})[value] = invoker.getDNAString()
-            simbase.backups.save('toon', (invoker.doId,), backup)
-            return 'Saved a DNA backup for %s under the name: %s' % (invoker.getName(), value)
+        # these arguments don't work
+        # if part == 'save':
+        #     backup = simbase.backups.load('toon', (invoker.doId,), default={})
+        #     backup.setdefault('dna', {})[value] = invoker.getDNAString()
+        #     simbase.backups.save('toon', (invoker.doId,), backup)
+        #     return 'Saved a DNA backup for %s under the name: %s' % (invoker.getName(), value)
 
-        if part == 'restore':
-            backup = simbase.backups.load('toon', (invoker.doId,), default={})
-            if value not in backup.get('dna', {}):
-                return "Couldn't find a DNA backup for %s under the name: %s" % (invoker.getName(), value)
-            invoker.b_setDNAString(backup['dna'][value])
-            return 'Restored a DNA backup for %s under the name: %s' % (invoker.getName(), value)
+        # if part == 'restore':
+        #     backup = simbase.backups.load('toon', (invoker.doId,), default={})
+        #     if value not in backup.get('dna', {}):
+        #         return "Couldn't find a DNA backup for %s under the name: %s" % (invoker.getName(), value)
+        #     invoker.b_setDNAString(backup['dna'][value])
+        #     return 'Restored a DNA backup for %s under the name: %s' % (invoker.getName(), value)
 
         return 'Invalid part: ' + part
 
