@@ -134,6 +134,16 @@ class LaffMeter(DirectFrame):
                 headModel = gui.find('**/laffMeter_bat')
             elif hType == 'raccoon':
                 headModel = gui.find('**/laffMeter_raccoon')
+            elif hType == 'turkey':
+                headModel = gui.find('**/laffMeter_turkey')
+            elif hType == 'koala':
+                headModel = gui.find('**/laffMeter_koala')
+            elif hType == 'kangaroo':
+                headModel = gui.find('**/laffMeter_kangaroo')
+            elif hType == 'kiwi':
+                headModel = gui.find('**/laffMeter_kiwi')
+            elif hType == 'armadillo':
+                headModel = gui.find('**/laffMeter_armadillo')
             else:
                 raise StandardError('unknown toon species: ', hType)
             self.color = self.style.getHeadColor()

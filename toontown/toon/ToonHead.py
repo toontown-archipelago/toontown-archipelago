@@ -35,6 +35,11 @@ if not base.config.GetBool('want-new-anims', 1):
      'v': '/models/char/fox-heads-',
      'n': '/models/char/bat-heads-',
      't': '/models/char/raccoon-heads-',
+     'g': '/models/char/turkey-heads-',
+     'e': '/models/char/koala-heads-',
+     'j': '/models/char/kangaroo-heads-',
+     'k': '/models/char/kiwi-heads-',
+     'l': '/models/char/armadillo-heads'
     }
 
 elif base.config.GetBool('want-legacy-heads', 1):
@@ -56,6 +61,11 @@ elif base.config.GetBool('want-legacy-heads', 1):
                 'v': '/models/char/fox-heads-',
                 'n': '/models/char/bat-heads-',
                 't': '/models/char/raccoon-heads-',
+                'g': '/models/char/turkey-heads-',
+                'e': '/models/char/koala-heads-',
+                'j': '/models/char/kangaroo-heads-',
+                'k': '/models/char/kiwi-heads-',
+                'l': '/models/char/armadillo-heads-'
                 }
     EyelashDict = {'d': '/models/char/legacy/dog-lashes',
                    'c': '/models/char/legacy/cat-lashes',
@@ -72,6 +82,11 @@ elif base.config.GetBool('want-legacy-heads', 1):
                    'v': '/models/char/fox-lashes',
                    'n': '/models/char/bat-lashes',
                    't': '/models/char/raccoon-lashes',
+                   'g': '/models/char/turkey-lashes',
+                   'e': '/models/char/koala-lashes',
+                   'j': '/models/char/kangaroo-lashes',
+                   'k': '/models/char/kiwi-lashes',
+                   'l': '/models/char/armadillo-lashes'
                    }
 
     DogMuzzleDict = {'dls': '/models/char/legacy/dogMM_Shorts-headMuzzles-',
@@ -99,6 +114,11 @@ else:
      'v': '/models/char/fox-heads-',
      'n': '/models/char/bat-heads-',
      't': '/models/char/raccoon-heads-',
+     'g': '/models/char/turkey-heads-',
+     'e': '/models/char/koala-heads-',
+     'j': '/models/char/kangaroo-heads-',
+     'k': '/models/char/kiwi-heads-',
+     'l': '/models/char/armadillo-heads-'
     }
     EyelashDict = {'d': '/models/char/dog-lashes',
      'c': '/models/char/cat-lashes',
@@ -115,6 +135,11 @@ else:
      'v': '/models/char/fox-lashes',
      'n': '/models/char/bat-lashes',
      't': '/models/char/raccoon-lashes',
+     'g': '/models/char/turkey-lashes',
+     'e': '/models/char/koala-lashes',
+     'j': '/models/char/kangaroo-lashes',
+     'k': '/models/char/kiwi-lashes',
+     'l': '/models/char/armadillo-lashes'
         }
 
 DogMuzzleDict = {'dls': '/models/char/dogMM_Shorts-headMuzzles-',
@@ -606,6 +631,117 @@ class ToonHead(Actor.Actor):
             filePrefix = HeadDict['t']
             fix = self.__fixHeadLongLong
             headHeight = 0.5
+
+        # TURKEY
+        elif headStyle == 'gls':
+            # turkey, long head, short muzzle
+            filePrefix = HeadDict['g']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif headStyle == 'gss':
+            # turkey, short head, short muzzle
+            filePrefix = HeadDict['g']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif headStyle == 'gsl':
+            # turkey, short head, long muzzle
+            filePrefix = HeadDict['g']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif headStyle == 'gll':
+            # turkey, long head, long muzzle
+            filePrefix = HeadDict['g']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.5
+
+            # KOALA
+        elif headStyle == 'els':
+            # koala, long head, short muzzle
+            filePrefix = HeadDict['e']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif headStyle == 'ess':
+            # koala, short head, short muzzle
+            filePrefix = HeadDict['e']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif headStyle == 'esl':
+            # koala, short head, long muzzle
+            filePrefix = HeadDict['e']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif headStyle == 'ell':
+            # koala, long head, long muzzle
+            filePrefix = HeadDict['e']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.5
+
+            # KANGAROO
+        elif headStyle == 'jls':
+            # kangaroo, long head, short muzzle
+            filePrefix = HeadDict['j']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif headStyle == 'jss':
+            # kangaroo, short head, short muzzle
+            filePrefix = HeadDict['j']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif headStyle == 'jsl':
+            # kangaroo, short head, long muzzle
+            filePrefix = HeadDict['j']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif headStyle == 'jll':
+            # kangaroo, long head, long muzzle
+            filePrefix = HeadDict['j']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.5
+
+            # KIWI
+        elif headStyle == 'kls':
+            # kiwi, long head, short muzzle
+            filePrefix = HeadDict['k']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif headStyle == 'kss':
+            # kiwi, short head, short muzzle
+            filePrefix = HeadDict['k']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif headStyle == 'ksl':
+            # kiwi, short head, long muzzle
+            filePrefix = HeadDict['k']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif headStyle == 'kll':
+            # kiwi, long head, long muzzle
+            filePrefix = HeadDict['k']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.5
+
+            # ARMADILLO
+        elif headStyle == 'lls':
+            # armadillo, long head, short muzzle
+            filePrefix = HeadDict['l']
+            fix = self.__fixHeadLongShort
+            headHeight = 0.75
+        elif headStyle == 'lss':
+            # armadillo, short head, short muzzle
+            filePrefix = HeadDict['l']
+            fix = self.__fixHeadShortShort
+            headHeight = 0.5
+        elif headStyle == 'lsl':
+            # armadillo, short head, long muzzle
+            filePrefix = HeadDict['l']
+            fix = self.__fixHeadShortLong
+            headHeight = 0.5
+        elif headStyle == 'lll':
+            # armadillo, long head, long muzzle
+            filePrefix = HeadDict['l']
+            fix = self.__fixHeadLongLong
+            headHeight = 0.5
+
         else:
             ToonHead.notify.error('unknown head style: %s' % headStyle)
         if len(lods) == 1:
@@ -817,7 +953,10 @@ class ToonHead(Actor.Actor):
             (animalType == "beaver") or
             (animalType == "fox") or
             (animalType == "bat") or
-            (animalType == "raccoon")):
+            (animalType == "raccoon") or
+            (animalType == "koala") or
+            (animalType == "kangaroo") or
+            (animalType == "armadillo")):
             parts = self.findAllMatches('**/ear?-*')
             parts.setColor(style.getHeadColor())
             dogears = self.findAllMatches('**/ear*')
@@ -1052,7 +1191,7 @@ class ToonHead(Actor.Actor):
             searchRoot = self
         else:
             searchRoot = self.find('**/' + str(lodName))
-        if animalType != 'duck' and animalType != 'alligator':
+        if animalType != 'duck' and animalType != 'alligator' and animalType != 'turkey' and animalType != 'kiwi':
             if animalType == 'rabbit':
                 if copy:
                     searchRoot.find('**/ears-long').removeNode()
@@ -1111,7 +1250,7 @@ class ToonHead(Actor.Actor):
             searchRoot = self
         else:
             searchRoot = self.find('**/' + str(lodName))
-        if animalType != 'duck' and animalType != 'alligator':
+        if animalType != 'duck' and animalType != 'alligator' and animalType != 'turkey' and animalType != 'kiwi':
             if animalType == 'rabbit':
                 if copy:
                     searchRoot.find('**/ears-short').removeNode()

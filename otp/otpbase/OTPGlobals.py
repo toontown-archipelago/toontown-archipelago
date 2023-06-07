@@ -256,7 +256,13 @@ toonBodyScales = {'mouse': 0.6,
  'alligator': 0.77,
  'fox': 0.73,
  'bat': 0.60,
- 'raccoon': 0.73}
+ 'raccoon': 0.73,
+ 'turkey': 0.66,
+ 'koala': 0.73,
+ 'kangaroo': 0.85,
+ 'kiwi': 0.6,
+ 'armadillo': 0.63
+}
 toonHeadScales = {'mouse': Point3(1.0),
  'cat': Point3(1.0),
  'duck': Point3(1.0),
@@ -271,7 +277,13 @@ toonHeadScales = {'mouse': Point3(1.0),
  'alligator': Point3(1),
  'fox': Point3(1),
  'bat': Point3(1),
- 'raccoon': Point3(1)}
+ 'raccoon': Point3(1),
+ 'turkey': Point3(1),
+ 'koala': Point3(1),
+ 'kangaroo': Point3(1),
+ 'kiwi': Point3(1),
+ 'armadillo': Point3(1)
+}
 legHeightDict = {'s': 1.5,
  'm': 2.0,
  'l': 2.75}
@@ -359,6 +371,31 @@ headHeightDict = {
     'tss': 0.50,
     'tsl': 0.50,
     'tll': 0.75,
+
+    'gls': 0.75,
+    'gss': 0.50,
+    'gsl': 0.50,
+    'gll': 0.75,
+
+    'els': 0.75,
+    'ess': 0.50,
+    'esl': 0.50,
+    'ell': 0.75,
+
+    'jls': 0.75,
+    'jss': 0.50,
+    'jsl': 0.50,
+    'jll': 0.75,
+
+    'kls': 0.75,
+    'kss': 0.50,
+    'ksl': 0.50,
+    'kll': 0.75,
+
+    'lls': 0.75,
+    'lss': 0.50,
+    'lsl': 0.50,
+    'lll': 0.75,
 }
 RandomButton = 'Randomize'
 TypeANameButton = 'Type Name'

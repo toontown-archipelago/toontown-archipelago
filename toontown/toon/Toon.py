@@ -909,6 +909,11 @@ class Toon(Avatar.Avatar, ToonHead):
                 piece = torso.find('**/' + pieceName)
                 piece.setColor(armColor)
 
+            if self.style.getAnimal() == 'kiwi':
+                torso.find('**/arms').hide()
+            else:
+                torso.find('**/arms').show()
+
             hands = torso.find('**/hands')
             hands.setColor(gloveColor)
             legs = self.getPart('legs', lodName)

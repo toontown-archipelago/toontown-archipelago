@@ -21,6 +21,11 @@ toonSpeciesTypes = ['d',    # Dog
                     'v',    # Fox
                     'n',    # Bat
                     't',    # Raccoon
+                    'g',    # Turkey
+                    'e',    # Koala
+                    'j',    # Kangaroo
+                    'k',    # Kiwi
+                    'l',    # Armadillo
                     ]
 toonHeadTypes = [ "dls", "dss", "dsl", "dll",  # Dog
                   "cls", "css", "csl", "cll",  # Cat
@@ -37,6 +42,11 @@ toonHeadTypes = [ "dls", "dss", "dsl", "dll",  # Dog
                   "vls", "vss", "vsl", "vll",  # Fox
                   "nls", "nss", "nsl", "nll",  # Bat
                   "tls", "tss", "tsl", "tll",  # Raccoon
+                  "gls", "gss", "gsl", "gll",  # Turkey
+                  "els", "ess", "esl", "ell",  # Koala
+                  "jls", "jss", "jsl", "jll",  # Kangaroo
+                  "kls", "kss", "ksl", "kll",  # Kiwi
+                  "lls", "lss", "lsl", "lll",  # Armadillo
 ]
 
 def getHeadList(species):
@@ -110,6 +120,11 @@ toonHeadAnimalIndices = [ 0, # start of dog heads
                           48, # start of fox heads
                           52, # start of bat heads
                           56, # start of raccoon heads
+                          60, # start of turkey heads
+                          64, # start of koala heads
+                          68, # start of kangaroo heads
+                          72, # start of kiwi heads
+                          76, # start of armadillo heads
                           ]
 toonHeadAnimalIndicesTrial = [0,
  4,
@@ -117,21 +132,26 @@ toonHeadAnimalIndicesTrial = [0,
  14,
  18,
  30]
-allToonHeadAnimalIndices = [ 0, 1, 2, 3,     # Dog
-                             4, 5, 6, 7,     # Cat
-                             8, 9, 10, 11,   # Horse
-                             12, 13, 14, 15,   # Mouse
-                             16, 17, 18, 19, # Rabbit
-                             20, 21, 22, 23, # Duck
-                             24, 25, 26, 27, # Monkey
-                             28, 29, 30, 31, # Bear
-                             32, 33, 34, 35, # Pig
-                             36, 37, 38, 39, # Deer
+allToonHeadAnimalIndices = [ 0, 1, 2, 3,      # Dog
+                             4, 5, 6, 7,      # Cat
+                             8, 9, 10, 11,    # Horse
+                             12, 13, 14, 15,  # Mouse
+                             16, 17, 18, 19,  # Rabbit
+                             20, 21, 22, 23,  # Duck
+                             24, 25, 26, 27,  # Monkey
+                             28, 29, 30, 31,  # Bear
+                             32, 33, 34, 35,  # Pig
+                             36, 37, 38, 39,  # Deer
                              40, 41, 42, 43,  # Beaver
-                             44, 45, 46, 47, # Alligator
-                             48, 49, 50, 51, # Fox
+                             44, 45, 46, 47,  # Alligator
+                             48, 49, 50, 51,  # Fox
                              52, 53, 54, 55,  # Bat
                              56, 57, 58, 59,  # Raccoon
+                             60, 61, 62, 63,  # Turkey
+                             64, 65, 66, 67,  # Koala
+                             68, 69, 70, 71,  # Kangaroo
+                             72, 73, 74, 75,  # Kiwi
+                             76, 77, 78, 79   # Armadillo
                              ]
 toonTorsoTypes = ['ss',
  'ms',
@@ -2777,6 +2797,16 @@ class ToonDNA(AvatarDNA.AvatarDNA):
             return 'bat'
         elif self.head[0] == 't':
             return 'raccoon'
+        elif self.head[0] == 'g':
+            return 'turkey'
+        elif self.head[0] == 'e':
+            return 'koala'
+        elif self.head[0] == 'j':
+            return 'kangaroo'
+        elif self.head[0] == 'k':
+            return 'kiwi'
+        elif self.head[0] == 'l':
+            return 'armadillo'
         else:
             notify.error('unknown headStyle: ', self.head[0])
 
