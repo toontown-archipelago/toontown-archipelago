@@ -5540,7 +5540,12 @@ AnimalToSpecies = {'dog': 'Dog',
  'alligator': 'Alligator',
  'fox': 'Fox',
  'bat': 'Bat',
- 'raccoon': 'Raccoon'
+ 'raccoon': 'Raccoon',
+ 'turkey': 'Turkey',
+ 'koala': 'Koala',
+ 'kangaroo': 'Kangaroo',
+ 'kiwi': 'Kiwi',
+ 'armadillo': 'Armadillo',
  }
 
 NameTooLong = 'That name is too long. Please try again.'
