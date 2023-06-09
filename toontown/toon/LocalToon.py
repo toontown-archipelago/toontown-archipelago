@@ -390,10 +390,10 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             guiButton = loader.loadModel('phase_3/models/gui/quit_button')
             self.purchaseButton = DirectButton(parent=aspect2d, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=0.9, text=TTLocalizer.OptionsPagePurchase, text_scale=0.05, text_pos=(0, -0.01), textMayChange=0, pos=(0.885, 0, -0.94), sortOrder=100, command=self.__handlePurchase)
             base.setCellsAvailable([base.bottomCells[4]], 0)
-        self.accept('time-insert', self.__beginTossPie)
-        self.accept('time-insert-up', self.__endTossPie)
-        self.accept('time-delete', self.__beginTossPie)
-        self.accept('time-delete-up', self.__endTossPie)
+        self.accept(base.SECONDARY_ACTION, self.__beginZeroPowerToss)
+        self.accept(base.SECONDARY_ACTION + '-up', self.__endZeroPowerToss)
+        self.accept('time-' + base.ACTION_BUTTON, self.__beginTossPie)
+        self.accept('time-' + base.ACTION_BUTTON + '-up', self.__endTossPie)
         self.accept('pieHit', self.__pieHit)
         self.accept('interrupt-pie', self.interruptPie)
         self.accept('InputState-jump', self.__toonMoved)
@@ -666,6 +666,25 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.tossPieStart = None
         self.localTossPie(power)
         return
+
+    def __beginZeroPowerToss(self):
+        if self.tossPieStart != None:
+            return
+        if not self.allowPies:
+            return
+        if self.numPies == 0:
+            messenger.send('outOfPies')
+            return
+        if self.__pieInHand():
+            return
+        if getattr(self.controlManager.currentControls, 'isAirborne', 0):
+            return
+        messenger.send('wakeup')
+        self.localPresentPie(0)
+
+    def __endZeroPowerToss(self):
+        power = 0
+        self.__endTossPie(0)
 
     def localPresentPie(self, time):
         import TTEmote

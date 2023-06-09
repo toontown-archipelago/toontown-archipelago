@@ -4680,7 +4680,8 @@ OptionsKeybindsMenu = 'Keybinds'
 
 RemapPrompt = 'Choose the keys you wish to remap.'
 RemapPopup = 'Press the key you wish to remap this control to.'
-Controls = ['Move Up:', 'Move Left:', 'Move Down:', 'Move Right:', 'Jump:', 'Action Key:', 'Options Hotkey:', 'Chatbox Hotkey:', 'Screenshot Key:', 'Crane Grab Key:', 'Sprint Key:']
+Controls = ['Move Up:', 'Move Left:', 'Move Down:', 'Move Right:', 'Jump:', 'Action Key:', 'Options Hotkey:', 'Chatbox Hotkey:',
+            'Screenshot Key:', 'Crane Grab Key:', 'Sprint Key:', 'Alt. Action Key:']
 OptionsTabTitle = 'Options\n& Codes'
 OptionsPagePurchase = 'Subscribe'
 OptionsPageLogout = 'Logout'
@@ -5533,7 +5534,20 @@ AnimalToSpecies = {'dog': 'Dog',
  'duck': 'Duck',
  'monkey': 'Monkey',
  'bear': 'Bear',
- 'pig': 'Pig'}
+ 'pig': 'Pig',
+ 'deer': 'Deer',
+ 'beaver': 'Beaver',
+ 'alligator': 'Alligator',
+ 'fox': 'Fox',
+ 'bat': 'Bat',
+ 'raccoon': 'Raccoon',
+ 'turkey': 'Turkey',
+ 'koala': 'Koala',
+ 'kangaroo': 'Kangaroo',
+ 'kiwi': 'Kiwi',
+ 'armadillo': 'Armadillo',
+ }
+
 NameTooLong = 'That name is too long. Please try again.'
 ToonAlreadyExists = 'You already have a toon named %s!'
 NameAlreadyInUse = 'That name is already used!'

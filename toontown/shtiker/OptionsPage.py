@@ -786,6 +786,31 @@ class OptionsTabPage2(DirectFrame):
             pos=(leftMargin, 0, -.45),
         )
 
+        self.wantRightClickToggle = DirectButton(
+            parent=self,
+            relief=None,
+            image=(
+                guiButton.find("**/QuitBtn_UP"),
+                guiButton.find("**/QuitBtn_DN"),
+                guiButton.find("**/QuitBtn_RLVR"),
+            ),
+            image_scale=button_image_scale,
+            text='On' if base.settings.getBool('game', 'cam-toggle-lock', True) else 'Off',
+            text_scale=options_text_scale,
+            text_pos=button_textpos,
+            pos=(0.42, 0.0, -0.58),
+            command=self.__toggleCamLock,
+        )
+
+        self.wantRightClickLabel = DirectLabel(
+            parent=self,
+            relief=None,
+            text="Right Click Toggles Mouse Control:",
+            text_align=TextNode.ALeft,
+            text_scale=options_text_scale,
+            pos=(leftMargin, 0, -.58),
+        )
+
         self.keybindDialogButton.setScale(0.8)
         self.keybindDialogButton.hide()
         guiButton.removeNode()
@@ -823,6 +848,13 @@ class OptionsTabPage2(DirectFrame):
         base.settings.updateSetting('game', 'fovEffects', new)
         base.WANT_FOV_EFFECTS = new
         self.wantFovEffectsToggle['text'] = 'On' if new else 'Off',
+
+    def __toggleCamLock(self):
+        curr = base.settings.getBool('game', 'cam-toggle-lock', True)
+        new = not curr
+        base.settings.updateSetting('game', 'cam-toggle-lock', new)
+        base.CAM_TOGGLE_LOCK = new
+        self.wantRightClickToggle['text'] = 'On' if new else 'Off',
 
     def enter(self):
         self.show()

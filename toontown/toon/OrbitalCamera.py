@@ -126,8 +126,12 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         if not pressed or self.ignoreRMB:
             return
 
-        self.ignore("InputState-RMB")
-        self.accept("InputState-RMB", self.disableMouseControl)
+        if not base.CAM_TOGGLE_LOCK:
+            # FIXME: Unless the user interacts with anything that untoggles mouse control
+            # (i.e. hopping onto a crane, taking damage, opening book), 
+            # the user is permanently stuck in this state            
+            self.ignore("InputState-RMB")
+            self.accept("InputState-RMB", self.disableMouseControl)
 
         if self.oobeEnabled():
             return
