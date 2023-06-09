@@ -84,6 +84,12 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Map of damage multipliers for toons
         self.toonDmgMultipliers = {}
 
+        # The index order to spawn toons
+        self.toonSpawnpointOrder = [i for i in range(8)]
+
+    def d_setToonSpawnpointOrder(self):
+        self.sendUpdate('setToonSpawnpoints', [self.toonSpawnpointOrder])
+
     def getToonOutgoingMultiplier(self, avId):
         n = self.toonDmgMultipliers.get(avId)
         if not n:
@@ -937,9 +943,16 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Clean up battle objects until we need them again later.
         self.__deleteBattleThreeObjects()
 
+    def setupSpawnpoints(self):
+        self.toonSpawnpointOrder = [i for i in range(8)]
+        if self.ruleset.RANDOM_SPAWN_POSITIONS:
+            random.shuffle(self.toonSpawnpointOrder)
+        self.d_setToonSpawnpointOrder()
+
     ##### PrepareBattleThree state #####
     def enterPrepareBattleThree(self):
         self.setupRuleset()
+        self.setupSpawnpoints()
 
         self.resetBattles()
 

@@ -371,5 +371,28 @@ class BodyShop(StateData.StateData):
         elif species == 's':
             self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['pig']
             self.memberButton.hide()
+        elif species == 'x':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['deer']
+        elif species == 'z':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['beaver']
+        elif species == 'a':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['alligator']
+        elif species == 'v':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['fox']
+        elif species == 'n':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['bat']
+        elif species == 't':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['raccoon']
+        elif species == 'g':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['turkey']
+        elif species == 'e':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['koala']
+        elif species == 'j':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['kangaroo']
+        elif species == 'k':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['kiwi']
+        elif species == 'l':
+            self.speciesFrame['text'] = TTLocalizer.AnimalToSpecies['armadillo']
+
         if base.cr.isPaid():
             self.memberButton.hide()

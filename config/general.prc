@@ -8,6 +8,7 @@ frame-rate-meter-text-pattern %0.f FPS
 frame-rate-meter-update-interval 0.001
 
 # Notify settings
+notify-level-gobj error
 notify-level-collide warning
 notify-level-chan warning
 notify-level-gobj warning
@@ -41,6 +42,7 @@ want-news-page false
 want-news-tab false
 
 # Gameplay settings
+want-legacy-heads false
 want-gardening true
 want-cogdominiums true
 want-emblems true
@@ -54,3 +56,4 @@ merge-lod-bundles false
 early-event-sphere true
 server-data-folder backups/
 isclient-check false
+model-cache-dir

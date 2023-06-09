@@ -149,11 +149,13 @@ class ToonBase(OTPBase.OTPBase):
         self.ACTION_BUTTON = 'delete'
         self.SCREENSHOT_KEY = 'f9'
         self.CRANE_GRAB_KEY = 'control'
-
         self.SPRINT = 'shift'
+        self.SECONDARY_ACTION = 'insert'
+
         self.reloadControls()
 
         self.WANT_FOV_EFFECTS = self.settings.getBool('game', 'fovEffects', True)
+        self.CAM_TOGGLE_LOCK = self.settings.getBool('game', 'cam-toggle-lock', False)
         return
 
     def openMainWindow(self, *args, **kw):
@@ -482,6 +484,8 @@ class ToonBase(OTPBase.OTPBase):
             self.JUMP = keymap.get("JUMP", self.JUMP)
             self.ACTION_BUTTON = keymap.get("ACTION_BUTTON", self.ACTION_BUTTON)
             self.CRANE_GRAB_KEY = keymap.get('CRANE_GRAB_KEY', self.CRANE_GRAB_KEY)
+            self.SPRINT = keymap.get("SPRINT_KEY", self.SPRINT)
+            self.SECONDARY_ACTION = keymap.get("SECONDARY_ACTION", self.SECONDARY_ACTION)
             ToontownGlobals.OptionsPageHotkey = keymap.get(
                 "OPTIONS-PAGE", ToontownGlobals.OptionsPageHotkey
             )
@@ -493,7 +497,10 @@ class ToonBase(OTPBase.OTPBase):
             self.JUMP = "control"
             self.ACTION_BUTTON = "delete"
             self.CRANE_GRAB_KEY = 'control'
-
-        self.SPRINT = 'shift'
+            self.SPRINT = 'shift'
+            self.SECONDARY_ACTION = "insert"
 
         self.accept(self.SCREENSHOT_KEY, self.takeScreenShot)
+
+        if hasattr(base, 'localAvatar'):
+            base.localAvatar.reloadSprintControls()

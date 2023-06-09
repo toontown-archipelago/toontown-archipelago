@@ -3197,6 +3197,192 @@ class StartBoss(MagicWord):
         return 'Cog HQ hood data not found!'
 
 
+class dna(MagicWord):
+    desc = 'Modify a DNA part on the invoker'
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("part", str, True), ("value", str, True)]
+    def handleWord(self, invoker, avId, toon, *args):
+        dna = ToonDNA.ToonDNA()
+        dna.makeFromNetString(invoker.getDNAString())
+
+        part = args[0]
+        value = args[1]
+
+        part = part.lower()
+        if part.endswith('color') or part.endswith('tex') or part.endswith('size') or part.endswith('gloves') or part.endswith('torso'):
+            try:
+                value = int(value)
+            except:
+                return 'Invalid value type for: ' + part
+
+        if part == 'gender':
+            if value not in ('m', 'f', 'male', 'female'):
+                return 'Invalid gender: ' + value
+            dna.gender = value[0]
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Gender set to: ' + dna.gender
+
+        if part in ('head', 'species'):
+            speciesNames = (
+                'dog', 'cat', 'horse', 'mouse', 'rabbit', 'duck', 'monkey', 'bear',
+                'pig', 'deer', 'beaver', 'alligator', 'fox', 'bat', 'raccoon', 'turkey',
+                'koala', 'kangaroo', 'kiwi', 'armadillo'
+            )
+            if value in speciesNames:
+                speciesIndex = speciesNames.index(value)
+                value = ToonDNA.toonSpeciesTypes[speciesIndex]
+            if value not in ToonDNA.toonSpeciesTypes:
+                return 'Invalid species: ' + value
+            dna.head = value + dna.head[1:3]
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Species set to: ' + dna.head[0]
+
+        if part == 'headsize':
+            sizes = ('ls', 'ss', 'sl', 'll')
+            if not 0 <= value <= len(sizes):
+                return 'Invalid head size index: ' + str(value)
+            dna.head = dna.head[0] + sizes[value]
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Head size index set to: ' + dna.head[1:]
+
+        if part == 'torso':
+            if dna.gender not in ('m', 'f'):
+                return 'Unknown gender.'
+            value = int(value)
+            if (dna.gender == 'm') and (not 0 <= value <= 2):
+                return 'Male torso index out of range (0-2).'
+            if (dna.gender == 'f') and (not 3 <= value <= 8):
+                return 'Female torso index out of range (3-8).'
+            dna.torso = ToonDNA.toonTorsoTypes[value]
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Torso set to: ' + dna.torso
+
+        if part == 'legs':
+            value = int(value)
+            if not 0 <= value <= len(ToonDNA.toonLegTypes):
+                return 'Legs index out of range (0-%d).' % len(ToonDNA.toonLegTypes)
+            dna.legs = ToonDNA.toonLegTypes[value]
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Legs set to: ' + dna.legs
+
+        if part == 'headcolor':
+            if dna.gender not in ('m', 'f'):
+                return 'Unknown gender.'
+            if (dna.gender == 'm') and (value not in ToonDNA.defaultBoyColorList):
+                return 'Invalid male head color index: ' + str(value)
+            if (dna.gender == 'f') and (value not in ToonDNA.defaultGirlColorList):
+                return 'Invalid female head color index: ' + str(value)
+            dna.headColor = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Head color index set to: ' + str(dna.headColor)
+
+        if part == 'armcolor':
+            if dna.gender not in ('m', 'f'):
+                return 'Unknown gender.'
+            if (dna.gender == 'm') and (value not in ToonDNA.defaultBoyColorList):
+                return 'Invalid male arm color index: ' + str(value)
+            if (dna.gender == 'f') and (value not in ToonDNA.defaultGirlColorList):
+                return 'Invalid female arm color index: ' + str(value)
+            dna.armColor = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Arm color index set to: ' + str(dna.armColor)
+
+        if part == 'legcolor':
+            if dna.gender not in ('m', 'f'):
+                return 'Unknown gender.'
+            if (dna.gender == 'm') and (value not in ToonDNA.defaultBoyColorList):
+                return 'Invalid male leg color index: ' + str(value)
+            if (dna.gender == 'f') and (value not in ToonDNA.defaultGirlColorList):
+                return 'Invalid female leg color index: ' + str(value)
+            dna.legColor = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Leg color index set to: ' + str(dna.legColor)
+
+        if part == 'color':
+            if dna.gender not in ('m', 'f'):
+                return 'Unknown gender.'
+            if (dna.gender == 'm') and (value not in ToonDNA.defaultBoyColorList):
+                return 'Invalid male leg color index: ' + str(value)
+            if (dna.gender == 'f') and (value not in ToonDNA.defaultGirlColorList):
+                return 'Invalid female leg color index: ' + str(value)
+            dna.headColor = value
+            dna.armColor = value
+            dna.legColor = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Color index set to: ' + str(dna.headColor)
+
+        if part == 'gloves':
+            value = int(value)
+            if value != 0:
+                return 'Invalid glove color: ' + str(value)
+            dna.gloveColor = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Glove color set to: ' + str(dna.gloveColor)
+
+        if part == 'toptex':
+            if not 0 <= value <= len(ToonDNA.Shirts):
+                return 'Top texture index out of range (0-%d).' % len(ToonDNA.Shirts)
+            dna.topTex = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Top texture index set to: ' + str(dna.topTex)
+
+        if part == 'toptexcolor':
+            if not 0 <= value <= len(ToonDNA.ClothesColors):
+                return 'Top texture color index out of range(0-%d).' % len(ToonDNA.ClothesColors)
+            dna.topTexColor = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Top texture color index set to: ' + str(dna.topTexColor)
+
+        if part == 'sleevetex':
+            if not 0 <= value <= len(ToonDNA.Sleeves):
+                return 'Sleeve texture index out of range(0-%d).' % len(ToonDNA.Sleeves)
+            dna.sleeveTex = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Sleeve texture index set to: ' + str(dna.sleeveTex)
+
+        if part == 'sleevetexcolor':
+            if not 0 <= value <= len(ToonDNA.ClothesColors):
+                return 'Sleeve texture color index out of range(0-%d).' % len(ToonDNA.ClothesColors)
+            dna.sleeveTexColor = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Sleeve texture color index set to: ' + str(dna.sleeveTexColor)
+
+        if part == 'bottex':
+            if dna.gender not in ('m', 'f'):
+                return 'Unknown gender.'
+            if dna.gender == 'm':
+                bottoms = ToonDNA.BoyShorts
+            else:
+                bottoms = ToonDNA.GirlBottoms
+            if not 0 <= value <= len(bottoms):
+                return 'Bottom texture index out of range (0-%d).' % len(bottoms)
+            dna.botTex = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Bottom texture index set to: ' + str(dna.botTex)
+
+        if part == 'bottexcolor':
+            if not 0 <= value <= len(ToonDNA.ClothesColors):
+                return 'Bottom texture color index out of range(0-%d).' % len(ToonDNA.ClothesColors)
+            dna.botTexColor = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Bottom texture color index set to: ' + str(dna.botTexColor)
+
+        # these arguments don't work
+        # if part == 'save':
+        #     backup = simbase.backups.load('toon', (invoker.doId,), default={})
+        #     backup.setdefault('dna', {})[value] = invoker.getDNAString()
+        #     simbase.backups.save('toon', (invoker.doId,), backup)
+        #     return 'Saved a DNA backup for %s under the name: %s' % (invoker.getName(), value)
+
+        # if part == 'restore':
+        #     backup = simbase.backups.load('toon', (invoker.doId,), default={})
+        #     if value not in backup.get('dna', {}):
+        #         return "Couldn't find a DNA backup for %s under the name: %s" % (invoker.getName(), value)
+        #     invoker.b_setDNAString(backup['dna'][value])
+        #     return 'Restored a DNA backup for %s under the name: %s' % (invoker.getName(), value)
+
+        return 'Invalid part: ' + part
+
 # Instantiate all classes defined here to register them.
 # A bit hacky, but better than the old system
 for item in globals().values():
