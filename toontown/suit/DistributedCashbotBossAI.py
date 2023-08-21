@@ -63,6 +63,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Controlled RNG parameters, True to enable, False to disable
         self.wantOpeningModifications = False
         self.wantMaxSizeGoons = False
+        self.wantLiveGoonPractice = False
+        self.wantNoStunning = False
 
         self.customSpawnPositions = {}
         self.goonMinScale = 0.8
@@ -700,8 +702,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.makeGoon()
 
         # How long to wait for the next goon?
-
-        delayTime = self.progressValue(10, 2)
+        if self.wantLiveGoonPractice:
+            delayTime = 4
+        else:
+            delayTime = self.progressValue(10, 2)
         self.waitForNextGoon(delayTime)
 
     def waitForNextHelmet(self):
@@ -855,6 +859,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # Is the damage high enough to stun? or did a side crane hit a high impact hit?
         hitMeetsStunRequirements = self.considerStun(crane, damage, impact)
+        if self.wantNoStunning:
+            hitMeetsStunRequirements = False
         if hitMeetsStunRequirements:
             # A particularly good hit (when he's not already
             # dizzy) will make the boss dizzy for a little while.
@@ -1077,7 +1083,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
         self.makeGoon(side='EmergeB')
-        self.waitForNextGoon(10)
+        if self.wantLiveGoonPractice:
+            self.waitForNextGoon(7)
+        else:
+            self.waitForNextGoon(10)
 
     def exitBattleThree(self):
         helmetName = self.uniqueName('helmet')

@@ -2106,6 +2106,63 @@ class safeRush(MagicWord):
         else:
             boss.wantSafeRushPractice = True
             return ("Safe Rush => ON")
+            
+
+
+class livegoon(MagicWord):
+    desc = "Sets goon spawn rate to 4 seconds"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+
+        if not boss:
+            return "You aren't in a CFO!"
+
+        if boss.wantSafeRushPractice:
+            boss.wantLiveGoonPractice = False
+            boss.wantOpeningModifications = False
+            boss.wantNoStunning = False
+            return ("Live Goon => OFF")
+        else:
+            boss.wantLiveGoonPractice = True
+            boss.wantOpeningModifications = True
+            boss.wantNoStunning = True
+            return ("Live Goon => ON")
+
+
+class rng(MagicWord):
+    desc = "Sets sides to always open your side, and max goon size"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+
+        if not boss:
+            return "You aren't in a CFO!"
+
+        if boss.wantSafeRushPractice:
+            boss.wantOpeningModifications = False
+            boss.wantMaxSizeGoons = False
+            return ("RNG => ON")
+        else:
+            boss.wantOpeningModifications = True
+            boss.wantMaxSizeGoons = True
+            return ("RNG => OFF")
 
         
 class aim(MagicWord):
