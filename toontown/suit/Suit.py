@@ -412,7 +412,6 @@ class Suit(Avatar.Avatar):
         self.loseActor = None
         self.isSkeleton = 0
         self.isImmune = 0
-        self.setBlend(frameBlend=True)
         if dna.name == 'f':
             self.scale = 4.0 / cSize
             self.handColor = SuitDNA.corpPolyColor
@@ -619,6 +618,7 @@ class Suit(Avatar.Avatar):
         self.getGeomNode().setScale(self.scale)
         self.generateHealthBar()
         self.generateCorporateMedallion()
+        self.setBlend(frameBlend=True)
         return
 
     def generateBody(self):
@@ -993,7 +993,6 @@ class Suit(Avatar.Avatar):
         self.generateCorporateMedallion()
         self.generateCorporateTie()
         self.setHeight(self.height)
-        self.setBlend(frameBlend=True)
         parts = self.findAllMatches('**/pPlane*')
         for partNum in range(0, parts.getNumPaths()):
             bb = parts.getPath(partNum)
@@ -1014,6 +1013,7 @@ class Suit(Avatar.Avatar):
                 dropShadow.reparentTo(self.shadowJoint)
         self.loop(anim)
         self.isSkeleton = 1
+        self.setBlend(frameBlend=True)
 
     def getHeadParts(self):
         return self.headParts

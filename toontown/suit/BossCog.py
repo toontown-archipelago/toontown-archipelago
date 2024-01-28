@@ -353,7 +353,6 @@ class BossCog(Avatar.Avatar):
         return fsm
 
     def doAnimate(self, anim = None, now = 0, queueNeutral = 1, raised = None, forward = None, happy = None):
-        self.setBlend(frameBlend=True)
         if now:
             self.stopAnimate()
         if not self.twoFaced:
@@ -380,6 +379,7 @@ class BossCog(Avatar.Avatar):
              self.happy))
             if self.currentAnimIval == None:
                 self.__getNextAnim()
+        self.setBlend(frameBlend=True)
         return
 
     def stopAnimate(self):

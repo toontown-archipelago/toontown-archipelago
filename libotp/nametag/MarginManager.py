@@ -192,7 +192,7 @@ class MarginManager(PandaNode):
     def update(self):
         num_want_visible = 0
 
-        for handle in self.m_popups.values():
+        for handle in list(self.m_popups.values()):
             popup = handle.m_popup
             handle.m_wants_visible = popup.considerVisible()
             if handle.m_wants_visible and handle.m_objcode:
