@@ -14,7 +14,7 @@ from toontown.battle import BattleExperienceAI
 from toontown.chat import ResistanceChat
 from toontown.toon import DistributedToonAI
 from direct.fsm import FSM
-import DistributedBossCogAI
+from . import DistributedBossCogAI
 import random
 import math
 
@@ -98,7 +98,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Makes sure theres something in the dict
         old = self.getToonOutgoingMultiplier(avId)
         self.toonDmgMultipliers[avId] = old + n
-        print("avId now does +" + str(old+n) + "% damage")
+        print(("avId now does +" + str(old+n) + "% damage"))
 
     def updateActivityLog(self, doId, content):
         self.sendUpdate('addToActivityLog', [doId, content])
@@ -159,7 +159,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     # Any time you change the ruleset, you should call this to sync the clients
     def d_setRawRuleset(self):
-        print(self.getRawRuleset())
+        print((self.getRawRuleset()))
         self.sendUpdate('setRawRuleset', [self.getRawRuleset()])
 
     def __getRawModifierList(self):
@@ -346,7 +346,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if self.safes == None:
             # And all of the safes.
             self.safes = []
-            for index in xrange(min(self.ruleset.SAFES_TO_SPAWN, len(CraneLeagueGlobals.SAFE_POSHPR))):
+            for index in range(min(self.ruleset.SAFES_TO_SPAWN, len(CraneLeagueGlobals.SAFE_POSHPR))):
                 safe = DistributedCashbotBossSafeAI.DistributedCashbotBossSafeAI(self.air, self, index)
                 safe.generateWithRequired(self.zoneId)
                 self.safes.append(safe)
@@ -802,7 +802,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Momentum mechanic?
         if self.ruleset.WANT_MOMENTUM_MECHANIC:
             damage *= (self.getToonOutgoingMultiplier(avId) / 100.0)
-            print('multiplying damage by ' + str(self.getToonOutgoingMultiplier(avId) / 100.0) + ' damage is now ' + str(damage))
+            print(('multiplying damage by ' + str(self.getToonOutgoingMultiplier(avId) / 100.0) + ' damage is now ' + str(damage)))
 
         # Record a successful hit in battle three.
         self.b_setBossDamage(self.bossDamage + damage)

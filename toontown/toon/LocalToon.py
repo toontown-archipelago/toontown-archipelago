@@ -50,9 +50,9 @@ from toontown.parties import PartyGlobals
 from toontown.toon import ElevatorNotifier
 from toontown.toon import ToonDNA
 from toontown.shtiker import WordPage
-import DistributedToon
-import Toon
-import LaffMeter
+from . import DistributedToon
+from . import Toon
+from . import LaffMeter
 from toontown.quest import QuestMap
 from toontown.toon.DistributedNPCToonBase import DistributedNPCToonBase
 WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
@@ -234,7 +234,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             if self.ticker >= 10:
                 self.ticker = 0
         if self.glitchCount >= 7:
-            print 'GLITCH MAXED!!! resetting pos'
+            print('GLITCH MAXED!!! resetting pos')
             self.setX(self.glitchX - 1 * (self.getX() - self.glitchX))
             self.setY(self.glitchY - 1 * (self.getY() - self.glitchY))
             self.glitchCount = 0
@@ -687,7 +687,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.__endTossPie(0)
 
     def localPresentPie(self, time):
-        import TTEmote
+        from . import TTEmote
         from otp.avatar import Emote
         self.__stopPresentPie()
         if self.tossTrack:
@@ -723,7 +723,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
     def __stopPresentPie(self):
         if self.__presentingPie:
-            import TTEmote
+            from . import TTEmote
             from otp.avatar import Emote
             Emote.globalEmote.releaseBody(self)
             messenger.send('end-pie')
@@ -1152,7 +1152,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         else:
             zoneId = '?'
         strPos = '(%.3f' % pos[0] + '\n %.3f' % pos[1] + '\n %.3f)' % pos[2] + '\nH: %.3f' % hpr[0] + '\nZone: %s' % str(zoneId) + ',\nVer: %s, ' % serverVersion + '\nDistrict: %s' % districtName
-        print 'Current position=', strPos.replace('\n', ', ')
+        print('Current position=', strPos.replace('\n', ', '))
         self.setChatAbsolute(strPos, CFThought | CFTimeout)
         return
 
@@ -1482,7 +1482,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         if place:
             state = place.fsm.getCurrentState()
             if state.getName() != self.lastPlaceState:
-                print 'Place State Change From %s to %s' % (self.lastPlaceState, state.getName())
+                print('Place State Change From %s to %s' % (self.lastPlaceState, state.getName()))
                 self.lastPlaceState = state.getName()
         return Task.cont
 
@@ -1802,7 +1802,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
     def b_setAnimState(self, animName, animMultiplier = 1.0, callback = None, extraArgs = []):
         if self.wantStatePrint:
-            print 'Local Toon Anim State %s' % animName
+            print('Local Toon Anim State %s' % animName)
         DistributedToon.DistributedToon.b_setAnimState(self, animName, animMultiplier, callback, extraArgs)
 
     def swimTimeoutAction(self):
@@ -1817,13 +1817,13 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         base.cr.gameFSM.request('closeShard', ['afkTimeout'])
 
     def sbFriendAdd(self, id, info):
-        print 'sbFriendAdd'
+        print('sbFriendAdd')
 
     def sbFriendUpdate(self, id, info):
-        print 'sbFriendUpdate'
+        print('sbFriendUpdate')
 
     def sbFriendRemove(self, id):
-        print 'sbFriendRemove'
+        print('sbFriendRemove')
 
     def addGolfPage(self):
         if self.hasPlayedGolf():

@@ -1,5 +1,5 @@
 from direct.directnotify import DirectNotifyGlobal
-import ZoneUtil
+from . import ZoneUtil
 from toontown.building import DistributedBuildingMgrAI
 from toontown.suit import DistributedSuitPlannerAI
 from toontown.safezone import ButterflyGlobals
@@ -130,8 +130,8 @@ class HoodDataAI:
 
     def createButterflies(self, playground):
         ButterflyGlobals.generateIndexes(self.zoneId, playground)
-        for i in xrange(0, ButterflyGlobals.NUM_BUTTERFLY_AREAS[playground]):
-            for j in xrange(0, ButterflyGlobals.NUM_BUTTERFLIES[playground]):
+        for i in range(0, ButterflyGlobals.NUM_BUTTERFLY_AREAS[playground]):
+            for j in range(0, ButterflyGlobals.NUM_BUTTERFLIES[playground]):
                 bfly = DistributedButterflyAI.DistributedButterflyAI(self.air, playground, i, self.zoneId)
                 bfly.generateWithRequired(self.zoneId)
                 bfly.start()

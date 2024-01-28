@@ -1,6 +1,6 @@
 from panda3d.core import *
 from direct.distributed import DistributedObject
-import SuitPlannerBase
+from . import SuitPlannerBase
 from toontown.toonbase import ToontownGlobals
 
 class DistributedSuitPlanner(DistributedObject.DistributedObject, SuitPlannerBase.SuitPlannerBase):
@@ -90,7 +90,7 @@ class DistributedSuitPlanner(DistributedObject.DistributedObject, SuitPlannerBas
         self.__makePathVizText(text, pos[0], pos[1], pos[2], color)
         adjacent = self.dnaStore.getAdjacentPoints(p)
         numPoints = adjacent.getNumPoints()
-        for i in xrange(numPoints):
+        for i in range(numPoints):
             qi = adjacent.getPointIndex(i)
             q = self.dnaStore.getSuitPointWithIndex(qi)
             pp = p.getPos()

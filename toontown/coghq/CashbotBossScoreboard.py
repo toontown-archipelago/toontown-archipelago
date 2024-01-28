@@ -262,7 +262,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
         # Check all the cranes
         crane = None
-        for c in base.boss.cranes.values():
+        for c in list(base.boss.cranes.values()):
             # Our toon is on a crane
             if c.avId == self.avId:
                 crane = c
@@ -462,7 +462,7 @@ class CashbotBossScoreboard(DirectObject):
 
     def set_ruleset(self, ruleset):
         self.ruleset = ruleset
-        for r in self.rows.values():
+        for r in list(self.rows.values()):
             r.ruleset = ruleset
 
     def _consider_expand(self):
@@ -475,13 +475,13 @@ class CashbotBossScoreboard(DirectObject):
     def expand(self):
         self.is_expanded = True
         self.default_row.setText('%-10s %-9s %-7s %-7s %-8s\0' % ('Toon', 'Pts', 'Dmg', 'Stuns', 'Stomps'))
-        for r in self.rows.values():
+        for r in list(self.rows.values()):
             r.expand()
 
     def collapse(self):
         self.is_expanded = False
         self.default_row.setText('%-10s %-7s\0' % ('Toon', 'Pts'))
-        for r in self.rows.values():
+        for r in list(self.rows.values()):
             r.collapse()
 
     def addToon(self, avId):
@@ -491,7 +491,7 @@ class CashbotBossScoreboard(DirectObject):
         self.show()
 
     def clearToons(self):
-        for row in self.rows.values():
+        for row in list(self.rows.values()):
             row.cleanup()
             del self.rows[row.avId]
 
@@ -528,7 +528,7 @@ class CashbotBossScoreboard(DirectObject):
 
     def updatePlacements(self):
         # make a list of all the objects
-        rows = [r for r in self.rows.values()]
+        rows = [r for r in list(self.rows.values())]
         # sort it based on how many points they have in descending order
         rows.sort(key=lambda x: x.points, reverse=True)
         # set place
@@ -539,7 +539,7 @@ class CashbotBossScoreboard(DirectObject):
             i += 1
 
     def getToons(self):
-        return [avId for avId in self.rows.keys()]
+        return [avId for avId in list(self.rows.keys())]
 
     def cleanup(self):
 
@@ -561,7 +561,7 @@ class CashbotBossScoreboard(DirectObject):
         self.expand_tip.setColorScale(1, 1, 1, 1)
         self.hide_tip_later()
         taskMgr.remove('expand-tip')
-        for row in self.rows.values():
+        for row in list(self.rows.values()):
             row.reset()
 
         self.updatePlacements()
@@ -572,7 +572,7 @@ class CashbotBossScoreboard(DirectObject):
         self.expand_tip.setColorScale(1, 1, 1, 1)
         self.hide_tip_later()
         self.default_row_path.show()
-        for row in self.rows.values():
+        for row in list(self.rows.values()):
             row.show()
 
         self.collapse()
@@ -580,7 +580,7 @@ class CashbotBossScoreboard(DirectObject):
     def hide(self):
         self.expand_tip.hide()
         self.default_row_path.hide()
-        for row in self.rows.values():
+        for row in list(self.rows.values()):
             row.hide()
 
     # updates combo text

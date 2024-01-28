@@ -879,7 +879,7 @@ class HoodMgr(DirectObject.DirectObject):
         tunnelOriginList = []
         for i in nodeList:
             linkTunnelNPC = i.findAllMatches('**/linktunnel*')
-            for p in xrange(linkTunnelNPC.getNumPaths()):
+            for p in range(linkTunnelNPC.getNumPaths()):
                 linkTunnel = linkTunnelNPC.getPath(p)
                 name = linkTunnel.getName()
                 nameParts = name.split('_')
@@ -926,7 +926,8 @@ class HoodMgr(DirectObject.DirectObject):
         return tunnelOriginList
 
     def extractGroupName(self, groupFullName):
-        return string.split(groupFullName, ':', 1)[0]
+        # return string.split(groupFullName, ':', 1)[0]
+        return groupFullName.split(':', 1)[0]
 
     def makeLinkTunnelName(self, hoodId, currentZone):
         return '**/toph_' + self.getNameFromId(hoodId) + '_' + str(currentZone)

@@ -41,7 +41,7 @@ class TelemetryLimiter(DirectObject):
         self.ignore(self._getDummyEventName(obj))
 
     def _enforceLimits(self, task = None):
-        for obj in self._objs.itervalues():
+        for obj in self._objs.values():
             obj.enforceTelemetryLimits()
 
         return Task.cont

@@ -5,7 +5,7 @@ from toontown.coghq.DistributedCashbotBossHeavyCraneAI import DistributedCashbot
 from toontown.coghq.DistributedCashbotBossSideCraneAI import DistributedCashbotBossSideCraneAI
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
-import DistributedCashbotBossObjectAI
+from . import DistributedCashbotBossObjectAI
 import math
 
 class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI):

@@ -1,9 +1,9 @@
 from panda3d.core import *
 from direct.distributed.ClockDelta import *
 from direct.interval.IntervalGlobal import *
-from ElevatorConstants import *
-from ElevatorUtils import *
-import DistributedElevatorFSM
+from .ElevatorConstants import *
+from .ElevatorUtils import *
+from . import DistributedElevatorFSM
 from toontown.toonbase import ToontownGlobals
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import ClassicFSM

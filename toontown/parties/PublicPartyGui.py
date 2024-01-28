@@ -1,3 +1,5 @@
+import functools
+
 from panda3d.core import Vec3, Vec4, Point3, TextNode, VBase4
 from direct.gui.DirectGui import DGG, DirectFrame, DirectButton, DirectLabel, DirectScrolledList, DirectCheckButton
 from direct.gui import DirectGuiGlobals
@@ -80,7 +82,7 @@ class PublicPartyGui(DirectFrame):
             else:
                 return 1
 
-        sortedList.sort(cmp, reverse=True)
+        sortedList.sort(key=functools.cmp_to_key(cmp), reverse=True)
         indexToCut = -1
         for index, partyTuple in enumerate(sortedList):
             numberOfGuests = partyTuple[2]

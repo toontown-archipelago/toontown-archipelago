@@ -1,8 +1,10 @@
 import random
+from enum import IntEnum
+
 from panda3d.core import *
 from direct.interval.FunctionInterval import Wait, Func
 from direct.interval.MetaInterval import Sequence, Parallel
-from direct.showbase.PythonUtil import lerp, Enum
+from direct.showbase.PythonUtil import lerp
 from direct.fsm import FSM
 from toontown.toonbase import TTLocalizer
 from toontown.toonbase import ToontownGlobals
@@ -18,7 +20,7 @@ from toontown.parties.KeyCodes import KeyCodes
 from toontown.parties.KeyCodesGui import KeyCodesGui
 from toontown.parties import PartyGlobals
 DANCE_FLOOR_COLLISION = 'danceFloor_collision'
-DanceViews = Enum(('Normal', 'Dancing', 'Isometric'))
+DanceViews = IntEnum('DanceViews', ('Normal', 'Dancing', 'Isometric'))
 
 class DistributedPartyDanceActivityBase(DistributedPartyActivity):
     notify = directNotify.newCategory('DistributedPartyDanceActivity')
@@ -42,7 +44,7 @@ class DistributedPartyDanceActivityBase(DistributedPartyActivity):
     def generateInit(self):
         self.notify.debug('generateInit')
         DistributedPartyActivity.generateInit(self)
-        self.keyCodes = KeyCodes(patterns=self.dancePatternToAnims.keys())
+        self.keyCodes = KeyCodes(patterns=list(self.dancePatternToAnims.keys()))
         self.gui = KeyCodesGui(self.keyCodes)
         self.__initOrthoWalk()
         self.activityFSM = DanceActivityFSM(self)
@@ -83,7 +85,7 @@ class DistributedPartyDanceActivityBase(DistributedPartyActivity):
             self.danceFloor.removeNode()
             self.danceFloor = None
         self.__destroyOrthoWalk()
-        for toonId in self.dancingToonFSMs.keys():
+        for toonId in list(self.dancingToonFSMs.keys()):
             self.dancingToonFSMs[toonId].destroy()
             del self.dancingToonFSMs[toonId]
 

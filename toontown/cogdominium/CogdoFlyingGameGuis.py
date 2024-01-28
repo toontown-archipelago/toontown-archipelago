@@ -3,8 +3,8 @@ from direct.gui.DirectGui import DirectLabel, DirectFrame, DGG
 from direct.showbase.PythonUtil import bound as clamp
 from panda3d.core import TextNode, NodePath
 from toontown.toonbase import ToontownGlobals
-import CogdoUtil
-import CogdoFlyingGameGlobals as Globals
+from . import CogdoUtil
+from . import CogdoFlyingGameGlobals as Globals
 
 class CogdoFlyingProgressGui(DirectFrame):
 
@@ -147,13 +147,13 @@ class CogdoFlyingFuelGui(DirectFrame):
             return
         numBlades = fuelState - 1
         if len(self.activeBlades) != numBlades:
-            for i in xrange(len(self.activeBlades)):
+            for i in range(len(self.activeBlades)):
                 blade = self.activeBlades.pop()
                 blade.stash()
 
             if numBlades > len(self.blades):
                 numBlades = len(self.blades)
-            for i in xrange(numBlades):
+            for i in range(numBlades):
                 blade = self.blades[i]
                 self.activeBlades.append(blade)
                 blade.unstash()

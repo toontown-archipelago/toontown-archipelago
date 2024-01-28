@@ -52,7 +52,7 @@ class BossSpeedrunTimer:
         self.time_text.setText(new_time)
 
     def override_time(self, secs):
-        print("overriding time with " + str(secs))
+        print(("overriding time with " + str(secs)))
         self.overridden_time = secs
 
     def cleanup(self):

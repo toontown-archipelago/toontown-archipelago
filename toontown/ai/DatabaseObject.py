@@ -1,5 +1,5 @@
 from panda3d.core import *
-from ToontownAIMsgTypes import *
+from .ToontownAIMsgTypes import *
 from direct.directnotify.DirectNotifyGlobal import *
 from toontown.toon import DistributedToonAI
 from direct.distributed.PyDatagram import PyDatagram
@@ -90,7 +90,7 @@ class DatabaseObject:
             return
         count = di.getUint16()
         fields = []
-        for i in xrange(count):
+        for i in range(count):
             name = di.getString()
             fields.append(name)
 
@@ -99,11 +99,11 @@ class DatabaseObject:
             self.notify.warning('Failed to retrieve data for object %d' % self.doId)
         else:
             values = []
-            for i in xrange(count):
+            for i in range(count):
                 value = di.getString()
                 values.append(value)
 
-            for i in xrange(count):
+            for i in range(count):
                 found = di.getUint8()
                 if not found:
                     self.notify.info('field %s is not found' % fields[i])
@@ -139,7 +139,7 @@ class DatabaseObject:
 
     def getDatabaseFields(self, dclass):
         fields = []
-        for i in xrange(dclass.getNumInheritedFields()):
+        for i in range(dclass.getNumInheritedFields()):
             dcf = dclass.getInheritedField(i)
             af = dcf.asAtomicField()
             if af:
@@ -209,5 +209,5 @@ class DatabaseObject:
         dg = PyDatagram()
         dg.addServerHeader(DBSERVER_ID, self.air.ourChannel, DBSERVER_DELETE_STORED_OBJECT)
         dg.addUint32(self.doId)
-        dg.addUint32(3735928559L)
+        dg.addUint32(3735928559)
         self.air.send(dg)

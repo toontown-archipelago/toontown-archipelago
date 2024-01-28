@@ -3,7 +3,7 @@ from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
 from toontown.toonbase import ToontownGlobals
 from direct.directnotify import DirectNotifyGlobal
-import DistributedDoorEntityBase
+from . import DistributedDoorEntityBase
 from direct.fsm import FourState
 from direct.fsm import ClassicFSM
 from panda3d.direct import ShowInterval, HideInterval
@@ -260,7 +260,7 @@ class DistributedDoorEntity(DistributedDoorEntityBase.DistributedDoorEntityBase,
 
             door = doorway.find('doortop')
             if door.isEmpty():
-                print 'doortop hack'
+                print('doortop hack')
                 door = doorway.attachNewNode('doortop')
                 doorway.find('doortop1').reparentTo(door)
                 doorway.find('doortop2').reparentTo(door)
@@ -288,7 +288,7 @@ class DistributedDoorEntity(DistributedDoorEntityBase.DistributedDoorEntityBase,
 
             door = doorway.find('doorbottom')
             if door.isEmpty():
-                print 'doorbottom hack'
+                print('doorbottom hack')
                 door = doorway.attachNewNode('doorbottom')
                 doorway.find('doorbottom1').reparentTo(door)
                 doorway.find('doorbottom2').reparentTo(door)
@@ -363,9 +363,9 @@ class DistributedDoorEntity(DistributedDoorEntityBase.DistributedDoorEntityBase,
         return
 
     def openInnerDoors(self):
-        print 'openInnerDoors'
+        print('openInnerDoors')
         if not self.level.complexVis() or self.isOuterDoorOpen and (not self.isVisBlocker or self.isVisReady):
-            print 'openInnerDoors stage Two'
+            print('openInnerDoors stage Two')
             duration = self.duration
             slideSfx = base.loader.loadSfx('phase_9/audio/sfx/CHQ_FACT_door_open_sliding.ogg')
             finalSfx = base.loader.loadSfx('phase_9/audio/sfx/CHQ_FACT_door_open_final.ogg')
@@ -383,7 +383,7 @@ class DistributedDoorEntity(DistributedDoorEntityBase.DistributedDoorEntityBase,
         self.isOuterDoorOpen = isOpen
 
     def enterState1(self):
-        print 'doors enter state 1'
+        print('doors enter state 1')
         FourState.FourState.enterState1(self)
         self.isOuterDoorOpen = 0
         if self.isVisBlocker:

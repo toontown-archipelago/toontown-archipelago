@@ -1,4 +1,6 @@
-from direct.showbase.PythonUtil import randFloat, normalDistrib, Enum
+from enum import IntEnum
+
+from direct.showbase.PythonUtil import randFloat, normalDistrib
 from otp.otpbase.PythonUtil import clampScalar
 from toontown.toonbase import TTLocalizer, ToontownGlobals
 import random, copy
@@ -23,8 +25,8 @@ def gaussian(min, max, rng):
 
 
 class TraitDistribution:
-    TraitQuality = Enum('VERY_BAD, BAD, AVERAGE, GOOD, VERY_GOOD')
-    TraitTypes = Enum('INCREASING, DECREASING')
+    TraitQuality = IntEnum('TraitQuality', ('VERY_BAD', 'BAD', 'AVERAGE', 'GOOD', 'VERY_GOOD'))
+    TraitTypes = IntEnum('TraitTypes', ('INCREASING', 'DECREASING'))
     Sz2MinMax = None
     TraitType = None
     TraitCutoffs = {TraitTypes.INCREASING: {TraitQuality.VERY_BAD: 0.1,
@@ -182,7 +184,7 @@ class PetTraits:
         self.safeZoneId = safeZoneId
         self.rng = random.Random(self.traitSeed)
         self.traits = {}
-        for i in xrange(len(PetTraits.TraitDescs)):
+        for i in range(len(PetTraits.TraitDescs)):
             if i < len(traitValueList) and traitValueList[i] > 0.0:
                 trait = PetTraits.Trait(i, self, traitValueList[i])
             else:

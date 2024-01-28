@@ -1,6 +1,8 @@
+from enum import IntEnum
+
 from direct.showbase import PythonUtil
 from panda3d.core import VBase4
-GameActions = PythonUtil.Enum(('EnterDoor',
+GameActions = IntEnum('GameActions', ('EnterDoor',
  'RevealDoor',
  'OpenDoor',
  'Countdown',
@@ -81,7 +83,7 @@ PickupsUntilDoorOpens = int(NumPickups * 0.6)
 SuitCollisionName = 'CogdoMazeSuit_Collision'
 SuitWalkSameDirectionProb = 1
 SuitWalkTurnAroundProb = 100
-SuitTypes = PythonUtil.Enum(('Boss', 'FastMinion', 'SlowMinion'))
+SuitTypes = IntEnum('SuitTypes', ('Boss', 'FastMinion', 'SlowMinion'))
 SuitData = {}
 SuitData[SuitTypes.Boss] = {'dnaName': 'ms',
  'cellWalkPeriod': 192,

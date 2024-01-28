@@ -50,10 +50,10 @@ CashbotStageConnectorRooms = ('phase_11/models/lawbotHQ/LB_connector_7cubeL2', '
 CashbotStageSpecModules = {}
 if config.GetBool('isclient-check', False):
     if not isClient():
-        print 'EXECWARNING StageRoomSpecs: %s' % CashbotStageRoomName2RoomId
+        print('EXECWARNING StageRoomSpecs: %s' % CashbotStageRoomName2RoomId)
         printStack()
 for roomName, roomId in CashbotStageRoomName2RoomId.items():
-    exec 'from toontown.coghq import %s' % roomName
+    exec('from toontown.coghq import %s' % roomName)
     CashbotStageSpecModules[roomId] = eval(roomName)
 
 CogSpecModules = {'LawbotOfficeOilRoom_Battle00': LawbotOfficeOilRoom_Battle00_Cogs,

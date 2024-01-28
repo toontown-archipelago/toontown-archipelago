@@ -1,6 +1,6 @@
 from direct.directnotify import DirectNotifyGlobal
 import string
-import LevelConstants
+from . import LevelConstants
 from direct.showbase.PythonUtil import lineInfo, uniqueElements
 import types
 
@@ -104,9 +104,9 @@ class Level:
         Level.notify.debug('creating %s %s' % (spec['type'], entId))
         entity = self.entityCreator.createEntity(entId)
         announce = False
-        if entity is 'nonlocal':
+        if entity == 'nonlocal':
             self.nonlocalEntIds[entId] = None
-        elif entity is 'nothing':
+        elif entity == 'nothing':
             self.nothingEntIds[entId] = None
             announce = True
         else:

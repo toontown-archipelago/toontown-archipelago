@@ -5,9 +5,9 @@ import copy
 from direct.interval.IntervalGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from panda3d.core import *
-from libotp import *
+from panda3d.otp import *
 from direct.showbase import DirectObject
-import BlinkingArrows
+from . import BlinkingArrows
 from toontown.toon import ToonHeadFrame
 from toontown.char import CharDNA
 from toontown.suit import SuitDNA
@@ -54,7 +54,7 @@ def clear():
 def readFile(filename):
     global curId
     scriptFile = StreamReader(vfs.openReadFile(filename, 1), 1)
-    gen = tokenize.generate_tokens(scriptFile.readline)
+    gen = tokenize.tokenize(scriptFile.readline)
     line = getLineOfTokens(gen)
     while line is not None:
         if line == []:
@@ -74,11 +74,11 @@ def readFile(filename):
 def getLineOfTokens(gen):
     tokens = []
     nextNeg = 0
-    token = gen.next()
+    token = next(gen)
     if token[0] == tokenize.ENDMARKER:
         return None
     while token[0] != tokenize.NEWLINE and token[0] != tokenize.NL:
-        if token[0] == tokenize.COMMENT:
+        if token[0] in (tokenize.COMMENT, tokenize.ENCODING):
             pass
         elif token[0] == tokenize.OP and token[1] == '-':
             nextNeg = 1
@@ -94,7 +94,7 @@ def getLineOfTokens(gen):
             tokens.append(token[1])
         else:
             notify.warning('Ignored token type: %s on line: %s' % (tokenize.tok_name[token[0]], token[2][0]))
-        token = gen.next()
+        token = next(gen)
 
     return tokens
 
@@ -161,7 +161,7 @@ class NPCMoviePlayer(DirectObject.DirectObject):
             self.currentTrack = None
         self.ignoreAll()
         taskMgr.remove(self.uniqueId)
-        for toonHeadFrame in self.toonHeads.values():
+        for toonHeadFrame in list(self.toonHeads.values()):
             toonHeadFrame.destroy()
 
         while self.chars:
@@ -991,8 +991,6 @@ class NPCMoviePlayer(DirectObject.DirectObject):
         if enable:
 
             def phraseSaid(phraseId, displayType):
-                if displayType != 0:
-                    return
                 toontastic = 315
                 if phraseId == toontastic:
                     messenger.send(DistributedBlackCatMgr.DistributedBlackCatMgr.ActivateEvent)

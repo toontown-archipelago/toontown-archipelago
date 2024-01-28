@@ -1,5 +1,5 @@
 from panda3d.core import *
-import ShtikerPage
+from . import ShtikerPage
 from direct.task.Task import Task
 from direct.gui.DirectGui import *
 from toontown.toonbase import TTLocalizer
@@ -194,7 +194,7 @@ class ShardPage(ShtikerPage.ShtikerPage):
         totalWVPop = 0
         currentMap = {}
         self.shardButtons = []
-        for i in xrange(len(curShardTuples)):
+        for i in range(len(curShardTuples)):
             shardId, name, pop, WVPop = curShardTuples[i]
             if shardId == actualShardId:
                 actualShardName = name

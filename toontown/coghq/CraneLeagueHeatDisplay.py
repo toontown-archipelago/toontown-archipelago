@@ -121,7 +121,7 @@ class CraneLeagueHeatDisplay:
 
         s = LOWEST_HEAT_S_VALUE + ((HIGHEST_HEAT_S_VALUE-LOWEST_HEAT_S_VALUE)*heat_factor)
         r, g, b = ColorSpace.hsv2rgb(h, s, V_HEAT_VALUE)
-        print('setting to %s %s %s (%s %s %s)' % (r, g, b, h, s, V_HEAT_VALUE))
+        print(('setting to %s %s %s (%s %s %s)' % (r, g, b, h, s, V_HEAT_VALUE)))
         return r, g, b, 1
 
     # Take in an integer and set the heat to display, update the color

@@ -64,10 +64,10 @@ CashbotMintConnectorRooms = ('phase_10/models/cashbotHQ/connector_7cubeL2', 'pha
 CashbotMintSpecModules = {}
 if config.GetBool('isclient-check', False):
     if not isClient():
-        print 'EXECWARNING MintRoomSpecs: %s' % CashbotMintRoomName2RoomId
+        print('EXECWARNING MintRoomSpecs: %s' % CashbotMintRoomName2RoomId)
         printStack()
 for roomName, roomId in CashbotMintRoomName2RoomId.items():
-    exec 'from toontown.coghq import %s' % roomName
+    exec('from toontown.coghq import %s' % roomName)
     CashbotMintSpecModules[roomId] = eval(roomName)
 
 CogSpecModules = {'CashbotMintBoilerRoom_Battle00': CashbotMintBoilerRoom_Battle00_Cogs,

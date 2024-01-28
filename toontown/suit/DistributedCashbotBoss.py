@@ -5,10 +5,10 @@ from direct.directnotify import DirectNotifyGlobal
 from toontown.coghq.ActivityLog import ActivityLog
 from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimedTimer, BossSpeedrunTimer
 from toontown.toonbase import TTLocalizer
-import DistributedBossCog
+from . import DistributedBossCog
 from direct.task.Task import Task
-import DistributedCashbotBossGoon
-import SuitDNA
+from . import DistributedCashbotBossGoon
+from . import SuitDNA
 from toontown.toon import Toon
 from toontown.toon import ToonDNA
 from direct.fsm import FSM
@@ -237,7 +237,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def setRawRuleset(self, attrs):
         self.ruleset = CraneLeagueGlobals.CFORuleset.fromStruct(attrs)
         self.updateRequiredElements()
-        print('ruleset updated: ' + str(self.ruleset))
+        print(('ruleset updated: ' + str(self.ruleset)))
 
     def getRawRuleset(self):
         return self.ruleset.asStruct()
@@ -302,7 +302,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
         # Make some goons for the resistance toon to play with
         self.fakeGoons = []
-        for i in xrange(self.numFakeGoons):
+        for i in range(self.numFakeGoons):
             goon = DistributedCashbotBossGoon.DistributedCashbotBossGoon(base.cr)
             goon.doId = -1 - i
             goon.setBossCogId(self.doId)
@@ -318,7 +318,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.resistanceToon.removeActive()
             self.resistanceToon.delete()
             self.resistanceToon = None
-            for i in xrange(self.numFakeGoons):
+            for i in range(self.numFakeGoons):
                 self.fakeGoons[i].disable()
                 self.fakeGoons[i].delete()
                 self.fakeGoons[i] = None
@@ -348,7 +348,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
                 goon.request('Off')
 
     def __showFakeGoons(self, state):
-        print self.fakeGoons
+        print(self.fakeGoons)
         if self.fakeGoons:
             for goon in self.fakeGoons:
                 goon.request(state)
@@ -490,7 +490,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
                 self.notify.warning('Not a collision node: %s' % repr(cnp))
                 break
             newCollideMask = newCollideMask | cn.getIntoCollideMask()
-            for i in xrange(cn.getNumSolids()):
+            for i in range(cn.getNumSolids()):
                 solid = cn.getSolid(i)
                 if isinstance(solid, CollisionPolygon):
                     # Save the plane defined by this polygon
@@ -684,8 +684,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         #we're gonna leave this guy on the side... stunned
         mainGoon = self.fakeGoons[0]
         goonLoop = Parallel()
-        print self.fakeGoons
-        for i in xrange(1, self.numFakeGoons):
+        print(self.fakeGoons)
+        for i in range(1, self.numFakeGoons):
             goon = self.fakeGoons[i]
             goonLoop.append(Sequence(goon.posHprInterval(8, goonPosHprs[i][0], goonPosHprs[i][1]), goon.posHprInterval(8, goonPosHprs[i][2], goonPosHprs[i][3])))
 
@@ -806,7 +806,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def moveToonsToBattleThreePos(self, toons):
         track = Parallel()
         if self.wantCustomCraneSpawns:
-            for i in xrange(len(toons)):
+            for i in range(len(toons)):
                 toonId = toons[i]
                 toon = base.cr.doId2do.get(toons[i])
                 if toonId:
@@ -819,7 +819,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
                     hpr = VBase3(*posHpr[3:6])
                     track.append(toon.posHprInterval(0.2, pos, hpr))
         else:
-            for i in xrange(len(toons)):
+            for i in range(len(toons)):
                 toon = base.cr.doId2do.get(toons[i])
                 spawn_index = self.toonSpawnpointOrder[i]
                 if toon:
@@ -1034,7 +1034,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         radius = 7
         numToons = len(self.involvedToons)
         center = (numToons - 1) / 2.0
-        for i in xrange(numToons):
+        for i in range(numToons):
             toon = self.cr.doId2do.get(self.involvedToons[i])
             if toon:
                 angle = 90 - 15 * (i - center)

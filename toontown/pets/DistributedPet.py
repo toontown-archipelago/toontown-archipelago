@@ -107,7 +107,7 @@ class DistributedPet(DistributedSmoothNode.DistributedSmoothNode, Pet.Pet, PetBa
         self.safeZone = safeZone
 
     def __generateDistTraitFuncs(self):
-        for i in xrange(PetTraits.PetTraits.NumTraits):
+        for i in range(PetTraits.PetTraits.NumTraits):
             traitName = PetTraits.getTraitNames()[i]
             setterName = self.getSetterName(traitName)
 
@@ -467,15 +467,15 @@ class DistributedPet(DistributedSmoothNode.DistributedSmoothNode, Pet.Pet, PetBa
             try:
                 self.movieTrack = Sequence(Func(self._petMovieStart, av), Parallel(av.getCallPetIval(), Sequence(Wait(0.54), SoundInterval(self.callSfx))), self._getPetMovieCompleteIval(av))
                 self.movieTrack.start()
-            except StandardError, error:
-                print str(error)
+            except Exception as error:
+                print(str(error))
 
         if mode == PetConstants.PET_MOVIE_SCRATCH:
             try:
                 self.movieTrack = Sequence(Func(self._petMovieStart, av), Func(self.holdPetDownForMovie), Parallel(self.getInteractIval(self.Interactions.SCRATCH), av.getScratchPetIval(), SoundInterval(self.petSfx)), Func(self.releasePetFromHoldDown), self._getPetMovieCompleteIval(av))
                 self.movieTrack.start()
-            except StandardError, error:
-                print str(error)
+            except Exception as error:
+                print(str(error))
 
         if mode == PetConstants.PET_MOVIE_FEED:
             self.bean = loader.loadModel('phase_4/models/props/jellybean4')

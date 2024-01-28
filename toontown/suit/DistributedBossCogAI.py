@@ -1,6 +1,7 @@
 from direct.directnotify import DirectNotifyGlobal
 from otp.avatar import DistributedAvatarAI
 from toontown.battle import BattleExperienceAI
+from toontown.suit import SuitDNA
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.toon import InventoryBase
@@ -9,7 +10,7 @@ from toontown.building import SuitPlannerInteriorAI
 from toontown.battle import BattleBase
 from toontown.coghq import CogDisguiseGlobals
 from panda3d.core import *
-import SuitDNA, random
+import random
 AllBossCogs = []
 
 class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
@@ -242,8 +243,8 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def formatLaffLevels(self):
         try:
-            return map(lambda id: simbase.air.doId2do.get(id).getMaxHp(), self.involvedToons)
-        except Exception, e:
+            return [simbase.air.doId2do.get(id).getMaxHp() for id in self.involvedToons]
+        except Exception as e:
             self.notify.warning(e)
             return []
 
@@ -257,7 +258,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
                     return 0
 
             return map(hasSuit, self.involvedToons)
-        except Exception, e:
+        except Exception as e:
             self.notify.warning(e)
             return []
 
@@ -578,7 +579,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         return suits
 
     def generateSuits(self, battleNumber):
-        raise StandardError, 'generateSuits unimplemented'
+        raise Exception('generateSuits unimplemented')
 
     def handleRoundDone(self, battle, suits, activeSuits, toonIds, totalHp, deadSuits):
         totalMaxHp = 0

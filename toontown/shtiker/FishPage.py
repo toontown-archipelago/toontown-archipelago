@@ -1,5 +1,5 @@
 from toontown.toonbase import ToontownGlobals
-import ShtikerPage
+from . import ShtikerPage
 from direct.directnotify import DirectNotifyGlobal
 from direct.gui.DirectGui import *
 from panda3d.core import *

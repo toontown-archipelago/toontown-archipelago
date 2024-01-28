@@ -29,7 +29,7 @@ class PetManagerAI:
             os.makedirs(self.cachePath)
 
         if os.path.isfile(self.cacheFile):
-            with open(self.cacheFile, 'rb') as f:
+            with open(self.cacheFile, 'r') as f:
                 data = f.read()
 
             try:
@@ -47,14 +47,14 @@ class PetManagerAI:
     def getAvailablePets(self, firstNumPets, secondNumPets):
         numPets = firstNumPets + secondNumPets
         if not self.seeds.get(str(numPets), []) or self.seeds.get('day', -1) != getDayId():
-            self.seeds[str(numPets)] = random.sample(xrange(256), numPets)
+            self.seeds[str(numPets)] = random.sample(range(256), numPets)
             self.updatePetSeedCache()
 
         return self.seeds.get(str(numPets), [numPets])[0:numPets]
 
     def updatePetSeedCache(self):
         self.seeds['day'] = getDayId()
-        with open(self.cacheFile, 'wb') as f:
+        with open(self.cacheFile, 'w') as f:
             f.write(json.dumps(self.seeds))
 
     def createNewPetFromSeed(self, avId, seed, nameIndex, gender, safeZoneId):

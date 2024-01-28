@@ -2,19 +2,19 @@ from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase import PythonUtil
 from otp.otpbase import OTPLocalizer
-import HTTPUtil
-import RemoteValueSet
+from . import HTTPUtil
+from . import RemoteValueSet
 import copy
 accountServer = ''
 accountServer = launcher.getAccountServer()
-print 'TTAccount: accountServer from launcher: ', accountServer
+print('TTAccount: accountServer from launcher: ', accountServer)
 configAccountServer = base.config.GetString('account-server', '')
 if configAccountServer:
     accountServer = configAccountServer
-    print 'TTAccount: overriding accountServer from config: ', accountServer
+    print('TTAccount: overriding accountServer from config: ', accountServer)
 if not accountServer:
     accountServer = 'https://toontown.go.com'
-    print 'TTAccount: default accountServer: ', accountServer
+    print('TTAccount: default accountServer: ', accountServer)
 accountServer = URLSpec(accountServer, 1)
 
 def getAccountServer():
@@ -54,7 +54,7 @@ class TTAccount:
             if self.response.getInt('errorCode') in (5, 72):
                 return (0, None)
             return (0, errorMsg)
-        except TTAccountException, e:
+        except TTAccountException as e:
             return (0, str(e))
 
         return None
@@ -70,7 +70,7 @@ class TTAccount:
             if self.response.getInt('errorCode') in (5, 72):
                 return (0, None)
             return (0, errorMsg)
-        except TTAccountException, e:
+        except TTAccountException as e:
             return (0, str(e))
 
         return None
@@ -84,7 +84,7 @@ class TTAccount:
             if self.response.getInt('errorCode') in (5, 72):
                 return (0, None)
             return (0, errorMsg)
-        except TTAccountException, e:
+        except TTAccountException as e:
             return (0, str(e))
 
         return None
@@ -273,7 +273,7 @@ class TTAccount:
             if self.response.getInt('errorCode') in (5, 72):
                 return (0, None)
             return (0, errorMsg)
-        except TTAccountException, e:
+        except TTAccountException as e:
             return (0, str(e))
 
         return None

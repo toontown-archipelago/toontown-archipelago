@@ -30,7 +30,9 @@ class GameServicesManager(DistributedObjectGlobal):
 
     def avatarListResponse(self, avatarList):
         avList = []
-        for avNum, avName, avDNA, avPosition, nameState in avatarList:
+        for avatarInfo in avatarList:
+            avNum, avName, avDNA, avPosition, nameState = avatarInfo
+
             nameOpen = int(nameState == 1)
             names = [avName, '', '', '']
             if nameState == 2:  # Pending

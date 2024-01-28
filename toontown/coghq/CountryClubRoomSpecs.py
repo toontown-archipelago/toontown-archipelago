@@ -43,10 +43,10 @@ BossbotCountryClubConnectorRooms = ('phase_12/models/bossbotHQ/Connector_Tunnel_
 CashbotMintSpecModules = {}
 if config.GetBool('isclient-check', False):
     if not isClient():
-        print 'EXECWARNING CountryClubRoomSpecs: %s' % BossbotCountryClubRoomName2RoomId
+        print('EXECWARNING CountryClubRoomSpecs: %s' % BossbotCountryClubRoomName2RoomId)
         printStack()
 for roomName, roomId in BossbotCountryClubRoomName2RoomId.items():
-    exec 'from toontown.coghq import %s' % roomName
+    exec('from toontown.coghq import %s' % roomName)
     CashbotMintSpecModules[roomId] = eval(roomName)
 
 CogSpecModules = {'BossbotCountryClubFairwayRoom_Battle00': BossbotCountryClubFairwayRoom_Battle00_Cogs,

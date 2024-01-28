@@ -1,5 +1,5 @@
 from direct.directnotify import DirectNotifyGlobal
-import HoodDataAI, ZoneUtil
+from . import HoodDataAI, ZoneUtil
 from toontown.toonbase import ToontownGlobals
 from toontown.safezone import OZTreasurePlannerAI
 from toontown.racing import DistributedStartingBlockAI
@@ -124,7 +124,7 @@ class OZHoodDataAI(HoodDataAI.HoodDataAI):
                 nameInfo = dnaGroup.getName().split('_')
                 pos = Point3(0, 0, 0)
                 hpr = Point3(0, 0, 0)
-                for i in xrange(dnaGroup.getNumChildren()):
+                for i in range(dnaGroup.getNumChildren()):
                     childDnaGroup = dnaGroup.at(i)
                     if string.find(childDnaGroup.getName(), 'game_table') >= 0:
                         pos = childDnaGroup.getPos()
@@ -136,7 +136,7 @@ class OZHoodDataAI(HoodDataAI.HoodDataAI):
         else:
             if isinstance(dnaGroup, DNAVisGroup) and not overrideDNAZone:
                 zoneId = ZoneUtil.getTrueZoneId(int(dnaGroup.getName().split(':')[0]), zoneId)
-            for i in xrange(dnaGroup.getNumChildren()):
+            for i in range(dnaGroup.getNumChildren()):
                 childPicnicTables = self.findAndCreateGameTables(dnaGroup.at(i), zoneId, area, overrideDNAZone, type)
                 picnicTables += childPicnicTables
 
@@ -145,14 +145,16 @@ class OZHoodDataAI(HoodDataAI.HoodDataAI):
     def findAndCreatePicnicTables(self, dnaGroup, zoneId, area, overrideDNAZone = 0, type = 'picnic_table'):
         picnicTables = []
         picnicTableGroups = []
-        if isinstance(dnaGroup, DNAGroup) and string.find(dnaGroup.getName(), type) >= 0:
+        # if isinstance(dnaGroup, DNAGroup) and string.find(dnaGroup.getName(), type) >= 0:
+        if isinstance(dnaGroup, DNAGroup) and dnaGroup.getName().find(type) >= 0:
             if type == 'picnic_table':
                 nameInfo = dnaGroup.getName().split('_')
                 pos = Point3(0, 0, 0)
                 hpr = Point3(0, 0, 0)
-                for i in xrange(dnaGroup.getNumChildren()):
+                for i in range(dnaGroup.getNumChildren()):
                     childDnaGroup = dnaGroup.at(i)
-                    if string.find(childDnaGroup.getName(), 'picnic_table') >= 0:
+                    # if string.find(childDnaGroup.getName(), 'picnic_table') >= 0:
+                    if childDnaGroup.getName().find('picnic_table') >= 0:
                         pos = childDnaGroup.getPos()
                         hpr = childDnaGroup.getHpr()
                         break
@@ -163,7 +165,7 @@ class OZHoodDataAI(HoodDataAI.HoodDataAI):
         else:
             if isinstance(dnaGroup, DNAVisGroup) and not overrideDNAZone:
                 zoneId = ZoneUtil.getTrueZoneId(int(dnaGroup.getName().split(':')[0]), zoneId)
-            for i in xrange(dnaGroup.getNumChildren()):
+            for i in range(dnaGroup.getNumChildren()):
                 childPicnicTables = self.findAndCreatePicnicTables(dnaGroup.at(i), zoneId, area, overrideDNAZone, type)
                 picnicTables += childPicnicTables
 
@@ -202,7 +204,7 @@ class OZHoodDataAI(HoodDataAI.HoodDataAI):
 
     def findStartingBlocks(self, dnaRacingPadGroup, distRacePad):
         startingBlocks = []
-        for i in xrange(dnaRacingPadGroup.getNumChildren()):
+        for i in range(dnaRacingPadGroup.getNumChildren()):
             dnaGroup = dnaRacingPadGroup.at(i)
             if string.find(dnaGroup.getName(), 'starting_block') >= 0:
                 padLocation = dnaGroup.getName().split('_')[2]

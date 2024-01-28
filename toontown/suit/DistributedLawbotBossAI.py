@@ -1,9 +1,9 @@
 from otp.ai.AIBaseGlobal import *
 from direct.distributed.ClockDelta import *
-import DistributedBossCogAI
+from . import DistributedBossCogAI
 from direct.directnotify import DirectNotifyGlobal
 from otp.avatar import DistributedAvatarAI
-import DistributedSuitAI
+from . import DistributedSuitAI
 from toontown.battle import BattleExperienceAI
 from direct.fsm import FSM
 from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
@@ -13,7 +13,7 @@ from toontown.toonbase import TTLocalizer
 from toontown.battle import BattleBase
 from toontown.toon import NPCToons
 from toontown.building import SuitBuildingGlobals
-import SuitDNA
+from . import SuitDNA
 import random
 from toontown.coghq import DistributedLawbotBossGavelAI, ScaleLeagueGlobals
 from toontown.suit import DistributedLawbotBossSuitAI
@@ -91,7 +91,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
 
     # Any time you change the ruleset, you should call this to sync the clients
     def d_setRawRuleset(self):
-        print(self.getRawRuleset())
+        print((self.getRawRuleset()))
         self.sendUpdate('setRawRuleset', [self.getRawRuleset()])
 
     def getRawRuleset(self):
@@ -392,7 +392,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
             numToons = len(self.involvedToons)
             numToons = 8
             stepDisplacement = totalDisplacement / (numToons + 1)
-            for index in xrange(numToons):
+            for index in range(numToons):
                 newPos = stepDisplacement * (index + 1)
                 self.notify.debug('curDisplacement = %s' % newPos)
                 newPos += startPt
@@ -406,7 +406,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
     def __makeChairs(self):
         if self.chairs == None:
             self.chairs = []
-            for index in xrange(12):
+            for index in range(12):
                 chair = DistributedLawbotChairAI.DistributedLawbotChairAI(self.air, self, index)
                 chair.generateWithRequired(self.zoneId)
                 self.chairs.append(chair)
@@ -643,7 +643,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
     def __makeBattleThreeObjects(self):
         if self.gavels == None:
             self.gavels = []
-            for index in xrange(self.numGavels):
+            for index in range(self.numGavels):
                 gavel = DistributedLawbotBossGavelAI.DistributedLawbotBossGavelAI(self.air, self, index)
                 gavel.generateWithRequired(self.zoneId)
                 self.gavels.append(gavel)
@@ -754,7 +754,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
                 summonType = 'invasion'
             else:
                 foundOne = False
-                for curDeptIndex in xrange(len(SuitDNA.suitDepts)):
+                for curDeptIndex in range(len(SuitDNA.suitDepts)):
                     if not toon.hasParticularCogSummons(curDeptIndex, cogLevel, prefSummonType):
                         deptIndex = curDeptIndex
                         foundOne = True
@@ -775,12 +775,12 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
                         foundOne = True
                         break
 
-                possibleCogLevel = xrange(SuitDNA.suitsPerDept)
-                possibleDeptIndex = xrange(len(SuitDNA.suitDepts))
+                possibleCogLevel = range(SuitDNA.suitsPerDept)
+                possibleDeptIndex = range(len(SuitDNA.suitDepts))
                 possibleSummonType = ['single', 'building', 'invasion']
                 typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3
                 if not foundOne:
-                    for i in xrange(5):
+                    for i in range(5):
                         randomCogLevel = random.choice(possibleCogLevel)
                         randomSummonType = random.choice(typeWeights)
                         randomDeptIndex = random.choice(possibleDeptIndex)
@@ -860,7 +860,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
     def __makeLawyers(self):
         self.__resetLawyers()
         lawCogChoices = ['b','dt', 'ac', 'bs', 'sd', 'le', 'bw']
-        for i in xrange(self.numLawyers):
+        for i in range(self.numLawyers):
             suit = DistributedLawbotBossSuitAI.DistributedLawbotBossSuitAI(self.air, None)
             suit.dna = SuitDNA.SuitDNA()
             lawCog = random.choice(lawCogChoices)

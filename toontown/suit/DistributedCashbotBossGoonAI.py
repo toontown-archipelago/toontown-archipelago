@@ -2,13 +2,13 @@ from panda3d.core import *
 from direct.task.TaskManagerGlobal import *
 from direct.distributed.ClockDelta import *
 from direct.interval.IntervalGlobal import *
-import GoonGlobals
+from . import GoonGlobals
 from direct.task.Task import Task
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 from toontown.coghq import DistributedCashbotBossObjectAI, CraneLeagueGlobals
 from direct.showbase import PythonUtil
-import DistributedGoonAI
+from . import DistributedGoonAI
 import math
 import random
 
@@ -153,7 +153,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         # ones.
         self.cQueue.sortEntries()
         
-        for i in xrange(self.cQueue.getNumEntries() - 1, -1, -1):
+        for i in range(self.cQueue.getNumEntries() - 1, -1, -1):
             entry = self.cQueue.getEntry(i)
             dist = Vec3(entry.getSurfacePoint(self)).length()
             
@@ -169,7 +169,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         # preference.
         netScore = 0
         scoreTable = []
-        for i in xrange(len(self.directionTable)):
+        for i in range(len(self.directionTable)):
             heading, weight = self.directionTable[i]
             seg = self.feelers[i]
             dist = entries.get(seg, self.feelerLength)
@@ -186,7 +186,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         # And finally, choose a random direction from the table,
         # with a random distribution weighted by score.
         s = random.uniform(0, netScore)
-        for i in xrange(len(self.directionTable)):
+        for i in range(len(self.directionTable)):
             s -= scoreTable[i]
             if s <= 0:
                 heading, weight = self.directionTable[i]

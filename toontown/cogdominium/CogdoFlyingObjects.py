@@ -4,9 +4,9 @@ from panda3d.physics import *
 from direct.interval.IntervalGlobal import Sequence, Func, Parallel, Wait, LerpHprInterval, LerpScaleInterval, LerpFunctionInterval
 from otp.otpbase import OTPGlobals
 from toontown.toonbase import ToontownGlobals
-from CogdoGameGatherable import CogdoGameGatherable, CogdoMemo
-import CogdoFlyingGameGlobals as Globals
-import CogdoUtil
+from .CogdoGameGatherable import CogdoGameGatherable, CogdoMemo
+from . import CogdoFlyingGameGlobals as Globals
+from . import CogdoUtil
 from direct.particles import ParticleEffect
 from direct.particles import Particles
 from direct.particles import ForceGroup
@@ -79,7 +79,7 @@ class CogdoFlyingGatherableFactory:
         del self._memoModel
         self._propellerModel.removeNode()
         del self._propellerModel
-        for model in self._powerUpModels.values():
+        for model in list(self._powerUpModels.values()):
             model.removeNode()
 
         del self._powerUpModels

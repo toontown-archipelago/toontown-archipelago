@@ -1,26 +1,15 @@
-import CutScene
-import EntityCreatorBase
-import BasicEntities
 from direct.directnotify import DirectNotifyGlobal
-import EditMgr
-import EntrancePoint
-import LevelMgr
-import LogicGate
-import ZoneEntity
-import ModelEntity
-import PathEntity
-import VisibilityExtender
-import PropSpinner
-import AmbientSound
-import LocatorEntity
-import CollisionSolidEntity
+
+from otp.level import CutScene, EntityCreatorBase, AmbientSound, CollisionSolidEntity, EditMgr, EntrancePoint, LevelMgr, \
+    LocatorEntity, LogicGate, ModelEntity, BasicEntities, PathEntity, PropSpinner, VisibilityExtender, ZoneEntity
+
 
 def nothing(*args):
     return 'nothing'
 
 
-def nonlocal(*args):
-    return 'nonlocal'
+def _nonlocal(*args):
+    return '_nonlocal'
 
 
 class EntityCreator(EntityCreatorBase.EntityCreatorBase):

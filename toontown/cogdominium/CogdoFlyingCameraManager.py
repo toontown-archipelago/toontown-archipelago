@@ -4,7 +4,7 @@ from math import pi, sin, cos
 from direct.showbase.PythonUtil import bound as clamp
 from otp.otpbase import OTPGlobals
 from toontown.toonbase import ToontownGlobals
-import CogdoFlyingGameGlobals as Globals
+from . import CogdoFlyingGameGlobals as Globals
 INVERSE_E = 1.0 / math.e
 
 def smooth(old, new):
@@ -162,7 +162,7 @@ class CogdoFlyingCameraManager:
                     if np not in nodesInBetween:
                         nodesInBetween[np] = np.getParent()
 
-        for np in nodesInBetween.keys():
+        for np in list(nodesInBetween.keys()):
             if np in self._betweenCamAndToon:
                 del self._betweenCamAndToon[np]
             else:

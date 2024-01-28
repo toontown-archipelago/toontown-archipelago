@@ -59,7 +59,7 @@ class AIZoneDataObj:
         return self._refCount
 
     def destroy(self):
-        for name in list(self._collTravsStarted):
+        for name in self._collTravsStarted:
             self.stopCollTrav(cTravName=name)
 
         del self._collTravsStarted

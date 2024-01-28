@@ -16,7 +16,7 @@ class LevelBattleManagerAI(BattleManagerAI.BattleManagerAI):
         return
 
     def destroyBattleMgr(self):
-        battles = self.cellId2battle.values()
+        battles = list(self.cellId2battle.values())
         for battle in battles:
             self.destroy(battle)
 

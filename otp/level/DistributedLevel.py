@@ -6,13 +6,13 @@ from toontown.distributed.ToontownMsgTypes import *
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 from direct.distributed import DistributedObject
-import Level
-import LevelConstants
+from . import Level
+from . import LevelConstants
 from direct.directnotify import DirectNotifyGlobal
-import EntityCreator
+from . import EntityCreator
 from direct.gui import OnscreenText
 from direct.task import Task
-import LevelUtil
+from . import LevelUtil
 import random
 
 class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
@@ -97,7 +97,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
 
             def setSpecBlob(specBlob, blobSender = blobSender, self = self):
                 blobSender.sendAck()
-                from LevelSpec import LevelSpec
+                from .LevelSpec import LevelSpec
                 spec = eval(specBlob)
                 if spec is None:
                     spec = self.candidateSpec
@@ -139,7 +139,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
                 base.localAvatar.setPosHpr(0, 0, 0, 0, 0, 0)
             self.notify.debug('showing all zones')
             self.setColorZones(1)
-            zoneEntIds = list(self.entType2ids['zone'])
+            zoneEntIds = self.entType2ids['zone']
             zoneEntIds.remove(LevelConstants.UberZoneEntId)
             if len(zoneEntIds):
                 zoneEntId = random.choice(zoneEntIds)
@@ -397,7 +397,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
                 if self.lastToonZone is not None:
                     self.notify.warning('adding zoneNum %s to visibility list because toon is standing in that zone!' % self.lastToonZone)
                     visibleZoneNums.update(list2dict([self.lastToonZone]))
-        zoneEntIds = list(self.entType2ids['zone'])
+        zoneEntIds = self.entType2ids['zone']
         zoneEntIds.remove(LevelConstants.UberZoneEntId)
         if len(zoneEntIds):
             pass
@@ -437,7 +437,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
 
     def setVisibility(self, vizList):
         if self.fColorZones and DistributedLevel.ColorZonesAllDOs:
-            vizList = list(self.zoneNums)
+            vizList = self.zoneNums
             vizList.remove(LevelConstants.UberZoneEntId)
         uberZone = self.getZoneId(LevelConstants.UberZoneEntId)
         visibleZoneIds = [OTPGlobals.UberZone, self.levelZone, uberZone]

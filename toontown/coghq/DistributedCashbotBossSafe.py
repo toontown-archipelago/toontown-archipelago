@@ -3,7 +3,7 @@ from direct.interval.IntervalGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
-import DistributedCashbotBossObject
+from . import DistributedCashbotBossObject
 
 from toontown.coghq import CraneLeagueGlobals
 

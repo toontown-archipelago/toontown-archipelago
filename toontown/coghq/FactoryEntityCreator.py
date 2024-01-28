@@ -1,55 +1,47 @@
 from otp.level import EntityCreator
-import FactoryLevelMgr
-import PlatformEntity
-import ConveyorBelt
-import GearEntity
-import PaintMixer
-import GoonClipPlane
-import MintProduct
-import MintProductPallet
-import MintShelf
-import PathMasterEntity
-import RenderingEntity
+from toontown.coghq import ConveyorBelt, GearEntity, GoonClipPlane, FactoryLevelMgr, MintProduct, MintProductPallet, \
+ MintShelf, PaintMixer, PathMasterEntity, RenderingEntity, PlatformEntity
+
 
 class FactoryEntityCreator(EntityCreator.EntityCreator):
 
     def __init__(self, level):
         EntityCreator.EntityCreator.__init__(self, level)
         nothing = EntityCreator.nothing
-        nonlocal = EntityCreator.nonlocal
-        self.privRegisterTypes({'activeCell': nonlocal,
-         'crusherCell': nonlocal,
-         'battleBlocker': nonlocal,
-         'beanBarrel': nonlocal,
-         'button': nonlocal,
+        _nonlocal = EntityCreator._nonlocal
+        self.privRegisterTypes({'activeCell': _nonlocal,
+         'crusherCell': _nonlocal,
+         'battleBlocker': _nonlocal,
+         'beanBarrel': _nonlocal,
+         'button': _nonlocal,
          'conveyorBelt': ConveyorBelt.ConveyorBelt,
-         'crate': nonlocal,
-         'door': nonlocal,
-         'directionalCell': nonlocal,
-         'gagBarrel': nonlocal,
+         'crate': _nonlocal,
+         'door': _nonlocal,
+         'directionalCell': _nonlocal,
+         'gagBarrel': _nonlocal,
          'gear': GearEntity.GearEntity,
-         'goon': nonlocal,
-         'gridGoon': nonlocal,
-         'golfGreenGame': nonlocal,
+         'goon': _nonlocal,
+         'gridGoon': _nonlocal,
+         'golfGreenGame': _nonlocal,
          'goonClipPlane': GoonClipPlane.GoonClipPlane,
-         'grid': nonlocal,
-         'healBarrel': nonlocal,
+         'grid': _nonlocal,
+         'healBarrel': _nonlocal,
          'levelMgr': FactoryLevelMgr.FactoryLevelMgr,
-         'lift': nonlocal,
+         'lift': _nonlocal,
          'mintProduct': MintProduct.MintProduct,
          'mintProductPallet': MintProductPallet.MintProductPallet,
          'mintShelf': MintShelf.MintShelf,
-         'mover': nonlocal,
+         'mover': _nonlocal,
          'paintMixer': PaintMixer.PaintMixer,
          'pathMaster': PathMasterEntity.PathMasterEntity,
          'rendering': RenderingEntity.RenderingEntity,
          'platform': PlatformEntity.PlatformEntity,
-         'sinkingPlatform': nonlocal,
-         'stomper': nonlocal,
-         'stomperPair': nonlocal,
-         'laserField': nonlocal,
-         'securityCamera': nonlocal,
-         'elevatorMarker': nonlocal,
-         'trigger': nonlocal,
-         'moleField': nonlocal,
-         'maze': nonlocal})
+         'sinkingPlatform': _nonlocal,
+         'stomper': _nonlocal,
+         'stomperPair': _nonlocal,
+         'laserField': _nonlocal,
+         'securityCamera': _nonlocal,
+         'elevatorMarker': _nonlocal,
+         'trigger': _nonlocal,
+         'moleField': _nonlocal,
+         'maze': _nonlocal})

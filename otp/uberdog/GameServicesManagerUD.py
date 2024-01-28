@@ -1,5 +1,5 @@
-import anydbm
-import dumbdbm
+import dbm
+import dbm.dumb
 import sys
 import time
 from datetime import datetime
@@ -31,11 +31,11 @@ class AccountDB:
         accountDbFile = simbase.config.GetString('accountdb-local-file', 'astron/databases/accounts.db')
 
         if sys.platform == 'darwin':
-            dbm = dumbdbm
+            self.dbm = dbm.dumb.open(accountDbFile, 'c')
+            # dbm = dumbdbm
         else:
-            dbm = anydbm
-
-        self.dbm = dbm.open(accountDbFile, 'c')
+            self.dbm = dbm.open(accountDbFile, 'c')
+            # dbm = anydbm
 
     def lookup(self, playToken, callback):
         raise NotImplementedError('lookup')  # Must be overridden by subclass.
@@ -356,7 +356,7 @@ class GetAvatarsOperation(AvatarOperation):
         potentialAvatars = []
 
         # Loop through the avatarFields array:
-        for avId, fields in self.avatarFields.items():
+        for avId, fields in list(self.avatarFields.items()):
             # Get the appropriate values.
             index = self.avList.index(avId)
             wishNameState = fields.get('WishNameState', [''])[0]
@@ -508,7 +508,8 @@ class LoadAvatarOperation(AvatarOperation):
         cleanupDatagram.addUint32(self.avId)
         datagram = PyDatagram()
         datagram.addServerHeader(channel, self.gameServicesManager.air.ourChannel, CLIENTAGENT_ADD_POST_REMOVE)
-        datagram.addString(cleanupDatagram.getMessage())
+        datagram.addUint16(cleanupDatagram.getLength())
+        datagram.appendData(cleanupDatagram.getMessage())
         self.gameServicesManager.air.send(datagram)
 
         # We will now set the account's days since creation on the client.
@@ -571,7 +572,9 @@ class LoadAvatarOperation(AvatarOperation):
 
         datagram = PyDatagram()
         datagram.addServerHeader(channel, self.gameServicesManager.air.ourChannel, CLIENTAGENT_ADD_POST_REMOVE)
-        datagram.addString(cleanupDatagram.getMessage())
+
+        datagram.addUint16(cleanupDatagram.getLength())
+        datagram.appendData(cleanupDatagram.getMessage())
         self.gameServicesManager.air.send(datagram)
 
         # We can now finally shut down this operation.
