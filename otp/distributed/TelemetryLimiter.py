@@ -111,7 +111,7 @@ class TLGatherAllAvs(DirectObject):
     def destroy(self):
         self.ignoreAll()
         while len(self._avs):
-            self._handlePlayerLeave(self._avs.values()[0])
+            self._handlePlayerLeave(list(self._avs.values())[0])
 
         del self._avs
         del self._limits
