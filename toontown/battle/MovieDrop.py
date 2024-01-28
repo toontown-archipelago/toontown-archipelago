@@ -68,7 +68,7 @@ def doDrops(drops):
             return -1
         return 0
 
-    suitDrops.sort(compFunc)
+    suitDrops.sort(key=functools.cmp_to_key(compFunc))
     delay = 0.0
     mtrack = Parallel(name='toplevel-drop')
     npcDrops = {}

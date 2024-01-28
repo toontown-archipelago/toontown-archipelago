@@ -49,7 +49,7 @@ def doThrows(throws):
             return -1
         return 0
 
-    suitThrows.sort(compFunc)
+    suitThrows.sort(key=functools.cmp_to_key(compFunc))
     totalHitDict = {}
     singleHitDict = {}
     groupHitDict = {}

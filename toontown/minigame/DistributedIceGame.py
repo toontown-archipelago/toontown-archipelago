@@ -1,3 +1,4 @@
+import functools
 import math
 from panda3d.core import Vec3, deg2Rad, Point3, NodePath, VBase4, CollisionHandlerEvent, CollisionNode, CollisionSphere
 from direct.fsm import ClassicFSM, State
@@ -429,7 +430,7 @@ class DistributedIceGame(DistributedMinigame.DistributedMinigame, DistributedIce
             else:
                 return 0
 
-        sortedByDistance.sort(key=compareDistance)
+        sortedByDistance.sort(key=functools.cmp_to_key(compareDistance))
         self.scoreMovie = Sequence()
         curScale = 0.01
         curTime = 0

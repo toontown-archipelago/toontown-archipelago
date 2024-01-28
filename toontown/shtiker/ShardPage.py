@@ -1,3 +1,5 @@
+import functools
+
 from panda3d.core import *
 from . import ShtikerPage
 from direct.task.Task import Task
@@ -180,7 +182,7 @@ class ShardPage(ShtikerPage.ShtikerPage):
             else:
                 return 0
 
-        curShardTuples.sort(compareShardTuples)
+        curShardTuples.sort(key=functools.cmp_to_key(compareShardTuples))
         if base.cr.welcomeValleyManager:
             curShardTuples.append((ToontownGlobals.WelcomeValleyToken,
              TTLocalizer.WelcomeValley[-1],

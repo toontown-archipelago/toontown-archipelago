@@ -1,3 +1,5 @@
+import functools
+
 from direct.showbase.DirectObject import DirectObject
 from direct.interval.MetaInterval import Parallel
 from direct.interval.LerpInterval import LerpPosInterval, LerpHprInterval
@@ -233,7 +235,7 @@ class MazeSuit(DirectObject):
             updateTics = suitList[i].getThinkTimestampTics(curTic)
             suitUpdates.extend(list(zip(updateTics, [i] * len(updateTics))))
 
-        suitUpdates.sort(lambda a, b: a[0] - b[0])
+        suitUpdates.sort(key=functools.cmp_to_key(lambda a, b: a[0] - b[0]))
         if len(suitUpdates) > 0:
             curTic = 0
             for i in range(len(suitUpdates)):

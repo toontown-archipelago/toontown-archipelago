@@ -1,3 +1,5 @@
+import functools
+
 from panda3d.core import *
 from toontown.toonbase.ToontownBattleGlobals import *
 from direct.task.Timer import *
@@ -157,7 +159,7 @@ def findToonAttack(toons, attacks, track):
             return -1
         return 0
 
-    foundAttacks.sort(compFunc)
+    foundAttacks.sort(key=functools.cmp_to_key(compFunc))
     return foundAttacks
 
 

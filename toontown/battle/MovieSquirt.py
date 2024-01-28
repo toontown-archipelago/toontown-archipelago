@@ -57,7 +57,7 @@ def doSquirts(squirts):
         elif len(a) < len(b):
             return -1
         return 0
-    suitSquirts.sort(compFunc)
+    suitSquirts.sort(key=functools.cmp_to_key(compFunc))
 
     delay = 0.0
 

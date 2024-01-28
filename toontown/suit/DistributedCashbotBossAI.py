@@ -1,3 +1,5 @@
+import functools
+
 from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.PythonUtil import clamp
@@ -289,7 +291,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # joinChance.
         def compareJoinChance(a, b):
             return cmp(a[1], b[1])
-        reserveSuits.sort(compareJoinChance)
+        reserveSuits.sort(key=functools.cmp_to_key(compareJoinChance))
 
         return {'activeSuits': activeSuits, 'reserveSuits': reserveSuits}
 

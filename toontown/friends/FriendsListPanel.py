@@ -1,3 +1,5 @@
+import functools
+
 from panda3d.core import *
 from direct.gui.DirectGui import *
 from direct.fsm import StateData
@@ -574,13 +576,13 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
             friendButton.destroy()
             del self.friends[friendPair]
 
-        newFriends.sort(compareFriends)
-        petFriends.sort(compareFriends)
-        freeChatOneRef.sort(compareFriends)
-        speedChatOneRef.sort(compareFriends)
-        freeChatDouble.sort(compareFriends)
-        speedChatDouble.sort(compareFriends)
-        offlineFriends.sort(compareFriends)
+        newFriends.sort(key=functools.cmp_to_key(compareFriends))
+        petFriends.sort(key=functools.cmp_to_key(compareFriends))
+        freeChatOneRef.sort(key=functools.cmp_to_key(compareFriends))
+        speedChatOneRef.sort(key=functools.cmp_to_key(compareFriends))
+        freeChatDouble.sort(key=functools.cmp_to_key(compareFriends))
+        speedChatDouble.sort(key=functools.cmp_to_key(compareFriends))
+        offlineFriends.sort(key=functools.cmp_to_key(compareFriends))
         for friendPair in newFriends:
             if friendPair not in self.friends:
                 friendButton = self.makeFriendButton(friendPair)

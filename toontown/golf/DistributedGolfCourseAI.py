@@ -1,3 +1,5 @@
+import functools
+
 from direct.distributed import DistributedObjectAI
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import ToontownGlobals
@@ -703,9 +705,9 @@ class DistributedGolfCourseAI(DistributedObjectAI.DistributedObjectAI, FSM):
                 return -1
 
         if GolfGlobals.TIME_TIE_BREAKER:
-            totalScores.sort(scoreCompareWithTime)
+            totalScores.sort(key=functools.cmp_to_key(scoreCompareWithTime))
         else:
-            totalScores.sort(scoreCompareNoTime)
+            totalScores.sort(key=functools.cmp_to_key(scoreCompareNoTime))
         curRank = 0
         oldScore = 0
         oldTime = 0
