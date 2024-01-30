@@ -1989,7 +1989,15 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         return self.teleporting
 
     def enableSleeping(self):
+        messenger.send('wakeup')
         self.neverSleep = False
 
     def disableSleeping(self):
+        messenger.send('wakeup')
         self.neverSleep = True
+
+    def startSleepWatch(self, callback):
+        if self.neverSleep:
+            return
+
+        super().startSleepWatch(callback)
