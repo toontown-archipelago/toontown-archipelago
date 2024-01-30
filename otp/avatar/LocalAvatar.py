@@ -320,6 +320,10 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         walkControls.setWallBitMask(wallBitmask)
         walkControls.setFloorBitMask(floorBitmask)
         walkControls.initializeCollisions(self.cTrav, self, avatarRadius, floorOffset, reach)
+        walkControls.lifter.setInPattern("on-floor")
+        walkControls.lifter.setOutPattern("off-floor")
+        walkControls.setCollisionsActive(0)
+        walkControls.setCollisionsActive(1)
         walkControls.setAirborneHeightFunc(self.getAirborneHeight)
         self.controlManager.add(walkControls, 'walk')
         self.physControls = walkControls
