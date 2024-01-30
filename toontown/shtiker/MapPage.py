@@ -80,7 +80,7 @@ class MapPage(ShtikerPage.ShtikerPage):
         self.goHomeButton = DirectButton(
             parent=self.map,
             relief=None,
-            image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')),
+            image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR'), guiButton.find('**/QuitBtn_UP')),
             image_scale=(0.66, 1.1, 1.1),
             pos=(0.15, 0, -.74),
             text=TTLocalizer.MapPageGoHome,
@@ -88,6 +88,11 @@ class MapPage(ShtikerPage.ShtikerPage):
             text_pos=(0, -0.02),
             textMayChange=0,
             command=self.goHome)
+
+        # todo fix estates
+        self.goHomeButton.setColorScale(Vec4(0.6, 0.6, 0.6, 1))
+        self.goHomeButton['state'] = DGG.DISABLED
+
         self.goHomeButton.hide()
         guiButton.removeNode()
         self.hoodLabel = DirectLabel(
@@ -225,6 +230,7 @@ class MapPage(ShtikerPage.ShtikerPage):
         messenger.send(self.doneEvent)
 
     def goHome(self):
+        return  # todo fix estates
         if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: VISITESTATE: Visit estate')
         self.doneStatus = {'mode': 'gohome',

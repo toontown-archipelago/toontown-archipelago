@@ -400,6 +400,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.cr.gameFSM.request(self.exitTo)
 
     def goHomeNow(self, curZoneId):
+        return  # todo: fix estates
         if localAvatar.hasActiveBoardingGroup():
             rejectText = TTLocalizer.BoardingCannotLeaveZone
             localAvatar.elevatorNotifier.showMe(rejectText)
