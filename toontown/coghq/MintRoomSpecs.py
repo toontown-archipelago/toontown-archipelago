@@ -86,7 +86,7 @@ CogSpecModules = {'CashbotMintBoilerRoom_Battle00': CashbotMintBoilerRoom_Battle
  'CashbotMintPipeRoom_Battle00': CashbotMintPipeRoom_Battle00_Cogs,
  'CashbotMintPipeRoom_Battle01': CashbotMintPipeRoom_Battle01_Cogs}
 roomId2numBattles = {}
-for roomName, roomId in CashbotMintRoomName2RoomId.items():
+for roomName, roomId in list(CashbotMintRoomName2RoomId.items()):
     if roomName not in CogSpecModules:
         roomId2numBattles[roomId] = 0
     else:
