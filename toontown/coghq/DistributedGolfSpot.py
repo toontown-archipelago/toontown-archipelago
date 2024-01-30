@@ -117,7 +117,7 @@ class DistributedGolfSpot(DistributedObject.DistributedObject, FSM.FSM):
         if self.releaseTrack:
             self.releaseTrack.finish()
             self.releaseTrack = None
-        flyTracks = self.flyBallTracks.values()
+        flyTracks = list(self.flyBallTracks.values())
         for track in flyTracks:
             track.finish()
 

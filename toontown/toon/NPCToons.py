@@ -157,7 +157,7 @@ def createNPC(air, npcId, desc, zoneId, posIndex = 0, questCallback = None):
 def createNpcsInZone(air, zoneId):
     npcs = []
     canonicalZoneId = ZoneUtil.getCanonicalZoneId(zoneId)
-    npcIdList = zone2NpcDict.get(canonicalZoneId, [])
+    npcIdList = sorted(zone2NpcDict.get(canonicalZoneId, []))
     for i in range(len(npcIdList)):
         npcId = npcIdList[i]
         npcDesc = NPCToonDict.get(npcId)
@@ -11556,7 +11556,7 @@ BlockerPositions = {TTLocalizer.Flippy: (Point3(207.4, 18.81, -0.475), 90.0)}
 zone2NpcDict = {}
 
 def generateZone2NpcDict():
-    for id, npcDesc in NPCToonDict.items():
+    for id, npcDesc in list(NPCToonDict.items()):
         zoneId = npcDesc[0]
         if zoneId in zone2NpcDict:
             zone2NpcDict[zoneId].append(id)
@@ -11768,7 +11768,7 @@ def getNPCName(npcId):
 
 
 def npcFriendsMinMaxStars(minStars, maxStars):
-    return [ id for id in npcFriends.keys() if getNPCTrackLevelHpRarity(id)[3] >= minStars and getNPCTrackLevelHpRarity(id)[3] <= maxStars ]
+    return [ id for id in list(npcFriends.keys()) if getNPCTrackLevelHpRarity(id)[3] >= minStars and getNPCTrackLevelHpRarity(id)[3] <= maxStars ]
 
 
 def getNPCTrack(npcId):

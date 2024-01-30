@@ -1924,7 +1924,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             maze = base.cr.doFind('DistCogdoMazeGame')
             if maze:
                 if kindOfCheat == 0:
-                    for suitNum in maze.game.suitsById.keys():
+                    for suitNum in list(maze.game.suitsById.keys()):
                         suit = maze.game.suitsById[suitNum]
                         maze.sendUpdate('requestSuitHitByGag', [suit.type, suitNum])
 

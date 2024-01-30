@@ -256,7 +256,7 @@ class DistributedGolfGreenGame(BattleBlocker.BattleBlocker):
             count += 1
 
     def pickLevelPattern(self):
-        self.boardIndex = random.choice(range(0, len(self.boardData)))
+        self.boardIndex = random.choice(list(range(0, len(self.boardData))))
         self.board = self.boardData[self.boardIndex]
         self.attackPattern = self.attackPatterns[self.boardIndex]
         self.attackCounter = 0
@@ -995,7 +995,7 @@ class DistributedGolfGreenGame(BattleBlocker.BattleBlocker):
         size = self.radiusBall * 2.0
         facing = 1
         if color == None:
-            colorChoice = random.choice(range(0, 3))
+            colorChoice = random.choice(list(range(0, 3)))
         else:
             colorChoice = color
         newSprite = GameSprite3D.GameSprite(spriteBase, size, colorChoice, found, facing)

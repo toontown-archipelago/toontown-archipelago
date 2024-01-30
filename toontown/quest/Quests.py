@@ -17670,7 +17670,7 @@ QuestDict = {
          TTLocalizer.QuestDialogDict[12032])}
 
 Tier2QuestsDict = {}
-for questId, questDesc in QuestDict.items():
+for questId, questDesc in list(QuestDict.items()):
     if questDesc[QuestDictStartIndex] == Start:
         tier = questDesc[QuestDictTierIndex]
         if tier in Tier2QuestsDict:
@@ -17684,11 +17684,11 @@ Quest2RemainingStepsDict = {}
 
 def getAllRewardIdsForReward(rewardId):
     if rewardId is AnyCashbotSuitPart:
-        return range(4000, 4011 + 1)
+        return list(range(4000, 4011 + 1))
     if rewardId is AnyLawbotSuitPart:
-        return range(4100, 4113 + 1)
+        return list(range(4100, 4113 + 1))
     if rewardId is AnyBossbotSuitPart:
-        return range(4200, 4216 + 1)
+        return list(range(4200, 4216 + 1))
     return (rewardId,)
 
 
@@ -18206,10 +18206,10 @@ class Reward:
         return None
 
     def sendRewardAI(self, av):
-        raise 'not implemented'
+        raise NotImplementedError
 
     def countReward(self, qrc):
-        raise 'not implemented'
+        raise NotImplementedError
 
     def getString(self):
         return 'undefined'

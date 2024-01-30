@@ -99,7 +99,7 @@ class QuestPage(ShtikerPage.ShtikerPage):
             else:
                 self.questFrames[i].hide()
 
-        for index, questDesc in self.quests.items():
+        for index, questDesc in list(self.quests.items()):
             if questDesc is not None and list(questDesc) not in newQuests:
                 self.clearQuestFrame(index)
 

@@ -533,12 +533,12 @@ class DistributedInGameEditor(DistributedObject.DistributedObject, Level.Level, 
         oldAttribs = []
         spec = self.levelSpec.getEntitySpecCopy(entId)
         del spec['type']
-        for attrib, value in spec.items():
+        for attrib, value in list(spec.items()):
             oldAttribs.append((attrib, value))
 
         def setNewEntityId(entId, self = self, removeAction = removeAction, oldAttribs = oldAttribs):
             removeAction[2]['entId'] = entId
-            for attrib, value in spec.items():
+            for attrib, value in list(spec.items()):
                 self.privSendAttribEdit(entId, attrib, value)
 
         def setEntCreateHandler(self = self, handler = setNewEntityId):
@@ -602,13 +602,13 @@ class DistributedInGameEditor(DistributedObject.DistributedObject, Level.Level, 
         copyAttribs['name'] = self.makeCopyOfEntName(copyAttribs['name'])
         typeDesc = self.entTypeReg.getTypeDesc(copyAttribs['type'])
         attribDescs = typeDesc.getAttribDescDict()
-        for attribName, attribDesc in attribDescs.items():
+        for attribName, attribDesc in list(attribDescs.items()):
             if attribDesc.getDatatype() == 'const':
                 del copyAttribs[attribName]
 
         def setNewEntityId(entId, self = self, removeAction = removeAction, copyAttribs = copyAttribs):
             removeAction[2]['entId'] = entId
-            for attribName, value in copyAttribs.items():
+            for attribName, value in list(copyAttribs.items()):
                 self.privSendAttribEdit(entId, attribName, value)
 
         def setEntCreateHandler(self = self, handler = setNewEntityId):
@@ -620,13 +620,13 @@ class DistributedInGameEditor(DistributedObject.DistributedObject, Level.Level, 
         self.setUndoableAttribEdit(old2new, new2old)
 
     def specPrePickle(self, spec):
-        for attribName, value in spec.items():
+        for attribName, value in list(spec.items()):
             spec[attribName] = repr(value)
 
         return spec
 
     def specPostUnpickle(self, spec):
-        for attribName, value in spec.items():
+        for attribName, value in list(spec.items()):
             spec[attribName] = eval(value)
 
         return spec
@@ -647,7 +647,7 @@ class DistributedInGameEditor(DistributedObject.DistributedObject, Level.Level, 
             f = open(filename, 'r')
             eTree = pickle.load(f)
             eGroup = pickle.load(f)
-            for entId, spec in eGroup.items():
+            for entId, spec in list(eGroup.items()):
                 eGroup[entId] = self.specPostUnpickle(spec)
 
         except:
@@ -657,13 +657,13 @@ class DistributedInGameEditor(DistributedObject.DistributedObject, Level.Level, 
         oldEntId2new = {}
 
         def addEntities(treeEntry, parentEntId, eGroup = eGroup):
-            for entId, children in treeEntry.items():
+            for entId, children in list(treeEntry.items()):
                 spec = eGroup[entId]
                 entType = spec['type']
                 del spec['type']
                 del spec['parentEntId']
                 typeDesc = self.entTypeReg.getTypeDesc(entType)
-                for attribName, attribDesc in typeDesc.getAttribDescDict().items():
+                for attribName, attribDesc in list(typeDesc.getAttribDescDict().items()):
                     if attribDesc.getDatatype() == 'const':
                         if attribName in spec:
                             del spec[attribName]
@@ -697,7 +697,7 @@ class DistributedInGameEditor(DistributedObject.DistributedObject, Level.Level, 
         eTree = {selectedEntId: {}}
         eGroup = {}
         eGroup[selectedEntId] = self.levelSpec.getEntitySpecCopy(selectedEntId)
-        for entId, spec in eGroup.items():
+        for entId, spec in list(eGroup.items()):
             eGroup[entId] = self.specPrePickle(spec)
 
         try:
@@ -731,7 +731,7 @@ class DistributedInGameEditor(DistributedObject.DistributedObject, Level.Level, 
                 addEntity(child.entId, treeEntry[entId])
 
         addEntity(selectedEntId, eTree)
-        for entId, spec in eGroup.items():
+        for entId, spec in list(eGroup.items()):
             eGroup[entId] = self.specPrePickle(spec)
 
         try:

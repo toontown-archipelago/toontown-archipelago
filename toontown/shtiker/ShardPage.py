@@ -224,7 +224,7 @@ class ShardPage(ShtikerPage.ShtikerPage):
                 buttonTuple[1]['state'] = DGG.NORMAL
                 buttonTuple[2]['state'] = DGG.NORMAL
 
-        for shardId, buttonTuple in self.shardButtonMap.items():
+        for shardId, buttonTuple in list(self.shardButtonMap.items()):
             if shardId not in currentMap:
                 buttonTuple[0].destroy()
                 del self.shardButtonMap[shardId]

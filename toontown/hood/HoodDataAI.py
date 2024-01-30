@@ -54,7 +54,7 @@ class HoodDataAI:
         self.buildingManagers = []
         ButterflyGlobals.clearIndexes(self.zoneId)
         del self.fishingPonds
-        for distObj in self.doId2do.values():
+        for distObj in list(self.doId2do.values()):
             distObj.requestDelete()
 
         del self.doId2do

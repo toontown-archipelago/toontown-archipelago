@@ -431,7 +431,7 @@ PartsQueryNames = ({1: PartNameStrings[0],
   16384: PartNameStrings[14],
   32768: PartNameStrings[15],
   65536: PartNameStrings[15]})
-suitTypes = IntEnum('suitTypes', ('NoSuit', 'NoMerits', 'FullSuit'))
+suitTypes = IntEnum('suitTypes', ('NoSuit', 'NoMerits', 'FullSuit'), start=0)
 
 def getNextPart(parts, partIndex, dept):
     dept = dept2deptIndex(dept)
@@ -518,6 +518,6 @@ def asNumber(bitstring):
 
 
 def dept2deptIndex(dept):
-    if type(dept) == bytes:
+    if type(dept) == str:
         dept = SuitDNA.suitDepts.index(dept)
     return dept

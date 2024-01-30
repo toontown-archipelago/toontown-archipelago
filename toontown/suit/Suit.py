@@ -184,7 +184,7 @@ def unloadSuits(level):
 
 
 def loadSuitModelsAndAnims(level, flag = 0):
-    for key in ModelDict.keys():
+    for key in list(ModelDict.keys()):
         model, phase = ModelDict[key]
         if base.config.GetBool('want-new-cogs', 0):
             headModel, headPhase = HeadModelDict[key]
@@ -944,7 +944,7 @@ class Suit(Avatar.Avatar):
                 else:
                     self.setSuitClothes(self.loseActor)
             else:
-                loseModel = 'phase_5/models/char/cog' + string.upper(self.style.body) + '_robot-lose-mod'
+                loseModel = 'phase_5/models/char/cog' + self.style.body.upper() + '_robot-lose-mod'
                 filePrefix, phase = TutorialModelDict[self.style.body]
                 loseAnim = 'phase_' + str(phase) + filePrefix + 'lose'
                 self.loseActor = Actor.Actor(loseModel, {'lose': loseAnim})
@@ -979,7 +979,7 @@ class Suit(Avatar.Avatar):
         self.healthBarGlow.setColor(self.healthGlowColors[0])
 
     def makeSkeleton(self):
-        model = 'phase_5/models/char/cog' + string.upper(self.style.body) + '_robot-zero'
+        model = 'phase_5/models/char/cog' + self.style.body.upper() + '_robot-zero'
         anims = self.generateAnimDict()
         anim = self.getCurrentAnim()
         dropShadow = self.dropShadow

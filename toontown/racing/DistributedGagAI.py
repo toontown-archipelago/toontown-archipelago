@@ -11,7 +11,7 @@ class DistributedGagAI(DistributedObjectAI):
         self.ownerId = avId
         self.race = race
         self.pos = (x, y, z)
-        self.type = type
+        self.gagType = gagType
         self.initTime = globalClockDelta.getFrameNetworkTime()
         self.activateTime = 0
 
@@ -31,7 +31,7 @@ class DistributedGagAI(DistributedObjectAI):
         return self.ownerId
 
     def getType(self):
-        return self.type
+        return self.gagType
 
     def hitSomebody(self, avId, time):
         self.race.thrownGags.remove(self)

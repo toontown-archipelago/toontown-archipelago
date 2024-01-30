@@ -44,7 +44,7 @@ class DistributedMoleField(DistributedNodePathEntity, MoleFieldBase.MoleFieldBas
 
     def disable(self):
         self.cleanupTimer()
-        for ival in self.toonHitTracks.values():
+        for ival in list(self.toonHitTracks.values()):
             ival.finish()
 
         self.toonHitTracks = {}

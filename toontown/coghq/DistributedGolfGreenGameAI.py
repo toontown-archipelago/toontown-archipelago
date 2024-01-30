@@ -59,7 +59,7 @@ class DistributedGolfGreenGameAI(BattleBlockerAI.BattleBlockerAI, NodePath, Basi
         if hasattr(self, 'level'):
             numToons = len(self.level.presentAvIds)
         numBoards = self.puzzleBase + numToons * self.puzzlePerPlayer
-        boardSelect = range(0, len(gameBoards))
+        boardSelect = list(range(0, len(gameBoards)))
         didGetLast = 1
         for index in range(numBoards):
             choice = random.choice(boardSelect)
@@ -95,9 +95,9 @@ class DistributedGolfGreenGameAI(BattleBlockerAI.BattleBlockerAI, NodePath, Basi
             for ball in attackString:
                 color = self.translateData.get(ball)
                 if color or color == 0:
-                    place = random.choice(range(0, len(attackPattern) + 1))
+                    place = random.choice(list(range(0, len(attackPattern) + 1)))
                     attackPattern.insert(place, color)
-                    place = random.choice(range(0, len(attackPattern) + 1))
+                    place = random.choice(list(range(0, len(attackPattern) + 1)))
                     attackPattern.insert(place, color)
 
             self.attackPatterns.append(attackPattern)

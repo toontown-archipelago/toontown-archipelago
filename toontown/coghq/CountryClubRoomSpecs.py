@@ -45,7 +45,7 @@ if config.GetBool('isclient-check', False):
     if not isClient():
         print('EXECWARNING CountryClubRoomSpecs: %s' % BossbotCountryClubRoomName2RoomId)
         printStack()
-for roomName, roomId in BossbotCountryClubRoomName2RoomId.items():
+for roomName, roomId in list(BossbotCountryClubRoomName2RoomId.items()):
     exec('from toontown.coghq import %s' % roomName)
     CashbotMintSpecModules[roomId] = eval(roomName)
 
@@ -56,7 +56,7 @@ CogSpecModules = {'BossbotCountryClubFairwayRoom_Battle00': BossbotCountryClubFa
  'BossbotCountryClubKartRoom_Battle00': BossbotCountryClubKartRoom_Battle00_Cogs,
  'BossbotCountryClubPresidentRoom_Battle00': BossbotCountryClubPresidentRoom_Battle00_Cogs}
 roomId2numBattles = {}
-for roomName, roomId in BossbotCountryClubRoomName2RoomId.items():
+for roomName, roomId in list(BossbotCountryClubRoomName2RoomId.items()):
     if roomName not in CogSpecModules:
         roomId2numBattles[roomId] = 0
     else:

@@ -561,7 +561,7 @@ class BossCog(Avatar.Avatar):
             self.raised = 1
         elif anim == 'Fb_fall':
             ival = Parallel(ActorInterval(self, 'Fb_fall'), Sequence(SoundInterval(self.reelSfx, node=self), SoundInterval(self.deathSfx)))
-        elif isinstance(anim, bytes):
+        elif isinstance(anim, str):
             ival = ActorInterval(self, anim)
         else:
             ival = anim

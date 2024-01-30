@@ -7,10 +7,10 @@ import types
 if (__debug__):
     import pdb
 import copy
-KartDNA = IntEnum('KartDNA', ('bodyType', 'bodyColor', 'accColor', 'ebType', 'spType', 'fwwType', 'bwwType', 'rimsType', 'decalType'))
+KartDNA = IntEnum('KartDNA', ('bodyType', 'bodyColor', 'accColor', 'ebType', 'spType', 'fwwType', 'bwwType', 'rimsType', 'decalType'), start=0)
 InvalidEntry = -1
 KartInfo = IntEnum('KartInfo', ('name', 'model', 'cost', 'viewDist', 'decalId', 'LODmodel1', 'LODmodel2'), start=0)
-AccInfo = IntEnum('AccInfo', ('name', 'model', 'cost', 'texCard', 'attach'))
+AccInfo = IntEnum('AccInfo', ('name', 'model', 'cost', 'texCard', 'attach'), start=0)
 kNames = TTLocalizer.KartDNA_KartNames
 KartDict = {0: (kNames[0],
      'phase_6/models/karting/Kart1_Final',

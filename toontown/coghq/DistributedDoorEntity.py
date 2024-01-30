@@ -39,7 +39,7 @@ class DistributedDoorEntityLock(DistributedDoorEntityBase.LockBase, FourState.Fo
         if self.track is not None:
             self.track.pause()
             self.track = None
-        for i in self.states.keys():
+        for i in list(self.states.keys()):
             del self.states[i]
 
         self.states = []
@@ -145,7 +145,7 @@ class DistributedDoorEntity(DistributedDoorEntityBase.DistributedDoorEntityBase,
 
         self.locks = []
         self.fsm = None
-        for i in self.states.keys():
+        for i in list(self.states.keys()):
             del self.states[i]
 
         self.states = []

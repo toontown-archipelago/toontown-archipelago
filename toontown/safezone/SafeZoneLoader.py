@@ -234,7 +234,7 @@ class SafeZoneLoader(StateData.StateData):
         return
 
     def deleteAnimatedProps(self):
-        for zoneNode, animPropList in self.animPropDict.items():
+        for zoneNode, animPropList in list(self.animPropDict.items()):
             for animProp in animPropList:
                 animProp.delete()
 

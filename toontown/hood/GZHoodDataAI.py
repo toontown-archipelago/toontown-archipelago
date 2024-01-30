@@ -163,7 +163,7 @@ class GZHoodDataAI(HoodDataAI.HoodDataAI):
         startingBlocks = []
         for i in range(dnaRacingPadGroup.getNumChildren()):
             dnaGroup = dnaRacingPadGroup.at(i)
-            if string.find(dnaGroup.getName(), 'starting_block') >= 0:
+            if dnaGroup.getName().find('starting_block') >= 0:
                 padLocation = dnaGroup.getName().split('_')[2]
                 pos = dnaGroup.getPos()
                 hpr = dnaGroup.getHpr()

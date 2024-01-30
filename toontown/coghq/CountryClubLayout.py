@@ -7,11 +7,11 @@ import random
 
 def printAllBossbotInfo():
     print('roomId: roomName')
-    for roomId, roomName in CountryClubRoomSpecs.BossbotCountryClubRoomId2RoomName.items():
+    for roomId, roomName in list(CountryClubRoomSpecs.BossbotCountryClubRoomId2RoomName.items()):
         print('%s: %s' % (roomId, roomName))
 
     print('\nroomId: numBattles')
-    for roomId, numBattles in CountryClubRoomSpecs.roomId2numBattles.items():
+    for roomId, numBattles in list(CountryClubRoomSpecs.roomId2numBattles.items()):
         print('%s: %s' % (roomId, numBattles))
 
     print('\ncountryClubId floor roomIds')
@@ -171,7 +171,7 @@ class CountryClubLayout:
         numBattles2middleRoomIds = invertDictLossless(CountryClubRoomSpecs.middleRoomId2numBattles)
 
         allBattleRooms = []
-        for num, roomIds in numBattles2middleRoomIds.items():
+        for num, roomIds in list(numBattles2middleRoomIds.items()):
             if num > 0:
                 allBattleRooms.extend(roomIds)
         while 1:

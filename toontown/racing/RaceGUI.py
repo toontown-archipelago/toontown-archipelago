@@ -445,7 +445,7 @@ class RaceGUI:
         mapspot.reparentTo(self.mapLines)
         mapspot.setHpr(self.mapScene, 0, 0, 0)
         self.racerDict[avId] = self.RacerInfo(headframe, mapspot)
-        for key, i in zip(list(self.racerDict.keys()), range(len(list(self.racerDict.keys())))):
+        for key, i in zip(list(self.racerDict.keys()), list(range(len(list(self.racerDict.keys()))))):
             face = self.racerDict[key].face
             mapspot = self.racerDict[key].mapspot
             face.setX(self.faceStartPos[0])

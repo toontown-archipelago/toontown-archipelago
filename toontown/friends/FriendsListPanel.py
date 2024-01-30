@@ -557,7 +557,7 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
                          0))
 
         if self.panelType == FLPPets:
-            for objId, obj in base.cr.doId2do.items():
+            for objId, obj in list(base.cr.doId2do.items()):
                 from toontown.pets import DistributedPet
                 if isinstance(obj, DistributedPet.DistributedPet):
                     friendPair = (objId, 0)

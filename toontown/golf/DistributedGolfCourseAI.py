@@ -301,7 +301,7 @@ class DistributedGolfCourseAI(DistributedObjectAI.DistributedObjectAI, FSM):
                 allAvatarsInCourse()
 
         self.__barrier = ToonBarrier('WaitReadyCourse', self.uniqueName('WaitReadyCourse'), self.avIdList, READY_TIMEOUT, allAvatarsInCourse, handleTimeout)
-        for avId in self.avStateDict.keys():
+        for avId in list(self.avStateDict.keys()):
             if self.avStateDict[avId] == READY:
                 self.__barrier.clear(avId)
 
@@ -336,7 +336,7 @@ class DistributedGolfCourseAI(DistributedObjectAI.DistributedObjectAI, FSM):
 
         stillPlaying = self.getStillPlayingAvIds()
         self.__barrier = ToonBarrier('WaitReadyHole', self.uniqueName('WaitReadyHole'), stillPlaying, READY_TIMEOUT, allAvatarsInHole, handleTimeout)
-        for avId in self.avStateDict.keys():
+        for avId in list(self.avStateDict.keys()):
             if self.avStateDict[avId] == ONHOLE:
                 self.__barrier.clear(avId)
 
@@ -503,7 +503,7 @@ class DistributedGolfCourseAI(DistributedObjectAI.DistributedObjectAI, FSM):
             retval = True
         else:
             retval = True
-            for state in self.avStateDict.values():
+            for state in list(self.avStateDict.values()):
                 if not (state == BALLIN or state == EXITED):
                     retval = False
                     break
@@ -513,7 +513,7 @@ class DistributedGolfCourseAI(DistributedObjectAI.DistributedObjectAI, FSM):
     def areAllBallsInHole(self):
         self.notify.debug('areAllBallsInHole, self.avStateDict=%s' % self.avStateDict)
         allBallsInHole = True
-        for state in self.avStateDict.values():
+        for state in list(self.avStateDict.values()):
             if state != BALLIN:
                 allBallsInHole = False
 
