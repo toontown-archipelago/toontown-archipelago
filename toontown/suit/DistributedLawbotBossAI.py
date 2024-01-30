@@ -35,7 +35,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.cannons = None
         self.chairs = None
         self.gavels = None
-        self.cagedToonNpcId = random.choice(NPCToons.npcFriends.keys())
+        self.cagedToonNpcId = random.choice(list(NPCToons.npcFriends.keys()))
         self.bossMaxDamage = ToontownGlobals.LawbotBossMaxDamage
         self.recoverRate = 0
         self.recoverStartTime = 0
@@ -588,7 +588,6 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
                     av.b_setHp(av.getMaxHp())
 
     def getToonDifficulty(self):
-        highestCogSuitLevel = 0
         totalCogSuitLevels = 0.0
         totalNumToons = 0.0
         for toonId in self.involvedToons:
@@ -597,13 +596,10 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
                 toonLevel = toon.getNumPromotions(self.dept)
                 totalCogSuitLevels += toonLevel
                 totalNumToons += 1
-                if toon.cogLevels > highestCogSuitLevel:
-                    highestCogSuitLevel = toonLevel
 
         if not totalNumToons:
             totalNumToons = 1.0
         averageLevel = totalCogSuitLevels / totalNumToons
-        self.notify.debug('toons average level = %f, highest level = %d' % (averageLevel, highestCogSuitLevel))
         retval = min(averageLevel, self.maxToonLevels)
         return retval
 
