@@ -559,7 +559,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
 
             ignoredClasses = ('MagicWordManager', 'TimeManager', 'DistributedDistrict', 'FriendManager', 'NewsManager', 'ToontownMagicWordManager', 'WelcomeValleyManager', 'DistributedTrophyMgr', 'CatalogManager', 'DistributedBankMgr', 'EstateManager', 'RaceManager', 'SafeZoneManager', 'DeleteManager', 'TutorialManager', 'ToontownDistrict', 'DistributedDeliveryManager', 'DistributedPartyManager', 'AvatarFriendsManager', 'InGameNewsMgr', 'WhitelistMgr', 'TTCodeRedemptionMgr')
         messenger.send('clientCleanup')
-        for avId, pad in self.__queryAvatarMap.items():
+        for avId, pad in list(self.__queryAvatarMap.items()):
             pad.delayDelete.destroy()
 
         self.__queryAvatarMap = {}

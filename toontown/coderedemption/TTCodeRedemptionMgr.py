@@ -11,25 +11,18 @@ class TTCodeRedemptionMgr(DistributedObject):
     def announceGenerate(self):
         DistributedObject.announceGenerate(self)
         base.codeRedemptionMgr = self
-        self._contextGen = SerialMaskedGen(4294967295)
-        self._context2callback = {}
 
     def delete(self):
         if hasattr(base, 'codeRedemptionMgr'):
             if base.codeRedemptionMgr is self:
                 del base.codeRedemptionMgr
-        self._context2callback = None
-        self._contextGen = None
         DistributedObject.delete(self)
         return
 
     def redeemCode(self, code, callback):
-        context = next(self._contextGen)
-        self._context2callback[context] = callback
-        self.notify.debug('redeemCode(%s, %s)' % (context, code))
-        self.sendUpdate('redeemCode', [context, code])
+        self.notify.debug('redeemCode(%s)' % code)
+        self.sendUpdate('redeemCode', [code])
+        callback(1, 0)  # Result in failure no matter what, this is not implemented
 
     def redeemCodeResult(self, context, result, awardMgrResult):
         self.notify.debug('redeemCodeResult(%s, %s, %s)' % (context, result, awardMgrResult))
-        callback = self._context2callback.pop(context)
-        callback(result, awardMgrResult)

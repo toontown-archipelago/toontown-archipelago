@@ -9,7 +9,7 @@ if (__debug__):
 import copy
 KartDNA = IntEnum('KartDNA', ('bodyType', 'bodyColor', 'accColor', 'ebType', 'spType', 'fwwType', 'bwwType', 'rimsType', 'decalType'))
 InvalidEntry = -1
-KartInfo = IntEnum('KartInfo', ('name', 'model', 'cost', 'viewDist', 'decalId', 'LODmodel1', 'LODmodel2'))
+KartInfo = IntEnum('KartInfo', ('name', 'model', 'cost', 'viewDist', 'decalId', 'LODmodel1', 'LODmodel2'), start=0)
 AccInfo = IntEnum('AccInfo', ('name', 'model', 'cost', 'texCard', 'attach'))
 kNames = TTLocalizer.KartDNA_KartNames
 KartDict = {0: (kNames[0],

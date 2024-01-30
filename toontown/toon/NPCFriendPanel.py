@@ -22,7 +22,7 @@ class NPCFriendPanel(DirectFrame):
         return None
 
     def update(self, friendDict, fCallable = 0):
-        friendList = friendDict.keys()
+        friendList = list(friendDict.keys())
         for i in range(self.maxNPCFriends):
             card = self.cardList[i]
             try:
