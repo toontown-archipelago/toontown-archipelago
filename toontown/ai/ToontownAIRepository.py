@@ -227,8 +227,8 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.newsManager.generateWithRequired(OTP_ZONE_ID_MANAGEMENT)
 
         # Generate our Welcome Valley manager...
-        self.welcomeValleyManager = WelcomeValleyManagerAI(self)
-        self.welcomeValleyManager.generateWithRequired(OTP_ZONE_ID_MANAGEMENT)
+        # self.welcomeValleyManager = WelcomeValleyManagerAI(self)
+        # self.welcomeValleyManager.generateWithRequired(OTP_ZONE_ID_MANAGEMENT)
 
         # Generate our catalog manager...
         self.catalogManager = CatalogManagerAI(self)
@@ -383,8 +383,8 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.createHood(GZHoodDataAI, ToontownGlobals.GolfZone)
 
         # Welcome Valley hoods (Toontown Central & Goofy Speedway)
-        self.notify.info('Creating ' + TTLocalizer.WelcomeValley[2] + '...')
-        self.welcomeValleyManager.createWelcomeValleyHoods()
+        # self.notify.info('Creating ' + TTLocalizer.WelcomeValley[2] + '...')
+        # self.welcomeValleyManager.createWelcomeValleyHoods()
 
         # Assign the initial suit buildings.
         self.notify.info('Assigning initial Cog buildings and Field Offices...')
