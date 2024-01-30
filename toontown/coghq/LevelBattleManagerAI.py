@@ -20,7 +20,7 @@ class LevelBattleManagerAI(BattleManagerAI.BattleManagerAI):
         for battle in battles:
             self.destroy(battle)
 
-        for cellId, battleBlocker in self.battleBlockers.items():
+        for cellId, battleBlocker in list(self.battleBlockers.items()):
             if battleBlocker is not None:
                 battleBlocker.deactivate()
 

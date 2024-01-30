@@ -7,11 +7,11 @@ import random
 
 def printAllCashbotInfo():
     print('roomId: roomName')
-    for roomId, roomName in MintRoomSpecs.CashbotMintRoomId2RoomName.items():
+    for roomId, roomName in list(MintRoomSpecs.CashbotMintRoomId2RoomName.items()):
         print('%s: %s' % (roomId, roomName))
 
     print('\nroomId: numBattles')
-    for roomId, numBattles in MintRoomSpecs.roomId2numBattles.items():
+    for roomId, numBattles in list(MintRoomSpecs.roomId2numBattles.items()):
         print('%s: %s' % (roomId, numBattles))
 
     print('\nmintId floor roomIds')
@@ -743,7 +743,7 @@ class MintLayout:
         numBattles2middleRoomIds = invertDictLossless(MintRoomSpecs.middleRoomId2numBattles)
 
         allBattleRooms = []
-        for num, roomIds in numBattles2middleRoomIds.items():
+        for num, roomIds in list(numBattles2middleRoomIds.items()):
             if num > 0:
                 allBattleRooms.extend(roomIds)
         while 1:
