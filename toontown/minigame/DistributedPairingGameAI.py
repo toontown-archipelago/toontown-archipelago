@@ -80,7 +80,7 @@ class DistributedPairingGameAI(DistributedMinigameAI):
             self.scoreDict[avId] = max(1, self.points)
             lowFlipBonus = self.calcLowFlipBonus()
             self.scoreDict[avId] += lowFlipBonus
-            if self.matches == len(self.cards) / 2:
+            if self.matches == len(self.cards) // 2:
                 self.scoreDict[avId] += round(len(self.cards) / 4.0)
                 self.logAllPerfect()
 

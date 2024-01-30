@@ -1378,7 +1378,7 @@ class Toon(Avatar.Avatar, ToonHead):
         if self.isDisguised:
             self.suit.getGeomNode().setH(h)
 
-    def setSpeed(self, forwardSpeed, rotateSpeed, strafeSpeed):
+    def setSpeed(self, forwardSpeed, rotateSpeed, strafeSpeed=0):
         self.forwardSpeed = forwardSpeed
         self.rotateSpeed = rotateSpeed
         self.strafeSpeed = strafeSpeed

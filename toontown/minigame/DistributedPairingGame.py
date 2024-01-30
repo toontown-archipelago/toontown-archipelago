@@ -383,7 +383,7 @@ class DistributedPairingGame(DistributedMinigame):
         if len(self.cards) == 0:
             return Task.done
         curT = self.getCurrentGameTime()
-        intTime = int(curT / self.bonusGlowTime)
+        intTime = int(curT // self.bonusGlowTime)
         newIndex = intTime % len(self.cards)
         if not newIndex == self.bonusGlowIndex:
             self.bonusGlowIndex = newIndex
@@ -455,7 +455,7 @@ class DistributedPairingGame(DistributedMinigame):
             perfectText = hidden.attachNewNode('perfectText')
             perfectTextSubnode.reparentTo(perfectText)
             frame = self.__textGen.getCardActual()
-            offsetY = -abs(frame[2] + frame[3]) / 2.0
+            offsetY = -abs(frame[2] + frame[3]) // 2.0
             perfectTextSubnode.setPos(0, 0, offsetY)
             perfectText.setColor(1, 0.1, 0.1, 1)
 
@@ -507,7 +507,7 @@ class DistributedPairingGame(DistributedMinigame):
 
     def getCardPos(self, deckOrderIndex):
         col = deckOrderIndex % self.cardsPerRow
-        row = deckOrderIndex / self.cardsPerRow
+        row = deckOrderIndex // self.cardsPerRow
         x = col * self.xCardInc
         y = row * self.yCardInc
         return (x, y)
@@ -521,7 +521,7 @@ class DistributedPairingGame(DistributedMinigame):
 
     def calcBonusTraversal(self):
         self.bonusTraversal = []
-        halfRow = self.cardsPerRow / 2
+        halfRow = self.cardsPerRow // 2
         if self.cardsPerRow % 2:
             halfRow += 1
         for i in range(halfRow):

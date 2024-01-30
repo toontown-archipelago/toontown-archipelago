@@ -68,7 +68,7 @@ class MazeSuit(DirectObject):
         self.startWalkAnim()
         self.occupiedTiles = [(self.nextTX, self.nextTY)]
         n = 20
-        self.nextThinkTic = self.serialNum * self.ticFreq / n
+        self.nextThinkTic = self.serialNum * self.ticFreq // n
         self.fromPos = Point3(0, 0, 0)
         self.toPos = Point3(0, 0, 0)
         self.fromHpr = Point3(0, 0, 0)

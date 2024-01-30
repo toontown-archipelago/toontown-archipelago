@@ -266,10 +266,10 @@ class DistributedTugOfWarGameAI(DistributedMinigameAI):
             for i in range(0, self.numPlayers):
                 avId = self.avIdList[i]
                 if -self.offsetDict[avId] > self.suitOffset:
-                    self.scoreDict[avId] = self.suitJellybeanReward / 2 + TugOfWarGameGlobals.TIE_WIN_JELLYBEANS
+                    self.scoreDict[avId] = self.suitJellybeanReward // 2 + TugOfWarGameGlobals.TIE_WIN_JELLYBEANS
                     self.winners.append(avId)
                 else:
-                    self.scoreDict[avId] = self.suitJellybeanReward / 2 + TugOfWarGameGlobals.TIE_LOSS_JELLYBEANS
+                    self.scoreDict[avId] = self.suitJellybeanReward // 2 + TugOfWarGameGlobals.TIE_LOSS_JELLYBEANS
                     self.losers.append(avId)
                     self.winners.append(self.suitId)
 

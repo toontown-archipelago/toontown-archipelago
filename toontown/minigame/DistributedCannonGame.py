@@ -709,8 +709,18 @@ class DistributedCannonGame(DistributedMinigame):
             if not isClient():
                 print('EXECWARNING DistributedCannonGame: %s' % flightResults)
                 printStack()
+
+        # wtf is this LMFAOOOOOOO
         for key in flightResults:
             exec("%s = flightResults['%s']" % (key, key))
+
+        # Do the above but like an actual human
+        startPos = flightResults['startPos']
+        startHpr = flightResults['startHpr']
+        startVel = flightResults['startVel']
+        trajectory = flightResults['trajectory']
+        timeOfImpact = flightResults['timeOfImpact']
+        hitWhat = flightResults['hitWhat']
 
         self.notify.debug('start position: ' + str(startPos))
         self.notify.debug('start velocity: ' + str(startVel))

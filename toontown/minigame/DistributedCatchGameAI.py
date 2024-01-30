@@ -45,7 +45,7 @@ class DistributedCatchGameAI(DistributedMinigameAI):
         self.notify.debug('fruits: %s, fruits caught: %s' % (self.numFruits, self.fruitsCaught))
         perfect = self.fruitsCaught >= self.numFruits
         for avId in self.avIdList:
-            self.scoreDict[avId] = max(1, int(self.scoreDict[avId] / 2))
+            self.scoreDict[avId] = max(1, int(self.scoreDict[avId] // 2))
             if perfect:
                 self.notify.debug('PERFECT GAME!')
                 self.scoreDict[avId] += round(self.numFruits / 4.0)
