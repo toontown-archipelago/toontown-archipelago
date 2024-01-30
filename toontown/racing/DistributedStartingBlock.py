@@ -671,9 +671,6 @@ class DistributedViewingBlock(DistributedStartingBlock):
 
     def enterEnterMovie(self):
         self.notify.debug('%d enterEnterMovie: Entering the Enter Movie State.' % self.doId)
-        if base.config.GetBool('want-qa-regression', 0):
-            raceName = TTLocalizer.KartRace_RaceNames[self.kartPad.trackType]
-            self.notify.info('QA-REGRESSION: KARTING: %s' % raceName)
         pos = self.nodePath.getPos(render)
         hpr = self.nodePath.getHpr(render)
         pos.addZ(1.7)
