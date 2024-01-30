@@ -59,7 +59,7 @@ class DistributedSuitPlanner(DistributedObject.DistributedObject, SuitPlannerBas
 
         cnode = CollisionNode('battleCells')
         cnode.setCollideMask(BitMask32.allOff())
-        for zoneId, cellPos in self.battlePosDict.items():
+        for zoneId, cellPos in list(self.battlePosDict.items()):
             cnode.addSolid(CollisionSphere(cellPos, 9))
             text = '%s' % zoneId
             self.__makePathVizText(text, cellPos[0], cellPos[1], cellPos[2] + 9, (1, 1, 1, 1))

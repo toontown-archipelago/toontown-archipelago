@@ -7,11 +7,11 @@ import random
 
 def printAllCashbotInfo():
     print('roomId: roomName')
-    for roomId, roomName in StageRoomSpecs.CashbotStageRoomId2RoomName.items():
+    for roomId, roomName in list(StageRoomSpecs.CashbotStageRoomId2RoomName.items()):
         print('%s: %s' % (roomId, roomName))
 
     print('\nroomId: numBattles')
-    for roomId, numBattles in StageRoomSpecs.roomId2numBattles.items():
+    for roomId, numBattles in list(StageRoomSpecs.roomId2numBattles.items()):
         print('%s: %s' % (roomId, numBattles))
 
     print('\nstageId floor roomIds')
