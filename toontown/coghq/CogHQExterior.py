@@ -143,13 +143,13 @@ class CogHQExterior(BattlePlace.BattlePlace):
         # First, we need to load the DNA file for this Cog HQ.
         dnaStore = DNAStorage()
         dnaFileName = self.genDNAFileName(self.zoneId)
-        loadDNAFileAI(dnaStore, dnaFileName)
+        loadDNAFile(dnaStore, dnaFileName)
 
         # Next, we need to collect all of the visgroup zone IDs.
         self.zoneVisDict = {}
-        for i in range(dnaStore.getNumDNAVisGroupsAI()):
+        for i in range(dnaStore.getNumDNAVisGroups()):
             groupFullName = dnaStore.getDNAVisGroupName(i)
-            visGroup = dnaStore.getDNAVisGroupAI(i)
+            visGroup = dnaStore.getDNAVisGroup(i)
             visZoneId = int(base.cr.hoodMgr.extractGroupName(groupFullName))
             visZoneId = ZoneUtil.getTrueZoneId(visZoneId, self.zoneId)
             visibles = []

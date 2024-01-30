@@ -368,9 +368,14 @@ class SCMenu(SCObject, NodePath):
     def __setitem__(self, index, value):
         if isinstance(self.__members, tuple):
             self.__members = list(self.__members)
-        removedMember = self.__members[index]
-        self.__members[index] = value
-        self.privMemberListChanged(added=[value], removed=[removedMember])
+        if isinstance(index, slice):
+            removedMembers = self.__members[index.start:index.stop]
+            self.__members[index.start:index.stop] = list(value)
+            self.privMemberListChanged(added=list(value), removed=removedMembers)
+        else:
+            removedMember = self.__members[index]
+            self.__members[index] = value
+            self.privMemberListChanged(added=[value], removed=[removedMember])
 
     def __delitem__(self, index):
         if isinstance(self.__members, tuple):

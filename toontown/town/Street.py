@@ -324,7 +324,7 @@ class Street(BattlePlace.BattlePlace):
         self.showAllVisibles()
 
     def doEnterZone(self, newZoneId):
-        if self.zoneId != None:
+        if self.zoneId is not None:
             for i in self.loader.nodeDict[self.zoneId]:
                 if newZoneId:
                     if i not in self.loader.nodeDict[newZoneId]:
@@ -334,7 +334,7 @@ class Street(BattlePlace.BattlePlace):
                     i.stash()
                     self.loader.exitAnimatedProps(i)
 
-        if newZoneId != None:
+        if newZoneId is not None:
             for i in self.loader.nodeDict[newZoneId]:
                 if self.zoneId:
                     if i not in self.loader.nodeDict[self.zoneId]:
@@ -350,11 +350,11 @@ class Street(BattlePlace.BattlePlace):
 
         if newZoneId != self.zoneId:
             if visualizeZones:
-                if self.zoneId != None:
+                if self.zoneId is not None:
                     self.loader.zoneDict[self.zoneId].clearColor()
-                if newZoneId != None:
+                if newZoneId is not None:
                     self.loader.zoneDict[newZoneId].setColor(0, 0, 1, 1, 100)
-            if newZoneId != None:
+            if newZoneId is not None:
                 visZones = [self.loader.nodeToZone[x] for x in self.loader.nodeDict[newZoneId]]
                 visZones.append(ZoneUtil.getBranchZone(newZoneId))
                 base.cr.sendSetZoneMsg(newZoneId, visZones)
