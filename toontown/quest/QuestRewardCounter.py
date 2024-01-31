@@ -145,6 +145,4 @@ class QuestRewardCounter:
             self.notify.info('Changed avatar %d to have trackAccess %s instead of %s' % (av.doId, self.trackAccess, av.trackArray))
             av.b_setTrackAccess(self.trackAccess)
             anyChanged = 1
-        if av.fixTrackAccess():
-            anyChanged = 1
         return anyChanged
