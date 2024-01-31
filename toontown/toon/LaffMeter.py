@@ -2,7 +2,7 @@ import random
 
 from panda3d.core import *
 from direct.gui.DirectGui import DirectFrame, DirectLabel
-from direct.interval.FunctionInterval import Func, Wait
+from direct.interval.FunctionInterval import Func
 from direct.interval.MetaInterval import Sequence, Parallel
 from otp.otpbase import OTPGlobals
 from toontown.toonbase import ToontownGlobals
@@ -13,14 +13,24 @@ class LaffMeter(DirectFrame):
     deathColor = Vec4(0.58039216, 0.80392157, 0.34117647, 1.0)
     flyoutLabelGenerator = TextNode('flyoutLabelGenerator')
 
+    FRACTIONS = [0.0, 0.166666, 0.333333, 0.5, 0.666666, 0.833333]
+
     def __init__(self, avdna, hp, maxHp):
         DirectFrame.__init__(self, relief=None, sortOrder=50)
+        self.teeth = None
+        self.hpLabel = None
+        self.maxLabel = None
+        self.openSmile = None
+        self.eyes = None
+        self.smile = None
+        self.frown = None
         self.initialiseoptions(LaffMeter)
         self.container = DirectFrame(parent=self, relief=None)
         self.style = avdna
         self.av = None
         self.hp = hp
         self.maxHp = maxHp
+        self.color = None
         self.__obscured = 0
         if self.style.type == 't':
             self.isToon = 1
@@ -29,7 +39,7 @@ class LaffMeter(DirectFrame):
         self.load()
         self.flashName = None
         self.flashIval = None
-        self.flashThreshold = 1  # The laff at which the laff meter starts flashing
+        self.flashThreshold = None  # The laff at which the laff meter starts flashing
         self.overhead = False
         return
 
@@ -51,8 +61,8 @@ class LaffMeter(DirectFrame):
     # Called when we take damage or get laff, makes a number fly out of the meter
     def makeDeltaNumber(self, delta):
 
-        def cleanup(node):
-            node.removeNode()
+        def cleanup(_node):
+            _node.removeNode()
 
         if delta == 0:
             return
@@ -101,137 +111,146 @@ class LaffMeter(DirectFrame):
         return self.__obscured
 
     def load(self):
+
+        if not self.isToon:
+            return
+
         gui = loader.loadModel('phase_3/models/gui/laff_o_meter')
-        if self.isToon:
-            hType = self.style.getType()
-            if hType == 'dog':
-                headModel = gui.find('**/laffMeter_dog')
-            elif hType == 'cat':
-                headModel = gui.find('**/laffMeter_cat')
-            elif hType == 'mouse':
-                headModel = gui.find('**/laffMeter_mouse')
-            elif hType == 'horse':
-                headModel = gui.find('**/laffMeter_horse')
-            elif hType == 'rabbit':
-                headModel = gui.find('**/laffMeter_rabbit')
-            elif hType == 'duck':
-                headModel = gui.find('**/laffMeter_duck')
-            elif hType == 'monkey':
-                headModel = gui.find('**/laffMeter_monkey')
-            elif hType == 'bear':
-                headModel = gui.find('**/laffMeter_bear')
-            elif hType == 'pig':
-                headModel = gui.find('**/laffMeter_pig')
-            elif hType == 'deer':
-                headModel = gui.find('**/laffMeter_deer')
-            elif hType == 'beaver':
-                headModel = gui.find('**/laffMeter_beaver')
-            elif hType == 'alligator':
-                headModel = gui.find('**/laffMeter_alligator')
-            elif hType == 'fox':
-                headModel = gui.find('**/laffMeter_fox')
-            elif hType == 'bat':
-                headModel = gui.find('**/laffMeter_bat')
-            elif hType == 'raccoon':
-                headModel = gui.find('**/laffMeter_raccoon')
-            elif hType == 'turkey':
-                headModel = gui.find('**/laffMeter_turkey')
-            elif hType == 'koala':
-                headModel = gui.find('**/laffMeter_koala')
-            elif hType == 'kangaroo':
-                headModel = gui.find('**/laffMeter_kangaroo')
-            elif hType == 'kiwi':
-                headModel = gui.find('**/laffMeter_kiwi')
-            elif hType == 'armadillo':
-                headModel = gui.find('**/laffMeter_armadillo')
-            else:
-                raise Exception('unknown toon species: ', hType)
-            self.color = self.style.getHeadColor()
-            self.container['image'] = headModel
-            self.container['image_color'] = self.color
-            self.resetFrameSize()
-            self.setScale(0.1)
-            self.frown = DirectFrame(parent=self.container, relief=None, image=gui.find('**/frown'))
-            self.smile = DirectFrame(parent=self.container, relief=None, image=gui.find('**/smile'))
-            self.eyes = DirectFrame(parent=self.container, relief=None, image=gui.find('**/eyes'))
-            toothScale = (.92, .92, 0.87)
-            toothPos = (-0.03, 0.0, -0.33)
-            self.openSmile = DirectFrame(parent=self.container, relief=None, image=gui.find('**/open_smile'), image_pos = (0.0, 0.0, -0.65), image_scale = toothScale)
-            self.tooth1 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_1'), image_pos = toothPos, image_scale = toothScale)
-            self.tooth2 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_2'), image_pos = toothPos, image_scale = toothScale)
-            self.tooth3 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_3'), image_pos = toothPos, image_scale = toothScale)
-            self.tooth4 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_4'), image_pos = toothPos, image_scale = toothScale)
-            self.tooth5 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_5'), image_pos = toothPos, image_scale = toothScale)
-            self.tooth6 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_6'), image_pos = toothPos, image_scale = toothScale)
-            self.maxLabel = DirectLabel(parent=self.eyes, relief=None, pos=(0.442, 0, 0.051), text='120',
-                                        text_scale=0.4, text_font=ToontownGlobals.getInterfaceFont())
-            self.hpLabel = DirectLabel(parent=self.eyes, relief=None, pos=(-0.398, 0, 0.051), text='120',
-                                       text_scale=0.4, text_font=ToontownGlobals.getInterfaceFont())
-            self.teeth = [self.tooth6,
-                          self.tooth5,
-                          self.tooth4,
-                          self.tooth3,
-                          self.tooth2,
-                          self.tooth1]
-            self.fractions = [0.0,
-                              0.166666,
-                              0.333333,
-                              0.5,
-                              0.666666,
-                              0.833333]
+
+        hType = self.style.getType()
+        if hType == 'dog':
+            headModel = gui.find('**/laffMeter_dog')
+        elif hType == 'cat':
+            headModel = gui.find('**/laffMeter_cat')
+        elif hType == 'mouse':
+            headModel = gui.find('**/laffMeter_mouse')
+        elif hType == 'horse':
+            headModel = gui.find('**/laffMeter_horse')
+        elif hType == 'rabbit':
+            headModel = gui.find('**/laffMeter_rabbit')
+        elif hType == 'duck':
+            headModel = gui.find('**/laffMeter_duck')
+        elif hType == 'monkey':
+            headModel = gui.find('**/laffMeter_monkey')
+        elif hType == 'bear':
+            headModel = gui.find('**/laffMeter_bear')
+        elif hType == 'pig':
+            headModel = gui.find('**/laffMeter_pig')
+        elif hType == 'deer':
+            headModel = gui.find('**/laffMeter_deer')
+        elif hType == 'beaver':
+            headModel = gui.find('**/laffMeter_beaver')
+        elif hType == 'alligator':
+            headModel = gui.find('**/laffMeter_alligator')
+        elif hType == 'fox':
+            headModel = gui.find('**/laffMeter_fox')
+        elif hType == 'bat':
+            headModel = gui.find('**/laffMeter_bat')
+        elif hType == 'raccoon':
+            headModel = gui.find('**/laffMeter_raccoon')
+        elif hType == 'turkey':
+            headModel = gui.find('**/laffMeter_turkey')
+        elif hType == 'koala':
+            headModel = gui.find('**/laffMeter_koala')
+        elif hType == 'kangaroo':
+            headModel = gui.find('**/laffMeter_kangaroo')
+        elif hType == 'kiwi':
+            headModel = gui.find('**/laffMeter_kiwi')
+        elif hType == 'armadillo':
+            headModel = gui.find('**/laffMeter_armadillo')
+        else:
+            raise Exception('unknown toon species: ', hType)
+
+        self.color = self.style.getHeadColor()
+        self.container['image'] = headModel
+        self.container['image_color'] = self.color
+        self.resetFrameSize()
+        self.setScale(0.1)
+        self.frown = DirectFrame(parent=self.container, relief=None, image=gui.find('**/frown'))
+        self.smile = DirectFrame(parent=self.container, relief=None, image=gui.find('**/smile'))
+        self.eyes = DirectFrame(parent=self.container, relief=None, image=gui.find('**/eyes'))
+        toothScale = (.92, .92, 0.87)
+        toothPos = (-0.03, 0.0, -0.33)
+        self.openSmile = DirectFrame(parent=self.container, relief=None, image=gui.find('**/open_smile'),
+                                     image_pos=(0.0, 0.0, -0.65), image_scale=toothScale)
+        tooth1 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_1'),
+                                  image_pos=toothPos, image_scale=toothScale)
+        tooth2 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_2'),
+                                  image_pos=toothPos, image_scale=toothScale)
+        tooth3 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_3'),
+                                  image_pos=toothPos, image_scale=toothScale)
+        tooth4 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_4'),
+                                  image_pos=toothPos, image_scale=toothScale)
+        tooth5 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_5'),
+                                  image_pos=toothPos, image_scale=toothScale)
+        tooth6 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_6'),
+                                  image_pos=toothPos, image_scale=toothScale)
+        self.maxLabel = DirectLabel(parent=self.eyes, relief=None, pos=(0.442, 0, 0.051), text='120',
+                                    text_scale=0.4, text_font=ToontownGlobals.getInterfaceFont())
+        self.hpLabel = DirectLabel(parent=self.eyes, relief=None, pos=(-0.398, 0, 0.051), text='120',
+                                   text_scale=0.4, text_font=ToontownGlobals.getInterfaceFont())
+
+        self.teeth = [tooth6, tooth5, tooth4, tooth3, tooth2, tooth1]
+
         gui.removeNode()
-        return
 
     def destroy(self):
+
         if self.av:
             ToontownIntervals.cleanup(self.av.uniqueName('laffMeterBoing') + '-' + str(self.this))
             ToontownIntervals.cleanup(self.av.uniqueName('laffMeterBoing') + '-' + str(self.this) + '-play')
             self.stopFlash()
             self.ignore(self.av.uniqueName('hpChange'))
+
         del self.style
         del self.av
         del self.hp
         del self.maxHp
+
+        for tooth in self.teeth:
+            tooth.destroy()
+
         if self.isToon:
             del self.frown
             del self.smile
             del self.openSmile
-            del self.tooth1
-            del self.tooth2
-            del self.tooth3
-            del self.tooth4
-            del self.tooth5
-            del self.tooth6
             del self.teeth
-            del self.fractions
             del self.maxLabel
             del self.hpLabel
-        DirectFrame.destroy(self)
+
+        super().destroy()
 
     def adjustTeeth(self):
-        if self.isToon:
-            for i in range(len(self.teeth)):
-                if self.hp > self.maxHp * self.fractions[i]:
-                    self.teeth[i].show()
-                else:
-                    self.teeth[i].hide()
+
+        if not self.isToon:
+            return
+
+        for i, tooth in enumerate(self.teeth):
+            if self.hp > self.maxHp * self.FRACTIONS[i]:
+                tooth.show()
+            else:
+                tooth.hide()
 
     def adjustText(self):
-        if self.isToon:
-            if self.maxLabel['text'] != str(self.maxHp) or self.hpLabel['text'] != str(self.hp):
-                self.maxLabel['text'] = str(self.maxHp)
-                self.hpLabel['text'] = str(self.hp)
+
+        if not self.isToon:
+            return
+
+        if self.maxLabel['text'] != str(self.maxHp) or self.hpLabel['text'] != str(self.hp):
+            self.maxLabel['text'] = str(self.maxHp)
+            self.hpLabel['text'] = str(self.hp)
 
     def animatedEffect(self, delta):
-        if delta == 0 or self.av == None:
+        if delta == 0 or self.av is None:
             return
+
         name = self.av.uniqueName('laffMeterBoing') + '-' + str(self.this)
         ToontownIntervals.cleanup(name)
+
         if delta > 0:
             ToontownIntervals.start(ToontownIntervals.getPulseLargerIval(self, name))
         else:
             ToontownIntervals.start(ToontownIntervals.getPulseSmallerIval(self, name))
-        return
 
     def startFlash(self):
 
@@ -244,6 +263,7 @@ class LaffMeter(DirectFrame):
         ToontownIntervals.loop(self.flashIval)
 
     def stopFlash(self):
+
         if not self.flashIval:
             return
 
@@ -293,10 +313,19 @@ class LaffMeter(DirectFrame):
                 self.animatedEffect(delta)
 
             # Flash when low hp but not when dead
-            if self.flashThreshold >= self.hp > 0:
-                self.startFlash()
+            # If there isn't a custom flash threshold set, then use the red teeth as one
+            shouldFlash = False
+            if self.flashThreshold is not None and self.hp <= self.flashThreshold:
+                shouldFlash = True
+            elif self.flashThreshold is None and self.hp <= self.maxHp * self.FRACTIONS[1]:
+                shouldFlash = True
 
-        return
+            # If we are dead we do not flash
+            if self.hp <= 0:
+                shouldFlash = False
+
+            if shouldFlash:
+                self.startFlash()
 
     def start(self):
         if self.av:
@@ -312,13 +341,19 @@ class LaffMeter(DirectFrame):
                 self.accept('uberThreshold', self.setFlashThreshold)
 
     def stop(self):
-        if self.isToon:
-            self.hide()
-            if self.av:
-                self.ignore(self.av.uniqueName('hpChange'))
 
-    def setAvatar(self, av):
+        if not self.isToon:
+            return
+
+        self.hide()
+
         if self.av:
             self.ignore(self.av.uniqueName('hpChange'))
+
+    def setAvatar(self, av):
+
+        if self.av:
+            self.ignore(self.av.uniqueName('hpChange'))
+
         self.av = av
         self.flashName = self.av.uniqueName('laffMeterFlash') + '-' + str(self.this)

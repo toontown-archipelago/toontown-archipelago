@@ -1080,20 +1080,20 @@ class LauncherBase(DirectObject):
         try:
             self._runTaskManager()
         except SystemExit:
-            if hasattr(__builtin__, 'base'):
+            if hasattr(builtins, 'base'):
                 base.destroy()
             self.notify.info('Normal exit.')
             raise
         except:
             self.setPandaErrorCode(12)
             self.notify.warning('Handling Python exception.')
-            if hasattr(__builtin__, 'base') and getattr(base, 'cr', None):
+            if hasattr(builtins, 'base') and getattr(base, 'cr', None):
                 if base.cr.timeManager:
                     from otp.otpbase import OTPGlobals
                     base.cr.timeManager.setDisconnectReason(OTPGlobals.DisconnectPythonError)
                     base.cr.timeManager.setExceptionInfo()
                 base.cr.sendDisconnect()
-            if hasattr(__builtin__, 'base'):
+            if hasattr(builtins, 'base'):
                 base.destroy()
             self.notify.info('Exception exit.\n')
             import traceback
@@ -1106,7 +1106,6 @@ class LauncherBase(DirectObject):
         self.notify.info('Updating multifiles in phase: ' + repr(phase))
         self.setPercentPhaseComplete(self.currentPhase, 0)
         self.phaseMultifileNames = []
-        numfiles = self.dldb.getServerNumMultifiles()
         for i in range(self.dldb.getServerNumMultifiles()):
             mfname = self.dldb.getServerMultifileName(i)
             if self.dldb.getServerMultifilePhase(mfname) == phase:
