@@ -87,10 +87,6 @@ class Level:
             if entity is not None:
                 Level.notify.debug('destroying %s %s' % (self.getEntityType(entId), entId))
                 entity.destroy()
-            else:
-                Level.notify.error('trying to destroy entity %s, but it is already gone' % entId)
-
-        return
 
     def createAllEntitiesOfType(self, entType):
         self.onEntityTypePreCreate(entType)

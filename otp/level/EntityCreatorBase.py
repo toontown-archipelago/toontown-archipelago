@@ -15,7 +15,7 @@ class EntityCreatorBase:
         return ent
 
     def getEntityTypes(self):
-        return self.entType2Ctor.keys()
+        return list(self.entType2Ctor.keys())
 
     def privRegisterType(self, entType, ctor):
         if entType in self.entType2Ctor:

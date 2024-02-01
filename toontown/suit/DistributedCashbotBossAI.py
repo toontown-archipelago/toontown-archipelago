@@ -29,6 +29,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.ruleset = CraneLeagueGlobals.CFORuleset()
         self.rulesetFallback = self.ruleset  # A fallback ruleset for when we rcr, or change mods mid round
         self.modifiers = []  # A list of CFORulesetModifierBase instances
+        self.oldMaxLaffs = {}
         self.cranes = None
         self.safes = None
         self.goons = None

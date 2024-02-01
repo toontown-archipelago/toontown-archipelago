@@ -69,12 +69,12 @@ class LevelSpec:
         return self.scenario
 
     def getGlobalEntIds(self):
-        return self.privGetGlobalEntityDict().keys()
+        return list(self.privGetGlobalEntityDict().keys())
 
-    def getScenarioEntIds(self, scenario = None):
+    def getScenarioEntIds(self, scenario=0):
         if scenario is None:
             scenario = self.scenario
-        return self.privGetScenarioEntityDict(scenario).keys()
+        return list(self.privGetScenarioEntityDict(scenario).keys())
 
     def getAllEntIds(self):
         return self.getGlobalEntIds() + self.getScenarioEntIds()

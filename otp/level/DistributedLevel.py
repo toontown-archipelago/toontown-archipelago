@@ -166,7 +166,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
         levelMgr = self.getEntity(LevelConstants.LevelMgrEntId)
         self.geom = levelMgr.geom
         self.zoneNum2node = LevelUtil.getZoneNum2Node(self.geom)
-        self.zoneNums = self.zoneNum2node.keys()
+        self.zoneNums = list(self.zoneNum2node.keys())
         self.zoneNums.sort()
         self.zoneNumDict = list2dict(self.zoneNums)
         DistributedLevel.notify.debug('zones from model: %s' % self.zoneNums)
@@ -398,7 +398,8 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
                     self.notify.warning('adding zoneNum %s to visibility list because toon is standing in that zone!' % self.lastToonZone)
                     visibleZoneNums.update(list2dict([self.lastToonZone]))
         zoneEntIds = self.entType2ids['zone']
-        zoneEntIds.remove(LevelConstants.UberZoneEntId)
+        if LevelConstants.UberZoneEntId in zoneEntIds:
+            zoneEntIds.remove(LevelConstants.UberZoneEntId)
         if len(zoneEntIds):
             pass
         vizZonesChanged = 1

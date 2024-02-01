@@ -19,7 +19,7 @@ class HolidayManagerAI:
                     self.currentHolidays[holidayId] = True
 
         if self.currentHolidays:
-            self.air.newsManager.d_setHolidayIdList(self.currentHolidays.keys())
+            self.air.newsManager.d_setHolidayIdList(list(self.currentHolidays.keys()))
 
     def isHolidayRunning(self, holidayId):
         return holidayId in self.currentHolidays
@@ -49,7 +49,7 @@ class HolidayManagerAI:
     def endHoliday(self, holidayId):
         if holidayId in self.currentHolidays:
             del self.currentHolidays[holidayId]
-            self.air.newsManager.d_setHolidayIdList(self.currentHolidays.keys())
+            self.air.newsManager.d_setHolidayIdList(list(self.currentHolidays.keys()))
             if holidayId == ToontownGlobals.SILLY_SATURDAY_BINGO:
                 self.air.newsManager.d_setBingoEnd()
             elif holidayId == ToontownGlobals.SILLY_SATURDAY_CIRCUIT:

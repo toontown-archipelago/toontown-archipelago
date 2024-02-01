@@ -28,14 +28,14 @@ class Entity(DirectObject):
 
     def destroy(self):
         Entity.notify.debug('Entity.destroy() %s' % self.entId)
-        if self.level:
+        if hasattr(self, 'level') and self.level:
             if self.level.isInitialized():
                 self.level.onEntityDestroy(self.entId)
             else:
                 Entity.notify.warning('Entity %s destroyed after level??' % self.entId)
-        self.ignoreAll()
-        del self.level
-        del self.entId
+
+            del self.level
+            self.ignoreAll()
 
     def getUniqueName(self, name, entId = None):
         if entId is None:
@@ -60,7 +60,7 @@ class Entity(DirectObject):
         return self.getZoneEntity().getNodePath()
 
     def privGetSetter(self, attrib):
-        setFuncName = 'set%s%s' % (string.upper(attrib[0]), attrib[1:])
+        setFuncName = 'set%s%s' % (attrib[0].upper(), attrib[1:])
         if hasattr(self, setFuncName):
             return getattr(self, setFuncName)
         return None
