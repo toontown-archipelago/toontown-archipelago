@@ -1,3 +1,4 @@
+from toontown.toon.ToonDNA import ToonDNA
 from toontown.toonbase.ToontownGlobals import *
 from otp.ai.AIBaseGlobal import *
 from direct.distributed.ClockDelta import *
@@ -33,11 +34,22 @@ class DistributedToonInteriorAI(DistributedObjectAI.DistributedObjectAI):
         return r
 
     def getToonData(self):
-        if not self.building.savedBy:
-            # We cannot pack "None" to Astron,
-            # so we'll pack an empty array instead.
-            return []
-        return self.building.savedBy
+        # Astron requires a list of these structs so let's construct them
+        # We have: (avId, name, dnaTuple, isGM)
+        # struct SavedBy {
+        #     uint32 avId;
+        #     string name;
+        #     blob dna;
+        #     bool isGM; // Unused in-game, maybe depecerate this later?
+        # };
+
+        toonData = []
+        for avId, name, dnaTuple, isGM in self.building.savedBy:
+            dna = ToonDNA()
+            dna.newToonFromProperties(*dnaTuple)
+            toonData.append((avId, name, dna.makeNetString(), isGM))
+
+        return toonData
 
     def getState(self):
         r = [self.fsm.getCurrentState().getName(), globalClockDelta.getRealNetworkTime()]

@@ -118,7 +118,7 @@ class TTOffMagicWordManagerAI(DistributedObjectAI.DistributedObjectAI):
             self.generateResponse(avId=avId, responseType = "RestrictionOther")
             return
 
-        if toon.getAccessLevel() < OTPGlobals.AccessLevelName2Int.get(magicWordInfo['access']):
+        if toon.getAccessLevel() < OTPGlobals.AccessLevelName2Int.get(magicWordInfo['access'], 0):
             self.generateResponse(avId=avId, responseType = "NoAccess")
             return
 

@@ -56,7 +56,7 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
         self.track = 'c'
         self.difficulty = 1
         self.numFloors = 0
-        self.savedBy = None
+        self.savedBy = []
         self.becameSuitTime = 0
         self.frontDoorPoint = None
         self.suitPlannerExt = None
@@ -90,7 +90,17 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
         del self.fsm
 
     def getJsonData(self):
-        jsonData = {'state': self.fsm.getCurrentState().getName(), 'block': self.block, 'track': self.track, 'difficulty': self.difficulty, 'numFloors': self.numFloors, 'savedBy': self.savedBy, 'becameSuitTime': self.becameSuitTime}
+
+        jsonData = {
+            'state': str(self.fsm.getCurrentState().getName()),
+            'block': int(self.block),
+            'track': str(self.track),
+            'difficulty': int(self.difficulty),
+            'numFloors': int(self.numFloors),
+            'savedBy': self.savedBy,   # List of lists [ ('toon 1', (toondnathing1, 2, 3), someattribute), (...) ]
+            'becameSuitTime': float(self.becameSuitTime)
+        }
+
         return jsonData
 
     def _getMinMaxFloors(self, difficulty):
@@ -283,16 +293,28 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
         return None
 
     def updateSavedBy(self, savedBy):
+
+        # Allow us to pass in None as a param
+        if savedBy is None:
+            savedBy = []
+
+        # Remove old trophy count if it exists
         if self.savedBy:
-            for avId, name, dna, isGM in self.savedBy:
+            for avId, _, _, _ in self.savedBy:
                 if not ZoneUtil.isWelcomeValley(self.zoneId):
                     self.trophyMgr.removeTrophy(avId, self.numFloors)
 
+        # Set the new saved by
         self.savedBy = savedBy
-        if self.savedBy:
-            for avId, name, dna, isGM in self.savedBy:
-                if not ZoneUtil.isWelcomeValley(self.zoneId):
-                    self.trophyMgr.addTrophy(avId, name, self.numFloors)
+
+        # Nobody saved this building womp womp
+        if self.savedBy is None:
+            return
+
+        # Loop through all the avs and update their trophies
+        for avId, name, _, _ in self.savedBy:
+            if not ZoneUtil.isWelcomeValley(self.zoneId):
+                self.trophyMgr.addTrophy(avId, name, self.numFloors)
 
     def enterWaitForVictors(self, victorList, savedBy):
         activeToons = []

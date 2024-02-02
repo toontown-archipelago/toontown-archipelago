@@ -12,6 +12,9 @@ from direct.task import Timer
 from . import DistributedElevatorIntAI
 import copy
 
+from ..toon.ToonDNA import ToonDNA
+
+
 class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
 
     def __init__(self, air, elevator):
@@ -435,9 +438,14 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
         victors = self.toonIds[:]
         savedBy = []
         for v in victors:
-            tuple = self.savedByMap.get(v)
-            if tuple:
-                savedBy.append([v, tuple[0], tuple[1], tuple[2]])
+
+            if v not in self.savedByMap:
+                continue
+
+            # (avatar.getName(), avatar.dna.makeNetString(), avatar.isGM())
+            name, dnaString, isGm = self.savedByMap.get(v)
+            dnaTuple = ToonDNA(dnaString).asTuple()
+            savedBy.append([v, name, dnaTuple, isGm])
 
         self.bldg.fsm.request('waitForVictors', [victors, savedBy])
         self.d_setState('Reward')

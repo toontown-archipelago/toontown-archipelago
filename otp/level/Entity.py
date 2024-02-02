@@ -28,14 +28,14 @@ class Entity(DirectObject):
 
     def destroy(self):
         Entity.notify.debug('Entity.destroy() %s' % self.entId)
-        if self.level:
+        if hasattr(self, 'level') and self.level:
             if self.level.isInitialized():
                 self.level.onEntityDestroy(self.entId)
             else:
                 Entity.notify.warning('Entity %s destroyed after level??' % self.entId)
-        self.ignoreAll()
-        del self.level
-        del self.entId
+
+            del self.level
+            self.ignoreAll()
 
     def getUniqueName(self, name, entId = None):
         if entId is None:

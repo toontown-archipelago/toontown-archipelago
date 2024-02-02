@@ -129,6 +129,10 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.accept(self.getStateChangeEvent(), self._doDebug)
 
     def _doDebug(self, _=None):
+
+        if not self.boss:
+            return
+        
         self.boss.craneStatesDebug(doId=self.doId,
                               content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
 

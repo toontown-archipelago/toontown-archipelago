@@ -599,6 +599,11 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.releaseToons()
         base.playMusic(self.battleOneMusic, looping=1, volume=0.9)
 
+    def cleanupIntervals(self):
+        super().cleanupIntervals()
+        for table in list(self.tables.values()):
+            table.cleanupIntervals()
+
     def exitBattleThree(self):
         self.cleanupBattles()
         self.battleOneMusic.stop()

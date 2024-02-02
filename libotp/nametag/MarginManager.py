@@ -90,7 +90,11 @@ class MarginManager(PandaNode):
         return self.m_cells[a2][0].m_available
 
     def cullCallback(self, *args):
-        self.update()
+        try:
+            self.update()
+        except Exception as e:
+            # Scary crash from finishing cgc and i don't particularly want to debug this rn >_<
+            print(f"Margin Manager: Cull callback error: {e}")
 
     def managePopup(self, a2):
         a2.setManaged(True)

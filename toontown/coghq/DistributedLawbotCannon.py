@@ -667,13 +667,15 @@ class DistributedLawbotCannon(DistributedObject.DistributedObject):
         avId = task.avId
         if self.toonHead == None or not self.boss.state == 'BattleTwo':
             return Task.done
+
         flightResults = self.__calcFlightResults(avId, launchTime)
-        if config.GetBool('isclient-check', False):
-            if not isClient():
-                print('EXECWARNING DistributedLawbotCannon: %s' % flightResults)
-                printStack()
-        for key in flightResults:
-            exec("%s = flightResults['%s']" % (key, key))
+
+        startPos = flightResults['startPos']
+        startVel = flightResults['startVel']
+        timeOfImpact = flightResults['timeOfImpact']
+        trajectory = flightResults['trajectory']
+        hitWhat = flightResults['hitWhat']
+        startHpr = flightResults['startHpr']
 
         self.notify.debug('start position: ' + str(startPos))
         self.notify.debug('start velocity: ' + str(startVel))
@@ -687,7 +689,6 @@ class DistributedLawbotCannon(DistributedObject.DistributedObject):
         juror = self.toonModel
         juror.reparentTo(render)
         juror.setPos(startPos)
-        barrelHpr = self.barrel.getHpr(render)
         juror.setHpr(startHpr)
         self.jurorToon.loop('swim')
         self.jurorToon.setPosHpr(0, 0, -(self.jurorToon.getHeight() / 2.0), 0, 0, 0)

@@ -741,7 +741,6 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return returnedToonId
 
     def getToonDifficulty(self):
-        highestCogSuitLevel = 0
         totalCogSuitLevels = 0.0
         totalNumToons = 0.0
         for toonId in self.involvedToons:
@@ -750,13 +749,10 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 toonLevel = toon.getNumPromotions(self.dept)
                 totalCogSuitLevels += toonLevel
                 totalNumToons += 1
-                if toon.cogLevels > highestCogSuitLevel:
-                    highestCogSuitLevel = toonLevel
 
         if not totalNumToons:
             totalNumToons = 1.0
         averageLevel = totalCogSuitLevels / totalNumToons
-        self.notify.debug('toons average level = %f, highest level = %d' % (averageLevel, highestCogSuitLevel))
         retval = min(averageLevel, self.maxToonLevels)
         return retval
 

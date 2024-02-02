@@ -17861,7 +17861,7 @@ def filterQuests(entireQuestPool, currentNpc, av):
 def chooseTrackChoiceQuest(tier, av, fixed = 0):
 
     def fixAndCallAgain():
-        if not fixed and av.fixTrackAccess():
+        if not fixed:
             notify.info('av %s trackAccess fixed: %s' % (av.getDoId(), trackAccess))
             return chooseTrackChoiceQuest(tier, av, fixed=1)
         else:
