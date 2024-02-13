@@ -48,6 +48,8 @@ from toontown.minigame import MinigameCreatorAI
 from . import ModuleListAI
 from functools import reduce
 
+from ..archipelago.archipelago_session import ArchipelagoSession
+
 if simbase.wantPets:
     from toontown.pets import PetLookerAI, PetObserve
 else:
@@ -214,7 +216,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.instaKill = False
         self.instantDelivery = False
         self.alwaysHitSuits = False
-        return
+
+        self.archipelago_session: ArchipelagoSession = None
 
     def generate(self):
         DistributedPlayerAI.DistributedPlayerAI.generate(self)
@@ -228,6 +231,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             if self.WantOldGMNameBan:
                 self._checkOldGMName()
             messenger.send('avatarEntered', [self])
+
+            self.archipelago_session = ArchipelagoSession(self)
+
         if hasattr(self, 'gameAccess') and self.gameAccess != 2:
             if self.hat[0] != 0:
                 self.replaceItemInAccessoriesList(ToonDNA.HAT, 0, 0, 0, self.hat[0], self.hat[1], self.hat[2])
@@ -317,7 +323,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self._sendExitServerEvent()
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.delete(self)
         DistributedPlayerAI.DistributedPlayerAI.delete(self)
-        return
+
+        if self.archipelago_session:
+            self.archipelago_session.cleanup()
+            self.archipelago_session = None
 
     def deleteDummy(self):
         self.notify.debug('----deleteDummy DistributedToonAI %d ' % self.doId)
@@ -4235,8 +4244,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def getAlwaysHitSuits(self):
         return self.alwaysHitSuits
 
-    def d_setRun(self):
-        self.sendUpdate('setRun', [])
-
     def d_doTeleport(self, hood):
         self.sendUpdateToAvatarId(self.doId, 'doTeleport', [hood])
+
+    def setTalk(self, fromAV, fromAC, avatarName, chat, mods, flags):
+        if self.archipelago_session:
+            self.archipelago_session.handle_chat(chat)

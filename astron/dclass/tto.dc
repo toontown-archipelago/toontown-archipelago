@@ -488,7 +488,7 @@ struct TalkModification {
 };
 
 dclass TalkPath_owner {
-  setTalk(uint32, uint32, string(0-256), string(0-400), TalkModification [], uint8) broadcast ownsend;
+  setTalk(uint32, uint32, string(0-256), string(0-400), TalkModification [], uint8) broadcast ownsend ownrecv airecv;
 };
 
 dclass TalkPath_whisper {

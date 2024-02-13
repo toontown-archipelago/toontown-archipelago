@@ -18,6 +18,8 @@ settings.json
 errorCode
 PPYTHON_PATH
 
+toontown/archipelago/output/
+
 # PyCharm IDE
 .idea
 venv/

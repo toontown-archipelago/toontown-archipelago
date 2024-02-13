@@ -1,11 +1,8 @@
 import sys
 import os
-import time
-import string
 import bz2
 import random
 from direct.showbase.MessengerGlobal import *
-from direct.showbase.DirectObject import DirectObject
 from direct.showbase.EventManagerGlobal import *
 from direct.task.TaskManagerGlobal import *
 from direct.task.Task import Task
