@@ -42,6 +42,9 @@ class ChatInputWhiteListFrame(FSM.FSM, DirectFrame):
          'sortOrder': DGG.FOREGROUND_SORT_INDEX}
         entryOptions['parent'] = self
         self.chatEntry = DirectEntry(**entryOptions)
+        self.chatEntry['numLines'] = 5
+        self.chatEntry['text_scale'] = .75
+        self.chatEntry['width'] = 12
         self.whisperId = None
         self.chatEntry.bind(DGG.OVERFLOW, self.chatOverflow)
         wantHistory = 0
