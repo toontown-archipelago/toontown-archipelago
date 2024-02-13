@@ -8,6 +8,8 @@ from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 from direct.fsm import FSM
 from direct.task import Task
+import math
+import copy
 smileyDoId = 1
 
 class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, FSM.FSM):
@@ -30,6 +32,9 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.avId = 0
         self.craneId = 0
         self.cleanedUp = 0
+        
+        # An attribute to cache the last 7 speed for the object
+        self.speeds = []
             
         # A CollisionNode to keep me out of walls and floors, and to
         # keep others from bumping into me.  We use PieBitmask instead
@@ -101,9 +106,14 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         NodePath.assign(self, anp)
         
         self.physicsObject = an.getPhysicsObject()
+        #self.copy.physicsObject = an.getPhysicsObject()
+        #print(self.copy.physicsObject.getOrientation())
+        #print(self.copy.physicsObject.getOrientation().getAngle())
+        #self.physicsObject.setOriented(False)
         self.setTag('object', str(self.doId))
-        
+       
         self.collisionNodePath.reparentTo(self)
+        #self.collisionNodePath.setH(180)
         self.handler = PhysicsCollisionHandler()
         self.handler.addCollider(self.collisionNodePath, self)
 
@@ -114,14 +124,45 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.handler.addAgainPattern(self.collideName + '-%in')
         
         self.watchDriftName = self.uniqueName('watchDrift')
+        self.startCacheName = self.uniqueName('startSpeedCaching')
+        self.resetSpeedCaching()
+        
+    def startSpeedCaching(self, task):
+
+        #print(self.physicsObject.getVelocity())
+        #print(self.collisionNodePath.getHpr())
+        speed = self.physicsObject.getVelocity().length()
+        #orientation = self.physicsObject.getOrientation()
+        #rotation = self.physicsObject.getRotation()
+        #lcs = self.physicsObject.getLcs()
+        #print(lcs)
+        
+        if len(self.speeds) > 6:
+            self.speeds.pop(0)
+        
+        self.speeds.append(speed)
+        print(self.speeds)
+        
+        return Task.again
+        
+    def resetSpeedCaching(self):
+        
+        self.speeds = []
+        taskMgr.remove(self.startCacheName)
 
     def activatePhysics(self):
         if not self.physicsActivated:
+            #self.speeds = []
+            self.speeds.append(self.physicsObject.getVelocity().length())
+            taskMgr.doMethodLater(0.1, self.startSpeedCaching, self.startCacheName)
             self.boss.physicsMgr.attachPhysicalNode(self.node())
+            #print(self.collisionNodePath.getHpr())
             base.cTrav.addCollider(self.collisionNodePath, self.handler)
             self.physicsActivated = 1
             self.accept(self.collideName + '-floor', self.__hitFloor)
             self.accept(self.collideName + '-goon', self.__hitGoon)
+            #print("Precoll Quaternion: %s" % self.physicsObject.getOrientation().getAngle())
+            #print("Precoll Angle: %s" % self.physicsObject.getOrientation())
             self.acceptOnce(self.collideName + '-headTarget', self.__hitBoss)
             self.accept(self.collideName + '-dropPlane', self.__hitDropPlane)
 
@@ -166,19 +207,33 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
     def __hitBoss(self, entry):
         if (self.state == 'Dropped' or self.state == 'LocalDropped') and self.craneId != self.boss.doId:
-            vel = self.physicsObject.getVelocity()
-            vel = self.crane.root.getRelativeVector(render, vel)
-            vel.normalize()
-            impact = vel[1]
+            
+            #get the velocity of the object, relative to the crane
+            
+            #print("Postcoll Angle: %s" % self.physicsObject.getOrientation().getAngle())
+            #print("Postcoll Quaternion: %s" % self.physicsObject.getOrientation())
+            #print(self.physicsObject.getOriented())
+            #print(self.speeds)
+            
+            #print("Post-collision:")
+            #print(self.getH())
+            #print(self.physicsObject.getOrientation())
+            #print("")
+            
+            #print(self.copy.getH())
+            #print(self.getH())  
+            
+            speed = max(self.speeds)
 
+            impact = min(1.0, max(pow(speed, 1.75)/466.475, 0.0))
+            
             if impact >= self.getMinImpact():
                 self.hitBossSoundInterval.start()
             else:
                 self.touchedBossSoundInterval.start()
 
-            impact = max(0, impact)
-
             self.doHitBoss(impact, self.craneId)
+            self.resetSpeedCaching()
 
     def doHitBoss(self, impact, craneId):
         # Derived classes can override this to do something specific
@@ -452,6 +507,11 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.startSmooth()
             
         self.hitFloorSoundInterval.start()
+        #self.resetSpeedCaching()
+        #print("Enter sliding:")
+        #print(self.getH())
+        #print(self.physicsObject.getOrientation())
+        #print("")
         return
 
     def exitSlidingFloor(self):
@@ -463,6 +523,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.stopSmooth()
 
     def enterFree(self):
+        self.resetSpeedCaching()
         self.avId = 0
         self.craneId = 0
 

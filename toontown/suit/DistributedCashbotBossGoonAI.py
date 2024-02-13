@@ -316,7 +316,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         if self.state == 'Dropped' or self.state == 'Grabbed':
             # A goon can only hurt the boss when he's got a helmet on.
             if not self.boss.heldObject:
-                damage = int(impact * 25 * self.scale)
+                damage = int(impact * 25 * self.scale * 0.8)
                 crane = simbase.air.doId2do.get(craneId)
                 # Apply a multiplier if needed (heavy cranes)
                 damage *= crane.getDamageMultiplier()

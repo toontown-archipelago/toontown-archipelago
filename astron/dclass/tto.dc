@@ -1368,6 +1368,7 @@ dclass DistributedCashbotBossHeavyCrane : DistributedCashbotBossCrane {
 dclass DistributedCashbotBossObject : DistributedObject {
   setBossCogId(uint32) required broadcast ram;
   setObjectState(char, uint32, uint32) broadcast ram;
+  resetSpeedCaching() broadcast ram;
   requestGrab() airecv clsend;
   rejectGrab();
   requestDrop() airecv clsend;

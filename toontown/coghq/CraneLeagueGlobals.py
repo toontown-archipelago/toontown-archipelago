@@ -25,12 +25,48 @@ SAFE_POSHPR = [
     (120, -315, 30, 0, 0, 0),
     (77.1, -302.7, 0, -90, 0, 0),  # 1R
     (165.7, -326.4, 0, 90, 0, 0),  # 2R
-    (134.2, -274.7, 0, 180, 0, 0),  # 3R
-    (107.8, -359.1, 0, 0, 0, 0),  # 4R
+    (134.2, -274.7, 0, 180, 0, 0),  # 4R
+    (107.8, -359.1, 0, 0, 0, 0),  # 3R
     (107.0, -274.7, 0, 180, 0, 0),  # 1L
     (133.9, -359.1, 0, 0, 0, 0),  # 2L
-    (165.5, -302.4, 0, 90, 0, 0),  # 3L
-    (77.2, -329.3, 0, -90, 0, 0),  # 4L
+    (165.5, -302.4, 0, 90, 0, 0),  # 4L
+    (77.2, -329.3, 0, -90, 0, 0),  # 3L
+]
+
+SAFE_POSHPR_NEW = [
+    (120, -315, 30, 0, 0, 0),
+    (77.1, -302.7, 0, 180, 0, 0),  # 1R
+    (165.7, -326.4, 0, 180, 0, 0),  # 2R
+    (134.2, -274.7, 0, 180, 0, 0),  # 4R
+    (107.8, -359.1, 0, 180, 0, 0),  # 3R
+    (107.0, -274.7, 0, 180, 0, 0),  # 1L
+    (133.9, -359.1, 0, 180, 0, 0),  # 2L
+    (165.5, -302.4, 0, 180, 0, 0),  # 4L
+    (77.2, -329.3, 0, 180, 0, 0),  # 3L
+]
+
+SAFE_H = [
+    0,
+    -270,  # 1R
+    270,  # 2R
+    0,  # 4R
+    -180,  # 3R
+    0,  # 1L
+    -180,  # 2L
+    270,  # 4L
+    -270,  # 3L
+]
+
+SAFE_R = [
+    90,
+    180,  # 1R
+    0,  # 2R
+    -90,  # 4R
+    90,  # 3R
+    -90,  # 1L
+    90,  # 2L
+    0,  # 4L
+    180,  # 3L
 ]
 
 TOON_SPAWN_POSITIONS = [
@@ -51,7 +87,7 @@ LOW_LAFF_BONUS_TEXT = "UBER BONUS"  # Text to display alongside a low laff bonus
 # Text to display in popup text for misc point gains
 GOON_STOMP_TEXT = 'GOON!'
 STUN_TEXT = "STUN!"
-IMPACT_TEXT = "IMPACT!"
+IMPACT_TEXT = "PERFECT!"
 DESAFE_TEXT = "DESAFE!"
 GOON_KILLED_BY_SAFE_TEXT = "DESTRUCTION!"
 KILLING_BLOW_TEXT = 'KILLING BLOW!'
@@ -78,7 +114,7 @@ class CFORuleset:
         self.TIMER_MODE_TIME_LIMIT = 15 * 60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
 
         self.CFO_MAX_HP = 1500  # How much HP should the CFO have?
-        self.CFO_STUN_THRESHOLD = 30  # How much damage should a goon do to stun?
+        self.CFO_STUN_THRESHOLD = 24  # How much damage should a goon do to stun?
         self.SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 
         self.WANT_BACKWALL = False
@@ -169,9 +205,9 @@ class CFORuleset:
         self.POINTS_GOON_STOMP = 1  # Points per goon stomp
         self.POINTS_STUN = 10  # Points per stun
         self.POINTS_SIDESTUN = 25  # Points per stun on sidecrane
-        self.POINTS_IMPACT = 15  # Points given when a max impact hit is achieved
+        self.POINTS_IMPACT = 3  # Points given when a max impact hit is achieved
         self.POINTS_DESAFE = 10  # Points for taking a safe helmet off
-        self.POINTS_GOON_KILLED_BY_SAFE = 3  # Points for killing a goon with a safe
+        self.POINTS_GOON_KILLED_BY_SAFE = 2  # Points for killing a goon with a safe
         self.POINTS_KILLING_BLOW = 0  # Points for dealing the killing blow to the CFO
 
         self.POINTS_PENALTY_SAFEHEAD = -25  # Deduction for putting a safe on the CFOs head

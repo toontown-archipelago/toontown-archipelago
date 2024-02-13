@@ -62,10 +62,16 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.wantCustomCraneSpawns = False
         self.wantAimPractice = False
         self.toonsWon = False
+        
+        # Controlled RNG parameters, True to enable, False to disable
+        self.wantOpeningModifications = False
+        self.wantMaxSizeGoons = False
+        self.wantLiveGoonPractice = False
+        self.wantNoStunning = False
 
         self.customSpawnPositions = {}
         self.goonMinScale = 0.8
-        self.goonMaxScale = 2.6
+        self.goonMaxScale = 2.4
         self.safesWanted = 5
 
         self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
@@ -125,6 +131,15 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def craneStatesDebug(self, doId='system', content='null'):
         if self.ruleset.CRANE_STATES_DEBUG:
             self.updateActivityLog(doId, content)
+            
+    def clearObjectSpeedCaching(self):
+        if self.safes:
+            for safe in self.safes:
+                safe.d_resetSpeedCaching()
+        
+        if self.goons:
+            for goon in self.goons:
+                goon.d_resetSpeedCaching()
 
     def getInvolvedToonsNotSpectating(self):
         toons = list(self.involvedToons)
@@ -614,7 +629,17 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def makeGoon(self, side = None):
         self.goonMovementTime = globalClock.getFrameTime()
         if side == None:
-            side = random.choice(['EmergeA', 'EmergeB'])
+            if not self.wantOpeningModifications:
+                side = random.choice(['EmergeA', 'EmergeB'])
+            else:
+                for t in self.involvedToons:
+                    avId = t
+                toon = self.air.doId2do.get(avId)
+                pos = toon.getPos()[1]
+                if pos < -315:
+                    side = 'EmergeB'
+                else:
+                    side = 'EmergeA'
 
         # First, look to see if we have a goon we can recycle.
         goon = self.__chooseOldGoon()
@@ -642,7 +667,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             goon_hfov = self.progressRandomValue(70, 80)
             goon_attack_radius = self.progressRandomValue(6, 15)
             goon_strength = int(self.progressRandomValue(self.ruleset.MIN_GOON_DAMAGE, self.ruleset.MAX_GOON_DAMAGE))
-            goon_scale = self.progressRandomValue(self.goonMinScale, self.goonMaxScale)
+            goon_scale = self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=self.wantMaxSizeGoons)
 
         # Apply multipliers if necessary
         goon_velocity *= self.ruleset.GOON_SPEED_MULTIPLIER
@@ -680,8 +705,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.makeGoon()
 
         # How long to wait for the next goon?
-
-        delayTime = self.progressValue(10, 2)
+        if self.wantLiveGoonPractice:
+            delayTime = 4
+        else:
+            delayTime = self.progressValue(10, 2)
         self.waitForNextGoon(delayTime)
 
     def waitForNextHelmet(self):
@@ -835,6 +862,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # Is the damage high enough to stun? or did a side crane hit a high impact hit?
         hitMeetsStunRequirements = self.considerStun(crane, damage, impact)
+        if self.wantNoStunning:
+            hitMeetsStunRequirements = False
         if hitMeetsStunRequirements:
             # A particularly good hit (when he's not already
             # dizzy) will make the boss dizzy for a little while.
@@ -1057,7 +1086,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
         self.makeGoon(side='EmergeB')
-        self.waitForNextGoon(10)
+        if self.wantLiveGoonPractice:
+            self.waitForNextGoon(7)
+        else:
+            self.waitForNextGoon(10)
 
     def exitBattleThree(self):
         helmetName = self.uniqueName('helmet')
