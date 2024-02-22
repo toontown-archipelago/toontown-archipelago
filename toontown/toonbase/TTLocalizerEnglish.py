@@ -2270,7 +2270,6 @@ RewardPanelCongratsStrings = ['Yeah!',
  'Awesome!',
  'Toon-tastic!']
 RewardPanelNewGag = 'New %(gagName)s gag for %(avName)s!'
-RewardPanelUberGag = '%(avName)s earned the %(gagName)s gag with %(exp)s experience points!'
 RewardPanelEndTrack = 'Yay! %(avName)s has reached the end of the %(gagName)s Gag Track!'
 RewardPanelMeritsMaxed = 'Maxed'
 RewardPanelMeritBarLabels = ['Stock Options',
@@ -4910,7 +4909,7 @@ InventorySkillCreditNone = 'Skill credit: None'
 InventoryDetailAmount = '%(numItems)s / %(maxItems)s'
 InventoryDetailData = 'Accuracy: %(accuracy)s\n%(damageString)s: %(damage)d%(bonus)s\n%(singleOrGroup)s'
 InventoryTrackExp = '%(curExp)s / %(nextExp)s'
-InventoryUberTrackExp = '%(nextExp)s to Go!'
+InventoryUberTrackExp = '%(curExp)s (+%(boostPercent)s%%)'
 InventoryGuestExp = 'Guest Limit'
 GuestLostExp = 'Over Guest Limit'
 InventoryAffectsOneCog = 'Affects: One ' + Cog

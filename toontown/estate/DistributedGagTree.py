@@ -130,12 +130,8 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
     def handlePicking(self):
         messenger.send('wakeup')
         if self.isFruiting() and self.canBeHarvested():
-            if self.velvetRoped():
-                self._teaserPanel = TeaserPanel(pageName='pickGags')
-                localAvatar._gagTreeVelvetRoped = None
-            else:
-                self.startInteraction()
-                self.doHarvesting()
+            self.startInteraction()
+            self.doHarvesting()
             return
         fullName = self.name
         text = TTLocalizer.ConfirmRemoveTree % {'tree': fullName}
@@ -355,10 +351,6 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         return Task.done
 
     def canBeHarvested(self):
-        if not base.cr.isPaid():
-            if self.velvetRoped():
-                if hasattr(localAvatar, '_gagTreeVelvetRoped'):
-                    return False
         myTrack, myLevel = GardenGlobals.getTreeTrackAndLevel(self.typeIndex)
         levelsInTrack = []
         levelTreeDict = {}
@@ -406,14 +398,8 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         self.finishInteraction()
         return
 
-    def velvetRoped(self):
-        return not base.cr.isPaid() and ToontownBattleGlobals.gagIsPaidOnly(self.gagTrack, self.gagLevel)
-
     def allowedToPick(self):
-        retval = True
-        if self.velvetRoped():
-            retval = False
-        return retval
+        return True
 
     def unlockPick(self):
         retval = True

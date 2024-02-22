@@ -555,7 +555,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.experience = Experience.Experience(experience, self)
 
     def getExperience(self):
-        return self.experience.makeNetString()
+        return self.experience.getCurrentExperience()
 
     def b_setInventory(self, inventory):
         self.setInventory(inventory)
@@ -585,7 +585,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             if oldTracks == 0 and oldLevels == 0:
                 self.notify.warning('reseting invalid inventory to MAX on toon: %s' % self.doId)
                 self.inventory.zeroInv()
-                self.inventory.maxOutInv(1, 1)
+                self.inventory.maxOutInv()
             else:
                 newInventory = InventoryBase.InventoryBase(self)
                 oldList = emptyInv.makeFromNetStringForceSize(inventoryNetString, oldTracks, oldLevels)
@@ -600,9 +600,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def getInventory(self):
         return self.inventory.makeNetString()
 
-    def doRestock(self, noUber=1, noPaid=1):
+    def doRestock(self):
         self.inventory.zeroInv()
-        self.inventory.maxOutInv(noUber, noPaid)
+        self.inventory.maxOutInv()
         self.d_setInventory(self.inventory.makeNetString())
 
     def setDefaultShard(self, shard):

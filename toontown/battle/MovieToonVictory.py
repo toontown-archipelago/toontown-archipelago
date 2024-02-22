@@ -72,7 +72,7 @@ class ToonVictorySkipper(DirectObject):
                 ival.setT(self._startTimes[nextIndex])
 
 
-def doToonVictory(localToonActive, toons, rewardToonIds, rewardDicts, deathList, rpanel, allowGroupShot = 1, uberList = [], helpfulToonsList = [], noSkip = False):
+def doToonVictory(localToonActive, toons, rewardToonIds, rewardDicts, deathList, rpanel, allowGroupShot = 1, helpfulToonsList = [], noSkip = False):
     track = Sequence()
     if localToonActive == 1:
         track.append(Func(rpanel.show))
@@ -82,13 +82,11 @@ def doToonVictory(localToonActive, toons, rewardToonIds, rewardDicts, deathList,
     danceSound = globalBattleSoundCache.getSound('ENC_Win.ogg')
     toonList = []
     countToons = 0
-    uberListNew = []
     for t in toons:
         if isinstance(t, int):
             t = base.cr.doId2do.get(t)
         if t:
             toonList.append(t)
-            uberListNew.append(uberList[countToons])
         countToons += 1
 
     toonId2toon = {}
@@ -106,7 +104,7 @@ def doToonVictory(localToonActive, toons, rewardToonIds, rewardDicts, deathList,
         t = toonList[tIndex]
         rdict = __findToonReward(rewardDicts, t)
         if rdict != None:
-            expTrack = rpanel.getExpTrack(t, rdict['origExp'], rdict['earnedExp'], deathList, rdict['origQuests'], rdict['items'], rdict['missedItems'], rdict['origMerits'], rdict['merits'], rdict['parts'], rewardToonList, uberListNew[tIndex], helpfulToonsList, noSkip=noSkip)
+            expTrack = rpanel.getExpTrack(t, rdict['origExp'], rdict['earnedExp'], deathList, rdict['origQuests'], rdict['items'], rdict['missedItems'], rdict['origMerits'], rdict['merits'], rdict['parts'], rewardToonList, helpfulToonsList, noSkip=noSkip)
             if expTrack:
                 skipper.setStartTime(tIndex, track.getDuration())
                 track.append(skipper.getTeardownFunc(lastListenIndex))

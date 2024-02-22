@@ -3,8 +3,6 @@ from direct.showbase.ShowBase import *
 from toontown.toonbase import TTLocalizer
 import string
 from direct.fsm import StateData
-from toontown.toonbase.ToontownBattleGlobals import gagIsPaidOnly
-from toontown.toontowngui.TeaserPanel import TeaserPanel
 
 class PlantTreeGUI(StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('PlantTreeGUI')
@@ -30,9 +28,6 @@ class PlantTreeGUI(StateData.StateData):
         return
 
     def __handleInventory(self, track, level):
-        if gagIsPaidOnly(track, level) and not base.cr.isPaid():
-            self._teaserPanel = TeaserPanel('plantGags')
-            return
         if base.localAvatar.inventory.numItem(track, level) > 0:
             messenger.send(self.doneEvent, [True, track, level])
         else:

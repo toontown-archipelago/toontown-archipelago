@@ -93,32 +93,6 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             self.tutText.reparentTo(self.battleFrame, 1)
         DirectFrame.show(self)
 
-    def uberGagToggle(self, showSuperGags = 1):
-        self.showSuperGags = showSuperGags
-        for itemList in self.invModels:
-            for itemIndex in range(MAX_LEVEL_INDEX + 1):
-                if itemIndex <= LAST_REGULAR_GAG_LEVEL + 1 or self.showSuperGags:
-                    itemList[itemIndex].show()
-                else:
-                    itemList[itemIndex].hide()
-
-        for buttonList in self.buttons:
-            for buttonIndex in range(MAX_LEVEL_INDEX + 1):
-                if buttonIndex <= LAST_REGULAR_GAG_LEVEL or self.showSuperGags:
-                    buttonList[buttonIndex].show()
-                else:
-                    buttonList[buttonIndex].hide()
-
-    def enableUberGags(self, enableSG = -1):
-        if enableSG != -1:
-            self.clickSuperGags = enableSG
-        for buttonList in self.buttons:
-            for buttonIndex in range(LAST_REGULAR_GAG_LEVEL + 1, MAX_LEVEL_INDEX + 1):
-                if self.clickSuperGags:
-                    pass
-                else:
-                    self.makeUnpressable(buttonList[buttonIndex], self.buttons.index(buttonList), buttonIndex)
-
     def hide(self):
         if self.tutorialFlag:
             self.tutArrows.arrowsOff()
@@ -285,7 +259,8 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         self.detailAmountLabel.configure(text=TTLocalizer.InventoryDetailAmount % {'numItems': self.numItem(track, level),
          'maxItems': self.getMax(track, level)})
         self.detailDataLabel.show()
-        damage = getAvPropDamage(track, level, self.toon.experience.getExp(track))
+        damage = getAvPropDamage(track, level, self.toon.experience)
+        damage = round(damage)
         organicBonus = self.toon.checkGagBonus(track, level)
         propBonus = self.checkPropBonus(track)
         damageBonusStr = ''
@@ -386,7 +361,6 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         self.tutorialFlag = tutorialFlag
         self.gagTutMode = gagTutMode
         self.__activateButtons()
-        self.enableUberGags()
         return None
 
     def setActivateModeBroke(self):
@@ -396,7 +370,6 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             self.setActivateMode('purchaseBroke', gagTutMode=self.gagTutMode)
         else:
             self.notify.error('Unexpected mode in setActivateModeBroke(): %s' % self.activateMode)
-        self.enableUberGags()
 
     def deactivateButtons(self):
         if self.previousActivateMode == 'book':
@@ -553,7 +526,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                     button = self.buttons[track][level]
                     if self.itemIsUsable(track, level):
                         button.show()
-                        if self.numItem(track, level) <= 0 or level >= UBER_GAG_LEVEL_INDEX:
+                        if self.numItem(track, level) <= 0:
                             self.makeUnpressable(button, track, level)
                         else:
                             self.makeDeletePressable(button, track, level)
@@ -576,7 +549,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                     button = self.buttons[track][level]
                     if self.itemIsUsable(track, level):
                         button.show()
-                        if self.numItem(track, level) <= 0 or level >= UBER_GAG_LEVEL_INDEX:
+                        if self.numItem(track, level) <= 0:
                             self.makeUnpressable(button, track, level)
                         else:
                             self.makeDeletePressable(button, track, level)
@@ -613,7 +586,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                     button = self.buttons[track][level]
                     if self.itemIsUsable(track, level):
                         button.show()
-                        if self.numItem(track, level) <= 0 or level >= UBER_GAG_LEVEL_INDEX:
+                        if self.numItem(track, level) <= 0:
                             self.makeUnpressable(button, track, level)
                         else:
                             self.makeDeletePressable(button, track, level)
@@ -730,16 +703,8 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                     button = self.buttons[track][level]
                     if self.itemIsUsable(track, level):
                         button.show()
-                        unpaid = not base.cr.isPaid()
-                        if self.numItem(track, level) >= self.getMax(track, level) or totalProps == maxProps or unpaid and gagIsPaidOnly(track, level) or level > LAST_REGULAR_GAG_LEVEL:
-                            if gagIsPaidOnly(track, level):
-                                self.makeDisabledPressable(button, track, level)
-                            elif unpaid and gagIsVelvetRoped(track, level):
-                                self.makeDisabledPressable(button, track, level)
-                            else:
-                                self.makeUnpressable(button, track, level)
-                        elif unpaid and gagIsVelvetRoped(track, level):
-                            self.makeDisabledPressable(button, track, level)
+                        if self.numItem(track, level) >= self.getMax(track, level) or totalProps == maxProps or level > LAST_REGULAR_GAG_LEVEL:
+                            self.makeUnpressable(button, track, level)
                         else:
                             self.makePressable(button, track, level)
                     else:
@@ -783,16 +748,8 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                     button = self.buttons[track][level]
                     if self.itemIsUsable(track, level):
                         button.show()
-                        unpaid = not base.cr.isPaid()
-                        if self.numItem(track, level) >= self.getMax(track, level) or totalProps == maxProps or unpaid and gagIsPaidOnly(track, level) or level > LAST_REGULAR_GAG_LEVEL:
-                            if gagIsPaidOnly(track, level):
-                                self.makeDisabledPressable(button, track, level)
-                            elif unpaid and gagIsVelvetRoped(track, level):
-                                self.makeDisabledPressable(button, track, level)
-                            else:
-                                self.makeUnpressable(button, track, level)
-                        elif unpaid and gagIsVelvetRoped(track, level):
-                            self.makeDisabledPressable(button, track, level)
+                        if self.numItem(track, level) >= self.getMax(track, level) or totalProps == maxProps or level > LAST_REGULAR_GAG_LEVEL:
+                            self.makeUnpressable(button, track, level)
                         else:
                             self.makePressable(button, track, level)
                     else:
@@ -929,12 +886,9 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                 for level in range(len(Levels[track])):
                     button = self.buttons[track][level]
                     if self.itemIsUsable(track, level):
-                        unpaid = not base.cr.isPaid()
                         button.show()
                         if self.numItem(track, level) <= 0 or track == HEAL_TRACK and not self.heal or track == TRAP_TRACK and not self.trap or track == LURE_TRACK and not self.lure:
                             self.makeUnpressable(button, track, level)
-                        elif unpaid and gagIsVelvetRoped(track, level):
-                            self.makeDisabledPressable(button, track, level)
                         elif self.itemIsCredit(track, level):
                             self.makePressable(button, track, level)
                         else:
@@ -1121,9 +1075,9 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         if curExp >= UnpaidMaxSkills[trackIndex] and self.toon.getGameAccess() != OTPGlobals.AccessFull:
             self.trackBars[trackIndex]['range'] = nextExp
             self.trackBars[trackIndex]['text'] = TTLocalizer.InventoryGuestExp
-        elif curExp >= regMaxSkill:
-            self.trackBars[trackIndex]['range'] = UberSkill
-            self.trackBars[trackIndex]['text'] = TTLocalizer.InventoryUberTrackExp % {'nextExp': MaxSkill - curExp}
+        elif curExp >= regMaxSkill:  # If we are maxed
+            self.trackBars[trackIndex]['range'] = MaxSkill
+            self.trackBars[trackIndex]['text'] = TTLocalizer.InventoryUberTrackExp % {'curExp': curExp, 'boostPercent': self.toon.experience.getUberDamageBonusString(trackIndex)}
         else:
             self.trackBars[trackIndex]['range'] = nextExp
             self.trackBars[trackIndex]['text'] = TTLocalizer.InventoryTrackExp % {'curExp': curExp,
@@ -1157,12 +1111,9 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         if track == None and level == None:
             for track in range(len(Tracks)):
                 curExp, nextExp = self.getCurAndNextExpValues(track)
-                if curExp >= UnpaidMaxSkills[track] and self.toon.getGameAccess() != OTPGlobals.AccessFull:
-                    self.trackBars[track]['range'] = nextExp
-                    self.trackBars[track]['text'] = TTLocalizer.InventoryGuestExp
-                elif curExp >= regMaxSkill:
-                    self.trackBars[track]['text'] = TTLocalizer.InventoryUberTrackExp % {'nextExp': MaxSkill - curExp}
-                    self.trackBars[track]['value'] = curExp - regMaxSkill
+                if curExp >= regMaxSkill:  # If we are maxed
+                    self.trackBars[track]['text'] = TTLocalizer.InventoryUberTrackExp % {'curExp': curExp, 'boostPercent': self.toon.experience.getUberDamageBonusString(track)}
+                    self.trackBars[track]['value'] = curExp
                 else:
                     self.trackBars[track]['text'] = TTLocalizer.InventoryTrackExp % {'curExp': curExp,
                      'nextExp': nextExp}

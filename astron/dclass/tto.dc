@@ -968,7 +968,7 @@ dclass DistributedToon : DistributedPlayer {
   toonUp(uint16) broadcast ownrecv;
   takeDamage(uint16) broadcast ownrecv;
   setBattleId(uint32 = 0) required broadcast ram;
-  setExperience(blob = [0 * 14]) required ownrecv db;
+  setExperience(uint32[] = [0, 0, 0, 0, 0, 0, 0]) required ownrecv db;
   setMaxCarry(uint8 = 20) required ownrecv db;
   setTrackAccess(uint16[] = [0, 0, 0, 0, 1, 1, 0]) required broadcast ownrecv db;
   setTrackProgress(int8 = -1, uint32 = 0) required ownrecv db;
@@ -997,7 +997,7 @@ dclass DistributedToon : DistributedPlayer {
   setBackpack(uint8 = 0, uint8 = 0, uint8 = 0) required broadcast db ownrecv;
   setShoes(uint8 = 0, uint8 = 0, uint8 = 0) required broadcast db ownrecv;
   setGardenSpecials(gardenSpecial [] = []) required ownrecv db airecv;
-  setEarnedExperience(uint16[]) ownrecv;
+  setEarnedExperience(uint32[]) ownrecv;
   setTunnelIn(int16, int16/10, int16/10, int16/10, int16/100, int32/100) ownsend broadcast;
   setTunnelOut(int16, int16/10, int16/10, int16/10, int16/10, int16/100, int32/100) ownsend broadcast;
   setAnimState(char [0-1024], int16/1000, int16) broadcast ram ownsend airecv;
@@ -1240,7 +1240,7 @@ dclass DistributedBossCog : DistributedNode {
   avatarNearEnter() airecv clsend;
   avatarNearExit() airecv clsend;
   toonDied(uint32) broadcast;
-  setBattleExperience(int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], uint8[], int16[], uint32[]) required broadcast ram;
+  setBattleExperience(int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], uint8[], uint32[]) required broadcast ram;
   zapToon(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, int8/100, int8/100, uint8, int16) airecv clsend;
   showZapToon(uint32, int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, uint8, int16) broadcast;
   setAttackCode(uint8, uint32) broadcast;
@@ -1442,7 +1442,7 @@ dclass DistributedBattleBase : DistributedObject {
   adjust(int16) broadcast;
   setMovie(int8, uint32[], uint32[], int8, int8, int8, int32, int16[], int16, int16, int16[], int8, int8, int8, int8, int8, int32, int16[], int16, int16, int16[], int8, int8, int8, int8, int8, int32, int16[], int16, int16, int16[], int8, int8, int8, int8, int8, int32, int16[], int16, int16, int16[], int8, int8, int8, int8, int8, int16[], int8, int8, int8, int8, int8, int8, int16[], int8, int8, int8, int8, int8, int8, int16[], int8, int8, int8, int8, int8, int8, int16[], int8, int8, int8) required broadcast ram;
   setChosenToonAttacks(uint32[], int16[], int16[], int32[]) broadcast ram;
-  setBattleExperience(int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], uint8[], int16[], uint32[]) required broadcast ram;
+  setBattleExperience(int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], uint8[], uint32[]) required broadcast ram;
   denyLocalToonJoin();
   setBossBattle(uint8) required broadcast ram;
   setState(string, int16) required broadcast ram;

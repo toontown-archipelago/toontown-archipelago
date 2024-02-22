@@ -52,10 +52,6 @@ class PurchaseBase(StateData.StateData):
         return
 
     def __handleSelection(self, track, level):
-        if gagIsPaidOnly(track, level):
-            if not base.cr.isPaid():
-                self._teaserPanel = TeaserPanel('restockGags', self._teaserDone)
-                return
         self.handlePurchase(track, level)
 
     def _teaserDone(self):
@@ -123,7 +119,6 @@ class PurchaseBase(StateData.StateData):
 
     def enterPurchase(self):
         self.frame.show()
-        self.toon.inventory.enableUberGags(0)
         self.toon.inventory.show()
         self.toon.inventory.reparentTo(self.frame)
         self.toon.inventory.setActivateMode(self.activateMode)
@@ -134,7 +129,6 @@ class PurchaseBase(StateData.StateData):
 
     def exitPurchase(self):
         self.frame.hide()
-        self.toon.inventory.enableUberGags(1)
         self.toon.inventory.reparentTo(hidden)
         self.toon.inventory.hide()
         self.ignore('purchaseOver')

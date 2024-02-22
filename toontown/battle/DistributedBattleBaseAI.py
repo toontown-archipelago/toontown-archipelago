@@ -432,18 +432,6 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         returnValue = BattleExperienceAI.getBattleExperience(4, self.activeToons, self.toonExp, self.battleCalc.toonSkillPtsGained, self.toonOrigQuests, self.toonItems, self.toonOrigMerits, self.toonMerits, self.toonParts, self.suitsKilled, self.helpfulToons)
         return returnValue
 
-    def getToonUberStatus(self):
-        fieldList = []
-        uberIndex = LAST_REGULAR_GAG_LEVEL + 1
-        for toon in self.activeToons:
-            toonList = []
-            for trackIndex in range(MAX_TRACK_INDEX):
-                toonList.append(toon.inventory.numItem(track, uberIndex))
-
-            fieldList.append(encodeUber(toonList))
-
-        return fieldList
-
     def addSuit(self, suit):
         self.notify.debug('addSuit(%d)' % suit.doId)
         self.newSuits.append(suit)
@@ -780,7 +768,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             toon = self.getToon(toonId)
             if toon:
                 toon.hp = -1
-                toon.inventory.zeroInv(1)
+                toon.inventory.zeroInv()
                 self.__handleSuddenExit(toonId, 0)
 
     def signupToon(self, toonId, x, y, z):
@@ -1290,11 +1278,11 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             if toon.immortalMode:
                 toon.toonUp(toon.maxHp)
             if toon.getUnlimitedGags():
-                toon.doRestock(noUber=0, noPaid=0)
+                toon.doRestock()
             if bboard.get('autoRestock-%s' % toonId, False):
                 toon = self.air.doId2do.get(toonId)
                 if toon is not None:
-                    toon.doRestock(0)
+                    toon.doRestock()
 
         return
 
@@ -1685,7 +1673,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                     toon.takeDamage(-hpDelta, quietly=1)
                 if toon.hp <= 0:
                     self.notify.debug('movieDone() - toon: %d was killed' % activeToon)
-                    toon.inventory.zeroInv(1)
+                    toon.inventory.zeroInv()
                     deadToons.append(activeToon)
                 self.notify.debug('AFTER ROUND: toon: %d setHp: %d' % (toon.doId, toon.hp))
 

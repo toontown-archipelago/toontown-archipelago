@@ -297,12 +297,11 @@ class MaxToon(MagicWord):
         experience = Experience.Experience(toon.getExperience(), toon)
         for i, track in enumerate(toon.getTrackAccess()):
             if track:
-                experience.experience[i] = (
-                        Experience.MaxSkill - Experience.UberSkill)
-        toon.b_setExperience(experience.makeNetString())
+                experience.experience[i] = ToontownBattleGlobals.MaxSkill
+        toon.b_setExperience(experience.getCurrentExperience())
 
         toon.inventory.zeroInv()
-        toon.inventory.maxOutInv(filterUberGags=0, filterPaidGags=0)
+        toon.inventory.maxOutInv()
         toon.b_setInventory(toon.inventory.makeNetString())
 
         toon.b_setMaxMoney(Quests.RewardDict[707][1])
@@ -2718,19 +2717,19 @@ class SetExp(MagicWord):
         if track not in tracks + maxed:
             return "Invalid gag track specified!"
 
-        if not 0 <= amt <= 10000:
-            return "Can't set {0}'s jellybean count to {1}! Specify a value between 0 and 10,000.".format(
+        if not 0 <= amt <= ToontownBattleGlobals.MaxSkill:
+            return "Can't set {0}'s jellybean count to {1}! Specify a value between 0 and 999,9999.".format(
                 toon.getName(), amt)
 
         if track in maxed:
             for track in tracks:
                 toon.experience.setExp(track, 10000)
-            toon.b_setExperience(toon.experience.makeNetString())
+            toon.b_setExperience(toon.experience.getCurrentExperience())
             return "Maxed all of {}'s gag tracks.".format(toon.getName())
         else:
             trackIndex = TTLocalizer.BattleGlobalTracks.index(track)
             toon.experience.setExp(trackIndex, amt)
-            toon.b_setExperience(toon.experience.makeNetString())
+            toon.b_setExperience(toon.experience.getCurrentExperience())
             return "Set %s exp to %d successfully." % (track, amt)
 
 

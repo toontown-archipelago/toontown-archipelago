@@ -330,7 +330,7 @@ class BattleCalculatorAI:
                 toon = self.battle.getToon(attackerId)
                 organicBonus = toon.checkGagBonus(TRAP, trapLvl)
                 propBonus = self.__checkPropBonus(TRAP)
-                damage = getAvPropDamage(TRAP, trapLvl, toon.experience.getExp(TRAP), organicBonus, propBonus, self.propAndOrganicBonusStack)
+                damage = getAvPropDamage(TRAP, trapLvl, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack)
                 if self.itemIsCredit(TRAP, trapLvl):
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
@@ -359,7 +359,7 @@ class BattleCalculatorAI:
                 toon = self.battle.getToon(attackerId)
                 organicBonus = toon.checkGagBonus(TRAP, trapLvl)
                 propBonus = self.__checkPropBonus(TRAP)
-                damage = getAvPropDamage(TRAP, trapLvl, toon.experience.getExp(TRAP), organicBonus, propBonus, self.propAndOrganicBonusStack)
+                damage = getAvPropDamage(TRAP, trapLvl, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack)
                 if self.itemIsCredit(TRAP, trapLvl):
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
@@ -525,7 +525,7 @@ class BattleCalculatorAI:
                 else:
                     organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
                     propBonus = self.__checkPropBonus(attackTrack)
-                    attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack), organicBonus, propBonus, self.propAndOrganicBonusStack)
+                    attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack)
                 if not self.__combatantDead(targetId, toon=toonTarget):
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         self.notify.debug('not setting validTargetAvail, since drop on a lured suit')
