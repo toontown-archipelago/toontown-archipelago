@@ -373,11 +373,11 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
             damage += getDamageBonus(originalDamage)
     elif organicBonus or propBonus:
         damage += getDamageBonus(damage)
-    return damage
+    return math.floor(damage)
 
 
 def getDamageBonus(normal):
-    bonus = int(normal * 0.1)
+    bonus = math.floor(normal * 0.1)
     if bonus < 1 and normal > 0:
         bonus = 1
     return bonus

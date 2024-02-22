@@ -23,6 +23,7 @@ class TownBattleToonPanel(DirectFrame):
         self.fireText.hide()
         self.undecidedText = DirectLabel(parent=self, relief=None, pos=(0.1, 0, 0.015), text=TTLocalizer.TownBattleUndecided, text_scale=0.1)
         self.healthText = DirectLabel(parent=self, text='', pos=(-0.06, 0, -0.075), text_scale=0.055)
+        self.gagDamageText = DirectLabel(parent=self, relief=None, pos=(0, 0, 0.15), text='', text_scale=.12, text_font=getSignFont(), text_fg=(1, 0, 0, 1))
         self.hpChangeEvent = None
         self.gagNode = self.attachNewNode('gag')
         self.gagNode.setPos(0.1, 0, 0.03)
@@ -94,6 +95,7 @@ class TownBattleToonPanel(DirectFrame):
         self.fireText.hide()
         self.gagNode.hide()
         self.whichText.hide()
+        self.gagDamageText.hide()
         self.passNode.hide()
         if self.hasGag:
             self.gag.removeNode()
@@ -121,6 +123,15 @@ class TownBattleToonPanel(DirectFrame):
             self.gag.setScale(0.8)
             self.gag.setPos(0, 0, 0.02)
             self.hasGag = 1
+            dmg = getAvPropDamage(track, level, self.avatar.experience, self.avatar.trackBonusLevel[track] >= level)
+            operator = '+' if track == HEAL_TRACK else '-'
+            if track == LURE_TRACK:
+                dmg = AvLureRounds[level]
+                operator = ''
+            color = (0, 1, 0, 1) if track in (HEAL_TRACK, LURE_TRACK) else (1, 0, 0, 1)
+            self.gagDamageText['text'] = f"{operator}{int(dmg)}"
+            self.gagDamageText['text_fg'] = color
+            self.gagDamageText.show()
             if numTargets is not None and targetIndex is not None and localNum is not None:
                 self.whichText.show()
                 self.whichText['text'] = self.determineWhichText(numTargets, targetIndex, localNum, index)

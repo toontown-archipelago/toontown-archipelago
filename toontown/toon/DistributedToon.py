@@ -1252,6 +1252,16 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def hasTrackAccess(self, track):
         return self.trackArray[track]
 
+    # What level gags are we allowed to learn for this track
+    def getTrackAccessLevel(self, track):
+        if not self.trackArray:
+            return 0
+
+        if track >= len(self.trackArray):
+            return 0
+
+        return self.trackArray[track]
+
     def setTrackProgress(self, trackId, progress):
         self.trackProgressId = trackId
         self.trackProgress = progress

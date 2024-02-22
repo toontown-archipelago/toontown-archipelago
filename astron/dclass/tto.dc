@@ -968,9 +968,9 @@ dclass DistributedToon : DistributedPlayer {
   toonUp(uint16) broadcast ownrecv;
   takeDamage(uint16) broadcast ownrecv;
   setBattleId(uint32 = 0) required broadcast ram;
-  setExperience(uint32[] = [0, 0, 0, 0, 0, 0, 0]) required ownrecv db;
+  setExperience(uint32[] = [0, 0, 0, 0, 0, 0, 0]) required broadcast ownrecv db;
   setMaxCarry(uint8 = 20) required ownrecv db;
-  setTrackAccess(uint16[] = [0, 0, 0, 0, 1, 1, 0]) required broadcast ownrecv db;
+  setTrackAccess(uint16[] = [0, 0, 0, 0, 0, 0, 0]) required broadcast ownrecv db;
   setTrackProgress(int8 = -1, uint32 = 0) required ownrecv db;
   setTrackBonusLevel(int8[] = [-1, -1, -1, -1, -1, -1, -1]) required broadcast ownrecv db;
   setInventory(blob = [0 * 7, 0 * 7, 0 * 7, 0 * 7, 1, 0 * 6, 1, 0 * 6, 0 * 7]) required ownrecv db;

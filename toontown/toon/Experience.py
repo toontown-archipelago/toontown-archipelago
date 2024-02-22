@@ -23,49 +23,38 @@ class Experience:
     def getCurrentExperience(self):
         return self.experience
 
+    def getExperienceCapForTrack(self, track):
+        trackExperienceCap = ToontownBattleGlobals.MaxSkill
+
+        # If we have an access level below the # of levels of gags, determine the max xp we can obtain
+        highestLevelGagAllowed = self.owner.getTrackAccessLevel(track)
+        highestLevelGagAllowed = max(0, highestLevelGagAllowed)  # Allow negative to just mean 0
+        if highestLevelGagAllowed <= ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL:
+            trackExperienceCap = ToontownBattleGlobals.Levels[track][highestLevelGagAllowed]
+            trackExperienceCap -= 1
+
+        # Make sure it is not negative
+        trackExperienceCap = max(0, trackExperienceCap)
+        return trackExperienceCap
+
     def addExp(self, track, amount=1):
-        if type(track) == type(''):
-            track = ToontownBattleGlobals.Tracks.index(track)
+
         self.notify.debug('adding %d exp to track %d' % (amount, track))
-        if self.owner.getGameAccess() == OTPGlobals.AccessFull:
-            if self.experience[track] + amount <= ToontownBattleGlobals.MaxSkill:
-                self.experience[track] += amount
-            else:
-                self.experience[track] = ToontownBattleGlobals.MaxSkill
-        elif self.experience[track] + amount <= ToontownBattleGlobals.UnpaidMaxSkills[track]:
-            self.experience[track] += amount
-        elif self.experience[track] > ToontownBattleGlobals.UnpaidMaxSkills[track]:
-            self.experience[track] += 0
-        else:
-            self.experience[track] = ToontownBattleGlobals.UnpaidMaxSkills[track]
 
-    def maxOutExp(self):
-        for track in range(0, len(ToontownBattleGlobals.Tracks)):
-            self.experience[track] = ToontownBattleGlobals.MaxSkill
+        trackExperienceCap = self.getExperienceCapForTrack(track)
 
-    def maxOutExpMinusOne(self):
-        for track in range(0, len(ToontownBattleGlobals.Tracks)):
-            self.experience[track] = ToontownBattleGlobals.MaxSkill - 1
+        # Add the xp, and make sure that it does not go above our cap
+        newXp = self.experience[track] + amount
+        self.experience[track] = min(trackExperienceCap, newXp)
 
-    def makeExpHigh(self):
-        for track in range(0, len(ToontownBattleGlobals.Tracks)):
-            self.experience[track] = ToontownBattleGlobals.Levels[track][
-                                         len(ToontownBattleGlobals.Levels[track]) - 1] - 1
-
-    def makeExpRegular(self):
-        import random
-        for track in range(0, len(ToontownBattleGlobals.Tracks)):
-            rank = random.choice((0, int(random.random() * 1500.0), int(random.random() * 2000.0)))
-            self.experience[track] = ToontownBattleGlobals.Levels[track][
-                                         len(ToontownBattleGlobals.Levels[track]) - 1] - rank
+    # Call when we decrement track access levels, this will decrease our xp to correct values
+    def fixTrackAccessLimits(self):
+        for track in range(len(ToontownBattleGlobals.Tracks)):
+            self.addExp(track, 0)
 
     def zeroOutExp(self):
         for track in range(0, len(ToontownBattleGlobals.Tracks)):
             self.experience[track] = ToontownBattleGlobals.StartingLevel
-
-    def setAllExp(self, num):
-        for track in range(0, len(ToontownBattleGlobals.Tracks)):
-            self.experience[track] = num
 
     def getExp(self, track):
         if type(track) == type(''):
@@ -86,13 +75,6 @@ class Experience:
                 level = ToontownBattleGlobals.Levels[track].index(amount)
 
         return level
-
-    def getTotalExp(self):
-        total = 0
-        for level in self.experience:
-            total += level
-
-        return total
 
     def getNextExpValue(self, track, curSkill=None):
         if curSkill == None:
@@ -128,6 +110,7 @@ class Experience:
 
         # Returns a multiplier to multiply base damage by, default is 1% damage per 100 xp
         multiplier = 1 + overflow / 10000
+        multiplier = round(multiplier, 2)
         return multiplier
 
     # Returns a clean string representation of the damage bonus from above

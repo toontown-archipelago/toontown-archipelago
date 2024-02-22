@@ -1798,12 +1798,13 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def getTrackAccess(self):
         return self.trackArray
 
-    def addTrackAccess(self, track):
-        self.trackArray[track] = 1
-        self.b_setTrackAccess(self.trackArray)
+    def addTrackAccess(self, track, level=ToontownBattleGlobals.UBER_GAG_LEVEL_INDEX):
+        self.setTrackAccessLevel(track, level)
 
     def removeTrackAccess(self, track):
         self.trackArray[track] = 0
+        self.experience.fixTrackAccessLimits()
+        self.b_setExperience(self.experience.getCurrentExperience())
         self.b_setTrackAccess(self.trackArray)
 
     def hasTrackAccess(self, track):
@@ -1811,6 +1812,30 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             return self.trackArray[track]
         else:
             return 0
+
+    # What level gags are we allowed to learn for this track
+    def getTrackAccessLevel(self, track):
+        if not self.trackArray:
+            return 0
+
+        if track >= len(self.trackArray):
+            return 0
+
+        return self.trackArray[track]
+
+    # What level gags do we want to allow for learning gags in this track
+    # 0 will revoke access to the track, 1-7 will allow us to learn level 1-7 gags respectively, 8+ functions the same as 7
+    def setTrackAccessLevel(self, track, level):
+        if not self.trackArray:
+            return 0
+
+        if track >= len(self.trackArray):
+            return 0
+
+        self.trackArray[track] = level
+        self.experience.fixTrackAccessLimits()
+        self.b_setExperience(self.experience.getCurrentExperience())
+        self.b_setTrackAccess(self.trackArray)
 
     def b_setTrackProgress(self, trackId, progress):
         self.setTrackProgress(trackId, progress)

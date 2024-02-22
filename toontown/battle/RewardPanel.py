@@ -283,17 +283,15 @@ class RewardPanel(DirectFrame):
 
     def incrementExp(self, track, newValue, toon):
         trackBar = self.trackBars[track]
-        oldValue = trackBar['value']
-        newValue = min(ToontownBattleGlobals.MaxSkill, newValue)
+        newValue = min(toon.experience.getExperienceCapForTrack(track), newValue)
         nextExp = self.getNextExpValue(newValue, track)
-        if newValue >= ToontownBattleGlobals.UnpaidMaxSkills[track] and toon.getGameAccess() != OTPGlobals.AccessFull:
-            newValue = oldValue
-            trackBar['text'] = TTLocalizer.GuestLostExp
-        elif newValue >= ToontownBattleGlobals.regMaxSkill:
+
+        if newValue >= ToontownBattleGlobals.regMaxSkill:
             nextExp = self.getNextExpValueUber(newValue, track)
             trackBar['text'] = TTLocalizer.InventoryUberTrackExp % {'curExp': newValue, 'boostPercent': toon.experience.getUberDamageBonusString(track)}
         else:
             trackBar['text'] = '%s/%s' % (newValue, nextExp)
+
         trackBar['range'] = nextExp
         trackBar['value'] = newValue
         trackBar['barColor'] = (ToontownBattleGlobals.TrackColors[track][0],
@@ -463,15 +461,16 @@ class RewardPanel(DirectFrame):
         intervalList.append(Wait(0.1))
         nextExpValue = self.getNextExpValue(origSkill, track)
         finalGagFlag = 0
-        while origSkill + earnedSkill >= nextExpValue and origSkill < nextExpValue and not finalGagFlag:
-            if nextExpValue != ToontownBattleGlobals.MaxSkill:
-                intervalList += self.getNewGagIntervalList(toon, track,
-                                                           ToontownBattleGlobals.Levels[track].index(nextExpValue))
-            newNextExpValue = self.getNextExpValue(nextExpValue, track)
-            if newNextExpValue == nextExpValue:
-                finalGagFlag = 1
-            else:
-                nextExpValue = newNextExpValue
+        if origSkill + earnedSkill < toon.experience.getExperienceCapForTrack(track):
+            while origSkill + earnedSkill >= nextExpValue > origSkill and not finalGagFlag:
+                if nextExpValue != ToontownBattleGlobals.MaxSkill:
+                    intervalList += self.getNewGagIntervalList(toon, track,
+                                                               ToontownBattleGlobals.Levels[track].index(nextExpValue))
+                newNextExpValue = self.getNextExpValue(nextExpValue, track)
+                if newNextExpValue == nextExpValue:
+                    finalGagFlag = 1
+                else:
+                    nextExpValue = newNextExpValue
 
         return intervalList
 

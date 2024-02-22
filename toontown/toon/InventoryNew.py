@@ -260,7 +260,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
          'maxItems': self.getMax(track, level)})
         self.detailDataLabel.show()
         damage = getAvPropDamage(track, level, self.toon.experience)
-        damage = round(damage)
+        # damage = int(damage)
         organicBonus = self.toon.checkGagBonus(track, level)
         propBonus = self.checkPropBonus(track)
         damageBonusStr = ''

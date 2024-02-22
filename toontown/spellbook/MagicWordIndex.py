@@ -283,7 +283,7 @@ class MaxToon(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         missingTrack = args[0]
 
-        gagTracks = [1, 1, 1, 1, 1, 1, 1]
+        gagTracks = [7, 7, 7, 7, 7, 7, 7]
         if missingTrack != '':
             try:
                 index = ('toonup', 'trap', 'lure', 'sound', 'throw',
@@ -737,8 +737,15 @@ class SetTrackAccess(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         # args = toonup, trap, lure, sound, throw, squirt, drop
+        tracks = ['toonup', 'trap', 'lure', 'sound', 'throw', 'squirt', 'drop']
         if len(args) == 7:
-            toon.b_setTrackAccess(list(args))
+            ret = ''
+            for track, accessLevel in enumerate(args):
+                ret += '\n'
+                toon.setTrackAccessLevel(track, accessLevel)
+                ret += f"{tracks[track]}: {accessLevel}"
+
+            return f"Set your track access to the following:\n{ret}"
         else:
             return "Invalid amount of arguments! There must be 7..."
 
@@ -2723,7 +2730,7 @@ class SetExp(MagicWord):
 
         if track in maxed:
             for track in tracks:
-                toon.experience.setExp(track, 10000)
+                toon.experience.setExp(track, amt if amt > 0 else 10000)
             toon.b_setExperience(toon.experience.getCurrentExperience())
             return "Maxed all of {}'s gag tracks.".format(toon.getName())
         else:
