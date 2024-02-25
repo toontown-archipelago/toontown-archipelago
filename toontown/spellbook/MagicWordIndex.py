@@ -3491,6 +3491,17 @@ class ShowActivityLog(MagicWord):
         return 'modified log'
 
 
+class SetGagSkillMultiplier(MagicWord):
+    aliases = ['xpmultiplier', 'setxpmultiplier']
+    desc = "Sets toon's base gag experience multiplier"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("multiplier", int, True)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        toon.b_setBaseGagSkillMultiplier(args[0])
+        return f"Set {toon.getName()}'s base gag xp multiplier to {args[0]}!"
+
+
 # Instantiate all classes defined here to register them.
 # A bit hacky, but better than the old system
 for item in list(globals().values()):

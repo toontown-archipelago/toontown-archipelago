@@ -217,6 +217,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.instantDelivery = False
         self.alwaysHitSuits = False
 
+        # Archipelago Stuff
+        self.baseGagSkillMultiplier = 1  # Multiplicative stacking gag xp multiplier to consider
+
         self.archipelago_session: ArchipelagoSession = None
 
     def generate(self):
@@ -4275,3 +4278,22 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def setTalk(self, fromAV, fromAC, avatarName, chat, mods, flags):
         if self.archipelago_session:
             self.archipelago_session.handle_chat(chat)
+
+    ### Archipelago stuff ###
+
+    # Set this toon's base gag XP multiplier and tell its client counterpart what it is (and save it to db?)
+    def b_setBaseGagSkillMultiplier(self, newGagSkillMultiplier) -> None:
+        self.setBaseGagSkillMultiplier(newGagSkillMultiplier)
+        self.d_setBaseGagSkillMultiplier(newGagSkillMultiplier)
+
+    # Only tell the client what its new base gag xp multiplier is (and save it to db?)
+    def d_setBaseGagSkillMultiplier(self, newGagSkillMultiplier) -> None:
+        self.sendUpdate('setBaseGagSkillMultiplier', [newGagSkillMultiplier])
+
+    # What is this toon's base gag xp multiplier
+    def getBaseGagSkillMultiplier(self) -> int:
+        return self.baseGagSkillMultiplier
+
+    # Set this toon's base gag xp multiplier but only on the server
+    def setBaseGagSkillMultiplier(self, newGagSkillMultiplier) -> None:
+        self.baseGagSkillMultiplier = newGagSkillMultiplier

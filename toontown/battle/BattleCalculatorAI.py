@@ -757,7 +757,12 @@ class BattleCalculatorAI:
                  0,
                  0]
                 self.toonSkillPtsGained[id] = expList
-            expList[trk] = min(ExperienceCap, expList[trk] + (lvl + 1) * self.__skillCreditMultiplier)
+
+            baseXPMultiplier = 1
+            toon = simbase.air.doId2do.get(id)
+            if toon:
+                baseXPMultiplier = toon.getBaseGagSkillMultiplier()
+            expList[trk] = min(ExperienceCap, expList[trk] + (lvl + 1) * self.__skillCreditMultiplier * baseXPMultiplier)
         return
 
     def __clearTgtDied(self, tgt, lastAtk, currAtk):

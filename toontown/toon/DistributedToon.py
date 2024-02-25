@@ -196,6 +196,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.instaKill = False
         self.accept('f10', self.openTeleportGUI)
         self.overheadLaffMeter = None
+
+        self.baseGagSkillMultiplier = 1
+
         return
 
     def disable(self):
@@ -2749,3 +2752,13 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             'where': 'cogHQBossBattle',
             'how': 'movie'
         }])
+
+    ### Archipelago Stuff ###
+
+    # What is this toon's base gag xp multiplier
+    def getBaseGagSkillMultiplier(self) -> int:
+        return self.baseGagSkillMultiplier
+
+    # Set this toon's base gag xp multiplier but only on the server
+    def setBaseGagSkillMultiplier(self, newGagSkillMultiplier) -> None:
+        self.baseGagSkillMultiplier = newGagSkillMultiplier

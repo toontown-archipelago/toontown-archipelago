@@ -302,6 +302,8 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             mult = self.__battleCreditMultiplier
             if self.__respectInvasions:
                 mult *= self.__invasionCreditMultiplier
+
+            mult *= localAvatar.getBaseGagSkillMultiplier()
             self.setDetailCredit(track, (level + 1) * mult)
         else:
             self.setDetailCredit(track, None)

@@ -94,7 +94,10 @@ class GagTrainingMultiplierReward(APReward):
         self.amount: int = amount
 
     def apply(self, av: "DistributedToonAI"):
-        av.d_setSystemMessage(0, f"todo: you received +{self.amount} base gag xp multiplier")
+        oldMultiplier = av.getBaseGagSkillMultiplier()
+        newMultiplier = oldMultiplier + self.amount
+        av.b_setBaseGagSkillMultiplier(newMultiplier)
+        av.d_setSystemMessage(0, f"Your base gag XP multiplier is now {newMultiplier}x!")
 
 
 class FishingRodUpgradeReward(APReward):
