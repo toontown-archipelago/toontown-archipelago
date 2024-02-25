@@ -4910,6 +4910,7 @@ InventoryDetailAmount = '%(numItems)s / %(maxItems)s'
 InventoryDetailData = 'Accuracy: %(accuracy)s\n%(damageString)s: %(damage)d%(bonus)s\n%(singleOrGroup)s'
 InventoryTrackExp = '%(curExp)s / %(nextExp)s'
 InventoryUberTrackExp = '%(curExp)s (+%(boostPercent)s%%)'
+InventoryUberTrackExpMaxed = 'MAXED (+%(boostPercent)s%%)'
 InventoryGuestExp = 'Guest Limit'
 GuestLostExp = 'Over Guest Limit'
 InventoryAffectsOneCog = 'Affects: One ' + Cog

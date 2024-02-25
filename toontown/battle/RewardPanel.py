@@ -267,7 +267,15 @@ class RewardPanel(DirectFrame):
             trackIncLabel.hide()
             if toon.hasTrackAccess(i):
                 trackBar.show()
-                if curExp >= ToontownBattleGlobals.regMaxSkill:
+
+                if curExp >= ToontownBattleGlobals.MaxSkill:
+                    nextExp = self.getNextExpValueUber(curExp, i)
+                    trackBar['range'] = nextExp
+                    trackBar['value'] = curExp
+                    trackBar['text'] = TTLocalizer.InventoryUberTrackExpMaxed % {
+                        'boostPercent': toon.experience.getUberDamageBonusString(i)}
+                    trackBar['text_fg'] = (238/255.0, 206/255.0, 74/255.0, 1)
+                elif curExp >= ToontownBattleGlobals.regMaxSkill:
                     nextExp = self.getNextExpValueUber(curExp, i)
                     trackBar['range'] = nextExp
                     trackBar['value'] = curExp
@@ -286,9 +294,13 @@ class RewardPanel(DirectFrame):
         newValue = min(toon.experience.getExperienceCapForTrack(track), newValue)
         nextExp = self.getNextExpValue(newValue, track)
 
-        if newValue >= ToontownBattleGlobals.regMaxSkill:
+        if newValue >= ToontownBattleGlobals.MaxSkill:
+            nextExp = self.getNextExpValueUber(newValue, track)
+            trackBar['text'] = TTLocalizer.InventoryUberTrackExpMaxed % {'boostPercent': toon.experience.getUberDamageBonusString(track)}
+        elif newValue >= ToontownBattleGlobals.regMaxSkill:
             nextExp = self.getNextExpValueUber(newValue, track)
             trackBar['text'] = TTLocalizer.InventoryUberTrackExp % {'curExp': newValue, 'boostPercent': toon.experience.getUberDamageBonusString(track)}
+
         else:
             trackBar['text'] = '%s/%s' % (newValue, nextExp)
 
@@ -298,6 +310,15 @@ class RewardPanel(DirectFrame):
                                 ToontownBattleGlobals.TrackColors[track][1],
                                 ToontownBattleGlobals.TrackColors[track][2],
                                 1)
+
+        # If we are maxed, make the text gold
+        if newValue == ToontownBattleGlobals.MaxSkill:
+            trackBar['text_fg'] = (238/255.0, 206/255.0, 74/255.0, 1)
+        # If we are stuck bc we don't have access make the bar red
+        elif newValue == toon.experience.getExperienceCapForTrack(track):
+            trackBar['barColor'] = (1, 0, 0, 1)
+            trackBar['frameColor'] = (.8, 0, 0, 1)
+
 
     def resetBarColor(self, track):
         self.trackBars[track]['barColor'] = (ToontownBattleGlobals.TrackColors[track][0] * 0.8,
