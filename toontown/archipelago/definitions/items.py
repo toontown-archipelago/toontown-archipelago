@@ -140,13 +140,13 @@ ITEM_DEFINITIONS: Dict[str, ToontownItemDefinition] = {
     ITEM_1250_MONEY_CAP: ToontownItemDefinition(ITEM_1250_MONEY_CAP, BASE_ITEM_ID+13, ItemClassification.useful, quantity=1),
 
     # Gag Training Frames (assume all are in pool, remove starting tracks before generation
-    ITEM_TOONUP_FRAME: ToontownItemDefinition(ITEM_TOONUP_FRAME, BASE_ITEM_ID+14, ItemClassification.progression, quantity=4),
-    ITEM_TRAP_FRAME: ToontownItemDefinition(ITEM_TRAP_FRAME, BASE_ITEM_ID+15, ItemClassification.progression, quantity=4),
-    ITEM_LURE_FRAME: ToontownItemDefinition(ITEM_LURE_FRAME, BASE_ITEM_ID+16, ItemClassification.progression, quantity=4),
-    ITEM_SOUND_FRAME: ToontownItemDefinition(ITEM_SOUND_FRAME, BASE_ITEM_ID+17, ItemClassification.progression, quantity=4),
-    ITEM_THROW_FRAME: ToontownItemDefinition(ITEM_THROW_FRAME, BASE_ITEM_ID+18, ItemClassification.progression, quantity=4),
-    ITEM_SQUIRT_FRAME: ToontownItemDefinition(ITEM_SQUIRT_FRAME, BASE_ITEM_ID+19, ItemClassification.progression, quantity=4),
-    ITEM_DROP_FRAME: ToontownItemDefinition(ITEM_DROP_FRAME, BASE_ITEM_ID+20, ItemClassification.progression, quantity=4),
+    ITEM_TOONUP_FRAME: ToontownItemDefinition(ITEM_TOONUP_FRAME, BASE_ITEM_ID+14, ItemClassification.progression, quantity=8),
+    ITEM_TRAP_FRAME: ToontownItemDefinition(ITEM_TRAP_FRAME, BASE_ITEM_ID+15, ItemClassification.progression, quantity=8),
+    ITEM_LURE_FRAME: ToontownItemDefinition(ITEM_LURE_FRAME, BASE_ITEM_ID+16, ItemClassification.progression, quantity=8),
+    ITEM_SOUND_FRAME: ToontownItemDefinition(ITEM_SOUND_FRAME, BASE_ITEM_ID+17, ItemClassification.progression, quantity=8),
+    ITEM_THROW_FRAME: ToontownItemDefinition(ITEM_THROW_FRAME, BASE_ITEM_ID+18, ItemClassification.progression, quantity=8),
+    ITEM_SQUIRT_FRAME: ToontownItemDefinition(ITEM_SQUIRT_FRAME, BASE_ITEM_ID+19, ItemClassification.progression, quantity=8),
+    ITEM_DROP_FRAME: ToontownItemDefinition(ITEM_DROP_FRAME, BASE_ITEM_ID+20, ItemClassification.progression, quantity=8),
 
     # Gag Training Multipliers
     ITEM_1_GAG_MULTIPLIER: ToontownItemDefinition(ITEM_1_GAG_MULTIPLIER, BASE_ITEM_ID+21, ItemClassification.useful, quantity=7),

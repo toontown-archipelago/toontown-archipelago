@@ -70,8 +70,22 @@ class GagTrainingFrameReward(APReward):
         self.track = track
 
     def apply(self, av: "DistributedToonAI"):
-        # todo
-        av.d_setSystemMessage(0, f"todo (gag training frame for track {self.TRACK_TO_NAME[self.track]})")
+
+        # Increment track access level by 1
+        oldLevel = av.getTrackAccessLevel(self.track)
+        newLevel = oldLevel+1
+
+        # If we get a frame when we already maxed, make the track organic
+        if newLevel > 7:
+            oldBonusArray = av.getTrackBonusLevel()
+            newBonusArray = oldBonusArray[self.track] = 7
+            av.b_setTrackBonusLevel(newBonusArray)
+            av.d_setSystemMessage(0, f"Your {self.TRACK_TO_NAME[self.track]} gags are now organic!")
+            return
+
+        # Otherwise increment the gag level allowed
+        av.setTrackAccessLevel(self.track, newLevel)
+        av.d_setSystemMessage(0, f"You can now train {self.TRACK_TO_NAME[self.track]} gags up to {newLevel}!")
 
 
 class GagTrainingMultiplierReward(APReward):
@@ -79,9 +93,8 @@ class GagTrainingMultiplierReward(APReward):
     def __init__(self, amount: int):
         self.amount: int = amount
 
-
     def apply(self, av: "DistributedToonAI"):
-        av.d_setSystemMessage(0 , f"todo: you received +{self.amount} base gag xp multiplier")
+        av.d_setSystemMessage(0, f"todo: you received +{self.amount} base gag xp multiplier")
 
 
 class FishingRodUpgradeReward(APReward):
