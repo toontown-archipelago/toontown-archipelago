@@ -1096,10 +1096,6 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
                     track = -1
                     level = -1
                     targetId = -1
-            elif track == HEAL and len(self.activeToons) == 1:
-                self.notify.warning('invalid group target for heal')
-                track = -1
-                level = -1
             elif not attackAffectsGroup(track, level):
                 if target >= 0 and target < len(self.activeSuits):
                     targetId = self.activeSuits[target].doId

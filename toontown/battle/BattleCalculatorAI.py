@@ -249,28 +249,29 @@ class BattleCalculatorAI:
     def __createToonTargetList(self, attackIndex):
         attack = self.battle.toonAttacks[attackIndex]
         atkTrack, atkLevel = self.__getActualTrackLevel(attack)
-        targetList = []
-        if atkTrack == NPCSOS:
-            return targetList
-        if not attackAffectsGroup(atkTrack, atkLevel, attack[TOON_TRACK_COL]):
-            if atkTrack == HEAL:
-                target = attack[TOON_TGT_COL]
-            else:
-                target = self.battle.findSuit(attack[TOON_TGT_COL])
-            if target != None:
-                targetList.append(target)
-        else:
-            if atkTrack == HEAL or atkTrack == PETSOS:
-                if attack[TOON_TRACK_COL] == NPCSOS or atkTrack == PETSOS:
-                    targetList = self.battle.activeToons
-                else:
-                    for currToon in self.battle.activeToons:
-                        if attack[TOON_ID_COL] != currToon:
-                            targetList.append(currToon)
 
-            else:
-                targetList = self.battle.activeSuits
-        return targetList
+        if atkTrack == NPCSOS:
+            return []
+
+        # If this attack is a group attack figure out if we are affecting all suits or all toons
+        if attackAffectsGroup(atkTrack, atkLevel, attack[TOON_TRACK_COL]):
+            # Heal gags target all the toons
+            if atkTrack in (HEAL, PETSOS):
+                return self.battle.activeToons
+
+            # Everything else targets all the suits
+            return self.battle.activeSuits
+
+        # At this point we have a specific target
+        if atkTrack == HEAL:
+            target = attack[TOON_TGT_COL]
+        else:
+            target = self.battle.findSuit(attack[TOON_TGT_COL])
+
+        if target is not None:
+            return [target]
+
+        return []
 
     def __prevAtkTrack(self, attackerId, toon=1):
         if toon:
@@ -810,7 +811,7 @@ class BattleCalculatorAI:
             self.kbBonuses = [{}, {}, {}, {}]
 
     def __bonusExists(self, tgtSuit, hp=1):
-        tgtPos = self.activeSuits.index(tgtSuit)
+        tgtPos = self.battle.activeSuits.index(tgtSuit)
         if hp:
             bonusLen = len(self.hpBonuses[tgtPos])
         else:
@@ -863,7 +864,7 @@ class BattleCalculatorAI:
         atkTrack = self.__getActualTrack(attack)
         if atkDmg > 0:
             if hp:
-                if atkTrack != LURE:
+                if atkTrack not in (LURE, SOUND):
                     self.notify.debug('Adding dmg of ' + str(atkDmg) + ' to hpBonuses list')
                     self.__addDmgToBonuses(atkDmg, attackIdx)
             elif self.__knockBackAtk(attackerId, toon=1):

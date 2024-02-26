@@ -147,7 +147,7 @@ class StageInterior(BattlePlace.BattlePlace):
         base.localAvatar.setTeleportAvailable(0)
 
     def enterTownBattle(self, event):
-        mult = ToontownBattleGlobals.getStageCreditMultiplier(bboard.get(DistributedStage.DistributedStage.FloorNum))
+        mult = ToontownBattleGlobals.getStageCreditMultiplier(bboard.get(DistributedStage.DistributedStage.ReadyPost).stageId)
         base.localAvatar.inventory.setBattleCreditMultiplier(mult)
         self.loader.townBattle.enter(event, self.fsm.getStateNamed('battle'), bldg=1, creditMultiplier=mult)
 

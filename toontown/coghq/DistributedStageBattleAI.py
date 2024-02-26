@@ -53,7 +53,7 @@ class DistributedStageBattleAI(DistributedLevelBattleAI.DistributedLevelBattleAI
                 recovered, notRecovered = self.air.questManager.recoverItems(toon, cogsThisFloor, self.getTaskZoneId())
                 self.toonItems[toon.doId][0].extend(recovered)
                 self.toonItems[toon.doId][1].extend(notRecovered)
-                meritArray = self.air.promotionMgr.recoverMerits(toon, cogsThisFloor, self.getTaskZoneId(), getStageCreditMultiplier(floorNum))
+                meritArray = self.air.promotionMgr.recoverMerits(toon, cogsThisFloor, self.getTaskZoneId(), getStageCreditMultiplier(self.level.stageId))
                 self.notify.info('toon %s: %s' % (toon.doId, meritArray))
                 if toon.doId in self.helpfulToons:
                     self.toonMerits[toon.doId] = addListsByValue(self.toonMerits[toon.doId], meritArray)

@@ -662,7 +662,7 @@ class Movie(DirectObject.DirectObject):
                     if levelAffectsGroup(HEAL, level):
                         targets = []
                         for t in toons:
-                            if t != toonId and t != -1:
+                            if t != -1:
                                 target = self.battle.findToon(t)
                                 if target == None:
                                     continue

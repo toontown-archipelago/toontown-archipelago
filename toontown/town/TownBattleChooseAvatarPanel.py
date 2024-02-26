@@ -95,7 +95,7 @@ class TownBattleChooseAvatarPanel(StateData.StateData):
 
     def __placeButtons(self, numAvatars, invalidTargets, localNum):
         for i in range(4):
-            if numAvatars > i and i not in invalidTargets and i != localNum:
+            if numAvatars > i and i not in invalidTargets:
                 self.avatarButtons[i].show()
             else:
                 self.avatarButtons[i].hide()

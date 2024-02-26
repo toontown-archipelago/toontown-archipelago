@@ -24,7 +24,7 @@ class DistributedStageRoomAI(DistributedLevelAI.DistributedLevelAI, StageRoomBas
         return FactoryEntityCreatorAI.FactoryEntityCreatorAI(level=self)
 
     def getBattleCreditMultiplier(self):
-        return ToontownBattleGlobals.getStageCreditMultiplier(self.getFloorNum())
+        return ToontownBattleGlobals.getStageCreditMultiplier(self.stageId)
 
     def getFloorNum(self):
         stage = self.air.getDo(self.stageDoId)

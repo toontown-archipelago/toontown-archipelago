@@ -144,14 +144,9 @@ class TownBattleToonPanel(DirectFrame):
         targetList = list(range(numTargets))
         targetList.reverse()
         for i in targetList:
-            if targetIndex == -1:
+            if targetIndex in (-1, -2):
                 returnStr += 'X'
-            elif targetIndex == -2:
-                if i == index:
-                    returnStr += '-'
-                else:
-                    returnStr += 'X'
-            elif targetIndex >= 0 and targetIndex <= 3:
+            elif 0 <= targetIndex <= 3:
                 if i == targetIndex:
                     returnStr += 'X'
                 else:

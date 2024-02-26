@@ -1,6 +1,6 @@
 from .ToontownGlobals import *
 import math
-from . import TTLocalizer
+from . import TTLocalizer, ToontownGlobals
 from ..toon.Experience import Experience
 
 BattleCamFaceOffFov = 30.0
@@ -200,112 +200,87 @@ AvPropsNew = (('inventory_feather',
 AvPropStrings = TTLocalizer.BattleGlobalAvPropStrings
 AvPropStringsSingular = TTLocalizer.BattleGlobalAvPropStringsSingular
 AvPropStringsPlural = TTLocalizer.BattleGlobalAvPropStringsPlural
-AvPropAccuracy = ((70,
-                   70,
-                   70,
-                   70,
-                   70,
-                   70,
-                   100),
-                  (0,
-                   0,
-                   0,
-                   0,
-                   0,
-                   0,
-                   0),
-                  (50,
-                   50,
-                   60,
-                   60,
-                   70,
-                   70,
-                   90),
-                  (95,
-                   95,
-                   95,
-                   95,
-                   95,
-                   95,
-                   95),
-                  (75,
-                   75,
-                   75,
-                   75,
-                   75,
-                   75,
-                   75),
-                  (95,
-                   95,
-                   95,
-                   95,
-                   95,
-                   95,
-                   95),
-                  (50,
-                   50,
-                   50,
-                   50,
-                   50,
-                   50,
-                   50))
-AvLureBonusAccuracy = (60,
-                       60,
-                       70,
-                       70,
-                       80,
-                       80,
-                       100)
+
+AvPropAccuracy = (
+    (70, 70, 70, 70, 70, 70, 100),  # Toonup
+    (0, 0, 0, 0, 0, 0, 0),          # Trap
+    (50, 50, 60, 60, 70, 70, 95),   # Lure
+    (95, 95, 95, 95, 95, 95, 95),   # Sound
+    (75, 75, 75, 75, 75, 75, 75),   # Throw
+    (95, 95, 95, 95, 95, 95, 95),   # Squirt
+    (50, 50, 50, 50, 50, 50, 50)    # Drop
+)
+
+AvLureBonusAccuracy = (60, 60, 70, 70, 80, 80, 100)
+
 AvTrackAccStrings = TTLocalizer.BattleGlobalAvTrackAccStrings
-AvPropDamage = ((((8, 10), (Levels[0][0], Levels[0][1])),
-                 ((15, 18), (Levels[0][1], Levels[0][2])),
-                 ((25, 30), (Levels[0][2], Levels[0][3])),
-                 ((40, 45), (Levels[0][3], Levels[0][4])),
-                 ((60, 70), (Levels[0][4], Levels[0][5])),
-                 ((90, 120), (Levels[0][5], Levels[0][6])),
-                 ((150, 150), (Levels[0][6], MaxSkill))),
-                (((12, 15), (Levels[1][0], Levels[1][1])),
-                 ((20, 25), (Levels[1][1], Levels[1][2])),
-                 ((35, 40), (Levels[1][2], Levels[1][3])),
-                 ((50, 60), (Levels[1][3], Levels[1][4])),
-                 ((70, 85), (Levels[1][4], Levels[1][5])),
-                 ((95, 185), (Levels[1][5], Levels[1][6])),
-                 ((195, 195), (Levels[1][6], MaxSkill))),
-                (((0, 0), (0, 0)),
-                 ((0, 0), (0, 0)),
-                 ((0, 0), (0, 0)),
-                 ((0, 0), (0, 0)),
-                 ((0, 0), (0, 0)),
-                 ((0, 0), (0, 0)),
-                 ((0, 0), (0, 0))),
-                (((4, 5), (Levels[3][0], Levels[3][1])),
-                 ((7, 11), (Levels[3][1], Levels[3][2])),
-                 ((12, 16), (Levels[3][2], Levels[3][3])),
-                 ((17, 20), (Levels[3][3], Levels[3][4])),
-                 ((22, 25), (Levels[3][4], Levels[3][5])),
-                 ((35, 70), (Levels[3][5], Levels[3][6])),
-                 ((80, 80), (Levels[3][6], MaxSkill))),
-                (((4, 6), (Levels[4][0], Levels[4][1])),
-                 ((8, 10), (Levels[4][1], Levels[4][2])),
-                 ((14, 17), (Levels[4][2], Levels[4][3])),
-                 ((24, 27), (Levels[4][3], Levels[4][4])),
-                 ((36, 40), (Levels[4][4], Levels[4][5])),
-                 ((48, 100), (Levels[4][5], Levels[4][6])),
-                 ((110, 110), (Levels[4][6], MaxSkill))),
-                (((3, 4), (Levels[5][0], Levels[5][1])),
-                 ((6, 8), (Levels[5][1], Levels[5][2])),
-                 ((10, 12), (Levels[5][2], Levels[5][3])),
-                 ((18, 21), (Levels[5][3], Levels[5][4])),
-                 ((27, 30), (Levels[5][4], Levels[5][5])),
-                 ((36, 80), (Levels[5][5], Levels[5][6])),
-                 ((90, 90), (Levels[5][6], MaxSkill))),
-                (((10, 10), (Levels[6][0], Levels[6][1])),
-                 ((18, 18), (Levels[6][1], Levels[6][2])),
-                 ((30, 30), (Levels[6][2], Levels[6][3])),
-                 ((45, 45), (Levels[6][3], Levels[6][4])),
-                 ((60, 60), (Levels[6][4], Levels[6][5])),
-                 ((85, 170), (Levels[6][5], Levels[6][6])),
-                 ((180, 180), (Levels[6][6], MaxSkill))))
+
+
+AvPropDamage = (
+    (   # Toonup
+        ((8, 10), (Levels[0][0], Levels[0][1])),
+        ((15, 20), (Levels[0][1], Levels[0][2])),
+        ((20, 25), (Levels[0][2], Levels[0][3])),
+        ((36, 48), (Levels[0][3], Levels[0][4])),
+        ((50, 60), (Levels[0][4], Levels[0][5])),
+        ((80, 120), (Levels[0][5], Levels[0][6])),
+        ((200, 200), (Levels[0][6], MaxSkill))
+    ),
+    (   # Trap
+        ((12, 15), (Levels[1][0], Levels[1][1])),
+        ((20, 25), (Levels[1][1], Levels[1][2])),
+        ((35, 40), (Levels[1][2], Levels[1][3])),
+        ((50, 60), (Levels[1][3], Levels[1][4])),
+        ((70, 85), (Levels[1][4], Levels[1][5])),
+        ((95, 185), (Levels[1][5], Levels[1][6])),
+        ((195, 195), (Levels[1][6], MaxSkill))
+    ),
+    (   # Lure
+        ((0, 0), (0, 0)),
+        ((0, 0), (0, 0)),
+        ((0, 0), (0, 0)),
+        ((0, 0), (0, 0)),
+        ((0, 0), (0, 0)),
+        ((0, 0), (0, 0)),
+        ((0, 0), (0, 0))
+    ),
+    (   # Sound
+        ((4, 5), (Levels[3][0], Levels[3][1])),
+        ((7, 11), (Levels[3][1], Levels[3][2])),
+        ((12, 16), (Levels[3][2], Levels[3][3])),
+        ((17, 20), (Levels[3][3], Levels[3][4])),
+        ((22, 25), (Levels[3][4], Levels[3][5])),
+        ((35, 60), (Levels[3][5], Levels[3][6])),
+        ((80, 80), (Levels[3][6], MaxSkill))
+    ),
+    (   # Throw
+        ((4, 6), (Levels[4][0], Levels[4][1])),
+        ((8, 10), (Levels[4][1], Levels[4][2])),
+        ((14, 17), (Levels[4][2], Levels[4][3])),
+        ((24, 27), (Levels[4][3], Levels[4][4])),
+        ((36, 40), (Levels[4][4], Levels[4][5])),
+        ((48, 100), (Levels[4][5], Levels[4][6])),
+        ((110, 110), (Levels[4][6], MaxSkill))
+    ),
+    (   # Squirt
+        ((3, 4), (Levels[5][0], Levels[5][1])),
+        ((6, 8), (Levels[5][1], Levels[5][2])),
+        ((10, 12), (Levels[5][2], Levels[5][3])),
+        ((18, 21), (Levels[5][3], Levels[5][4])),
+        ((27, 30), (Levels[5][4], Levels[5][5])),
+        ((36, 80), (Levels[5][5], Levels[5][6])),
+        ((90, 90), (Levels[5][6], MaxSkill))
+    ),
+    (   # Drop
+        ((10, 10), (Levels[6][0], Levels[6][1])),
+        ((18, 18), (Levels[6][1], Levels[6][2])),
+        ((30, 30), (Levels[6][2], Levels[6][3])),
+        ((45, 45), (Levels[6][3], Levels[6][4])),
+        ((60, 60), (Levels[6][4], Levels[6][5])),
+        ((85, 170), (Levels[6][5], Levels[6][6])),
+        ((180, 180), (Levels[6][6], MaxSkill))
+    )
+)
 ATK_SINGLE_TARGET = 0
 ATK_GROUP_TARGET = 1
 AvPropTargetCat = ((ATK_SINGLE_TARGET,
@@ -336,13 +311,7 @@ AvPropTargetCat = ((ATK_SINGLE_TARGET,
                     ATK_SINGLE_TARGET,
                     ATK_SINGLE_TARGET,
                     ATK_GROUP_TARGET))
-AvPropTarget = (0,
-                3,
-                0,
-                2,
-                3,
-                3,
-                3)
+AvPropTarget = (0, 3, 0, 2, 3, 3, 3)
 
 
 def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
@@ -388,35 +357,51 @@ def isGroup(track, level):
 
 
 def getCreditMultiplier(floorIndex):
-    return 1 + floorIndex * 0.5
+    return 1 + floorIndex
 
 
 def getFactoryCreditMultiplier(factoryId):
-    return 2.0
+
+    if factoryId == ToontownGlobals.SellbotFactoryIntS:
+        return 4.0
+
+    return 3.0
 
 
 def getFactoryMeritMultiplier(factoryId):
+    if factoryId == ToontownGlobals.SellbotFactoryIntS:
+        return 5.0
+
     return 4.0
 
 
 def getMintCreditMultiplier(mintId):
-    return {CashbotMintIntA: 2.0,
-            CashbotMintIntB: 2.5,
-            CashbotMintIntC: 3.0}.get(mintId, 1.0)
+    return {
+        CashbotMintIntA: 3.0,
+        CashbotMintIntB: 4.0,
+        CashbotMintIntC: 5.0
+    }.get(mintId, 3.0)
 
 
-def getStageCreditMultiplier(floor):
-    return getCreditMultiplier(floor)
+def getStageCreditMultiplier(stageId):
+    return {
+        LawbotStageIntA: 3.0,
+        LawbotStageIntB: 4.0,
+        LawbotStageIntC: 5.0,
+        LawbotStageIntD: 6.0,
+    }.get(stageId, 3.0)
 
 
 def getCountryClubCreditMultiplier(countryClubId):
-    return {BossbotCountryClubIntA: 2.0,
-            BossbotCountryClubIntB: 2.5,
-            BossbotCountryClubIntC: 3.0}.get(countryClubId, 1.0)
+    return {
+        BossbotCountryClubIntA: 4.0,
+        BossbotCountryClubIntB: 5.0,
+        BossbotCountryClubIntC: 6.0
+    }.get(countryClubId, 4.0)
 
 
 def getBossBattleCreditMultiplier(battleNumber):
-    return 1 + battleNumber
+    return 2 + battleNumber
 
 
 def getInvasionMultiplier():

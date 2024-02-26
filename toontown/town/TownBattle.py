@@ -349,6 +349,8 @@ class TownBattle(StateData.StateData):
             self.level = doneStatus['level']
             self.toonPanels[self.localNum].setValues(self.localNum, self.track, self.level)
             if self.track == HEAL_TRACK:
+
+                # Group TU
                 if self.__isGroupHeal(self.level):
                     response = {}
                     response['mode'] = 'Attack'
@@ -357,19 +359,18 @@ class TownBattle(StateData.StateData):
                     response['target'] = self.target
                     messenger.send(self.battleEvent, [response])
                     self.fsm.request('AttackWait')
-                elif self.numToons == 3 or self.numToons == 4:
+
+                # We need to pick the target
+                elif self.numToons in (2, 3, 4):
                     self.fsm.request('ChooseToon')
-                elif self.numToons == 2:
+
+                # We are alone, we can only heal ourselves
+                elif self.numToons == 1:
                     response = {}
                     response['mode'] = 'Attack'
                     response['track'] = self.track
                     response['level'] = self.level
-                    if self.localNum == 0:
-                        response['target'] = 1
-                    elif self.localNum == 1:
-                        response['target'] = 0
-                    else:
-                        self.notify.error('Bad localNum value: %s' % self.localNum)
+                    response['target'] = self.localNum
                     messenger.send(self.battleEvent, [response])
                     self.fsm.request('AttackWait')
                 else:
@@ -421,10 +422,8 @@ class TownBattle(StateData.StateData):
             canTrap = 0
         else:
             canLure = 1
-        if self.numToons == 1:
-            canHeal = 0
-        else:
-            canHeal = 1
+
+        canHeal = 1
         return (canHeal, canTrap, canLure)
 
     def adjustCogsAndToons(self, cogs, luredIndices, trappedIndices, toons, immuneIndices):

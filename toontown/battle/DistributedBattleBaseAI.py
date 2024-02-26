@@ -1063,7 +1063,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                 self.toonAttacks[toonId] = getToonAttack(toonId)
                 return
             if track == HEAL:
-                if self.runningToons.count(av) == 1 or attackAffectsGroup(track, level) and len(self.activeToons) < 2:
+                if self.runningToons.count(av) == 1:
                     self.toonAttacks[toonId] = getToonAttack(toonId, track=UN_ATTACK)
                     validResponse = 0
                 else:
@@ -1423,17 +1423,15 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                     elif track == HEAL:
                         if levelAffectsGroup(HEAL, level):
                             for i in range(len(self.activeToons)):
-                                at = self.activeToons[i]
-                                if at != toonId or attack[TOON_TRACK_COL] == NPCSOS:
-                                    toon = self.getToon(at)
-                                    if toon != None:
-                                        if i < len(hps):
-                                            hp = hps[i]
-                                        else:
-                                            self.notify.warning('Invalid targetIndex %s in hps %s.' % (i, hps))
-                                            hp = 0
-                                        toonHpDict[toon.doId][0] += hp
-                                        self.notify.debug('HEAL: toon: %d healed for hp: %d' % (toon.doId, hp))
+                                toon = self.getToon(self.activeToons[i])
+                                if toon != None:
+                                    if i < len(hps):
+                                        hp = hps[i]
+                                    else:
+                                        self.notify.warning('Invalid targetIndex %s in hps %s.' % (i, hps))
+                                        hp = 0
+                                    toonHpDict[toon.doId][0] += hp
+                                    self.notify.debug('HEAL: toon: %d healed for hp: %d' % (toon.doId, hp))
 
                         else:
                             targetId = attack[TOON_TGT_COL]
