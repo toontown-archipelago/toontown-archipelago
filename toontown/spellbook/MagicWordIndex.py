@@ -304,7 +304,9 @@ class MaxToon(MagicWord):
         toon.inventory.maxOutInv()
         toon.b_setInventory(toon.inventory.makeNetString())
 
-        toon.b_setMaxMoney(Quests.RewardDict[707][1])
+        toon.b_setBaseGagSkillMultiplier(10)
+
+        toon.b_setMaxMoney(5000)
         toon.b_setMoney(toon.getMaxMoney())
         toon.b_setBankMoney(ToontownGlobals.DefaultMaxBankMoney)
 
@@ -353,6 +355,8 @@ class MaxToon(MagicWord):
         toon.b_setTickets(99999)
 
         toon.b_setGolfHistory([600] * (GolfGlobals.MaxHistoryIndex * 2))
+
+        toon.b_setAccessKeys([_ for _ in range(100)])
 
         return "Maxed out {}'s stats.".format(toon.getName())
 
