@@ -1,3 +1,5 @@
+from typing import List
+
 from panda3d.core import *
 from libotp import *
 from toontown.toon.LaffMeter import LaffMeter
@@ -198,6 +200,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.overheadLaffMeter = None
 
         self.baseGagSkillMultiplier = 1
+        self.accessKeys: List[int] = []
 
         return
 
@@ -2762,3 +2765,11 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # Set this toon's base gag xp multiplier but only on the server
     def setBaseGagSkillMultiplier(self, newGagSkillMultiplier) -> None:
         self.baseGagSkillMultiplier = newGagSkillMultiplier
+
+    # What is this toon's list of access keys acquired
+    def getAccessKeys(self) -> List[int]:
+        return self.accessKeys
+
+    # Set this toon's list of access keys acquired from the server
+    def setAccessKeys(self, keys: List) -> None:
+        self.accessKeys = keys

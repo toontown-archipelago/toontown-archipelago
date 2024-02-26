@@ -8,7 +8,7 @@ from direct.fsm import ClassicFSM, State
 from direct.fsm import State
 from direct.task import Task
 from direct.directnotify import DirectNotifyGlobal
-from toontown.building import BoardingPartyBase
+from toontown.building import BoardingPartyBase, FADoorCodes
 from toontown.toonbase import ToontownAccessAI
 GROUPMEMBER = 0
 GROUPINVITE = 1
@@ -131,6 +131,8 @@ class DistributedBoardingPartyAI(DistributedObjectAI.DistributedObjectAI, Boardi
                     reason = BoardingPartyBase.BOARDCODE_MINLAFF
                 elif inviteeOkay == REJECT_PROMOTION:
                     reason = BoardingPartyBase.BOARDCODE_PROMOTION
+                elif inviteeOkay in FADoorCodes.reasonDict.keys():
+                    reason = BoardingPartyBase.BOARDCODE_NOACCESS
                 self.sendUpdateToAvatarId(inviterId, 'postInviteNotQualify', [inviteeId, reason, self.elevatorIdList[0]])
                 return
             else:
@@ -140,6 +142,8 @@ class DistributedBoardingPartyAI(DistributedObjectAI.DistributedObjectAI, Boardi
                         reason = BoardingPartyBase.BOARDCODE_MINLAFF
                     elif inviterOkay == REJECT_PROMOTION:
                         reason = BoardingPartyBase.BOARDCODE_PROMOTION
+                    elif inviteeOkay in FADoorCodes.reasonDict.keys():
+                        reason = BoardingPartyBase.BOARDCODE_NOACCESS
                     self.sendUpdateToAvatarId(inviterId, 'postInviteNotQualify', [inviterId, reason, self.elevatorIdList[0]])
                     return
         if inviterId in self.avIdDict:
@@ -263,9 +267,10 @@ class DistributedBoardingPartyAI(DistributedObjectAI.DistributedObjectAI, Boardi
                             if elevator.checkBoard(avatar) != 0:
                                 if elevator.checkBoard(avatar) == REJECT_MINLAFF:
                                     boardOkay = BoardingPartyBase.BOARDCODE_MINLAFF
-                                else:
-                                    if elevator.checkBoard(avatar) == REJECT_PROMOTION:
-                                        boardOkay = BoardingPartyBase.BOARDCODE_PROMOTION
+                                elif elevator.checkBoard(avatar) == REJECT_PROMOTION:
+                                    boardOkay = BoardingPartyBase.BOARDCODE_PROMOTION
+                                elif elevator.checkBoard(avatar) in FADoorCodes.reasonDict.keys():
+                                    boardOkay = BoardingPartyBase.BOARDCODE_NOACCESS
                                 avatarsFailingRequirements.append(avId)
                             elif avatar.battleId != 0:
                                 boardOkay = BoardingPartyBase.BOARDCODE_BATTLE

@@ -20,11 +20,6 @@ class DistributedMintElevatorExtAI(DistributedElevatorExtAI.DistributedElevatorE
     def getMintId(self):
         return self.mintId
 
-    def avIsOKToBoard(self, av):
-        if not DistributedElevatorExtAI.DistributedElevatorExtAI.avIsOKToBoard(self, av):
-            return False
-        return True
-
     def elevatorClosed(self):
         numPlayers = self.countFullSeats()
         if numPlayers > 0:

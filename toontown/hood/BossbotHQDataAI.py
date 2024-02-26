@@ -28,12 +28,6 @@ class BossbotHQDataAI(HoodDataAI.HoodDataAI):
     def startup(self):
         HoodDataAI.HoodDataAI.startup(self)
 
-        def makeOfficeElevator(index, antiShuffle=0, minLaff=0):
-            destZone = (ToontownGlobals.LawbotStageIntA, ToontownGlobals.LawbotStageIntB, ToontownGlobals.LawbotStageIntC, ToontownGlobals.LawbotStageIntD)[index]
-            elev = DistributedLawOfficeElevatorExtAI.DistributedLawOfficeElevatorExtAI(self.air, self.air.lawMgr, destZone, index, antiShuffle=0, minLaff=minLaff)
-            elev.generateWithRequired(ToontownGlobals.LawbotOfficeExt)
-            self.addDistObj(elev)
-
         self.lobbyMgr = LobbyManagerAI.LobbyManagerAI(self.air, DistributedBossbotBossAI.DistributedBossbotBossAI)
         self.lobbyMgr.generateWithRequired(ToontownGlobals.BossbotLobby)
         self.addDistObj(self.lobbyMgr)
@@ -67,6 +61,7 @@ class BossbotHQDataAI(HoodDataAI.HoodDataAI):
         posList = (
          (154.762, 37.169, 0), (141.403, -81.887, 0), (-48.44, 15.308, 0))
         hprList = ((110.815, 0, 0), (61.231, 0, 0), (-105.481, 0, 0))
+        lockList = (FADoorCodes.FRONT_THREE_ACCESS_MISSING, FADoorCodes.MIDDLE_SIX_ACCESS_MISSING, FADoorCodes.BACK_NINE_ACCESS_MISSING)
         mins = ToontownGlobals.FactoryLaffMinimums[3]
         kartIdList = []
         for cogCourse in range(len(posList)):
@@ -74,6 +69,7 @@ class BossbotHQDataAI(HoodDataAI.HoodDataAI):
             hpr = hprList[cogCourse]
             cogKart = DistributedCogKartAI.DistributedCogKartAI(self.air, cogCourse, pos[0], pos[1], pos[2], hpr[0], hpr[1], hpr[2], self.air.countryClubMgr, minLaff=mins[cogCourse])
             cogKart.generateWithRequired(self.zoneId)
+            cogKart.setLock(lockList[cogCourse])
             self.cogKarts.append(cogKart)
             kartIdList.append(cogKart.doId)
 

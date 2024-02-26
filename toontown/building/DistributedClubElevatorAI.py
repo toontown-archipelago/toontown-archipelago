@@ -287,10 +287,10 @@ class DistributedClubElevatorAI(DistributedElevatorFSMAI.DistributedElevatorFSMA
         return self.latch
 
     def checkBoard(self, av):
-        if av.hp < self.minLaff:
-            return ElevatorConstants.REJECT_MINLAFF
+
         if self.DoBlockedRoomCheck and self.bldg:
             if hasattr(self.bldg, 'blockedRooms'):
                 if self.bldg.blockedRooms:
                     return ElevatorConstants.REJECT_BLOCKED_ROOM
-        return 0
+
+        return super().checkBoard(av)

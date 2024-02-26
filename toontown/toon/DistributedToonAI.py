@@ -1,3 +1,5 @@
+from typing import List
+
 from otp.ai.AIBaseGlobal import *
 from panda3d.core import *
 from otp.otpbase import OTPGlobals
@@ -219,6 +221,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Archipelago Stuff
         self.baseGagSkillMultiplier = 1  # Multiplicative stacking gag xp multiplier to consider
+        self.accessKeys: List[int] = []
 
         self.archipelago_session: ArchipelagoSession = None
 
@@ -4297,3 +4300,39 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Set this toon's base gag xp multiplier but only on the server
     def setBaseGagSkillMultiplier(self, newGagSkillMultiplier) -> None:
         self.baseGagSkillMultiplier = newGagSkillMultiplier
+
+    # Set this toon's list of access keys acquired and tell its client counterpart what it is (and save it to db?)
+    def b_setAccessKeys(self, keys: List):
+        self.setAccessKeys(keys)
+        self.d_setAccessKeys(keys)
+
+    # Only tell the client what its list of access keys acquired is (and save it to db?)
+    def d_setAccessKeys(self, keys: List) -> None:
+        self.sendUpdate('setAccessKeys', [keys])
+
+    # What is this toon's list of access keys acquired
+    def getAccessKeys(self) -> List[int]:
+        return self.accessKeys
+
+    # Set this toon's list of access keys acquired but only on the server
+    def setAccessKeys(self, keys: List) -> None:
+        self.accessKeys = keys
+
+    # Give this toon a key to access some area
+    def addAccessKey(self, key: int) -> None:
+
+        if key not in self.getAccessKeys():
+            self.accessKeys.append(key)
+            self.b_setAccessKeys(self.accessKeys)
+
+    # Revoke this toon's key to access some area
+    def removeAccessKey(self, key: int) -> None:
+
+        if key in self.getAccessKeys():
+            self.accessKeys.remove(key)
+            self.b_setAccessKeys(self.accessKeys)
+
+    # Remove this toon's access keys completely
+    def clearAccessKeys(self) -> None:
+        self.accessKeys.clear()
+        self.b_setAccessKeys(self.accessKeys)

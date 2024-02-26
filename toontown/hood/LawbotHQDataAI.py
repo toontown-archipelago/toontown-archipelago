@@ -28,9 +28,11 @@ class LawbotHQDataAI(HoodDataAI.HoodDataAI):
 
         def makeOfficeElevator(index, antiShuffle=0, minLaff=0):
             destZone = (ToontownGlobals.LawbotStageIntA, ToontownGlobals.LawbotStageIntB, ToontownGlobals.LawbotStageIntC, ToontownGlobals.LawbotStageIntD)[index]
+            lock = (FADoorCodes.OFFICE_A_ACCESS_MISSING, FADoorCodes.OFFICE_B_ACCESS_MISSING, FADoorCodes.OFFICE_C_ACCESS_MISSING, FADoorCodes.OFFICE_D_ACCESS_MISSING)[index]
             elev = DistributedLawOfficeElevatorExtAI.DistributedLawOfficeElevatorExtAI(self.air, self.air.lawMgr, destZone, index, antiShuffle=0, minLaff=minLaff)
             elev.generateWithRequired(ToontownGlobals.LawbotOfficeExt)
             self.addDistObj(elev)
+            elev.setLock(lock)
             return elev.doId
 
         mins = ToontownGlobals.FactoryLaffMinimums[2]

@@ -1145,6 +1145,7 @@ dclass DistributedToon : DistributedPlayer {
   forceEnterBoss(uint16 zone, uint32 doId) ownrecv;
 
   setBaseGagSkillMultiplier(uint16 newMultiplier) required ownrecv broadcast db;
+  setAccessKeys(uint16[] = []) required ownrecv broadcast db;
 };
 
 dclass DistributedCCharBase : DistributedObject {

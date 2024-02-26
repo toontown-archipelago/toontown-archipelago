@@ -22,6 +22,7 @@ class DistributedElevatorAI(DistributedObjectAI.DistributedObjectAI):
         self.seats = []
         self.setAntiShuffle(antiShuffle)
         self.setMinLaff(minLaff)
+        self.lockID = None
         if self.antiShuffle:
             if not hasattr(simbase.air, 'elevatorTripId'):
                 simbase.air.elevatorTripId = 1
@@ -160,9 +161,25 @@ class DistributedElevatorAI(DistributedObjectAI.DistributedObjectAI):
     def avIsOKToBoard(self, av):
         return av.hp > self.minLaff and self.accepting
 
+    def setLock(self, lockID):
+        self.lockID = lockID
+
+    def getLock(self):
+        return self.lockID
+
+    def isLocked(self):
+        return self.lockID is not None and self.lockID > 0
+
+    def avHasKey(self, av):
+        return self.lockID in av.getAccessKeys()
+
     def checkBoard(self, av):
         if av.hp < self.minLaff:
             return REJECT_MINLAFF
+
+        if self.isLocked() and not self.avHasKey(av):
+            return self.lockID
+
         return 0
 
     def requestBoard(self, *args):

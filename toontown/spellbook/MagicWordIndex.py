@@ -3502,6 +3502,37 @@ class SetGagSkillMultiplier(MagicWord):
         return f"Set {toon.getName()}'s base gag xp multiplier to {args[0]}!"
 
 
+class SetAccessKeys(MagicWord):
+    aliases = ['keys', 'access']
+    desc = "Modifies a toons access to HQs and Cog Facilities"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("operation", str, False, 'list'), ('key', int, False, 0)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        operation = args[0].lower()
+        key = args[1]
+
+        if operation not in ('add', 'remove', 'clear', 'all', 'list'):
+            return f"Invalid operation: {operation}, must be add, remove, clear, or list"
+
+        if operation == 'add':
+            toon.addAccessKey(key)
+            return f"Added {key} to {toon.getName()}'s list of keys!"
+
+        if operation == 'remove':
+            toon.removeAccessKey(key)
+            return f"Removed {key} from {toon.getName()}'s list of keys!"
+
+        if operation == 'clear':
+            toon.clearAccessKeys()
+            return f"Removed all keys from {toon.getName()}!"
+
+        if operation == 'all':
+            toon.b_setAccessKeys([_ for _ in range(100)])  # Kinda hacky but meh i don't think im adding 75 more locks lol
+
+        return f"{toon.getName()}'s keys: {toon.getAccessKeys()}"
+
+
 # Instantiate all classes defined here to register them.
 # A bit hacky, but better than the old system
 for item in list(globals().values()):

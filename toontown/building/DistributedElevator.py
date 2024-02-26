@@ -13,7 +13,8 @@ from direct.task.Task import Task
 from toontown.distributed import DelayDelete
 from toontown.hood import ZoneUtil
 from toontown.toontowngui import TeaserPanel
-from toontown.building import BoardingGroupShow
+from toontown.building import BoardingGroupShow, FADoorCodes
+
 
 class DistributedElevator(DistributedObject.DistributedObject):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedElevator')
@@ -373,6 +374,8 @@ class DistributedElevator(DistributedObject.DistributedObject):
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.BossElevatorRejectMessage)
             elif reason == REJECT_NOT_YET_AVAILABLE:
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.NotYetAvailable)
+            elif reason in FADoorCodes.reasonDict.keys():
+                base.localAvatar.elevatorNotifier.showMe(FADoorCodes.reasonDict[reason])
         doneStatus = {'where': 'reject'}
         elevator = self.getPlaceElevator()
         if elevator:

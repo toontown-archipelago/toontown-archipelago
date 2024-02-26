@@ -116,6 +116,7 @@ GlobalStreetNames = {20000: ('to', 'on', 'Tutorial Terrace'),
  11100: ('to the', 'in the', 'Sellbot HQ Lobby'),
  11200: ('to the', 'in the', 'Sellbot Factory'),
  11500: ('to the', 'in the', 'Sellbot Factory'),
+ 11600: ('to the', 'in the', 'Sellbot Factory (Side Entrance)'),
  12000: ('to', 'in', 'Cashbot Train Yard'),
  12100: ('to the', 'in the', 'Cashbot HQ Lobby'),
  12500: ('to the', 'in the', 'Cashbot Coin Mint'),
@@ -154,6 +155,7 @@ SellbotSideEntrance = 'Side Entrance'
 Office = 'Office'
 FactoryNames = {0: 'Factory Mockup',
  11500: 'Sellbot Cog Factory',
+ 11600: 'Sellbot Cog Factory (Side Entrance)',
  13300: 'Lawbot Cog Office'}
 FactoryTypeLeg = 'Leg'
 FactoryTypeArm = 'Arm'
@@ -3116,6 +3118,30 @@ FADoorCodes_SB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon
 FADoorCodes_CB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Cashbot Disguise first!\n\nBuild your Cashbot Disguise by doing ToonTasks in Donald's Dreamland."
 FADoorCodes_LB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Lawbot Disguise first!\n\nBuild your Lawbot Disguise by doing the ToonTasks after Donald's Dreamland."
 FADoorCodes_BB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Bossbot Disguise first!\n\nBuild your Bossbot Disguise by doing the ToonTasks after Donald's Dreamland."
+
+FADoorCodes_TTC_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Toontown Central HQ Clearance before you can enter and complete toontasks here."
+FADoorCodes_DD_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Donald's Dock HQ Clearance before you can enter and complete toontasks here."
+FADoorCodes_DG_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Daisy's Gardens HQ Clearance before you can enter and complete toontasks here."
+FADoorCodes_MM_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Minnie's Melodyland HQ Clearance before you can enter and complete toontasks here."
+FADoorCodes_TB_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need The Brrrgh HQ Clearance before you can enter and complete toontasks here."
+FADoorCodes_DDL_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Donald's Dreamland HQ Clearance before you can enter and complete toontasks here."
+
+FADoorCodes_FRONT_FACTORY_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Front Factory Entrance Key."
+FADoorCodes_SIDE_FACTORY_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Side Factory Entrance Key."
+
+FADoorCodes_COIN_MINT_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Coin Mint Entrance Key."
+FADoorCodes_DOLLAR_MINT_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Dollar Mint Entrance Key."
+FADoorCodes_BULLION_MINT_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Bullion Mint Entrance Key."
+
+FADoorCodes_OFFICE_A_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Office A Entrance Key."
+FADoorCodes_OFFICE_B_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Office B Entrance Key."
+FADoorCodes_OFFICE_C_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Office C Entrance Key."
+FADoorCodes_OFFICE_D_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Office D Entrance Key."
+
+FADoorCodes_FRONT_THREE_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Front Three Entrance Key."
+FADoorCodes_MIDDLE_SIX_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Middle Six Entrance Key."
+FADoorCodes_BACK_NINE_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Back Nine Entrance Key."
+
 KnockKnockContestJokes = {2100: ['Wally', "Wally's not looking, hit him with a pie!"],
  2200: {28: ['Biscuit', 'Biscuit out of here the Cogs are coming!'],
         41: ['Dewey', 'Dewey want to go defeat some more Cogs?'],

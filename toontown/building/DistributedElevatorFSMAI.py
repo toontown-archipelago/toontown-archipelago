@@ -35,6 +35,8 @@ class DistributedElevatorFSMAI(DistributedObjectAI.DistributedObjectAI, FSM):
         for seat in range(numSeats):
             self.seats.append(None)
 
+        self.lockID = None
+
         self.accepting = 0
         self.setAntiShuffle(antiShuffle)
         self.setMinLaff(minLaff)
@@ -143,10 +145,25 @@ class DistributedElevatorFSMAI(DistributedObjectAI.DistributedObjectAI, FSM):
 
     def avIsOKToBoard(self, av):
         return av.hp > self.minLaff and self.accepting
+    def setLock(self, lockID):
+        self.lockID = lockID
+
+    def getLock(self):
+        return self.lockID
+
+    def isLocked(self):
+        return self.lockID is not None and self.lockID > 0
+
+    def avHasKey(self, av):
+        return self.lockID in av.getAccessKeys()
 
     def checkBoard(self, av):
         if av.hp < self.minLaff:
             return REJECT_MINLAFF
+
+        if self.isLocked() and not self.avHasKey(av):
+            return self.lockID
+
         return 0
 
     def requestBoard(self, *args):

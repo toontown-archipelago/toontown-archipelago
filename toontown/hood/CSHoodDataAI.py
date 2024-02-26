@@ -4,7 +4,7 @@ from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedFactoryElevatorExtAI
 from toontown.coghq import DistributedCogHQDoorAI
 from toontown.coghq import DistributedSellbotHQDoorAI
-from toontown.building import DoorTypes
+from toontown.building import DoorTypes, FADoorCodes
 from toontown.coghq import LobbyManagerAI
 from toontown.building import DistributedVPElevatorAI
 from toontown.suit import DistributedSellbotBossAI
@@ -23,12 +23,14 @@ class CSHoodDataAI(HoodDataAI.HoodDataAI):
     def startup(self):
         HoodDataAI.HoodDataAI.startup(self)
         mins = ToontownGlobals.FactoryLaffMinimums[0]
-        self.testElev0 = DistributedFactoryElevatorExtAI.DistributedFactoryElevatorExtAI(self.air, self.air.factoryMgr, ToontownGlobals.SellbotFactoryInt, 0, antiShuffle=0, minLaff=mins[0])
+        self.testElev0 = DistributedFactoryElevatorExtAI.DistributedFactoryElevatorExtAI(self.air, self.air.factoryMgr, ToontownGlobals.SellbotFactoryInt, 0, antiShuffle=0)
         self.testElev0.generateWithRequired(ToontownGlobals.SellbotFactoryExt)
         self.addDistObj(self.testElev0)
-        self.testElev1 = DistributedFactoryElevatorExtAI.DistributedFactoryElevatorExtAI(self.air, self.air.factoryMgr, ToontownGlobals.SellbotFactoryInt, 1, antiShuffle=0, minLaff=mins[1])
+        self.testElev0.setLock(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING)
+        self.testElev1 = DistributedFactoryElevatorExtAI.DistributedFactoryElevatorExtAI(self.air, self.air.factoryMgr, ToontownGlobals.SellbotFactoryIntS, 1, antiShuffle=0)
         self.testElev1.generateWithRequired(ToontownGlobals.SellbotFactoryExt)
         self.addDistObj(self.testElev1)
+        self.testElev1.setLock(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING)
         self.lobbyMgr = LobbyManagerAI.LobbyManagerAI(self.air, DistributedSellbotBossAI.DistributedSellbotBossAI)
         self.lobbyMgr.generateWithRequired(ToontownGlobals.SellbotLobby)
         self.addDistObj(self.lobbyMgr)

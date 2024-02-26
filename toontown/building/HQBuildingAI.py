@@ -6,6 +6,8 @@ from . import FADoorCodes
 from . import DoorTypes
 from toontown.toon import NPCToons
 from toontown.quest import Quests
+from ..hood import ZoneUtil
+
 
 class HQBuildingAI:
 
@@ -32,11 +34,15 @@ class HQBuildingAI:
         del self.interior
 
     def setup(self, blockNumber):
+
+        pgZone = ZoneUtil.getHoodId(self.exteriorZone)
+        lockCode = FADoorCodes.ZONE_TO_ACCESS_CODE[pgZone]
+
         self.interior = DistributedHQInteriorAI.DistributedHQInteriorAI(blockNumber, self.air, self.interiorZone)
         self.npcs = NPCToons.createNpcsInZone(self.air, self.interiorZone)
         self.interior.generateWithRequired(self.interiorZone)
-        door0 = DistributedDoorAI.DistributedDoorAI(self.air, blockNumber, DoorTypes.EXT_HQ, doorIndex=0)
-        door1 = DistributedDoorAI.DistributedDoorAI(self.air, blockNumber, DoorTypes.EXT_HQ, doorIndex=1)
+        door0 = DistributedDoorAI.DistributedDoorAI(self.air, blockNumber, DoorTypes.EXT_HQ, doorIndex=0, lockValue=lockCode)
+        door1 = DistributedDoorAI.DistributedDoorAI(self.air, blockNumber, DoorTypes.EXT_HQ, doorIndex=1, lockValue=lockCode)
         insideDoor0 = DistributedDoorAI.DistributedDoorAI(self.air, blockNumber, DoorTypes.INT_HQ, doorIndex=0)
         insideDoor1 = DistributedDoorAI.DistributedDoorAI(self.air, blockNumber, DoorTypes.INT_HQ, doorIndex=1)
         door0.setOtherDoor(insideDoor0)

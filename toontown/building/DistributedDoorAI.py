@@ -6,6 +6,9 @@ from direct.fsm import ClassicFSM, State
 from direct.distributed import DistributedObjectAI
 from direct.fsm import State
 
+from toontown.building import FADoorCodes
+
+
 class DistributedDoorAI(DistributedObjectAI.DistributedObjectAI):
 
     def __init__(self, air, blockNumber, doorType, doorIndex = 0, lockValue = 0, swing = 3):
@@ -100,14 +103,27 @@ class DistributedDoorAI(DistributedObjectAI.DistributedObjectAI):
     def sendReject(self, avatarID, lockedVal):
         self.sendUpdateToAvatarId(avatarID, 'rejectEnter', [lockedVal])
 
+    def avHasAccess(self, avatarID) -> bool:
+
+        if not self.isLockedDoor():
+            return True
+
+        av = self.air.doId2do.get(avatarID)
+        if not av:
+            return False
+
+        lockedBy = self.isLockedDoor()
+        return lockedBy in av.getAccessKeys()
+
     def requestEnter(self):
         avatarID = self.air.getAvatarIdFromSender()
         lockedVal = self.isLockedDoor()
-        if lockedVal:
-            self.sendReject(avatarID, lockedVal)
-        else:
-            self.enqueueAvatarIdEnter(avatarID)
-            self.sendUpdateToAvatarId(avatarID, 'setOtherZoneIdAndDoId', [self.otherDoor.getZoneId(), self.otherDoor.getDoId()])
+
+        if not self.avHasAccess(avatarID):
+            return self.sendReject(avatarID, lockedVal)
+
+        self.enqueueAvatarIdEnter(avatarID)
+        self.sendUpdateToAvatarId(avatarID, 'setOtherZoneIdAndDoId', [self.otherDoor.getZoneId(), self.otherDoor.getDoId()])
 
     def enqueueAvatarIdEnter(self, avatarID):
         if avatarID not in self.avatarsWhoAreEntering:

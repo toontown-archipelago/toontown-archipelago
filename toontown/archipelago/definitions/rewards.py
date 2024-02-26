@@ -1,6 +1,7 @@
 # Represents logic for what to do when we are given an item from AP
 from toontown.archipelago.definitions import items
 from toontown.archipelago.definitions.items import ToontownItemDefinition
+from toontown.building import FADoorCodes
 from toontown.coghq.CogDisguiseGlobals import PartsPerSuitBitmasks
 from toontown.fishing import FishGlobals
 from toontown.toonbase import ToontownGlobals, TTLocalizer
@@ -167,52 +168,41 @@ class TaskAccessReward(APReward):
         self.playground: int = playground
 
     def apply(self, av: "DistributedToonAI"):
-        av.d_setSystemMessage(0, f"todo you can now task in {self.playground}")
+
+        # Get the key ID for this playground
+        key = FADoorCodes.ZONE_TO_ACCESS_CODE[self.playground]
+        av.addAccessKey(key)
+        av.d_setSystemMessage(0, f"You have been given {self.playground} HQ Clearance and can now complete toontasks there!")
 
 
 class FacilityAccessReward(APReward):
 
-    # todo add correct IDs
-
-    FRONT_FACTORY = 0
-    SIDE_FACTORY = 1
-
-    COIN_MINT = 2
-    DOLLAR_MINT = 3
-    BULLION_MINT = 4
-
-    OFFICE_A = 5
-    OFFICE_B = 6
-    OFFICE_C = 7
-    OFFICE_D = 8
-
-    FRONT_THREE = 9
-    MIDDLE_THREE = 10
-    BACK_THREE = 11
-
     FACILITY_ID_TO_DISPLAY = {
-        FRONT_FACTORY: "Front Factory",
-        SIDE_FACTORY: "Side Factory",
+        ToontownGlobals.SellbotFactoryInt: "Front Factory",
+        ToontownGlobals.SellbotFactoryIntS: "Side Factory",
 
-        COIN_MINT: "Coin Mint",
-        DOLLAR_MINT: "Dollar Mint",
-        BULLION_MINT: "Bullion Mint",
+        ToontownGlobals.CashbotMintIntA: "Coin Mint",
+        ToontownGlobals.CashbotMintIntB: "Dollar Mint",
+        ToontownGlobals.CashbotMintIntC: "Bullion Mint",
 
-        OFFICE_A: "Office A",
-        OFFICE_B: "Office B",
-        OFFICE_C: "Office C",
-        OFFICE_D: "Office D",
+        ToontownGlobals.LawbotStageIntA: "Office A",
+        ToontownGlobals.LawbotStageIntB: "Office B",
+        ToontownGlobals.LawbotStageIntC: "Office C",
+        ToontownGlobals.LawbotStageIntD: "Office D",
 
-        FRONT_THREE: "Front Three",
-        MIDDLE_THREE: "Middle Three",
-        BACK_THREE: "Back Three",
+        ToontownGlobals.BossbotCountryClubIntA: "Front Three",
+        ToontownGlobals.BossbotCountryClubIntB: "Middle Three",
+        ToontownGlobals.BossbotCountryClubIntC: "Back Three",
     }
 
     def __init__(self, facilityID):
         self.facilityID = facilityID
 
     def apply(self, av: "DistributedToonAI"):
-        av.d_setSystemMessage(0, f"todo you can now access facility: {self.FACILITY_ID_TO_DISPLAY.get(self.facilityID, 'Unknown facility: ' + str(self.facilityID))}")
+        # Get the key ID for this playground
+        key = FADoorCodes.FACILITY_TO_ACCESS_CODE[self.facilityID]
+        av.addAccessKey(key)
+        av.d_setSystemMessage(0, f"You have been given a {self.FACILITY_ID_TO_DISPLAY[self.facilityID]} key and can now infiltrate this facility!")
 
 
 class CogDisguiseReward(APReward):
@@ -306,21 +296,21 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     items.ITEM_TB_HQ_ACCESS: TaskAccessReward(TaskAccessReward.THE_BRRRGH),
     items.ITEM_DDL_HQ_ACCESS: TaskAccessReward(TaskAccessReward.DONALDS_DREAMLAND),
 
-    items.ITEM_FRONT_FACTORY_ACCESS: FacilityAccessReward(FacilityAccessReward.FRONT_FACTORY),
-    items.ITEM_SIDE_FACTORY_ACCESS: FacilityAccessReward(FacilityAccessReward.SIDE_FACTORY),
+    items.ITEM_FRONT_FACTORY_ACCESS: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
+    items.ITEM_SIDE_FACTORY_ACCESS: FacilityAccessReward(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING),
 
-    items.ITEM_COIN_MINT_ACCESS: FacilityAccessReward(FacilityAccessReward.COIN_MINT),
-    items.ITEM_DOLLAR_MINT_ACCESS: FacilityAccessReward(FacilityAccessReward.DOLLAR_MINT),
-    items.ITEM_BULLION_MINT_ACCESS: FacilityAccessReward(FacilityAccessReward.BULLION_MINT),
+    items.ITEM_COIN_MINT_ACCESS: FacilityAccessReward(FADoorCodes.COIN_MINT_ACCESS_MISSING),
+    items.ITEM_DOLLAR_MINT_ACCESS: FacilityAccessReward(FADoorCodes.DOLLAR_MINT_ACCESS_MISSING),
+    items.ITEM_BULLION_MINT_ACCESS: FacilityAccessReward(FADoorCodes.BULLION_MINT_ACCESS_MISSING),
 
-    items.ITEM_A_OFFICE_ACCESS: FacilityAccessReward(FacilityAccessReward.OFFICE_A),
-    items.ITEM_B_OFFICE_ACCESS: FacilityAccessReward(FacilityAccessReward.OFFICE_B),
-    items.ITEM_C_OFFICE_ACCESS: FacilityAccessReward(FacilityAccessReward.OFFICE_C),
-    items.ITEM_D_OFFICE_ACCESS: FacilityAccessReward(FacilityAccessReward.OFFICE_D),
+    items.ITEM_A_OFFICE_ACCESS: FacilityAccessReward(FADoorCodes.OFFICE_A_ACCESS_MISSING),
+    items.ITEM_B_OFFICE_ACCESS: FacilityAccessReward(FADoorCodes.OFFICE_B_ACCESS_MISSING),
+    items.ITEM_C_OFFICE_ACCESS: FacilityAccessReward(FADoorCodes.OFFICE_C_ACCESS_MISSING),
+    items.ITEM_D_OFFICE_ACCESS: FacilityAccessReward(FADoorCodes.OFFICE_D_ACCESS_MISSING),
 
-    items.ITEM_FRONT_THREE_ACCESS: FacilityAccessReward(FacilityAccessReward.FRONT_THREE),
-    items.ITEM_MIDDLE_THREE_ACCESS: FacilityAccessReward(FacilityAccessReward.MIDDLE_THREE),
-    items.ITEM_BACK_THREE_ACCESS: FacilityAccessReward(FacilityAccessReward.BACK_THREE),
+    items.ITEM_FRONT_THREE_ACCESS: FacilityAccessReward(FADoorCodes.FRONT_THREE_ACCESS_MISSING),
+    items.ITEM_MIDDLE_THREE_ACCESS: FacilityAccessReward(FADoorCodes.MIDDLE_SIX_ACCESS_MISSING),
+    items.ITEM_BACK_THREE_ACCESS: FacilityAccessReward(FADoorCodes.BACK_NINE_ACCESS_MISSING),
 
     items.ITEM_SELLBOT_DISGUISE: CogDisguiseReward(CogDisguiseReward.SELLBOT),
     items.ITEM_CASHBOT_DISGUISE: CogDisguiseReward(CogDisguiseReward.CASHBOT),

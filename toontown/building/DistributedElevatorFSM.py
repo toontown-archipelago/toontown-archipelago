@@ -1,6 +1,8 @@
 from panda3d.core import *
 from direct.distributed.ClockDelta import *
 from direct.interval.IntervalGlobal import *
+
+from . import FADoorCodes
 from .ElevatorConstants import *
 from .ElevatorUtils import *
 from direct.showbase import PythonUtil
@@ -322,6 +324,8 @@ class DistributedElevatorFSM(DistributedObject.DistributedObject, FSM):
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.BossElevatorRejectMessage)
             elif reason == REJECT_BLOCKED_ROOM:
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.ElevatorBlockedRoom)
+            elif reason in FADoorCodes.reasonDict.keys():
+                base.localAvatar.elevatorNotifier.showMe(FADoorCodes.reasonDict[reason])
         doneStatus = {'where': 'reject'}
         elevator = self.getPlaceElevator()
         if elevator:
