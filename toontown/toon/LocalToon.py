@@ -1,18 +1,10 @@
 import random
-import math
-import time
-import re
-import zlib
 from libotp import *
 from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
 from direct.showbase.PythonUtil import *
 from direct.gui.DirectGui import *
 from direct.task import Task
-from direct.showbase import PythonUtil
-from direct.directnotify import DirectNotifyGlobal
-from direct.gui import DirectGuiGlobals
-from panda3d.core import *
 from otp.avatar import LocalAvatar
 from otp.login import LeaveToPayDialog
 from otp.avatar import PositionExaminer
@@ -48,13 +40,13 @@ from toontown.battle.BattleSounds import *
 from toontown.battle import Fanfare
 from toontown.parties import PartyGlobals
 from toontown.toon import ElevatorNotifier
-from toontown.toon import ToonDNA
 from toontown.shtiker import WordPage
 from . import DistributedToon
 from . import Toon
 from . import LaffMeter
 from toontown.quest import QuestMap
-from toontown.toon.DistributedNPCToonBase import DistributedNPCToonBase
+from toontown.archipelago.gui.ArchipelagoOnscreenLog import ArchipelagoOnscreenLog
+
 WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
 from toontown.toontowngui import NewsPageButtonManager
 if WantNewsPage:
@@ -176,6 +168,8 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.camPoints = []
             self.camera = camera
 
+            self.archipelagoLog: ArchipelagoOnscreenLog = None
+
     def wantLegacyLifter(self):
         return True
 
@@ -245,7 +239,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         if base.wantNametags:
             self.nametag.manage(base.marginManager)
         DistributedToon.DistributedToon.announceGenerate(self)
-        from otp.friends import FriendInfo
 
     def disable(self):
         self.laffMeter.destroy()
@@ -277,9 +270,11 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         if base.wantNametags:
             self.nametag.unmanage(base.marginManager)
         taskMgr.removeTasksMatching('*ioorrd234*')
+        self.archipelagoLog.destroy()
+        del self.archipelagoLog
         self.ignoreAll()
         DistributedToon.DistributedToon.disable(self)
-        return
+
 
     def disableBodyCollisions(self):
         pass
@@ -390,6 +385,9 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             guiButton = loader.loadModel('phase_3/models/gui/quit_button')
             self.purchaseButton = DirectButton(parent=aspect2d, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=0.9, text=TTLocalizer.OptionsPagePurchase, text_scale=0.05, text_pos=(0, -0.01), textMayChange=0, pos=(0.885, 0, -0.94), sortOrder=100, command=self.__handlePurchase)
             base.setCellsAvailable([base.bottomCells[4]], 0)
+
+        self.archipelagoLog = ArchipelagoOnscreenLog()
+
         self.accept(base.SECONDARY_ACTION, self.__beginZeroPowerToss)
         self.accept(base.SECONDARY_ACTION + '-up', self.__endZeroPowerToss)
         self.accept('time-' + base.ACTION_BUTTON, self.__beginTossPie)
@@ -687,7 +685,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.__endTossPie(0)
 
     def localPresentPie(self, time):
-        from . import TTEmote
         from otp.avatar import Emote
         self.__stopPresentPie()
         if self.tossTrack:
@@ -723,7 +720,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
     def __stopPresentPie(self):
         if self.__presentingPie:
-            from . import TTEmote
             from otp.avatar import Emote
             Emote.globalEmote.releaseBody(self)
             messenger.send('end-pie')
@@ -2001,3 +1997,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             return
 
         super().startSleepWatch(callback)
+
+    # Prints a message to the AP log
+    def sendArchipelagoMessage(self, message: str) -> None:
+        self.archipelagoLog.addToLog(message)

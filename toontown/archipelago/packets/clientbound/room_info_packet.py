@@ -1,10 +1,10 @@
 from typing import List, Dict
 
-from toontown.archipelago.data_package import DataPackage
-from toontown.archipelago.net_utils import Permission
+from toontown.archipelago.util.data_package import DataPackage
+from toontown.archipelago.util.net_utils import Permission
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 from toontown.archipelago.packets.serverbound.get_data_package_packet import GetDataPackagePacket
-from toontown.archipelago.utils import Version
+from toontown.archipelago.util.utils import Version
 
 
 class RoomInfoPacket(ClientBoundPacketBase):
@@ -74,7 +74,7 @@ class RoomInfoPacket(ClientBoundPacketBase):
             client.send_packet(data_package_packet)
 
     def handle(self, client):
-        print("[AP Client] Handling Room Info packet")
+        self.debug("[AP Client] Handling Room Info packet")
 
         # We should check in with our data packages
         self.update_data_packages(client)

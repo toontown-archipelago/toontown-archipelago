@@ -1,7 +1,7 @@
 import asyncio
 from asyncio import CancelledError
 
-from archipelago_client import ArchipelagoClient
+from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
 
 SLOT_NAME = 'devvydontTT'
 PASSWORD = 'aaaaaaaaaaaaa'

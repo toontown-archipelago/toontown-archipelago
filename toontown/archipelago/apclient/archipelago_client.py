@@ -9,15 +9,16 @@ import certifi
 from websockets import ConnectionClosed
 from websockets.sync.client import connect, ClientConnection
 
-from toontown.archipelago import net_utils
-from toontown.archipelago.data_package import DataPackage
-from toontown.archipelago.net_utils import encode, decode, NetworkSlot
+from toontown.archipelago.apclient.ap_client_enums import APClientEnums
+from toontown.archipelago.util import net_utils
+from toontown.archipelago.util.data_package import DataPackage
+from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot
 from toontown.archipelago.packets import packet_registry
 from toontown.archipelago.packets.archipelago_packet_base import ArchipelagoPacketBase
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacket
 from toontown.archipelago.packets.serverbound.serverbound_packet_base import ServerBoundPacketBase
-from toontown.archipelago.utils import cache_argsless
+from toontown.archipelago.util.utils import cache_argsless
 
 # TODO find dynamic way to do this
 ARCHIPELAGO_SERVER_ADDRESS = "localhost"
@@ -32,14 +33,9 @@ def get_ssl_context():
 # Class to handle sending and receiving packets through a socket estabilished via the archipelago server
 class ArchipelagoClient:
 
-    # Enums to determine the state of our client's connection
-    DISCONNECTED = 1  # Server loop is not running, we cannot send/receive packets, self.socket is None
-    CONNECTED = 2  # Connection to archipelago is established, we can receive RoomInfo and send Connect packet
-    PLAYING = 3  # Same as CONNECTED, but we have a valid slot after a good ConnectPacket has been sent
-
     def __init__(self, av, slot_name: str, password: str = ''):
 
-        self.state = ArchipelagoClient.DISCONNECTED
+        self.state = APClientEnums.DISCONNECTED
 
         # Address to connect to (IP of archipelago server)
         self.address: str = f"{ARCHIPELAGO_SERVER_ADDRESS}:{PORT}"
@@ -49,6 +45,7 @@ class ArchipelagoClient:
         # Store some identification
         self.av = av  # DistributedToonAI that owns this client
         self.slot_name: str = slot_name  # slot assigned for seed generation
+        self.slot: int = -1  # Our slot ID given when we connect
         self.uuid: str = ''  # not sure how important this is atm but just generating something in udpate_id method
         self.password: str = password  # password if required
 
@@ -64,11 +61,23 @@ class ArchipelagoClient:
     def get_slot_info(self, slot: Union[str, int]) -> NetworkSlot:
         return self.slot_id_to_slot_name[int(slot)]
 
+    # Returns the local slot ID (int) that this client belongs to
+    def get_local_slot(self) -> int:
+        return self.slot
+
+    # Given the ID of an item, find a display name for the item using our data package
+    def get_item_name(self, item_id: Union[str, int]) -> str:
+        return self.global_data_package.get_item_from_id(item_id)
+
+    # Given the ID of location, find a display name for the location using our data package
+    def get_location_name(self, location_id: Union[str, int]) -> str:
+        return self.global_data_package.get_location_from_id(location_id)
+
     # Starts up the socket thread
     def start(self):
 
         # If we are not disconnected we aren't allowed to do this
-        if self.state != ArchipelagoClient.DISCONNECTED:
+        if self.state != APClientEnums.DISCONNECTED:
             raise Exception("You are already connected!")
 
         # Run the socket thread and let it do whatever
@@ -79,11 +88,14 @@ class ArchipelagoClient:
     def connect(self):
 
         # If we aren't connected yet, estabilish a connection
-        if self.state == ArchipelagoClient.DISCONNECTED:
+        if self.state == APClientEnums.DISCONNECTED:
             return self.start()
 
+        if self.state == APClientEnums.CONNECTING:
+            raise Exception(f"You are already attempting to connect! Please wait a second!")
+
         # If we are already connected, don't do anything
-        if self.state == ArchipelagoClient.PLAYING:
+        if self.state == APClientEnums.PLAYING:
             raise Exception(f"You are already connected with slot: {self.slot_name}")
 
         # We are connected to the server but aren't assigned to a slot yet
@@ -96,7 +108,7 @@ class ArchipelagoClient:
         if self.socket:
             self.socket.close()
             self.socket = None
-            self.state = ArchipelagoClient.DISCONNECTED
+            self.state = APClientEnums.DISCONNECTED
 
     # Called via a new thread, responsible for instantiating a socket connection to the archipelago server
     # and receiving and handling incoming packets. Every 5 seconds we will perform a "kill" check to see
@@ -106,11 +118,12 @@ class ArchipelagoClient:
     def __socket_thread(self):
 
         # Kill if we aren't disconnected
-        if self.state != ArchipelagoClient.DISCONNECTED:
-            print("[AP Client] Attempted to start server client but one is already active!")
+        if self.state != APClientEnums.DISCONNECTED:
+            self.av.d_sendArchipelagoMessage("Attempted to start server client but one is already active!")
             return
 
-        print("[AP Client] Starting server loop")
+        self.state = APClientEnums.CONNECTING
+        self.av.d_sendArchipelagoMessage("[AP Client] Starting server loop")
 
         # Parse the URL to the archipelago server
         address = f"ws://{self.address}" if "://" not in self.address \
@@ -126,9 +139,9 @@ class ArchipelagoClient:
         try:
             with connect(address, ssl_context=get_ssl_context() if address.startswith("wss://") else None) as socket:
 
-                print(f"[AP Client] Estabilished socket connection with archipelago server at {address}")
+                self.av.d_sendArchipelagoMessage(f"[AP Client] Estabilished socket connection with archipelago server at {address}")
                 self.socket = socket
-                self.state = ArchipelagoClient.CONNECTED
+                self.state = APClientEnums.CONNECTED
 
                 # Attempt to forever read packets. Once the socket connection is closed, this loop and thread will term
                 while True:
@@ -144,16 +157,22 @@ class ArchipelagoClient:
                         pass  # Do nothing
                     # ConnectionClosed happens either when the server shuts down or when the toon logs out
                     except ConnectionClosed:
-                        print("[AP Client] Socket connection to archipelago server closed")
+                        self.av.d_sendArchipelagoMessage("[AP Client] Socket connection to archipelago server closed")
                         break
 
         # This will happen when we were given a bad archipelago server IP or when it just is not running
         except ConnectionRefusedError:
-            print(f"[AP Client] Socket connection to archipelago server {address} failed, either wrong address or server is not running")
+            self.av.d_sendArchipelagoMessage(f"[AP Client] Socket connection to archipelago server {address} failed, either wrong address or server is not running")
+        except Exception as e:
+            self.av.d_sendArchipelagoMessage(f"[AP Client] Unhandled exception {e}, disconnecting from Archipelago server")
 
-        self.state = ArchipelagoClient.DISCONNECTED
+        if self.socket:
+            self.socket.close()
+            self.socket = None
+
+        self.state = APClientEnums.DISCONNECTED
         # Ran out of data to send
-        print("[AP Client] Ran out of data to retrieve from packet!")
+        self.av.d_sendArchipelagoMessage("[AP Client] Ran out of data to retrieve from server! Please use !connect to reconnect")
 
     def update_identification(self, slot_name: str, password: str = ''):
         self.slot_name = slot_name
@@ -185,7 +204,6 @@ class ArchipelagoClient:
         assert packet.valid()
 
         # DEBUG
-        print(f"[AP Client] Receieved packet from server: {packet}")
         self.__debug_dump_raw_packet_contents(packet.raw_data)
 
         # Handle the packet
@@ -204,15 +222,15 @@ class ArchipelagoClient:
 
     def send_packets(self, packets: List[ServerBoundPacketBase]):
 
-        if self.state == self.DISCONNECTED:
+        if self.state == APClientEnums.DISCONNECTED:
             raise Exception("You cannot send packets unless we are connected to archipelago!")
 
         # Construct a list of built packets and send them using the json encoder
         raw_packets = []
         for packet in packets:
             raw_packets.append(packet.build())
+            packet.debug(f"[AP Client] Sending packet to server: {packet}")
 
-        print(f"[AP Client] Sending packets to server: {packets}")
         self.socket.send(encode(raw_packets))
 
     def get_item_info(self, item_id):

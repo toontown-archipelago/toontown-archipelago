@@ -2773,3 +2773,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # Set this toon's list of access keys acquired from the server
     def setAccessKeys(self, keys: List) -> None:
         self.accessKeys = keys
+
+    # To be overridden in LocalToon, just here for safety
+    def sendArchipelagoMessage(self, message: str) -> None:
+        pass

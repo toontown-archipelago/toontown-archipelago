@@ -1,7 +1,7 @@
 from typing import List
 
 from toontown.archipelago.definitions.rewards import APReward, get_ap_reward_from_id
-from toontown.archipelago.net_utils import NetworkItem
+from toontown.archipelago.util.net_utils import NetworkItem
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 
 
@@ -21,4 +21,4 @@ class ReceivedItemsPacket(ClientBoundPacketBase):
         for item in self.items:
             ap_reward: APReward = get_ap_reward_from_id(item.item)
             ap_reward.apply(client.av)
-            print(f"[AP Client] Received item {client.get_item_info(item.item)} from {client.get_slot_info(item.player).name}")
+            self.debug(f"[AP Client] Received item {client.get_item_info(item.item)} from {client.get_slot_info(item.player).name}")

@@ -1,6 +1,6 @@
 from typing import List
 
-from toontown.archipelago.net_utils import NetworkItem
+from toontown.archipelago.util.net_utils import NetworkItem
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 
 
@@ -17,4 +17,4 @@ class LocationInfoPacket(ClientBoundPacketBase):
     def handle(self, client):
 
         for location in self.locations:
-            print(f"[AP Client] player{location.player}'s {location.item} is at {location.location}")
+            self.debug(f"[AP Client] player{location.player}'s {location.item} is at {location.location}")

@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 
 from toontown.archipelago.packets.serverbound.serverbound_packet_base import ServerBoundPacketBase
-from toontown.archipelago.utils import Version
+from toontown.archipelago.util.utils import Version
 
 
 # Sent by the client to initiate a connection to an Archipelago game session.

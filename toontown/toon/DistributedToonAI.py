@@ -1,9 +1,7 @@
 from typing import List
 
 from otp.ai.AIBaseGlobal import *
-from panda3d.core import *
 from otp.otpbase import OTPGlobals
-from direct.directnotify import DirectNotifyGlobal
 from . import ToonDNA
 from toontown.suit import SuitDNA
 from . import InventoryBase
@@ -19,11 +17,7 @@ from toontown.battle import SuitBattleGlobals
 from direct.task import Task
 from toontown.catalog import CatalogItemList
 from toontown.catalog import CatalogItem
-from direct.showbase import PythonUtil
 from direct.distributed.ClockDelta import *
-from toontown.toonbase.ToontownGlobals import *
-import types
-from toontown.fishing import FishGlobals
 from toontown.fishing import FishCollection
 from toontown.fishing import FishTank
 from .NPCToons import npcFriends, isZoneProtected
@@ -44,13 +38,10 @@ from toontown.parties.InviteInfo import InviteInfoBase
 from toontown.parties.PartyReplyInfo import PartyReplyInfoBase
 from toontown.parties.PartyGlobals import InviteStatus
 from toontown.toonbase import ToontownAccessAI
-from toontown.toonbase import TTLocalizer
 from toontown.catalog import CatalogAccessoryItem
-from toontown.minigame import MinigameCreatorAI
 from . import ModuleListAI
-from functools import reduce
 
-from ..archipelago.archipelago_session import ArchipelagoSession
+from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
 
 if simbase.wantPets:
     from toontown.pets import PetLookerAI, PetObserve
@@ -2903,7 +2894,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         def setKartAccessoriesOwned(self, accessories):
             if (__debug__):
-                import pdb
+                pass
             self.accessories = accessories
 
         def getKartAccessoriesOwned(self):
@@ -4336,3 +4327,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def clearAccessKeys(self) -> None:
         self.accessKeys.clear()
         self.b_setAccessKeys(self.accessKeys)
+
+    # Send this toon an archipelago message to display on their log
+    def d_sendArchipelagoMessage(self, message: str) -> None:
+        self.sendUpdate('sendArchipelagoMessage', [message])

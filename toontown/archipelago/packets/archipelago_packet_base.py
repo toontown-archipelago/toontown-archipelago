@@ -5,6 +5,8 @@ from typing import Any
 
 class ArchipelagoPacketBase:
 
+    DEBUG = True  # Enable to have the AI spit out a bunch of information about packets
+
     class PacketType(IntEnum):
         UNDEFINED = -1  # This packet was not defined correctly, an error will be thrown
         SERVER_BOUND = 0  # This packet is to be sent to the server from our client only
@@ -48,3 +50,10 @@ class ArchipelagoPacketBase:
     def dump(self):
         formatted_msg = json.dumps(self.raw_data, indent=4)
         print(formatted_msg)
+
+    # Prints a message if debug flag is on
+    def debug(self, message: str) -> None:
+        if not self.DEBUG:
+            return
+
+        print(message)

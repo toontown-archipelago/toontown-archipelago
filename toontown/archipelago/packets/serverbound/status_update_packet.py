@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from toontown.archipelago.net_utils import ClientStatus
+from toontown.archipelago.util.net_utils import ClientStatus
 from toontown.archipelago.packets.serverbound.serverbound_packet_base import ServerBoundPacketBase
 
 

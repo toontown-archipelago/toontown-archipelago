@@ -1,6 +1,6 @@
 from typing import List
 
-from toontown.archipelago.net_utils import NetworkPlayer
+from toontown.archipelago.util.net_utils import NetworkPlayer
 from toontown.archipelago.packets.clientbound.connected_packet import ConnectedPacket
 from toontown.archipelago.packets.clientbound.room_info_packet import RoomInfoPacket
 
@@ -28,4 +28,4 @@ class RoomUpdatePacket(RoomInfoPacket, ConnectedPacket):
         self.checked_locations: List[int] = self.read_raw_field('checked_locations', ignore_missing=True)
 
     def handle(self, client):
-        print(f"[AP Client] Handling RoomUpdate packet")
+        self.debug(f"[AP Client] Handling RoomUpdate packet")

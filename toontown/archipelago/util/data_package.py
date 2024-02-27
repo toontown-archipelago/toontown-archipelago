@@ -14,15 +14,15 @@ class DataPackage:
         self.id_to_item_name: Dict[int, str] = {}
         self.id_to_location_name: Dict[int, str] = {}
 
-    def get_item_from_id(self, item_id: Union[int, str]):
+    def get_item_from_id(self, item_id: Union[int, str]) -> str:
         return self.id_to_location_name.get(int(item_id), f'Unknown Item[{item_id}]')
 
-    def get_location_from_id(self, location_id: Union[int, str]):
+    def get_location_from_id(self, location_id: Union[int, str]) -> str:
         return self.id_to_location_name.get(int(location_id), f'Unknown Location[{location_id}]')
 
     # Take in another datapackage, and merge all mappings from that one into this one THIS IS NOT OVERWRITE SAFE
     # Used to have a master package for all games where the instance calling merge() will have all keys
-    def merge(self, other: "DataPackage"):
+    def merge(self, other: "DataPackage") -> None:
 
         for item_id, name in other.id_to_item_name.items():
             self.id_to_item_name[item_id] = name

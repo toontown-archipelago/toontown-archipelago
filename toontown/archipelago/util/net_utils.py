@@ -7,7 +7,7 @@ import enum
 
 from json import JSONEncoder, JSONDecoder
 
-from toontown.archipelago.utils import Version, ByValue
+from toontown.archipelago.util.utils import Version, ByValue
 
 ARCHIPELAGO_GAME_NAME = "Toontown"
 ARCHIPELAGO_CLIENT_VERSION = Version(0, 4, 4)
@@ -197,11 +197,11 @@ class JSONtoTextParser(metaclass=HandlerMeta):
         "white": "FFFFFF"
     }
 
-    def __init__(self, ctx):
-        self.ctx = ctx
+    def __init__(self, client):
+        self.client = client
 
-    def __call__(self, input_object: typing.List[JSONMessagePart]) -> str:
-        return "".join(self.handle_node(section) for section in input_object)
+    def parse(self, input: typing.List[JSONMessagePart]) -> str:
+        return "".join(self.handle_node(section) for section in input)
 
     def handle_node(self, node: JSONMessagePart):
         node_type = node.get("type", None)
@@ -218,8 +218,8 @@ class JSONtoTextParser(metaclass=HandlerMeta):
 
     def _handle_player_id(self, node: JSONMessagePart):
         player = int(node["text"])
-        node["color"] = 'magenta' if player == self.ctx.slot else 'yellow'
-        node["text"] = self.ctx.player_names[player]
+        node["color"] = 'magenta' if player == self.client.slot else 'yellow'
+        node["text"] = self.client.get_slot_info(player)['name']
         return self._handle_color(node)
 
     # for other teams, spectators etc.? Only useful if player isn't in the clientside mapping
@@ -243,7 +243,7 @@ class JSONtoTextParser(metaclass=HandlerMeta):
 
     def _handle_item_id(self, node: JSONMessagePart):
         item_id = int(node["text"])
-        node["text"] = self.ctx.item_names[item_id]
+        node["text"] = self.client.get_item_name(item_id)
         return self._handle_item_name(node)
 
     def _handle_location_name(self, node: JSONMessagePart):
@@ -252,7 +252,7 @@ class JSONtoTextParser(metaclass=HandlerMeta):
 
     def _handle_location_id(self, node: JSONMessagePart):
         item_id = int(node["text"])
-        node["text"] = self.ctx.location_names[item_id]
+        node["text"] = self.client.get_location_name(item_id)
         return self._handle_location_name(node)
 
     def _handle_entrance_name(self, node: JSONMessagePart):

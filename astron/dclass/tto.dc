@@ -1146,6 +1146,7 @@ dclass DistributedToon : DistributedPlayer {
 
   setBaseGagSkillMultiplier(uint16=1) required ownrecv broadcast db;
   setAccessKeys(uint16[] = []) required ownrecv broadcast db;
+  sendArchipelagoMessage(string) ownrecv;
 };
 
 dclass DistributedCCharBase : DistributedObject {

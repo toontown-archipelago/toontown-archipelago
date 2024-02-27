@@ -1,6 +1,7 @@
 from typing import List, Any, Dict
 
-from toontown.archipelago.net_utils import NetworkPlayer, NetworkSlot
+from toontown.archipelago.apclient.ap_client_enums import APClientEnums
+from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 
 
@@ -43,16 +44,17 @@ class ConnectedPacket(ClientBoundPacketBase):
     def update_client_slot_cache(self, client):
 
         # Clear the cache, and populate it
+        client.slot = self.slot
         client.slot_id_to_slot_name.clear()
         for id_string, network_slot in self.slot_info.items():
             client.slot_id_to_slot_name[int(id_string)] = network_slot
 
     def handle(self, client):
-        print(f"[AP Client] Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"
+        self.debug(f"[AP Client] Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"
               f" playing {self.get_slot_info(self.slot).game}")
 
         # Store any information in the cache that we may need later
         self.update_client_slot_cache(client)
 
         # We have a valid connection, set client state to connected
-        client.state = 2  # todo actually use the variable this looks horrible, it's basically: client.state = ArchipelagoClient.PLAYING
+        client.state = APClientEnums.CONNECTED

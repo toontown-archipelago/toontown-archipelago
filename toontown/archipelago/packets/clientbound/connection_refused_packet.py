@@ -1,7 +1,6 @@
 from typing import List
 
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
-from toontown.archipelago.utils import InvalidSlotException
 
 
 # Sent to clients when the server refuses connection. This is sent during the initial connection handshake.
@@ -21,24 +20,24 @@ class ConnectionRefusedPacket(ClientBoundPacketBase):
         self.errors: List[str] = self.read_raw_field('errors')
 
     def handle(self, client):
-        print("[AP Client] Handling Connection Refused packet")
+        self.debug("[AP Client] Handling Connection Refused packet")
 
         for error in self.errors:
 
             if error == self.ERROR_INVALID_SLOT:
-                print(f"Slot {client.slot_name} is invalid for this multiworld!")
+                self.debug(f"Slot {client.slot_name} is invalid for this multiworld!")
 
             elif error == self.ERROR_INVALID_GAME:
-                print("[AP Client] Invalid game provided!")
+                self.debug("[AP Client] Invalid game provided!")
 
             elif error == self.ERROR_INCOMPATIBLE_VERSION:
-                print("[AP Client] Incompatible version detected!")
+                self.debug("[AP Client] Incompatible version detected!")
 
             elif error == self.ERROR_INVALID_PASSWORD:
-                print("[AP Client] Invalid password provided!")
+                self.debug("[AP Client] Invalid password provided!")
 
             elif error == self.ERROR_INVALID_ITEMS_HANDLING:
-                print("[AP Client] Invalid item sent to server!")
+                self.debug("[AP Client] Invalid item sent to server!")
 
             else:
-                print(f"[AP Client] Unknown error: {error}")
+                self.debug(f"[AP Client] Unknown error: {error}")
