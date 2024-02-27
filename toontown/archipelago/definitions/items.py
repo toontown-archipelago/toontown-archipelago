@@ -1,14 +1,7 @@
 import random
-from enum import IntEnum
 from typing import Dict
 
-
-class ItemClassification(IntEnum):
-    progression = 0
-    progression_skip_balancing = 1
-    useful = 2
-    filler = 3
-
+from BaseClasses import Item, ItemClassification
 
 # Fill in if some items need more context
 ITEM_DESCRIPTIONS = {
@@ -211,9 +204,14 @@ JUNK_ITEMS = [
     item for item in ITEM_DEFINITIONS.values() if item.classification == ItemClassification.filler
 ]
 
+
 ID_TO_ITEM_DEFINITION = {
     item.unique_id: item for item in ITEM_DEFINITIONS.values()
 }
+
+
+class ToontownItem(Item):
+    game: str = "Toontown"
 
 
 def random_junk() -> ToontownItemDefinition:

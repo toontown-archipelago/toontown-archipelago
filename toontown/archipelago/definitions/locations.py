@@ -1,17 +1,12 @@
-# COPEID DIRECTLY FROM THE ARCHIPELAGO TOONTOWN APWORLD FOLDER
-
 from enum import IntEnum
-from typing import List
+from typing import Optional, List
+
+from BaseClasses import Location, Region, LocationProgressType
 
 # Fill in if some items need more context
 LOCATION_DESCRIPTIONS = {
 
 }
-
-
-# Redefine an enum here so it works right
-class LocationProgressType(IntEnum):
-    DEFAULT = 0
 
 
 class ToontownLocationType(IntEnum):
@@ -489,3 +484,12 @@ DDL_TASK_LOCATIONS = [
     DONALDS_DREAMLAND_TASK_11,
     DONALDS_DREAMLAND_TASK_12,
 ]
+
+
+class ToontownLocation(Location):
+    game: str = "Toontown"
+
+    def __init__(self, player: int, name: str = "", address: Optional[int] = None,
+                 parent: Optional[Region] = None) -> None:
+        super().__init__(player, name, address, parent)
+        self.event = address is None
