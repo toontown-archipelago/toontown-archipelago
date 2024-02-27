@@ -212,7 +212,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Archipelago Stuff
         self.baseGagSkillMultiplier = 1  # Multiplicative stacking gag xp multiplier to consider
-        self.accessKeys: List[int] = []
+        self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
+        self.receivedItems: List[int] = []  # List of AP items received so far
+        self.checkedLocations: List[int] = []  # List of AP checks we have completed
 
         self.archipelago_session: ArchipelagoSession = None
 
@@ -4327,6 +4329,55 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def clearAccessKeys(self) -> None:
         self.accessKeys.clear()
         self.b_setAccessKeys(self.accessKeys)
+
+    # Set the AP items this toon has received from an AP client and tell the client
+    def b_setReceivedItems(self, receivedItems: List[int]):
+        self.setReceivedItems(receivedItems)
+        self.d_setReceivedItems(receivedItems)
+
+    # Set the AP items this toon has received but only server side
+    def setReceivedItems(self, receivedItems: List[int]):
+        self.receivedItems = receivedItems
+
+    # Get a list of item IDs this toon has received via AP
+    def getReceivedItems(self) -> List[int]:
+        return self.receivedItems
+
+    # Tell the client what items we have received via AP
+    def d_setReceivedItems(self, receivedItems: List[int]):
+        self.sendUpdate('setReceivedItems', [receivedItems])
+
+    def addReceivedItem(self, item: int):
+        self.receivedItems.append(item)
+        self.b_setReceivedItems(self.receivedItems)
+
+    # Set the AP locations this toon has checked and tell the client
+    def b_setCheckedLocations(self, checkedLocations: List[int]):
+        self.setReceivedItems(checkedLocations)
+        self.d_setReceivedItems(checkedLocations)
+
+    # Set the AP locations this toon has checked but only server side
+    def setCheckedLocations(self, checkedLocations: List[int]):
+        self.checkedLocations = checkedLocations
+
+    # Get a list of locations IDs this toon has checked
+    def getCheckedLocations(self) -> List[int]:
+        return self.checkedLocations
+
+    # Tell the client what locations we have checked
+    def d_setCheckedLocations(self, checkedLocations: List[int]):
+        self.sendUpdate('setCheckedLocations', [checkedLocations])
+
+    def hasCheckedLocation(self, location: int):
+        return location in self.checkedLocations
+
+    def addCheckedLocation(self, location: int):
+
+        if self.hasCheckedLocation(location):
+            return
+
+        self.checkedLocations.append(location)
+        self.b_setCheckedLocations(self.checkedLocations)
 
     # Send this toon an archipelago message to display on their log
     def d_sendArchipelagoMessage(self, message: str) -> None:

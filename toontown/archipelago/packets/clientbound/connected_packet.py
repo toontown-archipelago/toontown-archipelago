@@ -58,3 +58,6 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # We have a valid connection, set client state to connected
         client.state = APClientEnums.CONNECTED
+
+        # todo ew ew ew ew this is so gross fix later pls
+        client.av.archipelago_session.sync()

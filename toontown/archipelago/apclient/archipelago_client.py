@@ -1,5 +1,6 @@
 import ssl
 import time
+import traceback
 
 import urllib.parse
 from direct.stdpy import threading
@@ -176,6 +177,7 @@ class ArchipelagoClient:
 
     def update_identification(self, slot_name: str, password: str = ''):
         self.slot_name = slot_name
+        self.av.b_setName(slot_name)
         self.uuid = f"toontown-player-{slot_name}"  # todo make sure this is correct
         self.password = password
 
@@ -223,7 +225,8 @@ class ArchipelagoClient:
     def send_packets(self, packets: List[ServerBoundPacketBase]):
 
         if self.state == APClientEnums.DISCONNECTED:
-            raise Exception("You cannot send packets unless we are connected to archipelago!")
+            self.av.d_sendArchipelagoMessage("You cannot send packets unless you are connected to archipelago!")
+            return
 
         # Construct a list of built packets and send them using the json encoder
         raw_packets = []
@@ -231,7 +234,11 @@ class ArchipelagoClient:
             raw_packets.append(packet.build())
             packet.debug(f"[AP Client] Sending packet to server: {packet}")
 
-        self.socket.send(encode(raw_packets))
+        try:
+            self.socket.send(encode(raw_packets))
+        except Exception as e:
+            self.av.d_sendArchipelagoMessage(f"Failed to communicate with the server ({e})")
+            traceback.print_exc()
 
     def get_item_info(self, item_id):
         return self.global_data_package.id_to_item_name.get(int(item_id), f'Unknown Item[{item_id}]')

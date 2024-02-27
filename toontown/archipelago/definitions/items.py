@@ -113,16 +113,16 @@ BASE_ITEM_ID = 0x501100
 ITEM_DEFINITIONS: Dict[str, ToontownItemDefinition] = {
 
     # Laff boosts
-    ITEM_1_LAFF_BOOST: ToontownItemDefinition(ITEM_1_LAFF_BOOST, BASE_ITEM_ID+0, ItemClassification.useful, quantity=4),
-    ITEM_2_LAFF_BOOST: ToontownItemDefinition(ITEM_2_LAFF_BOOST, BASE_ITEM_ID+1, ItemClassification.useful, quantity=4),
-    ITEM_3_LAFF_BOOST: ToontownItemDefinition(ITEM_3_LAFF_BOOST, BASE_ITEM_ID+2, ItemClassification.useful, quantity=7),
-    ITEM_4_LAFF_BOOST: ToontownItemDefinition(ITEM_4_LAFF_BOOST, BASE_ITEM_ID+3, ItemClassification.useful, quantity=8),
-    ITEM_5_LAFF_BOOST: ToontownItemDefinition(ITEM_5_LAFF_BOOST, BASE_ITEM_ID+4, ItemClassification.useful, quantity=7),
+    ITEM_1_LAFF_BOOST: ToontownItemDefinition(ITEM_1_LAFF_BOOST, BASE_ITEM_ID+0, ItemClassification.useful, quantity=0),
+    ITEM_2_LAFF_BOOST: ToontownItemDefinition(ITEM_2_LAFF_BOOST, BASE_ITEM_ID+1, ItemClassification.useful, quantity=1),
+    ITEM_3_LAFF_BOOST: ToontownItemDefinition(ITEM_3_LAFF_BOOST, BASE_ITEM_ID+2, ItemClassification.useful, quantity=5),
+    ITEM_4_LAFF_BOOST: ToontownItemDefinition(ITEM_4_LAFF_BOOST, BASE_ITEM_ID+3, ItemClassification.useful, quantity=7),
+    ITEM_5_LAFF_BOOST: ToontownItemDefinition(ITEM_5_LAFF_BOOST, BASE_ITEM_ID+4, ItemClassification.useful, quantity=11),
 
     # Gag Cap+
-    ITEM_10_GAG_CAPACITY: ToontownItemDefinition(ITEM_10_GAG_CAPACITY, BASE_ITEM_ID+5, ItemClassification.useful, quantity=3),
+    ITEM_10_GAG_CAPACITY: ToontownItemDefinition(ITEM_10_GAG_CAPACITY, BASE_ITEM_ID+5, ItemClassification.useful, quantity=1),
     ITEM_15_GAG_CAPACITY: ToontownItemDefinition(ITEM_15_GAG_CAPACITY, BASE_ITEM_ID+6, ItemClassification.useful, quantity=2),
-    ITEM_20_GAG_CAPACITY: ToontownItemDefinition(ITEM_20_GAG_CAPACITY, BASE_ITEM_ID+7, ItemClassification.useful, quantity=1),
+    ITEM_20_GAG_CAPACITY: ToontownItemDefinition(ITEM_20_GAG_CAPACITY, BASE_ITEM_ID+7, ItemClassification.useful, quantity=2),
 
     # Jellybean Cap+
     ITEM_150_MONEY_CAP: ToontownItemDefinition(ITEM_150_MONEY_CAP, BASE_ITEM_ID+8,   ItemClassification.useful, quantity=1),
@@ -142,8 +142,8 @@ ITEM_DEFINITIONS: Dict[str, ToontownItemDefinition] = {
     ITEM_DROP_FRAME: ToontownItemDefinition(ITEM_DROP_FRAME, BASE_ITEM_ID+20, ItemClassification.progression, quantity=8),
 
     # Gag Training Multipliers
-    ITEM_1_GAG_MULTIPLIER: ToontownItemDefinition(ITEM_1_GAG_MULTIPLIER, BASE_ITEM_ID+21, ItemClassification.useful, quantity=7),
-    ITEM_2_GAG_MULTIPLIER: ToontownItemDefinition(ITEM_2_GAG_MULTIPLIER, BASE_ITEM_ID+22, ItemClassification.useful, quantity=1),
+    ITEM_1_GAG_MULTIPLIER: ToontownItemDefinition(ITEM_1_GAG_MULTIPLIER, BASE_ITEM_ID+21, ItemClassification.useful, quantity=3),
+    ITEM_2_GAG_MULTIPLIER: ToontownItemDefinition(ITEM_2_GAG_MULTIPLIER, BASE_ITEM_ID+22, ItemClassification.useful, quantity=3),
 
     # Fishing Rod Upgrades
     ITEM_FISHING_ROD_UPGRADE: ToontownItemDefinition(ITEM_FISHING_ROD_UPGRADE, BASE_ITEM_ID+23, ItemClassification.progression, quantity=4),

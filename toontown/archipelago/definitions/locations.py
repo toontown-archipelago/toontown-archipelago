@@ -15,6 +15,7 @@ class ToontownLocationType(IntEnum):
     FACILITIES = 3  # Locations for clearing facilities
     BOSSES = 4  # Locations for clearing bosses
     FISHING = 5  # Locations for fishing trophies
+    DISCOVER_PLAYGROUND = 6  # Locations for discovering playgrounds
 
 
 class ToontownLocationDefinition:
@@ -160,6 +161,13 @@ DONALDS_DREAMLAND_TASK_9 = "Donald's Dreamland Task #9"
 DONALDS_DREAMLAND_TASK_10 = "Donald's Dreamland Task #10"
 DONALDS_DREAMLAND_TASK_11 = "Donald's Dreamland Task #11"
 DONALDS_DREAMLAND_TASK_12 = "Donald's Dreamland Task #12"
+
+DISCOVER_TTC = "Discover Toontown Central"
+DISCOVER_DD = "Discover Donald's Dock"
+DISCOVER_DG = "Discover Daisy's Gardens"
+DISCOVER_MM = "Discover Minnie's Melodyland"
+DISCOVER_TB = "Discover The Brrrgh"
+DISCOVER_DDL = "Discover Donald's Dreamland"
 
 DISCOVER_SBHQ = "Discover Sellbot HQ"
 DISCOVER_CBHQ = "Discover Cashbot HQ"
@@ -375,6 +383,14 @@ LIST_OF_LOCATION_DEFINITIONS = {
 
     # Speak to flippy once you have obtained all 4 proofs for one final check
     ToontownLocationDefinition(SAVED_TOONTOWN, BASE_ID+132, location_type=ToontownLocationType.BOSSES),
+
+    # Discover Playgrounds
+    ToontownLocationDefinition(DISCOVER_TTC, BASE_ID+133, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_DD, BASE_ID+134, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_DG, BASE_ID+135, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_MM, BASE_ID+136, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_TB, BASE_ID+137, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_DDL, BASE_ID+138, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
 }
 
 # Maps Location Definitions by location name -> location definition
@@ -394,6 +410,11 @@ GALLERY_LOCATIONS: List[str] = [
 FISHING_LOCATIONS: List[str] = [
     check.unique_name for check in LIST_OF_LOCATION_DEFINITIONS if check.location_type == ToontownLocationType.FISHING
 ]
+
+DISCOVER_PLAYGROUND_LOCATIONS: List[str] = [
+    check.unique_name for check in LIST_OF_LOCATION_DEFINITIONS if check.location_type == ToontownLocationType.DISCOVER_PLAYGROUND
+]
+
 
 TTC_TASK_LOCATIONS = [
     TOONTOWN_CENTRAL_TASK_1,

@@ -201,6 +201,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
         self.baseGagSkillMultiplier = 1
         self.accessKeys: List[int] = []
+        self.receivedItems: List[int] = []
 
         return
 
@@ -2773,6 +2774,14 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # Set this toon's list of access keys acquired from the server
     def setAccessKeys(self, keys: List) -> None:
         self.accessKeys = keys
+
+    # Set the AP items this toon has received
+    def setReceivedItems(self, receivedItems: List[int]):
+        self.receivedItems = receivedItems
+
+    # Get a list of item IDs this toon has received via AP
+    def getReceivedItems(self) -> List[int]:
+        return self.receivedItems
 
     # To be overridden in LocalToon, just here for safety
     def sendArchipelagoMessage(self, message: str) -> None:

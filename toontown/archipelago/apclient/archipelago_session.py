@@ -1,12 +1,19 @@
 # Represents a gameplay session attached to toon players, handles rewarding and sending items through the multiworld
+from typing import List
+
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
+from toontown.archipelago.packets.serverbound.location_checks_packet import LocationChecksPacket
 from toontown.archipelago.packets.serverbound.say_packet import SayPacket
+
+# Typing hack, delete later #todo
+if False:
+    from toontown.toon.DistributedToonAI import DistributedToonAI
 
 
 class ArchipelagoSession:
 
-    def __init__(self, avatar):
+    def __init__(self, avatar: "DistributedToonAI"):
         self.avatar = avatar  # The avatar that owns this session, DistributedToonAI
         self.client = ArchipelagoClient(self.avatar, self.avatar.getName())  # The client responsible for socket communication
 
@@ -54,6 +61,23 @@ class ArchipelagoSession:
         packet = SayPacket()
         packet.text = message
         self.client.send_packet(packet)
+
+    # Called right when we get connected to the server, makes sure our locations are synced as well as toon stats
+    def sync(self):
+        self.avatar.b_setName(self.client.slot_name)
+        self.complete_checks(self.avatar.getCheckedLocations())
+
+    # Call to send a packet to AP that a location check was completed
+    def complete_check(self, check: int):
+        self.complete_checks([check])
+
+    def complete_checks(self, checks: List[int]):
+        if len(checks) == 0:
+            return
+
+        checks_packet = LocationChecksPacket()
+        checks_packet.locations = list(checks)
+        self.client.send_packet(checks_packet)
 
     def cleanup(self):
         self.client.stop()

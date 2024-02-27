@@ -26,18 +26,24 @@ class ConnectionRefusedPacket(ClientBoundPacketBase):
 
             if error == self.ERROR_INVALID_SLOT:
                 self.debug(f"Slot {client.slot_name} is invalid for this multiworld!")
+                client.av.d_sendArchipelagoMessage(f"Invalid slot! Please use !slot to correct your slot.")
 
             elif error == self.ERROR_INVALID_GAME:
                 self.debug("[AP Client] Invalid game provided!")
+                client.av.d_sendArchipelagoMessage("Invalid game provided!")
 
             elif error == self.ERROR_INCOMPATIBLE_VERSION:
                 self.debug("[AP Client] Incompatible version detected!")
+                client.av.d_sendArchipelagoMessage("Incompatible version detected!")
 
             elif error == self.ERROR_INVALID_PASSWORD:
                 self.debug("[AP Client] Invalid password provided!")
+                client.av.d_sendArchipelagoMessage("Invalid password provided! Please use !password to correct your password.")
 
             elif error == self.ERROR_INVALID_ITEMS_HANDLING:
                 self.debug("[AP Client] Invalid item sent to server!")
+                client.av.d_sendArchipelagoMessage("Invalid item sent to server!")
 
             else:
                 self.debug(f"[AP Client] Unknown error: {error}")
+                client.av.d_sendArchipelagoMessage(f"Unknown error: {error}")
