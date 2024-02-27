@@ -4353,8 +4353,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Set the AP locations this toon has checked and tell the client
     def b_setCheckedLocations(self, checkedLocations: List[int]):
-        self.setReceivedItems(checkedLocations)
-        self.d_setReceivedItems(checkedLocations)
+        self.setCheckedLocations(checkedLocations)
+        self.d_setCheckedLocations(checkedLocations)
 
     # Set the AP locations this toon has checked but only server side
     def setCheckedLocations(self, checkedLocations: List[int]):
@@ -4378,6 +4378,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         self.checkedLocations.append(location)
         self.b_setCheckedLocations(self.checkedLocations)
+
+        if self.archipelago_session:
+            self.archipelago_session.complete_check(location)
 
     # Send this toon an archipelago message to display on their log
     def d_sendArchipelagoMessage(self, message: str) -> None:

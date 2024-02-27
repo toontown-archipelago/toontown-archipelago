@@ -166,6 +166,7 @@ class ArchipelagoClient:
             self.av.d_sendArchipelagoMessage(f"[AP Client] Socket connection to archipelago server {address} failed, either wrong address or server is not running")
         except Exception as e:
             self.av.d_sendArchipelagoMessage(f"[AP Client] Unhandled exception {e}, disconnecting from Archipelago server")
+            traceback.print_exc()
 
         if self.socket:
             self.socket.close()

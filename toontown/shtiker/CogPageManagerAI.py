@@ -1,5 +1,6 @@
 from direct.directnotify import DirectNotifyGlobal
 
+from toontown.archipelago.definitions.util import cog_code_to_ap_location, ap_location_name_to_id
 from toontown.shtiker.CogPageGlobals import *
 from toontown.suit import SuitDNA
 
@@ -30,6 +31,13 @@ class CogPageManagerAI:
                 continue
 
             if toon.getDoId() in suit['activeToons']:
+
+                # AP location check
+                cog_location_unique_name = cog_code_to_ap_location(suit['type'])
+                location_id = ap_location_name_to_id(cog_location_unique_name)
+                if location_id > 0:
+                    toon.addCheckedLocation(location_id)
+
                 suitIndex = SuitDNA.suitHeadTypes.index(suit['type'])
                 suitDept = SuitDNA.suitDepts.index(suit['track'])
                 cogQuota = COG_QUOTAS[0][SuitDNA.getSuitType(suit['type']) - 1]

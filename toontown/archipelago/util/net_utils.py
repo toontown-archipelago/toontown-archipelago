@@ -219,7 +219,7 @@ class JSONtoTextParser(metaclass=HandlerMeta):
     def _handle_player_id(self, node: JSONMessagePart):
         player = int(node["text"])
         node["color"] = 'magenta' if player == self.client.slot else 'yellow'
-        node["text"] = self.client.get_slot_info(player)['name']
+        node["text"] = self.client.get_slot_info(player).name
         return self._handle_color(node)
 
     # for other teams, spectators etc.? Only useful if player isn't in the clientside mapping

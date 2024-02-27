@@ -78,9 +78,9 @@ class GagTrainingFrameReward(APReward):
 
         # If we get a frame when we already maxed, make the track organic
         if newLevel > 7:
-            oldBonusArray = av.getTrackBonusLevel()
-            newBonusArray = oldBonusArray[self.track] = 7
-            av.b_setTrackBonusLevel(newBonusArray)
+            bonusArray = av.getTrackBonusLevel()
+            bonusArray[self.track] = 7
+            av.b_setTrackBonusLevel(bonusArray)
             av.d_setSystemMessage(0, f"Your {self.TRACK_TO_NAME[self.track]} gags are now organic!")
             return
 

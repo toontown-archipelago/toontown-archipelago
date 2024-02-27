@@ -21,5 +21,6 @@ class PrintJSONPacket(ClientBoundPacketBase):
     def handle(self, client):
 
         parser = JSONtoTextParser(client)
-        self.debug(parser.parse(self.data))
-        client.av.d_sendArchipelagoMessage(parser.parse(self.data))
+        msg = parser.parse(self.data)
+        self.debug(msg)
+        client.av.d_sendArchipelagoMessage(msg)
