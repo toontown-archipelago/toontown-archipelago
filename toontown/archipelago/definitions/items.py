@@ -1,7 +1,7 @@
 import random
 from typing import Dict
 
-from BaseClasses import Item, ItemClassification
+from toontown.archipelago.definitions.BaseClasses import ItemClassification, Item
 
 # Fill in if some items need more context
 ITEM_DESCRIPTIONS = {

@@ -1,7 +1,7 @@
 from enum import IntEnum
 from typing import Optional, List
 
-from BaseClasses import Location, Region, LocationProgressType
+from toontown.archipelago.definitions.BaseClasses import LocationProgressType, Location, Region
 
 # Fill in if some items need more context
 LOCATION_DESCRIPTIONS = {
