@@ -22,10 +22,15 @@ import tempfile
 import atexit
 import shutil
 
+import toontown.archipelago.util.global_text_properties as global_text_properties
+
 class ToonBase(OTPBase.OTPBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('ToonBase')
 
     def __init__(self):
+
+        self.global_text_properties = global_text_properties
+
         if not config.GetInt('ignore-user-options', 0):
             self.settings = ToontownSettings.ToontownSettings()
             self.loadFromSettings()

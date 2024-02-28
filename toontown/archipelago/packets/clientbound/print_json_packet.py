@@ -1,6 +1,8 @@
+from copy import deepcopy
 from typing import List
 
-from toontown.archipelago.util.net_utils import JSONMessagePart, JSONtoTextParser
+from toontown.archipelago.util import global_text_properties
+from toontown.archipelago.util.net_utils import JSONMessagePart, JSONtoTextParser, JSONPartFormatter
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 
 
@@ -20,7 +22,19 @@ class PrintJSONPacket(ClientBoundPacketBase):
 
     def handle(self, client):
 
-        parser = JSONtoTextParser(client)
-        msg = parser.parse(self.data)
-        self.debug(msg)
-        client.av.d_sendArchipelagoMessage(msg)
+        # Parser for outputting to console if we want debug
+        self.debug(JSONtoTextParser(client).parse(deepcopy(self.data)))
+
+        # Our parser that is Panda3D friendly
+        parser = JSONPartFormatter(deepcopy(self.data), client)
+        formatted_parts = parser.get_formatted_parts()
+
+        # Loop through all the parts and build a string
+        ret = ''
+        for part in formatted_parts:
+            color = part['color']
+            text = part['text']
+            p3dcolor = global_text_properties.get_property_code_from_json_code(color)
+            ret += f"\1{p3dcolor}\1{text}\2"
+
+        client.av.d_sendArchipelagoMessage(ret)

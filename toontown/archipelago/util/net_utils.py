@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import typing
 import enum
+from copy import deepcopy
 
 from json import JSONEncoder, JSONDecoder
 
@@ -179,6 +180,149 @@ class JSONTypes(str, enum.Enum):
     location_name = "location_name"
     location_id = "location_id"
     entrance_name = "entrance_name"
+
+
+# A class that parses a list of JSONMessagePart instances and modifies them to have colors defined and IDs replaced
+class JSONPartFormatter:
+
+    COLOR_BLACK = (0, 0, 0, 1)
+    COLOR_RED = (.93, 0, 0, 1)
+    COLOR_GREEN = (0, 1, .5, 1)
+    COLOR_YELLOW = (.98, .98, .82, 1)
+    COLOR_BLUE = (.4, .58, .93, 1)
+    COLOR_MAGENTA = (.93, 0, .93, 1)
+    COLOR_CYAN = (0, .93, .93, 1)
+    COLOR_WHITE = (1, 1, 1, 1)
+
+    COLOR_PLUM = (.69, .6, .93, 1)
+    COLOR_SLATEBLUE = (.43, .54, .9, 1)
+    COLOR_SALMON = (.97, .5, .45, 1)
+
+    COLOR_MAP = {
+        'black': COLOR_BLACK,
+        'red': COLOR_RED,
+        'green': COLOR_GREEN,
+        'yellow': COLOR_YELLOW,
+        'blue': COLOR_BLUE,
+        'magenta': COLOR_MAGENTA,
+        'cyan': COLOR_CYAN,
+        'white': COLOR_WHITE,
+        'plum': COLOR_PLUM,
+        'slateblue': COLOR_SLATEBLUE,
+        'salmon': COLOR_SALMON
+    }
+
+    def __init__(self, parts: typing.List[JSONMessagePart], client):
+        self.parts = parts
+        self.client = client
+
+    def is_local_player(self, slot_num: int) -> bool:
+        return slot_num == self.client.slot
+
+    # Returns a new list of JSONMessagePart instances with replaced IDs and colors ALWAYS defined
+    def get_formatted_parts(self) -> typing.List[JSONMessagePart]:
+
+        new_parts: typing.List[JSONMessagePart] = []
+
+        for part in self.parts:
+
+            new_part: JSONMessagePart = deepcopy(part)
+
+            # What type of part is this?
+            part_type = part['type'] if 'type' in part else 'default'
+
+            # Switch statement basically on how we should handle the types of parts
+            if part_type in ('player_id', 'player_name'):
+                self.handle_player_part(new_part)
+            elif part_type in ('item_id', 'item_name'):
+                self.handle_item_part(new_part)
+            elif part_type in ('location_id', 'location_name'):
+                self.handle_location_part(new_part)
+            elif part_type == 'entrance_name':
+                self.handle_entrance_part(new_part)
+            elif part_type in ('default', 'text'):
+                self.handle_default_part(new_part)
+            elif part_type == 'color':  # No need to do anything, color is already defined
+                pass
+            else:
+                print(f"Unknown JSONMessagePart type: {part_type}, reverting to default part behavior")
+                self.handle_default_part(new_part)
+
+            new_parts.append(new_part)
+
+        return new_parts
+
+    # Modifies a JSONMessagePart assuming it is a player type
+    def handle_player_part(self, part: JSONMessagePart) -> None:
+
+        # If we were given the ID, compare it against our client and override the text
+        if part['type'] == 'player_id':
+            pid = int(part['text'])
+            # If this is us, set color to magenta otherwise yellow
+            part['color'] = 'magenta' if pid == self.client.slot else 'yellow'
+            part['text'] = self.client.get_slot_info(pid).name
+
+        # If we were given name, instead of ID, do same thing basically
+        elif part['type'] == 'player_name':
+            part['color'] = 'magenta' if self.client.slot_name == part['text'] else 'yellow'
+
+        else:
+            print(f"Unknown JSONMessagePart type for player part: {part['type']}")
+            part['color'] = 'white'
+
+    # Modifies a JSONMessagePart assuming it is an item type
+    def handle_item_part(self, part: JSONMessagePart) -> None:
+        color = self.item_flag_to_color(part['flags'])
+        part['color'] = color
+        item = part['text']
+
+        # If we were given the ID, override the text
+        if part['type'] == 'item_id':
+            part['text'] = self.client.get_item_name(item)
+
+        # If we were given name, instead of ID, do same thing basically
+        elif part['type'] == 'item_name':
+            pass  # Do nothing
+
+        else:
+            print(f"Unknown JSONMessagePart type for item part: {part['type']}")
+
+    # Modifies a JSONMessagePart assuming it is a location type
+    def handle_location_part(self, part: JSONMessagePart) -> None:
+        part['color'] = 'green'
+        location = part['text']
+
+        # If we were given the ID, override the text
+        if part['type'] == 'location_id':
+            part['text'] = self.client.get_location_name(location)
+
+        # If we were given name, instead of ID, do same thing basically
+        elif part['type'] == 'location_name':
+            pass  # Do nothing
+
+        else:
+            print(f"Unknown JSONMessagePart type for location part: {part['type']}")
+
+    # Modifies a JSONMessagePart assuming it is an entrance type
+    def handle_entrance_part(self, part: JSONMessagePart) -> None:
+        part['color'] = 'blue'
+
+    # Modifies a JSONMessagePart assuming it is a default type (no type specified)
+    def handle_default_part(self, part: JSONMessagePart) -> None:
+        part['color'] = 'white'
+
+    def item_flag_to_color(self, flag: int):
+        # 0b001 = logical advancement, 0b010 = useful, 0b100 = trap
+        if flag & 0b001:
+            return 'plum'
+
+        if flag & 0b010:
+            return 'slateblue'
+
+        if flag & 0b100:
+            return 'salmon'
+
+        return 'cyan'
 
 
 class JSONtoTextParser(metaclass=HandlerMeta):
