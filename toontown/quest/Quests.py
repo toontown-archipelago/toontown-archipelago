@@ -18226,10 +18226,11 @@ class MaxHpReward(Reward):
         return self.reward[0]
 
     def sendRewardAI(self, av):
-        maxHp = av.getMaxHp()
-        maxHp = min(ToontownGlobals.MaxHpLimit, maxHp + self.getAmount())
-        av.b_setMaxHp(maxHp)
-        av.toonUp(maxHp)
+        # maxHp = av.getMaxHp()
+        # maxHp = min(ToontownGlobals.MaxHpLimit, maxHp + self.getAmount())
+        # av.b_setMaxHp(maxHp)
+        # av.toonUp(maxHp)
+        pass
 
     def countReward(self, qrc):
         qrc.maxHp += self.getAmount()

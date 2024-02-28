@@ -1042,8 +1042,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 av = self.air.doId2do[avId]
 
                 if self.ruleset.FORCE_MAX_LAFF:
-                    self.oldMaxLaffs[avId] = av.getMaxHp()
-                    av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
+                    # self.oldMaxLaffs[avId] = av.getMaxHp()
+                    # av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
                     self.debug(content='Forcing max laff to %s' % self.ruleset.FORCE_MAX_LAFF_AMOUNT)
 
                 if self.ruleset.HEAL_TOONS_ON_START:
@@ -1113,7 +1113,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for avId in self.getInvolvedToonsNotSpectating():
             av = self.air.doId2do.get(avId)
             if av and avId in self.oldMaxLaffs:
-                av.b_setMaxHp(self.oldMaxLaffs[avId])
+                # av.b_setMaxHp(self.oldMaxLaffs[avId])
+                pass
 
         taskMgr.remove(self.uniqueName('times-up-task'))
         taskMgr.remove(self.uniqueName('post-times-up-task'))

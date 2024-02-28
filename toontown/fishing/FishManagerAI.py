@@ -101,8 +101,8 @@ class FishManagerAI:
         av.addMoney(av.fishTank.getTotalValue())
         av.b_setFishTank([], [], [])
         if trophies > curTrophies:
-            av.b_setMaxHp(av.getMaxHp() + trophies - curTrophies)
-            av.toonUp(av.getMaxHp())
+            # av.b_setMaxHp(av.getMaxHp() + trophies - curTrophies)
+            # av.toonUp(av.getMaxHp())
             av.b_setFishingTrophies(list(range(trophies)))
             return True
 

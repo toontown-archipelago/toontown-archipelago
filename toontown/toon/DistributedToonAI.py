@@ -10,7 +10,6 @@ from otp.avatar import DistributedAvatarAI
 from otp.avatar import DistributedPlayerAI
 from direct.distributed import DistributedSmoothNodeAI
 from toontown.toonbase import ToontownGlobals
-from toontown.quest import QuestRewardCounter
 from toontown.quest import Quests
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.battle import SuitBattleGlobals
@@ -1332,12 +1331,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         else:
             self.cogLevels[dept] += 1
             self.d_setCogLevels(self.cogLevels)
-            if lastCog:
-                if self.cogLevels[dept] in ToontownGlobals.CogSuitHPLevels:
-                    maxHp = self.getMaxHp()
-                    maxHp = min(ToontownGlobals.MaxHpLimit, maxHp + 1)
-                    self.b_setMaxHp(maxHp)
-                    self.toonUp(maxHp)
+            # if lastCog:
+            #     if self.cogLevels[dept] in ToontownGlobals.CogSuitHPLevels:
+            #         maxHp = self.getMaxHp()
+            #         maxHp = min(ToontownGlobals.MaxHpLimit, maxHp + 1)
+            #         self.b_setMaxHp(maxHp)
+            #         self.toonUp(maxHp)
         self.air.writeServerEvent('cogSuit', self.doId, '%s|%s|%s' % (dept, self.cogTypes[dept], self.cogLevels[dept]))
 
     def getNumPromotions(self, dept):
@@ -1949,83 +1948,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def getRewardTier(self):
         return self.rewardTier
-
-    def fixAvatar(self):
-        anyChanged = 0
-        qrc = QuestRewardCounter.QuestRewardCounter()
-        if qrc.fixAvatar(self):
-            self.notify.info("Fixed avatar %d's quest rewards." % self.doId)
-            anyChanged = 1
-        if self.hp > self.maxHp:
-            self.notify.info(
-                'Changed avatar %d to have hp %d instead of %d, to fit with maxHp' % (self.doId, self.maxHp, self.hp))
-            self.b_setHp(self.maxHp)
-            anyChanged = 1
-        inventoryChanged = 0
-        carry = self.maxCarry
-        for track in range(len(ToontownBattleGlobals.Tracks)):
-            if not self.hasTrackAccess(track):
-                for level in range(len(ToontownBattleGlobals.Levels[track])):
-                    count = self.inventory.inventory[track][level]
-                    if count != 0:
-                        self.notify.info(
-                            'Changed avatar %d to throw away %d items in track %d level %d; no access to track.' % (
-                            self.doId,
-                            count,
-                            track,
-                            level))
-                        self.inventory.inventory[track][level] = 0
-                        inventoryChanged = 1
-
-            else:
-                curSkill = self.experience.getExp(track)
-                for level in range(len(ToontownBattleGlobals.Levels[track])):
-                    count = self.inventory.inventory[track][level]
-                    if curSkill < ToontownBattleGlobals.Levels[track][level]:
-                        if count != 0:
-                            self.notify.info(
-                                'Changed avatar %d to throw away %d items in track %d level %d; no access to level.' % (
-                                self.doId,
-                                count,
-                                track,
-                                level))
-                            self.inventory.inventory[track][level] = 0
-                            inventoryChanged = 1
-                    else:
-                        newCount = min(count, carry)
-                        newCount = min(count, self.inventory.getMax(track, level))
-                        if count != newCount:
-                            self.notify.info(
-                                'Changed avatar %d to throw away %d items in track %d level %d; too many gags.' % (
-                                self.doId,
-                                count - newCount,
-                                track,
-                                level))
-                            self.inventory.inventory[track][level] = newCount
-                            inventoryChanged = 1
-                        carry -= newCount
-
-        self.inventory.calcTotalProps()
-        if inventoryChanged:
-            self.d_setInventory(self.inventory.makeNetString())
-            anyChanged = 1
-        if len(self.quests) > self.questCarryLimit:
-            self.notify.info('Changed avatar %d to throw out %d quests; too many quests.' % (
-            self.doId, len(self.quests) - self.questCarryLimit))
-            self.b_setQuests(self.quests[:self.questCarryLimit])
-            self.fixAvatar()
-            anyChanged = 1
-        if not (self.emoteAccess[0] and self.emoteAccess[1] and self.emoteAccess[2] and self.emoteAccess[3] and
-                self.emoteAccess[4]):
-            self.emoteAccess[0] = 1
-            self.emoteAccess[1] = 1
-            self.emoteAccess[2] = 1
-            self.emoteAccess[3] = 1
-            self.emoteAccess[4] = 1
-            self.b_setEmoteAccess(self.emoteAccess)
-            self.notify.info('Changed avatar %d to have emoteAccess: %s' % (self.doId, self.emoteAccess))
-            anyChanged = 1
-        return anyChanged
 
     def b_setEmoteAccess(self, bits):
         self.setEmoteAccess(bits)

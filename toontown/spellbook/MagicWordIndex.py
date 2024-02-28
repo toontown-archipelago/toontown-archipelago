@@ -2831,20 +2831,20 @@ class SetCogSuit(MagicWord):
         toon.b_setCogParts(parts)
 
         # Find out if they need laff boosts or laff points removed.
-        for levelBoost in [14, 19, 29, 39, 49]:
-            if level <= levelBoost and not levelBoost > toon.getCogLevels()[corpIndex]:
-                if toon.getMaxHp() <= 15:
-                    continue
-                toon.b_setMaxHp(toon.getMaxHp() - 1)
-            elif level > levelBoost and not levelBoost <= toon.getCogLevels()[corpIndex]:
-                if toon.getMaxHp() >= 137:
-                    continue
-                toon.b_setMaxHp(toon.getMaxHp() + 1)
-        # Lets be nice and give them a toonup or make them suffer.
-        if toon.getHp() > toon.getMaxHp():
-            toon.takeDamage(toon.getHp() - toon.getMaxHp())
-        else:
-            toon.toonUp(toon.getMaxHp() - toon.getHp())
+        # for levelBoost in [14, 19, 29, 39, 49]:
+        #     if level <= levelBoost and not levelBoost > toon.getCogLevels()[corpIndex]:
+        #         if toon.getMaxHp() <= 15:
+        #             continue
+        #         toon.b_setMaxHp(toon.getMaxHp() - 1)
+        #     elif level > levelBoost and not levelBoost <= toon.getCogLevels()[corpIndex]:
+        #         if toon.getMaxHp() >= 137:
+        #             continue
+        #         toon.b_setMaxHp(toon.getMaxHp() + 1)
+        # # Lets be nice and give them a toonup or make them suffer.
+        # if toon.getHp() > toon.getMaxHp():
+        #     toon.takeDamage(toon.getHp() - toon.getMaxHp())
+        # else:
+        #     toon.toonUp(toon.getMaxHp() - toon.getHp())
 
         # Set their type and level that they specified.
         types = toon.getCogTypes()

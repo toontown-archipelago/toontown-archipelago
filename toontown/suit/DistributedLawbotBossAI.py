@@ -581,8 +581,8 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
                 self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
                 av = self.air.doId2do[avId]
 
-                if self.ruleset.FORCE_MAX_LAFF:
-                    av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
+                # if self.ruleset.FORCE_MAX_LAFF:
+                #     av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
 
                 if self.ruleset.HEAL_TOONS_ON_START:
                     av.b_setHp(av.getMaxHp())

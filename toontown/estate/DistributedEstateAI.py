@@ -310,10 +310,8 @@ class DistributedEstateAI(DistributedObjectAI):
         dt = abs(len(collection) // 10 - oldSpecies // 10)
         if dt:
             self.notify.info('%d is getting a gardening trophy!' % avId)
-            maxHp = av.getMaxHp()
-            maxHp = min(ToontownGlobals.MaxHpLimit, maxHp + dt)
-            av.b_setMaxHp(maxHp)
-            av.toonUp(maxHp)
+            # av.b_setMaxHp(maxHp)
+            # av.toonUp(maxHp)
             self.sendUpdate('awardedTrophy', [avId])
 
         av.b_setGardenTrophies(list(range(len(collection) // 10)))

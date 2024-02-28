@@ -796,9 +796,8 @@ class DistributedGolfCourseAI(DistributedObjectAI.DistributedObjectAI, FSM):
                         self.notify.debug('New Trophy %d' % index)
                         newCups.append(True)
                         self.air.writeServerEvent('golf_cup', avId, '%s' % index)
-                        newMaxHp = av.getMaxHp() + 1
-                        av.b_setMaxHp(newMaxHp)
-                        av.toonUp(newMaxHp)
+                        # av.b_setMaxHp(newMaxHp)
+                        # av.toonUp(newMaxHp)
                     else:
                         newCups.append(False)
 

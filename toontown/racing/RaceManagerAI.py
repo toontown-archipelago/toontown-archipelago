@@ -326,11 +326,11 @@ class RaceManagerAI(DirectObject.DirectObject):
             trophyIndex = RaceGlobals.TrophyCups[i - 1]
             if cupNum and not trophies[trophyIndex]:
                 newTrophies.append(trophyIndex)
-                oldMaxHp = av.getMaxHp()
-                newMaxHp = min(ToontownGlobals.MaxHpLimit, oldMaxHp + 1)
-                self.notify.debug('cup awarded! new max laff : %s' % newMaxHp)
-                av.b_setMaxHp(newMaxHp)
-                av.toonUp(newMaxHp)
+                # oldMaxHp = av.getMaxHp()
+                # newMaxHp = min(ToontownGlobals.MaxHpLimit, oldMaxHp + 1)
+                # self.notify.debug('cup awarded! new max laff : %s' % newMaxHp)
+                # av.b_setMaxHp(newMaxHp)
+                # av.toonUp(newMaxHp)
                 self.air.writeServerEvent('kartingTrophy', avId, '%s' % trophyIndex)
                 self.notify.debug('trophy: ' + TTLocalizer.KartTrophyDescriptions[trophyIndex])
 
@@ -550,11 +550,11 @@ class RaceManagerAI(DirectObject.DirectObject):
             if cupNum and not trophies[trophyIndex]:
                 trophies[trophyIndex] = 1
                 newTrophies.append(trophyIndex)
-                oldMaxHp = av.getMaxHp()
-                newMaxHp = min(ToontownGlobals.MaxHpLimit, oldMaxHp + 1)
-                self.notify.debug('cup awarded! new max laff : %s' % newMaxHp)
-                av.b_setMaxHp(newMaxHp)
-                av.toonUp(newMaxHp)
+                # oldMaxHp = av.getMaxHp()
+                # newMaxHp = min(ToontownGlobals.MaxHpLimit, oldMaxHp + 1)
+                # self.notify.debug('cup awarded! new max laff : %s' % newMaxHp)
+                # av.b_setMaxHp(newMaxHp)
+                # av.toonUp(newMaxHp)
                 self.air.writeServerEvent('kartingTrophy', avId, '%s' % trophyIndex)
                 self.notify.debug('trophy: ' + TTLocalizer.KartTrophyDescriptions[trophyIndex])
 
