@@ -156,6 +156,8 @@ class ToonBase(OTPBase.OTPBase):
 
         self.WANT_FOV_EFFECTS = self.settings.getBool('game', 'fovEffects', True)
         self.CAM_TOGGLE_LOCK = self.settings.getBool('game', 'cam-toggle-lock', False)
+
+        self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {base.config.GetString('version', 'v???')}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)
         return
 
     def openMainWindow(self, *args, **kw):

@@ -2,7 +2,7 @@
 # specific to production instances of Toontown Online.
 
 # Window settings
-window-title Toontown Online
+window-title Toontown: Archipelago
 
 # Notify settings
 console-output false

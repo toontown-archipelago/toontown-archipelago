@@ -2,7 +2,7 @@
 # specific to developer instances of Toontown Online.
 
 # Window settings
-window-title Toontown: Crane League Edition
+window-title Toontown: Archipelago
 
 # Notify settings
 console-output true

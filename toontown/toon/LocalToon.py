@@ -1031,30 +1031,31 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def loadClarabelleGui(self):
         if self.__clarabelleButton:
             return
-        guiItems = loader.loadModel('phase_5.5/models/gui/catalog_gui')
-        circle = guiItems.find('**/cover/blue_circle')
-        icon = guiItems.find('**/cover/clarabelle')
-        icon.reparentTo(circle)
-        rgba = VBase4(0.71589, 0.784547, 0.974, 1.0)
-        white = VBase4(1.0, 1.0, 1.0, 1.0)
-        icon.setColor(white)
-        claraXPos = ClaraBaseXPos
-        newScale = oldScale = 0.5
-        newPos = (claraXPos, 1.0, -0.63)
-        if WantNewsPage:
-            claraXPos += AdjustmentForNewsButton
-            oldPos = ((claraXPos, 1.0, -0.63),)
-            newScale = oldScale * ToontownGlobals.NewsPageScaleAdjust
-            newPos = (claraXPos - 0.1, 1.0, -0.55)
-        self.__clarabelleButton = DirectButton(relief=None, image=circle, text='', text_fg=(1, 1, 1, 1), text_shadow=(0, 0, 0, 1), text_scale=0.1, text_pos=(-1.06, 1.06), text_font=ToontownGlobals.getInterfaceFont(), pos=newPos, scale=newScale, command=self.__handleClarabelleButton)
-        self.__clarabelleButton.reparentTo(base.a2dTopRight, DGG.BACKGROUND_SORT_INDEX - 1)
-        button = self.__clarabelleButton.stateNodePath[0]
-        self.__clarabelleFlash = Sequence(LerpColorInterval(button, 2, white, blendType='easeInOut'), LerpColorInterval(button, 2, rgba, blendType='easeInOut'))
-        self.__clarabelleFlash.loop()
-        self.__clarabelleFlash.pause()
-        return
+        # guiItems = loader.loadModel('phase_5.5/models/gui/catalog_gui')
+        # circle = guiItems.find('**/cover/blue_circle')
+        # icon = guiItems.find('**/cover/clarabelle')
+        # icon.reparentTo(circle)
+        # rgba = VBase4(0.71589, 0.784547, 0.974, 1.0)
+        # white = VBase4(1.0, 1.0, 1.0, 1.0)
+        # icon.setColor(white)
+        # claraXPos = ClaraBaseXPos
+        # newScale = oldScale = 0.5
+        # newPos = (claraXPos, 1.0, -0.63)
+        # if WantNewsPage:
+        #     claraXPos += AdjustmentForNewsButton
+        #     oldPos = ((claraXPos, 1.0, -0.63),)
+        #     newScale = oldScale * ToontownGlobals.NewsPageScaleAdjust
+        #     newPos = (claraXPos - 0.1, 1.0, -0.55)
+        # self.__clarabelleButton = DirectButton(relief=None, image=circle, text='', text_fg=(1, 1, 1, 1), text_shadow=(0, 0, 0, 1), text_scale=0.1, text_pos=(-1.06, 1.06), text_font=ToontownGlobals.getInterfaceFont(), pos=newPos, scale=newScale, command=self.__handleClarabelleButton)
+        # self.__clarabelleButton.reparentTo(base.a2dTopRight, DGG.BACKGROUND_SORT_INDEX - 1)
+        # button = self.__clarabelleButton.stateNodePath[0]
+        # self.__clarabelleFlash = Sequence(LerpColorInterval(button, 2, white, blendType='easeInOut'), LerpColorInterval(button, 2, rgba, blendType='easeInOut'))
+        # self.__clarabelleFlash.loop()
+        # self.__clarabelleFlash.pause()
+        # return
 
     def showClarabelleGui(self, mailboxItems):
+        return
         self.loadClarabelleGui()
         if mailboxItems:
             self.__clarabelleButton['text'] = ['', TTLocalizer.CatalogNewDeliveryButton, TTLocalizer.CatalogNewDeliveryButton]
@@ -1229,6 +1230,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         DistributedToon.DistributedToon.setGhostMode(self, flag)
 
     def newCatalogNotify(self):
+        return
         if not self.gotCatalogNotify:
             return
         hasPhase = not launcher or launcher.getPhaseComplete(5.5)

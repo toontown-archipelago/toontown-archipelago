@@ -1,9 +1,13 @@
-# Toontown-School-House, Crane League Edition
-Welcome to the repository of the Crane League version of the Toontown School House source code!
+# Toontown: Archipelago
+Welcome to the repository of the Archipelago version of the Toontown School House source code!
 
 Toontown School House is a course dedicated to teaching members of the Toontown community how to develop for the game. For more information, head over to [this](https://www.reddit.com/r/Toontown/comments/doszgg/toontown_school_house_learn_to_develop_for/) Reddit post.
 
-Crane League is essentially the "practice client" that people use that have an interest in competitive craning. This source attempts to mimic craning on Corporate Clash ever since the 1.2.8 update released where craning physics and impact/damage calcuations were refactored. This source also comes with a few custom and unique features added. 
+This repository is a version of Toontown that is compatible with [Archipelago's multi-world multi-game randomizer](https://archipelago.gg)!
+This version of toontown makes modifications to the base game to not only to provide support for Archipelago, but also introduce 
+gameplay tweaks to make the experience quicker, more satisfying, and more solo friendly. This game also has support for hosting
+and joining mini-servers if you still wish to play with friends, however the details on accomplishing this will not be covered here.
+If you are playing this way, just make sure that every player has their own unique player slot when generating an Archipelago game.
 
 
 # Source Code
