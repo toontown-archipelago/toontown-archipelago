@@ -72,6 +72,10 @@ class DistributedFishingSpotAI(DistributedObjectAI):
         self.lastFish = [None, None, None]
         self.cast = False
 
+        av = self.air.doId2do.get(avId)
+        if av:
+            self.d_setPity(self.air.fishManager.getAvPity(av))
+
     def requestExit(self):
         avId = self.air.getAvatarIdFromSender()
         if not avId:
@@ -169,4 +173,8 @@ class DistributedFishingSpotAI(DistributedObjectAI):
         catch = self.air.fishManager.generateCatch(av, area)
         self.lastFish = catch
         self.d_setMovie(FishGlobals.PullInMovie, catch[0], catch[1], catch[2], catch[3], 0, 0)
+        self.d_setPity(self.air.fishManager.getAvPity(av))
         self.cast = False
+
+    def d_setPity(self, pity: float):
+        self.sendUpdate('setPity', [pity])

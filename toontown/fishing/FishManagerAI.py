@@ -48,8 +48,6 @@ class FishManagerAI:
 
     def attemptForceNewSpecies(self, av, zoneId):
 
-        print(f"giving pity species to {av.getName()}")
-
         # How many times should we try to get a new catch
         ATTEMPTS = 1000
         fish = None
@@ -62,11 +60,8 @@ class FishManagerAI:
 
             # If this would be a new entry return it and reset pity
             if result == FishGlobals.COLLECT_NEW_ENTRY:
-                print(f"{av.getName()} found new species in {_} attempts")
                 self.newSpeciesPity[av.doId] = 0
                 return fish
-
-        print(f"{av.getName()} failed species pity in {ATTEMPTS} attempts, forcing random species")
 
         # We failed to find a fish in their current pond, let's try just finding a random species
         all_fish = FishGlobals.getAllFish()
@@ -82,7 +77,6 @@ class FishManagerAI:
 
             # If this would be a new entry return it and reset pity
             if result == FishGlobals.COLLECT_NEW_ENTRY:
-                print(f"{av.getName()} found new species after forcing all fish")
                 self.newSpeciesPity[av.doId] = 0
                 return fish
 
@@ -98,7 +92,6 @@ class FishManagerAI:
 
         rng = random.random()
         threshold = self.newSpeciesPity.get(av.doId, 0)
-        print(f"{av.getName()} fishing pity check, need < {threshold}, got {rng}")
         return rng < threshold
 
     def addNewSpeciesPity(self, av):
@@ -112,7 +105,9 @@ class FishManagerAI:
         # Add the pity
         oldPity = self.newSpeciesPity.get(av.doId, 0)
         self.newSpeciesPity[av.doId] = oldPity + pity
-        print(f"{av.getName()} new pity: {self.newSpeciesPity[av.doId]}")
+
+    def getAvPity(self, av) -> float:
+        return self.newSpeciesPity.get(av.doId, 0)
 
     def generateCatch(self, av, zoneId):
         # Generate our catch.

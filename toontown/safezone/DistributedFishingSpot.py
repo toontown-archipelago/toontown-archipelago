@@ -4,6 +4,9 @@ from direct.gui.DirectGui import *
 from direct.directtools.DirectGeometry import LineNodePath
 from direct.distributed import DistributedObject
 from direct.directnotify import DirectNotifyGlobal
+
+from toontown.archipelago.util import global_text_properties
+from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.toonbase import ToontownGlobals
 from toontown.fishing import FishGlobals
 from toontown.shtiker import FishPage
@@ -64,6 +67,8 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         self.startAngleNP = 0
         self.firstCast = 1
         self.fishPanel = None
+        self.pity: float = 0.0
+        self.pityLabel = None
         self.fsm = ClassicFSM.ClassicFSM('DistributedFishingSpot', [State.State('off', self.enterOff, self.exitOff, ['waiting',
           'distCasting',
           'fishing',
@@ -415,6 +420,37 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         if self.localToonFishing:
             self.fsm.request('waiting', [False])
 
+    def __updatePityLabel(self):
+        if not self.localToonFishing:
+            return
+
+        if not self.pityLabel:
+            return
+
+        if len(localAvatar.fishCollection) >= 70:
+            self.pityLabel.hide()
+            return
+
+        if self.pity < .10:
+            color = 'red'
+        elif self.pity < .20:
+            color = 'salmon'
+        elif self.pity < .50:
+            color = 'yellow'
+        elif self.pity < .75:
+            color = 'green'
+        else:
+            color = 'cyan'
+
+        clean_pity = int(round(self.pity * 100))
+
+        msg_parts = [
+            MinimalJsonMessagePart("Pity: "),
+            MinimalJsonMessagePart(f"{clean_pity}", color=color),
+        ]
+        formattedString = global_text_properties.get_raw_formatted_string(msg_parts)
+        self.pityLabel['text'] = formattedString
+
     def __showCastGui(self):
         self.__hideCastGui()
         self.__makeGui()
@@ -426,6 +462,7 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         self.castGui.reparentTo(base.a2dBottomCenterNs)
         self.castButton['state'] = DGG.NORMAL
         self.jar['text'] = str(self.av.getMoney())
+        self.__updatePityLabel()
         self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
         self.accept(localAvatar.uniqueName('fishTankChange'), self.__updateFishTankGui)
         target = base.cr.doFind('DistributedTarget')
@@ -612,6 +649,8 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         self.arrow.setColorScale(0.9, 0.9, 0.1, 0.7)
         self.arrow.hide()
         self.jar = DirectLabel(parent=self.castGui, relief=None, text=str(self.av.getMoney()), text_scale=0.16, text_fg=(0.95, 0.95, 0, 1), text_font=ToontownGlobals.getSignFont(), pos=(-1.12, 0, -1.3))
+        self.pityLabel = DirectLabel(self.castGui, relief=None, text=f"Pity: NA", text_scale=.1, text_fg=(1, 1, 1, 1), text_shadow=(0, 0, 0, 1),text_font=ToontownGlobals.getSignFont(), pos=(-.6, 0, -1.4))
+        self.__updatePityLabel()
         self.bucket = DirectLabel(parent=self.castGui, relief=None, text='', text_scale=0.09, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), pos=(1.14, 0, -1.33))
         self.__updateFishTankGui()
         self.itemGui = NodePath('itemGui')
@@ -713,6 +752,7 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         self.exitButton.destroy()
         self.castButton.destroy()
         self.jar.destroy()
+        self.pityLabel.destroy()
         self.bucket.destroy()
         self.itemFrame.destroy()
         self.itemGui.removeNode()
@@ -1062,3 +1102,10 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
                 if hoodId == ToontownGlobals.MyEstate:
                     return True
         return False
+
+    def setPity(self, pity: float):
+        print(f'setting pity to {pity}')
+        self.pity = pity
+
+        if self.localToonFishing:
+            self.__updatePityLabel()
