@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 from toontown.toonbase import TTLocalizer
 from math import ceil, pow
 import random
@@ -317,26 +319,14 @@ RARITY_INDEX = 2
 ZONE_LIST_INDEX = 3
 Anywhere = 1
 TTG = ToontownGlobals
-__fishDict = {0: ((1,
-      3,
-      1,
-      (Anywhere,)),
-     (1,
-      1,
-      4,
-      (TTG.ToontownCentral, Anywhere)),
-     (3,
-      5,
-      5,
-      (TTG.PunchlinePlace, TTG.TheBrrrgh)),
-     (3,
-      5,
-      3,
-      (TTG.SillyStreet, TTG.DaisyGardens)),
-     (1,
-      5,
-      2,
-      (TTG.LoopyLane, TTG.ToontownCentral))),
+__fishDict = {
+    0: (
+        (1, 3, 1, (Anywhere,)),
+        (1, 1, 4, (TTG.ToontownCentral, Anywhere)),
+        (3, 5, 5, (TTG.PunchlinePlace, TTG.TheBrrrgh)),
+        (3, 5, 3, (TTG.SillyStreet, TTG.DaisyGardens)),
+        (1, 5, 2, (TTG.LoopyLane, TTG.ToontownCentral))
+    ),
  2: ((2,
       6,
       1,
@@ -791,6 +781,18 @@ def getRandomFish():
     genus = random.choice(list(__fishDict.keys()))
     species = random.randint(0, len(__fishDict[genus]) - 1)
     return (genus, species)
+
+
+# Returns a list of tuples containing (genus, species)
+def getAllFish() -> List[Tuple[int, int]]:
+
+    fishies = []
+
+    for genusID, thisGenusSpeciesList in __fishDict.items():
+        for speciesID in range(len(thisGenusSpeciesList)):
+            fishies.append((genusID, speciesID))
+
+    return fishies
 
 
 def getPondInfo():

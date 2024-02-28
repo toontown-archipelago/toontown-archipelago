@@ -1,11 +1,18 @@
 import random
+from typing import Dict
 
 from direct.directnotify import DirectNotifyGlobal
 
+from toontown.archipelago.definitions import locations
+from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.fishing import FishGlobals
 from toontown.fishing.DistributedFishingPondAI import DistributedFishingPondAI
 from toontown.fishing.FishBase import FishBase
 from toontown.safezone.DistributedFishingSpotAI import DistributedFishingSpotAI
+
+
+# How much pity to add per rod (.01) = 1%
+FISHING_ROD_PITY = (0.02, 0.05, 0.10, 0.15, 0.25)
 
 
 class FishManagerAI:
@@ -14,6 +21,10 @@ class FishManagerAI:
     def __init__(self, air):
         self.air = air
         self.requestedFish = {}
+
+        # For every roll a toon does give them some pity, pity starts at 0 and increases slightly and is checked against
+        # a random.random() call
+        self.newSpeciesPity: Dict[int, float] = {}
 
     def generatePond(self, area, zoneId):
         # Generate our fishing pond.
@@ -35,6 +46,74 @@ class FishManagerAI:
         fishingSpot.generateWithRequired(zoneId)
         return fishingSpot
 
+    def attemptForceNewSpecies(self, av, zoneId):
+
+        print(f"giving pity species to {av.getName()}")
+
+        # How many times should we try to get a new catch
+        ATTEMPTS = 1000
+        fish = None
+
+        # Simulate some amount of casts in the current pond to prioritize the fish here first
+        for _ in range(ATTEMPTS):
+            success, genus, species, weight = FishGlobals.getRandomFishVitals(zoneId, av.getFishingRod())
+            fish = FishBase(genus, species, weight)
+            result = av.fishCollection.getCollectResult(fish)  # Simulate us catching the fish but don't actually
+
+            # If this would be a new entry return it and reset pity
+            if result == FishGlobals.COLLECT_NEW_ENTRY:
+                print(f"{av.getName()} found new species in {_} attempts")
+                self.newSpeciesPity[av.doId] = 0
+                return fish
+
+        print(f"{av.getName()} failed species pity in {ATTEMPTS} attempts, forcing random species")
+
+        # We failed to find a fish in their current pond, let's try just finding a random species
+        all_fish = FishGlobals.getAllFish()
+        random.shuffle(all_fish)
+
+        for fish_data in all_fish:
+            genus, species = fish_data
+            weight = FishGlobals.getRandomWeight(genus, species, rodIndex=av.getFishingRod())
+            fish = FishBase(genus, species, weight)
+
+            # Simulate a catch, is this new?
+            result = av.fishCollection.getCollectResult(fish)
+
+            # If this would be a new entry return it and reset pity
+            if result == FishGlobals.COLLECT_NEW_ENTRY:
+                print(f"{av.getName()} found new species after forcing all fish")
+                self.newSpeciesPity[av.doId] = 0
+                return fish
+
+        # We failed to find a fish in x rolls, just return the last one we got
+        assert fish is not None
+        return fish
+
+    def shouldForceNewSpecies(self, av):
+
+        # Maxed toons don't need this
+        if len(av.fishCollection) >= 70:
+            return False
+
+        rng = random.random()
+        threshold = self.newSpeciesPity.get(av.doId, 0)
+        print(f"{av.getName()} fishing pity check, need < {threshold}, got {rng}")
+        return rng < threshold
+
+    def addNewSpeciesPity(self, av):
+
+        rod = av.getFishingRod()  # Value from 0-4 representing how good our fishing rod is
+        # clamp to length of pity
+        rod = min(len(FISHING_ROD_PITY), rod)
+        rod = max(0, rod)
+        pity = FISHING_ROD_PITY[rod]
+
+        # Add the pity
+        oldPity = self.newSpeciesPity.get(av.doId, 0)
+        self.newSpeciesPity[av.doId] = oldPity + pity
+        print(f"{av.getName()} new pity: {self.newSpeciesPity[av.doId]}")
+
     def generateCatch(self, av, zoneId):
         # Generate our catch.
         if len(av.fishTank) >= av.getMaxFishTank():
@@ -44,12 +123,14 @@ class FishManagerAI:
         if caughtItem:
             return [FishGlobals.QuestItem, caughtItem, 0, 0]
 
+        itemType = FishGlobals.FishItem
         rand = random.random() * 100.0
         for cutoff in FishGlobals.SortedProbabilityCutoffs:
             if rand <= cutoff:
                 itemType = FishGlobals.ProbabilityDict[cutoff]
                 break
 
+        # Process if this av used commands to cheat a fish
         if av.doId in self.requestedFish:
             genus, species = self.requestedFish[av.doId]
             weight = FishGlobals.getRandomWeight(genus, species)
@@ -70,12 +151,24 @@ class FishManagerAI:
             del self.requestedFish[av.doId]
             return [itemType, genus, species, weight]
 
+        # Process the item we rolled
         if itemType == FishGlobals.FishItem:
             success, genus, species, weight = FishGlobals.getRandomFishVitals(zoneId, av.getFishingRod())
             fish = FishBase(genus, species, weight)
+
+            # Are we due to forcefully get a new species?
+            if self.shouldForceNewSpecies(av):
+                fish = self.attemptForceNewSpecies(av, zoneId)
+
+            # Catch the fish
             fishType = av.fishCollection.collectFish(fish)
+
+            self.addNewSpeciesPity(av)
+
+            # If we have a new species, reset pity
             if fishType == FishGlobals.COLLECT_NEW_ENTRY:
                 itemType = FishGlobals.FishItemNewEntry
+                self.newSpeciesPity[av.doId] = 0
             elif fishType == FishGlobals.COLLECT_NEW_RECORD:
                 itemType = FishGlobals.FishItemNewRecord
             else:
@@ -86,7 +179,7 @@ class FishManagerAI:
             av.fishTank.addFish(fish)
             tankNetList = av.fishTank.getNetLists()
             av.d_setFishTank(tankNetList[0], tankNetList[1], tankNetList[2])
-            return [itemType, genus, species, weight]
+            return [itemType, fish.getGenus(), fish.getSpecies(), fish.getWeight()]
         elif itemType == FishGlobals.BootItem:
             return [itemType, 0, 0, 0]
         else:
@@ -100,6 +193,8 @@ class FishManagerAI:
         curTrophies = len(av.fishingTrophies)
         av.addMoney(av.fishTank.getTotalValue())
         av.b_setFishTank([], [], [])
+        self.checkForFishingLocationCompletions(av)
+
         if trophies > curTrophies:
             # av.b_setMaxHp(av.getMaxHp() + trophies - curTrophies)
             # av.toonUp(av.getMaxHp())
@@ -107,3 +202,23 @@ class FishManagerAI:
             return True
 
         return False
+
+    def checkForFishingLocationCompletions(self, av):
+
+        thresholdToLocation = {
+            10: locations.FISHING_10_SPECIES,
+            20: locations.FISHING_20_SPECIES,
+            30: locations.FISHING_30_SPECIES,
+            40: locations.FISHING_40_SPECIES,
+            50: locations.FISHING_50_SPECIES,
+            60: locations.FISHING_60_SPECIES,
+            70: locations.FISHING_COMPLETE_ALBUM,
+        }
+
+        numFish = len(av.fishCollection)
+        for threshold, check in thresholdToLocation.items():
+            if numFish < threshold:
+                continue
+
+            check_id = ap_location_name_to_id(check)
+            av.addCheckedLocation(check_id)
