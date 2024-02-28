@@ -25,11 +25,11 @@
 #     'slateblue': COLOR_SLATEBLUE,
 #     'salmon': COLOR_SALMON
 # }
-
+from typing import List, NamedTuple
 
 from panda3d.core import TextProperties, TextPropertiesManager
 
-from toontown.archipelago.util.net_utils import JSONPartFormatter
+from toontown.archipelago.util.net_utils import JSONPartFormatter, JSONMessagePart
 
 __TEXT_PROPERTIES_MANAGER = TextPropertiesManager.getGlobalPtr()
 
@@ -140,4 +140,27 @@ __register_property('underline', TEXT_PROPERTIES_CODE_UNDERLINE, __TEXT_PROPERTI
 
 # Called publically to get the TextProperties property code from a json color code
 def get_property_code_from_json_code(json_color_code: str) -> str:
-    return __JSON_COLOR_CODE_TO_TEXT_PROPERTY[json_color_code]
+    return __JSON_COLOR_CODE_TO_TEXT_PROPERTY.get(json_color_code, TEXT_PROPERTIES_CODE_WHITE)
+
+
+class MinimalJsonMessagePart(NamedTuple):
+    message: str
+    color: str = 'white'  # Use a json color code, 'red' 'blue' 'salmon' etc.
+
+
+# Use this is you want to use the JSONMessagePart system to create strings to display in game. This method will skip
+# all the special formatting that AP messages need however, and will only utilize the 'text' and 'color' fields
+# There is no error checking for this method so be wary of the color ur passing in
+
+# Example usage:
+# msg = get_raw_formatted_string([
+#   MinimalJsonMessagePart(message='this is a '),
+#   MinimalJsonMessagePart(message='colorful', color='red'),
+#   MinimalJsonMessagePart(message='message ', color='blue'),
+#   MinimalJsonMessagePart(message=' :)', color='green'),
+# ])
+def get_raw_formatted_string(parts: List[MinimalJsonMessagePart]) -> str:
+    msg = ''
+    for part in parts:
+        msg += f"\1{get_property_code_from_json_code(part.color)}\1{part.message}\2"
+    return msg
