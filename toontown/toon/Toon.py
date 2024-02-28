@@ -2085,9 +2085,11 @@ class Toon(Avatar.Avatar, ToonHead):
         self.loop('neutral')
         self.setPlayRate(animMultiplier * 0.4, 'neutral')
         self.setChatAbsolute(SLEEP_STRING, CFThought)
-        if self == base.localAvatar:
-            print('adding timeout task')
-            taskMgr.doMethodLater(self.afkTimeout, self.__handleAfkTimeout, self.uniqueName('afkTimeout'))
+
+        # Disabling sleep bc we don't need to worry about afking on a private game :3
+        # if self == base.localAvatar:
+        #     print('adding timeout task')
+        #     taskMgr.doMethodLater(self.afkTimeout, self.__handleAfkTimeout, self.uniqueName('afkTimeout'))
         self.setActiveShadow(0)
 
     def __handleAfkTimeout(self, task):
