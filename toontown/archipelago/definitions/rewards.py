@@ -224,7 +224,9 @@ class CogDisguiseReward(APReward):
         self.dept: int = dept
 
     def apply(self, av: "DistributedToonAI"):
-        av.b_setCogParts(PartsPerSuitBitmasks[self.dept])
+        parts = av.getCogParts()
+        parts[self.dept] = PartsPerSuitBitmasks[self.dept]
+        av.b_setCogParts(parts)
         av.d_setSystemMessage(0, f"You were given your {self.ENUM_TO_NAME[self.dept]} disguise!")
 
 

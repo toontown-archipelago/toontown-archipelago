@@ -18,7 +18,19 @@ class ReceivedItemsPacket(ClientBoundPacketBase):
         self.items: List[NetworkItem] = json_data['items']
 
     def handle(self, client):
+
+        reward_index = self.index
         for item in self.items:
-            ap_reward: APReward = get_ap_reward_from_id(item.item)
-            ap_reward.apply(client.av)
-            self.debug(f"[AP Client] Received item {client.get_item_info(item.item)} from {client.get_slot_info(item.player).name}")
+
+            # Have we already received the index of this reward?
+            not_applied_yet = reward_index not in client.av.getReceivedItems()
+
+            # If we need to apply it go ahead and keep track on the toon that we applied this specific reward
+            if not_applied_yet:
+                ap_reward: APReward = get_ap_reward_from_id(item.item)
+                ap_reward.apply(client.av)
+                client.av.addReceivedItem(reward_index)
+                self.debug(f"[AP Client] Received item {client.get_item_info(item.item)} from {client.get_slot_info(item.player).name}")
+
+            # Incrememnt the reward index and go to the next one
+            reward_index += 1
