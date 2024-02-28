@@ -245,11 +245,11 @@ AvPropDamage = (
         ((0, 0), (0, 0))
     ),
     (   # Sound
-        ((4, 5), (Levels[3][0], Levels[3][1])),
-        ((7, 11), (Levels[3][1], Levels[3][2])),
-        ((12, 16), (Levels[3][2], Levels[3][3])),
-        ((17, 20), (Levels[3][3], Levels[3][4])),
-        ((22, 25), (Levels[3][4], Levels[3][5])),
+        ((2, 3), (Levels[3][0], Levels[3][1])),
+        ((5, 7), (Levels[3][1], Levels[3][2])),
+        ((9, 11), (Levels[3][2], Levels[3][3])),
+        ((14, 16), (Levels[3][3], Levels[3][4])),
+        ((20, 25), (Levels[3][4], Levels[3][5])),
         ((35, 60), (Levels[3][5], Levels[3][6])),
         ((80, 80), (Levels[3][6], MaxSkill))
     ),
