@@ -11,7 +11,7 @@ class ConnectPacket(ServerBoundPacketBase):
     ITEMS_HANDLING_FLAG_GET_SENT_STARTING_ITEMS = 0b100  # Have our starting inventory sent
 
     # Default behavior, send, receive items and get sent starting inventory
-    ITEMS_HANDLING_ALL_FLAGS = ITEMS_HANDLING_FLAG_SEND_ITEMS | ITEMS_HANDLING_FLAG_SEND_ITEMS | ITEMS_HANDLING_FLAG_GET_SENT_STARTING_ITEMS
+    ITEMS_HANDLING_ALL_FLAGS = ITEMS_HANDLING_FLAG_SEND_ITEMS | ITEMS_HANDLING_FLAG_RECEIVE_ITEMS | ITEMS_HANDLING_FLAG_GET_SENT_STARTING_ITEMS
 
     # Signifies that this client is a reference client, its usefulness is mostly in debugging to compare client
     # behaviours more easily.

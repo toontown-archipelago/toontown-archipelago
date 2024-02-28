@@ -67,6 +67,7 @@ ITEM_CBHQ_TELEPORT = "CBHQ Teleport Access"
 ITEM_LBHQ_TELEPORT = "LBHQ Teleport Access"
 ITEM_BBHQ_TELEPORT = "BBHQ Teleport Access"
 
+ITEM_TTC_HQ_ACCESS = "Toontown Central HQ Clearance"
 ITEM_DD_HQ_ACCESS = "Donald's Dock HQ Clearance"
 ITEM_DG_HQ_ACCESS = "Daisy's Gardens HQ Clearance"
 ITEM_MML_HQ_ACCESS = "Minnie's Melodyland HQ Clearance"
@@ -162,6 +163,7 @@ ITEM_DEFINITIONS: Dict[str, ToontownItemDefinition] = {
     ITEM_BBHQ_TELEPORT: ToontownItemDefinition(ITEM_BBHQ_TELEPORT, BASE_ITEM_ID+33, ItemClassification.useful, quantity=1),
 
     # Tasking Access (Playground HQ entry access)
+    ITEM_TTC_HQ_ACCESS: ToontownItemDefinition(ITEM_TTC_HQ_ACCESS, BASE_ITEM_ID+59, ItemClassification.progression, quantity=0),
     ITEM_DD_HQ_ACCESS: ToontownItemDefinition(ITEM_DD_HQ_ACCESS, BASE_ITEM_ID+34, ItemClassification.progression, quantity=1),
     ITEM_DG_HQ_ACCESS: ToontownItemDefinition(ITEM_DG_HQ_ACCESS, BASE_ITEM_ID+35, ItemClassification.progression, quantity=1),
     ITEM_MML_HQ_ACCESS: ToontownItemDefinition(ITEM_MML_HQ_ACCESS, BASE_ITEM_ID+36, ItemClassification.progression, quantity=1),

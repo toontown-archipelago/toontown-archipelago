@@ -178,31 +178,31 @@ class TaskAccessReward(APReward):
 class FacilityAccessReward(APReward):
 
     FACILITY_ID_TO_DISPLAY = {
-        ToontownGlobals.SellbotFactoryInt: "Front Factory",
-        ToontownGlobals.SellbotFactoryIntS: "Side Factory",
+        FADoorCodes.FRONT_FACTORY_ACCESS_MISSING: "Front Factory",
+        FADoorCodes.SIDE_FACTORY_ACCESS_MISSING: "Side Factory",
 
-        ToontownGlobals.CashbotMintIntA: "Coin Mint",
-        ToontownGlobals.CashbotMintIntB: "Dollar Mint",
-        ToontownGlobals.CashbotMintIntC: "Bullion Mint",
+        FADoorCodes.COIN_MINT_ACCESS_MISSING: "Coin Mint",
+        FADoorCodes.DOLLAR_MINT_ACCESS_MISSING: "Dollar Mint",
+        FADoorCodes.BULLION_MINT_ACCESS_MISSING: "Bullion Mint",
 
-        ToontownGlobals.LawbotStageIntA: "Office A",
-        ToontownGlobals.LawbotStageIntB: "Office B",
-        ToontownGlobals.LawbotStageIntC: "Office C",
-        ToontownGlobals.LawbotStageIntD: "Office D",
+        FADoorCodes.OFFICE_A_ACCESS_MISSING: "Office A",
+        FADoorCodes.OFFICE_B_ACCESS_MISSING: "Office B",
+        FADoorCodes.OFFICE_C_ACCESS_MISSING: "Office C",
+        FADoorCodes.OFFICE_D_ACCESS_MISSING: "Office D",
 
-        ToontownGlobals.BossbotCountryClubIntA: "Front Three",
-        ToontownGlobals.BossbotCountryClubIntB: "Middle Three",
-        ToontownGlobals.BossbotCountryClubIntC: "Back Three",
+        FADoorCodes.FRONT_THREE_ACCESS_MISSING: "Front Three",
+        FADoorCodes.MIDDLE_SIX_ACCESS_MISSING: "Middle Three",
+        FADoorCodes.BACK_NINE_ACCESS_MISSING: "Back Three",
     }
 
-    def __init__(self, facilityID):
-        self.facilityID = facilityID
+    def __init__(self, key):
+        self.key = key
 
     def apply(self, av: "DistributedToonAI"):
         # Get the key ID for this playground
-        key = FADoorCodes.FACILITY_TO_ACCESS_CODE[self.facilityID]
-        av.addAccessKey(key)
-        av.d_setSystemMessage(0, f"You have been given a {self.FACILITY_ID_TO_DISPLAY[self.facilityID]} key and can now infiltrate this facility!")
+        av.addAccessKey(self.key)
+        key_name = self.FACILITY_ID_TO_DISPLAY.get(self.key, f"UNKNOWN-KEY[{self.key}]")
+        av.d_setSystemMessage(0, f"You have been given a {key_name} key and can now infiltrate this facility!")
 
 
 class CogDisguiseReward(APReward):

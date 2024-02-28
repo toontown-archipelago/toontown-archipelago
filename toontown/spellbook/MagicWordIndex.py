@@ -31,6 +31,9 @@ import time
 import random
 import json
 
+from ..archipelago.definitions import locations
+from ..archipelago.definitions.locations import ToontownLocationDefinition
+
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
 DEBUG_LOG = None
@@ -3535,6 +3538,28 @@ class SetAccessKeys(MagicWord):
             toon.b_setAccessKeys([_ for _ in range(100)])  # Kinda hacky but meh i don't think im adding 75 more locks lol
 
         return f"{toon.getName()}'s keys: {toon.getAccessKeys()}"
+
+
+class Archipelago(MagicWord):
+    aliases = ['ap', 'archi']
+    desc = "Commands to force certain behavior with an AP session, does not work unless an active AP session is active"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [('operation', str, True)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        operation = args[0].lower()
+
+        if not toon.archipelago_session:
+            return f"Toon {toon.getName()} does not have an active AP session!"
+
+        # Add a random location check
+        if operation in ('check', 'addcheck'):
+            check: ToontownLocationDefinition = random.choice(list(locations.LOCATION_DEFINITIONS.values()))
+            toon.addCheckedLocation(check.unique_id)
+            return f"Gave {toon.getName()} the {check.unique_name} check!"
+
+        return f"Invalid argument, valid arguments are: check"
+
 
 
 # Instantiate all classes defined here to register them.

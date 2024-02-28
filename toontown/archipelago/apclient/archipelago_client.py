@@ -11,8 +11,9 @@ from websockets import ConnectionClosed
 from websockets.sync.client import connect, ClientConnection
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
-from toontown.archipelago.util import net_utils
+from toontown.archipelago.util import net_utils, global_text_properties
 from toontown.archipelago.util.data_package import DataPackage
+from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart, get_raw_formatted_string
 from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot
 from toontown.archipelago.packets import packet_registry
 from toontown.archipelago.packets.archipelago_packet_base import ArchipelagoPacketBase
@@ -165,7 +166,10 @@ class ArchipelagoClient:
         except ConnectionRefusedError:
             self.av.d_sendArchipelagoMessage(f"[AP Client] Socket connection to archipelago server {address} failed, either wrong address or server is not running")
         except Exception as e:
-            self.av.d_sendArchipelagoMessage(f"[AP Client] Unhandled exception {e}, disconnecting from Archipelago server")
+            self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"Archipelago connection killed to prevent a district reset.", color='red')]))
+            self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"[SEVERE ERROR] Unhandled exception: {e}", color='red')]))
+            self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"Check district(ai) logs for full traceback.", color='red')]))
+            self.av.d_sendArchipelagoMessage('You may use !connect to reconnect!')
             traceback.print_exc()
 
         if self.socket:
@@ -191,7 +195,7 @@ class ArchipelagoClient:
         connect_packet.uuid = self.uuid
         connect_packet.version = net_utils.ARCHIPELAGO_CLIENT_VERSION
         connect_packet.items_handling = ConnectPacket.ITEMS_HANDLING_ALL_FLAGS
-        connect_packet.tags = [ConnectPacket.TAG_AP]  # todo add support for deathlink
+        connect_packet.tags = []  # todo add support for deathlink
         connect_packet.slot_data = True
         self.send_packet(connect_packet)
 
