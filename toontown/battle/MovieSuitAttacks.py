@@ -16,11 +16,23 @@ from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 notify = DirectNotifyGlobal.directNotify.newCategory('MovieSuitAttacks')
 
+
+def updateToonNeutralAnims(toon):
+    if toon.hp <= 0:
+        toon.sadEyes()
+        toon.loop('sad-neutral')
+    else:
+        toon.normalEyes()
+        toon.loop('neutral')
+
+    toon.blinkEyes()
+
 def __doDamage(toon, dmg, died):
     if dmg > 0 and toon.hp != None:
         toon.takeDamage(dmg)
-    return
-
+        if died:
+            toon.sadEyes()
+            toon.blinkEyes()
 
 def __showProp(prop, parent, pos, hpr = None, scale = None):
     prop.reparentTo(parent)
@@ -255,17 +267,23 @@ def doSuitAttack(attack):
     battle = attack['battle']
     target = attack['target']
     groupStatus = attack['group']
+    toons = []
     if groupStatus == ATK_TGT_SINGLE:
         toon = target['toon']
-        toonHprTrack = Sequence(Func(toon.headsUp, battle, MovieUtil.PNT3_ZERO), Func(toon.loop, 'neutral'))
+        toons.append(toon)
+        toonHprTrack = Sequence(Func(toon.headsUp, battle, MovieUtil.PNT3_ZERO), Func(updateToonNeutralAnims, toon))
     else:
         toonHprTrack = Parallel()
         for t in target:
             toon = t['toon']
-            toonHprTrack.append(Sequence(Func(toon.headsUp, battle, MovieUtil.PNT3_ZERO), Func(toon.loop, 'neutral')))
+            toons.append(toon)
+            toonHprTrack.append(Sequence(Func(toon.headsUp, battle, MovieUtil.PNT3_ZERO), Func(updateToonNeutralAnims, toon)))
 
     suit = attack['suit']
     neutralIval = Func(suit.loop, 'neutral')
+    for toon in toons:
+        suitTrack.append(Func(updateToonNeutralAnims, toon))
+
     suitTrack = Sequence(suitTrack, neutralIval, toonHprTrack)
     suitPos = suit.getPos(battle)
     resetPos, resetHpr = battle.getActorPosHpr(suit)
@@ -574,7 +592,7 @@ def getToonDodgeTrack(target, dodgeDelay, dodgeAnimNames, splicedDodgeAnims, sho
 
     else:
         toonTrack.append(getSplicedAnimsTrack(splicedDodgeAnims, actor=toon))
-    toonTrack.append(Func(toon.loop, 'neutral'))
+    toonTrack.append(Func(updateToonNeutralAnims, toon))
     return toonTrack
 
 
@@ -601,9 +619,9 @@ def getAllyToonsDodgeParallel(target):
         soundEffect = globalBattleSoundCache.getSound('AV_jump_to_side.ogg')
     toonTracks = Parallel()
     for t in toonDodgeList:
-        toonTracks.append(Sequence(ActorInterval(t, sidestepAnim), Func(t.loop, 'neutral')))
+        toonTracks.append(Sequence(ActorInterval(t, sidestepAnim), Func(updateToonNeutralAnims, t)))
 
-    toonTracks.append(Sequence(ActorInterval(toon, sidestepAnim), Func(toon.loop, 'neutral')))
+    toonTracks.append(Sequence(ActorInterval(toon, sidestepAnim), Func(updateToonNeutralAnims, toon)))
     toonTracks.append(Sequence(Wait(0.5), SoundInterval(soundEffect, node=toon)))
     return toonTracks
 
@@ -711,9 +729,12 @@ def getToonTakeDamageTrack(toon, died, dmg, delay, damageAnimNames = None, splic
         splicedAnims = getSplicedAnimsTrack(splicedDamageAnims, actor=toon)
         toonTrack.append(splicedAnims)
         indicatorTrack = Sequence(Wait(delay + showDamageExtraTime), Func(__doDamage, toon, dmg, died))
-    toonTrack.append(Func(toon.loop, 'neutral'))
     if died:
-        toonTrack.append(Wait(5.0))
+        toonTrack.append(toon.getPartialDeathInterval())
+        toonTrack.append(Func(toon.loop, 'sad-neutral'))
+
+    toonTrack.append(Func(updateToonNeutralAnims, toon))
+
     return Parallel(toonTrack, indicatorTrack)
 
 

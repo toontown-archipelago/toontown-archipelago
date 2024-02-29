@@ -652,9 +652,9 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
 
     def __handleDied(self, toon):
         self.notify.warning('handleDied() - toon: %d' % toon.doId)
-        if toon == base.localAvatar:
-            self.d_toonDied(toon.doId)
-            self.cleanupBattle()
+        # if toon == base.localAvatar:
+        #     self.d_toonDied(toon.doId)
+        #     self.cleanupBattle()
 
     def delayDeleteMembers(self):
         membersKeep = []
@@ -930,7 +930,11 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
             for toon in self.activeToons:
                 toonPos, toonHpr = self.getActorPosHpr(toon)
                 toon.setPosHpr(self, toonPos, toonHpr)
-                toon.loop('neutral')
+
+                if toon.hp > 0:
+                    toon.loop('neutral')
+                else:
+                    toon.loop('sad-neutral')
 
         if self.fsm.getCurrentState().getName() == 'WaitForInput' and self.localToonActive() and self.localToonJustJoined == 1:
             self.notify.debug('makeAvsActive() - local toon just joined')
@@ -1068,6 +1072,11 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         if self.needAdjustTownBattle == 1:
 
             self.__adjustTownBattle()
+
+        for toon in self.toons:
+            if toon.hp <= 0:
+                toon.loop('sad-neutral')
+
         return None
 
     def exitWaitForInput(self):
@@ -1302,7 +1311,11 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         adjustTrack.append(Func(av.headsUp, self, destPos))
         adjustTrack.append(LerpPosInterval(av, adjustTime, destPos, other=self))
         adjustTrack.append(Func(av.setHpr, self, destHpr))
-        adjustTrack.append(Func(av.loop, 'neutral'))
+
+        if toon and av.hp <= 0:
+            adjustTrack.append(Func(av.loop, 'sad-neutral'))
+        else:
+            adjustTrack.append(Func(av.loop, 'neutral'))
         return adjustTrack
 
     def __adjust(self, ts, callback):
@@ -1340,14 +1353,14 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
                 destPos = point[0]
                 if pos != destPos:
                     destHpr = VBase3(point[1], 0.0, 0.0)
-                    adjustTrack.append(self.createAdjustInterval(toon, destPos, destHpr))
+                    adjustTrack.append(self.createAdjustInterval(toon, destPos, destHpr, toon=1))
                 index += 1
 
             for toon in self.pendingToons:
                 point = self.toonPoints[numToons][index]
                 destPos = point[0]
                 destHpr = VBase3(point[1], 0.0, 0.0)
-                adjustTrack.append(self.createAdjustInterval(toon, destPos, destHpr))
+                adjustTrack.append(self.createAdjustInterval(toon, destPos, destHpr, toon=1))
                 index += 1
 
         if len(adjustTrack) > 0:

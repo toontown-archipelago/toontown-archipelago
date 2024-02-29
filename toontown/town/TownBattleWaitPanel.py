@@ -30,6 +30,11 @@ class TownBattleWaitPanel(StateData.StateData):
             self.frame['text'] = TTLocalizer.TownSoloBattleWaitTitle
             self.frame['text_pos'] = (0, -0.05, 0)
             self.frame['text_scale'] = 0.13
+
+        # If we are dead, the back button will work as a run button
+        if localAvatar.hp <= 0:
+            self.backButton['text'] = "RUN"
+
         self.frame.show()
 
     def exit(self):

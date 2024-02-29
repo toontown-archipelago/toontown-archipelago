@@ -196,7 +196,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.immortalMode = False
         self.unlimitedGags = False
         self.instaKill = False
-        self.accept('f10', self.openTeleportGUI)
+        self.accept('f10', self.openTeleportGUI)  # TODO only enable if cheats are enabled
         self.overheadLaffMeter = None
 
         self.baseGagSkillMultiplier = 1
@@ -251,9 +251,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         try:
             self.DistributedToon_deleted
         except:
-            if self.overheadLaffMeter:
-                self.overheadLaffMeter.destroy()
-                self.overheadLaffMeter = None
+            self.destroyOverheadLaffMeter()
             self.DistributedToon_deleted = 1
             del self.safeZonesVisited
             DistributedPlayer.DistributedPlayer.delete(self)
@@ -271,11 +269,19 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.accept('clientCleanup', self._handleClientCleanup)
         return
 
-    def announceGenerate(self):
-        DistributedPlayer.DistributedPlayer.announceGenerate(self)
-        if self.animFSM.getCurrentState().getName() == 'off':
-            self.setAnimState('neutral')
-        self._startZombieCheck()
+    def setHp(self, hitPoints):
+        if not self.overheadLaffMeter:
+            self.makeOverheadLaffMeter()
+        super().setHp(hitPoints)
+
+    def setMaxHp(self, hitPoints):
+        if not self.overheadLaffMeter:
+            self.makeOverheadLaffMeter()
+        super().setMaxHp(hitPoints)
+
+    def makeOverheadLaffMeter(self):
+
+        self.destroyOverheadLaffMeter()
 
         if self.maxHp and self.hp:
             self.overheadLaffMeter = LaffMeter(self.style, self.hp, self.maxHp)
@@ -285,16 +291,20 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             self.overheadLaffMeter.setScale(1.35)
             self.overheadLaffMeter.fixOverhead()
             self.overheadLaffMeter.adjustFace(self.hp, self.maxHp)
-
-    def setHp(self, hp):
-        super(DistributedToon, self).setHp(hp)
-        if self.overheadLaffMeter:
             self.overheadLaffMeter.start()
 
-    def setMaxHp(self, hp):
-        super(DistributedToon, self).setMaxHp(hp)
+    def destroyOverheadLaffMeter(self):
         if self.overheadLaffMeter:
-            self.overheadLaffMeter.start()
+            self.overheadLaffMeter.stop()
+            self.overheadLaffMeter.destroy()
+            self.overheadLaffMeter = None
+
+    def announceGenerate(self):
+        DistributedPlayer.DistributedPlayer.announceGenerate(self)
+        if self.animFSM.getCurrentState().getName() == 'off':
+            self.setAnimState('neutral')
+        self._startZombieCheck()
+        self.makeOverheadLaffMeter()
 
     def _handleClientCleanup(self):
         if self.track != None:

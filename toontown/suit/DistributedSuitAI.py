@@ -61,6 +61,7 @@ class DistributedSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
         toonId = self.air.getAvatarIdFromSender()
         if self.air.doId2do.get(toonId) == None:
             return
+        toon = self.air.doId2do.get(toonId)
         if self.pathState == 3:
             pass
         elif self.pathState != 1:
@@ -78,7 +79,7 @@ class DistributedSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
             return
         self.confrontPos = Point3(x, y, z)
         self.confrontHpr = Vec3(h, p, r)
-        if self.sp.requestBattle(self.zoneId, self, toonId):
+        if toon.hp > 0 and self.sp.requestBattle(self.zoneId, self, toonId):
             if self.notify.getDebug():
                 self.notify.debug('Suit %d requesting battle in zone %d' % (self.getDoId(), self.zoneId))
         else:

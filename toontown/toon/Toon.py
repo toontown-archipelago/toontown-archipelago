@@ -1935,6 +1935,28 @@ class Toon(Avatar.Avatar, ToonHead):
     def exitTeleportedOut(self):
         pass
 
+    # Gets the animation for a toon dying, but only enough of it to immediately transition into the neutral sad state
+    def getPartialDeathInterval(self):
+        sound = loader.loadSfx('phase_5/audio/sfx/ENC_Lose.ogg')
+        if hasattr(self, 'uniqueName'):
+            trackName = self.uniqueName('died')
+        else:
+            trackName = 'died'
+
+        ival = Sequence(
+            Func(Emote.globalEmote.disableBody, self),
+            Func(self.sadEyes),
+            Func(self.blinkEyes),
+            Track(
+                (0, ActorInterval(self, 'lose', endFrame=90)),
+                (1.1, SoundInterval(sound, node=self)),
+            ),
+            Func(Emote.globalEmote.releaseBody, self),
+            Func(self.finishDied),
+            name=trackName
+        )
+        return ival
+
     def getDiedInterval(self, autoFinishTrack = 1):
         sound = loader.loadSfx('phase_5/audio/sfx/ENC_Lose.ogg')
         if hasattr(self, 'uniqueName'):
@@ -1945,24 +1967,29 @@ class Toon(Avatar.Avatar, ToonHead):
         return ival
 
     def enterDied(self, animMultiplier = 1, ts = 0, callback = None, extraArgs = []):
+
         if self.ghostMode:
             if callback:
                 callback(*extraArgs)
             return
+
         if self.isDisguised:
             self.takeOffSuit()
+
         self.playingAnim = 'lose'
         Emote.globalEmote.disableAll(self, 'enterDied')
         if self.isLocal():
             autoFinishTrack = 0
         else:
             autoFinishTrack = 1
+
         if hasattr(self, 'jumpLandAnimFixTask') and self.jumpLandAnimFixTask:
             self.jumpLandAnimFixTask.remove()
             self.jumpLandAnimFixTask = None
-        self.track = self.getDiedInterval(autoFinishTrack)
+        self.track = self.getPartialDeathInterval()
         if callback:
             self.track = Sequence(self.track, Func(callback, *extraArgs), autoFinish=autoFinishTrack)
+
         self.track.start(ts)
         self.setActiveShadow(0)
         return
@@ -1973,8 +2000,6 @@ class Toon(Avatar.Avatar, ToonHead):
             self.track.finish()
             DelayDelete.cleanupDelayDeletes(self.track)
             self.track = None
-        if hasattr(self, 'animFSM'):
-            self.animFSM.request('TeleportedOut')
         if callback:
             callback(*extraArgs)
         return

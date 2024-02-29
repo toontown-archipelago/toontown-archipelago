@@ -103,8 +103,7 @@ def __healToon(toon, hp, ineffective, hasInteractivePropHealBonus):
             laughter = random.choice(TTLocalizer.MovieHealLaughterHits2)
         else:
             laughter = random.choice(TTLocalizer.MovieHealLaughterHits1)
-    toon.setChatAbsolute(laughter, CFSpeech | CFTimeout)
-    toon.clearChat()
+    toon.playDialogueForString(laughter)
     if hp > 0 and toon.hp != None:
         toon.toonUp(hp, hasInteractivePropHealBonus)
     else:
@@ -172,7 +171,14 @@ def __healTickle(heal, hasInteractivePropHealBonus):
     dFeatherScaleDown = 0.5
     featherTrack = Parallel(MovieUtil.getActorIntervals(feathers, 'feather'), Sequence(Wait(tFeatherScaleUp), Func(MovieUtil.showProps, feathers, hands), Func(scaleFeathers, feathers), MovieUtil.getScaleIntervals(feathers, dFeatherScaleUp, MovieUtil.PNT3_NEARZERO, feathers[0].getScale)), Sequence(Wait(toon.getDuration('tickle') - dFeatherScaleDown), MovieUtil.getScaleIntervals(feathers, dFeatherScaleDown, None, MovieUtil.PNT3_NEARZERO)))
     tHeal = 3.0
-    mtrack = Parallel(featherTrack, ActorInterval(toon, 'tickle'), __getSoundTrack(level, 1, node=toon), Sequence(Wait(tHeal), Func(__healToon, target, hp, ineffective, hasInteractivePropHealBonus), ActorInterval(target, 'cringe', startTime=20.0 / target.getFrameRate('cringe'))))
+
+    toonWasRevived = target.hp <= 0 < hp
+    targetReactionInterval = Sequence(ActorInterval(target, 'confused')) if toonWasRevived else Sequence(ActorInterval(target, 'cringe', startTime=20.0 / target.getFrameRate('cringe')))
+    targetReactionInterval.append(Func(target.normalEyes))
+    targetReactionInterval.append(Func(target.blinkEyes))
+    targetReactionInterval.append(Func(target.loop, 'neutral'))
+
+    mtrack = Parallel(featherTrack, ActorInterval(toon, 'tickle'), __getSoundTrack(level, 1, node=toon), Sequence(Wait(tHeal), Func(__healToon, target, hp, ineffective, hasInteractivePropHealBonus), targetReactionInterval))
     track.append(mtrack)
     track.append(Func(MovieUtil.removeProps, feathers))
 
@@ -181,7 +187,6 @@ def __healTickle(heal, hasInteractivePropHealBonus):
     else:
         track.append(__resetToBase(heal))
 
-    track.append(Func(target.clearChat))
     return track
 
 
@@ -225,19 +230,30 @@ def __healJoke(heal, hasInteractivePropHealBonus):
     tracks.append(Sequence(Wait(tSpeakSetup), Func(toon.setChatAbsolute, joke[0], CFSpeech | CFTimeout)))
     tracks.append(Sequence(Wait(tSpeakPunchline), Func(toon.setChatAbsolute, joke[1], CFSpeech | CFTimeout)))
     reactTrack = Sequence(Wait(tTargetReact))
+    revivesTrack = Parallel()
     for target in targets:
         targetToon = target['toon']
         hp = target['hp']
+
+        toonWasRevived = targetToon.hp <= 0 < hp
+        if toonWasRevived:
+            reviveTrack = Sequence()
+            reviveTrack.append(ActorInterval(targetToon, 'confused'))
+            reviveTrack.append(Func(targetToon.normalEyes))
+            reviveTrack.append(Func(targetToon.blinkEyes))
+            reviveTrack.append(Func(targetToon.loop, 'neutral'))
+            revivesTrack.append(reviveTrack)
+
         reactTrack.append(Func(__healToon, targetToon, hp, ineffective, hasInteractivePropHealBonus))
 
+    reactTrack.append(revivesTrack)
     reactTrack.append(Wait(dTargetLaugh))
-    for target in targets:
-        targetToon = target['toon']
-        reactTrack.append(Func(targetToon.clearChat))
 
     tracks.append(reactTrack)
     if npcId != 0:
         track.append(Sequence(Wait(tRunBack), Func(toon.clearChat), *MovieNPCSOS.teleportOut(heal, toon)))
+    else:
+        track.append(Func(toon.loop, 'neutral'))
 
     track.append(tracks)
     return track
@@ -281,11 +297,21 @@ def __healSmooch(heal, hasInteractivePropHealBonus):
     else:
         smoochTrack.append(__resetToBase(heal))
 
+    reactionTrack = Sequence()
+
+    toonWasRevived = target.hp <= 0 < hp
+    if toonWasRevived:
+        reactionTrack.append(ActorInterval(target, 'confused'))
+        reactionTrack.append(Func(target.normalEyes))
+        reactionTrack.append(Func(target.blinkEyes))
+        reactionTrack.append(Func(target.loop, 'neutral'))
+    else:
+        reactionTrack.append(ActorInterval(target, 'conked'))
+
     mtrack = Parallel(
-        lipstickTrack, lipsTrack, __getSoundTrack(level, 2, node=toon), smoochTrack, Sequence(Wait(delay), ActorInterval(target, 'conked')), Sequence(Wait(delay), Func(__healToon, target, hp, ineffective, hasInteractivePropHealBonus))
+        lipstickTrack, lipsTrack, __getSoundTrack(level, 2, node=toon), smoochTrack, Sequence(Wait(delay), reactionTrack), Sequence(Wait(delay), Func(__healToon, target, hp, ineffective, hasInteractivePropHealBonus))
     )
     track.append(mtrack)
-    track.append(Func(target.clearChat))
     return track
 
 
@@ -311,14 +337,27 @@ def __healDance(heal, hasInteractivePropHealBonus):
     delay = 3.0
     first = 1
     targetTrack = Sequence()
+    reviveTrack = Parallel()
     for target in targets:
         targetToon = target['toon']
         hp = target['hp']
+        toonWasRevived = targetToon.hp <= 0 < hp
         reactIval = Func(__healToon, targetToon, hp, ineffective, hasInteractivePropHealBonus)
         if first:
             targetTrack.append(Wait(delay))
             first = 0
         targetTrack.append(reactIval)
+
+        if toonWasRevived:
+            thisToonRevive = Sequence()
+            thisToonRevive.append(ActorInterval(targetToon, 'confused'))
+            thisToonRevive.append(Func(targetToon.normalEyes))
+            thisToonRevive.append(Func(targetToon.blinkEyes))
+            thisToonRevive.append(Func(targetToon.loop, 'neutral'))
+            reviveTrack.append(thisToonRevive)
+
+
+    targetTrack.append(reviveTrack)
 
     hat = globalPropPool.getProp('hat')
     hat2 = MovieUtil.copyProp(hat)
@@ -341,10 +380,6 @@ def __healDance(heal, hasInteractivePropHealBonus):
             track.append(__returnToBase(heal))
         else:
             track.append(__resetToBase(heal))
-
-    for target in targets:
-        targetToon = target['toon']
-        track.append(Func(targetToon.clearChat))
 
     return track
 
@@ -376,14 +411,22 @@ def __healSprinkle(heal, hasInteractivePropHealBonus):
         toon.headsUp(render, targetPoint)
 
     delay = 2.5
-    mtrack = Parallel(__getPartTrack(sprayEffect, 1.5, 0.5, [sprayEffect, toon, 0]), __getPartTrack(dropEffect, 1.9, 2.0, [dropEffect, target, 0]), __getPartTrack(explodeEffect, 2.7, 1.0, [explodeEffect, toon, 0]), __getPartTrack(poofEffect, 3.4, 1.0, [poofEffect, target, 0]), __getPartTrack(wallEffect, 4.05, 1.2, [wallEffect, toon, 0]), __getSoundTrack(level, 2, duration=4.1, node=toon), Sequence(Func(face90), ActorInterval(toon, 'sprinkle-dust')), Sequence(Wait(delay), Func(__healToon, target, hp, ineffective, hasInteractivePropHealBonus)))
+
+    toonWasRevived = target.hp <= 0 < hp
+    reactTrack = Sequence()
+    if toonWasRevived:
+        reactTrack.append(ActorInterval(target, 'confused'))
+        reactTrack.append(Func(target.normalEyes))
+        reactTrack.append(Func(target.blinkEyes))
+        reactTrack.append(Func(target.loop, 'neutral'))
+
+    mtrack = Parallel(__getPartTrack(sprayEffect, 1.5, 0.5, [sprayEffect, toon, 0]), __getPartTrack(dropEffect, 1.9, 2.0, [dropEffect, target, 0]), __getPartTrack(explodeEffect, 2.7, 1.0, [explodeEffect, toon, 0]), __getPartTrack(poofEffect, 3.4, 1.0, [poofEffect, target, 0]), __getPartTrack(wallEffect, 4.05, 1.2, [wallEffect, toon, 0]), __getSoundTrack(level, 2, duration=4.1, node=toon), Sequence(Func(face90), ActorInterval(toon, 'sprinkle-dust')), Sequence(Wait(delay), Func(__healToon, target, hp, ineffective, hasInteractivePropHealBonus), reactTrack))
     track.append(mtrack)
     if toon != target:
         track.append(__returnToBase(heal))
     else:
         track.append(__resetToBase(heal))
 
-    track.append(Func(target.clearChat))
     return track
 
 
@@ -410,14 +453,26 @@ def __healJuggle(heal, hasInteractivePropHealBonus):
     delay = 4.0
     first = 1
     targetTrack = Sequence()
+    reviveTrack = Parallel()
     for target in targets:
         targetToon = target['toon']
         hp = target['hp']
+        toonWasRevived = targetToon.hp <= 0 < hp
         reactIval = Func(__healToon, targetToon, hp, ineffective, hasInteractivePropHealBonus)
         if first == 1:
             targetTrack.append(Wait(delay))
             first = 0
         targetTrack.append(reactIval)
+
+        if toonWasRevived:
+            thisToonRevive = Sequence()
+            thisToonRevive.append(ActorInterval(targetToon, 'confused'))
+            thisToonRevive.append(Func(targetToon.normalEyes))
+            thisToonRevive.append(Func(targetToon.blinkEyes))
+            thisToonRevive.append(Func(targetToon.loop, 'neutral'))
+            reviveTrack.append(thisToonRevive)
+
+    targetTrack.append(reviveTrack)
 
     cube = globalPropPool.getProp('cubes')
     cube2 = MovieUtil.copyProp(cube)
@@ -433,10 +488,6 @@ def __healJuggle(heal, hasInteractivePropHealBonus):
             track.append(__returnToBase(heal))
         else:
             track.append(__resetToBase(heal))
-
-    for target in targets:
-        targetToon = target['toon']
-        track.append(Func(targetToon.clearChat))
 
     return track
 
@@ -464,14 +515,26 @@ def __healDive(heal, hasInteractivePropHealBonus):
     delay = 7.0
     first = 1
     targetTrack = Sequence()
+    reviveTrack = Parallel()
     for target in targets:
         targetToon = target['toon']
         hp = target['hp']
+        toonWasRevived = targetToon.hp <= 0 < hp
         reactIval = Func(__healToon, targetToon, hp, ineffective, hasInteractivePropHealBonus)
         if first == 1:
             targetTrack.append(Wait(delay))
             first = 0
         targetTrack.append(reactIval)
+
+        if toonWasRevived:
+            thisToonRevive = Sequence()
+            thisToonRevive.append(ActorInterval(targetToon, 'confused'))
+            thisToonRevive.append(Func(targetToon.normalEyes))
+            thisToonRevive.append(Func(targetToon.blinkEyes))
+            thisToonRevive.append(Func(targetToon.loop, 'neutral'))
+            reviveTrack.append(thisToonRevive)
+
+    targetTrack.append(reviveTrack)
 
     thisBattle = heal['battle']
     toonsInBattle = thisBattle.toons
@@ -521,10 +584,6 @@ def __healDive(heal, hasInteractivePropHealBonus):
         track.append(MovieNPCSOS.teleportOut(heal, toon))
     else:
         track.append(__returnToBase(heal))
-    for target in targets:
-        targetToon = target['toon']
-        track.append(Func(targetToon.clearChat))
-
     return track
 
 

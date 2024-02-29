@@ -564,6 +564,7 @@ class BattleCalculatorAI:
                     continue
                 targetIndex = targets.index(targetList[currTarget])
                 if atkTrack == HEAL:
+                    validTargetAvail = 1
                     result = result / len(targetList)
                     if self.notify.getDebug():
                         self.notify.debug('Splitting heal among ' + str(len(targetList)) + ' targets')
@@ -953,8 +954,7 @@ class BattleCalculatorAI:
                             attack[TOON_KBBONUS_COL][tgtPos] = -1
 
                     if allTargetsDead and atkTrack != lastTrack:
-                        if self.notify.getDebug():
-                            self.notify.debug('all targets of toon attack ' + str(currToonAttack) + ' are dead')
+                        self.notify.debug('all targets of toon attack ' + str(currToonAttack) + ' are dead')
                         self.__clearAttack(currToonAttack, toon=1)
                         attack = self.battle.toonAttacks[currToonAttack]
                         atkTrack, atkLevel = self.__getActualTrackLevel(attack)
@@ -1124,6 +1124,11 @@ class BattleCalculatorAI:
             if toonId == -1 or toonId not in self.battle.activeToons:
                 return -1
             self.notify.debug('Suit attacking back at toon ' + str(toonId))
+
+            if self.__combatantDead(toonId, toon=1):
+                self.notify.debug(f'Suit tried to target toon {toonId} because they are threatening but they are dead, choosing a random toon instead')
+                return self.__pickRandomToon(suitId)
+
             return self.battle.activeToons.index(toonId)
         else:
             return self.__pickRandomToon(suitId)
@@ -1182,8 +1187,12 @@ class BattleCalculatorAI:
             if debug:
                 self.notify.debug('Suit attack is group target')
             for currToon in self.battle.activeToons:
-                if debug:
-                    self.notify.debug('Suit attack will target toon' + str(currToon))
+
+                # Skip dead toons
+                if self.__combatantDead(currToon, toon=1):
+                    continue
+
+                self.notify.debug('Suit attack will target toon' + str(currToon))
                 targetList.append(currToon)
 
         return targetList
@@ -1225,21 +1234,24 @@ class BattleCalculatorAI:
 
     def __applySuitAttackDamages(self, attackIndex):
         attack = self.battle.suitAttacks[attackIndex]
-        if self.APPLY_HEALTH_ADJUSTMENTS:
-            for t in self.battle.activeToons:
-                position = self.battle.activeToons.index(t)
-                if attack[SUIT_HP_COL][position] <= 0:
-                    continue
-                toonHp = self.__getToonHp(t)
-                if toonHp - attack[SUIT_HP_COL][position] <= 0:
-                    if self.notify.getDebug():
-                        self.notify.debug('Toon %d has died, removing' % t)
-                    self.toonLeftBattle(t)
-                    attack[TOON_DIED_COL] = attack[TOON_DIED_COL] | 1 << position
-                if self.notify.getDebug():
-                    self.notify.debug('Toon ' + str(t) + ' takes ' + str(attack[SUIT_HP_COL][position]) + ' damage')
-                self.toonHPAdjusts[t] -= attack[SUIT_HP_COL][position]
-                self.notify.debug('Toon ' + str(t) + ' now has ' + str(self.__getToonHp(t)) + ' health')
+
+        if not self.APPLY_HEALTH_ADJUSTMENTS:
+            return
+
+        for toonID in self.battle.activeToons:
+            toonPositionIndex = self.battle.activeToons.index(toonID)
+
+            if attack[SUIT_HP_COL][toonPositionIndex] <= 0:
+                continue
+
+            toonHp = self.__getToonHp(toonID)
+            if toonHp - attack[SUIT_HP_COL][toonPositionIndex] <= 0:
+                self.notify.debug('Toon %d has died' % toonID)
+                attack[TOON_DIED_COL] = attack[TOON_DIED_COL] | 1 << toonPositionIndex
+
+            self.notify.debug('Toon ' + str(toonID) + ' takes ' + str(attack[SUIT_HP_COL][toonPositionIndex]) + ' damage')
+            self.toonHPAdjusts[toonID] -= attack[SUIT_HP_COL][toonPositionIndex]
+            self.notify.debug('Toon ' + str(toonID) + ' now has ' + str(self.__getToonHp(toonID)) + ' health')
 
     def __suitCanAttack(self, suitId):
         if self.__combatantDead(suitId, toon=0) or self.__suitIsLured(suitId) or self.__combatantJustRevived(suitId):

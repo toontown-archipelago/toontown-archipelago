@@ -536,6 +536,17 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         if self.battleB:
             self.handleRoundDone(self.battleB, self.suitsB, self.activeSuitsB, toonIds, totalHp, deadSuits)
 
+    def setDeadToonsToHp(self, toons, hp):
+
+        for temp in toons:
+            if not isinstance(temp, DistributedAvatarAI.DistributedAvatarAI):
+                toon = self.air.doId2do.get(temp)
+            else:
+                toon = temp
+
+            if toon and toon.hp <= 0:
+                toon.b_setHp(hp)
+
     def handleBattleADone(self, zoneId, toonIds):
         if self.battleA:
             self.battleA.requestDelete()
@@ -546,7 +557,8 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             self.b_setArenaSide(0)
         if not self.battleB and self.hasToons() and self.hasToonsAlive():
             self.b_setState(self.postBattleState)
-        return
+
+        self.setDeadToonsToHp(toonIds, 1)
 
     def handleBattleBDone(self, zoneId, toonIds):
         if self.battleB:
@@ -558,7 +570,8 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             self.b_setArenaSide(1)
         if not self.battleA and self.hasToons() and self.hasToonsAlive():
             self.b_setState(self.postBattleState)
-        return
+
+        self.setDeadToonsToHp(toonIds, 1)
 
     def invokeSuitPlanner(self, buildingCode, skelecog):
         planner = SuitPlannerInteriorAI.SuitPlannerInteriorAI(1, buildingCode, self.dna.dept, self.zoneId)

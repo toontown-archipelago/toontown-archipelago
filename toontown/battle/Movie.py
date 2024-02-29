@@ -878,32 +878,25 @@ class Movie(DirectObject.DirectObject):
         return
 
     def __doSuitAttacks(self):
-        if base.config.GetBool('want-suit-anims', 1):
-            track = Sequence(name='suit-attacks')
-            camTrack = Sequence(name='suit-attacks-cam')
-            isLocalToonSad = False
-            for a in self.suitAttackDicts:
-                ival, camIval = MovieSuitAttacks.doSuitAttack(a)
-                if ival:
-                    track.append(ival)
-                    camTrack.append(camIval)
-                targetField = a.get('target')
-                if targetField is None:
-                    continue
-                if a['group'] == ATK_TGT_GROUP:
-                    for target in targetField:
-                        if target['died'] and target['toon'].doId == base.localAvatar.doId:
-                            isLocalToonSad = True
+        if not base.config.GetBool('want-suit-anims', 1):
+            return None, None
 
-                elif a['group'] == ATK_TGT_SINGLE:
-                    if targetField['died'] and targetField['toon'].doId == base.localAvatar.doId:
-                        isLocalToonSad = True
-                if isLocalToonSad:
-                    break
+        track = Sequence(name='suit-attacks')
+        camTrack = Sequence(name='suit-attacks-cam')
 
-            if len(track) == 0:
-                return (None, None)
-            return (track, camTrack)
-        else:
-            return (None, None)
-        return
+        for attack in self.suitAttackDicts:
+
+            ival, camIval = MovieSuitAttacks.doSuitAttack(attack)
+
+            if ival:
+                track.append(ival)
+                camTrack.append(camIval)
+
+            targetField = attack.get('target')
+            if targetField is None:
+                continue
+
+        if len(track) == 0:
+            return None, None
+
+        return track, camTrack

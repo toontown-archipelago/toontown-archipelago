@@ -71,7 +71,8 @@ class TownBattle(StateData.StateData):
                 self.exitAttackWait,
                 ['ChooseCog',
                  'ChooseToon',
-                 'Attack']),
+                 'Attack',
+                 'Run']),
             State.State('ChooseToon',
                 self.enterChooseToon,
                 self.exitChooseToon,
@@ -334,6 +335,10 @@ class TownBattle(StateData.StateData):
         for toonPanel in self.toonPanels:
             toonPanel.setValues(0, BattleBase.NO_ATTACK)
 
+        # If we are dead force a pass
+        if localAvatar.hp <= 0:
+            messenger.send('inventory-pass')
+
         return None
 
     def exitAttack(self):
@@ -508,6 +513,12 @@ class TownBattle(StateData.StateData):
     def __handleAttackWaitBack(self, doneStatus):
         mode = doneStatus['mode']
         if mode == 'Back':
+
+            # If we are dead this works as an alternative to run
+            if localAvatar.hp <= 0:
+                self.fsm.request('Run')
+                return
+
             if self.track == HEAL_TRACK:
                 self.fsm.request('Attack')
             elif self.track == BattleBase.NO_ATTACK:

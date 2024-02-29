@@ -44,6 +44,16 @@ largeSuits = ['f',
  'mh']
 shotDirection = 'left'
 
+def updateToonNeutralAnims(toon):
+    if toon.hp <= 0:
+        toon.sadEyes()
+        toon.loop('sad-neutral')
+    else:
+        toon.normalEyes()
+        toon.loop('neutral')
+
+    toon.blinkEyes()
+
 def avatarDodge(leftAvatars, rightAvatars, leftData, rightData):
     if len(leftAvatars) > len(rightAvatars):
         PoLR = rightAvatars
@@ -286,13 +296,12 @@ def createSuitReviveTrack(suit, toon, battle, npcs = []):
     gears2MTrack = Track((0.0, explosionTrack), (0.7, ParticleInterval(singleGear, battle, worldRelative=0, duration=5.7, cleanup=True)), (5.2, ParticleInterval(smallGearExplosion, battle, worldRelative=0, duration=1.2, cleanup=True)), (5.4, ParticleInterval(bigGearExplosion, battle, worldRelative=0, duration=1.0, cleanup=True)), name='gears2MTrack')
     toonMTrack = Parallel(name='toonMTrack')
     for mtoon in battle.toons:
-        toonMTrack.append(Sequence(Wait(1.0), ActorInterval(mtoon, 'duck'), ActorInterval(mtoon, 'duck', startTime=1.8), Func(mtoon.loop, 'neutral')))
+        toonMTrack.append(Sequence(Wait(1.0), ActorInterval(mtoon, 'duck'), ActorInterval(mtoon, 'duck', startTime=1.8), Func(updateToonNeutralAnims, mtoon)))
 
     for mtoon in npcs:
         toonMTrack.append(Sequence(Wait(1.0), ActorInterval(mtoon, 'duck'), ActorInterval(mtoon, 'duck', startTime=1.8), Func(mtoon.loop, 'neutral')))
 
     return Parallel(suitTrack, deathSoundTrack, gears1Track, gears2MTrack, toonMTrack)
-
 
 def createSuitDeathTrack(suit, toon, battle, npcs = []):
     suitTrack = Sequence()
@@ -331,7 +340,7 @@ def createSuitDeathTrack(suit, toon, battle, npcs = []):
     gears2MTrack = Track((0.0, explosionTrack), (0.7, ParticleInterval(singleGear, battle, worldRelative=0, duration=5.7, cleanup=True)), (5.2, ParticleInterval(smallGearExplosion, battle, worldRelative=0, duration=1.2, cleanup=True)), (5.4, ParticleInterval(bigGearExplosion, battle, worldRelative=0, duration=1.0, cleanup=True)), name='gears2MTrack')
     toonMTrack = Parallel(name='toonMTrack')
     for mtoon in battle.toons:
-        toonMTrack.append(Sequence(Wait(1.0), ActorInterval(mtoon, 'duck'), ActorInterval(mtoon, 'duck', startTime=1.8), Func(mtoon.loop, 'neutral')))
+        toonMTrack.append(Sequence(Wait(1.0), ActorInterval(mtoon, 'duck'), ActorInterval(mtoon, 'duck', startTime=1.8), Func(updateToonNeutralAnims, mtoon)))
 
     for mtoon in npcs:
         toonMTrack.append(Sequence(Wait(1.0), ActorInterval(mtoon, 'duck'), ActorInterval(mtoon, 'duck', startTime=1.8), Func(mtoon.loop, 'neutral')))
@@ -366,11 +375,11 @@ def createToonDodgeMultitrack(tDodge, toon, leftToons, rightToons):
     if toonDodgeList is leftToons:
         sidestepAnim = 'sidestep-left'
         for t in toonDodgeList:
-            toonTracks.append(Sequence(ActorInterval(t, sidestepAnim), Func(t.loop, 'neutral')))
+            toonTracks.append(Sequence(ActorInterval(t, sidestepAnim), Func(updateToonNeutralAnims, t)))
 
     else:
         sidestepAnim = 'sidestep-right'
-    toonTracks.append(Sequence(ActorInterval(toon, sidestepAnim), Func(toon.loop, 'neutral')))
+    toonTracks.append(Sequence(ActorInterval(toon, sidestepAnim), Func(updateToonNeutralAnims, toon)))
     toonTracks.append(Func(indicateMissed, toon))
     return Sequence(Wait(tDodge), toonTracks)
 

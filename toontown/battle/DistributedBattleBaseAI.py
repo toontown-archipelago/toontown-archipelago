@@ -759,6 +759,15 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
     def toonRequestJoin(self, x, y, z):
         toonId = self.air.getAvatarIdFromSender()
         self.notify.debug('toonRequestJoin(%d)' % toonId)
+
+        toon = self.air.doId2do.get(toonId)
+        if not toon:
+            return
+
+        if toon.hp <= 0:
+            self.d_denyLocalToonJoin(toonId)
+            return
+
         self.signupToon(toonId, x, y, z)
 
     def toonDied(self):
@@ -1012,6 +1021,11 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         if toon == None:
             self.notify.warning('requestAttack() - no toon: %d' % toonId)
             return
+
+        # Force dead toons to pass
+        if toon.hp <= 0:
+            track = PASS
+
         validResponse = 1
         if track == SOS:
             self.notify.debug('toon: %d calls for help' % toonId)
@@ -1273,6 +1287,9 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         if not self.tutorialFlag:
             self.timer.startCallback(SERVER_INPUT_TIMEOUT, self.__serverTimedOut)
         self.npcAttacks = {}
+
+        deadToons = []
+        toonIsAlive = False
         for toonId in self.toons:
             toon = self.air.doId2do.get(toonId)
             if toon.immortalMode:
@@ -1280,11 +1297,28 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             if toon.getUnlimitedGags():
                 toon.doRestock()
             if bboard.get('autoRestock-%s' % toonId, False):
-                toon = self.air.doId2do.get(toonId)
-                if toon is not None:
-                    toon.doRestock()
+                toon.doRestock()
 
-        return
+            # If toon is dead, keep track of them and force their hp to 0
+            if toon.hp <= 0:
+                toon.b_setHp(0)
+                deadToons.append(toon)
+            else:
+                toonIsAlive = True
+
+        # If there are no toons alive this battle is over
+        if not toonIsAlive:
+            for toonId in self.toons:
+                self.__makeToonRun(toonId, 0)
+
+            self.d_setMembers()
+            return
+
+        # If there are any dead toons force them to pass immediately
+        for toon in deadToons:
+            self.toonAttacks[toon.doId] = getToonAttack(toon.doId, track=PASS)
+            self.d_setChosenToonAttacks()
+            self.responses[toon.doId] += 1
 
     def exitWaitForInput(self):
         self.npcAttacks = {}
@@ -1659,10 +1693,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             hp = toonHpDict[activeToon]
             toon = self.getToon(activeToon)
             if toon != None:
-                self.notify.debug('AFTER ROUND: currtoonHP: %d toonMAX: %d hheal: %d damage: %d' % (toon.hp,
-                 toon.maxHp,
-                 hp[0],
-                 hp[1]))
+                self.notify.debug('AFTER ROUND: currtoonHP: %d toonMAX: %d hheal: %d damage: %d' % (toon.hp, toon.maxHp, hp[0], hp[1]))
                 toon.hpOwnedByBattle = 0
                 hpDelta = hp[0] - hp[1]
                 if hpDelta >= 0:
@@ -1671,13 +1702,8 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                     toon.takeDamage(-hpDelta, quietly=1)
                 if toon.hp <= 0:
                     self.notify.debug('movieDone() - toon: %d was killed' % activeToon)
-                    toon.inventory.zeroInv()
                     deadToons.append(activeToon)
                 self.notify.debug('AFTER ROUND: toon: %d setHp: %d' % (toon.doId, toon.hp))
-
-        for deadToon in deadToons:
-            self.__removeToon(deadToon)
-            needUpdate = 1
 
         self.clearAttacks()
         self.d_setMovie()

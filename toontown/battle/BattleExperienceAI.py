@@ -134,6 +134,11 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
             activeToonList.append(toon)
 
     for toon in activeToonList:
+
+        # If this toon was dead set them to 1 hp
+        if toon.hp <= 0:
+            toon.b_setHp(1)
+
         for i in range(len(ToontownBattleGlobals.Tracks)):
             exp = getSkillGained(toonSkillPtsGained, toon.doId, i)
             needed = ToontownBattleGlobals.MaxSkill
