@@ -41,6 +41,8 @@ from toontown.catalog import CatalogAccessoryItem
 from . import ModuleListAI
 
 from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
+from ..archipelago.definitions.util import get_zone_discovery_id
+from ..shtiker import CogPageGlobals
 
 if simbase.wantPets:
     from toontown.pets import PetLookerAI, PetObserve
@@ -262,22 +264,19 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def setLocation(self, parentId, zoneId):
         DistributedPlayerAI.DistributedPlayerAI.setLocation(self, parentId, zoneId)
         from toontown.toon.DistributedNPCToonBaseAI import DistributedNPCToonBaseAI
-        if not isinstance(self, DistributedNPCToonBaseAI):
-            if 100 <= zoneId < ToontownGlobals.DynamicZonesBegin:
-                hood = ZoneUtil.getHoodId(zoneId)
-                self.sendUpdate('setLastHood', [hood])
-                self.b_setDefaultZone(hood)
+        if isinstance(self, DistributedNPCToonBaseAI):
+            return
 
-                hoodsVisited = list(self.getHoodsVisited())
-                if hood not in hoodsVisited:
-                    hoodsVisited.append(hood)
-                    self.b_setHoodsVisited(hoodsVisited)
+        if not (100 <= zoneId < ToontownGlobals.DynamicZonesBegin):
+            return
 
-                if zoneId == ToontownGlobals.GoofySpeedway:
-                    tpAccess = self.getTeleportAccess()
-                    if ToontownGlobals.GoofySpeedway not in tpAccess:
-                        tpAccess.append(ToontownGlobals.GoofySpeedway)
-                        self.b_setTeleportAccess(tpAccess)
+        hood = ZoneUtil.getHoodId(zoneId)
+        self.sendUpdate('setLastHood', [hood])
+        self.b_setDefaultZone(hood)
+        self.addHoodVisited(hood)
+
+        if zoneId == ToontownGlobals.GoofySpeedway:
+            self.addTeleportAccess(ToontownGlobals.GoofySpeedway)
 
     def sendDeleteEvent(self):
         if simbase.wantPets:
@@ -1865,6 +1864,19 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def d_setHoodsVisited(self, hoodsVisitedArray):
         self.sendUpdate('setHoodsVisited', [hoodsVisitedArray])
 
+    def addHoodVisited(self, hoodId):
+
+        zone_reward = get_zone_discovery_id(hoodId)
+        if zone_reward >= 0:
+            self.addCheckedLocation(zone_reward)
+
+        hoods = self.getHoodsVisited()
+        if hoodId in hoods:
+            return
+
+        hoods.append(hoodId)
+        self.b_setHoodsVisited(hoods)
+
     def b_setTeleportAccess(self, teleportZoneArray):
         self.setTeleportAccess(teleportZoneArray)
         self.d_setTeleportAccess(teleportZoneArray)
@@ -1882,6 +1894,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         return zoneId in self.teleportZoneArray
 
     def addTeleportAccess(self, zoneId):
+
+        # Discover this zone immediately if we are given teleport access
+        self.addHoodVisited(zoneId)
+
         if zoneId not in self.teleportZoneArray:
             self.teleportZoneArray.append(zoneId)
             self.b_setTeleportAccess(self.teleportZoneArray)
@@ -4307,3 +4323,55 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Send this toon an archipelago message to display on their log
     def d_sendArchipelagoMessage(self, message: str) -> None:
         self.sendUpdate('sendArchipelagoMessage', [message])
+
+    # Sets this toons stats as if they were a freshly created toon
+    # This should only be called when we detect an AP player connected for the very first time.
+    def newToon(self):
+
+        # First stat stuff
+        self.b_setMaxHp(15)
+        self.b_setHp(15)
+        self.b_setMaxCarry(20)
+        for id in self.getQuests():
+            self.removeQuest(id)
+        self.b_setQuestCarryLimit(4)
+
+        # Wipe gag track access and orgs
+        self.b_setTrackAccess([0, 0, 0, 0, 0, 0, 0])
+        self.b_setTrackBonusLevel([-1, -1, -1, -1, -1, -1, -1])
+        self.inventory.zeroInv()
+        self.b_setInventory(self.inventory.makeNetString())
+        self.b_setBaseGagSkillMultiplier(1)
+
+        self.b_setMaxMoney(50)
+        self.b_setMoney(50)
+        self.b_setBankMoney(0)
+
+        # Fishing
+        self.b_setFishCollection([], [], [])
+        self.b_setFishingRod(0)
+        self.b_setFishingTrophies([])
+
+        # TP access
+        self.b_setHoodsVisited([])
+        self.addHoodVisited(ZoneUtil.getHoodId(self.zoneId))
+        self.b_setTeleportAccess([])
+
+        # Disguise stuff, revoke their disguises
+        self.b_setCogParts([0, 0, 0, 0])
+
+        # We haven't seen any cogs
+        cogStatus = self.getCogStatus()
+        cogCount = self.getCogCount()
+        for suitIndex, suitCode in enumerate(SuitDNA.suitHeadTypes):
+            cogStatus[suitIndex] = CogPageGlobals.COG_UNSEEN
+            cogCount[suitIndex] = 0
+        self.b_setCogStatus(cogStatus)
+        self.b_setCogCount(cogCount)
+
+        # AP stuff
+        self.b_setCheckedLocations([])
+        self.b_setReceivedItems([])
+        self.b_setAccessKeys([])
+
+

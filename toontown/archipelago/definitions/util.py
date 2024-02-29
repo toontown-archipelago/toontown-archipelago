@@ -1,4 +1,6 @@
 from toontown.archipelago.definitions import locations
+from toontown.hood import ZoneUtil
+from toontown.toonbase import ToontownGlobals
 
 
 # Given cog code (bf, nc, etc) return the AP location counterpart
@@ -48,3 +50,32 @@ def cog_code_to_ap_location(cog_code: str) -> str:
 # Given the string representation of a location, retrieve the numeric ID
 def ap_location_name_to_id(location_name: str) -> int:
     return locations.LOCATION_DEFINITIONS.get(location_name, -1).unique_id
+
+
+# Given a Zone ID, give the ID of an AP location award the player.
+# returns -1 if this isn't a zone we have to worry about
+def get_zone_discovery_id(zoneId: int) -> int:
+
+    pgZone = ZoneUtil.getHoodId(zoneId)
+
+    ZONE_TO_LOCATION = {
+        ToontownGlobals.ToontownCentral: locations.DISCOVER_TTC,
+        ToontownGlobals.DonaldsDock: locations.DISCOVER_DD,
+        ToontownGlobals.DaisyGardens: locations.DISCOVER_DG,
+        ToontownGlobals.MinniesMelodyland: locations.DISCOVER_MM,
+        ToontownGlobals.TheBrrrgh: locations.DISCOVER_TB,
+        ToontownGlobals.DonaldsDreamland: locations.DISCOVER_DDL,
+
+        ToontownGlobals.SellbotHQ: locations.DISCOVER_SBHQ,
+        ToontownGlobals.CashbotHQ: locations.DISCOVER_CBHQ,
+        ToontownGlobals.LawbotHQ: locations.DISCOVER_LBHQ,
+        ToontownGlobals.BossbotHQ: locations.DISCOVER_BBHQ,
+    }
+
+    # Valid zone?
+    loc = ZONE_TO_LOCATION.get(pgZone)
+    if not loc:
+        return -1
+
+    # We have a location, convert it to its ID
+    return ap_location_name_to_id(loc)

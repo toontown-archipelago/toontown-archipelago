@@ -1,6 +1,8 @@
 from typing import List, Any, Dict
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
+from toontown.archipelago.definitions import locations
+from toontown.archipelago.definitions.util import ap_location_name_to_id, get_zone_discovery_id
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 
@@ -59,5 +61,26 @@ class ConnectedPacket(ClientBoundPacketBase):
         # We have a valid connection, set client state to connected
         client.state = APClientEnums.CONNECTED
 
-        # todo ew ew ew ew this is so gross fix later pls
-        client.av.archipelago_session.sync()
+        client.av.b_setName(client.slot_name)
+
+        # Is this this toon's first time? If so reset the toon's stats and initialize their settings from their YAML
+        if len(self.checked_locations) == 0:
+
+            #  Reset stats
+            client.av.newToon()
+
+            # Set their max HP
+            client.av.b_setMaxHp(self.slot_info.get('starting_hp', 15))
+            client.av.b_setHp(client.av.getMaxHp())
+
+            # Set their starting money
+            client.av.b_setMoney(50)
+
+            # Set their starting gag xp multiplier
+            client.av.b_setBaseGagSkillMultiplier(self.slot_info.get('starting_gag_xp_multiplier', 2))
+
+        # Login location rewarding
+        track_one_check = ap_location_name_to_id(locations.STARTING_TRACK_ONE_LOCATION)
+        track_two_check = ap_location_name_to_id(locations.STARTING_TRACK_TWO_LOCATION)
+        client.av.addCheckedLocation(track_one_check)
+        client.av.addCheckedLocation(track_two_check)

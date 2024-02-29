@@ -3558,6 +3558,10 @@ class Archipelago(MagicWord):
             toon.addCheckedLocation(check.unique_id)
             return f"Gave {toon.getName()} the {check.unique_name} check!"
 
+        if operation in ('wipe', 'reset', 'clear'):
+            toon.newToon()
+            return f"Wiped {toon.getName()}'s progress!"
+
         return f"Invalid argument, valid arguments are: check"
 
 

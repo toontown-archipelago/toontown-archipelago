@@ -17,6 +17,8 @@ class ToontownLocationType(IntEnum):
     FISHING = 5  # Locations for fishing trophies
     DISCOVER_PLAYGROUND = 6  # Locations for discovering playgrounds
 
+    STARTER = 7  # Location that is considered a "starting" check on login, typically we force checks here
+
 
 class ToontownLocationDefinition:
     """
@@ -36,6 +38,9 @@ class ToontownLocationDefinition:
 
 
 # Name of every location as a string for easy access
+STARTING_TRACK_ONE_LOCATION = "Starter Track #1 (Create a Toon)"
+STARTING_TRACK_TWO_LOCATION = "Starter Track #2 (Create a Toon)"
+
 COLD_CALLER_DEFEATED_LOCATION = "Cog Gallery (Cold Caller)"
 SHORT_CHANGE_DEFEATED_LOCATION = "Cog Gallery (Short Change)"
 BOTTOM_FEEDER_DEFEATED_LOCATION = "Cog Gallery (Bottom Feeder)"
@@ -211,6 +216,10 @@ SAVED_TOONTOWN = "Save Toontown"
 BASE_ID = 0x501100
 
 LIST_OF_LOCATION_DEFINITIONS = {
+
+    # Checks for simply logging in the game
+    ToontownLocationDefinition(STARTING_TRACK_ONE_LOCATION, BASE_ID-2, location_type=ToontownLocationType.STARTER),
+    ToontownLocationDefinition(STARTING_TRACK_TWO_LOCATION, BASE_ID-1, location_type=ToontownLocationType.STARTER),
 
     # Cog Gallery Discoveries (32)
     ToontownLocationDefinition(COLD_CALLER_DEFEATED_LOCATION, BASE_ID+0, location_type=ToontownLocationType.GALLERY),
@@ -402,6 +411,10 @@ LOCATION_DEFINITIONS = {
 ID_TO_LOCATION_DEFINITION = {
     loc_def.unique_id: loc_def for loc_def in LIST_OF_LOCATION_DEFINITIONS
 }
+
+LOGIN_LOCATIONS: List[str] = [
+    check.unique_name for check in LIST_OF_LOCATION_DEFINITIONS if check.location_type == ToontownLocationType.STARTER
+]
 
 GALLERY_LOCATIONS: List[str] = [
     check.unique_name for check in LIST_OF_LOCATION_DEFINITIONS if check.location_type == ToontownLocationType.GALLERY
