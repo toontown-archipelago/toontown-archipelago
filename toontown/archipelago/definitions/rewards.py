@@ -76,16 +76,19 @@ class GagTrainingFrameReward(APReward):
         oldLevel = av.getTrackAccessLevel(self.track)
         newLevel = oldLevel+1
 
+        bonusArray = av.getTrackBonusLevel()
+
         # If we get a frame when we already maxed, make the track organic
         if newLevel > 7:
-            bonusArray = av.getTrackBonusLevel()
             bonusArray[self.track] = 7
             av.b_setTrackBonusLevel(bonusArray)
             av.d_setSystemMessage(0, f"Your {self.TRACK_TO_NAME[self.track]} gags are now organic!")
             return
 
-        # Otherwise increment the gag level allowed
+        # Otherwise increment the gag level allowed and make sure it is not organic
         av.setTrackAccessLevel(self.track, newLevel)
+        bonusArray[self.track] = -1
+        av.b_setTrackBonusLevel(bonusArray)
         av.d_setSystemMessage(0, f"You can now train {self.TRACK_TO_NAME[self.track]} gags up to {newLevel}!")
 
 
