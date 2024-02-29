@@ -202,7 +202,7 @@ AvPropStringsSingular = TTLocalizer.BattleGlobalAvPropStringsSingular
 AvPropStringsPlural = TTLocalizer.BattleGlobalAvPropStringsPlural
 
 AvPropAccuracy = (
-    (70, 70, 70, 70, 70, 70, 100),  # Toonup
+    (100, 100, 100, 100, 100, 100, 100),  # Toonup
     (0, 0, 0, 0, 0, 0, 0),          # Trap
     (50, 50, 60, 60, 70, 70, 95),   # Lure
     (95, 95, 95, 95, 95, 95, 95),   # Sound
