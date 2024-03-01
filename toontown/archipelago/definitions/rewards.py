@@ -295,6 +295,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     items.ITEM_LBHQ_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.LAWBOT_HQ),
     items.ITEM_BBHQ_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.BOSSBOT_HQ),
 
+    items.ITEM_TTC_HQ_ACCESS: TaskAccessReward(TaskAccessReward.TOONTOWN_CENTRAL),
     items.ITEM_DD_HQ_ACCESS: TaskAccessReward(TaskAccessReward.DONALDS_DOCK),
     items.ITEM_DG_HQ_ACCESS: TaskAccessReward(TaskAccessReward.DAISYS_GARDENS),
     items.ITEM_MML_HQ_ACCESS: TaskAccessReward(TaskAccessReward.MINNIES_MELODYLAND),

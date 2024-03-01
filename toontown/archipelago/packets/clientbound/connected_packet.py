@@ -85,7 +85,9 @@ class ConnectedPacket(ClientBoundPacketBase):
             client.av.archipelago_session.sync()
 
         # Login location rewarding
+        new_game = ap_location_name_to_id(locations.STARTING_NEW_GAME_LOCATION)
         track_one_check = ap_location_name_to_id(locations.STARTING_TRACK_ONE_LOCATION)
         track_two_check = ap_location_name_to_id(locations.STARTING_TRACK_TWO_LOCATION)
+        client.av.addCheckedLocation(new_game)
         client.av.addCheckedLocation(track_one_check)
         client.av.addCheckedLocation(track_two_check)

@@ -1,7 +1,7 @@
 from enum import IntEnum
 from typing import Optional, List
 
-from toontown.archipelago.definitions.BaseClasses import LocationProgressType, Location, Region
+from toontown.archipelago.definitions.BaseClasses import Location, Region, LocationProgressType
 
 # Fill in if some items need more context
 LOCATION_DESCRIPTIONS = {
@@ -38,6 +38,7 @@ class ToontownLocationDefinition:
 
 
 # Name of every location as a string for easy access
+STARTING_NEW_GAME_LOCATION = "Create a Toon (Create a Toon)"
 STARTING_TRACK_ONE_LOCATION = "Starter Track #1 (Create a Toon)"
 STARTING_TRACK_TWO_LOCATION = "Starter Track #2 (Create a Toon)"
 
@@ -218,6 +219,7 @@ BASE_ID = 0x501100
 LIST_OF_LOCATION_DEFINITIONS = {
 
     # Checks for simply logging in the game
+    ToontownLocationDefinition(STARTING_NEW_GAME_LOCATION, BASE_ID-3, location_type=ToontownLocationType.STARTER),
     ToontownLocationDefinition(STARTING_TRACK_ONE_LOCATION, BASE_ID-2, location_type=ToontownLocationType.STARTER),
     ToontownLocationDefinition(STARTING_TRACK_TWO_LOCATION, BASE_ID-1, location_type=ToontownLocationType.STARTER),
 
