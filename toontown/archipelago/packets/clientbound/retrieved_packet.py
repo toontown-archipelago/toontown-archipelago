@@ -15,4 +15,4 @@ class RetrievedPacket(ClientBoundPacketBase):
         self.keys: Dict[str, Any] = self.read_raw_field('keys')
 
     def handle(self, client):
-        self.debug("[AP Client] Handling Retrieved packet via sent Get packet")
+        self.debug("Handling packet")

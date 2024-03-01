@@ -43,7 +43,7 @@ class DataPackagePacket(ClientBoundPacketBase):
         self.data: DataPackageObject = self.read_raw_field('data')
 
     def handle(self, client):
-        self.debug(f"[AP Client] Received data package from server, storing information for {len(self.data['games'])} games")
+        self.debug(f"Received data package from server, storing information for {len(self.data['games'])} games")
 
         # Loop through all games and their data
         for game_name, game_data in self.data['games'].items():

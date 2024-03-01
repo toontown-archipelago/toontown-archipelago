@@ -28,4 +28,4 @@ class RoomUpdatePacket(RoomInfoPacket, ConnectedPacket):
         self.checked_locations: List[int] = self.read_raw_field('checked_locations', ignore_missing=True)
 
     def handle(self, client):
-        self.debug(f"[AP Client] Handling RoomUpdate packet")
+        self.debug(f"Handling packet")

@@ -20,7 +20,7 @@ class ConnectionRefusedPacket(ClientBoundPacketBase):
         self.errors: List[str] = self.read_raw_field('errors')
 
     def handle(self, client):
-        self.debug("[AP Client] Handling Connection Refused packet")
+        self.debug("Handling packet")
 
         for error in self.errors:
 
@@ -29,21 +29,21 @@ class ConnectionRefusedPacket(ClientBoundPacketBase):
                 client.av.d_sendArchipelagoMessage(f"Invalid slot! Please use !slot to correct your slot.")
 
             elif error == self.ERROR_INVALID_GAME:
-                self.debug("[AP Client] Invalid game provided!")
+                self.debug("Invalid game provided!")
                 client.av.d_sendArchipelagoMessage("Invalid game provided!")
 
             elif error == self.ERROR_INCOMPATIBLE_VERSION:
-                self.debug("[AP Client] Incompatible version detected!")
+                self.debug("Incompatible version detected!")
                 client.av.d_sendArchipelagoMessage("Incompatible version detected!")
 
             elif error == self.ERROR_INVALID_PASSWORD:
-                self.debug("[AP Client] Invalid password provided!")
+                self.debug("Invalid password provided!")
                 client.av.d_sendArchipelagoMessage("Invalid password provided! Please use !password to correct your password.")
 
             elif error == self.ERROR_INVALID_ITEMS_HANDLING:
-                self.debug("[AP Client] Invalid item sent to server!")
+                self.debug("Invalid item sent to server!")
                 client.av.d_sendArchipelagoMessage("Invalid item sent to server!")
 
             else:
-                self.debug(f"[AP Client] Unknown error: {error}")
+                self.debug(f"Unknown error: {error}")
                 client.av.d_sendArchipelagoMessage(f"Unknown error: {error}")

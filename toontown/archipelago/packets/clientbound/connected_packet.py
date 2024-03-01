@@ -53,7 +53,7 @@ class ConnectedPacket(ClientBoundPacketBase):
             client.slot_id_to_slot_name[int(id_string)] = network_slot
 
     def handle(self, client):
-        self.debug(f"[AP Client] Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"
+        self.debug(f"Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"
               f" playing {self.get_slot_info(self.slot).game}")
 
         # Store any information in the cache that we may need later

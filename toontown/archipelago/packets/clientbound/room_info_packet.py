@@ -74,7 +74,7 @@ class RoomInfoPacket(ClientBoundPacketBase):
             client.send_packet(data_package_packet)
 
     def handle(self, client):
-        self.debug("[AP Client] Handling Room Info packet")
+        self.debug("Handling packet")
 
         # We should check in with our data packages
         self.update_data_packages(client)

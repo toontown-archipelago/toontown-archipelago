@@ -44,7 +44,7 @@ class ArchipelagoPacketBase:
 
     # String representation of this instance
     def __repr__(self):
-        return f"[{self.__class__}] {','.join(self.raw_data)}"
+        return f"[{self.__class__.__name__}]=<{','.join(self.raw_data)}>"
 
     # Used for debugging, dump the entire content of the raw packet data
     def dump(self):
@@ -56,4 +56,4 @@ class ArchipelagoPacketBase:
         if not self.DEBUG:
             return
 
-        print(message)
+        print(f"[{self.__class__.__name__}]: {message}")

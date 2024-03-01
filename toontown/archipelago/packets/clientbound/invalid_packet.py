@@ -18,4 +18,4 @@ class InvalidPacket(ClientBoundPacketBase):
         self.text: str = self.read_raw_field('text')
 
     def handle(self, client):
-        self.debug(f"[AP Client] Invalid packet received:\n<{self.original_cmd}>: {self.type}: {self.text}")
+        self.debug(f"Invalid packet received:\n<{self.original_cmd}>: {self.type}: {self.text}")

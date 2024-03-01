@@ -22,4 +22,4 @@ class BouncedPacket(ClientBoundPacketBase):
         self.data: Dict[Any, Any] = self.read_raw_field('data')
 
     def handle(self, client):
-        self.debug("[AP Client] Received Bounced packet")
+        self.debug("Handling packet")

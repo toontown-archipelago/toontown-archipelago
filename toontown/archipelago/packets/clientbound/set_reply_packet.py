@@ -21,4 +21,4 @@ class SetReplyPacket(ClientBoundPacketBase):
         self.original_value: Any = self.read_raw_field('original_value')
 
     def handle(self, client):
-        self.debug("[AP Client] Handling SetReply packet")
+        self.debug("Handling packet")

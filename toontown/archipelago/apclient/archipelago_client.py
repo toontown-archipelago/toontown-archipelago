@@ -164,17 +164,17 @@ class ArchipelagoClient:
             return
 
         self.state = APClientEnums.CONNECTING
-        self.av.d_sendArchipelagoMessage("[AP Client] Starting server loop")
+        self.av.d_sendArchipelagoMessage("[AP Client Thread] Starting server loop")
 
         # Parse the URL to the archipelago server, use whatever URL we defined previously
         address = self.parse_url(self.address)
-        self.av.d_sendArchipelagoMessage(f"[AP Client] Attempting connection with archipelago server at {address}")
+        self.av.d_sendArchipelagoMessage(f"[AP Client Thread] Attempting connection with archipelago server at {address}")
 
         # Attempt to connect to the server, if we get refused then !connect must be run to try again
         try:
             with connect(address, ssl_context=get_ssl_context() if address.startswith("wss://") else None) as socket:
 
-                self.av.d_sendArchipelagoMessage(f"[AP Client] Estabilished socket connection with archipelago server at {address}")
+                self.av.d_sendArchipelagoMessage(f"[AP Client Thread] Estabilished socket connection with archipelago server at {address}")
                 self.socket = socket
                 self.state = APClientEnums.CONNECTED
 
@@ -192,12 +192,12 @@ class ArchipelagoClient:
                         pass  # Do nothing
                     # ConnectionClosed happens either when the server shuts down or when the toon logs out
                     except ConnectionClosed:
-                        self.av.d_sendArchipelagoMessage("[AP Client] Socket connection to archipelago server closed")
+                        self.av.d_sendArchipelagoMessage("[AP Client Thread] Socket connection to archipelago server closed")
                         break
 
         # This will happen when we were given a bad archipelago server IP or when it just is not running
         except ConnectionRefusedError:
-            self.av.d_sendArchipelagoMessage(f"[AP Client] Socket connection to archipelago server {address} failed, either wrong address or server is not running")
+            self.av.d_sendArchipelagoMessage(f"[AP Client Thread] Socket connection to archipelago server {address} failed, either wrong address or server is not running")
         except gaierror:
             self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"Server address {address} failed to parse! Please check the address given and try again.", color='red')]))
 
@@ -214,7 +214,8 @@ class ArchipelagoClient:
 
         self.state = APClientEnums.DISCONNECTED
         # Ran out of data to send
-        self.av.d_sendArchipelagoMessage("[AP Client] Ran out of data to retrieve from server! Please use !connect to reconnect")
+        self.av.d_sendArchipelagoMessage("[AP Client Thread] Ran out of data to retrieve from server! Please use !connect to reconnect")
+        self.av.d_sendArchipelagoMessage("[AP Client Thread] Terminating thread...")
 
     def update_identification(self, slot_name: str = '', password: str = ''):
 
@@ -279,7 +280,7 @@ class ArchipelagoClient:
         raw_packets = []
         for packet in packets:
             raw_packets.append(packet.build())
-            packet.debug(f"[AP Client] Sending packet to server: {packet}")
+            packet.debug(f"Sending packet to server: {packet}")
 
         try:
             self.socket.send(encode(raw_packets))

@@ -30,7 +30,7 @@ class ReceivedItemsPacket(ClientBoundPacketBase):
                 ap_reward: APReward = get_ap_reward_from_id(item.item)
                 ap_reward.apply(client.av)
                 client.av.addReceivedItem(reward_index)
-                self.debug(f"[AP Client] Received item {client.get_item_info(item.item)} from {client.get_slot_info(item.player).name}")
+                self.debug(f"Received item {client.get_item_info(item.item)} from {client.get_slot_info(item.player).name}")
 
             # Incrememnt the reward index and go to the next one
             reward_index += 1
