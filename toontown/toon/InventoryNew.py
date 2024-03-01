@@ -14,6 +14,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
     PressableTextColor = Vec4(1, 1, 1, 1)
     PressableGeomColor = Vec4(1, 1, 1, 1)
     PressableImageColor = Vec4(0, 0.6, 1, 1)
+    PressableOrganicColor = Vec4(0, .2, .9, 1)
     PropBonusPressableImageColor = Vec4(1.0, 0.6, 0.0, 1)
     NoncreditPressableImageColor = Vec4(0.3, 0.6, 0.6, 1)
     PropBonusNoncreditPressableImageColor = Vec4(0.6, 0.6, 0.3, 1)
@@ -210,10 +211,23 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
              1), text='0 / 0', text_scale=0.16, text_fg=(0, 0, 0, 0.8), text_align=TextNode.ACenter, text_pos=(0, -0.05)))
             self.buttons.append([])
             for item in range(0, len(Levels[track])):
-                button = DirectButton(parent=self.trackRows[track], image=(self.upButton,
-                 self.downButton,
-                 self.rolloverButton,
-                 self.flatButton), geom=self.invModels[track][item], text='50', text_scale=0.04, text_align=TextNode.ARight, geom_scale=0.7, geom_pos=(-0.01, -0.1, 0), text_fg=Vec4(1, 1, 1, 1), text_pos=(0.07, -0.04), textMayChange=1, relief=None, image_color=(0, 0.6, 1, 1), pos=(self.ButtonXOffset + item * self.ButtonXSpacing + adjustLeft, -0.1, 0), command=self.__handleSelection, extraArgs=[track, item])
+                button = DirectButton(
+                    parent=self.trackRows[track],
+                    image=(self.upButton,self.downButton,self.rolloverButton,self.flatButton),
+                    geom=self.invModels[track][item],
+                    text='50',
+                    text_scale=0.04,
+                    text_align=TextNode.ARight,
+                    geom_scale=0.7,
+                    geom_pos=(-0.01, -0.1, 0),
+                    text_fg=Vec4(1, 1, 1, 1),
+                    text_pos=(0.07, -0.04),
+                    textMayChange=1,
+                    relief=None,
+                    image_color=self.PressableImageColor,
+                    pos=(self.ButtonXOffset + item * self.ButtonXSpacing + adjustLeft, -0.1, 0),
+                    command=self.__handleSelection, extraArgs=[track, item])
+
                 button.bind(DGG.ENTER, self.showDetail, extraArgs=[track, item])
                 button.bind(DGG.EXIT, self.hideDetail)
                 self.buttons[track].append(button)
@@ -999,6 +1013,8 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         if self._interactivePropTrackBonus == track:
             button.configure(image_color=self.PropBonusPressableImageColor)
             self.addToPropBonusIval(button)
+        elif organicBonus:
+            button.configure(image_color=self.PressableOrganicColor)
         else:
             button.configure(image_color=self.PressableImageColor)
 
@@ -1059,7 +1075,11 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         else:
             shadowColor = self.ShadowColor
         button.configure(text_shadow=shadowColor, geom_color=self.BookUnpressableGeomColor, image_image=self.flatButton, commandButtons=())
-        button.configure(image0_color=self.BookUnpressableImage0Color, image2_color=self.BookUnpressableImage2Color)
+
+        color = self.BookUnpressableImage0Color
+        if organicBonus:
+            color = self.PressableOrganicColor
+        button.configure(image0_color=color, image2_color=self.BookUnpressableImage2Color)
 
     def hideTrack(self, trackIndex):
         self.trackNameLabels[trackIndex].show()
@@ -1098,9 +1118,11 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         bonus = organicBonus or propBonus
         if bonus:
             textScale = 0.05
+            imageColor = self.PressableOrganicColor
         else:
             textScale = 0.04
-        button.configure(text_scale=textScale)
+            imageColor = self.PressableImageColor
+        button.configure(text_scale=textScale, image_color=imageColor)
 
     def buttonBoing(self, track, level):
         button = self.buttons[track][level]

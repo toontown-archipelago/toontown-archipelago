@@ -8,9 +8,11 @@ from direct.directnotify import DirectNotifyGlobal
 from . import DistributedToon
 from toontown.friends import FriendInviter
 from . import ToonTeleportPanel
-from toontown.toonbase import TTLocalizer
+from toontown.toonbase import TTLocalizer, ToontownGlobals
 from toontown.hood import ZoneUtil
 from toontown.toonbase.ToontownBattleGlobals import Tracks, Levels
+from .Experience import Experience
+
 globalAvatarDetail = None
 
 def showAvatarDetail(avId, avName, playerId = None):
@@ -219,10 +221,13 @@ class ToonAvatarDetailPanel(DirectFrame):
                         if numItems == 0:
                             image_color = Vec4(0.5, 0.5, 0.5, 1)
                             geom_color = Vec4(0.2, 0.2, 0.2, 0.5)
+                        elif self.avatar.checkGagBonus(track, item):
+                            image_color = Vec4(0, 0.2, .9, 1)
+                            geom_color = None
                         else:
                             image_color = Vec4(0, 0.6, 1, 1)
                             geom_color = None
-                        DirectLabel(parent=self, image=buttonModel, image_scale=(0.92, 1, 1), image_color=image_color, geom=inventory.invModels[track][item], geom_color=geom_color, geom_scale=0.6, relief=None, pos=(xOffset + item * xSpacing, 0, yOffset + track * ySpacing))
+                        DirectLabel(parent=self, image=buttonModel, text=f"{numItems}", text_font=ToontownGlobals.getSignFont(), text_scale=.08, text_align=TextNode.ACenter, text_pos=(.045, -.045), text_fg=(1, 1, 1, 1), text_shadow=(0, 0, 0, 1), image_scale=(0.92, 1, 1), image_color=image_color, geom=inventory.invModels[track][item], geom_color=geom_color, geom_scale=0.6, relief=None, pos=(xOffset + item * xSpacing, 0, yOffset + track * ySpacing))
                     else:
                         break
 
