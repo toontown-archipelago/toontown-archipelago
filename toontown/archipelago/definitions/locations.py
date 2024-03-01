@@ -216,6 +216,7 @@ SAVED_TOONTOWN = "Save Toontown"
 # Used to offset all location ids to be compatible in the multiworld
 BASE_ID = 0x501100
 
+# Only define locations here that our game needs to be aware of (not events)
 LIST_OF_LOCATION_DEFINITIONS = {
 
     # Checks for simply logging in the game
@@ -392,16 +393,20 @@ LIST_OF_LOCATION_DEFINITIONS = {
     ToontownLocationDefinition(CLEAR_CJ, BASE_ID+130, location_type=ToontownLocationType.BOSSES),
     ToontownLocationDefinition(CLEAR_CEO, BASE_ID+131, location_type=ToontownLocationType.BOSSES),
 
-    # Speak to flippy once you have obtained all 4 proofs for one final check
-    ToontownLocationDefinition(SAVED_TOONTOWN, BASE_ID+132, location_type=ToontownLocationType.BOSSES),
+    ToontownLocationDefinition(SELLBOT_PROOF, BASE_ID+132, location_type=ToontownLocationType.BOSSES),
+    ToontownLocationDefinition(CASHBOT_PROOF, BASE_ID+133, location_type=ToontownLocationType.BOSSES),
+    ToontownLocationDefinition(LAWBOT_PROOF, BASE_ID+134, location_type=ToontownLocationType.BOSSES),
+    ToontownLocationDefinition(BOSSBOT_PROOF, BASE_ID+135, location_type=ToontownLocationType.BOSSES),
+
+    ToontownLocationDefinition(SAVED_TOONTOWN, BASE_ID+136),
 
     # Discover Playgrounds
-    ToontownLocationDefinition(DISCOVER_TTC, BASE_ID+133, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
-    ToontownLocationDefinition(DISCOVER_DD, BASE_ID+134, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
-    ToontownLocationDefinition(DISCOVER_DG, BASE_ID+135, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
-    ToontownLocationDefinition(DISCOVER_MM, BASE_ID+136, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
-    ToontownLocationDefinition(DISCOVER_TB, BASE_ID+137, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
-    ToontownLocationDefinition(DISCOVER_DDL, BASE_ID+138, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_TTC, BASE_ID+137, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_DD, BASE_ID+138, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_DG, BASE_ID+139, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_MM, BASE_ID+140, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_TB, BASE_ID+141, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_DDL, BASE_ID+142, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
 }
 
 # Maps Location Definitions by location name -> location definition

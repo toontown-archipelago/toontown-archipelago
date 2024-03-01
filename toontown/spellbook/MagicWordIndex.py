@@ -325,8 +325,8 @@ class MaxToon(MagicWord):
             CogDisguiseGlobals.PartsPerSuitBitmasks[2],
             CogDisguiseGlobals.PartsPerSuitBitmasks[3],
         ])
-        toon.b_setCogLevels([ToontownGlobals.MaxCogSuitLevel] * 4 + [0])
-        toon.b_setCogTypes([7] * 4 + [0])
+        toon.b_setCogLevels([ToontownGlobals.MaxCogSuitLevel] * 4)
+        toon.b_setCogTypes([7] * 4)
 
         toon.b_setCogCount(list(CogPageGlobals.COG_QUOTAS[1]) * 4)
         cogStatus = [CogPageGlobals.COG_COMPLETE2] * SuitDNA.suitsPerDept

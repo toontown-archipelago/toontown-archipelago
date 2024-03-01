@@ -8,7 +8,7 @@ window-title Toontown: Archipelago
 console-output true
 
 # Server settings
-server-version tt-cl-edition
+server-version tt-ap-edition
 
 # Developer settings
 want-dev false

@@ -163,7 +163,6 @@ ITEM_DEFINITIONS: Dict[str, ToontownItemDefinition] = {
     ITEM_BBHQ_TELEPORT: ToontownItemDefinition(ITEM_BBHQ_TELEPORT, BASE_ITEM_ID+33, ItemClassification.useful, quantity=1),
 
     # Tasking Access (Playground HQ entry access)
-    ITEM_TTC_HQ_ACCESS: ToontownItemDefinition(ITEM_TTC_HQ_ACCESS, BASE_ITEM_ID+59, ItemClassification.progression, quantity=0),
     ITEM_DD_HQ_ACCESS: ToontownItemDefinition(ITEM_DD_HQ_ACCESS, BASE_ITEM_ID+34, ItemClassification.progression, quantity=1),
     ITEM_DG_HQ_ACCESS: ToontownItemDefinition(ITEM_DG_HQ_ACCESS, BASE_ITEM_ID+35, ItemClassification.progression, quantity=1),
     ITEM_MML_HQ_ACCESS: ToontownItemDefinition(ITEM_MML_HQ_ACCESS, BASE_ITEM_ID+36, ItemClassification.progression, quantity=1),
@@ -193,11 +192,21 @@ ITEM_DEFINITIONS: Dict[str, ToontownItemDefinition] = {
     ITEM_LAWBOT_DISGUISE: ToontownItemDefinition(ITEM_LAWBOT_DISGUISE, BASE_ITEM_ID+53, ItemClassification.progression, quantity=1),
     ITEM_BOSSBOT_DISGUISE: ToontownItemDefinition(ITEM_BOSSBOT_DISGUISE, BASE_ITEM_ID+54, ItemClassification.progression, quantity=1),
 
+    # Proofs
+    ITEM_SELLBOT_PROOF: ToontownItemDefinition(ITEM_SELLBOT_PROOF, BASE_ITEM_ID+55, ItemClassification.progression, quantity=0),
+    ITEM_CASHBOT_PROOF: ToontownItemDefinition(ITEM_CASHBOT_PROOF, BASE_ITEM_ID+56, ItemClassification.progression, quantity=0),
+    ITEM_LAWBOT_PROOF: ToontownItemDefinition(ITEM_LAWBOT_PROOF, BASE_ITEM_ID+57, ItemClassification.progression, quantity=0),
+    ITEM_BOSSBOT_PROOF: ToontownItemDefinition(ITEM_BOSSBOT_PROOF, BASE_ITEM_ID+58, ItemClassification.progression, quantity=0),
+
     # todo add filler items (jellybeans more laff maybe gag xp or something idk)
-    ITEM_250_MONEY: ToontownItemDefinition(ITEM_250_MONEY, BASE_ITEM_ID+55, ItemClassification.filler),
-    ITEM_500_MONEY: ToontownItemDefinition(ITEM_500_MONEY, BASE_ITEM_ID+56, ItemClassification.filler),
-    ITEM_1000_MONEY: ToontownItemDefinition(ITEM_1000_MONEY, BASE_ITEM_ID+57, ItemClassification.filler),
-    ITEM_2000_MONEY: ToontownItemDefinition(ITEM_2000_MONEY, BASE_ITEM_ID+58, ItemClassification.filler),
+    ITEM_250_MONEY: ToontownItemDefinition(ITEM_250_MONEY, BASE_ITEM_ID+59, ItemClassification.filler),
+    ITEM_500_MONEY: ToontownItemDefinition(ITEM_500_MONEY, BASE_ITEM_ID+60, ItemClassification.filler),
+    ITEM_1000_MONEY: ToontownItemDefinition(ITEM_1000_MONEY, BASE_ITEM_ID+61, ItemClassification.filler),
+    ITEM_2000_MONEY: ToontownItemDefinition(ITEM_2000_MONEY, BASE_ITEM_ID+62, ItemClassification.filler),
+
+    # Items added in hindsight, #todo do this better
+    ITEM_TTC_HQ_ACCESS: ToontownItemDefinition(ITEM_TTC_HQ_ACCESS, BASE_ITEM_ID+63, ItemClassification.progression, quantity=0),
+    ITEM_VICTORY: ToontownItemDefinition(ITEM_VICTORY, BASE_ITEM_ID+64, ItemClassification.progression, quantity=0),
 }
 
 # Junk items are items where they are classified as filler

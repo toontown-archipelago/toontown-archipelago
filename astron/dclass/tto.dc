@@ -2411,6 +2411,7 @@ dclass DistributedNPCSpecialQuestGiver : DistributedNPCToonBase {
 };
 
 dclass DistributedNPCFlippyInToonHall : DistributedNPCToon {
+  doToonVictory(uint32 avId) broadcast ram;
 };
 
 dclass DistributedNPCScientist : DistributedNPCToonBase {

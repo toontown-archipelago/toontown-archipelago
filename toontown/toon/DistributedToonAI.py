@@ -4327,6 +4327,19 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def d_sendArchipelagoMessage(self, message: str) -> None:
         self.sendUpdate('sendArchipelagoMessage', [message])
 
+    # Checks whether or not this toon has "beat" their archipelago goal
+    # Default goal is to default all 4 bosses at least once
+    # todo add more win conditions, maybe even a field on toons that keeps track of flags from APReward 's that we get
+    def winConditionSatisfied(self):
+
+        # Win condition for defeat all bosses satisfied? (Toon has a suit that isn't level 1 in any boss)
+        print(self.getCogLevels())
+        for level in self.getCogLevels():
+            if level <= 0:
+                return False
+
+        return True
+
     # Sets this toons stats as if they were a freshly created toon
     # This should only be called when we detect an AP player connected for the very first time.
     def newToon(self):
@@ -4365,6 +4378,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Disguise stuff, revoke their disguises
         self.b_setCogParts([0, 0, 0, 0])
+        self.b_setCogTypes([0, 0, 0, 0])
+        self.b_setCogLevels([0, 0, 0, 0])
+        self.b_setCogMerits([0, 0, 0, 0])
 
         # Revoke rewards
         self.resetNPCFriendsDict()
@@ -4385,4 +4401,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setReceivedItems([])
         self.b_setAccessKeys([])
 
+    def APVictory(self):
+        if self.archipelago_session:
+            self.archipelago_session.victory()
 

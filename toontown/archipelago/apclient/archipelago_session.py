@@ -5,6 +5,8 @@ from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
 from toontown.archipelago.packets.serverbound.location_checks_packet import LocationChecksPacket
 from toontown.archipelago.packets.serverbound.say_packet import SayPacket
+from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
+from toontown.archipelago.util.net_utils import ClientStatus
 
 # Typing hack, delete later #todo
 if False:
@@ -81,4 +83,10 @@ class ArchipelagoSession:
 
     def cleanup(self):
         self.client.stop()
+
+    # Sends a status update to AP that we have completed our goal
+    def victory(self):
+        goal_complete_packet = StatusUpdatePacket()
+        goal_complete_packet.status = ClientStatus.CLIENT_GOAL
+        self.client.send_packet(goal_complete_packet)
 

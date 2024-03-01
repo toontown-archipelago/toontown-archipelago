@@ -1,4 +1,6 @@
 # Represents logic for what to do when we are given an item from AP
+from enum import IntEnum
+
 from toontown.archipelago.definitions import items
 from toontown.archipelago.definitions.items import ToontownItemDefinition
 from toontown.building import FADoorCodes
@@ -22,7 +24,7 @@ class LaffBoostReward(APReward):
         self.amount = amount
 
     def apply(self, av: "DistributedToonAI"):
-        av.b_setMaxHp(av.maxHp+self.amount)
+        av.b_setMaxHp(av.maxHp + self.amount)
         av.toonUp(self.amount)
         av.d_setSystemMessage(0, f"Increased your max laff by {self.amount}!")
 
@@ -48,7 +50,6 @@ class JellybeanJarUpgradeReward(APReward):
 
 
 class GagTrainingFrameReward(APReward):
-
     TOONUP = 0
     TRAP = 1
     LURE = 2
@@ -74,7 +75,7 @@ class GagTrainingFrameReward(APReward):
 
         # Increment track access level by 1
         oldLevel = av.getTrackAccessLevel(self.track)
-        newLevel = oldLevel+1
+        newLevel = oldLevel + 1
 
         bonusArray = av.getTrackBonusLevel()
 
@@ -92,7 +93,7 @@ class GagTrainingFrameReward(APReward):
 
         # Consider the case where we just learned a new gag track, we should give them as many of them as possible
         if newLevel == 1:
-            av.inventory.addItemsWithListMax([(self.track, newLevel)])
+            av.inventory.addItemsWithListMax([(self.track, 0)])
             av.b_setInventory(av.inventory.makeNetString())
 
         av.d_setSystemMessage(0, f"You can now train {self.TRACK_TO_NAME[self.track]} gags up to {newLevel}!")
@@ -113,15 +114,13 @@ class GagTrainingMultiplierReward(APReward):
 class FishingRodUpgradeReward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
-
-        nextRodID = min(av.fishingRod+1, FishGlobals.MaxRodId)
+        nextRodID = min(av.fishingRod + 1, FishGlobals.MaxRodId)
 
         av.b_setFishingRod(nextRodID)
         av.d_setSystemMessage(0, f"Upgraded your fishing rod!")
 
 
 class TeleportAccessUpgradeReward(APReward):
-
     TOONTOWN_CENTRAL = ToontownGlobals.ToontownCentral
     DONALDS_DOCK = ToontownGlobals.DonaldsDock
     DAISYS_GARDENS = ToontownGlobals.DaisyGardens
@@ -152,11 +151,11 @@ class TeleportAccessUpgradeReward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         av.addTeleportAccess(self.playground)
-        av.d_setSystemMessage(0, f"You can now teleport to {self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}!")
+        av.d_setSystemMessage(0,
+                              f"You can now teleport to {self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}!")
 
 
 class TaskAccessReward(APReward):
-
     TOONTOWN_CENTRAL = ToontownGlobals.ToontownCentral
     DONALDS_DOCK = ToontownGlobals.DonaldsDock
     DAISYS_GARDENS = ToontownGlobals.DaisyGardens
@@ -177,15 +176,14 @@ class TaskAccessReward(APReward):
         self.playground: int = playground
 
     def apply(self, av: "DistributedToonAI"):
-
         # Get the key ID for this playground
         key = FADoorCodes.ZONE_TO_ACCESS_CODE[self.playground]
         av.addAccessKey(key)
-        av.d_setSystemMessage(0, f"You have been given {self.playground} HQ Clearance and can now complete toontasks there!")
+        av.d_setSystemMessage(0,
+                              f"You have been given {self.playground} HQ Clearance and can now complete toontasks there!")
 
 
 class FacilityAccessReward(APReward):
-
     FACILITY_ID_TO_DISPLAY = {
         FADoorCodes.FRONT_FACTORY_ACCESS_MISSING: "Front Factory",
         FADoorCodes.SIDE_FACTORY_ACCESS_MISSING: "Side Factory",
@@ -215,7 +213,6 @@ class FacilityAccessReward(APReward):
 
 
 class CogDisguiseReward(APReward):
-
     BOSSBOT = 0
     LAWBOT = 1
     CASHBOT = 2
@@ -247,6 +244,36 @@ class JellybeanReward(APReward):
     def apply(self, av: "DistributedToonAI"):
         av.addMoney(self.amount)
         av.d_setSystemMessage(0, f"You were given {self.amount} jellybeans!")
+
+
+class ProofReward(APReward):
+    class ProofType(IntEnum):
+        SellbotBossFirstTime = 0
+        CashbotBossFirstTime = 1
+        LawbotBossFirstTime = 2
+        BossbotBossFirstTime = 3
+
+        def to_display(self):
+            return {
+                self.SellbotBossFirstTime: "First VP Defeated",
+                self.CashbotBossFirstTime: "First CFO Defeated",
+                self.LawbotBossFirstTime: "First CJ Defeated",
+                self.BossbotBossFirstTime: "First CEO Defeated"
+            }.get(self, f"Unknown Proof ({self.value})")
+
+    def __init__(self, proofType: ProofType):
+        self.proofType: ProofReward.ProofType = proofType
+
+    def apply(self, av: "DistributedToonAI"):
+        # todo keep track of these
+        av.d_setSystemMessage(0, f"Proof obtained!: {self.proofType.to_display()}")
+
+
+class VictoryReward(APReward):
+
+    def apply(self, av: "DistributedToonAI"):
+        av.APVictory()
+        av.d_setSystemMessage(0, "DEBUG: Victory condition achieved")
 
 
 class UndefinedReward(APReward):
@@ -329,6 +356,13 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     items.ITEM_LAWBOT_DISGUISE: CogDisguiseReward(CogDisguiseReward.LAWBOT),
     items.ITEM_BOSSBOT_DISGUISE: CogDisguiseReward(CogDisguiseReward.BOSSBOT),
 
+    items.ITEM_SELLBOT_PROOF: ProofReward(ProofReward.ProofType.SellbotBossFirstTime),
+    items.ITEM_CASHBOT_PROOF: ProofReward(ProofReward.ProofType.CashbotBossFirstTime),
+    items.ITEM_LAWBOT_PROOF: ProofReward(ProofReward.ProofType.LawbotBossFirstTime),
+    items.ITEM_BOSSBOT_PROOF: ProofReward(ProofReward.ProofType.BossbotBossFirstTime),
+
+    items.ITEM_VICTORY: VictoryReward(),
+
     items.ITEM_250_MONEY: JellybeanReward(250),
     items.ITEM_500_MONEY: JellybeanReward(500),
     items.ITEM_1000_MONEY: JellybeanReward(1000),
@@ -353,4 +387,3 @@ def get_ap_reward_from_id(_id: int) -> APReward:
         ap_reward = UndefinedReward(definition.unique_name)
 
     return ap_reward
-

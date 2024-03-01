@@ -3,7 +3,8 @@ from typing import List, Any, Dict
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.definitions import locations
 from toontown.archipelago.definitions.util import ap_location_name_to_id, get_zone_discovery_id
-from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot
+from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
+from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 
 
@@ -91,3 +92,7 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.av.addCheckedLocation(new_game)
         client.av.addCheckedLocation(track_one_check)
         client.av.addCheckedLocation(track_two_check)
+
+        status_packet = StatusUpdatePacket()
+        status_packet.status = ClientStatus.CLIENT_GOAL if client.av.winConditionSatisfied() else ClientStatus.CLIENT_PLAYING
+        client.send_packet(status_packet)
