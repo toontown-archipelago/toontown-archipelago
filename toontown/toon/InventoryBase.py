@@ -295,7 +295,7 @@ class InventoryBase(DirectObject.DirectObject):
 
     def zeroInv(self):
         for track in range(len(Tracks)):
-            for level in range(LAST_REGULAR_GAG_LEVEL):
+            for level in range(LAST_REGULAR_GAG_LEVEL+1):
                 self.inventory[track][level] = 0
 
         self.calcTotalProps()

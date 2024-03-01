@@ -4340,9 +4340,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setTrackAccess([0, 0, 0, 0, 0, 0, 0])
         self.b_setTrackBonusLevel([-1, -1, -1, -1, -1, -1, -1])
         self.inventory.zeroInv()
+        self.experience.zeroOutExp()
         self.b_setInventory(self.inventory.makeNetString())
+        self.b_setExperience(self.experience.getCurrentExperience())
         self.b_setBaseGagSkillMultiplier(1)
 
+        # Default money
         self.b_setMaxMoney(50)
         self.b_setMoney(50)
         self.b_setBankMoney(0)
@@ -4359,6 +4362,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Disguise stuff, revoke their disguises
         self.b_setCogParts([0, 0, 0, 0])
+
+        # Revoke rewards
+        self.resetNPCFriendsDict()
+        self.b_setResistanceMessages([])
+        self.b_setPinkSlips(0)
 
         # We haven't seen any cogs
         cogStatus = self.getCogStatus()

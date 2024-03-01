@@ -8,11 +8,10 @@ from direct.interval.MetaInterval import Sequence
 
 
 class ArchipelagoOnscreenLog(DirectFrame):
-    NUM_ITEMS_VISIBLE = 16
+    NUM_ITEMS_VISIBLE = 20
     X_OFFSET = 0.05
-    Z_OFFSET = -0.65
-
-    DEBUG = True
+    Z_OFFSET = -0.4
+    ENTRY_VISIBLITY_LENGTH = 15
 
     def __init__(self):
         DirectFrame.__init__(self, parent=base.a2dTopLeft, relief=None)
@@ -34,8 +33,8 @@ class ArchipelagoOnscreenLog(DirectFrame):
                                 text_shadow=(0, 0, 0, 1))
 
         Sequence(
-            Wait(10),
-            LerpColorScaleInterval(msg_label, duration=2.5, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1))
+            Wait(self.ENTRY_VISIBLITY_LENGTH),
+            LerpColorScaleInterval(msg_label, duration=3, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1))
         ).start()
 
         self.log.addItem(msg_label)
