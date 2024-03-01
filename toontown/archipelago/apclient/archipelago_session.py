@@ -62,9 +62,9 @@ class ArchipelagoSession:
         packet.text = message
         self.client.send_packet(packet)
 
-    # Called right when we get connected to the server, makes sure our locations are synced as well as toon stats
+    # Called right when we get connected to the server, makes sure our locations are synced in case we got stuff
+    # while disconnected from AP
     def sync(self):
-        self.avatar.b_setName(self.client.slot_name)
         self.complete_checks(self.avatar.getCheckedLocations())
 
     # Call to send a packet to AP that a location check was completed

@@ -202,6 +202,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.baseGagSkillMultiplier = 1
         self.accessKeys: List[int] = []
         self.receivedItems: List[int] = []
+        self.checkedLocations: List[int] = []
 
         return
 
@@ -2792,6 +2793,12 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # Get a list of item IDs this toon has received via AP
     def getReceivedItems(self) -> List[int]:
         return self.receivedItems
+
+    def setCheckedLocations(self, checkedLocations: List[int]) -> None:
+        self.checkedLocations = checkedLocations
+
+    def getCheckedLocations(self) -> List[int]:
+        return self.checkedLocations
 
     # To be overridden in LocalToon, just here for safety
     def sendArchipelagoMessage(self, message: str) -> None:

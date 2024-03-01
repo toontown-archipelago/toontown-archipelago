@@ -74,10 +74,15 @@ class ConnectedPacket(ClientBoundPacketBase):
             client.av.b_setHp(client.av.getMaxHp())
 
             # Set their starting money
-            client.av.b_setMoney(50)
+            client.av.b_setMoney(self.slot_info.get('starting_money', 50))
 
             # Set their starting gag xp multiplier
             client.av.b_setBaseGagSkillMultiplier(self.slot_info.get('starting_gag_xp_multiplier', 2))
+
+        # Send all checks that may have been obtained while disconnected
+        toonCheckedLocations = client.av.getCheckedLocations()
+        if len(toonCheckedLocations) > 0:
+            client.av.archipelago_session.sync()
 
         # Login location rewarding
         track_one_check = ap_location_name_to_id(locations.STARTING_TRACK_ONE_LOCATION)
