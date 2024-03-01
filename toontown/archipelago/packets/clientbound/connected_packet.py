@@ -70,14 +70,14 @@ class ConnectedPacket(ClientBoundPacketBase):
             client.av.newToon()
 
             # Set their max HP
-            client.av.b_setMaxHp(self.slot_info.get('starting_hp', 15))
+            client.av.b_setMaxHp(self.slot_data.get('starting_hp', 15))
             client.av.b_setHp(client.av.getMaxHp())
 
             # Set their starting money
-            client.av.b_setMoney(self.slot_info.get('starting_money', 50))
+            client.av.b_setMoney(self.slot_data.get('starting_money', 50))
 
             # Set their starting gag xp multiplier
-            client.av.b_setBaseGagSkillMultiplier(self.slot_info.get('starting_gag_xp_multiplier', 2))
+            client.av.b_setBaseGagSkillMultiplier(self.slot_data.get('starting_gag_xp_multiplier', 2))
 
         # Send all checks that may have been obtained while disconnected
         toonCheckedLocations = client.av.getCheckedLocations()
