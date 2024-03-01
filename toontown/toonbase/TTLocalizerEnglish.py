@@ -5141,7 +5141,7 @@ BattleGlobalAvPropStringsPlural = (('Feathers',
   'Safes',
   'Grand Pianos',
   'Oceanliners'))
-BattleGlobalAvTrackAccStrings = ('70%',
+BattleGlobalAvTrackAccStrings = ('100%',
  '100%',
  '50%',
  '95%',
