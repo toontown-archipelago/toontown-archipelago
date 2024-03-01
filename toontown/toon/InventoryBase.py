@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 from panda3d.core import *
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase.ToontownBattleGlobals import *
@@ -95,30 +97,86 @@ class InventoryBase(DirectObject.DirectObject):
     def addItems(self, track, level, amount):
         if type(track) == type(''):
             track = Tracks.index(track)
+
         max = self.getMax(track, level)
-        unpaid = self.toon.getGameAccess() != ToontownGlobals.AccessFull
-        if hasattr(self.toon, 'experience') and hasattr(self.toon.experience, 'getExpLevel'):
-            if self.toon.experience.getExpLevel(track) >= level and self.toon.hasTrackAccess(track):
-                if self.numItem(track, level) <= max - amount:
-                    if self.totalProps + amount <= self.toon.getMaxCarry() or level > LAST_REGULAR_GAG_LEVEL:
-                        if not (unpaid and Levels[track][level] > UnpaidMaxSkills[track]):
-                            self.inventory[track][level] += amount
-                            self.totalProps += amount
-                            return self.inventory[track][level]
-                        else:
-                            return -3
-                    else:
-                        return -2
-                else:
-                    return -1
-            else:
-                return 0
-        else:
+
+        if not (hasattr(self.toon, 'experience') and hasattr(self.toon.experience, 'getExpLevel')):
             return 0
+
+        # Toon does not have the experience required or access to the track
+        if not (self.toon.experience.getExpLevel(track) >= level and self.toon.hasTrackAccess(track)):
+            return 0
+
+        # Requested amount of items to add will not fit due to gag limit constraints
+        if self.numItem(track, level) > max - amount:
+            return 0
+
+        # Requested amount of items to add will go over our toons carry limit
+        if self.totalProps + amount > self.toon.getMaxCarry():
+            return 0
+
+        # Add the gag, update the count, and return the amount of gags that were added
+        self.inventory[track][level] += amount
+        self.totalProps += amount
+        return amount
 
     def addItemWithList(self, track, levelList):
         for level in levelList:
             self.addItem(track, level)
+
+    # Given a list of tuple pairs representing track and level, add as many items as possible
+    # Example input: [(0, 0), (0, 1), (1, 0), (6, 1)]  is feather, megaphone, banana peel, sandbag
+    # We should first try to fit as many level two gags, then start considering lower levels
+    # We should also try and spread out the gags evenly so we don't just dump 5 of the same gag into the same space
+    def addItemsWithListMax(self, trackAndLevelList: List[tuple[int, int]]) -> int:
+
+        # Level -> list of tracks to consider
+        # We can then iterate from max level to lowest level and process all the tracks within that level
+        levelToTrack: Dict[int, List[int]] = {
+
+        }
+
+        # Process all the input info
+        for gagInfo in trackAndLevelList:
+            track, level = gagInfo
+            # Get list of tracks present for this level, add this track
+            currTracksForLevel: List[int] = levelToTrack.get(level, [])
+            currTracksForLevel.append(track)
+            levelToTrack[level] = currTracksForLevel
+
+        # Now iterate from highest level to lowest level of gags we have
+        levels = list(levelToTrack.keys())
+        maxLevel: int = max(levels)
+        minLevel: int = min(levels)
+        totalGagsAdded = 0
+        assert maxLevel >= minLevel
+        for level in range(maxLevel, minLevel-1, -1):
+            # It is possible that we don't have a track for this level of gag
+            if level not in levelToTrack:
+                continue
+
+            # Get the tracks of gags for this level we should process
+            tracks = list(levelToTrack[level])
+            # Keep continuously iterating over these tracks until we get a pass where a gag was not added
+            _attempts = 0  # Infinite loop protection
+            while _attempts < 1000:
+                _attempts += 1
+
+                numGagsAdded = 0
+                for track in tracks:
+                    numGagsAdded += self.addItem(track, level)
+                    totalGagsAdded += numGagsAdded
+
+                # If we did not add a single gag for this specific level for all tracks, then break out
+                # This will go to the next iteration of levels to process
+                if numGagsAdded <= 0:
+                    break
+
+            # At this point, we have run out of gags to add for this level, go to the next
+            continue
+
+        # We have iterated through all of our levels, our inventory should now have as many new gags as possible added
+        return totalGagsAdded
 
     def numItem(self, track, level):
         if type(track) == type(''):
@@ -270,7 +328,7 @@ class InventoryBase(DirectObject.DirectObject):
 
     def NPCMaxOutInv(self, targetTrack = -1):
         result = 0
-        for level in range(5, -1, -1):
+        for level in range(6, -1, -1):
             anySpotsAvailable = 1
             while anySpotsAvailable == 1:
                 anySpotsAvailable = 0

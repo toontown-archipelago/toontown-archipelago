@@ -1,3 +1,4 @@
+from typing import List
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.suit import SuitDNA
@@ -139,17 +140,26 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
         if toon.hp <= 0:
             toon.b_setHp(1)
 
-        for i in range(len(ToontownBattleGlobals.Tracks)):
-            exp = getSkillGained(toonSkillPtsGained, toon.doId, i)
+        # New gags [(track, level), (track, level), ....]
+        newGags: List[tuple[int, int]] = []
+
+        for track in range(len(ToontownBattleGlobals.Tracks)):
+            exp = getSkillGained(toonSkillPtsGained, toon.doId, track)
             needed = ToontownBattleGlobals.MaxSkill
-            totalExp = exp + toon.experience.getExp(i)
+            totalExp = exp + toon.experience.getExp(track)
             if totalExp >= needed or totalExp >= ToontownBattleGlobals.MaxSkill:
-                toon.experience.setExp(i, ToontownBattleGlobals.MaxSkill)
+                toon.experience.setExp(track, ToontownBattleGlobals.MaxSkill)
             else:
                 if exp > 0:
-                    newGagList = toon.experience.getNewGagIndexList(i, exp)
-                    toon.experience.addExp(i, amount=exp)
-                    toon.inventory.addItemWithList(i, newGagList)
+                    newGagList = toon.experience.getNewGagIndexList(track, exp)
+                    toon.experience.addExp(track, amount=exp)
+                    for newGagLevel in newGagList:
+                        newGags.append((track, newGagLevel))
+
+        # New gag
+        if len(newGags) > 0:
+            toon.inventory.addItemsWithListMax(newGags)
+
         toon.b_setExperience(toon.experience.getCurrentExperience())
         toon.d_setInventory(toon.inventory.makeNetString())
         toon.b_setAnimState('victory', 1)

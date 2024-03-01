@@ -89,6 +89,12 @@ class GagTrainingFrameReward(APReward):
         av.setTrackAccessLevel(self.track, newLevel)
         bonusArray[self.track] = -1
         av.b_setTrackBonusLevel(bonusArray)
+
+        # Consider the case where we just learned a new gag track, we should give them as many of them as possible
+        if newLevel == 1:
+            av.inventory.addItemsWithListMax([(self.track, newLevel)])
+            av.b_setInventory(av.inventory.makeNetString())
+
         av.d_setSystemMessage(0, f"You can now train {self.TRACK_TO_NAME[self.track]} gags up to {newLevel}!")
 
 
