@@ -15,8 +15,8 @@ class TTOffFriendsManager(DistributedObjectGlobal):
         for currentField in fields:
             if currentField[0] in (
                     'setDNAString', 'setMailboxContents', 'setAwardMailboxContents', 'setGiftSchedule',
-                    'setDeliverySchedule', 'setAwardSchedule'):
-                currentField[1] = currentField[1].decode('base64')
+                    'setDeliverySchedule', 'setAwardSchedule', 'setInventory'):
+                currentField[1] = bytes(currentField[1], 'utf-8')
 
         base.cr.handleGetAvatarDetailsResp(avId, fields=fields)
 
