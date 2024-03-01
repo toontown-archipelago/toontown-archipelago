@@ -255,6 +255,10 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
 
                 def doReparent(parentId = parentId, self = self, wrt = wrt):
                     parent = self.getEntity(parentId)
+
+                    if parent is None:
+                        return
+
                     for child in self.parent2pendingChildren[parentId]:
                         DistributedLevel.notify.debug('performing pending reparent of %s to %s' % (child, parent))
                         if wrt:

@@ -69,73 +69,111 @@ def printNumBattles():
     iterateBossbotCountryClubs(func)
 
 
-ClubLayout3_0 = [(0, 2, 5, 9, 17), (0, 2, 4, 9, 17), (0, 2, 5, 9, 18)]
-ClubLayout3_1 = [(0, 2, 5, 9, 17), (0, 2, 4, 9, 17), (0, 2, 5, 9, 18)]
-ClubLayout3_2 = [(0, 2, 4, 9, 17), (0, 2, 4, 9, 17), (0, 2, 6, 9, 18)]
-ClubLayout6_0 = [(0, 22, 4, 29, 17),
- (0, 22, 5, 29, 17),
- (0, 22, 6, 29, 17),
- (0, 22, 5, 29, 17),
- (0, 22, 6, 29, 17),
- (0, 22, 5, 29, 18)]
-ClubLayout6_1 = [(0, 22, 4, 29, 17),
- (0, 22, 6, 29, 17),
- (0, 22, 4, 29, 17),
- (0, 22, 6, 29, 17),
- (0, 22, 4, 29, 17),
- (0, 22, 6, 29, 18)]
-ClubLayout6_2 = [(0, 22, 4, 29, 17),
- (0, 22, 6, 29, 17),
- (0, 22, 5, 29, 17),
- (0, 22, 6, 29, 17),
- (0, 22, 5, 29, 17),
- (0, 22, 7, 29, 18)]
-ClubLayout9_0 = [(0, 32, 4, 39, 17),
- (0, 32, 5, 39, 17),
- (0, 32, 6, 39, 17),
- (0, 32, 7, 39, 17),
- (0, 32, 5, 39, 17),
- (0, 32, 6, 39, 17),
- (0, 32, 7, 39, 17),
- (0, 32, 7, 39, 17),
- (0, 32, 6, 39, 18)]
-ClubLayout9_1 = [(0, 32, 4, 39, 17),
- (0, 32, 5, 39, 17),
- (0, 32, 6, 39, 17),
- (0, 32, 7, 39, 17),
- (0, 32, 5, 39, 17),
- (0, 32, 6, 39, 17),
- (0, 32, 7, 39, 17),
- (0, 32, 7, 39, 17),
- (0, 32, 7, 39, 18)]
-ClubLayout9_2 = [(0, 32, 5, 39, 17),
- (0, 32, 5, 39, 17),
- (0, 32, 6, 39, 17),
- (0, 32, 6, 39, 17),
- (0, 32, 5, 39, 17),
- (0, 32, 5, 39, 17),
- (0, 32, 6, 39, 17),
- (0, 32, 6, 39, 17),
- (0, 32, 7, 39, 18)]
-countryClubLayouts = [ClubLayout3_0,
- ClubLayout3_1,
- ClubLayout3_2,
- ClubLayout6_0,
- ClubLayout6_1,
- ClubLayout6_2,
- ClubLayout9_0,
- ClubLayout9_1,
- ClubLayout9_2]
-testLayout = [ClubLayout3_0,
- ClubLayout3_0,
- ClubLayout3_0,
- ClubLayout6_0,
- ClubLayout6_0,
- ClubLayout6_0,
- ClubLayout9_0,
- ClubLayout9_0,
- ClubLayout9_0]
-countryClubLayouts = testLayout
+ClubLayout3_0 = [
+    # (0, 2, 5, 9, 17),
+    # (0, 2, 4, 9, 17),
+    (0, 2, 5, 9, 18)
+]
+ClubLayout3_1 = [
+    # (0, 2, 5, 9, 17),
+    # (0, 2, 4, 9, 17),
+    (0, 2, 5, 9, 18)
+]
+
+ClubLayout3_2 = [
+    # (0, 2, 4, 9, 17),
+    # (0, 2, 4, 9, 17),
+    (0, 2, 6, 9, 18)
+]
+
+ClubLayout6_0 = [
+    # (0, 22, 4, 29, 17),
+    # (0, 22, 5, 29, 17),
+    # (0, 22, 6, 29, 17),
+    # (0, 22, 5, 29, 17),
+    (0, 22, 6, 29, 17),
+    (0, 22, 5, 29, 18)
+                 ]
+
+ClubLayout6_1 = [
+    # (0, 22, 4, 29, 17),
+    # (0, 22, 6, 29, 17),
+    # (0, 22, 4, 29, 17),
+    # (0, 22, 6, 29, 17),
+    (0, 22, 4, 29, 17),
+    (0, 22, 6, 29, 18)
+]
+
+ClubLayout6_2 = [
+    # (0, 22, 4, 29, 17),
+    # (0, 22, 6, 29, 17),
+    # (0, 22, 5, 29, 17),
+    # (0, 22, 6, 29, 17),
+    (0, 22, 5, 29, 17),
+    (0, 22, 7, 29, 18)
+]
+
+ClubLayout9_0 = [
+    # (0, 32, 4, 39, 17),
+    # (0, 32, 5, 39, 17),
+    # (0, 32, 6, 39, 17),
+    # (0, 32, 7, 39, 17),
+    # (0, 32, 5, 39, 17),
+    # (0, 32, 6, 39, 17),
+    (0, 32, 7, 39, 17),
+    (0, 32, 7, 39, 17),
+    (0, 32, 6, 39, 18)
+]
+
+ClubLayout9_1 = [
+    # (0, 32, 4, 39, 17),
+    # (0, 32, 5, 39, 17),
+    # (0, 32, 6, 39, 17),
+    # (0, 32, 7, 39, 17),
+    # (0, 32, 5, 39, 17),
+    # (0, 32, 6, 39, 17),
+    (0, 32, 7, 39, 17),
+    (0, 32, 7, 39, 17),
+    (0, 32, 7, 39, 18)
+]
+
+ClubLayout9_2 = [
+    # (0, 32, 5, 39, 17),
+    # (0, 32, 5, 39, 17),
+    # (0, 32, 6, 39, 17),
+    # (0, 32, 6, 39, 17),
+    # (0, 32, 5, 39, 17),
+    # (0, 32, 5, 39, 17),
+    (0, 32, 6, 39, 17),
+    (0, 32, 6, 39, 17),
+    (0, 32, 7, 39, 18)
+]
+
+countryClubLayouts = [
+    ClubLayout3_0,
+    ClubLayout3_1,
+    ClubLayout3_2,
+    ClubLayout6_0,
+    ClubLayout6_1,
+    ClubLayout6_2,
+    ClubLayout9_0,
+    ClubLayout9_1,
+    ClubLayout9_2
+]
+
+testLayout = [
+    ClubLayout3_0,
+    ClubLayout3_0,
+    ClubLayout3_0,
+    ClubLayout6_0,
+    ClubLayout6_0,
+    ClubLayout6_0,
+    ClubLayout9_0,
+    ClubLayout9_0,
+    ClubLayout9_0
+]
+
+# countryClubLayouts = testLayout
 
 class CountryClubLayout:
     notify = DirectNotifyGlobal.directNotify.newCategory('CountryClubLayout')
@@ -240,6 +278,9 @@ class CountryClubLayout:
 
     def getFloorNum(self):
         return self.floorNum
+
+    def getNumFloors(self):
+        return len(countryClubLayouts[self.layoutIndex])
 
     def getRng(self):
         return random.Random(self.countryClubId * self.floorNum)

@@ -2,6 +2,7 @@ from otp.level import DistributedLevelAI, LevelSpec
 from direct.directnotify import DirectNotifyGlobal
 from direct.task import Task
 from otp.level import LevelSpec
+from toontown.archipelago.definitions.util import get_facility_id
 from toontown.toonbase import ToontownGlobals, ToontownBattleGlobals
 from toontown.coghq import FactoryEntityCreatorAI, CountryClubRoomSpecs
 from toontown.coghq import CountryClubRoomBase, LevelSuitPlannerAI
@@ -111,6 +112,12 @@ class DistributedCountryClubRoomAI(DistributedLevelAI.DistributedLevelAI, Countr
         description = '%s|%s' % (self.countryClubId, activeVictorIds)
         for avId in activeVictorIds:
             self.air.writeServerEvent('mintDefeated', avId, description)
+
+        for toon in activeVictors:
+            ap_check_id = get_facility_id(self.countryClubId)
+            if ap_check_id >= 0:
+                toon.addCheckedLocation(ap_check_id)
+            simbase.air.questManager.toonDefeatedCountryClub(toon, self.countryClubId, activeVictors)
 
         return
 
