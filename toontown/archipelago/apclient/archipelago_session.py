@@ -19,7 +19,12 @@ class ArchipelagoSession:
         self.avatar = avatar  # The avatar that owns this session, DistributedToonAI
         self.client = ArchipelagoClient(self.avatar, self.avatar.getName())  # The client responsible for socket communication
 
-    def handle_connect(self):
+    def handle_connect(self, server_url: str = None):
+
+        if server_url:
+            self.avatar.d_setSystemMessage(0, f"DEBUG: set AP server URL to {server_url}")
+            self.client.set_connect_url(server_url)
+
         try:
             self.client.connect()
         except Exception as e:
@@ -49,7 +54,12 @@ class ArchipelagoSession:
 
         # Handle the case where they are trying to connect
         if message.startswith('!connect'):
-            return self.handle_connect()
+            # Attempt to extract an AP server URL and port
+            ip = message.removeprefix('!connect').lstrip()
+            if not ip:
+                ip = None
+
+            return self.handle_connect(server_url=ip)
 
         # Handle the case where they are trying to disconnect
         if message.startswith('!disconnect'):

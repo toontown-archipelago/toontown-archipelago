@@ -3,6 +3,8 @@ import time
 import traceback
 
 import urllib.parse
+
+from _socket import gaierror
 from direct.stdpy import threading
 from typing import List, Dict, Union
 
@@ -23,8 +25,8 @@ from toontown.archipelago.packets.serverbound.serverbound_packet_base import Ser
 from toontown.archipelago.util.utils import cache_argsless
 
 # TODO find dynamic way to do this
-ARCHIPELAGO_SERVER_ADDRESS = "localhost"
-PORT = 38281
+DEFAULT_ARCHIPELAGO_SERVER_ADDRESS = "localhost"
+DEFAULT_PORT = 38281
 
 
 @cache_argsless
@@ -35,21 +37,25 @@ def get_ssl_context():
 # Class to handle sending and receiving packets through a socket estabilished via the archipelago server
 class ArchipelagoClient:
 
-    def __init__(self, av, slot_name: str, password: str = ''):
+    def __init__(self, av, slot_name: str = '', password: str = ''):
 
         self.state = APClientEnums.DISCONNECTED
 
         # Address to connect to (IP of archipelago server)
-        self.address: str = f"{ARCHIPELAGO_SERVER_ADDRESS}:{PORT}"
+        # Given from the client to be attempt address
+        self.address: str = f"{DEFAULT_ARCHIPELAGO_SERVER_ADDRESS}:{DEFAULT_PORT}"
+
+        # Parsed from the address
+        self.port = DEFAULT_PORT
+        self.slot_name = slot_name  # slot assigned for seed generation
+        self.password: str = password  # password if required
         # Socket interface of the archipelago server
         self.socket: ClientConnection = None
 
         # Store some identification
         self.av = av  # DistributedToonAI that owns this client
-        self.slot_name: str = slot_name  # slot assigned for seed generation
         self.slot: int = -1  # Our slot ID given when we connect
         self.uuid: str = ''  # not sure how important this is atm but just generating something in udpate_id method
-        self.password: str = password  # password if required
 
         # Actually defines correct values for variables above
         self.update_identification(slot_name, password)
@@ -112,6 +118,39 @@ class ArchipelagoClient:
             self.socket = None
             self.state = APClientEnums.DISCONNECTED
 
+    # Parses a url given (basically the archipelago server address)
+    # Updates username, password, and port
+    def parse_url(self, url: str):
+
+        # Update the raw address given
+        self.address = url
+
+        # Try to extract the username password and port from this address
+        address = f"ws://{self.address}" if "://" not in self.address \
+            else self.address.replace("archipelago://", "ws://")
+        server_url = urllib.parse.urlparse(address)
+
+        new_username = ''
+        new_password = ''
+        if server_url.username:
+            new_username = server_url.username
+        if server_url.password:
+            new_password = server_url.password
+
+        use_default_port = False
+        if not server_url.port:
+            use_default_port = True
+
+        self.update_identification(new_username, new_password)
+
+        self.port = server_url.port or 38281
+
+        port_component = ''
+        if use_default_port:
+            port_component = f':{self.port}'
+
+        return f"ws://{self.address}{port_component}"
+
     # Called via a new thread, responsible for instantiating a socket connection to the archipelago server
     # and receiving and handling incoming packets. Every 5 seconds we will perform a "kill" check to see
     # whether we should continue executing this thread
@@ -127,15 +166,9 @@ class ArchipelagoClient:
         self.state = APClientEnums.CONNECTING
         self.av.d_sendArchipelagoMessage("[AP Client] Starting server loop")
 
-        # Parse the URL to the archipelago server
-        address = f"ws://{self.address}" if "://" not in self.address \
-            else self.address.replace("archipelago://", "ws://")
-        server_url = urllib.parse.urlparse(address)
-        if server_url.username:
-            self.username = server_url.username
-        if server_url.password:
-            self.password = server_url.password
-        port = server_url.port or 38281
+        # Parse the URL to the archipelago server, use whatever URL we defined previously
+        address = self.parse_url(self.address)
+        self.av.d_sendArchipelagoMessage(f"[AP Client] Attempting connection with archipelago server at {address}")
 
         # Attempt to connect to the server, if we get refused then !connect must be run to try again
         try:
@@ -165,6 +198,9 @@ class ArchipelagoClient:
         # This will happen when we were given a bad archipelago server IP or when it just is not running
         except ConnectionRefusedError:
             self.av.d_sendArchipelagoMessage(f"[AP Client] Socket connection to archipelago server {address} failed, either wrong address or server is not running")
+        except gaierror:
+            self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"Server address {address} failed to parse! Please check the address given and try again.", color='red')]))
+
         except Exception as e:
             self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"Archipelago connection killed to prevent a district reset.", color='red')]))
             self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"[SEVERE ERROR] Unhandled exception: {e}", color='red')]))
@@ -180,11 +216,16 @@ class ArchipelagoClient:
         # Ran out of data to send
         self.av.d_sendArchipelagoMessage("[AP Client] Ran out of data to retrieve from server! Please use !connect to reconnect")
 
-    def update_identification(self, slot_name: str, password: str = ''):
-        self.slot_name = slot_name
-        self.av.b_setName(slot_name)
+    def update_identification(self, slot_name: str = '', password: str = ''):
+
+        if len(slot_name) > 0:
+            self.slot_name = slot_name
+            self.av.b_setName(slot_name)
+
+        if len(password) > 0:
+            self.password = password
+
         self.uuid = f"toontown-player-{slot_name}"  # todo make sure this is correct
-        self.password = password
 
     # Constructs a ConnectPacket to authenticate with the server
     def send_connect_packet(self):
@@ -192,6 +233,7 @@ class ArchipelagoClient:
         connect_packet = ConnectPacket()
         connect_packet.game = net_utils.ARCHIPELAGO_GAME_NAME
         connect_packet.name = self.slot_name
+        connect_packet.password = self.password
         connect_packet.uuid = self.uuid
         connect_packet.version = net_utils.ARCHIPELAGO_CLIENT_VERSION
         connect_packet.items_handling = ConnectPacket.ITEMS_HANDLING_ALL_FLAGS
@@ -250,3 +292,6 @@ class ArchipelagoClient:
 
     def get_location_info(self, location_id):
         return self.global_data_package.id_to_location_name.get(int(location_id), f'Unknown Location[{location_id}]')
+
+    def set_connect_url(self, server_url: str):
+        self.address = server_url
