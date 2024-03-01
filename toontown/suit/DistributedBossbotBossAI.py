@@ -4,6 +4,9 @@ from panda3d.core import Point3
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import FSM
 from direct.interval.IntervalGlobal import LerpPosInterval
+
+from toontown.archipelago.definitions import locations
+from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.coghq import DistributedFoodBeltAI
 from toontown.coghq import DistributedBanquetTableAI
 from toontown.coghq import DistributedGolfSpotAI
@@ -587,6 +590,8 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
+                toon.addCheckedLocation(ap_location_name_to_id(locations.CLEAR_CEO))
+                toon.addCheckedLocation(ap_location_name_to_id(locations.BOSSBOT_PROOF))
                 self.givePinkSlipReward(toon)
                 toon.b_promote(self.deptIndex)
 

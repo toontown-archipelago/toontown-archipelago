@@ -79,3 +79,31 @@ def get_zone_discovery_id(zoneId: int) -> int:
 
     # We have a location, convert it to its ID
     return ap_location_name_to_id(loc)
+
+
+# Gets the AP location ID from a ToontownGlobals facility ID definition
+def get_facility_id(facility_id: int) -> int:
+
+    FACILITY_LOCATION_CHECKS = {
+        ToontownGlobals.SellbotFactoryInt: locations.CLEAR_FRONT_FACTORY,
+        ToontownGlobals.SellbotFactoryIntS: locations.CLEAR_SIDE_FACTORY,
+
+        ToontownGlobals.CashbotMintIntA: locations.CLEAR_COIN_MINT,
+        ToontownGlobals.CashbotMintIntB: locations.CLEAR_DOLLAR_MINT,
+        ToontownGlobals.CashbotMintIntC: locations.CLEAR_BULLION_MINT,
+
+        ToontownGlobals.LawbotStageIntA: locations.CLEAR_A_OFFICE,
+        ToontownGlobals.LawbotStageIntB: locations.CLEAR_B_OFFICE,
+        ToontownGlobals.LawbotStageIntC: locations.CLEAR_C_OFFICE,
+        ToontownGlobals.LawbotStageIntD: locations.CLEAR_D_OFFICE,
+
+        ToontownGlobals.BossbotCountryClubIntA: locations.CLEAR_FRONT_THREE,
+        ToontownGlobals.BossbotCountryClubIntB: locations.CLEAR_MIDDLE_THREE,
+        ToontownGlobals.BossbotCountryClubIntC: locations.CLEAR_BACK_THREE,
+    }
+
+    loc = FACILITY_LOCATION_CHECKS.get(facility_id)
+    if not loc:
+        return -1
+
+    return ap_location_name_to_id(loc)

@@ -20,6 +20,9 @@ from toontown.suit import DistributedLawbotBossSuitAI
 from toontown.coghq import DistributedLawbotCannonAI
 from toontown.coghq import DistributedLawbotChairAI
 from toontown.toonbase import ToontownBattleGlobals
+from ..archipelago.definitions import locations
+from ..archipelago.definitions.util import ap_location_name_to_id
+
 
 class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedLawbotBossAI')
@@ -728,6 +731,8 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
+                toon.addCheckedLocation(ap_location_name_to_id(locations.CLEAR_CJ))
+                toon.addCheckedLocation(ap_location_name_to_id(locations.LAWBOT_PROOF))
                 self.giveCogSummonReward(toon, preferredDept, preferredSummonType)
                 toon.b_promote(self.deptIndex)
 

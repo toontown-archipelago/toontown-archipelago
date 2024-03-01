@@ -14,6 +14,10 @@ from toontown.toon import NPCToons
 from toontown.suit import SellbotBossGlobals
 import random
 
+from ..archipelago.definitions import locations
+from ..archipelago.definitions.util import ap_location_name_to_id
+
+
 class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedSellbotBossAI')
     limitHitCount = 6
@@ -374,6 +378,10 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
+
+                toon.addCheckedLocation(ap_location_name_to_id(locations.CLEAR_VP))
+                toon.addCheckedLocation(ap_location_name_to_id(locations.SELLBOT_PROOF))
+
                 configMax = simbase.config.GetInt('max-sos-cards', 16)
                 if configMax == 8:
                     maxNumCalls = 1

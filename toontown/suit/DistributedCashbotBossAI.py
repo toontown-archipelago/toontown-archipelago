@@ -20,6 +20,10 @@ from . import DistributedBossCogAI
 import random
 import math
 
+from ..archipelago.definitions import locations
+from ..archipelago.definitions.util import ap_location_name_to_id
+
+
 class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossAI')
 
@@ -1153,23 +1157,19 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         # There is no race condition between AI and client here
         # because these messages are sent sequentially on the wire.
-
-        '''
         BattleExperienceAI.assignRewards(
             self.involvedToons, self.toonSkillPtsGained, self.suitsKilled,
             ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
-        '''
 
         # Don't forget to give the toon the resistance chat reward and the
         # promotion!
-
-        '''
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
+                toon.addCheckedLocation(ap_location_name_to_id(locations.CLEAR_CFO))
+                toon.addCheckedLocation(ap_location_name_to_id(locations.CASHBOT_PROOF))
                 toon.addResistanceMessage(self.rewardId)
                 toon.b_promote(self.deptIndex)
-        '''
 
     def exitVictory(self):
         self.__deleteBattleThreeObjects()
