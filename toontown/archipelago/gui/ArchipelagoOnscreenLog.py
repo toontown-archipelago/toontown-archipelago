@@ -1,8 +1,9 @@
 import random
+from typing import Dict
 
 from panda3d.core import *
 from direct.gui.DirectGui import *
-from direct.interval.FunctionInterval import Wait
+from direct.interval.FunctionInterval import Wait, Func
 from direct.interval.LerpInterval import LerpColorScaleInterval
 from direct.interval.MetaInterval import Sequence
 
@@ -19,6 +20,9 @@ class ArchipelagoOnscreenLog(DirectFrame):
                                       numItemsVisible=self.NUM_ITEMS_VISIBLE, decButton_relief=None,
                                       incButton_relief=None, forceHeight=0.065)
 
+        self.sequenceCache: Dict[int, Sequence] = {}
+        self.accept("f2", self.showAllEntries)  # todo remove this for better version
+
     def destroy(self):
         self.log.removeAndDestroyAllItems()
         self.log.destroy()
@@ -32,10 +36,44 @@ class ArchipelagoOnscreenLog(DirectFrame):
                                 text_align=TextNode.ALeft, text_wordwrap=40, text_fg=(1, 1, 1, 1),
                                 text_shadow=(0, 0, 0, 1))
 
-        Sequence(
-            Wait(self.ENTRY_VISIBLITY_LENGTH),
-            LerpColorScaleInterval(msg_label, duration=3, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1))
-        ).start()
-
         self.log.addItem(msg_label)
-        self.log.scrollTo(len(self.log['items']) - 1)
+        pos = len(self.log['items']) - 1
+        self.log.scrollTo(pos)
+        self.doFadeoutSequence(pos, msg_label)
+
+    def getFadeoutSequence(self, __id, __label):
+        return Sequence(
+            Wait(self.ENTRY_VISIBLITY_LENGTH),
+            LerpColorScaleInterval(__label, duration=3, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1)),
+            Func(__label.hide),
+            Func(self.__cleanupSequence, __id)
+        )
+
+    def doFadeoutSequence(self, pos, label):
+        self.__cleanupSequence(pos)
+        seq = self.getFadeoutSequence(pos, label)
+        self.sequenceCache[pos] = seq
+        seq.start()
+
+    def __cleanupSequence(self, seqID):
+        if seqID not in self.sequenceCache:
+            return
+
+        seq = self.sequenceCache[seqID]
+        del self.sequenceCache[seqID]
+
+        if seq is None:
+            return
+
+        seq.finish()
+
+    def showAllEntries(self):
+        for i, entry in enumerate(self.log['items']):
+            self.doFadeoutSequence(i, entry)
+            entry.setColorScale(1, 1, 1, 1)
+            entry.show()
+
+    def hideAllEntries(self):
+        for i, entry in enumerate(self.log['items']):
+            self.__cleanupSequence(i)
+            entry.hide()
