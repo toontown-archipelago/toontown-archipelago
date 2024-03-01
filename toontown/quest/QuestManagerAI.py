@@ -81,8 +81,7 @@ class QuestManagerAI:
     def toonDefeatedFactory(self, toon, factoryId, activeToonVictors):
         for index, quest in enumerate(self.__toonQuestsList2Quests(toon.quests)):
             if isinstance(quest, Quests.FactoryQuest):
-                for _ in range(quest.doesFactoryCount(toon.getDoId(), factoryId, activeToonVictors)):
-                    self.__incrementQuestProgress(toon.quests[index])
+                self.__incrementQuestProgress(toon.quests[index])
 
         if toon.quests:
             toon.d_setQuests(toon.getQuests())
@@ -100,7 +99,22 @@ class QuestManagerAI:
             toon.d_setQuests(toon.getQuests())
 
     def toonDefeatedStage(self, toon, stageId, activeToonVictors):
-        pass
+        for index, quest in enumerate(self.__toonQuestsList2Quests(toon.quests)):
+            if isinstance(quest, Quests.StageQuest):
+                for _ in range(quest.doesMintCount(toon.getDoId(), stageId, activeToonVictors)):
+                    self.__incrementQuestProgress(toon.quests[index])
+
+        if toon.quests:
+            toon.d_setQuests(toon.getQuests())
+
+    def toonDefeatedCountryClub(self, toon , countryClubId, activeToonVictors):
+        for index, quest in enumerate(self.__toonQuestsList2Quests(toon.quests)):
+            if isinstance(quest, Quests.CountryClubQuest):
+                for _ in range(quest.doesMintCount(toon.getDoId(), countryClubId, activeToonVictors)):
+                    self.__incrementQuestProgress(toon.quests[index])
+
+        if toon.quests:
+            toon.d_setQuests(toon.getQuests())
 
     def hasTailorClothingTicket(self, toon, npc):
         for index, quest in enumerate(self.__toonQuestsList2Quests(toon.quests)):

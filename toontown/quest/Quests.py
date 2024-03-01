@@ -390,6 +390,8 @@ class LocationBasedQuest(Quest):
         elif loc in ToontownGlobals.StreetBranchZones:
             locName = TTLocalizer.QuestInLocationString % {'inPhrase': ToontownGlobals.StreetNames[loc][1],
              'location': ToontownGlobals.StreetNames[loc][-1] + TTLocalizer.QuestsLocationArticle}
+        else:
+            locName = f"Unknown Location: {loc}"
         return locName
 
     def isLocationMatch(self, zoneId):
@@ -1272,6 +1274,63 @@ class MintQuest(LocationBasedQuest):
 
     def doesMintCount(self, avId, location, avList):
         return self.isLocationMatch(location)
+
+
+class StageQuest(MintQuest):
+
+    def getCompletionStatus(self, av, questDesc, npc=None):
+        questId, fromNpcId, toNpcId, rewardId, toonProgress = questDesc
+        questComplete = toonProgress >= self.getNumMints()
+        return getCompleteStatusWithNpc(questComplete, toNpcId, npc)
+
+    def getObjectiveStrings(self):
+        count = self.getNumMints()
+        if count == 1:
+            text = TTLocalizer.QuestsStageQuestDesc
+        else:
+            text = TTLocalizer.QuestsStageQuestDescC % {'count': count}
+        return (text,)
+
+    def getSCStrings(self, toNpcId, progress):
+        if progress >= self.getNumMints():
+            return getFinishToonTaskSCStrings(toNpcId)
+        count = self.getNumMints()
+        if count == 1:
+            objective = TTLocalizer.QuestsStageQuestDesc
+        else:
+            objective = TTLocalizer.QuestsStageQuestDescI
+        location = self.getLocationName()
+        return TTLocalizer.QuestsMintQuestSCString % {'objective': objective,
+                                                      'location': location}
+
+    def doesMintCount(self, avId, location, avList):
+        return avId in avList
+
+
+class CountryClubQuest(StageQuest):
+
+    def getObjectiveStrings(self):
+        count = self.getNumMints()
+        if count == 1:
+            text = TTLocalizer.QuestsCountryClubQuestDesc
+        else:
+            text = TTLocalizer.QuestsStageQuestDescC % {'count': count}
+        return (text,)
+
+    def getSCStrings(self, toNpcId, progress):
+        if progress >= self.getNumMints():
+            return getFinishToonTaskSCStrings(toNpcId)
+        count = self.getNumMints()
+        if count == 1:
+            objective = TTLocalizer.QuestsCountryClubQuestDesc
+        else:
+            objective = TTLocalizer.QuestsCountryClubQuestDescI
+        location = self.getLocationName()
+        return TTLocalizer.QuestsMintQuestSCString % {'objective': objective,
+                                                      'location': location}
+
+    def doesMintCount(self, avId, location, avList):
+        return avId in avList
 
 
 class MintNewbieQuest(MintQuest, NewbieQuest):
