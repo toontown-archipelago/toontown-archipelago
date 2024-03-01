@@ -2348,6 +2348,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             bankMoney = self.bankMoney + overflowMoney
             self.b_setBankMoney(bankMoney)
 
+        # DEBUG
+        self.d_setSystemMessage(0, f"DEBUG: Received {deltaMoney} beans")
+
     def takeMoney(self, deltaMoney, bUseBank=True):
         totalMoney = self.money
         if bUseBank:

@@ -1,4 +1,7 @@
+import math
+import random
 from typing import List
+
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.suit import SuitDNA
@@ -134,6 +137,17 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
         if toon != None:
             activeToonList.append(toon)
 
+    # We should award the toons for killing some cogs, randomly generate some amount of beans to give to the players
+    # so they can sustain restocking gags without taking fishing/trolley breaks
+    moneyAward = 0
+    for suit in suitsKilled:
+
+        # Some percent chance that this suit will not drop any money
+        if random.random() > 0.5:
+            continue
+
+        moneyAward += random.randint(1, 3)
+
     for toon in activeToonList:
 
         # If this toon was dead set them to 1 hp
@@ -162,6 +176,8 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
 
         toon.b_setExperience(toon.experience.getCurrentExperience())
         toon.d_setInventory(toon.inventory.makeNetString())
+        if moneyAward > 0:
+            toon.addMoney(moneyAward)
         toon.b_setAnimState('victory', 1)
 
         if simbase.air.config.GetBool('battle-passing-no-credit', True):
