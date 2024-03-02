@@ -42,9 +42,6 @@ class CogPageManagerAI:
                 suitDept = SuitDNA.suitDepts.index(suit['track'])
                 cogQuota = COG_QUOTAS[0][SuitDNA.getSuitType(suit['type']) - 1]
                 buildingQuota = COG_QUOTAS[1][SuitDNA.getSuitType(suit['type']) - 1]
-                cogRadar = toon.getCogRadar()
-                if cogRadar[suitDept] == 1:
-                    continue
 
                 cogCount[suitIndex] += 1
                 cogStatus[suitIndex] = COG_DEFEATED

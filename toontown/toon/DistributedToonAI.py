@@ -4395,6 +4395,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             cogCount[suitIndex] = 0
         self.b_setCogStatus(cogStatus)
         self.b_setCogCount(cogCount)
+        self.b_setCogRadar([0] * 4)
+        self.b_setBuildingRadar([0] * 4)
 
         # AP stuff
         self.b_setCheckedLocations([])
