@@ -89,13 +89,13 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         self.air = air
         self.zoneId = zoneId
         self.canonicalZoneId = ZoneUtil.getCanonicalZoneId(zoneId)
-        if simbase.air.wantCogdominiums:
-            if not hasattr(self.__class__, 'CogdoPopAdjusted'):
-                self.__class__.CogdoPopAdjusted = True
-                for index in range(len(self.SuitHoodInfo)):
-                    hoodInfo = self.SuitHoodInfo[index]
-                    hoodInfo[self.SUIT_HOOD_INFO_BMIN] = int(0.5 + self.CogdoPopFactor * hoodInfo[self.SUIT_HOOD_INFO_BMIN])
-                    hoodInfo[self.SUIT_HOOD_INFO_BMAX] = int(0.5 + self.CogdoPopFactor * hoodInfo[self.SUIT_HOOD_INFO_BMAX])
+        # if simbase.air.wantCogdominiums:
+        #     if not hasattr(self.__class__, 'CogdoPopAdjusted'):
+        #         self.__class__.CogdoPopAdjusted = True
+        #         for index in range(len(self.SuitHoodInfo)):
+        #             hoodInfo = self.SuitHoodInfo[index]
+        #             hoodInfo[self.SUIT_HOOD_INFO_BMIN] = int(0.5 + self.CogdoPopFactor * hoodInfo[self.SUIT_HOOD_INFO_BMIN])
+        #             hoodInfo[self.SUIT_HOOD_INFO_BMAX] = int(0.5 + self.CogdoPopFactor * hoodInfo[self.SUIT_HOOD_INFO_BMAX])
 
         self.hoodInfoIdx = -1
         for index in range(len(self.SuitHoodInfo)):
@@ -106,10 +106,10 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         self.currDesired = None
         self.baseNumSuits = (self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_MIN] + self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_MAX]) // 2
         self.targetNumCogdos = 0
-        if simbase.air.wantCogdominiums:
-            self.targetNumCogdos = int(0.5 + self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_BMIN] * self.CogdoRatio)
-            if self.MinimumOfOne:
-                self.targetNumCogdos = max(self.targetNumCogdos, 1)
+        # if simbase.air.wantCogdominiums:
+        #     self.targetNumCogdos = int(0.5 + self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_BMIN] * self.CogdoRatio)
+        #     if self.MinimumOfOne:
+        #         self.targetNumCogdos = max(self.targetNumCogdos, 1)
         self.targetNumSuitBuildings = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_BMIN]
         self.targetNumSuitBuildings -= self.targetNumCogdos
         if self.MinimumOfOne:
@@ -350,11 +350,11 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
                 totalAvailable = cogdosAvailable + bldgsAvailable
                 if cogdoTakeover is None:
                     cogdoTakeover = False
-                    if simbase.air.wantCogdominiums:
-                        if totalAvailable > 0:
-                            r = random.randrange(totalAvailable)
-                            if r < cogdosAvailable:
-                                cogdoTakeover = True
+                    # if simbase.air.wantCogdominiums:
+                    #     if totalAvailable > 0:
+                    #         r = random.randrange(totalAvailable)
+                    #         if r < cogdosAvailable:
+                    #             cogdoTakeover = True
                 newSuit.takeoverIsCogdo = cogdoTakeover
                 if newSuit.takeoverIsCogdo:
                     pendingTracks = [
@@ -438,8 +438,8 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         if not self.SUITS_ENTER_BUILDINGS:
             return 0
         numNeeded = self.countNumNeededBuildings()
-        if simbase.air.wantCogdominiums:
-            numNeeded += self.countNumNeededCogdos()
+        # if simbase.air.wantCogdominiums:
+        #     numNeeded += self.countNumNeededCogdos()
         if self.numAttemptingTakeover >= numNeeded:
             self.pendingBuildingTracks = []
             return 0
@@ -704,11 +704,12 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
                 actualCogdos += numCogdoBlocks
 
         wantedSuitBuildings = int(totalBuildings * self.TOTAL_SUIT_BUILDING_PCT / 100)
-        if simbase.air.wantCogdominiums:
-            wantedCogdos = int(wantedSuitBuildings * self.CogdoRatio)
-            wantedSuitBuildings -= wantedCogdos
-        else:
-            wantedCogdos = 0
+        # if simbase.air.wantCogdominiums:
+        #     wantedCogdos = int(wantedSuitBuildings * self.CogdoRatio)
+        #     wantedSuitBuildings -= wantedCogdos
+        # else:
+        #     wantedCogdos = 0
+        wantedCogdos = 0
         self.notify.debug('Want %d out of %d total suit buildings; we currently have %d assigned, %d actual.' % (wantedSuitBuildings, totalBuildings, targetSuitBuildings, actualSuitBuildings))
         if actualSuitBuildings > 0:
             numReassigned = 0
@@ -725,22 +726,22 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
 
             if numReassigned > 0:
                 self.notify.debug('Assigned %d buildings where suit buildings already existed.' % numReassigned)
-        if simbase.air.wantCogdominiums:
-            if actualCogdos > 0:
-                numReassigned = 0
-                for sp in list(self.air.suitPlanners.values()):
-                    if sp.buildingMgr:
-                        numCogdos = len(sp.buildingMgr.getCogdoBlocks())
-                    else:
-                        numCogdos = 0
-                    if numCogdos > sp.targetNumCogdos:
-                        more = numCogdos - sp.targetNumCogdos
-                        sp.targetNumCogdos += more
-                        targetCogdos += more
-                        numReassigned += more
-
-                if numReassigned > 0:
-                    self.notify.debug('Assigned %d cogdos where cogdos already existed.' % numReassigned)
+        # if simbase.air.wantCogdominiums:
+        #     if actualCogdos > 0:
+        #         numReassigned = 0
+        #         for sp in list(self.air.suitPlanners.values()):
+        #             if sp.buildingMgr:
+        #                 numCogdos = len(sp.buildingMgr.getCogdoBlocks())
+        #             else:
+        #                 numCogdos = 0
+        #             if numCogdos > sp.targetNumCogdos:
+        #                 more = numCogdos - sp.targetNumCogdos
+        #                 sp.targetNumCogdos += more
+        #                 targetCogdos += more
+        #                 numReassigned += more
+        #
+        #         if numReassigned > 0:
+        #             self.notify.debug('Assigned %d cogdos where cogdos already existed.' % numReassigned)
         if wantedSuitBuildings > targetSuitBuildings:
             additionalBuildings = wantedSuitBuildings - targetSuitBuildings
             self.assignSuitBuildings(additionalBuildings)
@@ -748,13 +749,13 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             if wantedSuitBuildings < targetSuitBuildings:
                 extraBuildings = targetSuitBuildings - wantedSuitBuildings
                 self.unassignSuitBuildings(extraBuildings)
-        if simbase.air.wantCogdominiums:
-            if wantedCogdos > targetCogdos:
-                additionalCogdos = wantedCogdos - targetCogdos
-                self.assignCogdos(additionalCogdos)
-            elif wantedCogdos < targetCogdos:
-                extraCogdos = targetCogdos - wantedCogdos
-                self.unassignCogdos(extraCogdos)
+        # if simbase.air.wantCogdominiums:
+        #     if wantedCogdos > targetCogdos:
+        #         additionalCogdos = wantedCogdos - targetCogdos
+        #         self.assignCogdos(additionalCogdos)
+        #     elif wantedCogdos < targetCogdos:
+        #         extraCogdos = targetCogdos - wantedCogdos
+        #         self.unassignCogdos(extraCogdos)
 
     def assignSuitBuildings(self, numToAssign):
         hoodInfo = self.SuitHoodInfo[:]

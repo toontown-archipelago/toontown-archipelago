@@ -69,7 +69,7 @@ class ToontownAIRepository(ToontownInternalRepository):
         ToontownInternalRepository.__init__(self, baseChannel, serverId, dcSuffix='AI')
         self.districtName = districtName
         self.doLiveUpdates = self.config.GetBool('want-live-updates', True)
-        self.wantCogdominiums = self.config.GetBool('want-cogdominiums', True)
+        # self.wantCogdominiums = self.config.GetBool('want-cogdominiums', True)
         self.wantEmblems = self.config.GetBool('want-emblems', True)
         self.useAllMinigames = self.config.GetBool('want-all-minigames', True)
         self.districtId = None

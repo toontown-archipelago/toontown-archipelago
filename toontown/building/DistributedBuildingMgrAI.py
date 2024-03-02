@@ -162,10 +162,10 @@ class DistributedBuildingMgrAI:
             building.becameSuitTime = blockData.get('becameSuitTime', time.time())
             if blockData['state'] == 'suit':
                 building.setState('suit')
-            elif blockData['state'] == 'cogdo':
-                if simbase.air.wantCogdominiums:
-                    building.numFloors = DistributedBuildingAI.DistributedBuildingAI.FieldOfficeNumFloors + (1 if blockData.get('track', 'c') == 'l' else 0)
-                    building.setState('cogdo')
+            # elif blockData['state'] == 'cogdo':
+            #     if simbase.air.wantCogdominiums:
+            #         building.numFloors = DistributedBuildingAI.DistributedBuildingAI.FieldOfficeNumFloors + (1 if blockData.get('track', 'c') == 'l' else 0)
+            #         building.setState('cogdo')
             else:
                 building.setState('toon')
         else:

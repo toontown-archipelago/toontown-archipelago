@@ -439,9 +439,9 @@ class DistributedElevatorFSM(DistributedObject.DistributedObject, FSM):
             hoodId = ZoneUtil.getHoodId(zoneId)
             loader = 'suitInterior'
             where = 'suitInterior'
-            if base.cr.wantCogdominiums:
-                loader = 'cogdoInterior'
-                where = 'cogdoInterior'
+            # if base.cr.wantCogdominiums:
+            #     loader = 'cogdoInterior'
+            #     where = 'cogdoInterior'
             doneStatus = {'loader': loader,
              'where': where,
              'hoodId': hoodId,
