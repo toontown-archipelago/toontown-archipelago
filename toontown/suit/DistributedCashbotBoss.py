@@ -1380,37 +1380,64 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
     ##### Epilogue state #####
     def enterEpilogue(self):
+        assert self.notify.debug('enterEpilogue()')
         # No more intervals should be playing.
         self.cleanupIntervals()
         self.clearChat()
         self.resistanceToon.clearChat()
-        
+
         # Boss Cog is gone.
         self.stash()
         self.stopAnimate()
-        
+
         # The toons are under our control once again.
         self.controlToons()
+
         self.__showResistanceToon(False)
-        
         self.resistanceToon.setPosHpr(*ToontownGlobals.CashbotBossBattleThreePosHpr)
         self.resistanceToon.loop('neutral')
-        
+
         self.__arrangeToonsAroundResistanceToon()
-        
         camera.reparentTo(render)
         camera.setPos(self.resistanceToon, -9, 12, 6)
         camera.lookAt(self.resistanceToon, 0, 0, 3)
-        intervalName = 'EpilogueMovie'
 
-        speech = TTLocalizer.ResistanceToonCongratulations
+        intervalName = "EpilogueMovie"
+
+        text = ResistanceChat.getChatText(self.rewardId)
+        menuIndex, itemIndex = ResistanceChat.decodeId(self.rewardId)
+        value = ResistanceChat.getItemValue(self.rewardId)
+        if menuIndex == ResistanceChat.RESISTANCE_TOONUP:
+            if value == -1:
+                instructions = TTLocalizer.ResistanceToonToonupAllInstructions
+            else:
+                instructions = TTLocalizer.ResistanceToonToonupInstructions % (
+                    value)
+
+        elif menuIndex == ResistanceChat.RESISTANCE_MONEY:
+            if value == -1:
+                instructions = TTLocalizer.ResistanceToonMoneyAllInstructions
+            else:
+                instructions = TTLocalizer.ResistanceToonMoneyInstructions % (
+                    value)
+
+        elif menuIndex == ResistanceChat.RESISTANCE_RESTOCK:
+            if value == -1:
+                instructions = TTLocalizer.ResistanceToonRestockAllInstructions
+            else:
+                trackName = TTLocalizer.BattleGlobalTracks[value]
+                instructions = TTLocalizer.ResistanceToonRestockInstructions % (
+                    trackName)
+
+        speech = TTLocalizer.ResistanceToonCongratulations % (
+            text, instructions)
         speech = self.__talkAboutPromotion(speech)
-        
+
         self.resistanceToon.setLocalPageChat(speech, 0)
-        
-        self.accept('nextChatPage', self.__epilogueChatNext)
-        self.accept('doneChatPage', self.__epilogueChatDone)
-        
+
+        self.accept("nextChatPage", self.__epilogueChatNext)
+        self.accept("doneChatPage", self.__epilogueChatDone)
+
         base.playMusic(self.epilogueMusic, looping=1, volume=0.9)
 
     def __epilogueChatNext(self, pageNumber, elapsed):
@@ -1422,18 +1449,32 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             # ActorIntervals that apply the animation.
             toon = self.resistanceToon
             playRate = 0.75
-            track = Sequence(ActorInterval(toon, 'victory', playRate=playRate, startFrame=0, endFrame=9), ActorInterval(toon, 'victory', playRate=playRate, startFrame=9, endFrame=0), Func(self.resistanceToon.loop, 'neutral'))
-            intervalName = 'EpilogueMovieToonAnim'
+            track = Sequence(ActorInterval(toon, 'victory', playRate=playRate, startFrame=0, endFrame=9),
+                             ActorInterval(toon, 'victory', playRate=playRate, startFrame=9, endFrame=0),
+                             Func(self.resistanceToon.loop, 'neutral'))
+            intervalName = "EpilogueMovieToonAnim"
             self.storeInterval(track, intervalName)
             track.start()
 
+        elif pageNumber == 3:
+            # Page 3 is the special resistance chat.  Apply it.
+            self.d_applyReward()
+            ResistanceChat.doEffect(self.rewardId, self.resistanceToon, self.involvedToons)
+
     def __epilogueChatDone(self, elapsed):
+        assert self.notify.debug('epilogueChatDone()')
         self.resistanceToon.setChatAbsolute(TTLocalizer.CagedToonGoodbye, CFSpeech)
-        self.ignore('nextChatPage')
-        self.ignore('doneChatPage')
-        intervalName = 'EpilogueMovieToonAnim'
+
+        self.ignore("nextChatPage")
+        self.ignore("doneChatPage")
+
+        intervalName = "EpilogueMovieToonAnim"
         self.clearInterval(intervalName)
-        track = Parallel(Sequence(ActorInterval(self.resistanceToon, 'wave'), Func(self.resistanceToon.loop, 'neutral')), Sequence(Wait(0.5), Func(self.localToonToSafeZone)))
+        track = Parallel(
+            Sequence(ActorInterval(self.resistanceToon, 'wave'),
+                     Func(self.resistanceToon.loop, 'neutral')),
+            Sequence(Wait(0.5),
+                     Func(self.localToonToSafeZone)))
         self.storeInterval(track, intervalName)
         track.start()
 

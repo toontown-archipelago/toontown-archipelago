@@ -36,7 +36,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.rulesetFallback = self.ruleset  # A fallback ruleset for when we rcr, or change mods mid round
         self.modifiers = []  # A list of CFORulesetModifierBase instances
         self.oldMaxLaffs = {}
-        self.rewardId = 0
+        self.rewardId = ResistanceChat.getRandomId()
+        self.rewardedToons = []
         self.cranes = None
         self.safes = None
         self.goons = None
@@ -903,6 +904,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     ##### Off state #####
     def enterOff(self):
         DistributedBossCogAI.DistributedBossCogAI.enterOff(self)
+        self.rewardedToons = []
 
     def exitOff(self):
         DistributedBossCogAI.DistributedBossCogAI.exitOff(self)
