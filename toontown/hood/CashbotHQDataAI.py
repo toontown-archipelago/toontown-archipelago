@@ -3,10 +3,10 @@ from . import HoodDataAI
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedMintElevatorExtAI
 from toontown.coghq import DistributedCogHQDoorAI
-from toontown.building import DoorTypes, DistributedCFOCLMatchElevatorAI
+from toontown.building import DoorTypes
 from toontown.coghq import LobbyManagerAI
 from toontown.building import DistributedCFOElevatorAI
-from toontown.suit import DistributedCashbotBossAI, DistributedCashbotBossCLAI
+from toontown.suit import DistributedCashbotBossAI
 from toontown.building import FADoorCodes
 from toontown.building import DistributedBoardingPartyAI
 
@@ -36,19 +36,13 @@ class CashbotHQDataAI(HoodDataAI.HoodDataAI):
         self.addDistObj(self.testElev2)
         self.testElev2.setLock(FADoorCodes.BULLION_MINT_ACCESS_MISSING)
         self.lobbyMgr = LobbyManagerAI.LobbyManagerAI(self.air, DistributedCashbotBossAI.DistributedCashbotBossAI)
-        self.lobbyMgrCL = LobbyManagerAI.LobbyManagerAI(self.air, DistributedCashbotBossCLAI.DistributedCashbotBossCLAI)
         self.lobbyMgr.generateWithRequired(ToontownGlobals.CashbotLobby)
-        self.lobbyMgrCL.generateWithRequired(ToontownGlobals.CashbotLobby)
         self.addDistObj(self.lobbyMgr)
-        self.addDistObj(self.lobbyMgrCL)
         self.lobbyElevator = DistributedCFOElevatorAI.DistributedCFOElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.CashbotLobby, antiShuffle=1)
-        self.lobbyElevatorCL = DistributedCFOCLMatchElevatorAI.DistributedCFOCLMatchElevatorAI(self.air, self.lobbyMgrCL, ToontownGlobals.CashbotLobby, antiShuffle=1)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.CashbotLobby)
-        self.lobbyElevatorCL.generateWithRequired(ToontownGlobals.CashbotLobby)
         self.addDistObj(self.lobbyElevator)
-        self.addDistObj(self.lobbyElevatorCL)
         if simbase.config.GetBool('want-boarding-groups', 1):
-            self.boardingParty = DistributedBoardingPartyAI.DistributedBoardingPartyAI(self.air, [self.lobbyElevator.doId, self.lobbyElevatorCL.doId], 8)
+            self.boardingParty = DistributedBoardingPartyAI.DistributedBoardingPartyAI(self.air, [self.lobbyElevator.doId], 8)
             self.boardingParty.generateWithRequired(ToontownGlobals.CashbotLobby)
         destinationZone = ToontownGlobals.CashbotLobby
         extDoor0 = DistributedCogHQDoorAI.DistributedCogHQDoorAI(self.air, 0, DoorTypes.EXT_COGHQ, destinationZone, doorIndex=0, lockValue=FADoorCodes.CB_DISGUISE_INCOMPLETE)
