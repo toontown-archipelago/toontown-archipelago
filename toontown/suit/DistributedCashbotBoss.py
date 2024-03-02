@@ -49,6 +49,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def __init__(self, cr):
         DistributedBossCog.DistributedBossCog.__init__(self, cr)
         FSM.FSM.__init__(self, 'DistributedCashbotBoss')
+        self.rewardId = 0
         self.resistanceToon = None
         self.resistanceToonOnstage = 0
         self.cranes = {}
@@ -72,42 +73,14 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.warningSfx = None
         
         self.latency = 0.5 #default latency for updating object posHpr
-
-        self.activityLog = ActivityLog()
-
         self.toonSpawnpointOrder = [i for i in range(8)]
         return
 
     def setToonSpawnpoints(self, order):
         self.toonSpawnpointOrder = order
 
-    def addToActivityLog(self, doId, content):
-        doObj = base.cr.doId2do.get(doId)
-
-        try:
-            name = doObj.getName()
-        except:
-            name = doId
-
-        msg = '[%s]' % name
-        msg += ' %s' % content
-        self.activityLog.addToLog(msg)
-
     def debug(self, doId='system', content='null'):
-        if self.ruleset.GENERAL_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def goonStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.GOON_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def safeStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.SAFE_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def craneStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.CRANE_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
+        pass
 
     def updateSpectators(self, specs):
         self.spectators = specs
@@ -367,7 +340,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             cn = self.endVault.find('**/wallsCollision').node()
             cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask)  # TTCC No Back Wall
         except:
-            print('[Crane League] Failed to disable back wall.')
+            print('[CFO Boss Room] Failed to disable back wall.')
 
     def enableBackWall(self):
         if self.endVault is None:
@@ -377,7 +350,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             cn = self.endVault.find('**/wallsCollision').node()
             cn.setIntoCollideMask(OTPGlobals.WallBitmask | ToontownGlobals.PieBitmask | BitMask32.lowerOn(3) << 21) #TTR Back Wall
         except:
-            print('[Crane League] Failed to enable back wall.')
+            print('[CFO Boss Room] Failed to enable back wall.')
 
 
     ##### Environment #####

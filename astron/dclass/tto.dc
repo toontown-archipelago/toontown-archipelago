@@ -1321,7 +1321,6 @@ struct ScaleLeagueRuleset {
 };
 
 dclass DistributedCashbotBoss : DistributedBossCog {
-  addToActivityLog(uint32, string) broadcast;
   updateSpectators(uint32[]) broadcast ram;
   setRawRuleset(CraneLeagueRuleset) required broadcast ram;
   setModifiers(CraneLeagueModifier[]) broadcast ram;

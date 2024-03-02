@@ -45,9 +45,6 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         self.name = 'safe'
         return
 
-    def _doDebug(self, _=None):
-        self.boss.safeStatesDebug(doId=self.doId, content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
-
     def announceGenerate(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.announceGenerate(self)
         self.name = 'safe-%s' % self.doId

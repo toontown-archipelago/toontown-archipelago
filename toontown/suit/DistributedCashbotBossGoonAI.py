@@ -74,9 +74,6 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         self.cQueue = CollisionHandlerQueue()
         self.cTrav.addCollider(self.feelerNodePath, self.cQueue)
 
-    def _doDebug(self, _=None):
-        self.boss.goonStatesDebug(doId=self.doId, content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
-
     def requestBattle(self, pauseTime):
         avId = self.air.getAvatarIdFromSender()
 

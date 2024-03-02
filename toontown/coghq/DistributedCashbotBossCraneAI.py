@@ -29,18 +29,12 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
         self.objectId = 0
         
         self.setBroadcastStateChanges(True)
-        self.accept(self.getStateChangeEvent(), self._doDebug)
-
-    def _doDebug(self, _=None):
-        self.boss.craneStatesDebug(doId=self.doId,
-                              content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
 
     def getName(self):
         return 'NormalCrane-%s' % self.index
 
     def setObjectID(self, objId):
         self.objectId = objId
-        self.boss.craneStatesDebug(doId=self.doId, content='(Server) grabbing object: %s' % objId)
 
     # Should we multiply any damage done from this crane?
     def getDamageMultiplier(self):
