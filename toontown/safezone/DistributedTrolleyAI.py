@@ -266,14 +266,6 @@ class DistributedTrolleyAI(DistributedObjectAI.DistributedObjectAI):
     def trolleyLeft(self):
         numPlayers = self.countFullSeats()
         if numPlayers > 0:
-            newbieIds = []
-            for avId in self.seats:
-                if avId:
-                    toon = self.air.doId2do.get(avId)
-                    if toon:
-                        if Quests.avatarHasTrolleyQuest(toon):
-                            if not Quests.avatarHasCompletedTrolleyQuest(toon):
-                                newbieIds.append(avId)
 
             playerArray = []
             for i in self.seats:
@@ -289,7 +281,7 @@ class DistributedTrolleyAI(DistributedObjectAI.DistributedObjectAI):
                 metagameRound = 0
                 if simbase.config.GetBool('metagame-min-2-players', 1) and len(playerArray) == 1:
                     metagameRound = -1
-            mgDict = MinigameCreatorAI.createMinigame(self.air, playerArray, self.zoneId, newbieIds=newbieIds, startingVotes=startingVotes, metagameRound=metagameRound)
+            mgDict = MinigameCreatorAI.createMinigame(self.air, playerArray, self.zoneId, newbieIds=[], startingVotes=startingVotes, metagameRound=metagameRound)
             minigameZone = mgDict['minigameZone']
             minigameId = mgDict['minigameId']
             for seatIndex in range(len(self.seats)):

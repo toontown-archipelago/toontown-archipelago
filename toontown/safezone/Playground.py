@@ -19,7 +19,6 @@ from toontown.toon.Toon import teleportDebug
 from toontown.toonbase import TTLocalizer
 from direct.gui import DirectLabel
 from otp.distributed.TelemetryLimiter import RotationLimitToH, TLGatherAllAvs
-from toontown.quest import Quests
 
 class Playground(Place.Place):
     notify = DirectNotifyGlobal.directNotify.newCategory('Playground')
@@ -465,70 +464,15 @@ class Playground(Place.Place):
 
     def enterTeleportIn(self, requestStatus):
         imgScale = 0.25
-        if self.dialog:
-            x, y, z, h, p, r = base.cr.hoodMgr.getPlaygroundCenterFromId(self.loader.hood.id)
-        elif base.localAvatar.hp < 1:
+        x, y, z, h, p, r = base.cr.hoodMgr.getPlaygroundCenterFromId(self.loader.hood.id)
+
+        if base.localAvatar.hp < 1:
             requestStatus['nextState'] = 'popup'
-            x, y, z, h, p, r = base.cr.hoodMgr.getPlaygroundCenterFromId(self.loader.hood.id)
             self.accept('deathAck', self.__handleDeathAck, extraArgs=[requestStatus])
             self.deathAckBox = DeathForceAcknowledge.DeathForceAcknowledge(doneEvent='deathAck')
-        elif base.localAvatar.hp > 0 and (Quests.avatarHasTrolleyQuest(base.localAvatar) or Quests.avatarHasFirstCogQuest(base.localAvatar) or Quests.avatarHasFriendQuest(base.localAvatar) or Quests.avatarHasPhoneQuest(base.localAvatar) and Quests.avatarHasCompletedPhoneQuest(base.localAvatar)) and self.loader.hood.id == ToontownGlobals.ToontownCentral:
-            requestStatus['nextState'] = 'popup'
-            imageModel = loader.loadModel('phase_4/models/gui/tfa_images')
-            if base.localAvatar.quests[0][0] == Quests.TROLLEY_QUEST_ID:
-                if not Quests.avatarHasCompletedTrolleyQuest(base.localAvatar):
-                    x, y, z, h, p, r = base.cr.hoodMgr.getDropPoint(base.cr.hoodMgr.ToontownCentralInitialDropPoints)
-                    msg = TTLocalizer.NPCForceAcknowledgeMessage3
-                    imgNodePath = imageModel.find('**/trolley-dialog-image')
-                    imgPos = (0, 0, 0.04)
-                    imgScale = 0.5
-                else:
-                    x, y, z, h, p, r = base.cr.hoodMgr.getDropPoint(base.cr.hoodMgr.ToontownCentralHQDropPoints)
-                    msg = TTLocalizer.NPCForceAcknowledgeMessage4
-                    imgNodePath = imageModel.find('**/hq-dialog-image')
-                    imgPos = (0, 0, -0.02)
-                    imgScale = 0.5
-            elif base.localAvatar.quests[0][0] == Quests.FIRST_COG_QUEST_ID:
-                if not Quests.avatarHasCompletedFirstCogQuest(base.localAvatar):
-                    x, y, z, h, p, r = base.cr.hoodMgr.getDropPoint(base.cr.hoodMgr.ToontownCentralTunnelDropPoints)
-                    msg = TTLocalizer.NPCForceAcknowledgeMessage5
-                    imgNodePath = imageModel.find('**/tunnelSignA')
-                    imgPos = (0, 0, 0.04)
-                    imgScale = 0.5
-                else:
-                    x, y, z, h, p, r = base.cr.hoodMgr.getDropPoint(base.cr.hoodMgr.ToontownCentralHQDropPoints)
-                    msg = TTLocalizer.NPCForceAcknowledgeMessage6
-                    imgNodePath = imageModel.find('**/hq-dialog-image')
-                    imgPos = (0, 0, 0.05)
-                    imgScale = 0.5
-            elif base.localAvatar.quests[0][0] == Quests.FRIEND_QUEST_ID:
-                if not Quests.avatarHasCompletedFriendQuest(base.localAvatar):
-                    x, y, z, h, p, r = base.cr.hoodMgr.getDropPoint(base.cr.hoodMgr.ToontownCentralInitialDropPoints)
-                    msg = TTLocalizer.NPCForceAcknowledgeMessage7
-                    gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
-                    imgNodePath = gui.find('**/FriendsBox_Closed')
-                    imgPos = (0, 0, 0.04)
-                    imgScale = 1.0
-                    gui.removeNode()
-                else:
-                    x, y, z, h, p, r = base.cr.hoodMgr.getDropPoint(base.cr.hoodMgr.ToontownCentralHQDropPoints)
-                    msg = TTLocalizer.NPCForceAcknowledgeMessage8
-                    imgNodePath = imageModel.find('**/hq-dialog-image')
-                    imgPos = (0, 0, 0.05)
-                    imgScale = 0 # TODO: RETRO MODE 0.5
-            elif base.localAvatar.quests[0][0] == Quests.PHONE_QUEST_ID:
-                if Quests.avatarHasCompletedPhoneQuest(base.localAvatar):
-                    x, y, z, h, p, r = base.cr.hoodMgr.getDropPoint(base.cr.hoodMgr.ToontownCentralHQDropPoints)
-                    msg = TTLocalizer.NPCForceAcknowledgeMessage9
-                    imgNodePath = imageModel.find('**/hq-dialog-image')
-                    imgPos = (0, 0, 0.05)
-                    imgScale = 0.5
-            self.dialog = TTDialog.TTDialog(text=msg, command=self.__cleanupDialog, style=TTDialog.Acknowledge)
-            imgLabel = DirectLabel.DirectLabel(parent=self.dialog, relief=None, pos=imgPos, scale=TTLocalizer.PimgLabel, image=imgNodePath, image_scale=imgScale)
-            imageModel.removeNode()
         else:
             requestStatus['nextState'] = 'walk'
-            x, y, z, h, p, r = base.cr.hoodMgr.getPlaygroundCenterFromId(self.loader.hood.id)
+
         base.localAvatar.detachNode()
         base.localAvatar.setPosHpr(render, x, y, z, h, p, r)
         Place.Place.enterTeleportIn(self, requestStatus)

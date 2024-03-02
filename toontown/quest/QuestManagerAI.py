@@ -129,14 +129,19 @@ class QuestManagerAI:
         if not av:
             return
 
+
+        # A list of Reward IDs this toon is currently working on
+        currentlyWorkingOnRewards = []
+
         for index, quest in enumerate(self.__toonQuestsList2Quests(av.quests)):
+
             questId, fromNpcId, toNpcId, rewardId, toonProgress = av.quests[index]
+            currentlyWorkingOnRewards.append(rewardId)
             isComplete = quest.getCompletionStatus(av, av.quests[index], npc)
+
+            # Quest is not complete, go to next one
             if isComplete != Quests.COMPLETE:
                 continue
-
-            if avId in list(self.air.tutorialManager.avId2fsm.keys()):
-                self.air.tutorialManager.avId2fsm[avId].demand('Tunnel')
 
             if isinstance(quest, Quests.DeliverGagQuest):
                 track, level = quest.getGagType()
@@ -144,6 +149,8 @@ class QuestManagerAI:
                 av.b_setInventory(av.inventory.makeNetString())
 
             nextQuest = Quests.getNextQuest(questId, npc, av)
+
+            # There is no next quest, complete it and give them their reward
             if nextQuest == (Quests.NA, Quests.NA):
                 if isinstance(quest, Quests.TrackChoiceQuest):
                     npc.presentTrackChoice(avId, questId, quest.getChoices())
@@ -154,37 +161,22 @@ class QuestManagerAI:
                 self.completeQuest(av, questId)
                 self.giveReward(av, rewardId)
                 return
-            else:
-                self.completeQuest(av, questId)
-                nextQuestId = nextQuest[0]
-                nextRewardId = Quests.getFinalRewardId(questId, 1)
-                nextToNpcId = nextQuest[1]
-                self.npcGiveQuest(npc, av, nextQuestId, nextRewardId, nextToNpcId)
-                return
 
+            # There is another part to this quest, complete this one and assign the next
+            self.completeQuest(av, questId)
+            nextQuestId = nextQuest[0]
+            nextRewardId = Quests.getFinalRewardId(questId, 1)
+            nextToNpcId = nextQuest[1]
+            self.npcGiveQuest(npc, av, nextQuestId, nextRewardId, nextToNpcId)
+            return
+
+        # We cannot pickup any more quests
         if len(self.__toonQuestsList2Quests(av.quests)) >= av.getQuestCarryLimit():
             npc.rejectAvatar(avId)
             return
 
-        if avId in list(self.air.tutorialManager.avId2fsm.keys()):
-            if av.getRewardHistory()[0] == 0:
-                self.npcGiveQuest(npc, av, 101, Quests.findFinalRewardId(101)[0], Quests.getQuestToNpcId(101),
-                                  storeReward=True)
-                self.air.tutorialManager.avId2fsm[avId].demand('Battle')
-                return
-
-        tier = av.getRewardHistory()[0]
-        if Quests.avatarHasAllRequiredRewards(av, tier):
-            if not Quests.avatarWorkingOnRequiredRewards(av):
-                if tier != Quests.LOOPING_FINAL_TIER:
-                    tier += 1
-
-                av.b_setRewardHistory(tier, [])
-            else:
-                npc.rejectAvatarTierNotDone(avId)
-                return
-
-        bestQuests = Quests.chooseBestQuests(tier, npc, av)
+        # Randomly pick some quests to pick from
+        bestQuests = Quests.chooseBestQuests(npc, av, excludeRewards=currentlyWorkingOnRewards)
         if not bestQuests:
             npc.rejectAvatar(avId)
             return

@@ -1190,10 +1190,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             if self.clarabelleButtonObscured <= 0 and self.isTeleportAllowed():
                 if self.catalogNotify == ToontownGlobals.NewItems or self.mailboxNotify == ToontownGlobals.NewItems or self.simpleMailNotify == ToontownGlobals.NewItems or self.inviteMailNotify == ToontownGlobals.NewItems or self.awardNotify == ToontownGlobals.NewItems:
                     showClarabelle = not launcher or launcher.getPhaseComplete(5.5)
-                    for quest in self.quests:
-                        if quest[0] in Quests.PreClarabelleQuestIds and self.mailboxNotify != ToontownGlobals.NewItems and self.awardNotify != ToontownGlobals.NewItems:
-                            showClarabelle = 0
-
                     if base.cr.playGame.getPlace().getState() == 'stickerBook':
                         showClarabelle = 0
                     if showClarabelle:

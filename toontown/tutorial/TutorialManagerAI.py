@@ -155,11 +155,6 @@ class TutorialManagerAI(DistributedObjectAI):
         av = self.air.doId2do.get(avId)
         if av:
             av.b_setTutorialAck(1)
-            av.b_setQuestHistory([101])
-            av.b_setRewardHistory(0, [100])
-            av.addQuest(
-                (110, Quests.getQuestFromNpcId(110), Quests.getQuestToNpcId(110), Quests.getQuestReward(110, av), 0), 0)
-            self.air.questManager.toonRodeTrolleyFirstTime(av)
             self.d_skipTutorialResponse(avId, 1)
         else:
             self.d_skipTutorialResponse(avId, 0)
@@ -189,12 +184,7 @@ class TutorialManagerAI(DistributedObjectAI):
         av.b_setHp(15)
         av.b_setMaxHp(15)
 
-        av.inventory.zeroInv()
-        if av.inventory.numItem(ToontownBattleGlobals.THROW_TRACK, 0) == 0:
-            av.inventory.addItem(ToontownBattleGlobals.THROW_TRACK, 0)
-
-        if av.inventory.numItem(ToontownBattleGlobals.SQUIRT_TRACK, 0) == 0:
-            av.inventory.addItem(ToontownBattleGlobals.SQUIRT_TRACK, 0)
+        av.inventory.maxOutInv()
 
         av.d_setInventory(av.inventory.makeNetString())
         av.experience.zeroOutExp()

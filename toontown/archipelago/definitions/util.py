@@ -107,3 +107,16 @@ def get_facility_id(facility_id: int) -> int:
         return -1
 
     return ap_location_name_to_id(loc)
+
+
+# Given a hood ID, return a list of AP check location names present in that hood
+def hood_to_task_locations(hoodId: int):
+    return {
+        ToontownGlobals.ToontownCentral: locations.TTC_TASK_LOCATIONS,
+        ToontownGlobals.DonaldsDock: locations.DD_TASK_LOCATIONS,
+        ToontownGlobals.DaisyGardens: locations.DG_TASK_LOCATIONS,
+        ToontownGlobals.MinniesMelodyland: locations.MM_TASK_LOCATIONS,
+        ToontownGlobals.TheBrrrgh: locations.TB_TASK_LOCATIONS,
+        ToontownGlobals.DonaldsDreamland: locations.DDL_TASK_LOCATIONS,
+    }.get(hoodId, [])
+

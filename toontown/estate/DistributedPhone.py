@@ -52,7 +52,6 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
         DistributedFurnitureItem.DistributedFurnitureItem.announceGenerate(self)
         self.accept(self.phoneSphereEnterEvent, self.__handleEnterSphere)
         self.load()
-        taskMgr.doMethodLater(6, self.ringIfHasPhoneQuest, self.uniqueName('ringDoLater'))
 
     def loadModel(self):
         self.model = Actor.Actor('phase_5.5/models/estate/prop_phone-mod', {'SS_phoneOut': 'phase_5.5/models/estate/prop_phone-SS_phoneOut',
@@ -365,11 +364,6 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
         self.model.pose('SS_phoneOut', 0)
         self.phoneInUse = 0
         return
-
-    def ringIfHasPhoneQuest(self, task):
-        if Quests.avatarHasPhoneQuest(base.localAvatar) and not Quests.avatarHasCompletedPhoneQuest(base.localAvatar):
-            self.ring()
-        return Task.done
 
     def ring(self):
         if self.phoneInUse:
