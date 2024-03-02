@@ -323,15 +323,6 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
 
     def generateSuits(self, battleNumber):
         if battleNumber == 1:
-            weakenedValue = ((1, 1),
-             (2, 2),
-             (2, 2),
-             (1, 1),
-             (1, 1, 1, 1, 1))
-            listVersion = list(SuitBuildingGlobals.SuitBuildingInfo)
-            if simbase.config.GetBool('lawbot-boss-cheat', 0):
-                listVersion[13] = weakenedValue
-                SuitBuildingGlobals.SuitBuildingInfo = tuple(listVersion)
             return self.invokeSuitPlanner(13, 0)
         else:
             return self.invokeSuitPlanner(13, 1)
@@ -942,9 +933,6 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         
         #Whisper out the time from the start of CJ
         self.bonusTimeStarted = globalClock.getFrameTime()
-        for doId, do in simbase.air.doId2do.items():
-            if str(doId)[0] != str(simbase.air.districtId)[0]:
-                do.d_setSystemMessage(0, "Lawyers Stunned From Start: {0:.3f}s".format(self.bonusTimeStarted - self.battleThreeTimeStarted))
 
     def areAllLawyersStunned(self):
         for lawyer in self.lawyers:
