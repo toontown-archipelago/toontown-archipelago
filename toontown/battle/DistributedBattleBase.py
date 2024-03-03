@@ -1067,7 +1067,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
             self.townBattle.suitPanels[i].setCogInformation(self.activeSuits[i])
         
         for i in range(len(self.activeToons)):
-            self.townBattle.updateLaffMeter(i, self.activeToons[i].hp)
+            self.townBattle.updateLaffMeter(i, self.activeToons[i].hp, self.activeToons[i].maxHp)
 
     def enterWaitForInput(self, ts = 0):
         self.notify.debug('enterWaitForInput()')

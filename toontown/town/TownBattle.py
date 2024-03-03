@@ -133,7 +133,7 @@ class TownBattle(StateData.StateData):
          TownBattleToonPanel.TownBattleToonPanel(2),
          TownBattleToonPanel.TownBattleToonPanel(3))
         self.suitPanels = []
-        for i in xrange(8):
+        for i in range(8):
             self.suitPanels.append(TownBattleSuitPanel.TownBattleSuitPanel(i))
         self.timer = ToontownTimer.ToontownTimer()
         self.timer.reparentTo(base.a2dTopRight)
@@ -322,8 +322,8 @@ class TownBattle(StateData.StateData):
             return 1
         return 0
 
-    def updateLaffMeter(self, toonNum, hp):
-        self.toonPanels[toonNum].updateLaffMeter(hp)
+    def updateLaffMeter(self, toonNum, hp, maxHp):
+        self.toonPanels[toonNum].updateLaffMeter(hp, maxHp)
 
     def enterOff(self):
         if self.isLoaded:

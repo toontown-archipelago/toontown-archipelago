@@ -77,7 +77,7 @@ class TownBattleToonPanel(DirectFrame):
         if self.laffMeter:
             self.laffMeter.stop()
 
-    def updateLaffMeter(self, hp):
+    def updateLaffMeter(self, hp, maxHp):
         if self.laffMeter:
             self.laffMeter.adjustFace(hp, self.avatar.maxHp)
         self.setHealthText(hp, maxHp)

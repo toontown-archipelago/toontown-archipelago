@@ -1,6 +1,7 @@
-from BattleCalculationObjectAI import BattleCalculationObjectAI
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.MessengerGlobal import messenger
+
+from toontown.battle.BattleCalculationObjectAI import BattleCalculationObjectAI
 from toontown.toonbase.ToontownBattleGlobals import *
 
 class BattleEffectHandlerAI(BattleCalculationObjectAI):
