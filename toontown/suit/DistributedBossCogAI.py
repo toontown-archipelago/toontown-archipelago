@@ -470,12 +470,15 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.battleNumber = battleNumber
         suitHandles = self.generateSuits(battleNumber)
         self.suitsA = suitHandles['activeSuits']
+        random.shuffle(self.suitsA)
         self.activeSuitsA = self.suitsA[:]
         self.reserveSuits = suitHandles['reserveSuits']
         suitHandles = self.generateSuits(battleNumber)
         self.suitsB = suitHandles['activeSuits']
+        random.shuffle(self.suitsB)
         self.activeSuitsB = self.suitsB[:]
         self.reserveSuits += suitHandles['reserveSuits']
+        random.shuffle(self.reserveSuits)
         if self.toonsA:
             self.battleA = self.makeBattle(bossCogPosHpr, ToontownGlobals.BossCogBattleAPosHpr, self.handleRoundADone, self.handleBattleADone, battleNumber, 0)
             self.battleAId = self.battleA.doId

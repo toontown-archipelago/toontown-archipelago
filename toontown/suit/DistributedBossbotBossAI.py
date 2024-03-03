@@ -159,6 +159,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.battleNumber = battleNumber
         suitHandles = self.generateSuits(battleNumber)
         self.suitsA = suitHandles['activeSuits']
+        random.shuffle(self.suitsA)
         self.activeSuitsA = self.suitsA[:]
         self.reserveSuits = suitHandles['reserveSuits']
         if battleNumber == 3:
@@ -173,8 +174,11 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         else:
             suitHandles = self.generateSuits(battleNumber)
             self.suitsB = suitHandles['activeSuits']
+            random.shuffle(self.suitsB)
             self.activeSuitsB = self.suitsB[:]
             self.reserveSuits += suitHandles['reserveSuits']
+            random.shuffle(self.reserveSuits)
+
         if self.toonsA:
             if battleNumber == 1:
                 self.battleA = self.makeBattle(bossCogPosHpr, ToontownGlobals.WaiterBattleAPosHpr, self.handleRoundADone, self.handleBattleADone, battleNumber, 0)
