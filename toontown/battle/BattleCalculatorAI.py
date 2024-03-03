@@ -84,6 +84,8 @@ class BattleCalculatorAI:
         debug = self.notify.getDebug()
         attack = self.battle.toonAttacks[attackIndex]
         atkTrack, atkLevel = self.__getActualTrackLevel(attack)
+        if atkTrack == HEAL:
+            return 1, 95
         if atkTrack == NPCSOS:
             return (1, 95)
         if atkTrack == FIRE:
