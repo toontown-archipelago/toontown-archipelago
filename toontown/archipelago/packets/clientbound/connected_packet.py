@@ -1,8 +1,9 @@
+import random
 from typing import List, Any, Dict
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.definitions import locations
-from toontown.archipelago.definitions.util import ap_location_name_to_id, get_zone_discovery_id
+from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
@@ -52,6 +53,61 @@ class ConnectedPacket(ClientBoundPacketBase):
         for id_string, network_slot in self.slot_info.items():
             client.slot_id_to_slot_name[int(id_string)] = network_slot
 
+    def handle_first_time_player(self, av):
+
+        #  Reset stats
+        av.newToon()
+
+        # Set their max HP
+        av.b_setMaxHp(self.slot_data.get('starting_hp', 15))
+        av.b_setHp(av.getMaxHp())
+
+        # Set their starting money
+        av.b_setMoney(self.slot_data.get('starting_money', 50))
+
+        # Set their starting gag xp multiplier
+        av.b_setBaseGagSkillMultiplier(self.slot_data.get('starting_gag_xp_multiplier', 2))
+
+    # Given the option defined in the YAML for RNG generation and the seed of the AP playthrough
+    # Return a new modified seed based on what option was chosen in the YAML
+    #     option_global = 0
+    #     option_slot_name = 1
+    #     option_unique = 2
+    #     option_wild = 3
+    def handle_seed_generation_type(self, av, seed, option):
+
+        option_global = 0
+        option_slot_name = 1
+        option_unique = 2
+        option_wild = 3
+
+        # No change
+        if option == option_global:
+            return seed
+
+        # Use slot name
+        if option == option_slot_name:
+            return f"{seed}-{self.get_slot_info(self.slot).name}"
+
+        # Use Toon ID
+        if option == option_unique:
+            return f"{seed}-{av.doId}"
+
+        # Make something up
+        if option == option_wild:
+            return random.randint(1, 2**32)
+
+        # An incorrect value was given, default to global
+        return self.handle_seed_generation_type(av, seed, option_global)
+
+    def handle_yaml_settings(self, av):
+
+        # Update the value used for seeding any RNG elements that we want to be consistent based on this AP seed
+        new_seed = self.slot_data.get('seed', random.randint(1, 2**32))
+        rng_option = self.slot_data.get('seed_generation_type', 'global')
+        new_seed = self.handle_seed_generation_type(av, new_seed, rng_option)
+        av.setSeed(new_seed)
+
     def handle(self, client):
         self.debug(f"Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"
               f" playing {self.get_slot_info(self.slot).game}")
@@ -66,19 +122,9 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Is this this toon's first time? If so reset the toon's stats and initialize their settings from their YAML
         if len(self.checked_locations) == 0:
+            self.handle_first_time_player(client.av)
 
-            #  Reset stats
-            client.av.newToon()
-
-            # Set their max HP
-            client.av.b_setMaxHp(self.slot_data.get('starting_hp', 15))
-            client.av.b_setHp(client.av.getMaxHp())
-
-            # Set their starting money
-            client.av.b_setMoney(self.slot_data.get('starting_money', 50))
-
-            # Set their starting gag xp multiplier
-            client.av.b_setBaseGagSkillMultiplier(self.slot_data.get('starting_gag_xp_multiplier', 2))
+        self.handle_yaml_settings(client.av)
 
         # Send all checks that may have been obtained while disconnected
         toonCheckedLocations = client.av.getCheckedLocations()

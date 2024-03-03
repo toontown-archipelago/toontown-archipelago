@@ -179,8 +179,7 @@ class TaskAccessReward(APReward):
         # Get the key ID for this playground
         key = FADoorCodes.ZONE_TO_ACCESS_CODE[self.playground]
         av.addAccessKey(key)
-        av.d_setSystemMessage(0,
-                              f"You have been given {self.playground} HQ Clearance and can now complete toontasks there!")
+        av.d_setSystemMessage(0,f"You have been given {self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'UNKNOWN PG ' + str(self.playground))} HQ Clearance and can now complete toontasks there!")
 
 
 class FacilityAccessReward(APReward):

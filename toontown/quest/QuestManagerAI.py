@@ -176,7 +176,7 @@ class QuestManagerAI:
             return
 
         # Randomly pick some quests to pick from
-        bestQuests = Quests.chooseBestQuests(npc, av, excludeRewards=currentlyWorkingOnRewards)
+        bestQuests = Quests.chooseBestQuests(npc, av, excludeRewards=currentlyWorkingOnRewards, seed=av.getSeed())
         if not bestQuests:
             npc.rejectAvatar(avId)
             return

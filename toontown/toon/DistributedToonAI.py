@@ -212,6 +212,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.alwaysHitSuits = False
 
         # Archipelago Stuff
+        self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
         self.baseGagSkillMultiplier = 1  # Multiplicative stacking gag xp multiplier to consider
         self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
         self.receivedItems: List[int] = []  # List of AP items received so far
@@ -4407,3 +4408,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if self.archipelago_session:
             self.archipelago_session.victory()
 
+    # Sets a seed value to use for any RNG elements that want to be determined by the AP seed
+    def setSeed(self, seed):
+        self.seed = seed
+
+    # Gets this toon's current AP seed, used for task generation mainly
+    def getSeed(self):
+        return self.seed
