@@ -401,7 +401,7 @@ def getCountryClubCreditMultiplier(countryClubId):
 
 
 def getBossBattleCreditMultiplier(battleNumber):
-    return 2 + battleNumber
+    return 4 + battleNumber
 
 
 def getInvasionMultiplier():
