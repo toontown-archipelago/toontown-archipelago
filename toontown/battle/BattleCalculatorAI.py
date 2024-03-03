@@ -1396,6 +1396,19 @@ class BattleCalculatorAI:
         return (
          toonsHit, cogsMiss)
 
+    def buildASuitAttack(self, suit, attackIndex, attackType, targetIndex, damages):
+        attackMovie = [suit.doId, attackIndex, targetIndex, [], 0, 0, 0]
+
+        attackMovie[SUIT_HP_COL] = damages
+
+        self.battle.suitAttacks.append(attackMovie)
+
+        for damage in damages:
+            toon = self.battle.getToon(self.battle.activeToons[targetIndex])
+            
+            #apply toon damage
+            toon.setHp(toon.getHp() - damage)
+
     def calculateRound(self):
         longest = max(len(self.battle.activeToons), len(self.battle.activeSuits))
         for t in self.battle.activeToons:
@@ -1420,6 +1433,9 @@ class BattleCalculatorAI:
         self.__calculateToonAttacks()
         self.__updateLureTimeouts()
         self.__calculateSuitAttacks()
+
+        # buildASuitAttack will go here! :)
+        
         if toonsHit == 1:
             BattleCalculatorAI.toonsAlwaysHit = 0
         if cogsMiss == 1:
