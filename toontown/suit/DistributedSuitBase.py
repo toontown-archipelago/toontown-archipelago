@@ -161,6 +161,7 @@ class DistributedSuitBase(DistributedAvatar.DistributedAvatar, Suit.Suit, SuitBa
         return self.currHP
     
     def getMaxHP(self):
+        reteturn self.maxHP
 
     def setHP(self, hp):
         if hp > self.maxHP:
