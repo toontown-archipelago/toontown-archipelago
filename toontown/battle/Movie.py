@@ -31,6 +31,7 @@ import copy
 from toontown.toonbase import TTLocalizer
 from toontown.toon import NPCToons
 from libotp import *
+from . import BattleScenes
 camPos = Point3(14, 0, 10)
 camHpr = Vec3(89, -30, 0)
 randomBattleTimestamp = base.config.GetBool('random-battle-timestamp', 0)
@@ -50,6 +51,7 @@ class Movie(DirectObject.DirectObject):
         self.reset()
         self.rewardHasBeenReset = 0
         self.resetReward()
+        self.battleScenes = []
         return
 
     def cleanup(self):
@@ -63,6 +65,7 @@ class Movie(DirectObject.DirectObject):
             self.rewardPanel.cleanup()
         self.rewardPanel = None
         self.rewardCallback = None
+        self.battleScenes = []
         return
 
     def needRestoreColor(self):
@@ -407,6 +410,11 @@ class Movie(DirectObject.DirectObject):
         if base.config.GetBool('want-toon-attack-anims', 1):
             track = Sequence(name='toon-attacks')
             camTrack = Sequence(name='toon-attacks-cam')
+            for scene in self.battleScenes:
+                if scene[4]:
+                    ival, camIval = BattleScenes.doScene(scene, self.battle)
+                    track.append(ival)
+                    camTrack.append(camIval)
             ival, camIval = MovieFire.doFires(self.__findToonAttack(FIRE))
             if ival:
                 track.append(ival)
@@ -505,79 +513,13 @@ class Movie(DirectObject.DirectObject):
          id2,
          id3]
 
-    def genAttackDicts(self, toons, suits, id0, tr0, le0, tg0, hp0, ac0, hpb0, kbb0, died0, revive0, id1, tr1, le1, tg1, hp1, ac1, hpb1, kbb1, died1, revive1, id2, tr2, le2, tg2, hp2, ac2, hpb2, kbb2, died2, revive2, id3, tr3, le3, tg3, hp3, ac3, hpb3, kbb3, died3, revive3, sid0, at0, stg0, dm0, sd0, sb0, st0, sid1, at1, stg1, dm1, sd1, sb1, st1, sid2, at2, stg2, dm2, sd2, sb2, st2, sid3, at3, stg3, dm3, sd3, sb3, st3):
+    def genAttackDicts(self, activeToons, activeSuits, toonAttacks, suitAttacks, battleScenes):
         if self.track and self.track.isPlaying():
             self.notify.warning('genAttackDicts() - track is playing!')
-        toonAttacks = ((id0,
-          tr0,
-          le0,
-          tg0,
-          hp0,
-          ac0,
-          hpb0,
-          kbb0,
-          died0,
-          revive0),
-         (id1,
-          tr1,
-          le1,
-          tg1,
-          hp1,
-          ac1,
-          hpb1,
-          kbb1,
-          died1,
-          revive1),
-         (id2,
-          tr2,
-          le2,
-          tg2,
-          hp2,
-          ac2,
-          hpb2,
-          kbb2,
-          died2,
-          revive2),
-         (id3,
-          tr3,
-          le3,
-          tg3,
-          hp3,
-          ac3,
-          hpb3,
-          kbb3,
-          died3,
-          revive3))
-        self.__genToonAttackDicts(toons, suits, toonAttacks)
-        suitAttacks = ((sid0,
-          at0,
-          stg0,
-          dm0,
-          sd0,
-          sb0,
-          st0),
-         (sid1,
-          at1,
-          stg1,
-          dm1,
-          sd1,
-          sb1,
-          st1),
-         (sid2,
-          at2,
-          stg2,
-          dm2,
-          sd2,
-          sb2,
-          st2),
-         (sid3,
-          at3,
-          stg3,
-          dm3,
-          sd3,
-          sb3,
-          st3))
-        self.__genSuitAttackDicts(toons, suits, suitAttacks)
+
+        self.battleScenes = battleScenes
+        self.__genToonAttackDicts(activeToons, activeSuits, toonAttacks)
+        self.__genSuitAttackDicts(activeToons, activeSuits, suitAttacks)
 
     def __genToonAttackDicts(self, toons, suits, toonAttacks):
         for ta in toonAttacks:
@@ -895,6 +837,11 @@ class Movie(DirectObject.DirectObject):
             targetField = attack.get('target')
             if targetField is None:
                 continue
+        for scene in self.battleScenes:
+            if not scene[4]:
+                ival, camIval = BattleScenes.doScene(scene, self.battle)
+                track.append(ival)
+                camTrack.append(camIval)
 
         if len(track) == 0:
             return None, None

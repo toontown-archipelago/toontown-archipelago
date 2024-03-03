@@ -1398,6 +1398,19 @@ class BattleCalculatorAI:
         return (
          toonsHit, cogsMiss)
 
+    def buildASuitAttack(self, suit, attackIndex, attackType, targetIndex, damages):
+        attackMovie = [suit.doId, attackIndex, targetIndex, [], 0, 0, 0]
+
+        attackMovie[SUIT_HP_COL] = damages
+
+        self.battle.suitAttacks.append(attackMovie)
+
+        for damage in damages:
+            toon = self.battle.getToon(self.battle.activeToons[targetIndex])
+            
+            #apply toon damage
+            toon.setHp(toon.getHp() - damage)
+
     def calculateRound(self):
         longest = max(len(self.battle.activeToons), len(self.battle.activeSuits))
         for t in self.battle.activeToons:
@@ -1418,10 +1431,24 @@ class BattleCalculatorAI:
             if not hasattr(suit, 'dna'):
                 self.notify.warning('a removed suit is in this battle!')
                 return None
-
+        try:
+            for suit in self.battle.activeSuits:
+                suit.effectHandler.tick(0)
+        except:
+            pass
         self.__calculateToonAttacks()
         self.__updateLureTimeouts()
+        try:
+            for suit in self.battle.activeSuits:
+                if not self.__combatantDead(suit.doId, toon=0):
+                    suit.effectHandler.tick(1)
+        except:
+            pass
         self.__calculateSuitAttacks()
+        
+
+        # buildASuitAttack goes here! :)
+        
         if toonsHit == 1:
             BattleCalculatorAI.toonsAlwaysHit = 0
         if cogsMiss == 1:

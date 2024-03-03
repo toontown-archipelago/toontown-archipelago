@@ -10,6 +10,7 @@ from . import TownBattleSOSPanel
 from . import TownBattleSOSPetSearchPanel
 from . import TownBattleSOSPetInfoPanel
 from . import TownBattleToonPanel
+from . import TownBattleSuitPanel
 from toontown.toontowngui import TTDialog
 from direct.directnotify import DirectNotifyGlobal
 from toontown.battle import BattleBase
@@ -131,6 +132,9 @@ class TownBattle(StateData.StateData):
          TownBattleToonPanel.TownBattleToonPanel(1),
          TownBattleToonPanel.TownBattleToonPanel(2),
          TownBattleToonPanel.TownBattleToonPanel(3))
+        self.suitPanels = []
+        for i in range(8):
+            self.suitPanels.append(TownBattleSuitPanel.TownBattleSuitPanel(i))
         self.timer = ToontownTimer.ToontownTimer()
         self.timer.reparentTo(base.a2dTopRight)
         self.timer.setPos(-0.151, 0, -0.158)
@@ -156,6 +160,12 @@ class TownBattle(StateData.StateData):
             toonPanel.cleanup()
 
         del self.toonPanels
+
+        for suitPanel in self.suitPanels:
+            suitPanel.cleanup()
+
+        del self.suitPanels
+
         self.timer.destroy()
         del self.timer
         del self.toons
@@ -221,6 +231,15 @@ class TownBattle(StateData.StateData):
         self.time = time
         self.timer.setTime(time)
         return None
+    
+    def __suitPanels(self, num):
+        for panel in self.suitPanels:
+            panel.hide()
+            panel.setPos(0, 0, 0.7)
+
+        for i in range(num):
+            self.suitPanels[i].setX(((num - 1) * 0.25) - (i * 0.5))
+            self.suitPanels[i].show()
 
     def __enterPanels(self, num, localNum):
         self.notify.debug('enterPanels() num: %d localNum: %d' % (num, localNum))
@@ -303,13 +322,16 @@ class TownBattle(StateData.StateData):
             return 1
         return 0
 
-    def updateLaffMeter(self, toonNum, hp):
-        self.toonPanels[toonNum].updateLaffMeter(hp)
+    def updateLaffMeter(self, toonNum, hp, maxHp):
+        self.toonPanels[toonNum].updateLaffMeter(hp, maxHp)
 
     def enterOff(self):
         if self.isLoaded:
             for toonPanel in self.toonPanels:
                 toonPanel.hide()
+            
+            for suitPanel in self.suitPanels:
+                suitPanel.hide()
 
         self.toonAttacks = [(-1, 0, 0),
          (-1, 0, 0),
@@ -323,6 +345,7 @@ class TownBattle(StateData.StateData):
     def exitOff(self):
         if self.isLoaded:
             self.__enterPanels(self.numToons, self.localNum)
+            self.__suitPanels(self.numCogs)
         self.timer.show()
         self.track = -1
         self.level = -1
@@ -465,6 +488,11 @@ class TownBattle(StateData.StateData):
             self.__enterPanels(self.numToons, self.localNum)
             for i in range(len(toons)):
                 self.toonPanels[i].setLaffMeter(toons[i])
+            
+            self.__suitPanels(self.numCogs)
+                
+            for i in range(self.numCogs):
+                self.suitPanels[i].setCogInformation(cogs[i])
 
             if currStateName == 'ChooseCog':
                 self.chooseCogPanel.adjustCogs(self.numCogs, self.luredIndices, self.trappedIndices, self.track, self.immuneIndices)

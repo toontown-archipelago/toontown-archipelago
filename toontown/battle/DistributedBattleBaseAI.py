@@ -18,6 +18,7 @@ from toontown.toonbase import ToontownGlobals
 import random
 from toontown.toon import NPCToons
 from toontown.pets import DistributedPetProxyAI
+from toontown.battle import BattleEffectHandlersAI
 
 class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBattleBaseAI')
@@ -74,6 +75,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.newToons = []
         self.newSuits = []
         self.numNPCAttacks = 0
+        self.battleScenes = []
         self.npcAttacks = {}
         self.pets = {}
         self.fsm = ClassicFSM.ClassicFSM('DistributedBattleAI', [State.State('FaceOff', self.enterFaceOff, self.exitFaceOff, ['WaitForInput', 'Resume']),
@@ -97,6 +99,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
 
     def clearAttacks(self):
         self.toonAttacks = {}
+        self.battleScenes = []
         self.suitAttacks = getDefaultSuitAttacks()
 
     def requestDelete(self):
@@ -329,74 +332,86 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         return self.zoneId
 
     def d_setMovie(self):
-        self.notify.debug('network:setMovie()')
-        self.sendUpdate('setMovie', self.getMovie())
+        movie = self.getMovie()
+
+        try:
+            self.sendUpdate('setMovie', [movie])
+        except:
+            self.notify.warning('Could not set movie: {0}'.format(str(movie)))
+
         self.__updateEncounteredCogs()
 
     def getMovie(self):
-        suitIds = []
-        for s in self.activeSuits:
-            suitIds.append(s.doId)
+        suitIds = [suit.doId for suit in self.activeSuits]
+        movie = [self.movieHasBeenMade, self.activeToons, suitIds]
+        toonAttacks = self.getToonAttacks(suitIds)
+        suitAttacks = self.getSuitAttacks()
+        battleScenes = self.getBattleScenes()
 
-        p = [self.movieHasBeenMade]
-        p.append(self.activeToons)
-        p.append(suitIds)
-        for t in self.activeToons:
-            if t in self.toonAttacks:
-                ta = self.toonAttacks[t]
-                index = -1
-                id = ta[TOON_ID_COL]
-                if id != -1:
-                    index = self.activeToons.index(id)
-                track = ta[TOON_TRACK_COL]
-                if (track == NO_ATTACK or attackAffectsGroup(track, ta[TOON_LVL_COL])) and track != NPCSOS and track != PETSOS:
-                    target = -1
-                    if track == HEAL:
-                        if ta[TOON_LVL_COL] == 1:
-                            ta[TOON_HPBONUS_COL] = random.randint(0, 10000)
-                elif track == SOS or track == NPCSOS or track == PETSOS:
-                    target = ta[TOON_TGT_COL]
-                elif track == HEAL:
-                    if self.activeToons.count(ta[TOON_TGT_COL]) != 0:
-                        target = self.activeToons.index(ta[TOON_TGT_COL])
-                    else:
-                        target = -1
-                elif suitIds.count(ta[TOON_TGT_COL]) != 0:
-                    target = suitIds.index(ta[TOON_TGT_COL])
-                else:
-                    target = -1
-                p = p + [index,
-                 track,
-                 ta[TOON_LVL_COL],
-                 target]
-                p = p + ta[4:]
-            else:
-                index = self.activeToons.index(t)
-                attack = getToonAttack(index)
-                p = p + attack
+        movie += [toonAttacks, suitAttacks, battleScenes]
+        return movie
+
+    def getToonAttacks(self, suitIds):
+        toonAttacks = []
+        for toon in self.activeToons:
+            if toon not in self.toonAttacks:
+                index = self.activeToons.index(toon)
+                toonAttacks.append(getToonAttack(index))
+                continue
+
+            attack = self.toonAttacks[toon]
+            id = attack[TOON_ID_COL]
+            index = self.activeToons.index(id) if id != -1 else -1
+            track = attack[TOON_TRACK_COL]
+            target = -1
+
+            if (track == NO_ATTACK or attackAffectsGroup(track, attack[TOON_LVL_COL])) and track not in (NPCSOS, PETSOS):
+                if track == HEAL:
+                    if attack[TOON_LVL_COL] == 1:
+                        attack[TOON_HPBONUS_COL] = random.randint(0, 10000)
+            elif track in (SOS, NPCSOS, PETSOS):
+                target = attack[TOON_TGT_COL]
+            elif track == HEAL:
+                targetToon = attack[TOON_TGT_COL]
+                target = self.activeToons.index(targetToon) if targetToon in self.activeToons else -1
+            elif attack[TOON_TGT_COL] in suitIds:
+                target = suitIds.index(attack[TOON_TGT_COL])
+
+            toonAttacks.append([index, track, attack[TOON_LVL_COL], target] + attack[4:])  # Remaining 6 (4-10)
 
         for i in range(4 - len(self.activeToons)):
-            p = p + getToonAttack(-1)
+            toonAttacks.append(getToonAttack(-1))
 
-        for sa in self.suitAttacks:
-            index = -1
-            id = sa[SUIT_ID_COL]
-            if id != -1:
-                index = suitIds.index(id)
-            if sa[SUIT_ATK_COL] == -1:
-                targetIndex = -1
-            else:
-                targetIndex = sa[SUIT_TGT_COL]
-                if targetIndex == -1:
-                    self.notify.debug('suit attack: %d must be group' % sa[SUIT_ATK_COL])
-                else:
-                    toonId = self.activeToons[targetIndex]
-            p = p + [index, sa[SUIT_ATK_COL], targetIndex]
-            sa[SUIT_TAUNT_COL] = 0
-            if sa[SUIT_ATK_COL] != -1:
+        return toonAttacks
+
+    def getSuitAttacks(self):
+        suitIds = [suit.doId for suit in self.activeSuits]
+        suitAttacks = []
+        for attack in self.suitAttacks:
+            id = attack[SUIT_ID_COL]
+            index = suitIds.index(id) if id != -1 else -1
+            attackCol = attack[SUIT_ATK_COL]
+            target = -1 if attackCol == NO_ATTACK else attack[SUIT_TGT_COL]
+
+            if attackCol != NO_ATTACK:
                 suit = self.findSuit(id)
-                sa[SUIT_TAUNT_COL] = getAttackTauntIndexFromIndex(suit, sa[SUIT_ATK_COL])
-            p = p + sa[3:]
+                attack[SUIT_TAUNT_COL] = getAttackTauntIndexFromIndex(suit, attackCol)
+
+            suitAttacks.append([index, attackCol, target] + attack[3:])  # Remaining 4 (3-7)
+
+        return suitAttacks
+
+    def getBattleScenes(self):
+        battleScenes = []
+        for scene in self.battleScenes:
+            id = scene[0]
+            targetId = scene[1]
+            hp = scene[2]
+            otherTargets = scene[3]
+            isToon = scene[4]
+            battleScenes.append([id, targetId, hp, otherTargets, isToon])
+
+        return battleScenes
 
         return p
 
@@ -1319,10 +1334,49 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             self.toonAttacks[toon.doId] = getToonAttack(toon.doId, track=PASS)
             self.d_setChosenToonAttacks()
             self.responses[toon.doId] += 1
+        
+        for s in self.suits:
+            if hasattr(s, 'effectHandler'):
+                if s.effectHandler == None:
+                    effectHandler = BattleEffectHandlersAI.BattleEffectHandlerAI(self, s)
+                    s.effectHandler = effectHandler
+                        
+                    #s.effectHandler.addEffect('BattleEffectHeathBonusSuitAI')
+                    #s.effectHandler.children['healthBonusSuit'].startEffect()
+        
+        for tId in self.toons:
+            t = simbase.air.doId2do.get(tId)
+            if hasattr(t, 'effectHandler'):
+                if t.effectHandler == None:
+                    effectHandler = BattleEffectHandlersAI.BattleEffectHandlerAI(self, t)
+                    t.effectHandler = effectHandler
+                        
+                    #s.effectHandler.addEffect('BattleEffectHeathBonusSuitAI')
+                    #s.effectHandler.children['healthBonusSuit'].startEffect()
 
     def exitWaitForInput(self):
         self.npcAttacks = {}
         self.timer.stop()
+
+        for s in self.suits:
+            if hasattr(s, 'effectHandler'):
+                if s.effectHandler == None:
+                    effectHandler = BattleEffectHandlersAI.BattleEffectHandlerAI(self, s)
+                    s.effectHandler = effectHandler
+                        
+                    #s.effectHandler.addEffect('BattleEffectHeathBonusSuitAI')
+                    #s.effectHandler.children['healthBonusSuit'].startEffect()
+        
+        for tId in self.toons:
+            t = simbase.air.doId2do.get(tId)
+            if hasattr(t, 'effectHandler'):
+                if t.effectHandler == None:
+                    effectHandler = BattleEffectHandlersAI.BattleEffectHandlerAI(self, t)
+                    t.effectHandler = effectHandler
+                        
+                    #s.effectHandler.addEffect('BattleEffectHeathBonusSuitAI')
+                    #s.effectHandler.children['healthBonusSuit'].startEffect()
+
         return None
 
     def __serverTimedOut(self):

@@ -77,3 +77,7 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel):
         self.cleanup()
         AvatarPanel.currentAvatarPanel = None
         return
+
+    @classmethod
+    def getRevives(cls, cog):
+        return cog.getSkeleRevives()

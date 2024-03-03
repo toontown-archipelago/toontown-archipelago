@@ -5182,6 +5182,11 @@ TownBattleWaitBack = 'BACK'
 TownBattleSOSPetSearchTitle = 'Searching for doodle\n%s...'
 TownBattleSOSPetInfoTitle = '%s is %s'
 TownBattleSOSPetInfoOK = lOK
+
+TownBattleSuitLevel = "Level %(level)s v%(revives)s.0"
+TownBattleSuitLevelAndRevive = "Level %(level)s"
+
+
 TrolleyHFAMessage = 'You may not board the trolley until your Laff meter is smiling.'
 TrolleyTFAMessage = 'You may not board the trolley until ' + Mickey + ' says so.'
 TrolleyHopOff = 'Hop off'

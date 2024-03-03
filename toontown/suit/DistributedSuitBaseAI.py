@@ -21,6 +21,7 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
         self.immune = 0
         self.reviveFlag = 0
         self.buildingHeight = None
+        self.effectHandler = None
         return
 
     def generate(self):
