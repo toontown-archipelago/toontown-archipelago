@@ -183,6 +183,20 @@ class JSONTypes(str, enum.Enum):
 
 
 # A class that parses a list of JSONMessagePart instances and modifies them to have colors defined and IDs replaced
+def item_flag_to_color(flag: int):
+    # 0b001 = logical advancement, 0b010 = useful, 0b100 = trap
+    if flag & 0b001:
+        return 'plum'
+
+    if flag & 0b010:
+        return 'slateblue'
+
+    if flag & 0b100:
+        return 'salmon'
+
+    return 'cyan'
+
+
 class JSONPartFormatter:
 
     COLOR_BLACK = (0, 0, 0, 1)
@@ -272,7 +286,7 @@ class JSONPartFormatter:
 
     # Modifies a JSONMessagePart assuming it is an item type
     def handle_item_part(self, part: JSONMessagePart) -> None:
-        color = self.item_flag_to_color(part['flags'])
+        color = item_flag_to_color(part['flags'])
         part['color'] = color
         item = part['text']
 
@@ -310,19 +324,6 @@ class JSONPartFormatter:
     # Modifies a JSONMessagePart assuming it is a default type (no type specified)
     def handle_default_part(self, part: JSONMessagePart) -> None:
         part['color'] = 'white'
-
-    def item_flag_to_color(self, flag: int):
-        # 0b001 = logical advancement, 0b010 = useful, 0b100 = trap
-        if flag & 0b001:
-            return 'plum'
-
-        if flag & 0b010:
-            return 'slateblue'
-
-        if flag & 0b100:
-            return 'salmon'
-
-        return 'cyan'
 
 
 class JSONtoTextParser(metaclass=HandlerMeta):

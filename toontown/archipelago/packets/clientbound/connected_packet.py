@@ -131,6 +131,14 @@ class ConnectedPacket(ClientBoundPacketBase):
         if len(toonCheckedLocations) > 0:
             client.av.archipelago_session.sync()
 
+        # Tell AP we are playing
+        status_packet = StatusUpdatePacket()
+        status_packet.status = ClientStatus.CLIENT_GOAL if client.av.winConditionSatisfied() else ClientStatus.CLIENT_PLAYING
+        client.send_packet(status_packet)
+
+        # Scout some locations that we need to display
+        client.av.scoutLocations(locations.SCOUTING_REQUIRED_LOCATIONS)
+
         # Login location rewarding
         new_game = ap_location_name_to_id(locations.STARTING_NEW_GAME_LOCATION)
         track_one_check = ap_location_name_to_id(locations.STARTING_TRACK_ONE_LOCATION)
@@ -138,7 +146,3 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.av.addCheckedLocation(new_game)
         client.av.addCheckedLocation(track_one_check)
         client.av.addCheckedLocation(track_two_check)
-
-        status_packet = StatusUpdatePacket()
-        status_packet.status = ClientStatus.CLIENT_GOAL if client.av.winConditionSatisfied() else ClientStatus.CLIENT_PLAYING
-        client.send_packet(status_packet)

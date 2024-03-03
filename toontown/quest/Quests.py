@@ -2531,8 +2531,6 @@ def getAllRewardIdsForReward(rewardId):
 
 def findFinalRewardId(questID, depth=0):
 
-    print(questID, depth)
-
     questDesc = QuestDict.get(questID)
     if questDesc is None:
         return -1, -1
@@ -3245,11 +3243,29 @@ class APLocationReward(Reward):
 
         av.addCheckedLocation(self.getCheckId())
 
+    def getRewardName(self):
+
+
+        # First try to find out if we are running this locally or on the ai
+        av = None
+        try:
+            av = base.localAvatar
+        # This is the AI, just use the check name
+        except AttributeError:
+            return self.getCheckName()
+
+        # Do we have it cached?
+        if not av.hasCachedLocationReward(self.getCheckId()):
+            return self.getCheckName()
+
+        # Send
+        return av.getCachedLocationReward(self.getCheckId())
+
     def getString(self):
         return f"You have completed {self.getCheckName()}"
 
-    def getPosterString(self):  # todo somehow figure out how to get the players item name?
-        return f"Reward: {self.getCheckName()} completion"
+    def getPosterString(self):
+        return self.getRewardName()
 
 
 REWARD_INDEX_CLASS = 0
@@ -3651,8 +3667,6 @@ for rewardID, rewardDescription in RewardDict.items():
     rewardClass = rewardDescription[0]
     if rewardClass == APLocationReward:
         __AP_LOCATION_TO_REWARD_ID[rewardDescription[1]] = rewardID
-
-print(__AP_LOCATION_TO_REWARD_ID)
 
 
 # Given an AP location name (locations.DONALDS_DREAMLAND_TASK_11 for example) return the reward ID that corresponds w it

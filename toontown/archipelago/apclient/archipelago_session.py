@@ -3,7 +3,9 @@ from typing import List
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
+from toontown.archipelago.definitions import util
 from toontown.archipelago.packets.serverbound.location_checks_packet import LocationChecksPacket
+from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.archipelago.packets.serverbound.say_packet import SayPacket
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
 from toontown.archipelago.util.net_utils import ClientStatus
@@ -100,3 +102,20 @@ class ArchipelagoSession:
         goal_complete_packet.status = ClientStatus.CLIENT_GOAL
         self.client.send_packet(goal_complete_packet)
 
+    # Call to send a LocationScout packet to AP so we can receive information about items at specific locations
+    def scout(self, locations: List[str], hint_item=False, force_broadcast=False):
+
+        locationIDs = []
+        for location in locations:
+            locationIDs.append(util.ap_location_name_to_id(location))
+
+        scout_packet = LocationScoutsPacket()
+        scout_packet.locations = locationIDs
+
+        # todo add setting in YAML for hinting the scout
+        if hint_item and force_broadcast:
+            scout_packet.hint_item = 2
+        elif hint_item:
+            scout_packet.hint_item = 1
+
+        self.client.send_packet(scout_packet)

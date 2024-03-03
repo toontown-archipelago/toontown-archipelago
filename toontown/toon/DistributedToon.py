@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from panda3d.core import *
 from libotp import *
@@ -2802,4 +2802,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     # To be overridden in LocalToon, just here for safety
     def sendArchipelagoMessage(self, message: str) -> None:
+        pass
+
+    # To be overridden in LocalToon, just here for safety
+    def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
         pass

@@ -956,6 +956,11 @@ dclass DistributedAnimatedProp : DistributedObject {
 
 typedef int16 pair16[2];
 
+struct LocationScoutsCache {
+  uint32 locationId;
+  string rewardName;
+}
+
 dclass DistributedToon : DistributedPlayer {
   setDNAString(blob) required broadcast ownrecv db;
   setGM(uint8 = 0) required broadcast ownrecv db;
@@ -1149,6 +1154,7 @@ dclass DistributedToon : DistributedPlayer {
   setReceivedItems(uint32[]=[]) required ownrecv broadcast db;
   setCheckedLocations(uint32[]=[]) required ownrecv broadcast db;
   sendArchipelagoMessage(string) ownrecv;
+  updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
 };
 
 dclass DistributedCCharBase : DistributedObject {

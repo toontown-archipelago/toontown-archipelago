@@ -1,4 +1,6 @@
 import random
+from typing import List, Tuple
+
 from libotp import *
 from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
@@ -46,6 +48,7 @@ from . import Toon
 from . import LaffMeter
 from toontown.quest import QuestMap
 from toontown.archipelago.gui.ArchipelagoOnscreenLog import ArchipelagoOnscreenLog
+from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 
 WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
 from toontown.toontowngui import NewsPageButtonManager
@@ -169,6 +172,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.camera = camera
 
             self.archipelagoLog: ArchipelagoOnscreenLog = None
+            self.locationScoutsCache: LocationScoutsCache = LocationScoutsCache()
 
     def wantLegacyLifter(self):
         return True
@@ -1999,3 +2003,16 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     # Prints a message to the AP log
     def sendArchipelagoMessage(self, message: str) -> None:
         self.archipelagoLog.addToLog(message)
+
+    # Called from the ai, update our location scouts for quest poster display
+    def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
+        new_cache = LocationScoutsCache.from_struct(cacheTuples)
+        self.locationScoutsCache.merge(new_cache, update=True)
+        print(self.locationScoutsCache._data_cache)
+
+    # Call this method to get the cached location that we have stored
+    def getCachedLocationReward(self, locationId: int) -> str:
+        return self.locationScoutsCache.get(locationId, default=f"Undefined <location={locationId}>")
+
+    def hasCachedLocationReward(self, locationId: int) -> bool:
+        return self.locationScoutsCache.get(locationId) is not None

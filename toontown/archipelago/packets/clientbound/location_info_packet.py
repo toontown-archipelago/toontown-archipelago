@@ -1,5 +1,6 @@
 from typing import List
 
+from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
 from toontown.archipelago.util.net_utils import NetworkItem
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 
@@ -16,5 +17,10 @@ class LocationInfoPacket(ClientBoundPacketBase):
 
     def handle(self, client):
 
+        self.debug(f"Handling location info for locations: {[i.location for i in self.locations]}")
+
         for location in self.locations:
-            self.debug(f"{location.player}'s {location.item} is at {location.location}")
+            client.cache_location_and_item(location.location, location.player, location.item, location.flags)
+
+        # Send this to the client
+        client.av.d_updateLocationScoutsCache()

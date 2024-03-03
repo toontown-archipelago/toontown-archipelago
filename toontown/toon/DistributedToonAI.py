@@ -42,6 +42,7 @@ from . import ModuleListAI
 
 from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
 from ..archipelago.definitions.util import get_zone_discovery_id
+from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..shtiker import CogPageGlobals
 
 if simbase.wantPets:
@@ -4324,6 +4325,27 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if self.archipelago_session:
             self.archipelago_session.complete_check(location)
 
+    # Called to announce to Archipelago that we need to know what this location ID is so we can receive
+    # A LocationInfo packet and keep track of it
+    def scoutLocation(self, location: int):
+        self.scoutLocations([location])
+
+    # Called to announce to Archipelago that we need to know what these location IDs are so we can receive
+    # A LocationInfo packet and keep track all of them and know what item is present for this check upon completion
+    def scoutLocations(self, locations: List[int]):
+        if self.archipelago_session:
+            self.archipelago_session.scout(locations)
+
+    def d_updateLocationScoutsCache(self, cache: LocationScoutsCache = None):
+
+        if cache is None:
+            if not self.archipelago_session:
+                return
+
+            cache = self.archipelago_session.client.location_scouts_cache
+
+        self.sendUpdate('updateLocationScoutsCache', [cache.struct()])
+
     # Send this toon an archipelago message to display on their log
     def d_sendArchipelagoMessage(self, message: str) -> None:
         self.sendUpdate('sendArchipelagoMessage', [message])
@@ -4334,7 +4356,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def winConditionSatisfied(self):
 
         # Win condition for defeat all bosses satisfied? (Toon has a suit that isn't level 1 in any boss)
-        print(self.getCogLevels())
         for level in self.getCogLevels():
             if level <= 0:
                 return False

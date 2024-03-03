@@ -16,7 +16,8 @@ from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.util import net_utils, global_text_properties
 from toontown.archipelago.util.data_package import DataPackage
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart, get_raw_formatted_string
-from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot
+from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
+from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color
 from toontown.archipelago.packets import packet_registry
 from toontown.archipelago.packets.archipelago_packet_base import ArchipelagoPacketBase
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
@@ -64,6 +65,7 @@ class ArchipelagoClient:
         self.slot_id_to_slot_name: Dict[int, NetworkSlot] = {}
         self.data_packages: Dict[str, DataPackage] = {}
         self.global_data_package: DataPackage = DataPackage()
+        self.location_scouts_cache: LocationScoutsCache = LocationScoutsCache()
 
     # Given a slot number (as string or int, doesn't matter but must be a number) return the NetworkSlot as cached
     def get_slot_info(self, slot: Union[str, int]) -> NetworkSlot:
@@ -296,3 +298,27 @@ class ArchipelagoClient:
 
     def set_connect_url(self, server_url: str):
         self.address = server_url
+
+    # Caches an item ID at some location. We do all the conversion in this method necessary to store it how we please
+    # our_location_id: The location that we own, that stores some item
+    # owning_player_id: The ID of the player that owns the item stored at the location
+    # item_id: The ID of the item
+    def cache_location_and_item(self, our_location_id: int, owning_player_id: int, item_id: int, item_flag: int = 0):
+
+        # Stolen from the JSON parser
+
+        someone_elses = owning_player_id != self.slot
+
+        owner_name = self.get_slot_info(owning_player_id).name + "'s " if someone_elses else "Your "
+        item_name = self.get_item_info(item_id)
+
+        # Let's make the string pretty
+        name_color = 'yellow' if someone_elses else 'magenta'
+        item_color = item_flag_to_color(item_flag)
+        item_display_string = global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("AP Reward: ", color='salmon'),
+            MinimalJsonMessagePart(owner_name, color=name_color),
+            MinimalJsonMessagePart(item_name, color=item_color)
+        ])
+
+        self.location_scouts_cache.put(our_location_id, item_display_string)
