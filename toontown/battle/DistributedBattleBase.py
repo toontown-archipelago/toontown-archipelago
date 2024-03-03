@@ -1062,6 +1062,13 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
             self.__stopTimer()
         return Task.done
 
+    def resetStatusEffects(self):
+        for i in range(len(self.activeSuits)):
+            self.townBattle.suitPanels[i].setCogInformation(self.activeSuits[i])
+        
+        for i in range(len(self.activeToons)):
+            self.townBattle.updateLaffMeter(i, self.activeToons[i].hp)
+
     def enterWaitForInput(self, ts = 0):
         self.notify.debug('enterWaitForInput()')
         if self.interactiveProp:
@@ -1077,6 +1084,9 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         for toon in self.toons:
             if toon.hp <= 0:
                 toon.loop('sad-neutral')
+        
+        resetPanels = Sequence(Wait(0.01), Func(self.resetStatusEffects))
+        resetPanels.start()
 
         return None
 
