@@ -18,6 +18,7 @@ from toontown.toonbase import ToontownGlobals
 import random
 from toontown.toon import NPCToons
 from toontown.pets import DistributedPetProxyAI
+from toontown.battle import BattleEffectHandlersAI
 
 class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBattleBaseAI')
@@ -1333,10 +1334,49 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             self.toonAttacks[toon.doId] = getToonAttack(toon.doId, track=PASS)
             self.d_setChosenToonAttacks()
             self.responses[toon.doId] += 1
+        
+        for s in self.suits:
+            if hasattr(s, 'effectHandler'):
+                if s.effectHandler == None:
+                    effectHandler = BattleEffectHandlersAI.BattleEffectHandlerAI(self, s)
+                    s.effectHandler = effectHandler
+                        
+                    #s.effectHandler.addEffect('BattleEffectHeathBonusSuitAI')
+                    #s.effectHandler.children['healthBonusSuit'].startEffect()
+        
+        for tId in self.toons:
+            t = simbase.air.doId2do.get(tId)
+            if hasattr(t, 'effectHandler'):
+                if t.effectHandler == None:
+                    effectHandler = BattleEffectHandlersAI.BattleEffectHandlerAI(self, t)
+                    t.effectHandler = effectHandler
+                        
+                    #s.effectHandler.addEffect('BattleEffectHeathBonusSuitAI')
+                    #s.effectHandler.children['healthBonusSuit'].startEffect()
 
     def exitWaitForInput(self):
         self.npcAttacks = {}
         self.timer.stop()
+
+        for s in self.suits:
+            if hasattr(s, 'effectHandler'):
+                if s.effectHandler == None:
+                    effectHandler = BattleEffectHandlersAI.BattleEffectHandlerAI(self, s)
+                    s.effectHandler = effectHandler
+                        
+                    #s.effectHandler.addEffect('BattleEffectHeathBonusSuitAI')
+                    #s.effectHandler.children['healthBonusSuit'].startEffect()
+        
+        for tId in self.toons:
+            t = simbase.air.doId2do.get(tId)
+            if hasattr(t, 'effectHandler'):
+                if t.effectHandler == None:
+                    effectHandler = BattleEffectHandlersAI.BattleEffectHandlerAI(self, t)
+                    t.effectHandler = effectHandler
+                        
+                    #s.effectHandler.addEffect('BattleEffectHeathBonusSuitAI')
+                    #s.effectHandler.children['healthBonusSuit'].startEffect()
+
         return None
 
     def __serverTimedOut(self):

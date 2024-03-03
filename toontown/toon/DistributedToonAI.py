@@ -160,6 +160,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.immortalMode = 0
         self.numPies = 0
         self.pieType = 0
+        self.effectHandler = None
         self._isGM = False
         self._gmType = None
         self.hpOwnedByBattle = 0

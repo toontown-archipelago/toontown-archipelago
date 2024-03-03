@@ -1429,12 +1429,23 @@ class BattleCalculatorAI:
             if not hasattr(suit, 'dna'):
                 self.notify.warning('a removed suit is in this battle!')
                 return None
-
+        try:
+            for suit in self.battle.activeSuits:
+                suit.effectHandler.tick(0)
+        except:
+            pass
         self.__calculateToonAttacks()
         self.__updateLureTimeouts()
+        try:
+            for suit in self.battle.activeSuits:
+                if not self.__combatantDead(suit.doId, toon=0):
+                    suit.effectHandler.tick(1)
+        except:
+            pass
         self.__calculateSuitAttacks()
+        
 
-        # buildASuitAttack will go here! :)
+        # buildASuitAttack goes here! :)
         
         if toonsHit == 1:
             BattleCalculatorAI.toonsAlwaysHit = 0
