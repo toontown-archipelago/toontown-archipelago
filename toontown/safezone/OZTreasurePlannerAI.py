@@ -6,7 +6,7 @@ class OZTreasurePlannerAI(RegenTreasurePlannerAI.RegenTreasurePlannerAI):
 
     def __init__(self, zoneId):
         self.healAmount = 3
-        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedOZTreasureAI.DistributedOZTreasureAI, 'OZTreasurePlanner', 20, 5)
+        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedOZTreasureAI.DistributedOZTreasureAI, 'OZTreasurePlanner', 10, 6)
 
     def initSpawnPoints(self):
         self.spawnPoints = [(-156.9, -118.9, 0.025),
