@@ -263,6 +263,7 @@ class Movie(DirectObject.DirectObject):
             self.track.delayDeletes.append(DelayDelete.DelayDelete(toon, 'Movie.play'))
 
         self.track.start(ts)
+        self.track.setPlayRate(2)
         return None
 
     def finish(self):
