@@ -755,7 +755,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def setHoodsVisited(self, hoods):
         self.hoodsVisited = hoods
-        if ToontownGlobals.SellbotHQ in hoods or ToontownGlobals.CashbotHQ in hoods or ToontownGlobals.LawbotHQ in hoods:
+        if ToontownGlobals.SellbotHQ in hoods or ToontownGlobals.CashbotHQ in hoods or ToontownGlobals.LawbotHQ in hoods or ToontownGlobals.BossbotHQ in hoods:
             self.setDisguisePageFlag(1)
 
     def wrtReparentTo(self, parent):
