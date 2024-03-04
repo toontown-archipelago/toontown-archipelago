@@ -236,4 +236,8 @@ class ToontownItem(Item):
 
 
 def random_junk() -> ToontownItemDefinition:
-    return random.choice(JUNK_ITEMS)
+    # Cool way to make 30% of junk traps until we get a packet/yaml method
+    if random.randint(1, 10) <= 3:
+        return random.choice(TRAP_ITEMS)
+    else:
+        return random.choice(JUNK_ITEMS)
