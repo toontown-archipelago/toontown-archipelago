@@ -44,13 +44,14 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         else:
             self.reparentTo(render)
             self.initPos()
-            zonePosDict = {ToontownGlobals.SellbotHQ: (2, -164, -20, -180),
-                           ToontownGlobals.CashbotHQ: (62, -128, -23, -135),
-                           ToontownGlobals.LawbotHQ: (90, -366, -68, 0),
-                           ToontownGlobals.BossbotHQ: (75, 120, 0, 145)}
+            zonePosDict = {ToontownGlobals.SellbotHQ: (2, -164, -19.594, -180, 'cc'),
+                           ToontownGlobals.CashbotHQ: (62, 128, -23.439, -135, 'sc'),
+                           ToontownGlobals.LawbotHQ: (90, -366, -68.367, 0, 'bf'),
+                           ToontownGlobals.BossbotHQ: (75, 120, 0, 145, 'f')}
             posData = zonePosDict.get(self.zoneId)
             self.setPos(posData[0], posData[1], posData[2])
             self.setH(posData[3])
+            self.putOnSuit(posData[4])
         return
 
     def allowedToEnter(self):
