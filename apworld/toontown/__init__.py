@@ -9,6 +9,7 @@ from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, ToontownLoca
 from .options import ToontownOptions
 from ..generic.Rules import set_rule
 
+DEBUG_MODE = False
 
 class ToontownWeb(WebWorld):
     tutorials = [Tutorial(
@@ -210,9 +211,10 @@ class ToontownWorld(World):
         # Place our victory
         self.multiworld.get_location(locations.SAVED_TOONTOWN, self.player).place_locked_item(self.create_item(items.ITEM_VICTORY))
 
-        # Debug
-        from Utils import visualize_regions
-        visualize_regions(self.multiworld.get_region("Menu", self.player), "toontown.puml")
+        # Debug, use this to print a pretty picture to make sure our regions are set up correctly
+        if DEBUG_MODE:
+            from Utils import visualize_regions
+            visualize_regions(self.multiworld.get_region("Menu", self.player), "toontown.puml")
 
     def generate_basic(self) -> None:
         # Set win condition
