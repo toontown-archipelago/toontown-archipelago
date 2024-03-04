@@ -95,6 +95,8 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         self.detectAvatars()
         if self.isLocalToon:
             self.freeAvatar()
+
+        self.initToonState()
         return Task.done
 
     def setMovie(self, mode, npcId, avId, timestamp):

@@ -159,9 +159,12 @@ class FactoryExterior(BattlePlace.BattlePlace):
             self.notify.error('Unknown mode: ' + where + ' in handleElevatorDone')
 
     def handleInterests(self):
+        # Grab the "starting" zone ID for this zone
+        branchZone = ZoneUtil.getBranchZone(self.zoneId)
+
         # First, we need to load the DNA file for this Cog HQ.
         dnaStore = DNAStorage()
-        dnaFileName = self.genDNAFileName(self.zoneId)
+        dnaFileName = self.genDNAFileName(branchZone)
         loadDNAFile(dnaStore, dnaFileName)
 
         # Next, we need to collect all of the visgroup zone IDs.
@@ -170,7 +173,7 @@ class FactoryExterior(BattlePlace.BattlePlace):
             groupFullName = dnaStore.getDNAVisGroupName(i)
             visGroup = dnaStore.getDNAVisGroup(i)
             visZoneId = int(base.cr.hoodMgr.extractGroupName(groupFullName))
-            visZoneId = ZoneUtil.getTrueZoneId(visZoneId, self.zoneId)
+            visZoneId = ZoneUtil.getTrueZoneId(visZoneId, branchZone)
             visibles = []
             for i in range(visGroup.getNumVisibles()):
                 visibles.append(int(visGroup.getVisibleName(i)))
@@ -179,4 +182,12 @@ class FactoryExterior(BattlePlace.BattlePlace):
             self.zoneVisDict[visZoneId] = visibles
 
         # Finally, we want interest in all visgroups due to this being a Cog HQ.
-        base.cr.sendSetZoneMsg(self.zoneId, list(self.zoneVisDict.values())[0])
+        visibleZoneIds = set()
+        visibleZoneIds.add(self.zoneId)  # Of course make sure we can at least see our zone
+        for connectingZones in list(self.zoneVisDict.values()):
+            for zone in connectingZones:
+                visibleZoneIds.add(zone)
+
+        print('setting interest for zones: ', visibleZoneIds)
+
+        base.cr.sendSetZoneMsg(self.zoneId, list(visibleZoneIds))

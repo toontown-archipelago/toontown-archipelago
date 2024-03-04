@@ -1347,10 +1347,8 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         for s in self.suits:
 
             # Make sure this cogs hp is synced
-            s = self.air.doId2do.get(s)
-            if s:
-                s.d_setHp(s.hp)
-            
+            s.d_setHP(s.getHP())
+
             if hasattr(s, 'effectHandler'):
                 if s.effectHandler == None:
                     effectHandler = BattleEffectHandlersAI.BattleEffectHandlerAI(self, s)
