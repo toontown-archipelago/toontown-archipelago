@@ -136,8 +136,8 @@ class TownBattle(StateData.StateData):
         for i in range(8):
             self.suitPanels.append(TownBattleSuitPanel.TownBattleSuitPanel(i))
         self.timer = ToontownTimer.ToontownTimer()
-        self.timer.reparentTo(base.a2dTopRight)
-        self.timer.setPos(-0.151, 0, -0.158)
+        self.timer.reparentTo(base.a2dBottomRight)
+        self.timer.setPos(-0.151, 0, 0.158)
         self.timer.setScale(0.4)
         self.timer.hide()
         return
