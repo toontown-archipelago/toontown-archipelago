@@ -196,7 +196,7 @@ class TownBattle(StateData.StateData):
         base.localAvatar.laffMeter.stop()
         self.parentFSMState.removeChild(self.fsm)
         del self.parentFSMState
-        base.localAvatar.inventory.setBattleCreditMultiplier(1)
+        localAvatar.inventory.setDefaultBattleCreditMultiplier()
 
     def load(self):
         if self.isLoaded:

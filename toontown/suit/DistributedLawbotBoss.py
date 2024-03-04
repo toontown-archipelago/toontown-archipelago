@@ -939,7 +939,6 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.clearInterval(intervalName)
         self.cleanupBattles()
         self.battleTwoMusic.stop()
-        localAvatar.inventory.setBattleCreditMultiplier(1)
         if self.juryTimer:
             self.juryTimer.destroy()
             del self.juryTimer

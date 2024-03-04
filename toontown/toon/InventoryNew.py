@@ -2,12 +2,14 @@ from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.toonbase.ToontownBattleGlobals import *
 from . import InventoryBase
-from toontown.toonbase import TTLocalizer
+from toontown.toonbase import TTLocalizer, ToontownBattleGlobals
 from toontown.quest import BlinkingArrows
 from direct.interval.IntervalGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
+from ..hood import ZoneUtil
+
 
 class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
     notify = DirectNotifyGlobal.directNotify.newCategory('InventoryNew')
@@ -39,9 +41,8 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         DirectFrame.__init__(self, relief=None)
         self.initialiseoptions(InventoryNew)
         self.battleCreditLevel = None
-        self.detailCredit = None
         self.__battleCreditMultiplier = 1
-        self.__invasionCreditMultiplier = 1
+        self.__invasionCreditMultiplier = 0
         self.__respectInvasions = 1
         self._interactivePropTrackBonus = -1
         self.tutorialFlag = 0
@@ -55,8 +56,19 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         self.hide()
         return
 
+    def __calculateBaseBattleCreditMultiplier(self):
+        hood = ZoneUtil.getHoodId(base.localAvatar.zoneId)
+        hoodMult = ToontownBattleGlobals.getHoodSkillCreditMultiplier(hood)
+        if self.getRespectInvasions():
+            hoodMult += self.getInvasionCreditMultiplier()
+
+        return hoodMult * base.localAvatar.getBaseGagSkillMultiplier()
+
+    def setDefaultBattleCreditMultiplier(self):
+        self.setBattleCreditMultiplier(1)
+
     def setBattleCreditMultiplier(self, mult):
-        self.__battleCreditMultiplier = mult
+        self.__battleCreditMultiplier = mult * self.__calculateBaseBattleCreditMultiplier()
 
     def getBattleCreditMultiplier(self):
         return self.__battleCreditMultiplier
@@ -313,38 +325,38 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
          'bonus': damageBonusStr,
          'singleOrGroup': self.getSingleGroupStr(track, level)})
         if self.itemIsCredit(track, level):
-            mult = self.__battleCreditMultiplier
-            if self.__respectInvasions:
-                mult *= self.__invasionCreditMultiplier
-
-            mult *= localAvatar.getBaseGagSkillMultiplier()
+            mult = self.getBattleCreditMultiplier()
             self.setDetailCredit(track, (level + 1) * mult)
         else:
-            self.setDetailCredit(track, None)
+            self.setDetailCredit(track, 0)
         self.detailCreditLabel.show()
         return
 
     def setDetailCredit(self, track, credit):
-        if credit != None:
-            if self.toon.earnedExperience:
-                maxCredit = ExperienceCap - self.toon.earnedExperience[track]
-                credit = min(credit, maxCredit)
-            credit = int(credit * 10 + 0.5)
-            if credit % 10 == 0:
-                credit /= 10
-            else:
-                credit /= 10.0
-        if self.detailCredit == credit:
-            return
-        if credit != None:
-            self.detailCreditLabel['text'] = TTLocalizer.InventorySkillCredit % credit
-            if self.detailCredit == None:
-                self.detailCreditLabel['text_fg'] = (0.05, 0.14, 0.4, 1)
-        else:
+
+        # How much can we earn?
+        availableCredit = self.__experienceLeftToEarn(track)
+        # Update credit variable to not go above our available credit
+        oldCredit = credit
+        credit = min(availableCredit, credit)
+
+        # Set to NONE and gray it make it red if we cannot earn anything
+        if credit <= 0:
             self.detailCreditLabel['text'] = TTLocalizer.InventorySkillCreditNone
             self.detailCreditLabel['text_fg'] = (0.5, 0.0, 0.0, 1.0)
-        self.detailCredit = credit
-        return
+            return
+
+        # Set the label text with how much we can earn
+        self.detailCreditLabel['text'] = TTLocalizer.InventorySkillCredit % int(credit)
+
+        # If our amount to earn is less than what we had originally, make it orange
+        if credit < oldCredit:
+            self.detailCreditLabel['text_fg'] = (.5, .3, 0, 1)
+            return
+
+        # Make it default color
+        self.detailCreditLabel['text_fg'] = (0.05, 0.14, 0.4, 1)
+
 
     def hideDetail(self, event = None):
         self.totalLabel.show()
@@ -976,15 +988,34 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         else:
             return 1
 
-    def itemIsCredit(self, track, level):
+    def __experienceLeftToEarn(self, track):
+        # Calculate how much xp we are allowed to earn, never any more than global gag xp cap
+        availableExperienceToEarn = self.toon.experience.getExperienceCapForTrack(track) - self.toon.experience.getExp(track)
+
+        # Do we have to consider potential exp gains for a battle?
         if self.toon.earnedExperience:
-            if self.toon.earnedExperience[track] >= ExperienceCap:
-                return 0
-        if self.battleCreditLevel == None:
-            return 1
-        else:
-            return level < self.battleCreditLevel
-        return
+            availableExperienceToEarn -= self.toon.earnedExperience[track]
+
+        # Don't let it go below 0
+        availableExperienceToEarn = max(0, availableExperienceToEarn)
+
+        # Don't let it go above the global experience cap
+        return min(availableExperienceToEarn, ExperienceCap)
+
+    def itemIsCredit(self, track, level):
+
+        # Very simple condition, is our gag too good for credit this fight?
+        if self.battleCreditLevel is not None and level >= self.battleCreditLevel:
+            return False
+
+        availableExperienceToEarn = self.__experienceLeftToEarn(track)
+
+        # Is any xp available?
+        if availableExperienceToEarn <= 0:
+            return False
+
+        # This amount of xp should be valid to earn
+        return True
 
     def getMax(self, track, level):
         if self.gagTutMode and (track not in (4, 5) or level > 0):

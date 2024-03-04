@@ -19,6 +19,8 @@ import random
 from toontown.toon import NPCToons
 from toontown.pets import DistributedPetProxyAI
 from toontown.battle import BattleEffectHandlersAI
+from ..hood import ZoneUtil
+
 
 class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBattleBaseAI')
@@ -50,12 +52,18 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.toonMerits = {}
         self.toonParts = {}
         self.battleCalc = BattleCalculatorAI.BattleCalculatorAI(self, tutorialFlag)
+
+        battleHoodId = ZoneUtil.getHoodId(self.zoneId)
+        skillCreditMult = getHoodSkillCreditMultiplier(battleHoodId)
+
         if self.air.suitInvasionManager.getInvading():
-            mult = getInvasionMultiplier()
-            self.battleCalc.setSkillCreditMultiplier(mult)
+            skillCreditMult += getInvasionMultiplier()
+
         if self.air.holidayManager.isMoreXpHolidayRunning():
-            mult = getMoreXpHolidayMultiplier()
-            self.battleCalc.setSkillCreditMultiplier(mult)
+            skillCreditMult += getMoreXpHolidayMultiplier()
+
+        self.battleCalc.setSkillCreditMultiplier(skillCreditMult)
+
         self.fsm = None
         self.clearAttacks()
         self.ignoreFaceOffDone = 0

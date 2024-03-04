@@ -69,7 +69,7 @@ UnpaidMaxSkills = [Levels[0][1] - 1,
                    Levels[4][4] - 1,
                    Levels[5][4] - 1,
                    Levels[6][1] - 1]
-ExperienceCap = 9999
+ExperienceCap = 99999
 
 MaxToonAcc = 95
 StartingLevel = 0
@@ -377,36 +377,51 @@ def getFactoryMeritMultiplier(factoryId):
 
 def getMintCreditMultiplier(mintId):
     return {
-        CashbotMintIntA: 3.0,
-        CashbotMintIntB: 4.0,
-        CashbotMintIntC: 5.0
+        CashbotMintIntA: 4.0,
+        CashbotMintIntB: 5.0,
+        CashbotMintIntC: 6.0
     }.get(mintId, 3.0)
 
 
 def getStageCreditMultiplier(stageId):
     return {
-        LawbotStageIntA: 3.0,
-        LawbotStageIntB: 4.0,
-        LawbotStageIntC: 5.0,
-        LawbotStageIntD: 6.0,
-    }.get(stageId, 3.0)
+        LawbotStageIntA: 4.0,
+        LawbotStageIntB: 5.0,
+        LawbotStageIntC: 6.0,
+        LawbotStageIntD: 7.0,
+    }.get(stageId, 4.0)
 
 
 def getCountryClubCreditMultiplier(countryClubId):
     return {
-        BossbotCountryClubIntA: 4.0,
-        BossbotCountryClubIntB: 5.0,
-        BossbotCountryClubIntC: 6.0
+        BossbotCountryClubIntA: 5.0,
+        BossbotCountryClubIntB: 6.0,
+        BossbotCountryClubIntC: 7.0
     }.get(countryClubId, 4.0)
 
 
 def getBossBattleCreditMultiplier(battleNumber):
-    return 4 + battleNumber
+    return 4 + battleNumber  # First round is usually battleNumber=1 btw
 
 
 def getInvasionMultiplier():
-    return 2.0
+    return 1.0
 
 
 def getMoreXpHolidayMultiplier():
-    return 2.0
+    return 1.0
+
+
+# Define any hoods that should have a special skill multiplier
+def getHoodSkillCreditMultiplier(hoodId: int):
+    return {
+
+        ToontownGlobals.MinniesMelodyland: 2.0,
+        ToontownGlobals.TheBrrrgh: 2.0,
+        ToontownGlobals.DonaldsDreamland: 3.0,
+
+        ToontownGlobals.SellbotHQ: 3.0,
+        ToontownGlobals.CashbotHQ: 3.0,
+        ToontownGlobals.LawbotHQ: 4.0,
+        ToontownGlobals.BossbotHQ: 4.0,
+    }.get(hoodId, 1.0)

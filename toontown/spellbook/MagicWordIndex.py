@@ -192,7 +192,7 @@ class SetMaxHP(MagicWord):
         maxhp = args[0]
 
         if not 1 <= maxhp <= ToontownGlobals.MaxHpLimit:
-            return "Can't set {}'s max laff to {}! Specify a value between 1 and {}}.".format(toon.getName(), maxhp,
+            return "Can't set {}'s max laff to {}! Specify a value between 1 and {}.".format(toon.getName(), maxhp,
                                                                                               ToontownGlobals.MaxHpLimit)
 
         toon.b_setMaxHp(maxhp)

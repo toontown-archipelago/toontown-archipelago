@@ -39,6 +39,7 @@ class Hood(StateData.StateData):
         hoodText = self.getHoodText(zoneId)
         self.titleText = OnscreenText.OnscreenText(hoodText, fg=self.titleColor, font=getSignFont(), pos=(0, -0.5), scale=TTLocalizer.HtitleText, drawOrder=0, mayChange=1)
         self.fsm.request(requestStatus['loader'], [requestStatus])
+        localAvatar.inventory.setDefaultBattleCreditMultiplier()
 
     def getHoodText(self, zoneId):
         hoodText = base.cr.hoodMgr.getFullnameFromId(self.id)
