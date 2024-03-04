@@ -68,8 +68,16 @@ class ArchipelagoOnscreenLog(DirectFrame):
         seq.finish()
 
     def showAllEntries(self):
-        for i, entry in enumerate(self.log['items']):
-            self.doFadeoutSequence(i, entry)
+
+        numItems = len(self.log['items'])
+        # If there are so many items that we shouldn't show some of them, splice the list
+        startShowIndex = 0
+        if numItems > self.NUM_ITEMS_VISIBLE:
+            startShowIndex = numItems - self.NUM_ITEMS_VISIBLE
+
+        for labelIndex in range(startShowIndex, numItems):
+            entry = self.log['items'][labelIndex]
+            self.doFadeoutSequence(labelIndex, entry)
             entry.setColorScale(1, 1, 1, 1)
             entry.show()
 
