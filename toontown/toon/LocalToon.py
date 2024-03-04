@@ -173,6 +173,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
             self.archipelagoLog: ArchipelagoOnscreenLog = None
             self.locationScoutsCache: LocationScoutsCache = LocationScoutsCache()
+            self.currentlyInHQ = False
 
     def wantLegacyLifter(self):
         return True

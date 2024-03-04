@@ -27,6 +27,7 @@ class DistributedHQInterior(DistributedObject.DistributedObject):
         self.interior.find('**/cream').hide()
         self.interior.find('**/crashed_piano').hide()
         self.buildLeaderBoard()
+        base.localAvatar.currentlyInHQ = True
 
     def announceGenerate(self):
         DistributedObject.DistributedObject.announceGenerate(self)
@@ -171,6 +172,7 @@ class DistributedHQInterior(DistributedObject.DistributedObject):
         del self.scoreTextNodes
         del self.trophyStars
         taskMgr.remove(self.uniqueName('starSpinHQ'))
+        base.localAvatar.currentlyInHQ = False
         DistributedObject.DistributedObject.disable(self)
 
     def buildTrophyStar(self):

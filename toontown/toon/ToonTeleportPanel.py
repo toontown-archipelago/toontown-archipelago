@@ -9,7 +9,11 @@ from otp.avatar.Avatar import teleportNotify
 from . import ToonAvatarDetailPanel
 from toontown.toonbase import TTLocalizer
 from toontown.hood import ZoneUtil
+from ..building import FADoorCodes
+
 globalTeleport = None
+
+TELEPORT_RESPONSE_AVAILABLE_CODE_IN_HQ = 4
 
 def showTeleportPanel(avId, avName, avDisableName):
     global globalTeleport
@@ -62,6 +66,9 @@ class ToonTeleportPanel(DirectFrame):
             State.State('ignored',
                 self.enterIgnored,
                 self.exitIgnored),
+            State.State('noHqAccess',
+                        self.enterNoHqAccess,
+                        self.exitNoHqAccess),
             State.State('notOnline',
                 self.enterNotOnline,
                 self.exitNotOnline),
@@ -166,6 +173,14 @@ class ToonTeleportPanel(DirectFrame):
         self.bOk.show()
 
     def exitIgnored(self):
+        self.bOk.hide()
+
+    def enterNoHqAccess(self, hoodId):
+        pg = ZoneUtil.hoodNameMap.get(hoodId, [f"Unknown Playground({hoodId})"])[-1]
+        self['text'] = TTLocalizer.TeleportPanelNoHqAccess % (self.avName, pg)
+        self.bOk.show()
+
+    def exitNoHqAccess(self):
         self.bOk.hide()
 
     def enterNotOnline(self):
@@ -281,6 +296,18 @@ class ToonTeleportPanel(DirectFrame):
           zoneId),))
         if avId != self.avId:
             return
+
+        # Was this toon in an HQ?
+        if available == TELEPORT_RESPONSE_AVAILABLE_CODE_IN_HQ:
+            # Do we not have the required key for this?
+            key = FADoorCodes.ZONE_TO_ACCESS_CODE.get(hoodId)
+            # This hood has an HQ access key
+            if key is not None:
+                # We do not have this key, do not let the tp occur
+                if key not in base.localAvatar.getAccessKeys():
+                    self.fsm.request('noHqAccess', [hoodId])
+                    return
+
         if available == 0:
             teleportNotify.debug('__teleportResponse: not available')
             self.fsm.request('notAvailable')

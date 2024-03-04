@@ -2048,6 +2048,7 @@ TeleportPanelYes = lYes
 TeleportPanelNo = lNo
 TeleportPanelCheckAvailability = 'Trying to go to %s.'
 TeleportPanelNotAvailable = '%s is busy right now; try again later.'
+TeleportPanelNoHqAccess = '%s is in the %s Toon HQ right now, and you do not have clearance for it!'
 TeleportPanelIgnored = '%s is ignoring you.'
 TeleportPanelNotOnline = "%s isn't online right now."
 TeleportPanelWentAway = '%s went away.'

@@ -147,13 +147,18 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         return 1
 
     def handleTeleportQuery(self, fromAvatar, toAvatar):
+
+        availCode = 1
+        if base.localAvatar.currentlyInHQ:
+            availCode = 4
+
         if base.config.GetBool('want-tptrack', False):
             if toAvatar == localAvatar:
                 toAvatar.doTeleportResponse(fromAvatar, toAvatar, toAvatar.doId, 1, toAvatar.defaultShard, base.cr.playGame.getPlaceId(), self.getZoneId(), fromAvatar.doId)
             else:
-                self.notify.warning('handleTeleportQuery toAvatar.doId != localAvatar.doId' % (toAvatar.doId, localAvatar.doId))
+                self.notify.warning('handleTeleportQuery toAvatar.doId != localAvatar.doId')
         else:
-            fromAvatar.d_teleportResponse(toAvatar.doId, 1, toAvatar.defaultShard, base.cr.playGame.getPlaceId(), self.getZoneId())
+            fromAvatar.d_teleportResponse(toAvatar.doId, availCode, toAvatar.defaultShard, base.cr.playGame.getPlaceId(), self.getZoneId())
 
     def enablePeriodTimer(self):
         if self.isPeriodTimerEffective():
