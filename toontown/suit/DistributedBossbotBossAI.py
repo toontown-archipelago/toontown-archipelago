@@ -94,7 +94,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.battleOneBattlesMade = True
 
     def getHoodId(self):
-        return ToontownGlobals.LawbotHQ
+        return ToontownGlobals.BossbotHQ
 
     def generateSuits(self, battleNumber):
         if battleNumber == 1:

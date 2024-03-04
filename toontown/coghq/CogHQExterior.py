@@ -29,6 +29,7 @@ class CogHQExterior(BattlePlace.BattlePlace):
           'WaitForBattle',
           'battle',
           'squished',
+          'purchase',
           'stopped']),
          State.State('stopped', self.enterStopped, self.exitStopped, ['walk', 'teleportOut', 'stickerBook']),
          State.State('doorIn', self.enterDoorIn, self.exitDoorIn, ['walk', 'stopped']),
@@ -40,6 +41,7 @@ class CogHQExterior(BattlePlace.BattlePlace):
           'tunnelOut',
           'doorOut',
           'squished',
+          'purchase',
           'died']),
          State.State('WaitForBattle', self.enterWaitForBattle, self.exitWaitForBattle, ['battle', 'walk']),
          State.State('battle', self.enterBattle, self.exitBattle, ['walk', 'teleportOut', 'died']),
@@ -51,6 +53,7 @@ class CogHQExterior(BattlePlace.BattlePlace):
          State.State('died', self.enterDied, self.exitDied, ['quietZone']),
          State.State('tunnelIn', self.enterTunnelIn, self.exitTunnelIn, ['walk', 'WaitForBattle', 'battle']),
          State.State('tunnelOut', self.enterTunnelOut, self.exitTunnelOut, ['final']),
+         State.State('purchase', self.enterPurchase, self.exitPurchase, ['walk']),
          State.State('final', self.enterFinal, self.exitFinal, ['start'])], 'start', 'final')
 
     def load(self):
@@ -76,8 +79,7 @@ class CogHQExterior(BattlePlace.BattlePlace):
         self.tunnelOriginList = base.cr.hoodMgr.addLinkTunnelHooks(self, self.nodeList, self.zoneId)
         how = requestStatus['how']
         self.fsm.request(how, [requestStatus])
-        if self.zoneId != ToontownGlobals.BossbotHQ:
-            self.handleInterests()
+        self.handleInterests()
 
     def exit(self):
         self.fsm.requestFinalState()
