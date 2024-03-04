@@ -51,6 +51,7 @@ class SuitInterior(Place.Place):
         self.parentFSM = parentFSM
         self.elevatorDoneEvent = 'elevatorDoneSI'
         self.currentFloor = 0
+        self.numFloors = 1
 
     def enter(self, requestStatus):
         self.fsm.enterInitialState()
@@ -148,7 +149,7 @@ class SuitInterior(Place.Place):
             self.notify.error('Unknown mode: ' + +' in handleElevatorDone')
 
     def enterBattle(self, event):
-        mult = ToontownBattleGlobals.getCreditMultiplier(self.currentFloor)
+        mult = ToontownBattleGlobals.getInteriorCreditMultiplier(self.numFloors)
         self.townBattle.enter(event, self.fsm.getStateNamed('battle'), bldg=1, creditMultiplier=mult)
         base.localAvatar.b_setAnimState('off', 1)
         base.localAvatar.cantLeaveGame = 1

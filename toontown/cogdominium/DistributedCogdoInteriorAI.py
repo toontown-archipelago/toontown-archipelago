@@ -725,7 +725,7 @@ class DistributedCogdoInteriorAI(DistributedObjectAI.DistributedObjectAI):
         self.battle.helpfulToons = self.helpfulToons
         self.battle.setInitialMembers(self.toons, self.suits)
         self.battle.generateWithRequired(self.zoneId)
-        mult = getCreditMultiplier(self.currentFloor)
+        mult = getInteriorCreditMultiplier(self._numFloors)
         if self.air.suitInvasionManager.getInvading():
             mult *= getInvasionMultiplier()
 

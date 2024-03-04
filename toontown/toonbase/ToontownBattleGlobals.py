@@ -356,8 +356,8 @@ def isGroup(track, level):
     return AvPropTargetCat[AvPropTarget[track]][level]
 
 
-def getCreditMultiplier(floorIndex):
-    return 1 + floorIndex
+def getInteriorCreditMultiplier(numFloors):
+    return 1 + numFloors
 
 
 def getFactoryCreditMultiplier(factoryId):

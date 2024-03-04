@@ -513,6 +513,7 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
         if not self._CogdoGameRepeat:
             self.currentFloor += 1
         self.cr.playGame.getPlace().currentFloor = self.currentFloor
+        self.cr.playGame.getPlace().numFloors = 2
         self.setElevatorLights(self.elevatorModelIn)
         self.setElevatorLights(self.elevatorModelOut)
         if not self.isBossFloor(self.currentFloor):
@@ -524,7 +525,7 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
                 self._movie.load()
                 self._movie.play()
         self.__playElevator(ts, self.elevatorName, self.__handleElevatorDone)
-        mult = ToontownBattleGlobals.getCreditMultiplier(self.currentFloor)
+        mult = ToontownBattleGlobals.getInteriorCreditMultiplier(self.currentFloor)
         base.localAvatar.inventory.setBattleCreditMultiplier(mult)
 
     def __handleElevatorDone(self):

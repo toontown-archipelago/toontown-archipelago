@@ -114,6 +114,7 @@ class DistributedBattleBldgAI(DistributedBattleBaseAI.DistributedBattleBaseAI):
             if topFloor == 0:
                 self.b_setState('Reward')
             else:
+                numFloors = currentFloor+1
                 for floorNum, cogsThisFloor in PythonUtil.enumerate(self.suitsKilledPerFloor):
                     for toonId in self.activeToons:
                         toon = self.getToon(toonId)
@@ -121,7 +122,7 @@ class DistributedBattleBldgAI(DistributedBattleBaseAI.DistributedBattleBaseAI):
                             recovered, notRecovered = self.air.questManager.recoverItems(toon, cogsThisFloor, self.zoneId)
                             self.toonItems[toonId][0].extend(recovered)
                             self.toonItems[toonId][1].extend(notRecovered)
-                            meritArray = self.air.promotionMgr.recoverMerits(toon, cogsThisFloor, self.zoneId, getCreditMultiplier(floorNum))
+                            meritArray = self.air.promotionMgr.recoverMerits(toon, cogsThisFloor, self.zoneId, getInteriorCreditMultiplier(numFloors))
                             if toonId in self.helpfulToons:
                                 self.toonMerits[toonId] = addListsByValue(self.toonMerits[toonId], meritArray)
                             else:

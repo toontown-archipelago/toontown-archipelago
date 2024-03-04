@@ -303,10 +303,11 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
     def enterElevator(self, ts = 0):
         self.currentFloor += 1
         self.cr.playGame.getPlace().currentFloor = self.currentFloor
+        self.cr.playGame.getPlace().numFloors = self.numFloors
         self.setElevatorLights(self.elevatorModelIn)
         self.setElevatorLights(self.elevatorModelOut)
         self.__playElevator(ts, self.elevatorName, self.__handleElevatorDone)
-        mult = ToontownBattleGlobals.getCreditMultiplier(self.currentFloor)
+        mult = ToontownBattleGlobals.getInteriorCreditMultiplier(self.numFloors)
         base.localAvatar.inventory.setBattleCreditMultiplier(mult)
 
     def __handleElevatorDone(self):
