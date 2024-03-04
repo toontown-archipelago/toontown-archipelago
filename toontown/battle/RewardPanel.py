@@ -453,8 +453,6 @@ class RewardPanel(DirectFrame):
                 else:
                     nextExpValue = newNextExpValue
 
-        intervalList.append(Wait(2.0))
-
         return intervalList
 
     def getMeritIntervalList(self, toon, dept, origMerits, earnedMerits):
@@ -676,7 +674,7 @@ class RewardPanel(DirectFrame):
             if meritList[dept]:
                 track += self.getMeritIntervalList(toon, dept, origMeritList[dept], meritList[dept])
 
-        track.append(Wait(0.75))
+        track.append(Wait(1))
         itemInterval = self.getItemIntervalList(toon, itemList)
         if itemInterval:
             track.append(Func(self.initItemFrame, toon))

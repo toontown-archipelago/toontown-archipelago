@@ -35,6 +35,24 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         DistributedNPCToonBase.disable(self)
         return
 
+    def initToonState(self):
+        self.setAnimState('neutral', 0.9, None, None)
+        npcOrigin = render.find('**/npc_origin_' + repr((self.posIndex)))
+        if not npcOrigin.isEmpty():
+            self.reparentTo(npcOrigin)
+            self.initPos()
+        else:
+            self.reparentTo(render)
+            self.initPos()
+            zonePosDict = {ToontownGlobals.SellbotHQ: (2, -164, -20, -180),
+                           ToontownGlobals.CashbotHQ: (62, -128, -23, -135),
+                           ToontownGlobals.LawbotHQ: (90, -366, -68, 0),
+                           ToontownGlobals.BossbotHQ: (75, 120, 0, 145)}
+            posData = zonePosDict.get(self.zoneId)
+            self.setPos(posData[0], posData[1], posData[2])
+            self.setH(posData[3])
+        return
+
     def allowedToEnter(self):
         if hasattr(base, 'ttAccess') and base.ttAccess and base.ttAccess.canAccess():
             return True
@@ -77,6 +95,8 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         self.detectAvatars()
         if self.isLocalToon:
             self.freeAvatar()
+
+        self.initToonState()
         return Task.done
 
     def setMovie(self, mode, npcId, avId, timestamp):

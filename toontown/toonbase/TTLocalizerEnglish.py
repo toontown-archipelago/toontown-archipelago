@@ -2063,8 +2063,8 @@ FactoryBossTaunt = "I'm the Foreman."
 FactoryBossBattleTaunt = 'Let me introduce you to the Foreman.'
 MintBossTaunt = "I'm the Supervisor."
 MintBossBattleTaunt = 'You need to talk to the Supervisor.'
-StageBossTaunt = "My Justice isn't Blind"
-StageBossBattleTaunt = 'I am above the Law'
+StageBossTaunt = "My Justice isn't Blind."
+StageBossBattleTaunt = 'I am above the Law.'
 CountryClubBossTaunt = "I'm the Club President."
 CountryClubBossBattleTaunt = 'You need to talk to the Club President.'
 ForcedLeaveCountryClubAckMsg = 'The Club President was defeated before you could reach him. You did not recover any Stock Options.'
@@ -2263,14 +2263,20 @@ MovieNPCSOSGoodbye = 'See you later!'
 MovieNPCSOSToonsHit = 'Toons Always Hit!'
 MovieNPCSOSCogsMiss = 'Cogs Always Miss!'
 MovieNPCSOSRestockGags = 'Restocking %s gags!'
-MovieNPCSOSHeal = 'Heal'
-MovieNPCSOSTrap = 'Trap'
-MovieNPCSOSLure = 'Lure'
-MovieNPCSOSSound = 'Sound'
-MovieNPCSOSThrow = 'Throw'
-MovieNPCSOSSquirt = 'Squirt'
-MovieNPCSOSDrop = 'Drop'
-MovieNPCSOSAll = 'All'
+MovieNPCSOSHeal = 'Level One'
+MovieNPCSOSTrap = 'Level Two'
+MovieNPCSOSLure = 'Level Three'
+MovieNPCSOSSound = 'Level Four'
+MovieNPCSOSThrow = 'Level Five'
+MovieNPCSOSSquirt = 'Level Six'
+MovieNPCSOSDrop = 'Level Seven'
+ResistanceChatOne = 'to level one gags'
+ResistanceChatTwo = 'to level two gags'
+ResistanceChatThree = 'to level three gags'
+ResistanceChatFour = 'to level four gags'
+ResistanceChatFive = 'to level five gags'
+ResistanceChatSix = 'to level six gags'
+ResistanceChatSeven = 'all gags'
 MoviePetSOSTrickFail = 'Sigh'
 MoviePetSOSTrickSucceedBoy = 'Good boy!'
 MoviePetSOSTrickSucceedGirl = 'Good girl!'
@@ -7687,7 +7693,11 @@ NPCToonNames = {20000: 'Tutorial Tom',
  7006: 'Gimmy Ahand',
  7007: 'Dewin Tymme',
  7008: 'Ima Cagedtoon',
- 7009: 'Jimmy Thelock'}
+ 7009: 'Jimmy Thelock',
+ 11001: 'Clerk Sally',
+ 12001: 'Clerk Penny',
+ 13001: 'Clerk Goodman',
+ 10001: 'Clerk Igrrrr'}
 zone2TitleDict = {2513: ('Toon Hall', ''),
  2514: ('Toontown Bank', ''),
  2516: ('Toontown School House', ''),

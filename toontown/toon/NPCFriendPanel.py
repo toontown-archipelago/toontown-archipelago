@@ -169,7 +169,7 @@ class NPCFriendCard(DirectFrame):
                 if level == -1:
                     sosText += ' All'
                 else:
-                    sosText += ' ' + self.sosTracks[level]
+                    sosText += ' Level ' + str(level + 1)
             sosText = TextEncoder.upper(sosText)
             self.sosTypeInfo['text'] = sosText
             for i in range(self.maxRarity):

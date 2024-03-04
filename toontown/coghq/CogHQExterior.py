@@ -29,6 +29,7 @@ class CogHQExterior(BattlePlace.BattlePlace):
           'WaitForBattle',
           'battle',
           'squished',
+          'purchase',
           'stopped']),
          State.State('stopped', self.enterStopped, self.exitStopped, ['walk', 'teleportOut', 'stickerBook']),
          State.State('doorIn', self.enterDoorIn, self.exitDoorIn, ['walk', 'stopped']),
@@ -40,6 +41,7 @@ class CogHQExterior(BattlePlace.BattlePlace):
           'tunnelOut',
           'doorOut',
           'squished',
+          'purchase',
           'died']),
          State.State('WaitForBattle', self.enterWaitForBattle, self.exitWaitForBattle, ['battle', 'walk']),
          State.State('battle', self.enterBattle, self.exitBattle, ['walk', 'teleportOut', 'died']),
@@ -51,6 +53,7 @@ class CogHQExterior(BattlePlace.BattlePlace):
          State.State('died', self.enterDied, self.exitDied, ['quietZone']),
          State.State('tunnelIn', self.enterTunnelIn, self.exitTunnelIn, ['walk', 'WaitForBattle', 'battle']),
          State.State('tunnelOut', self.enterTunnelOut, self.exitTunnelOut, ['final']),
+         State.State('purchase', self.enterPurchase, self.exitPurchase, ['walk']),
          State.State('final', self.enterFinal, self.exitFinal, ['start'])], 'start', 'final')
 
     def load(self):
@@ -76,8 +79,7 @@ class CogHQExterior(BattlePlace.BattlePlace):
         self.tunnelOriginList = base.cr.hoodMgr.addLinkTunnelHooks(self, self.nodeList, self.zoneId)
         how = requestStatus['how']
         self.fsm.request(how, [requestStatus])
-        if self.zoneId != ToontownGlobals.BossbotHQ:
-            self.handleInterests()
+        self.handleInterests()
 
     def exit(self):
         self.fsm.requestFinalState()
@@ -140,9 +142,13 @@ class CogHQExterior(BattlePlace.BattlePlace):
         base.localAvatar.laffMeter.stop()
 
     def handleInterests(self):
+
+        # Grab the "starting" zone ID for this zone
+        branchZone = ZoneUtil.getBranchZone(self.zoneId)
+
         # First, we need to load the DNA file for this Cog HQ.
         dnaStore = DNAStorage()
-        dnaFileName = self.genDNAFileName(self.zoneId)
+        dnaFileName = self.genDNAFileName(branchZone)
         loadDNAFile(dnaStore, dnaFileName)
 
         # Next, we need to collect all of the visgroup zone IDs.
@@ -151,7 +157,7 @@ class CogHQExterior(BattlePlace.BattlePlace):
             groupFullName = dnaStore.getDNAVisGroupName(i)
             visGroup = dnaStore.getDNAVisGroup(i)
             visZoneId = int(base.cr.hoodMgr.extractGroupName(groupFullName))
-            visZoneId = ZoneUtil.getTrueZoneId(visZoneId, self.zoneId)
+            visZoneId = ZoneUtil.getTrueZoneId(visZoneId, branchZone)
             visibles = []
             for i in range(visGroup.getNumVisibles()):
                 visibles.append(int(visGroup.getVisibleName(i)))
@@ -160,4 +166,12 @@ class CogHQExterior(BattlePlace.BattlePlace):
             self.zoneVisDict[visZoneId] = visibles
 
         # Finally, we want interest in all visgroups due to this being a Cog HQ.
-        base.cr.sendSetZoneMsg(self.zoneId, list(self.zoneVisDict.values())[0])
+        visibleZoneIds = set()
+        visibleZoneIds.add(self.zoneId)  # Of course make sure we can at least see our zone
+        for connectingZones in list(self.zoneVisDict.values()):
+            for zone in connectingZones:
+                visibleZoneIds.add(zone)
+
+        print('setting interest for zones: ', visibleZoneIds)
+
+        base.cr.sendSetZoneMsg(self.zoneId, list(visibleZoneIds))

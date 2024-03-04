@@ -1322,12 +1322,13 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             if bboard.get('autoRestock-%s' % toonId, False):
                 toon.doRestock()
 
-            # If toon is dead, keep track of them and force their hp to 0
+            # If toon is dead, keep track of them and force their hp to 0, otherwise make sure their laff is synced
             if toon.hp <= 0:
                 toon.b_setHp(0)
                 deadToons.append(toon)
             else:
                 toonIsAlive = True
+                toon.b_setHp(toon.hp)
 
         # If there are no toons alive this battle is over
         if not toonIsAlive:
@@ -1344,6 +1345,10 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             self.responses[toon.doId] += 1
         
         for s in self.suits:
+
+            # Make sure this cogs hp is synced
+            s.d_setHP(s.getHP())
+
             if hasattr(s, 'effectHandler'):
                 if s.effectHandler == None:
                     effectHandler = BattleEffectHandlersAI.BattleEffectHandlerAI(self, s)

@@ -19,6 +19,7 @@ Credits:
 * [The Toontown Offline Team](https://ttoffline.com) for the foundation of this codebase (Toontown Schoolhouse)
 * [The Corporate Clash Crew](https://corporateclash.net) for toon models, some various textures, and assistance with implementing v1.2.8 craning
 * [Open Toontown](https://github.com/open-toontown) for providing a great reference for a Toontown codebase ported to Python 3
+* Toontown Infinite for Bossbot HQ suit paths
 * [Astron](https://github.com/Astron/Astron)
 * [Panda3D](https://github.com/panda3d/panda3d)  (to be redirected to the version of Panda3D this source supports [click here](https://github.com/Astron/panda3d))  
 * [libpandadna](https://github.com/loblao/libpandadna)

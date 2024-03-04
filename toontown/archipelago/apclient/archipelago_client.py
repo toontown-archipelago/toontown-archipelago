@@ -9,7 +9,7 @@ from direct.stdpy import threading
 from typing import List, Dict, Union
 
 import certifi
-from websockets import ConnectionClosed
+from websockets import ConnectionClosed, InvalidURI, InvalidMessage
 from websockets.sync.client import connect, ClientConnection
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
@@ -130,6 +130,7 @@ class ArchipelagoClient:
         # Try to extract the username password and port from this address
         address = f"ws://{self.address}" if "://" not in self.address \
             else self.address.replace("archipelago://", "ws://")
+
         server_url = urllib.parse.urlparse(address)
 
         new_username = ''
@@ -151,7 +152,7 @@ class ArchipelagoClient:
         if use_default_port:
             port_component = f':{self.port}'
 
-        return f"ws://{self.address}{port_component}"
+        return f"{address}{port_component}"
 
     # Called via a new thread, responsible for instantiating a socket connection to the archipelago server
     # and receiving and handling incoming packets. Every 5 seconds we will perform a "kill" check to see
@@ -169,8 +170,13 @@ class ArchipelagoClient:
         self.av.d_sendArchipelagoMessage("[AP Client Thread] Starting server loop")
 
         # Parse the URL to the archipelago server, use whatever URL we defined previously
-        address = self.parse_url(self.address)
-        self.av.d_sendArchipelagoMessage(f"[AP Client Thread] Attempting connection with archipelago server at {address}")
+        try:
+            address = self.parse_url(self.address)
+        except ValueError as e:
+            self.av.d_sendArchipelagoMessage(f"Error parsing url! {e}", color='red')
+            return
+
+        self.av.d_sendArchipelagoMessage(f"[AP Client Thread] Attempting connection with archipelago server at {address}...")
 
         # Attempt to connect to the server, if we get refused then !connect must be run to try again
         try:
@@ -202,8 +208,20 @@ class ArchipelagoClient:
             self.av.d_sendArchipelagoMessage(f"[AP Client Thread] Socket connection to archipelago server {address} failed, either wrong address or server is not running")
         except gaierror:
             self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"Server address {address} failed to parse! Please check the address given and try again.", color='red')]))
+        except InvalidURI:
+            self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"Server address {address} is not a valid server.", color='red')]))
+        except InvalidMessage or ConnectionError:
+            self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"Failed to connect to {address}.", color='red')]))
 
         except Exception as e:
+            # Attempt encryption pass
+            if address.startswith("ws://"):
+                # try wss
+                self.address = f"ws{address[1:]}"
+                self.state = APClientEnums.DISCONNECTED
+                self.__socket_thread()
+                return
+
             self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"Archipelago connection killed to prevent a district reset.", color='red')]))
             self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"[SEVERE ERROR] Unhandled exception: {e}", color='red')]))
             self.av.d_sendArchipelagoMessage(get_raw_formatted_string([MinimalJsonMessagePart(f"Check district(ai) logs for full traceback.", color='red')]))
