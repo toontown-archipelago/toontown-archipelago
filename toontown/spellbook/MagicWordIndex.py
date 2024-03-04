@@ -449,7 +449,7 @@ class ToggleUnlimitedGags(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         inventory = toon.inventory
-        inventory.NPCMaxOutInv(targetTrack=-1)
+        inventory.NPCMaxOutInv(maxLevel=6)
         invoker.b_setInventory(inventory.makeNetString())
         toon.b_setUnlimitedGags(not toon.getUnlimitedGags())
         return "{} {} has unlimited gags!".format(toon.getName(), "now" if toon.getUnlimitedGags() else "no longer")
@@ -1367,7 +1367,7 @@ class SetInventory(MagicWord):
                 return "Invalid target track index: {0}".format(targetTrack)
             if (targetTrack != -1) and (not toon.hasTrackAccess(targetTrack)):
                 return "The target Toon doesn't have target track index: {0}".format(targetTrack)
-            inventory.NPCMaxOutInv(targetTrack=targetTrack)
+            inventory.NPCMaxOutInv(maxLevel=level)
             toon.b_setInventory(inventory.makeNetString())
             if targetTrack == -1:
                 return "Inventory restocked."
