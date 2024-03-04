@@ -245,6 +245,15 @@ class JellybeanReward(APReward):
         av.d_setSystemMessage(0, f"You were given {self.amount} jellybeans!")
 
 
+class UberTrapAward(APReward):
+
+    def apply(self, av: "DistributedToonAI"):
+        av.b_setHp(15)
+        av.inventory.NPCMaxOutInv(-1)
+        av.b_setInventory(av.inventory.makeNetString())
+        av.d_setSystemMessage(0, "Don't get hit!")
+
+
 class ProofReward(APReward):
     class ProofType(IntEnum):
         SellbotBossFirstTime = 0
@@ -366,6 +375,8 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     items.ITEM_500_MONEY: JellybeanReward(500),
     items.ITEM_1000_MONEY: JellybeanReward(1000),
     items.ITEM_2000_MONEY: JellybeanReward(2000),
+
+    items.ITEM_UBER_TRAP: UberTrapAward(),
 }
 
 
