@@ -59,9 +59,12 @@ class DistributedFactoryElevatorExt(DistributedElevatorExt.DistributedElevatorEx
 
     def setFactoryInteriorZone(self, zoneId):
         if self.localToonOnBoard:
+
+            where = 'factoryInterior' if self.entranceId == 0 else 'factoryInteriorSide'
+
             hoodId = self.cr.playGame.hood.hoodId
             doneStatus = {'loader': 'cogHQLoader',
-             'where': 'factoryInterior',
+             'where': where,
              'how': 'teleportIn',
              'zoneId': zoneId,
              'hoodId': hoodId}

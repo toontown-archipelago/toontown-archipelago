@@ -275,3 +275,9 @@ class FactoryInterior(BattlePlace.BattlePlace):
         if hasattr(self, 'flaDialog'):
             self.flaDialog.cleanup()
             del self.flaDialog
+
+
+class FactoryInteriorSide(FactoryInterior):
+    def __init__(self, loader, parentFSM, doneEvent):
+        super().__init__(loader, parentFSM, doneEvent)
+        self.zoneId = ToontownGlobals.SellbotFactoryIntS

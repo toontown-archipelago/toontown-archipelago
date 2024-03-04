@@ -20,15 +20,17 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
 
     def __init__(self, hood, parentFSMState, doneEvent):
         CogHQLoader.CogHQLoader.__init__(self, hood, parentFSMState, doneEvent)
-        self.fsm.addState(State.State('factoryExterior', self.enterFactoryExterior, self.exitFactoryExterior, ['quietZone', 'factoryInterior', 'cogHQExterior']))
+        self.fsm.addState(State.State('factoryExterior', self.enterFactoryExterior, self.exitFactoryExterior, ['quietZone', 'factoryInterior', 'factoryInteriorSide', 'cogHQExterior']))
         for stateName in ['start', 'cogHQExterior', 'quietZone']:
             state = self.fsm.getStateNamed(stateName)
             state.addTransition('factoryExterior')
 
         self.fsm.addState(State.State('factoryInterior', self.enterFactoryInterior, self.exitFactoryInterior, ['quietZone', 'factoryExterior']))
+        self.fsm.addState(State.State('factoryInteriorSide', self.enterFactoryInteriorSide, self.exitFactoryInteriorSide, ['quietZone', 'factoryExterior']))
         for stateName in ['quietZone']:
             state = self.fsm.getStateNamed(stateName)
             state.addTransition('factoryInterior')
+            state.addTransition('factoryInteriorSide')
 
         self.musicFile = 'phase_9/audio/bgm/encntr_suit_HQ_nbrhood.ogg'
         self.cogHQExteriorModelPath = 'phase_9/models/cogHQ/SellbotHQExterior'
@@ -245,10 +247,24 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
         return
 
     def enterFactoryInterior(self, requestStatus):
-        self.placeClass = FactoryInterior.FactoryInterior
-        self.enterPlace(requestStatus)
+        self.__doEnterFactoryInterior(requestStatus, ToontownGlobals.SellbotFactoryInt)
+
+    def enterFactoryInteriorSide(self, requestStatus):
+        self.__doEnterFactoryInterior(requestStatus, ToontownGlobals.SellbotFactoryIntS)
 
     def exitFactoryInterior(self):
+        self.__doExitFactoryInterior()
+
+    def exitFactoryInteriorSide(self):
+        self.__doExitFactoryInterior()
+
+    def __doEnterFactoryInterior(self, requestStatus, factoryType):
+        self.placeClass = self.getFactoryInteriorPlaceClass(factoryType)
+        if self.placeClass is None:
+            raise Exception(f"Factory type: {factoryType} is an invalid factory type for factory interior!")
+        self.enterPlace(requestStatus)
+
+    def __doExitFactoryInterior(self):
         self.exitPlace()
         self.placeClass = None
         return
@@ -258,3 +274,9 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
 
     def getBossPlaceClass(self):
         return SellbotHQBossBattle.SellbotHQBossBattle
+
+    def getFactoryInteriorPlaceClass(self, zoneId):
+        return {
+            ToontownGlobals.SellbotFactoryInt: FactoryInterior.FactoryInterior,
+            ToontownGlobals.SellbotFactoryIntS: FactoryInterior.FactoryInteriorSide,
+        }.get(zoneId)

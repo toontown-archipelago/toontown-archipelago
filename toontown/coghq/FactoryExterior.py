@@ -149,7 +149,7 @@ class FactoryExterior(BattlePlace.BattlePlace):
                 self.fsm.request('walk')
         elif where == 'exit':
             self.fsm.request('walk')
-        elif where == 'factoryInterior':
+        elif where in ('factoryInterior', 'factoryInteriorSide'):
             self.doneStatus = doneStatus
             messenger.send(self.doneEvent)
         elif where == 'stageInterior':
