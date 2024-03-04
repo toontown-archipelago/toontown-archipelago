@@ -154,6 +154,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
             self.ignoreAll()
             DistributedAvatar.DistributedAvatar.delete(self)
             BossCog.BossCog.delete(self)
+            localAvatar.inventory.setDefaultBattleCreditMultiplier()
 
     def setDNAString(self, dnaString):
         BossCog.BossCog.setDNAString(self, dnaString)
@@ -1027,7 +1028,6 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def exitBattleOne(self):
         self.cleanupBattles()
         self.battleOneMusic.stop()
-        localAvatar.inventory.setBattleCreditMultiplier(1)
 
     def enterBattleThree(self):
         self.cleanupIntervals()

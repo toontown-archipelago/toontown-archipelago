@@ -831,7 +831,6 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.clearInterval(intervalName)
         self.cleanupBattles()
         self.battleTwoMusic.stop()
-        localAvatar.inventory.setBattleCreditMultiplier(1)
 
     def enterPrepareBattleThree(self):
         self.cleanupIntervals()

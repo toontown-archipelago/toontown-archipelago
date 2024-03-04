@@ -607,7 +607,6 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def exitBattleThree(self):
         self.cleanupBattles()
         self.battleOneMusic.stop()
-        localAvatar.inventory.setBattleCreditMultiplier(1)
 
     def claimOneChair(self):
         chairInfo = None

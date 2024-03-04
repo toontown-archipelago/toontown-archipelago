@@ -109,7 +109,7 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
         del self.openSfx
         del self.closeSfx
         del self.fsm
-        base.localAvatar.inventory.setBattleCreditMultiplier(1)
+        base.localAvatar.inventory.setDefaultBattleCreditMultiplier()
         DistributedObject.DistributedObject.delete(self)
 
     def __cleanup(self):
