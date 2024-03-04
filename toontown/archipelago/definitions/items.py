@@ -107,6 +107,7 @@ ITEM_1000_MONEY = "1000 Jellybeans"
 ITEM_2000_MONEY = "2000 Jellybeans"
 
 ITEM_UBER_TRAP = "Uber Trap"
+ITEM_DRIP_TRAP = "Drip Trap"
 
 # Used to offset all item ids to be compatible in the multiworld
 BASE_ITEM_ID = 0x501100
@@ -211,6 +212,7 @@ ITEM_DEFINITIONS: Dict[str, ToontownItemDefinition] = {
     ITEM_VICTORY: ToontownItemDefinition(ITEM_VICTORY, BASE_ITEM_ID+64, ItemClassification.progression, quantity=0),
 
     ITEM_UBER_TRAP: ToontownItemDefinition(ITEM_UBER_TRAP, BASE_ITEM_ID+65, ItemClassification.trap),
+    ITEM_DRIP_TRAP: ToontownItemDefinition(ITEM_DRIP_TRAP, BASE_ITEM_ID+66, ItemClassification.trap),
 }
 
 # Junk items are items where they are classified as filler
