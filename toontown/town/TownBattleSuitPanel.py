@@ -44,7 +44,6 @@ class TownBattleSuitPanel(DirectFrame):
         self.button = button
         self.glow = glow
         self.head = None
-        self.blinkTask = None
         self.hide()
         healthGui.removeNode()
         gui.removeNode()
@@ -81,21 +80,25 @@ class TownBattleSuitPanel(DirectFrame):
             }
 
     def updateHealthBar(self):
+
         condition = self.cog.healthCondition
-        if condition == 9:
-            self.blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.75), Task.pause(0.1))
-            taskMgr.add(self.blinkTask, self.uniqueName('blink-task'))
-        elif condition == 10:
+        taskMgr.remove(self.uniqueName('blink-task'))
+
+        if condition == 4:
+            blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.75), Task(self.__blinkGray), Task.pause(0.1))
+            taskMgr.add(blinkTask, self.uniqueName('blink-task'))
+
+        elif condition == 5:
             taskMgr.remove(self.uniqueName('blink-task'))
             blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.25), Task(self.__blinkGray), Task.pause(0.1))
             taskMgr.add(blinkTask, self.uniqueName('blink-task'))
         else:
-            taskMgr.remove(self.uniqueName('blink-task'))
             if not self.button.isEmpty():
                 self.button.setColor(self.healthColors[condition], 1)
 
             if not self.glow.isEmpty():
                 self.glow.setColor(self.healthGlowColors[condition], 1)
+
         self.hp = self.cog.getHP()
         self.maxHp = self.cog.getMaxHP()
         self.hpText['text'] = str(self.hp) + '/' + str(self.maxHp)
@@ -124,26 +127,24 @@ class TownBattleSuitPanel(DirectFrame):
 
     def __blinkRed(self, task):
         if not self.button.isEmpty():
-            self.button.setColor(self.healthColors[8], 1)
+            self.button.setColor(self.healthColors[3], 1)
 
         if not self.glow.isEmpty():
-            self.glow.setColor(self.healthGlowColors[8], 1)
+            self.glow.setColor(self.healthGlowColors[3], 1)
 
         return Task.done
 
     def __blinkGray(self, task):
         if not self.button.isEmpty():
-            self.button.setColor(self.healthColors[9], 1)
+            self.button.setColor(self.healthColors[4], 1)
 
         if not self.glow.isEmpty():
-            self.glow.setColor(self.healthGlowColors[9], 1)
+            self.glow.setColor(self.healthGlowColors[4], 1)
 
         return Task.done
 
     def hide(self):
-        if self.blinkTask:
-            taskMgr.remove(self.blinkTask)
-            self.blinkTask = None
+        taskMgr.remove(self.uniqueName('blink-task'))
 
         self.hidden = True
         self.healthNode.hide()
@@ -159,7 +160,6 @@ class TownBattleSuitPanel(DirectFrame):
         del self.glow
         del self.cog
         del self.button
-        del self.blinkTask
         del self.hpText
         DirectFrame.destroy(self)
 
@@ -169,11 +169,8 @@ class TownBattleSuitPanel(DirectFrame):
             self.head.removeNode()
             del self.head
 
-        if self.blinkTask:
-            taskMgr.remove(self.blinkTask)
-            self.blinkTask = None
+        taskMgr.remove(self.uniqueName('blink-task'))
 
-        del self.blinkTask
         self.healthNode.removeNode()
         self.button.removeNode()
         self.glow.removeNode()

@@ -315,22 +315,33 @@ def attachSuitHead(node, suitName):
 
 
 class Suit(Avatar.Avatar):
-    healthColors = (Vec4(0, 1, 0, 1),
-     Vec4(1, 1, 0, 1),
-     Vec4(1, 0.5, 0, 1),
-     Vec4(1, 0, 0, 1),
-     Vec4(0.3, 0.3, 0.3, 1),
-     ToontownGlobals.CogImmuneColor)
-    healthGlowColors = (Vec4(0.25, 1, 0.25, 0.5),
-     Vec4(1, 1, 0.25, 0.5),
-     Vec4(1, 0.5, 0.25, 0.5),
-     Vec4(1, 0.25, 0.25, 0.5),
-     Vec4(0.3, 0.3, 0.3, 0),
-     ToontownGlobals.CogImmuneGlowColor)
-    medallionColors = {'c': Vec4(0.863, 0.776, 0.769, 1.0),
-     's': Vec4(0.843, 0.745, 0.745, 1.0),
-     'l': Vec4(0.749, 0.776, 0.824, 1.0),
-     'm': Vec4(0.749, 0.769, 0.749, 1.0)}
+
+    healthColors = (
+        Vec4(0, 1, 0, 1),        # Green/full(ish) hp
+        Vec4(1, 1, 0, 1),        # Yellow (Halfish)
+        Vec4(1, 0.5, 0, 1),      # Orange (Low)
+        Vec4(1, 0, 0, 1),        # Red (Very low)
+        Vec4(0.3, 0.3, 0.3, 1),  # Blink slow, task will refer to red as well
+        Vec4(0.3, 0.3, 0.3, 1),  # Blink fast, task will refer to red as well
+        ToontownGlobals.CogImmuneColor  # Immune
+    )
+
+    healthGlowColors = (
+        Vec4(0.25, 1, 0.25, 0.5),  # Green/full(ish) hp
+        Vec4(1, 1, 0.25, 0.5),     # Yellow (Halfish)
+        Vec4(1, 0.5, 0.25, 0.5),   # Orange (Low)
+        Vec4(1, 0.25, 0.25, 0.5),  # Red (Very low)
+        Vec4(0.3, 0.3, 0.3, 0),    # Blink slow, task will refer to red as well
+        Vec4(0.3, 0.3, 0.3, 0),    # Blink fast, task will refer to red as well
+        ToontownGlobals.CogImmuneGlowColor  # Immune
+    )
+
+    medallionColors = {
+        'c': Vec4(0.863, 0.776, 0.769, 1.0),
+        's': Vec4(0.843, 0.745, 0.745, 1.0),
+        'l': Vec4(0.749, 0.776, 0.824, 1.0),
+        'm': Vec4(0.749, 0.769, 0.749, 1.0)
+    }
 
     def __init__(self):
         try:
@@ -844,61 +855,68 @@ class Suit(Avatar.Avatar):
         else:
             chestNull = self.find('**/joint_attachMeter')
         button.reparentTo(chestNull)
-        if self.isImmune == 1:
-            button.setColor(self.healthColors[5])
         self.healthBar = button
         glow = BattleProps.globalPropPool.getProp('glow')
         glow.reparentTo(self.healthBar)
         glow.setScale(0.28)
         glow.setPos(-0.005, 0.01, 0.015)
         glow.setColor(self.healthGlowColors[0])
-        if self.isImmune == 1:
-            glow.setColor(self.healthGlowColors[5])
         button.flattenLight()
         self.healthBarGlow = glow
         self.healthBar.hide()
-        self.healthCondition = 0
+        self.healthCondition = 0 if not self.isImmune else 6
+        self.updateHealthBar(0, forceUpdate=True)
 
     def resetHealthBarForSkele(self):
         self.healthBar.setPos(0.0, 0.1, 0.0)
 
     def updateHealthBar(self, hp, forceUpdate = 0):
+
+        if not hasattr(self, 'currHP'):
+            return
+
         if hp > self.currHP:
             hp = self.currHP
         self.currHP -= hp
         health = float(self.currHP) / float(self.maxHP)
-        if self.isImmune != 1:
-            if health > 0.95:
-                condition = 0
-            elif health > 0.7:
-                condition = 1
-            elif health > 0.3:
-                condition = 2
-            elif health > 0.05:
-                condition = 3
-            elif health > 0.0:
-                condition = 4
-            else:
-                condition = 5
-        elif self.isImmune == 1:
-            condition = 6
-        if self.healthCondition != condition or forceUpdate:
-            if condition == 4:
+
+        if self.isImmune:
+            newCondition = 6
+        elif health > 0.95:
+            newCondition = 0  # green
+        elif health > 0.7:
+            newCondition = 1  # yellow
+        elif health > 0.3:
+            newCondition = 2  # orange
+        elif health > .05:
+            newCondition = 3  # red
+        elif health > 0:
+            newCondition = 4  # blink red
+        else:
+            newCondition = 5  # blink red fast
+
+        oldCondition = self.healthCondition
+        self.healthCondition = newCondition
+
+        if oldCondition != newCondition or forceUpdate:
+
+            # Handle blinking condition
+            if newCondition == 4:
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.75), Task(self.__blinkGray), Task.pause(0.1))
                 taskMgr.add(blinkTask, self.uniqueName('blink-task'))
-            elif condition == 5:
-                if self.healthCondition == 4:
-                    taskMgr.remove(self.uniqueName('blink-task'))
+                return
+
+            # Handle fast blink condition
+            if newCondition == 5:
+                taskMgr.remove(self.uniqueName('blink-task'))
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.25), Task(self.__blinkGray), Task.pause(0.1))
                 taskMgr.add(blinkTask, self.uniqueName('blink-task'))
-            else:
-                if not self.isImmune:
-                    self.healthBar.setColor(self.healthColors[condition], 1)
-                    self.healthBarGlow.setColor(self.healthGlowColors[condition], 1)
-                else:
-                    self.healthBar.setColor(self.healthColors[5], 1)
-                    self.healthBarGlow.setColor(self.healthGlowColors[5], 1)
-            self.healthCondition = condition
+                return
+
+            # Simply setting color
+            self.healthBar.setColor(self.healthColors[newCondition], 1)
+            self.healthBarGlow.setColor(self.healthGlowColors[newCondition], 1)
+
 
     def __blinkRed(self, task):
         self.healthBar.setColor(self.healthColors[3], 1)
@@ -970,13 +988,13 @@ class Suit(Avatar.Avatar):
 
     def makeIntoImmune(self):
         self.isImmune = 1
-        self.healthBar.setColor(self.healthColors[5])
-        self.healthBarGlow.setColor(self.healthGlowColors[5])
+        self.healthBar.setColor(self.healthColors[6])
+        self.healthBarGlow.setColor(self.healthGlowColors[6])
+        self.updateHealthBar(0)
 
     def removeImmune(self):
         self.isImmune = 0
-        self.healthBar.setColor(self.healthColors[0])
-        self.healthBarGlow.setColor(self.healthGlowColors[0])
+        self.updateHealthBar(0)
 
     def makeSkeleton(self):
         model = 'phase_5/models/char/cog' + self.style.body.upper() + '_robot-zero'
