@@ -81,7 +81,8 @@ class InventoryPage(ShtikerPage.ShtikerPage):
             cap = base.localAvatar.experience.getExperienceCapForTrack(trackIndex)
 
             if curExp >= ToontownBattleGlobals.regMaxSkill:
-                newTrackInfoText = TTLocalizer.InventoryPageTrackFull % trackName
+                boost = ToontownBattleGlobals.getUberDamageBonusString(curExp)
+                newTrackInfoText = TTLocalizer.InventoryPageTrackFull % (trackName, boost)
             elif cap < nextExp:
                 newTrackInfoText = TTLocalizer.InventoryPageTrackLocked % trackName
             else:
