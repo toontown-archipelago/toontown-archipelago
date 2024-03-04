@@ -104,14 +104,7 @@ class Experience:
 
     # Based on how much overflow XP we have, how much damage should we add as a bonus?
     def getUberDamageBonus(self, track) -> float:
-        overflow = self.experience[track] - ToontownBattleGlobals.regMaxSkill
-        if overflow < 0:
-            overflow = 0
-
-        # Returns a multiplier to multiply base damage by, default is 1% damage per 100 xp
-        multiplier = 1 + overflow / 10000
-        multiplier = round(multiplier, 2)
-        return multiplier
+        return ToontownBattleGlobals.getUberDamageBonus(self.experience[track])
 
     # Returns a clean string representation of the damage bonus from above
     def getUberDamageBonusString(self, track) -> str:

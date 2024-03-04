@@ -62,6 +62,23 @@ Levels = [
 
 regMaxSkill = 10000
 MaxSkill = 999999  # How high should we allow xp to go
+
+
+def getUberDamageBonus(experience) -> float:
+    overflow = experience - regMaxSkill
+    if overflow < 0:
+        overflow = 0
+
+    # Returns a multiplier to multiply base damage by, default is 1% damage per 100 xp
+    multiplier = 1 + overflow / 10000
+    multiplier = round(multiplier, 2)
+    return multiplier
+
+
+# Returns a clean string representation of the damage bonus from above
+def getUberDamageBonusString(experience) -> str:
+    return str(int((getUberDamageBonus(experience) - 1) * 100))
+
 UnpaidMaxSkills = [Levels[0][1] - 1,
                    Levels[1][1] - 1,
                    Levels[2][1] - 1,

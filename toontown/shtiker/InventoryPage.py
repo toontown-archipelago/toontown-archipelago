@@ -4,6 +4,8 @@ from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
+from ..battle.GagTrackBarGUI import GagTrackBarGUI
+
 
 class InventoryPage(ShtikerPage.ShtikerPage):
 
@@ -19,10 +21,7 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         self.title = DirectLabel(parent=self, relief=None, text=TTLocalizer.InventoryPageTitle, text_scale=0.12, textMayChange=1, pos=(0, 0, 0.62))
         self.gagFrame = DirectFrame(parent=self, relief=None, pos=(0.1, 0, -0.47), scale=(0.35, 0.35, 0.35), geom=DGG.getDefaultDialogGeom(), geom_color=ToontownGlobals.GlobalDialogColor)
         self.trackInfo = DirectFrame(parent=self, relief=None, pos=(-0.4, 0, -0.47), scale=(0.35, 0.35, 0.35), geom=DGG.getDefaultDialogGeom(), geom_scale=(1.4, 1, 1), geom_color=ToontownGlobals.GlobalDialogColor, text='', text_wordwrap=11, text_align=TextNode.ALeft, text_scale=0.12, text_pos=(-0.65, 0.3), text_fg=(0.05, 0.14, 0.4, 1))
-        self.trackProgress = DirectWaitBar(parent=self.trackInfo, pos=(0, 0, -0.2), relief=DGG.SUNKEN, frameSize=(-0.6,
-         0.6,
-         -0.1,
-         0.1), borderWidth=(0.025, 0.025), scale=1.1, frameColor=(0.4, 0.6, 0.4, 1), barColor=(0.9, 1, 0.7, 1), text='0/0', text_scale=0.15, text_fg=(0.05, 0.14, 0.4, 1), text_align=TextNode.ACenter, text_pos=(0, -0.22))
+        self.trackProgress = GagTrackBarGUI(parent=self.trackInfo, track=0, pos=(0, 0, -0.25), scale=1.1)
         self.trackProgress.hide()
         jarGui = loader.loadModel('phase_3.5/models/gui/jar_gui')
         self.moneyDisplay = DirectLabel(parent=self, relief=None, pos=(0.55, 0, -0.5), scale=0.8, text=str(base.localAvatar.getMoney()), text_scale=0.18, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.1, 0), image=jarGui.find('**/Jar'), text_font=ToontownGlobals.getSignFont())
@@ -74,39 +73,27 @@ class InventoryPage(ShtikerPage.ShtikerPage):
 
     def updateTrackInfo(self, trackIndex):
         self.currentTrackInfo = trackIndex
+        self.trackProgress.setTrack(trackIndex)
+        self.trackProgress.showExperience(base.localAvatar.experience, trackIndex)
         trackName = TextEncoder.upper(ToontownBattleGlobals.Tracks[trackIndex])
         if base.localAvatar.hasTrackAccess(trackIndex):
             curExp, nextExp = base.localAvatar.inventory.getCurAndNextExpValues(trackIndex)
-            trackText = '%s / %s' % (curExp, nextExp)
-            self.trackProgress['range'] = nextExp
-            self.trackProgress['value'] = curExp
+            cap = base.localAvatar.experience.getExperienceCapForTrack(trackIndex)
+
             if curExp >= ToontownBattleGlobals.regMaxSkill:
-                str = TTLocalizer.InventoryPageTrackFull % trackName
-                trackText = TTLocalizer.InventoryUberTrackExp % {'curExp': curExp, 'boostPercent': base.localAvatar.experience.getUberDamageBonusString(trackIndex)}
-                self.trackProgress['range'] = ToontownBattleGlobals.MaxSkill
-                self.trackProgress['value'] = curExp
+                newTrackInfoText = TTLocalizer.InventoryPageTrackFull % trackName
+            elif cap < nextExp:
+                newTrackInfoText = TTLocalizer.InventoryPageTrackLocked % trackName
             else:
                 morePoints = nextExp - curExp
-                if morePoints == 1:
-                    str = TTLocalizer.InventoryPageSinglePoint % {'trackName': trackName,
-                     'numPoints': morePoints}
-                else:
-                    str = TTLocalizer.InventoryPagePluralPoints % {'trackName': trackName,
-                     'numPoints': morePoints}
-            self.trackInfo['text'] = str
-            self.trackProgress['text'] = trackText
-            self.trackProgress['frameColor'] = (ToontownBattleGlobals.TrackColors[trackIndex][0] * 0.6,
-             ToontownBattleGlobals.TrackColors[trackIndex][1] * 0.6,
-             ToontownBattleGlobals.TrackColors[trackIndex][2] * 0.6,
-             1)
-            self.trackProgress['barColor'] = (ToontownBattleGlobals.TrackColors[trackIndex][0],
-             ToontownBattleGlobals.TrackColors[trackIndex][1],
-             ToontownBattleGlobals.TrackColors[trackIndex][2],
-             1)
+                newTrackInfoText = TTLocalizer.InventoryPageSinglePoint % {'trackName': trackName, 'numPoints': morePoints} if morePoints == 1 else TTLocalizer.InventoryPagePluralPoints % {'trackName': trackName, 'numPoints': morePoints}
+                self.trackProgress.forceShowExperience(curExp, min(ToontownBattleGlobals.regMaxSkill, cap))
+
+            self.trackInfo['text'] = newTrackInfoText
             self.trackProgress.show()
         else:
-            str = TTLocalizer.InventoryPageNoAccess % trackName
-            self.trackInfo['text'] = str
+            newTrackInfoText = TTLocalizer.InventoryPageNoAccess % trackName
+            self.trackInfo['text'] = newTrackInfoText
             self.trackProgress.hide()
 
     def clearTrackInfo(self, trackIndex):

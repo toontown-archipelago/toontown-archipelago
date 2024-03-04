@@ -1,3 +1,5 @@
+from typing import List
+
 from panda3d.core import *
 from direct.gui.DirectGui import *
 from direct.interval.IntervalGlobal import *
@@ -17,6 +19,7 @@ from toontown.coghq import CogDisguiseGlobals
 from toontown.shtiker import DisguisePage
 from . import Fanfare
 from otp.otpbase import OTPGlobals
+from .GagTrackBarGUI import GagTrackBarGUI
 
 
 class RewardPanel(DirectFrame):
@@ -63,7 +66,7 @@ class RewardPanel(DirectFrame):
                                           text_pos=(0, -0.46), text_scale=0.06)
         self.trackLabels = []
         self.trackIncLabels = []
-        self.trackBars = []
+        self.trackBars: List[GagTrackBarGUI] = []
         self.trackBarsOffset = 0
         self.meritLabels = []
         self.meritIncLabels = []
@@ -102,20 +105,10 @@ class RewardPanel(DirectFrame):
             self.trackIncLabels.append(
                 DirectLabel(parent=self.gagExpFrame, relief=None, text='', text_scale=0.05, text_align=TextNode.ALeft,
                             pos=(0.65, 0, -0.09 * i), text_pos=(0, -0.02)))
-            self.trackBars.append(DirectWaitBar(parent=self.gagExpFrame, relief=DGG.SUNKEN, frameSize=(-1,
-                                                                                                       1,
-                                                                                                       -0.15,
-                                                                                                       0.15),
-                                                borderWidth=(0.02, 0.02), scale=0.25,
-                                                frameColor=(ToontownBattleGlobals.TrackColors[i][0] * 0.7,
-                                                            ToontownBattleGlobals.TrackColors[i][1] * 0.7,
-                                                            ToontownBattleGlobals.TrackColors[i][2] * 0.7,
-                                                            1), barColor=(ToontownBattleGlobals.TrackColors[i][0],
-                                                                          ToontownBattleGlobals.TrackColors[i][1],
-                                                                          ToontownBattleGlobals.TrackColors[i][2],
-                                                                          1), text='0/0', text_scale=0.18,
-                                                text_fg=(0, 0, 0, 1), text_align=TextNode.ACenter, text_pos=(0, -0.05),
-                                                pos=(0.4, 0, -0.09 * i)))
+
+            gagTrackBar = GagTrackBarGUI(i, parent=self.gagExpFrame, scale=0.25, pos=(0.4, 0, -0.09 * i))
+            gagTrackBar.makeSkinny()
+            self.trackBars.append(gagTrackBar)
 
         self._battleGui = loader.loadModel('phase_3.5/models/gui/battle_gui')
         self.skipButton = DirectButton(parent=self, relief=None,
@@ -258,7 +251,12 @@ class RewardPanel(DirectFrame):
 
         for i in range(len(expList)):
             curExp = expList[i]
+            nextGagExp = self.getNextExpValue(curExp, i)
+            toonExpCap = min(nextGagExp, toon.experience.getExperienceCapForTrack(i))
             trackBar = self.trackBars[i]
+            trackBar.setTrack(i)
+            if toonExpCap < nextGagExp:
+                trackBar.makeFrameRed()
             trackLabel = self.trackLabels[i]
             trackIncLabel = self.trackIncLabels[i]
             trackBar.setX(trackBar.getX() - trackBarOffset)
@@ -268,63 +266,28 @@ class RewardPanel(DirectFrame):
             if toon.hasTrackAccess(i):
                 trackBar.show()
 
-                if curExp >= ToontownBattleGlobals.MaxSkill:
-                    nextExp = self.getNextExpValueUber(curExp, i)
-                    trackBar['range'] = nextExp
-                    trackBar['value'] = curExp
-                    trackBar['text'] = TTLocalizer.InventoryUberTrackExpMaxed % {
-                        'boostPercent': toon.experience.getUberDamageBonusString(i)}
-                    trackBar['text_fg'] = (238/255.0, 206/255.0, 74/255.0, 1)
-                elif curExp >= ToontownBattleGlobals.regMaxSkill:
-                    nextExp = self.getNextExpValueUber(curExp, i)
-                    trackBar['range'] = nextExp
-                    trackBar['value'] = curExp
-                    trackBar['text'] = TTLocalizer.InventoryUberTrackExp % {'curExp': curExp, 'boostPercent': toon.experience.getUberDamageBonusString(i)}
-                else:
-                    nextExp = self.getNextExpValue(curExp, i)
-                    trackBar['range'] = nextExp
-                    trackBar['value'] = curExp
-                    trackBar['text'] = '%s/%s' % (curExp, nextExp)
-                self.resetBarColor(i)
+                trackBar.forceShowExperience(curExp, toonExpCap)
+                self.trackBars[i].resetBarColor()
             else:
                 trackBar.hide()
 
-    def incrementExp(self, track, newValue, toon):
+    def __incrementExp(self, track, newValue, toon):
+
+        nextGagExp = self.getNextExpValue(newValue, track)
+        hardCappedExp = toon.experience.getExperienceCapForTrack(track)
+        capToShow = min(nextGagExp, hardCappedExp)
+        currExpToShow = min(capToShow, newValue)
+
         trackBar = self.trackBars[track]
-        newValue = min(toon.experience.getExperienceCapForTrack(track), newValue)
-        nextExp = self.getNextExpValue(newValue, track)
 
-        if newValue >= ToontownBattleGlobals.MaxSkill:
-            nextExp = self.getNextExpValueUber(newValue, track)
-            trackBar['text'] = TTLocalizer.InventoryUberTrackExpMaxed % {'boostPercent': toon.experience.getUberDamageBonusString(track)}
-        elif newValue >= ToontownBattleGlobals.regMaxSkill:
-            nextExp = self.getNextExpValueUber(newValue, track)
-            trackBar['text'] = TTLocalizer.InventoryUberTrackExp % {'curExp': newValue, 'boostPercent': toon.experience.getUberDamageBonusString(track)}
-
+        trackBar.forceShowExperience(currExpToShow, capToShow)
+        if currExpToShow != capToShow:
+            trackBar.makeBarBright()
         else:
-            trackBar['text'] = '%s/%s' % (newValue, nextExp)
+            trackBar.makeBarRed()
 
-        trackBar['range'] = nextExp
-        trackBar['value'] = newValue
-        trackBar['barColor'] = (ToontownBattleGlobals.TrackColors[track][0],
-                                ToontownBattleGlobals.TrackColors[track][1],
-                                ToontownBattleGlobals.TrackColors[track][2],
-                                1)
-
-        # If we are maxed, make the text gold
-        if newValue == ToontownBattleGlobals.MaxSkill:
-            trackBar['text_fg'] = (238/255.0, 206/255.0, 74/255.0, 1)
-        # If we are stuck bc we don't have access make the bar red
-        elif newValue == toon.experience.getExperienceCapForTrack(track):
-            trackBar['barColor'] = (1, 0, 0, 1)
-            trackBar['frameColor'] = (.8, 0, 0, 1)
-
-
-    def resetBarColor(self, track):
-        self.trackBars[track]['barColor'] = (ToontownBattleGlobals.TrackColors[track][0] * 0.8,
-                                             ToontownBattleGlobals.TrackColors[track][1] * 0.8,
-                                             ToontownBattleGlobals.TrackColors[track][2] * 0.8,
-                                             1)
+        if hardCappedExp < nextGagExp:
+            trackBar.makeFrameRed()
 
     def incrementMerits(self, toon, dept, newValue, totalMerits):
         meritBar = self.meritBars[dept]
@@ -462,24 +425,21 @@ class RewardPanel(DirectFrame):
         self.meritIncLabels[dept].show()
 
     def getTrackIntervalList(self, toon, track, origSkill, earnedSkill, guestWaste=0):
-        tickDelay = 1.0 / 60
+
+        tickDelay = 1.0 / 144
         intervalList = []
-        if origSkill + earnedSkill >= ToontownBattleGlobals.UnpaidMaxSkills[
-            track] and toon.getGameAccess() != OTPGlobals.AccessFull:
-            lostExp = origSkill + earnedSkill - ToontownBattleGlobals.UnpaidMaxSkills[track]
-            intervalList.append(Func(self.showTrackIncLabel, track, lostExp, 1))
-        else:
-            intervalList.append(Func(self.showTrackIncLabel, track, earnedSkill))
-        barTime = 0.5
+
+        intervalList.append(Func(self.showTrackIncLabel, track, earnedSkill))
+        barTime = .5
         numTicks = int(math.ceil(barTime / tickDelay))
         for i in range(numTicks):
             t = (i + 1) / float(numTicks)
             newValue = int(origSkill + t * earnedSkill + 0.5)
-            intervalList.append(Func(self.incrementExp, track, newValue, toon))
+            intervalList.append(Func(self.__incrementExp, track, newValue, toon))
             intervalList.append(Wait(tickDelay))
 
-        intervalList.append(Func(self.resetBarColor, track))
         intervalList.append(Wait(0.1))
+        intervalList.append(Func(self.trackBars[track].resetBarColor))
         nextExpValue = self.getNextExpValue(origSkill, track)
         finalGagFlag = 0
         if origSkill + earnedSkill < toon.experience.getExperienceCapForTrack(track):
@@ -492,6 +452,8 @@ class RewardPanel(DirectFrame):
                     finalGagFlag = 1
                 else:
                     nextExpValue = newNextExpValue
+
+        intervalList.append(Wait(2.0))
 
         return intervalList
 

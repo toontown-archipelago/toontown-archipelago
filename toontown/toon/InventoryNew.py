@@ -8,6 +8,7 @@ from direct.interval.IntervalGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
+from ..battle.GagTrackBarGUI import GagTrackBarGUI
 from ..hood import ZoneUtil
 
 
@@ -211,16 +212,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             self.trackRows.append(trackFrame)
             adjustLeft = -0.065
             self.trackNameLabels.append(DirectLabel(text=TextEncoder.upper(Tracks[track]), parent=self.trackRows[track], pos=(-0.72 + adjustLeft, -0.1, 0.01), scale=TTLocalizer.INtrackNameLabels, relief=None, text_fg=(0.2, 0.2, 0.2, 1), text_font=getInterfaceFont(), text_align=TextNode.ALeft, textMayChange=0))
-            self.trackBars.append(DirectWaitBar(parent=self.trackRows[track], pos=(-0.58 + adjustLeft, -0.1, -0.025), relief=DGG.SUNKEN, frameSize=(-0.6,
-             0.6,
-             -0.1,
-             0.1), borderWidth=(0.02, 0.02), scale=0.25, frameColor=(TrackColors[track][0] * 0.6,
-             TrackColors[track][1] * 0.6,
-             TrackColors[track][2] * 0.6,
-             1), barColor=(TrackColors[track][0] * 0.9,
-             TrackColors[track][1] * 0.9,
-             TrackColors[track][2] * 0.9,
-             1), text='0 / 0', text_scale=0.16, text_fg=(0, 0, 0, 0.8), text_align=TextNode.ACenter, text_pos=(0, -0.05)))
+            self.trackBars.append(GagTrackBarGUI(track=track, parent=self.trackRows[track], pos=(-0.58 + adjustLeft, -0.1, -0.025), scale=0.25))
             self.buttons.append([])
             for item in range(0, len(Levels[track])):
                 button = DirectButton(
@@ -1124,17 +1116,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         for levelIndex in range(0, len(Levels[trackIndex])):
             self.buttons[trackIndex][levelIndex].show()
 
-        curExp, nextExp = self.getCurAndNextExpValues(trackIndex)
-        if curExp >= UnpaidMaxSkills[trackIndex] and self.toon.getGameAccess() != OTPGlobals.AccessFull:
-            self.trackBars[trackIndex]['range'] = nextExp
-            self.trackBars[trackIndex]['text'] = TTLocalizer.InventoryGuestExp
-        elif curExp >= regMaxSkill:  # If we are maxed
-            self.trackBars[trackIndex]['range'] = MaxSkill
-            self.trackBars[trackIndex]['text'] = TTLocalizer.InventoryUberTrackExp % {'curExp': curExp, 'boostPercent': self.toon.experience.getUberDamageBonusString(trackIndex)}
-        else:
-            self.trackBars[trackIndex]['range'] = nextExp
-            self.trackBars[trackIndex]['text'] = TTLocalizer.InventoryTrackExp % {'curExp': curExp,
-             'nextExp': nextExp}
+        self.trackBars[trackIndex].showExperience(base.localAvatar.experience, trackIndex)
 
     def updateInvString(self, invString):
         InventoryBase.InventoryBase.updateInvString(self, invString)
@@ -1166,13 +1148,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         if track == None and level == None:
             for track in range(len(Tracks)):
                 curExp, nextExp = self.getCurAndNextExpValues(track)
-                if curExp >= regMaxSkill:  # If we are maxed
-                    self.trackBars[track]['text'] = TTLocalizer.InventoryUberTrackExp % {'curExp': curExp, 'boostPercent': self.toon.experience.getUberDamageBonusString(track)}
-                    self.trackBars[track]['value'] = curExp
-                else:
-                    self.trackBars[track]['text'] = TTLocalizer.InventoryTrackExp % {'curExp': curExp,
-                     'nextExp': nextExp}
-                    self.trackBars[track]['value'] = curExp
+                self.trackBars[track].showExperience(base.localAvatar.experience, track)
                 for level in range(0, len(Levels[track])):
                     self.updateButton(track, level)
 
