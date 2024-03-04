@@ -248,6 +248,7 @@ class JellybeanReward(APReward):
 class UberTrapAward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
+        av.playSound('phase_4/audio/sfx/avatar_emotion_very_sad.ogg')
         av.b_setHp(15)
         av.inventory.NPCMaxOutInv(-1)
         av.b_setInventory(av.inventory.makeNetString())

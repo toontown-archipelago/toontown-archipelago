@@ -1785,6 +1785,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setCheesyEffect(ToontownGlobals.CENormal, 0, 0)
         return Task.cont
 
+    def playSound(self, sound):
+        self.sendUpdate('playSound', [sound])
+
     def b_setTrackAccess(self, trackArray):
         self.setTrackAccess(trackArray)
         self.d_setTrackAccess(trackArray)
