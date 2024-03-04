@@ -281,13 +281,12 @@ class ToontownAIRepository(ToontownInternalRepository):
 
     def createHood(self, hoodCtr, zoneId):
         # Bossbot HQ doesn't use DNA, so we skip over that.
-        if zoneId != ToontownGlobals.BossbotHQ:
-            self.dnaStoreMap[zoneId] = DNAStorage()
-            self.dnaDataMap[zoneId] = loadDNAFileAI(self.dnaStoreMap[zoneId], self.genDNAFileName(zoneId))
-            if zoneId in ToontownGlobals.HoodHierarchy:
-                for streetId in ToontownGlobals.HoodHierarchy[zoneId]:
-                    self.dnaStoreMap[streetId] = DNAStorage()
-                    self.dnaDataMap[streetId] = loadDNAFileAI(self.dnaStoreMap[streetId], self.genDNAFileName(streetId))
+        self.dnaStoreMap[zoneId] = DNAStorage()
+        self.dnaDataMap[zoneId] = loadDNAFileAI(self.dnaStoreMap[zoneId], self.genDNAFileName(zoneId))
+        if zoneId in ToontownGlobals.HoodHierarchy:
+            for streetId in ToontownGlobals.HoodHierarchy[zoneId]:
+                self.dnaStoreMap[streetId] = DNAStorage()
+                self.dnaDataMap[streetId] = loadDNAFileAI(self.dnaStoreMap[streetId], self.genDNAFileName(streetId))
 
         hood = hoodCtr(self, zoneId)
         hood.startup()
@@ -345,24 +344,28 @@ class ToontownAIRepository(ToontownInternalRepository):
             (ToontownGlobals.SellbotHQ, 0, 1), (ToontownGlobals.SellbotFactoryExt, 0, 1)
         )
         self.createHood(CSHoodDataAI, ToontownGlobals.SellbotHQ)
+        NPCToons.createNpcsInZone(self, ToontownGlobals.SellbotHQ)
 
         # Cashbot HQ
         self.zoneTable[ToontownGlobals.CashbotHQ] = (
             (ToontownGlobals.CashbotHQ, 0, 1),
         )
         self.createHood(CashbotHQDataAI, ToontownGlobals.CashbotHQ)
+        NPCToons.createNpcsInZone(self, ToontownGlobals.CashbotHQ)
 
         # Lawbot HQ
         self.zoneTable[ToontownGlobals.LawbotHQ] = (
             (ToontownGlobals.LawbotHQ, 0, 1),
         )
         self.createHood(LawbotHQDataAI, ToontownGlobals.LawbotHQ)
+        NPCToons.createNpcsInZone(self, ToontownGlobals.LawbotHQ)
 
         # Bossbot HQ
         self.zoneTable[ToontownGlobals.BossbotHQ] = (
-            (ToontownGlobals.BossbotHQ, 0, 0),
+            (ToontownGlobals.BossbotHQ, 0, 1),
         )
         self.createHood(BossbotHQDataAI, ToontownGlobals.BossbotHQ)
+        NPCToons.createNpcsInZone(self, ToontownGlobals.BossbotHQ)
 
         # Goofy Speedway
         self.zoneTable[ToontownGlobals.GoofySpeedway] = (
