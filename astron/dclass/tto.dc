@@ -1149,6 +1149,9 @@ dclass DistributedToon : DistributedPlayer {
   setRun() broadcast ownrecv ram;
   doTeleport(string hood);
   forceEnterBoss(uint16 zone, uint32 doId) ownrecv;
+  setMagicDNA(blob) airecv clsend;
+  setMagicBodyAccessories(uint16, uint16, uint16, uint16) airecv clsend;
+  setMagicHeadAccessories(uint16, uint16, uint16, uint16) airecv clsend;
 
   setBaseGagSkillMultiplier(uint16=1) required ownrecv broadcast db;
   setAccessKeys(uint16[] = []) required ownrecv broadcast db;
