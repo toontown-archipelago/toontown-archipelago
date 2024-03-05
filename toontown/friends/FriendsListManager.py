@@ -33,12 +33,16 @@ class FriendsListManager:
         base.cr.friendManager.setGameSpecificFunction(self.processQueuedRequests)
         self.accept(OTPGlobals.AvatarNewFriendAddEvent, self.__friendAdded)
 
+    def cleanupCurrentAvatarPanel(self):
+        if self.avatarPanel:
+            self.avatarPanel.cleanup()
+            self.avatarPanel = None
+
     def unload(self):
         if base.cr.friendManager:
             base.cr.friendManager.setGameSpecificFunction(None)
         self.exitFLM()
-        if self.avatarPanel:
-            del self.avatarPanel
+        self.cleanupCurrentAvatarPanel()
         FriendInviter.unloadFriendInviter()
         ToonAvatarDetailPanel.unloadAvatarDetail()
         ToonTeleportPanel.unloadTeleportPanel()
@@ -76,9 +80,7 @@ class FriendsListManager:
         self.ignore('clickedNametagPlayer')
         base.localAvatar.setFriendsListButtonActive(0)
         NametagGlobals.setMasterNametagsActive(0)
-        if self.avatarPanel:
-            self.avatarPanel.cleanup()
-            self.avatarPanel = None
+        self.cleanupCurrentAvatarPanel()
         self.ignore('gotoAvatar')
         self.ignore('friendAvatar')
         self.ignore('avatarDetails')
@@ -97,6 +99,7 @@ class FriendsListManager:
         FriendsListPanel.showFriendsList()
 
     def __handleClickedNametag(self, avatar, playerId = None):
+        self.cleanupCurrentAvatarPanel()
         self.notify.debug('__handleClickedNametag. doId = %s' % avatar.doId)
         if avatar.isPet():
             self.avatarPanel = PetAvatarPanel.PetAvatarPanel(avatar)
@@ -114,20 +117,20 @@ class FriendsListManager:
     def __handleClickedNametagPlayer(self, avatar, playerId, showType = 1):
         self.notify.debug('__handleClickedNametagPlayer PlayerId%s' % playerId)
         if showType == 1:
-            if hasattr(self, 'avatarPanel'):
-                if self.avatarPanel:
-                    if not hasattr(self.avatarPanel, 'getPlayerId') or self.avatarPanel.getPlayerId() == playerId:
-                        if not self.avatarPanel.isHidden():
-                            if self.avatarPanel.getType() == 'player':
-                                return
+            if self.avatarPanel:
+                if not hasattr(self.avatarPanel, 'getPlayerId') or self.avatarPanel.getPlayerId() == playerId:
+                    if not self.avatarPanel.isHidden():
+                        if self.avatarPanel.getType() == 'player':
+                            return
+            self.cleanupCurrentAvatarPanel()
             self.avatarPanel = PlayerInfoPanel.PlayerInfoPanel(playerId)
         elif isinstance(avatar, Toon.Toon) or isinstance(avatar, FriendHandle.FriendHandle):
-            if hasattr(self, 'avatarPanel'):
-                if self.avatarPanel:
-                    if not hasattr(self.avatarPanel, 'getAvId') or self.avatarPanel.getAvId() == avatar.doId:
-                        if not self.avatarPanel.isHidden():
-                            if self.avatarPanel.getType() == 'toon':
-                                return
+            if self.avatarPanel:
+                if not hasattr(self.avatarPanel, 'getAvId') or self.avatarPanel.getAvId() == avatar.doId:
+                    if not self.avatarPanel.isHidden():
+                        if self.avatarPanel.getType() == 'toon':
+                            return
+            self.cleanupCurrentAvatarPanel()
             self.avatarPanel = ToonAvatarPanel.ToonAvatarPanel(avatar, playerId)
 
     def __handleGotoAvatar(self, avId, avName, avDisableName):
