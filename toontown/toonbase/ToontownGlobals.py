@@ -1269,7 +1269,7 @@ LawbotBossWitnessEpiloguePosHpr = (-3,
  0,
  0)
 LawbotBossChanceForTaunt = 25
-LawbotBossBonusWaitTime = 0
+LawbotBossBonusWaitTime = 5
 LawbotBossBonusDuration = 20
 LawbotBossBonusToonup = 10
 LawbotBossBonusWeightMultiplier = 2

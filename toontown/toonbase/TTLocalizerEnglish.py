@@ -9028,6 +9028,10 @@ WitnessToonLastPromotion = "\x07Wow, you've reached level %s on your Cog Suit!\x
 WitnessToonHPBoost = "\x07You've done a lot of work for the Resistance.\x07The Toon Council has decided to give you another Laff point. Congratulations!"
 WitnessToonMaxed = '\x07I see that you have a level %s Cog Suit. Very impressive!\x07On behalf of the Toon Council, thank you for coming back to defend more Toons!'
 WitnessToonBonus = 'Wonderful! All the lawyers are stunned. Your evidence weight is %s times heavier for %s seconds'
+WitnessToonBonusOver = 'Oh no! The lawyers aren\'t slipping up! Keep at it for now until we can stun them all for another bonus!'
+StunBonus = 'Lawyers stunned'
+StunBonusOver = 'Bonus Over'
+StunBonusAvailable = 'Stun available'
 WitnessToonJuryWeightBonusSingular = {6: 'This is a tough case. You seated %d Toon juror, so your evidence has a bonus weight of %d.',
  7: 'This is a very tough case. You seated %d Toon juror, so your evidence has a bonus weight of %d.',
  8: 'This is the toughest case. You seated %d Toon juror, so your evidence has a bonus weight of %d.'}

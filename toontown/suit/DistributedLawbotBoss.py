@@ -79,6 +79,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.evidenceHitSfx = None
         self.toonUpSfx = None
         self.bonusTimer = None
+        self.cooldownTimer = None
         self.warningSfx = None
         self.juryMovesSfx = None
         self.baseColStashed = False
@@ -86,6 +87,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bonusWeight = 0
         self.numJurorsLocalToonSeated = 0
         self.cannonIndex = -1
+        self.stunTextColor = (0, 0.3, 1.0, 1)
 
         self.bossSpeedrunTimer = None
         self.scoreboard = None
@@ -231,6 +233,9 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         if self.bonusTimer:
             self.bonusTimer.destroy()
             del self.bonusTimer
+        if self.cooldownTimer:
+            self.cooldownTimer.destroy()
+            del self.cooldownTimer
         localAvatar.chatMgr.chatInputSpeedChat.removeCJMenu()
         if OneBossCog == self:
             OneBossCog = None
@@ -1880,10 +1885,37 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             base.playSfx(self.toonUpSfx, node=toon)
 
     def hideBonusTimer(self):
+        base.localAvatar.showHpString(TTLocalizer.StunBonusOver, color=self.stunTextColor)
+
+        self.witnessToon.clearChat()
+        text = TTLocalizer.WitnessToonBonusOver
+        self.witnessToon.setChatAbsolute(text, CFSpeech | CFTimeout)
         if self.bonusTimer:
-            self.bonusTimer.hide()
+            Sequence(LerpScaleInterval(self.bonusTimer, 0.09, .45, blendType='easeInOut'),
+                     LerpScaleInterval(self.bonusTimer, 0.2, 0, blendType='easeInOut'),
+                     Func(self.bonusTimer.hide),
+                     Func(self.showCooldownTimer)).start()
+
+    def hideCooldownTimer(self):
+        base.localAvatar.showHpString(TTLocalizer.StunBonusAvailable, color=self.stunTextColor)
+
+        if self.cooldownTimer:
+            Sequence(LerpScaleInterval(self.cooldownTimer, 0.09, .45, blendType='easeInOut'),
+                     LerpScaleInterval(self.cooldownTimer, 0.2, 0, blendType='easeInOut'),
+                     Func(self.cooldownTimer.hide)).start()
+
+    def showCooldownTimer(self):
+        if not self.cooldownTimer:
+            self.cooldownTimer = ToontownTimer.ToontownTimer()
+            self.cooldownTimer.posInTopRightBelowHealthBar()
+            self.cooldownTimer.setFontColor(Vec4(0, 0.65, 1, 1))
+        Sequence(Func(self.cooldownTimer.show),
+                LerpScaleInterval(self.cooldownTimer, 0.2, 0.45, 0, blendType='easeInOut'),
+                LerpScaleInterval(self.cooldownTimer, 0.09, 0.4, blendType='easeInOut')).start()
+        self.cooldownTimer.countdown(ToontownGlobals.LawbotBossBonusWaitTime, self.hideCooldownTimer)
 
     def enteredBonusState(self):
+        base.localAvatar.showHpString(TTLocalizer.StunBonus, color=self.stunTextColor)
         self.witnessToon.clearChat()
         text = TTLocalizer.WitnessToonBonus % (ToontownGlobals.LawbotBossBonusWeightMultiplier, ToontownGlobals.LawbotBossBonusDuration)
         self.witnessToon.setChatAbsolute(text, CFSpeech | CFTimeout)
@@ -1891,7 +1923,9 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         if not self.bonusTimer:
             self.bonusTimer = ToontownTimer.ToontownTimer()
             self.bonusTimer.posInTopRightBelowHealthBar()
-        self.bonusTimer.show()
+        Sequence(Func(self.bonusTimer.show),
+                 LerpScaleInterval(self.bonusTimer, 0.2, 0.45, 0, blendType='easeInOut'),
+                 LerpScaleInterval(self.bonusTimer, 0.09, 0.4, blendType='easeInOut')).start()
         self.bonusTimer.countdown(ToontownGlobals.LawbotBossBonusDuration, self.hideBonusTimer)
 
     def setAttackCode(self, attackCode, avId = 0):
