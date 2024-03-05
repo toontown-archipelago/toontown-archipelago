@@ -263,7 +263,12 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for table in self.tables:
             table.turnOn()
 
-        self.barrier = self.beginBarrier('BattleTwo', self.involvedToons, ToontownGlobals.BossbotBossServingDuration + 1, self.__doneBattleTwo)
+        if len(self.involvedToons) > 1:
+            timer = ToontownGlobals.BossbotBossServingDuration
+        else:
+            timer = ToontownGlobals.BossbotBossServingDurationSolo
+
+        self.barrier = self.beginBarrier('BattleTwo', self.involvedToons, timer + 1, self.__doneBattleTwo)
 
     def exitBattleTwo(self):
         self.ignoreBarrier(self.barrier)
