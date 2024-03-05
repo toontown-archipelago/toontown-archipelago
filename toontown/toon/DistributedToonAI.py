@@ -4440,3 +4440,20 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Gets this toon's current AP seed, used for task generation mainly
     def getSeed(self):
         return self.seed
+
+    # Magic word stuff
+    def setMagicDNA(self, dnaString):
+        self.b_setDNAString(dnaString)
+        self.d_setSystemMessage(0, "Updated your DNA!")
+
+    def setMagicBodyAccessories(self, backpack, backpackTex, shoes, shoesTex):
+        self.b_setBackpack(backpack, backpackTex, 0)
+        self.b_setShoes(shoes, shoesTex, 0)
+        self.d_setSystemMessage(0, "Updated your Accessories!")
+    
+    def setMagicHeadAccessories(self, hat, hatTex, glasses, glassesTex):
+        self.b_setHat(hat, hatTex, 0)
+        self.b_setGlasses(glasses, glassesTex, 0)
+        self.d_setSystemMessage(0, "Updated your Accessories!")
+
+

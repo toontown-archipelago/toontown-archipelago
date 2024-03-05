@@ -1,7 +1,7 @@
 import typing
 from dataclasses import dataclass
 
-from Options import PerGameCommonOptions, StartInventoryPool, Range, Choice
+from Options import PerGameCommonOptions, StartInventoryPool, Range, Choice, Toggle
 
 
 class StartHPOption(Range):
@@ -39,6 +39,22 @@ class BaseGagXPMultiplierOption(Range):
     default = 2
 
 
+class ForcePlaygroundVisitTeleportAccessUnlocksOption(Toggle):
+    """
+    Enable to force your playground teleport access to be on its corresponding "Visit Location" check
+    """
+
+    display_name = "Force Visit Playground Teleport Access Unlocks"
+
+
+class ForceCogHQVisitTeleportAccessUnlocksOption(Toggle):
+    """
+    Enable to force your Cog HQ teleport access to be on its corresponding "Visit Location" check
+    """
+
+    display_name = "Force Visit Cog HQ Teleport Access Unlocks"
+
+
 class SeedGenerationTypeOption(Choice):
     """
     Type of seeding to use when RNG checks happen in game.
@@ -59,10 +75,24 @@ class SeedGenerationTypeOption(Choice):
     display_name = "Seed Generation Type"
 
 
+class TrapPercentOption(Range):
+    """
+    Percentage of junk items to be replaced with traps
+    """
+
+    display_name = "Trap Percentage"
+    range_start = 1
+    range_end = 100
+    default = 10
+
+
 @dataclass
 class ToontownOptions(PerGameCommonOptions):
     start_inventory: StartInventoryPool
     starting_hp: StartHPOption
     starting_money: StartMoneyOption
     starting_base_gag_xp_multiplier: BaseGagXPMultiplierOption
+    force_playground_visit_teleport_access_unlocks: ForcePlaygroundVisitTeleportAccessUnlocksOption
+    force_coghq_visit_teleport_access_unlocks: ForceCogHQVisitTeleportAccessUnlocksOption
     seed_generation_type: SeedGenerationTypeOption
+    trap_percent: TrapPercentOption

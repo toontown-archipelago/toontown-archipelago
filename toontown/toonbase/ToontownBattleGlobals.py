@@ -220,17 +220,20 @@ AvPropStringsPlural = TTLocalizer.BattleGlobalAvPropStringsPlural
 
 AvPropAccuracy = (
     (100, 100, 100, 100, 100, 100, 100),  # Toonup
-    (0, 0, 0, 0, 0, 0, 0),          # Trap
-    (50, 50, 60, 60, 70, 70, 95),   # Lure
+    (100, 100, 100, 100, 100, 100, 100),  # Trap
+    (70, 70, 70, 70, 70, 70, 95),   # Lure
     (95, 95, 95, 95, 95, 95, 95),   # Sound
     (75, 75, 75, 75, 75, 75, 75),   # Throw
     (95, 95, 95, 95, 95, 95, 95),   # Squirt
-    (50, 50, 50, 50, 50, 50, 50)    # Drop
+    (70, 70, 70, 70, 70, 70, 70)    # Drop
 )
 
-AvLureBonusAccuracy = (60, 60, 70, 70, 80, 80, 100)
+AvLureBonusAccuracy = (80, 80, 80, 80, 80, 80, 100)
 
-AvTrackAccStrings = TTLocalizer.BattleGlobalAvTrackAccStrings
+
+# Util method to show a clean percentage accuracy (base) string for a specific gag utilizing AvPropAccuracy defined here
+def getAccuracyPercentString(track, level):
+    return f"{AvPropAccuracy[track][level]}%"
 
 
 AvPropDamage = (

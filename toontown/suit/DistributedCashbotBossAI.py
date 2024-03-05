@@ -1084,7 +1084,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         actualTime = craneTime - self.battleThreeTimeStarted
         self.d_updateTimer(actualTime)
 
-        # add a suit-defeat entry for the VP
+        # add a suit-defeat entry for the CFO
+        self.suitsKilled.append({
+            'type': None, 'level': 0, 'track': self.dna.dept, 'isSkelecog': 0, 'isForeman': 0, 'isVP': 0, 'isCFO': 1,'isSupervisor': 0, 'isVirtual': 0, 'activeToons': self.involvedToons[:]
+        })
         # based on code in DistributedBattleBaseAI.__movieDone
         self.resetBattles()
         self.barrier = self.beginBarrier('Victory', self.involvedToons, 30, self.__doneVictory)

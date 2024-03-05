@@ -5150,15 +5150,8 @@ BattleGlobalAvPropStringsPlural = (('Feathers',
   'Safes',
   'Grand Pianos',
   'Oceanliners'))
-BattleGlobalAvTrackAccStrings = ('100%',
- '100%',
- '50%',
- '95%',
- '75%',
- '95%',
- '50%')
-BattleGlobalLureAccLow = '50%'
-BattleGlobalLureAccLow2 = '60%'
+BattleGlobalLureAccLow = '70%'
+BattleGlobalLureAccLow2 = '70%'
 BattleGlobalLureAccMedium = '70%'
 BattleGlobalLureAccHigh = '95%'
 BattleGlobalLureTrackBonus = ' (+10%)'
@@ -5192,8 +5185,8 @@ TownBattleSOSPetSearchTitle = 'Searching for doodle\n%s...'
 TownBattleSOSPetInfoTitle = '%s is %s'
 TownBattleSOSPetInfoOK = lOK
 
-TownBattleSuitLevel = "Level %(level)s v%(revives)s.0"
-TownBattleSuitLevelAndRevive = "Level %(level)s"
+TownBattleSuitLevelAndRevive = "Level %(level)s v%(revives)s.0"
+TownBattleSuitLevel = "Level %(level)s"
 
 
 TrolleyHFAMessage = 'You may not board the trolley until your Laff meter is smiling.'

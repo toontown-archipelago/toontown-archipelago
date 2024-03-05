@@ -413,9 +413,9 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         numToons = min(len(toons), 8)
         if numToons >= 5:
             if numToons < 4:
-                numToonsB = numToons / 2
+                numToonsB = numToons // 2
             else:
-                numToonsB = (numToons + random.choice([0, 1])) / 2
+                numToonsB = (numToons + random.choice([0, 1])) // 2
         else:
             numToonsB = 0
         teamA = toons[numToonsB:numToons]

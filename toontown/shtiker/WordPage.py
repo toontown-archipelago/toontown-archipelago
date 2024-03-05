@@ -655,7 +655,7 @@ class ClothingTabPage(DirectFrame):
             gender = 'f'
         else:
             gender = 'm'
-        dna.newToon(('dls', self.torsoSize + self.torsoType, 'm', gender))
+        dna.newToon(('cls', self.torsoSize + self.torsoType, 'm', gender))
         if self.torsoType != '':
             dna.topTex = self.shirt
             dna.topTexColor = self.shirtColor
@@ -1601,7 +1601,7 @@ class AccTabPage2(DirectFrame):
             bodyEnd = ''
         elif self.gender == 'f':
             bodyEnd = 'd'
-        dna.newToon(('dls', self.torsoType + bodyEnd, self.torsoType, self.gender))
+        dna.newToon(('cls', self.torsoType + bodyEnd, self.torsoType, self.gender))
         dna.sleeveTexColor = 27
         dna.topTexColor = 27
         dna.botTexColor = 27

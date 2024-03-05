@@ -679,6 +679,11 @@ class CogLevelQuest(CogQuest):
 
     def doesCogCount(self, avId, cogDict, zoneId, avList):
         questCogLevel = self.getCogLevel()
+
+        # (py2->3) Just in case a TTO dev decided that putting a boss in the dict with a level of None was a good idea
+        if cogDict['level'] is None:
+            return False
+
         return questCogLevel <= cogDict['level'] and avId in cogDict['activeToons'] and self.isLocationMatch(zoneId)
 
 
@@ -762,7 +767,10 @@ class SkelecogLevelQuest(CogLevelQuest, SkelecogQBase):
         return SkelecogQBase.getCogNameString(self)
 
     def doesCogCount(self, avId, cogDict, zoneId, avList):
-        return SkelecogQBase.doesCogCount(self, avId, cogDict, zoneId, avList) and self.getCogLevel() <= cogDict['level']
+        level = cogDict['level']
+        if level is None:
+            level = 1
+        return SkelecogQBase.doesCogCount(self, avId, cogDict, zoneId, avList) and self.getCogLevel() <= level
 
 
 class SkeleReviveQBase:
