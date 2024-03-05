@@ -6,6 +6,7 @@ from panda3d.core import *
 from panda3d.toontown import *
 from toontown.racing.RaceGlobals import *
 from toontown.safezone import DistributedGolfKartAI
+from toontown.safezone import GZTreasurePlannerAI
 import string
 if __debug__:
     import pdb
@@ -22,6 +23,8 @@ class GZHoodDataAI(HoodDataAI.HoodDataAI):
 
     def startup(self):
         HoodDataAI.HoodDataAI.startup(self)
+        self.treasurePlanner = GZTreasurePlannerAI.GZTreasurePlannerAI(self.zoneId)
+        self.treasurePlanner.start()
         self.createStartingBlocks()
         self.createGolfKarts()
 

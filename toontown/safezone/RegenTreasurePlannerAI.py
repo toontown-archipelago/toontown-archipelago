@@ -3,7 +3,7 @@ from direct.showbase import DirectObject
 from direct.directnotify import DirectNotifyGlobal
 from direct.task import Task
 import random
-from . import TreasurePlannerAI
+from . import TreasurePlannerAI, TreasureGlobals
 
 class RegenTreasurePlannerAI(TreasurePlannerAI.TreasurePlannerAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('RegenTreasurePlannerAI')
@@ -13,6 +13,7 @@ class RegenTreasurePlannerAI(TreasurePlannerAI.TreasurePlannerAI):
         self.taskName = '%s-%s' % (taskName, zoneId)
         self.spawnInterval = spawnInterval
         self.maxTreasures = maxTreasures
+        self.healAmount = TreasureGlobals.healAmounts[zoneId]
 
     def start(self):
         self.preSpawnTreasures()

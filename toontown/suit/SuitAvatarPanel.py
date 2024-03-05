@@ -8,20 +8,23 @@ from toontown.battle import SuitBattleGlobals
 from toontown.toonbase import TTLocalizer
 from otp.avatar import AvatarPanel
 from toontown.friends import FriendsListPanel
+from toontown.suit import Suit
+from direct.interval.IntervalGlobal import *
+from direct.showbase import DirectObject
+from panda3d.core import *
 
-class SuitAvatarPanel(AvatarPanel.AvatarPanel):
+
+class SuitAvatarPanel(AvatarPanel.AvatarPanel, DirectObject.DirectObject):
     currentAvatarPanel = None
 
     def __init__(self, avatar):
         AvatarPanel.AvatarPanel.__init__(self, avatar, FriendsListPanel=FriendsListPanel)
         self.avName = avatar.getName()
+        self.avatr = avatar
         gui = loader.loadModel('phase_3.5/models/gui/suit_detail_panel')
-        self.frame = DirectFrame(geom=gui.find('**/avatar_panel'), geom_scale=0.21, geom_pos=(0, 0, 0.02), relief=None, pos=(-0.2348, 0, -0.475), parent=base.a2dTopRight)
-        disabledImageColor = Vec4(1, 1, 1, 0.4)
-        text0Color = Vec4(1, 1, 1, 1)
-        text1Color = Vec4(0.5, 1, 0.5, 1)
-        text2Color = Vec4(1, 1, 0.5, 1)
-        text3Color = Vec4(1, 1, 1, 0.2)
+        gui.find('**/shadow').setTransparency(TransparencyAttrib.MAlpha)
+        gui.find('**/shadow').setColor(1, 1, 1, 0.4)
+        self.frame = DirectFrame(geom=gui.find('**/avatar_panel'), geom_scale=0.21, geom_color=Suit.Suit.medallionColors[avatar.dna.dept], geom_pos=(0, 0, 0.02), relief=None, pos=(-0.2348, 0, -0.475), parent=base.a2dTopRight)
         self.head = self.frame.attachNewNode('head')
         for part in avatar.headParts:
             copyPart = part.copyTo(self.head)
@@ -37,11 +40,10 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel):
         self.head.setPosHprScale(0, 0, 0, 180, 0, 0, s, s, s)
         self.nameLabel = DirectLabel(parent=self.frame, pos=(0.0125, 0, 0.36), relief=None, text=self.avName, text_font=avatar.getFont(), text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.047, text_wordwrap=7.5, text_shadow=(1, 1, 1, 1))
         level = avatar.getActualLevel()
-        relativelevel = avatar.getLevel()
         revives = avatar.getMaxSkeleRevives() + 1
-        attributes = SuitBattleGlobals.SuitAttributes[avatar.getStyleName()]
-        maxHP = (level + 1) * (level + 2)
-        self.hpLabel = DirectLabel(parent=self.frame, pos=(0.0125, 0, -0.15), relief=None, text=TTLocalizer.AvatarPanelCogHP % maxHP, text_font=avatar.getFont(), text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale = 0.047, text_wordwrap = 7.5, text_shadow=(1, 1, 1, 1))
+        maxHP = avatar.maxHP
+        HP = avatar.currHP
+        self.hpLabel = DirectLabel(parent=self.frame, pos=(0.0125, 0, -0.15), relief=None, text=TTLocalizer.AvatarPanelCogHP % (HP, maxHP), text_font=avatar.getFont(), text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale = 0.047, text_wordwrap = 7.5, text_shadow=(1, 1, 1, 1))
         dept = SuitDNA.getSuitDeptFullname(avatar.dna.name)
         if revives == 1:
             self.levelLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.1), relief=None, text=TTLocalizer.AvatarPanelCogLevel % level, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
@@ -54,28 +56,64 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel):
         self.deptLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.31), relief=None, text=dept, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
         self.closeButton = DirectButton(parent=self.frame, relief=None, pos=(0.0, 0, -0.36), text=TTLocalizer.AvatarPanelCogDetailClose, text_font=avatar.getFont(), text0_fg=Vec4(0, 0, 0, 1), text1_fg=Vec4(0.5, 0, 0, 1), text2_fg=Vec4(1, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, command=self.__handleClose)
         gui.removeNode()
-        menuX = -0.05
-        menuScale = 0.064
-        base.localAvatar.obscureFriendsListButton(1)
+        base.localAvatar.setFriendsListButtonActive(False)
+
+        #create a LerpScaleInterval that scales the frame from 0 to 1
+        self.currentInterval = self.__getOpenSequence()
+        self.currentInterval.start()
+
         self.frame.show()
         messenger.send('avPanelDone')
         return
 
+    def __getOpenSequence(self) -> Sequence:
+        return Sequence(
+            LerpScaleInterval(self.frame, 0.25, Vec3(1.2, 1.2, 1.2), Vec3(0, 0, 0), blendType='easeIn'),
+            LerpScaleInterval(self.frame, 0.15, Vec3(1, 1, 1), Vec3(1.2, 1.2, 1.2), blendType='easeInOut'),
+        )
+
+    def __getCloseSequence(self) -> Sequence:
+        return Sequence(
+            LerpScaleInterval(self.frame, 0.25, Vec3(1.2, 1.2, 1.2), Vec3(1, 1, 1), blendType='easeIn'),
+            LerpScaleInterval(self.frame, 0.15, Vec3(0, 0, 0), Vec3(1.2, 1.2, 1.2),blendType='easeInOut'),
+            Func(self.cleanup),
+        )
+
+    def __cleanupSequence(self):
+        if self.currentInterval:
+            self.currentInterval.finish()
+            self.currentInterval = None
+
     def cleanup(self):
-        if self.frame == None:
-            return
-        self.frame.destroy()
-        del self.frame
-        self.frame = None
-        self.head.removeNode()
-        del self.head
-        base.localAvatar.obscureFriendsListButton(-1)
+        self.__cleanupSequence()
+
+        if self.frame:
+            self.frame.destroy()
+            self.frame = None
+
+        if self.head:
+            self.head.removeNode()
+            self.head = None
+
+        base.localAvatar.setFriendsListButtonActive(True)
         AvatarPanel.AvatarPanel.cleanup(self)
+        self.panelNoneFunc()
+        return
+    
+    def panelNoneFunc(self):
+        AvatarPanel.currentAvatarPanel = None
         return
 
     def __handleClose(self):
-        self.cleanup()
-        AvatarPanel.currentAvatarPanel = None
+        self.__cleanupSequence()
+
+        # If someone abuses the GUI enough, frame could get deleted before we have a chance to play an animation :(
+        if self.frame is None:
+            self.cleanup()
+            return
+
+        self.currentInterval = self.__getCloseSequence()
+        self.currentInterval.start()
         return
 
     @classmethod

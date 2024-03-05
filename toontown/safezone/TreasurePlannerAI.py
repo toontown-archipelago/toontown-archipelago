@@ -2,6 +2,7 @@ from direct.distributed.ClockDelta import *
 from direct.showbase import DirectObject
 from direct.directnotify import DirectNotifyGlobal
 from direct.task import Task
+from . import TreasureGlobals
 import random
 
 class TreasurePlannerAI(DirectObject.DirectObject):
@@ -20,10 +21,11 @@ class TreasurePlannerAI(DirectObject.DirectObject):
         self.lastRequestId = None
         self.requestStartTime = None
         self.requestCount = None
+        self.healAmount = TreasureGlobals.healAmounts[zoneId]
         return
 
     def initSpawnPoints(self):
-        self.spawnPoints = []
+        self.spawnPoints = TreasureGlobals.spawnPoints[self.zoneId]
         return self.spawnPoints
 
     def numTreasures(self):
