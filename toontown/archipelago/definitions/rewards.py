@@ -252,7 +252,7 @@ class UberTrapAward(APReward):
     def apply(self, av: "DistributedToonAI"):
         av.playSound('phase_4/audio/sfx/avatar_emotion_very_sad.ogg')
         av.b_setHp(15)
-        av.inventory.NPCMaxOutInv(-1)
+        av.inventory.NPCMaxOutInv(maxLevel=6)
         av.b_setInventory(av.inventory.makeNetString())
         av.d_setSystemMessage(0, "Don't get hit!")
 
