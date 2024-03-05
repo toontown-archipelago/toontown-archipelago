@@ -81,7 +81,14 @@ class DistributedStageRoomAI(DistributedLevelAI.DistributedLevelAI, StageRoomBas
         return self.roomNum
 
     def getCogLevel(self):
-        return self.cogLevel
+        if self.stageId == ToontownGlobals.LawbotStageIntA:
+            return self.cogLevel - 2
+        elif self.stageId == ToontownGlobals.LawbotStageIntB:
+            return self.cogLevel - 1
+        elif self.stageId == ToontownGlobals.LawbotStageIntC:
+            return self.cogLevel
+        else:
+            return self.cogLevel + 1
 
     def d_setSuits(self):
         self.sendUpdate('setSuits', [self.getSuits(), self.getReserveSuits()])

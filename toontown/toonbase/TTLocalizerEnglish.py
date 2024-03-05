@@ -109,9 +109,9 @@ GlobalStreetNames = {20000: ('to', 'on', 'Tutorial Terrace'),
  10000: ('to', 'in', 'Bossbot HQ Country Club'),
  10100: ('to the', 'in the', 'Bossbot HQ Lobby'),
  10200: ('to the', 'in the', 'The Clubhouse'),
- 10500: ('to the', 'in the', 'The Front Three'),
- 10600: ('to the', 'in the', 'The Middle Six'),
- 10700: ('to the', 'in the', 'The Back Nine'),
+ 10500: ('to the', 'in the', 'The Front One'),
+ 10600: ('to the', 'in the', 'The Middle Two'),
+ 10700: ('to the', 'in the', 'The Back Three'),
  11000: ('to the', 'in the', 'Sellbot HQ Courtyard'),
  11100: ('to the', 'in the', 'Sellbot HQ Lobby'),
  11200: ('to the', 'in the', 'Sellbot Factory'),
@@ -9609,9 +9609,9 @@ BossbotRTMaxed = '\x07I see that you have a level %s Cog Suit. Very impressive!\
 GolfAreaAttackTaunt = 'Fore!'
 OvertimeAttackTaunts = ["It's time to reorganize.", "Now let's downsize."]
 ElevatorBossBotBoss = 'C.E.O Battle'
-ElevatorBossBotCourse0 = 'The Front Three'
-ElevatorBossBotCourse1 = 'The Middle Six'
-ElevatorBossBotCourse2 = 'The Back Nine'
+ElevatorBossBotCourse0 = 'The Front One'
+ElevatorBossBotCourse1 = 'The Middle Two'
+ElevatorBossBotCourse2 = 'The Back Three'
 ElevatorCashBotBoss = 'Crane Practice'
 ElevatorCashBotBossCLMatch = 'Crane League'
 ElevatorCashBotMint0 = 'Coin Mint'

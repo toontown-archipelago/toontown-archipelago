@@ -75,7 +75,12 @@ class DistributedCountryClubRoomAI(DistributedLevelAI.DistributedLevelAI, Countr
         return self.roomNum
 
     def getCogLevel(self):
-        return self.cogLevel
+        if self.countryClubId == ToontownGlobals.BossbotCountryClubIntA:
+            return self.cogLevel
+        elif self.countryClubId == ToontownGlobals.BossbotCountryClubIntB:
+            return self.cogLevel + 1
+        else:
+            return self.cogLevel + 2
 
     def d_setSuits(self):
         self.sendUpdate('setSuits', [self.getSuits(), self.getReserveSuits()])

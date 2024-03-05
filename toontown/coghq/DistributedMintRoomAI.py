@@ -74,7 +74,12 @@ class DistributedMintRoomAI(DistributedLevelAI.DistributedLevelAI, MintRoomBase.
         return self.roomNum
 
     def getCogLevel(self):
-        return self.cogLevel
+        if self.mintId == ToontownGlobals.CashbotMintIntA:
+            return self.cogLevel - 3
+        elif self.mintId == ToontownGlobals.CashbotMintIntB:
+            return self.cogLevel - 2
+        else:
+            return self.cogLevel - 1
 
     def d_setSuits(self):
         self.sendUpdate('setSuits', [self.getSuits(), self.getReserveSuits()])
