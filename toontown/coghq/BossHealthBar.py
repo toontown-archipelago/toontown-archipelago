@@ -25,7 +25,7 @@ class BossHealthBar:
     def __init__(self, dept):
         self.dept = dept
         self.bossBarFrameBg = loader.loadTexture('phase_9/maps/HealthBarBosses.png')
-        self.bossBarFrame = DirectFrame(pos=(1, 0, self.bossBarEndPosZ), scale=1.8*0.8)
+        self.bossBarFrame = DirectFrame(parent=base.a2dTopRight, pos=(-.7, 0, -.1), scale=1.8 * 0.8)
         self.gui = loader.loadModel('phase_9/models/gui/HealthBarBosses')
         self.gui.setScale(1, 1, .75)
         self.gui.setColorScale(.4, .4, .4, 1)
@@ -70,7 +70,7 @@ class BossHealthBar:
         self.damageBar.show()
         self.bossBar.show()
         self.gui.show()
-        Sequence(self.bossBarFrame.posInterval(1.0, Point3(1, 0, self.bossBarEndPosZ), blendType='easeOut')).start()
+#        Sequence(self.bossBarFrame.posInterval(1.0, Point3(1, 0, self.bossBarEndPosZ), blendType='easeOut')).start()
 
     def update(self, hp, maxHp):
 
