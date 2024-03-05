@@ -7,7 +7,7 @@ from toontown.safezone.TreasurePlannerAI import TreasurePlannerAI
 class EFlyingTreasurePlannerAI(TreasurePlannerAI):
 
     def __init__(self, zoneId, callback=None):
-        self.healAmount = 9
+        self.healAmount = 0.20
         self.spawnPoints = []
         TreasurePlannerAI.__init__(self, zoneId, DistributedEFlyingTreasureAI, callback)
 

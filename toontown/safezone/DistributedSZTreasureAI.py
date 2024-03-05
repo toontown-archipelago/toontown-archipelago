@@ -8,7 +8,7 @@ class DistributedSZTreasureAI(DistributedTreasureAI.DistributedTreasureAI):
         if hasattr(treasurePlanner, 'healAmount'):
             self.healAmount = treasurePlanner.healAmount
         else:
-            self.healAmount = 1
+            self.healAmount = 0.10
 
     def validAvatar(self, av):
         return av.hp > 0 and av.hp < av.maxHp
@@ -17,8 +17,4 @@ class DistributedSZTreasureAI(DistributedTreasureAI.DistributedTreasureAI):
         DistributedTreasureAI.DistributedTreasureAI.d_setGrab(self, avId)
         if avId in self.air.doId2do:
             av = self.air.doId2do[avId]
-            if av.hp > 0 and av.hp < av.maxHp:
-                if ToontownGlobals.VALENTINES_DAY in simbase.air.holidayManager.currentHolidays:
-                    av.toonUp(self.healAmount * 2)
-                else:
-                    av.toonUp(self.healAmount)
+            av.toonUp(av.maxHp * self.healAmount)

@@ -5,7 +5,7 @@ from toontown.safezone.RegenTreasurePlannerAI import RegenTreasurePlannerAI
 class ETreasurePlannerAI(RegenTreasurePlannerAI):
 
     def __init__(self, zoneId):
-        self.healAmount = 2
+        self.healAmount = 0.20
         self.spawnPoints = []
         RegenTreasurePlannerAI.__init__(self, zoneId, DistributedETreasureAI, 'ETreasurePlanner', 15, 3)
 
