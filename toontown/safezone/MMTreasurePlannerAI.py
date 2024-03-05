@@ -5,8 +5,8 @@ from . import DistributedMMTreasureAI
 class MMTreasurePlannerAI(RegenTreasurePlannerAI.RegenTreasurePlannerAI):
 
     def __init__(self, zoneId):
-        self.healAmount = 24
-        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedMMTreasureAI.DistributedMMTreasureAI, 'MMTreasurePlanner', 10, 6)
+        self.healAmount = 10
+        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedMMTreasureAI.DistributedMMTreasureAI, 'MMTreasurePlanner', 20, 2)
         return None
 
     def initSpawnPoints(self):

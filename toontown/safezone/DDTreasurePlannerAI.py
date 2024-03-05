@@ -5,8 +5,8 @@ from . import DistributedDDTreasureAI
 class DDTreasurePlannerAI(RegenTreasurePlannerAI.RegenTreasurePlannerAI):
 
     def __init__(self, zoneId):
-        self.healAmount = 12
-        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedDDTreasureAI.DistributedDDTreasureAI, 'DDTreasurePlanner', 10, 6)
+        self.healAmount = 10
+        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedDDTreasureAI.DistributedDDTreasureAI, 'DDTreasurePlanner', 20, 2)
         return None
 
     def initSpawnPoints(self):
