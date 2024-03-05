@@ -61,11 +61,19 @@ def pickSuitAttack(attacks, suitLevel):
     count = 0
     index = 0
     total = 0
-    for c in attacks:
-        total = total + c[3][suitLevel]
 
     for c in attacks:
-        count = count + c[3][suitLevel]
+        if suitLevel > (len(c[3]) - 1):
+            total = total + c[3][(len(c[3]) - 1)]
+        else:
+            total = total + c[3][suitLevel]
+
+    for c in attacks:
+        if suitLevel > (len(c[3]) - 1):
+            count = count + c[3][(len(c[3]) - 1)]
+        else:
+            count = count + c[3][suitLevel]
+
         if randNum < count:
             attackNum = index
             notify.debug('picking attack %d' % attackNum)
@@ -103,9 +111,22 @@ def getSuitAttack(suitName, suitLevel, attackNum = -1):
     adict['name'] = name
     adict['id'] = list(SuitAttacks.keys()).index(name)
     adict['animName'] = SuitAttacks[name][0]
-    adict['hp'] = attack[1][suitLevel]
-    adict['acc'] = attack[2][suitLevel]
-    adict['freq'] = attack[3][suitLevel]
+
+    if suitLevel > (len(attack[1]) - 1):
+        adict['hp'] = attack[1][(len(attack[1]) - 1)] * (1.1 ** (suitLevel - len(attack[1])))
+    else:
+        adict['hp'] = attack[1][suitLevel]
+
+    if suitLevel > (len(attack[2]) - 1):
+        adict['acc'] = attack[2][(len(attack[2]) - 1)]
+    else:
+        adict['acc'] = attack[2][suitLevel]
+
+    if suitLevel > (len(attack[3]) - 1):
+        adict['freq'] = attack[3][(len(attack[3]) - 1)]
+    else:
+        adict['freq'] = attack[3][suitLevel]
+
     adict['group'] = SuitAttacks[name][1]
     return adict
 
