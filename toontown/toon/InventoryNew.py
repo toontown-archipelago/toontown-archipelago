@@ -298,7 +298,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         if track == LURE_TRACK:
             numRoundsLured = AvLureRounds[level]
             damage = numRoundsLured
-        accString = AvTrackAccStrings[track]
+        accString = getAccuracyPercentString(track, level)
         if (organicBonus or propBonus) and track == LURE_TRACK and level == 0 or (organicBonus or propBonus) and track == LURE_TRACK and level == 1:
             accString = TTLocalizer.BattleGlobalLureAccLow + TTLocalizer.BattleGlobalLureTrackBonus
         if track == LURE_TRACK and level == 2 or track == LURE_TRACK and level == 3:

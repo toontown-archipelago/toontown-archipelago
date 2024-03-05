@@ -5150,13 +5150,6 @@ BattleGlobalAvPropStringsPlural = (('Feathers',
   'Safes',
   'Grand Pianos',
   'Oceanliners'))
-BattleGlobalAvTrackAccStrings = ('100%',
- '100%',
- '70%',
- '95%',
- '75%',
- '95%',
- '70%')
 BattleGlobalLureAccLow = '70%'
 BattleGlobalLureAccLow2 = '70%'
 BattleGlobalLureAccMedium = '70%'
