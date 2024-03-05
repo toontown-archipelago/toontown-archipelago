@@ -2501,8 +2501,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def __waitForNextToonUp(self):
         taskMgr.doMethodLater(self.healFrequency, self.toonUpTask, self.uniqueName('safeZoneToonUp'))
 
+    def __getPassiveToonupAmount(self):
+        return self.getMaxHp() * ToontownGlobals.PassiveHealPercentage
+
     def toonUpTask(self, task):
-        self.toonUp(1)
+        self.toonUp(self.__getPassiveToonupAmount())
         self.__waitForNextToonUp()
         return Task.done
 

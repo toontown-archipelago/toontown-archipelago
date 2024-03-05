@@ -1,7 +1,7 @@
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
-HealFrequency = 30.0
+from toontown.toonbase import ToontownGlobals
 
 
 class SafeZoneManagerAI(DistributedObjectAI):
@@ -17,7 +17,7 @@ class SafeZoneManagerAI(DistributedObjectAI):
             return
 
         if not av.isToonedUp():
-            av.startToonUp(HealFrequency)
+            av.startToonUp(ToontownGlobals.PassiveHealFrequency)
 
     def exitSafeZone(self):
         avId = self.air.getAvatarIdFromSender()
