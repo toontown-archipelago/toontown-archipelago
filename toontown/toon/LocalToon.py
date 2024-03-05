@@ -393,8 +393,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
         self.archipelagoLog = ArchipelagoOnscreenLog()
 
-        self.accept(base.SECONDARY_ACTION, self.__beginZeroPowerToss)
-        self.accept(base.SECONDARY_ACTION + '-up', self.__endZeroPowerToss)
+        self.accept(base.SECONDARY_ACTION, self.__zeroPowerToss)
         self.accept('time-' + base.ACTION_BUTTON, self.__beginTossPie)
         self.accept('time-' + base.ACTION_BUTTON + '-up', self.__endTossPie)
         self.accept('pieHit', self.__pieHit)
@@ -670,24 +669,8 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.localTossPie(power)
         return
 
-    def __beginZeroPowerToss(self):
-        if self.tossPieStart != None:
-            return
-        if not self.allowPies:
-            return
-        if self.numPies == 0:
-            messenger.send('outOfPies')
-            return
-        if self.__pieInHand():
-            return
-        if getattr(self.controlManager.currentControls, 'isAirborne', 0):
-            return
-        messenger.send('wakeup')
-        self.localPresentPie(0)
-
-    def __endZeroPowerToss(self):
-        power = 0
-        self.__endTossPie(0)
+    def __zeroPowerToss(self):
+        self.__beginTossPie(0)
 
     def localPresentPie(self, time):
         from otp.avatar import Emote
