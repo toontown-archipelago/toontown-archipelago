@@ -1,6 +1,8 @@
 # Represents logic for what to do when we are given an item from AP
 from enum import IntEnum
 
+import random
+
 from toontown.archipelago.definitions import items
 from toontown.archipelago.definitions.items import ToontownItemDefinition
 from toontown.building import FADoorCodes
@@ -245,6 +247,27 @@ class JellybeanReward(APReward):
         av.d_setSystemMessage(0, f"You were given {self.amount} jellybeans!")
 
 
+class UberTrapAward(APReward):
+
+    def apply(self, av: "DistributedToonAI"):
+        av.playSound('phase_4/audio/sfx/avatar_emotion_very_sad.ogg')
+        av.b_setHp(15)
+        av.inventory.NPCMaxOutInv(-1)
+        av.b_setInventory(av.inventory.makeNetString())
+        av.d_setSystemMessage(0, "Don't get hit!")
+
+
+class DripTrapAward(APReward):
+
+    def apply(self, av: "DistributedToonAI"):
+        av.playSound('phase_4/audio/sfx/avatar_emotion_drip.ogg')
+        av.b_setShoes(1, random.randint(1, 48), 0)
+        av.b_setBackpack(random.randint(1, 24), 0, 0)
+        av.b_setGlasses(random.randint(1, 21), 0, 0)
+        av.b_setHat(random.randint(1, 56), 0, 0)
+        av.d_setSystemMessage(0, "Did someone say the door to drip?")
+
+
 class ProofReward(APReward):
     class ProofType(IntEnum):
         SellbotBossFirstTime = 0
@@ -366,6 +389,9 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     items.ITEM_500_MONEY: JellybeanReward(500),
     items.ITEM_1000_MONEY: JellybeanReward(1000),
     items.ITEM_2000_MONEY: JellybeanReward(2000),
+
+    items.ITEM_UBER_TRAP: UberTrapAward(),
+    items.ITEM_DRIP_TRAP: DripTrapAward(),
 }
 
 

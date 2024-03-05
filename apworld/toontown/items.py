@@ -106,6 +106,9 @@ ITEM_500_MONEY = "500 Jellybeans"
 ITEM_1000_MONEY = "1000 Jellybeans"
 ITEM_2000_MONEY = "2000 Jellybeans"
 
+ITEM_UBER_TRAP = "Uber Trap"
+ITEM_DRIP_TRAP = "Drip Trap"
+
 # Used to offset all item ids to be compatible in the multiworld
 BASE_ITEM_ID = 0x501100
 
@@ -207,6 +210,10 @@ ITEM_DEFINITIONS: Dict[str, ToontownItemDefinition] = {
     # Items added in hindsight, #todo do this better
     ITEM_TTC_HQ_ACCESS: ToontownItemDefinition(ITEM_TTC_HQ_ACCESS, BASE_ITEM_ID+63, ItemClassification.progression, quantity=0),
     ITEM_VICTORY: ToontownItemDefinition(ITEM_VICTORY, BASE_ITEM_ID+64, ItemClassification.progression, quantity=0),
+
+    # Traps
+    ITEM_UBER_TRAP: ToontownItemDefinition(ITEM_UBER_TRAP, BASE_ITEM_ID+65, ItemClassification.trap),
+    ITEM_DRIP_TRAP: ToontownItemDefinition(ITEM_DRIP_TRAP, BASE_ITEM_ID+66, ItemClassification.trap),
 }
 
 # Junk items are items where they are classified as filler
@@ -215,6 +222,10 @@ JUNK_ITEMS = [
     item for item in ITEM_DEFINITIONS.values() if item.classification == ItemClassification.filler
 ]
 
+# Trap items are items that cause some form of potentially negative action to the player
+TRAP_ITEMS = [
+    item for item in ITEM_DEFINITIONS.values() if item.classification == ItemClassification.trap
+]
 
 ID_TO_ITEM_DEFINITION = {
     item.unique_id: item for item in ITEM_DEFINITIONS.values()
@@ -227,3 +238,7 @@ class ToontownItem(Item):
 
 def random_junk() -> ToontownItemDefinition:
     return random.choice(JUNK_ITEMS)
+
+
+def random_trap() -> ToontownItemDefinition:
+    return random.choice(TRAP_ITEMS)
