@@ -1545,7 +1545,11 @@ AV_TOUCH_CHECK_DIST_Z = 5.0
 AV_TOUCH_CHECK_TIMELIMIT_CL = 0.002
 AV_TOUCH_COUNT_LIMIT = 5
 AV_TOUCH_COUNT_TIME = 300
-SuitLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+SuitLevels = []
+for level in range(1,51):
+    SuitLevels.append(level)
+
 GravityValue = 32.174
 hood2Id = [
     ('TTC', (ToontownCentral,)),
