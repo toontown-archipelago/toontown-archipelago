@@ -27,6 +27,16 @@ toonSpeciesTypes = ['d',    # Dog
                     'k',    # Kiwi
                     'l',    # Armadillo
                     ]
+toonSpeciesTypesBodyShop = ['d',    # Dog
+                    'c',    # Cat
+                    'h',    # Horse
+                    'm',    # Mouse
+                    'r',    # Rabbit
+                    'f',    # Duck
+                    'p',    # Monkey
+                    'b',    # Bear
+                    's',    # Pig (swine)
+                    ]
 toonHeadTypes = [ "dls", "dss", "dsl", "dll",  # Dog
                   "cls", "css", "csl", "cll",  # Cat
                   "hls", "hss", "hsl", "hll",  # Horse
@@ -2701,12 +2711,7 @@ class ToonDNA(AvatarDNA.AvatarDNA):
         self.gender = gender
         if not npc:
             if stage == MAKE_A_TOON:
-                if not base.cr.isPaid():
-                    animalIndicesToUse = allToonHeadAnimalIndicesTrial
-                else:
-                    animalIndicesToUse = allToonHeadAnimalIndices
-                animal = generator.choice(animalIndicesToUse)
-                self.head = toonHeadTypes[animal]
+                self.head = toonHeadTypes[random.randint(0, 35)]
             else:
                 self.head = generator.choice(toonHeadTypes)
         else:
