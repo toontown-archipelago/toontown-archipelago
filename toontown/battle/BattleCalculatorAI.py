@@ -794,18 +794,23 @@ class BattleCalculatorAI:
             track = self.__getActualTrack(attack)
             if hp:
                 if track in self.hpBonuses[tgtPos]:
-                    self.hpBonuses[tgtPos][track].append([attackIndex, dmg])
+                    self.hpBonuses[tgtPos][track].append([attackIndex, dmg, 0])
                 else:
                     self.hpBonuses[tgtPos][track] = [
                      [
-                      attackIndex, dmg]]
+                      attackIndex, dmg, 0]]
             elif self.__suitIsLured(currTgt.getDoId()):
+                kbEff = currTgt.effectHandler.children.get('knockbackBonus', None)
+                if kbEff is not None:
+                    kbBonus = kbEff.children['value']
+                else:
+                    kbBonus = 40 # Failsafe
                 if track in self.kbBonuses[tgtPos]:
-                    self.kbBonuses[tgtPos][track].append([attackIndex, dmg])
+                    self.kbBonuses[tgtPos][track].append([attackIndex, dmg, kbBonus])
                 else:
                     self.kbBonuses[tgtPos][track] = [
                      [
-                      attackIndex, dmg]]
+                      attackIndex, dmg, kbBonus]]
 
     def __clearBonuses(self, hp=1):
         if hp:
@@ -847,7 +852,8 @@ class BattleCalculatorAI:
                         if self.notify.getDebug():
                             self.notify.debug('Applying hp bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_HPBONUS_COL]))
                     elif len(attack[TOON_KBBONUS_COL]) > tgtPos:
-                        attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * 0.5
+                        print(currTgt)
+                        attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * (currTgt[currAtkType][0][2] / 100.0) # {4: [[0, 11000, 6000]]}
                         if self.notify.getDebug():
                             self.notify.debug('Applying kb bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_KBBONUS_COL][tgtPos]) + ' to target ' + str(tgtPos))
                     else:
@@ -1576,9 +1582,16 @@ class BattleCalculatorAI:
                 lureInfo[3][lurer] = [
                  lureLvl, availLureId, credit]
         else:
+            # Generate new lured suit info
             lurerInfo = {lurer: [lureLvl, availLureId, credit]}
             self.currentlyLuredSuits[suitId] = [
              currRounds, maxRounds, wakeChance, lurerInfo]
+            suit = simbase.air.doId2do.get(suitId)
+            toon = simbase.air.doId2do.get(lurer)
+            suit.effectHandler.addEffect('BattleEffectLureKnockbackAI')
+            lureEff = suit.effectHandler.children['knockbackBonus']
+            lureEff.children['timer'] = maxRounds
+            lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience)
         self.notify.debug('__addLuredSuitInfo: currLuredSuits -> %s' % repr(self.currentlyLuredSuits))
         return availLureId
 
@@ -1621,6 +1634,8 @@ class BattleCalculatorAI:
 
     def __removeLured(self, suitId):
         if self.__suitIsLured(suitId):
+            suit = simbase.air.doId2do.get(suitId)
+            suit.effectHandler.removeEffect('knockbackBonus')
             del self.currentlyLuredSuits[suitId]
 
     def __luredMaxRoundsReached(self, suitId):

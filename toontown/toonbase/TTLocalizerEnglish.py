@@ -4955,6 +4955,7 @@ InventorySkillCredit = 'Skill credit: %s'
 InventorySkillCreditNone = 'Skill credit: None'
 InventoryDetailAmount = '%(numItems)s / %(maxItems)s'
 InventoryDetailData = 'Accuracy: %(accuracy)s\n%(damageString)s: %(damage)d%(bonus)s\n%(singleOrGroup)s'
+InventoryDetailDataLure = 'Accuracy: %(accuracy)s\n%(damageString)s: %(damage)d%(bonus)s\nKnockback: %(knockback)s\n%(singleOrGroup)s'
 InventoryTrackExp = '%(curExp)s / %(nextExp)s'
 InventoryUberTrackExp = '%(curExp)s (+%(boost)s%%)'
 InventoryUberTrackMaxed = "MAXED"

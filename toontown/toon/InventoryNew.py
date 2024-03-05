@@ -297,7 +297,12 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                 damageBonusStr = TTLocalizer.InventoryDamageBonus % damageBonus
         if track == LURE_TRACK:
             numRoundsLured = AvLureRounds[level]
+            knockback = str(damage) + '%'
             damage = numRoundsLured
+            damageBonusStr = ''
+            self.detailCreditLabel.setPos(-0.22, 0, -0.395)
+        else:
+            self.detailCreditLabel.setPos(-0.22, 0, -0.365)
         accString = getAccuracyPercentString(track, level)
         if (organicBonus or propBonus) and track == LURE_TRACK and level == 0 or (organicBonus or propBonus) and track == LURE_TRACK and level == 1:
             accString = TTLocalizer.BattleGlobalLureAccLow + TTLocalizer.BattleGlobalLureTrackBonus
@@ -311,11 +316,20 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             accString = TTLocalizer.BattleGlobalLureAccLow2 + TTLocalizer.BattleGlobalLureTrackBonus
         if (organicBonus or propBonus) and track == LURE_TRACK and level == 4 or (organicBonus or propBonus) and track == LURE_TRACK and level == 5:
             accString = TTLocalizer.BattleGlobalLureAccMedium + TTLocalizer.BattleGlobalLureTrackBonus
-        self.detailDataLabel.configure(text=TTLocalizer.InventoryDetailData % {'accuracy': accString,
-         'damageString': self.getToonupDmgStr(track, level),
-         'damage': damage,
-         'bonus': damageBonusStr,
-         'singleOrGroup': self.getSingleGroupStr(track, level)})
+        if track == LURE_TRACK:
+            labelStr = TTLocalizer.InventoryDetailDataLure % {'accuracy': accString,
+             'damageString': self.getToonupDmgStr(track, level),
+             'damage': damage,
+             'bonus': damageBonusStr,
+             'knockback': knockback,
+             'singleOrGroup': self.getSingleGroupStr(track, level)}
+        else:
+            labelStr = TTLocalizer.InventoryDetailData % {'accuracy': accString,
+             'damageString': self.getToonupDmgStr(track, level),
+             'damage': damage,
+             'bonus': damageBonusStr,
+             'singleOrGroup': self.getSingleGroupStr(track, level)}
+        self.detailDataLabel.configure(text=labelStr)
         if self.itemIsCredit(track, level):
             mult = self.getBattleCreditMultiplier()
             self.setDetailCredit(track, (level + 1) * mult)
