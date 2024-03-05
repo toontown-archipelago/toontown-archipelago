@@ -131,6 +131,7 @@ class CogHQBossBattle(BattlePlace.BattlePlace):
         if self.bossCog:
             mult = ToontownBattleGlobals.getBossBattleCreditMultiplier(self.bossCog.battleNumber)
         self.townBattle.enter(event, self.fsm.getStateNamed('battle'), bldg=1, creditMultiplier=mult)
+        self.enterFLM()
         base.localAvatar.b_setAnimState('off', 1)
         base.localAvatar.setTeleportAvailable(0)
         base.localAvatar.cantLeaveGame = 1
