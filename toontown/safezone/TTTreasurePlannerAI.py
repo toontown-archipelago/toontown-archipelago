@@ -5,4 +5,4 @@ from . import DistributedTTTreasureAI
 class TTTreasurePlannerAI(RegenTreasurePlannerAI.RegenTreasurePlannerAI):
 
     def __init__(self, zoneId):
-        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedTTTreasureAI.DistributedTTTreasureAI, 'TTTreasurePlanner', 20, 5)
+        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedTTTreasureAI.DistributedTTTreasureAI, 'TTTreasurePlanner')

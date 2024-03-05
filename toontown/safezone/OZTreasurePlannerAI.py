@@ -5,4 +5,4 @@ from . import DistributedOZTreasureAI
 class OZTreasurePlannerAI(RegenTreasurePlannerAI.RegenTreasurePlannerAI):
 
     def __init__(self, zoneId):
-        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedOZTreasureAI.DistributedOZTreasureAI, 'OZTreasurePlanner', 20, 5)
+        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedOZTreasureAI.DistributedOZTreasureAI, 'OZTreasurePlanner')

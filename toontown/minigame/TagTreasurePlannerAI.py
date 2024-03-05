@@ -8,7 +8,7 @@ class TagTreasurePlannerAI(RegenTreasurePlannerAI.RegenTreasurePlannerAI):
 
     def __init__(self, zoneId, callback):
         self.numPlayers = 0
-        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedTagTreasureAI.DistributedTagTreasureAI, 'TagTreasurePlanner-' + str(zoneId), 3, 4, callback)
+        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedTagTreasureAI.DistributedTagTreasureAI, 'TagTreasurePlanner-' + str(zoneId), spawnInterval=3, maxTreasures=4, callback=callback)
         return None
 
     def initSpawnPoints(self):

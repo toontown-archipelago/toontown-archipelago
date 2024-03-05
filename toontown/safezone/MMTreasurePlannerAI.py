@@ -6,7 +6,7 @@ class MMTreasurePlannerAI(RegenTreasurePlannerAI.RegenTreasurePlannerAI):
 
     def __init__(self, zoneId):
         self.healAmount = 10
-        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedMMTreasureAI.DistributedMMTreasureAI, 'MMTreasurePlanner', 20, 2)
+        RegenTreasurePlannerAI.RegenTreasurePlannerAI.__init__(self, zoneId, DistributedMMTreasureAI.DistributedMMTreasureAI, 'MMTreasurePlanner')
         return None
 
     def initSpawnPoints(self):

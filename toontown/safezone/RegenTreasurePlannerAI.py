@@ -8,7 +8,7 @@ from . import TreasurePlannerAI, TreasureGlobals
 class RegenTreasurePlannerAI(TreasurePlannerAI.TreasurePlannerAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('RegenTreasurePlannerAI')
 
-    def __init__(self, zoneId, treasureConstructor, taskName, spawnInterval, maxTreasures, callback = None):
+    def __init__(self, zoneId, treasureConstructor, taskName, spawnInterval=TreasureGlobals.HOOD_SPAWN_FREQUENCY, maxTreasures=TreasureGlobals.HOOD_SPAWN_CAP, callback = None):
         TreasurePlannerAI.TreasurePlannerAI.__init__(self, zoneId, treasureConstructor, callback)
         self.taskName = '%s-%s' % (taskName, zoneId)
         self.spawnInterval = spawnInterval
@@ -29,6 +29,9 @@ class RegenTreasurePlannerAI(TreasurePlannerAI.TreasurePlannerAI):
         self.stopSpawning()
         taskMgr.doMethodLater(self.spawnInterval, self.upkeepTreasurePopulation, self.taskName)
 
+    def roomForNewTreasure(self):
+        return self.numTreasures() < self.maxTreasures
+
     def upkeepTreasurePopulation(self, task):
         if self.numTreasures() < self.maxTreasures:
             self.placeRandomTreasure()
@@ -36,6 +39,10 @@ class RegenTreasurePlannerAI(TreasurePlannerAI.TreasurePlannerAI):
         return Task.done
 
     def placeRandomTreasure(self):
+
+        if not self.roomForNewTreasure():
+            return
+
         self.notify.debug('Placing a Treasure...')
         spawnPointIndex = self.nthEmptyIndex(random.randrange(self.countEmptySpawnPoints()))
         self.placeTreasure(spawnPointIndex)

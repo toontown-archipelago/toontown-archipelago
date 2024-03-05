@@ -39,7 +39,7 @@ class TreasurePlannerAI(DirectObject.DirectObject):
     def countEmptySpawnPoints(self):
         counter = 0
         for treasure in self.treasures:
-            if treasure == None:
+            if treasure is None:
                 counter += 1
 
         return counter

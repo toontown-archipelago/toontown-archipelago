@@ -154,4 +154,10 @@ healAmounts = {
     DaisyGardens: 0.25,
     MinniesMelodyland: 0.30,
     TheBrrrgh: 0.35,
-    DonaldsDreamland: 0.40}
+    DonaldsDreamland: 0.40
+}
+
+# How often should we spawn treasures? lower = faster
+HOOD_SPAWN_FREQUENCY = 10
+# How many treasures is allowed in a hood?
+HOOD_SPAWN_CAP = 8
