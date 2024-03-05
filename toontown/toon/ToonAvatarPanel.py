@@ -316,6 +316,7 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
         self.accept('updateGroupStatus', self.__checkGroupStatus)
 
         self.frame.show()
+        self.frame.setBin("gui-popup", 0)
         messenger.send('avPanelDone')
 
     def disableAll(self):

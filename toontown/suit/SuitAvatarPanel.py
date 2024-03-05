@@ -62,6 +62,7 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel, DirectObject.DirectObject):
         self.currentInterval = self.__getOpenSequence()
         self.currentInterval.start()
 
+        self.frame.setBin("gui-popup", 0)
         self.frame.show()
         messenger.send('avPanelDone')
         return

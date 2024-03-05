@@ -85,6 +85,9 @@ class ToonAvatarDetailPanel(DirectFrame):
         self.fsm.request('begin')
         buttons.removeNode()
         gui.removeNode()
+        self.setBin("gui-popup", 0)
+        self.setDepthTest(False)
+        self.setDepthWrite(False)
         return
 
     def cleanup(self):
