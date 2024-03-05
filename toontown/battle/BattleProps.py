@@ -395,6 +395,7 @@ class PropPool:
                 animDict[name] = self.propStrings[name][1]
                 prop.loadAnims(animDict)
                 prop.setName(name)
+                self.setBlend(frameBlend=True)
                 self.storeProp(name, prop)
                 if name in Variants:
                     self.makeVariant(name)

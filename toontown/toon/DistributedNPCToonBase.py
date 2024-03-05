@@ -62,6 +62,7 @@ class DistributedNPCToonBase(DistributedToon.DistributedToon):
         self.legsParts = []
         self.__bookActors = []
         self.__holeActors = []
+        self.setBlend(frameBlend=True)
 
     def announceGenerate(self):
         self.initToonState()

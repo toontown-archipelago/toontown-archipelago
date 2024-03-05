@@ -839,6 +839,7 @@ class Toon(Avatar.Avatar, ToonHead):
         del self.shadowJoint
         self.initializeDropShadow()
         self.initializeNametag3d()
+        self.setBlend(frameBlend=True)
 
     def generateToonTorso(self, copy = 1, genClothes = 1):
         torsoStyle = self.style.torso
@@ -876,6 +877,7 @@ class Toon(Avatar.Avatar, ToonHead):
         self.resetHeight()
         self.setupToonNodes()
         self.generateBackpack()
+        self.setBlend(frameBlend=True)
 
     def generateToonHead(self, copy = 1):
         headHeight = ToonHead.generateToonHead(self, copy, self.style, ('1000', '500', '250'))
@@ -899,6 +901,7 @@ class Toon(Avatar.Avatar, ToonHead):
         self.resetHeight()
         self.eyelids.request('open')
         self.startLookAround()
+        self.setBlend(frameBlend=True)
 
     def generateToonColor(self):
         ToonHead.generateToonColor(self, self.style)

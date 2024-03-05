@@ -53,6 +53,7 @@ class BossCog(Avatar.Avatar):
         self.healthCondition = 0
         self.animDoneEvent = 'BossCogAnimDone'
         self.animIvalName = 'BossCogAnimIval'
+        self.setBlend(frameBlend=True)
         return
 
     def delete(self):
