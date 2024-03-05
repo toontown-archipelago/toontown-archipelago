@@ -211,6 +211,7 @@ ITEM_DEFINITIONS: Dict[str, ToontownItemDefinition] = {
     ITEM_TTC_HQ_ACCESS: ToontownItemDefinition(ITEM_TTC_HQ_ACCESS, BASE_ITEM_ID+63, ItemClassification.progression, quantity=0),
     ITEM_VICTORY: ToontownItemDefinition(ITEM_VICTORY, BASE_ITEM_ID+64, ItemClassification.progression, quantity=0),
 
+    # Traps
     ITEM_UBER_TRAP: ToontownItemDefinition(ITEM_UBER_TRAP, BASE_ITEM_ID+65, ItemClassification.trap),
     ITEM_DRIP_TRAP: ToontownItemDefinition(ITEM_DRIP_TRAP, BASE_ITEM_ID+66, ItemClassification.trap),
 }
@@ -236,8 +237,8 @@ class ToontownItem(Item):
 
 
 def random_junk() -> ToontownItemDefinition:
-    # Cool way to make 30% of junk traps until we get a packet/yaml method
-    if random.randint(1, 10) <= 3:
-        return random.choice(TRAP_ITEMS)
-    else:
-        return random.choice(JUNK_ITEMS)
+    return random.choice(JUNK_ITEMS)
+
+
+def random_trap() -> ToontownItemDefinition:
+    return random.choice(TRAP_ITEMS)

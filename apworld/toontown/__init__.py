@@ -11,6 +11,7 @@ from ..generic.Rules import set_rule
 
 DEBUG_MODE = False
 
+
 class ToontownWeb(WebWorld):
     tutorials = [Tutorial(
         "Multiworld Setup Guide",
@@ -125,6 +126,35 @@ class ToontownWorld(World):
             "second_track": self.second_track
         }
 
+    # Get what items we should exclude from the pool that is marked as required
+    def _get_excluded_items(self) -> List[str]:
+
+        items_to_exclude = []
+
+        # Exclude our starting tracks
+        items_to_exclude.append(self.first_track)
+        items_to_exclude.append(self.second_track)
+
+        # If we have the force tp access setting...
+        if self.options.force_playground_visit_teleport_access_unlocks.value:
+
+            # Add all teleport access
+            items_to_exclude.append(items.ITEM_TTC_TELEPORT)
+            items_to_exclude.append(items.ITEM_DD_TELEPORT)
+            items_to_exclude.append(items.ITEM_DG_TELEPORT)
+            items_to_exclude.append(items.ITEM_MML_TELEPORT)
+            items_to_exclude.append(items.ITEM_TB_TELEPORT)
+            items_to_exclude.append(items.ITEM_DDL_TELEPORT)
+
+        if self.options.force_coghq_visit_teleport_access_unlocks.value:
+            items_to_exclude.append(items.ITEM_SBHQ_TELEPORT)
+            items_to_exclude.append(items.ITEM_CBHQ_TELEPORT)
+            items_to_exclude.append(items.ITEM_LBHQ_TELEPORT)
+            items_to_exclude.append(items.ITEM_BBHQ_TELEPORT)
+
+        # Done return our items
+        return items_to_exclude
+
     def create_items(self) -> None:
 
         num_items_in_pool = 0
@@ -132,12 +162,7 @@ class ToontownWorld(World):
         # todo calculate dynamically based on settings
         num_locations = len(LOCATION_DEFINITIONS)
 
-        # Items that we are going to exclude from the pool based on options our player chose
-        items_to_exclude = []
-
-        # Exclude our starting tracks
-        items_to_exclude.append(self.first_track)
-        items_to_exclude.append(self.second_track)
+        items_to_exclude = self._get_excluded_items()
 
         # Go through all the defined items and make sure the requirements are in
         for item in ITEM_DEFINITIONS.values():
@@ -157,9 +182,21 @@ class ToontownWorld(World):
             raise Exception(f"Not enough locations for {num_items_in_pool} items ({num_locations} locations)")
 
         # Amount of things we need to fill in is the difference of total locations and number of items
+        rng = self.multiworld.random
         num_junk = num_locations - num_items_in_pool
         for _ in range(num_junk):
-            self.multiworld.itempool.append(self.create_item(items.random_junk().unique_name))
+
+            # Do a check for a trap...
+            if self.options.trap_percent.value >= rng.randint(1, 100):
+                item = items.random_trap()
+            else:
+                item = items.random_junk()
+
+            item = item.unique_name
+            self.multiworld.itempool.append(self.create_item(item))
+
+    def _force_item_placement(self, location: str, item: str) -> None:
+        self.multiworld.get_location(location, self.player).place_locked_item(self.create_item(item))
 
     def create_regions(self) -> None:
 
@@ -198,18 +235,35 @@ class ToontownWorld(World):
         self.multiworld.regions.extend(all_regions.values())
 
         # Place our starter items
-        self.multiworld.get_location(locations.STARTING_NEW_GAME_LOCATION, self.player).place_locked_item(self.create_item(items.ITEM_TTC_HQ_ACCESS))
-        self.multiworld.get_location(locations.STARTING_TRACK_ONE_LOCATION, self.player).place_locked_item(self.create_item(self.first_track))
-        self.multiworld.get_location(locations.STARTING_TRACK_TWO_LOCATION, self.player).place_locked_item(self.create_item(self.second_track))
+        self._force_item_placement(locations.STARTING_NEW_GAME_LOCATION, items.ITEM_TTC_HQ_ACCESS)
+        self._force_item_placement(locations.STARTING_TRACK_ONE_LOCATION, self.first_track)
+        self._force_item_placement(locations.STARTING_TRACK_TWO_LOCATION, self.second_track)
+
+        # Do we have force teleport access? if so place our tps
+        if self.options.force_playground_visit_teleport_access_unlocks.value:
+            self._force_item_placement(locations.DISCOVER_TTC, items.ITEM_TTC_TELEPORT)
+            self._force_item_placement(locations.DISCOVER_DD, items.ITEM_DD_TELEPORT)
+            self._force_item_placement(locations.DISCOVER_DG, items.ITEM_DG_TELEPORT)
+            self._force_item_placement(locations.DISCOVER_MM, items.ITEM_MML_TELEPORT)
+            self._force_item_placement(locations.DISCOVER_TB, items.ITEM_TB_TELEPORT)
+            self._force_item_placement(locations.DISCOVER_DDL, items.ITEM_DDL_TELEPORT)
+
+        # Same for cog hqs
+        if self.options.force_coghq_visit_teleport_access_unlocks.value:
+            self._force_item_placement(locations.DISCOVER_SBHQ, items.ITEM_SBHQ_TELEPORT)
+            self._force_item_placement(locations.DISCOVER_CBHQ, items.ITEM_CBHQ_TELEPORT)
+            self._force_item_placement(locations.DISCOVER_LBHQ, items.ITEM_LBHQ_TELEPORT)
+            self._force_item_placement(locations.DISCOVER_BBHQ, items.ITEM_BBHQ_TELEPORT)
 
         # Place our proofs
-        self.multiworld.get_location(locations.SELLBOT_PROOF, self.player).place_locked_item(self.create_item(items.ITEM_SELLBOT_PROOF))
-        self.multiworld.get_location(locations.CASHBOT_PROOF, self.player).place_locked_item(self.create_item(items.ITEM_CASHBOT_PROOF))
-        self.multiworld.get_location(locations.LAWBOT_PROOF, self.player).place_locked_item(self.create_item(items.ITEM_LAWBOT_PROOF))
-        self.multiworld.get_location(locations.BOSSBOT_PROOF, self.player).place_locked_item(self.create_item(items.ITEM_BOSSBOT_PROOF))
+        self._force_item_placement(locations.SELLBOT_PROOF, items.ITEM_SELLBOT_PROOF)
+        self._force_item_placement(locations.CASHBOT_PROOF, items.ITEM_CASHBOT_PROOF)
+        self._force_item_placement(locations.LAWBOT_PROOF, items.ITEM_LAWBOT_PROOF)
+        self._force_item_placement(locations.BOSSBOT_PROOF, items.ITEM_BOSSBOT_PROOF)
 
         # Place our victory
-        self.multiworld.get_location(locations.SAVED_TOONTOWN, self.player).place_locked_item(self.create_item(items.ITEM_VICTORY))
+        self._force_item_placement(locations.SAVED_TOONTOWN, items.ITEM_VICTORY)
+
 
         # Debug, use this to print a pretty picture to make sure our regions are set up correctly
         if DEBUG_MODE:
