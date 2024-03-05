@@ -700,7 +700,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.sendUpdate('updateTimer', [timeToSend])
         self.resetBattles()
         self.suitsKilled.append({'type': None,
-         'level': None,
+         'level': 0,
          'track': self.dna.dept,
          'isSkelecog': 0,
          'isForeman': 0,

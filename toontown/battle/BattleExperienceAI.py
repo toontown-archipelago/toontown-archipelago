@@ -3,7 +3,7 @@ import random
 from typing import List
 
 from direct.directnotify import DirectNotifyGlobal
-from toontown.toonbase import ToontownBattleGlobals
+from toontown.toonbase import ToontownBattleGlobals, ToontownGlobals
 from toontown.suit import SuitDNA
 BattleExperienceAINotify = DirectNotifyGlobal.directNotify.newCategory('BattleExprienceAI')
 
@@ -140,17 +140,19 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
     # We should award the toons for killing some cogs, randomly generate some amount of beans to give to the players
     # so they can sustain restocking gags without taking fishing/trolley breaks
     moneyAward = 0
-    for suit in suitsKilled:
+    for _ in suitsKilled:
 
         # Some percent chance that this suit will not drop any money
-        if random.random() > 0.5:
+        if random.random() > ToontownGlobals.CogMoneyDropChance:
             continue
 
-        moneyAward += random.randint(1, 3)
+        # Calculate a random amount of beans to give to the player
+        _min, _max = ToontownGlobals.CogMoneyDropRange
+        moneyAward += random.randint(_min, _max)
 
     for toon in activeToonList:
 
-        # If this toon was dead set them to 1 hp
+        # If this toon is dead set them to 1 hp so they aren't sad when they are done dancing
         if toon.hp <= 0:
             toon.b_setHp(1)
 
