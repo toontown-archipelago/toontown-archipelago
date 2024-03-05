@@ -70,13 +70,13 @@ class TownBattleSuitPanel(DirectFrame):
 
     def setLevelText(self, cog):
         if cog.getSkeleRevives() > 0:
-            self.healthText['text'] = TTLocalizer.TownBattleSuitLevel % {
-                'level': (self.cog.getActualLevel()),
-            }
-        else:
             self.healthText['text'] = TTLocalizer.TownBattleSuitLevelAndRevive % {
                 'level': (self.cog.getActualLevel()),
-                'revives': SuitAvatarPanel.getRevives(self.cog)
+                'revives': SuitAvatarPanel.getRevives(self.cog) + 1
+            }
+        else:
+            self.healthText['text'] = TTLocalizer.TownBattleSuitLevel % {
+                'level': (self.cog.getActualLevel()),
             }
 
     def updateHealthBar(self):

@@ -5192,8 +5192,8 @@ TownBattleSOSPetSearchTitle = 'Searching for doodle\n%s...'
 TownBattleSOSPetInfoTitle = '%s is %s'
 TownBattleSOSPetInfoOK = lOK
 
-TownBattleSuitLevel = "Level %(level)s v%(revives)s.0"
-TownBattleSuitLevelAndRevive = "Level %(level)s"
+TownBattleSuitLevelAndRevive = "Level %(level)s v%(revives)s.0"
+TownBattleSuitLevel = "Level %(level)s"
 
 
 TrolleyHFAMessage = 'You may not board the trolley until your Laff meter is smiling.'
