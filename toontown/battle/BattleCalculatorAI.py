@@ -852,7 +852,6 @@ class BattleCalculatorAI:
                         if self.notify.getDebug():
                             self.notify.debug('Applying hp bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_HPBONUS_COL]))
                     elif len(attack[TOON_KBBONUS_COL]) > tgtPos:
-                        print(currTgt)
                         attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * (currTgt[currAtkType][0][2] / 100.0) # {4: [[0, 11000, 6000]]}
                         if self.notify.getDebug():
                             self.notify.debug('Applying kb bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_KBBONUS_COL][tgtPos]) + ' to target ' + str(tgtPos))
@@ -1635,7 +1634,8 @@ class BattleCalculatorAI:
     def __removeLured(self, suitId):
         if self.__suitIsLured(suitId):
             suit = simbase.air.doId2do.get(suitId)
-            suit.effectHandler.removeEffect('knockbackBonus')
+            if 'knockbackBonus' in suit.effectHandler.children.keys():
+                suit.effectHandler.removeEffect('knockbackBonus')
             del self.currentlyLuredSuits[suitId]
 
     def __luredMaxRoundsReached(self, suitId):
