@@ -1,4 +1,5 @@
 import time
+from typing import Dict
 
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.PyDatagram import *
@@ -114,6 +115,12 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.magicWordManager = None
         self.deliveryManager = None
         self.defaultAccessLevel = OTPGlobals.accessLevelValues.get('TTOFF_DEVELOPER')
+
+        # AP stuff
+
+        # Keeps track of toon IDs and maps them to last successful connection information so they can fast !connect
+        # When relogging
+        self.archipelagoConnectionCache: Dict[int, tuple] = {}
 
     def getTrackClsends(self):
         return False
@@ -556,3 +563,10 @@ class ToontownAIRepository(ToontownInternalRepository):
             leaderboards.extend(foundLeaderBoards)
 
         return leaderboards
+
+    def cacheArchipelagoConnectInformation(self, avId, slotName, address):
+        self.archipelagoConnectionCache[avId] = (slotName, address)
+
+    def getCachedArchipelagoConnectionInformation(self, avId):
+        return self.archipelagoConnectionCache.get(avId, (None, None))
+

@@ -53,6 +53,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         for id_string, network_slot in self.slot_info.items():
             client.slot_id_to_slot_name[int(id_string)] = network_slot
 
+        # Cache this successful connection on the ai
+        slot_info = self.get_slot_info(self.slot)
+        simbase.air.cacheArchipelagoConnectInformation(client.av.doId, slot_info.name, client.address)
+
     def handle_first_time_player(self, av):
 
         #  Reset stats
