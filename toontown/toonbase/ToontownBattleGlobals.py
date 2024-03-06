@@ -377,7 +377,7 @@ def isGroup(track, level):
 
 
 def getInteriorCreditMultiplier(numFloors):
-    return 1 + numFloors
+    return 2 + numFloors
 
 
 def getFactoryCreditMultiplier(factoryId):
