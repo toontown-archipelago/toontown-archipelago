@@ -16,7 +16,6 @@ from toontown.shtiker import ShtikerBook
 from toontown.shtiker import InventoryPage
 from toontown.shtiker import MapPage
 from toontown.shtiker import OptionsPage
-from toontown.shtiker import ShardPage
 from toontown.shtiker import QuestPage
 from toontown.shtiker import KartPage
 from toontown.shtiker import GardenPage
@@ -257,7 +256,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         base.whiteList.unload()
         self.book.unload()
         del self.optionsPage
-        del self.shardPage
         del self.mapPage
         del self.invPage
         del self.questPage
@@ -332,9 +330,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.optionsPage = OptionsPage.OptionsPage()
         self.optionsPage.load()
         self.book.addPage(self.optionsPage, pageName=TTLocalizer.OptionsPageTitle)
-        self.shardPage = ShardPage.ShardPage()
-        self.shardPage.load()
-        self.book.addPage(self.shardPage, pageName=TTLocalizer.ShardPageTitle)
         self.checkPage = CheckPage.CheckPage()
         self.checkPage.load()
         self.book.addPage(self.checkPage, pageName=TTLocalizer.CheckPageTitle)

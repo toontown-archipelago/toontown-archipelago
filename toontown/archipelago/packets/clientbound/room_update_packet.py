@@ -34,7 +34,7 @@ class RoomUpdatePacket(RoomInfoPacket, ConnectedPacket):
             return
 
         new_hint_points = self.hint_points
-        # Do something with our new hint points on av: DistributedToonAI
+        av.hintPoints = new_hint_points
 
     def handle(self, client):
 

@@ -146,3 +146,4 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.av.addCheckedLocation(new_game)
         client.av.addCheckedLocation(track_one_check)
         client.av.addCheckedLocation(track_two_check)
+        client.av.hintPoints = self.hint_points
