@@ -32,7 +32,7 @@ class DistributedCountryClubBattle(DistributedLevelBattle.DistributedLevelBattle
             NametagGlobals.setMasterArrowsOn(0)
             if self.bossBattle:
                 messenger.send('localToonConfrontedCountryClubBoss')
-        self.movie.playReward(ts, self.uniqueName('building-reward'), self.__handleCountryClubRewardDone)
+        self.movie.playReward(ts, self.uniqueName('building-reward'), self.__handleCountryClubRewardDone, noSkip=True)
 
     def __handleCountryClubRewardDone(self):
         self.notify.debug('countryClub reward done')

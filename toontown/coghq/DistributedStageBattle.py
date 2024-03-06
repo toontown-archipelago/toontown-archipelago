@@ -32,7 +32,7 @@ class DistributedStageBattle(DistributedLevelBattle.DistributedLevelBattle):
             NametagGlobals.setMasterArrowsOn(0)
             if self.bossBattle:
                 messenger.send('localToonConfrontedStageBoss')
-        self.movie.playReward(ts, self.uniqueName('building-reward'), self.__handleStageRewardDone)
+        self.movie.playReward(ts, self.uniqueName('building-reward'), self.__handleStageRewardDone, noSkip=True)
 
     def __handleStageRewardDone(self):
         self.notify.debug('stage reward done')

@@ -32,7 +32,7 @@ class DistributedBattleFactory(DistributedLevelBattle.DistributedLevelBattle):
             NametagGlobals.setMasterArrowsOn(0)
             if self.bossBattle:
                 messenger.send('localToonConfrontedForeman')
-        self.movie.playReward(ts, self.uniqueName('building-reward'), self.__handleFactoryRewardDone)
+        self.movie.playReward(ts, self.uniqueName('building-reward'), self.__handleFactoryRewardDone, noSkip=True)
 
     def __handleFactoryRewardDone(self):
         self.notify.info('Factory reward done')
