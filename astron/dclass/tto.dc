@@ -1159,6 +1159,8 @@ dclass DistributedToon : DistributedPlayer {
   setCheckedLocations(uint32[]=[]) required ownrecv broadcast db;
   sendArchipelagoMessage(string) ownrecv;
   updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
+  requestHintPoints() ownsend airecv;
+  hintPointResp(uint16) ownrecv;
 };
 
 dclass DistributedCCharBase : DistributedObject {

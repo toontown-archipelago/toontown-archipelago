@@ -203,6 +203,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.accessKeys: List[int] = []
         self.receivedItems: List[int] = []
         self.checkedLocations: List[int] = []
+        self.hintPoints = 0
 
         return
 
@@ -2793,6 +2794,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # Set the AP items this toon has received
     def setReceivedItems(self, receivedItems: List[int]):
         self.receivedItems = receivedItems
+        if self.isLocal():
+            if hasattr(base.localAvatar, 'checkPage'):
+                base.localAvatar.checkPage.updateCheckButtons()
 
     # Get a list of item IDs this toon has received via AP
     def getReceivedItems(self) -> List[int]:
@@ -2811,3 +2815,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # To be overridden in LocalToon, just here for safety
     def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
         pass
+
+    def hintPointResp(self, pts):
+        self.hintPoints = pts
+        if self.isLocal:
+            base.localAvatar.checkPage.updateHintPointText()

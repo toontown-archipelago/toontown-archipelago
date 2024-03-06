@@ -219,6 +219,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
         self.receivedItems: List[int] = []  # List of AP items received so far
         self.checkedLocations: List[int] = []  # List of AP checks we have completed
+        self.hintPoints = 0  # How many hint points the player has
 
         self.archipelago_session: ArchipelagoSession = None
 
@@ -4356,6 +4357,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Send this toon an archipelago message to display on their log
     def d_sendArchipelagoMessage(self, message: str) -> None:
         self.sendUpdate('sendArchipelagoMessage', [message])
+
+    # Sent by client to request hint points from the arch session
+    def requestHintPoints(self):
+        print("Requesting hint points")
+        self.sendUpdate('hintPointResp', [self.hintPoints])
 
     # Checks whether or not this toon has "beat" their archipelago goal
     # Default goal is to default all 4 bosses at least once
