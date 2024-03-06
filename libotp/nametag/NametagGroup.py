@@ -203,8 +203,8 @@ class NametagGroup:
 
         self.m_page_number = page
         if self.willHaveButton():
-            self.m_timeout_start = globalClock.getFrameTime() + 0.2
-            self.m_has_timeout = True
+            self.m_timeout_start = 0.0
+            self.m_has_timeout = False
 
         self.updateContentsAll()
 
