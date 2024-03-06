@@ -2067,12 +2067,7 @@ def getQuestReward(id, av):
     return transformReward(baseRewardId, av)
 
 def isQuestJustForFun(questId, rewardId):
-    questEntry = QuestDict.get(questId)
-    if questEntry:
-        tier = questEntry[QuestDictTierIndex]
-        return isRewardOptional(tier, rewardId)
-    else:
-        return False
+    return True
 
 
 
@@ -3681,6 +3676,17 @@ for rewardID, rewardDescription in RewardDict.items():
 # Returns -1 if not a valid AP location
 def getRewardIdFromAPLocationName(location_name: str) -> int:
     return __AP_LOCATION_TO_REWARD_ID.get(location_name, -1)
+
+
+# Given a hood ID, return a list of reward IDs that this hood will have
+def getRewardIdsFromHood(hoodId) -> List[int]:
+    # Loop through all the AP location names for this hood and find the reward id from it
+    rewards = []
+    for apLocationName in util.hood_to_task_locations(hoodId):
+        rewardId = getRewardIdFromAPLocationName(apLocationName)
+        rewards.append(rewardId)
+
+    return rewards
 
 
 def isLoopingFinalTier(tier):

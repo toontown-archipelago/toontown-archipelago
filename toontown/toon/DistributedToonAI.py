@@ -4392,9 +4392,13 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setMaxHp(15)
         self.b_setHp(15)
         self.b_setMaxCarry(20)
+
+        # Now quests
         for id in self.getQuests():
             self.removeQuest(id)
         self.b_setQuestCarryLimit(4)
+        self.b_setRewardHistory(0, [])
+        self.b_setQuestHistory([])
 
         # Wipe gag track access and orgs
         self.b_setTrackAccess([0, 0, 0, 0, 0, 0, 0])

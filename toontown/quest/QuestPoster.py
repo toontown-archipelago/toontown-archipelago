@@ -297,10 +297,10 @@ class QuestPoster(DirectFrame):
         else:
             rewardString = ''
         self.rewardText['text'] = rewardString
-        if Quests.isQuestJustForFun(questId, rewardId):
-            self.funQuest.show()
-        else:
-            self.funQuest.hide()
+        # if Quests.isQuestJustForFun(questId, rewardId):
+        #     self.funQuest.show()
+        # else:
+        self.funQuest.hide()
         if self._deleteCallback:
             self.showDeleteButton(questDesc)
         else:
