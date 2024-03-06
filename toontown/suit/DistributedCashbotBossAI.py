@@ -19,7 +19,8 @@ from . import DistributedBossCogAI
 import random
 import math
 
-from ..archipelago.definitions import locations
+from apworld.toontown import locations
+
 from ..archipelago.definitions.util import ap_location_name_to_id
 
 # How many unites do we award on victory

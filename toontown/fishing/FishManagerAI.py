@@ -3,7 +3,8 @@ from typing import Dict
 
 from direct.directnotify import DirectNotifyGlobal
 
-from toontown.archipelago.definitions import locations
+from apworld.toontown import locations
+
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.fishing import FishGlobals
 from toontown.fishing.DistributedFishingPondAI import DistributedFishingPondAI

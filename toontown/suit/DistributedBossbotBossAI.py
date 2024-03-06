@@ -5,7 +5,8 @@ from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import FSM
 from direct.interval.IntervalGlobal import LerpPosInterval
 
-from toontown.archipelago.definitions import locations
+from apworld.toontown import locations
+
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.coghq import DistributedFoodBeltAI
 from toontown.coghq import DistributedBanquetTableAI

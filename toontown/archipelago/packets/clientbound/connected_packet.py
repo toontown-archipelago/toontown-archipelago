@@ -1,8 +1,9 @@
 import random
 from typing import List, Any, Dict
 
+from apworld.toontown import locations
+
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
-from toontown.archipelago.definitions import locations
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus

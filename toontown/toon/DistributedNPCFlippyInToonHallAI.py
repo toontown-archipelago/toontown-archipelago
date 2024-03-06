@@ -1,5 +1,8 @@
 from .DistributedNPCToonAI import *
-from ..archipelago.definitions import locations, util
+
+from apworld.toontown import locations
+
+from ..archipelago.definitions import util
 
 
 class DistributedNPCFlippyInToonHallAI(DistributedNPCToonAI):

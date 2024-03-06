@@ -2,6 +2,7 @@ import collections, types
 
 from direct.interval.IntervalGlobal import *
 
+from apworld.toontown.locations import ToontownLocationDefinition
 from libotp import NametagGroup
 
 from otp.otpbase import OTPLocalizer
@@ -31,8 +32,7 @@ import time
 import random
 import json
 
-from ..archipelago.definitions import locations
-from ..archipelago.definitions.locations import ToontownLocationDefinition
+from apworld.toontown import locations
 
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
@@ -3285,7 +3285,6 @@ class Archipelago(MagicWord):
             return f"Wiped {toon.getName()}'s progress!"
 
         return f"Invalid argument, valid arguments are: check"
-
 
 
 # Instantiate all classes defined here to register them.

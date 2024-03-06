@@ -1,5 +1,5 @@
 from enum import IntEnum
-from typing import Optional, List
+from typing import Optional, List, Set
 
 from BaseClasses import Location, Region, LocationProgressType
 
@@ -217,7 +217,7 @@ SAVED_TOONTOWN = "Save Toontown"
 BASE_ID = 0x501100
 
 # Only define locations here that our game needs to be aware of (not events)
-LIST_OF_LOCATION_DEFINITIONS = {
+LIST_OF_LOCATION_DEFINITIONS: Set[ToontownLocationDefinition] = {
 
     # Checks for simply logging in the game
     ToontownLocationDefinition(STARTING_NEW_GAME_LOCATION, BASE_ID-3, location_type=ToontownLocationType.STARTER),
@@ -525,6 +525,12 @@ DDL_TASK_LOCATIONS = [
     DONALDS_DREAMLAND_TASK_11,
     DONALDS_DREAMLAND_TASK_12,
 ]
+
+ALL_TASK_LOCATIONS = (TTC_TASK_LOCATIONS + DD_TASK_LOCATIONS + DG_TASK_LOCATIONS
+                      + MM_TASK_LOCATIONS + TB_TASK_LOCATIONS + DDL_TASK_LOCATIONS)
+
+
+SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy()
 
 
 class ToontownLocation(Location):

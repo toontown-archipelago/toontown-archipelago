@@ -1,13 +1,13 @@
 from typing import Dict, Any, List
 
-from BaseClasses import Tutorial, Region, ItemClassification, Location, CollectionState
+from BaseClasses import Tutorial, Region, ItemClassification, CollectionState
 from worlds.AutoWorld import World, WebWorld
+from worlds.generic.Rules import set_rule
 
 from . import regions
 from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, ToontownItem
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, ToontownLocation
 from .options import ToontownOptions
-from ..generic.Rules import set_rule
 
 DEBUG_MODE = False
 

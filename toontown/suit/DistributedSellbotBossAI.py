@@ -14,7 +14,8 @@ from toontown.toon import NPCToons
 from toontown.suit import SellbotBossGlobals
 import random
 
-from ..archipelago.definitions import locations
+from apworld.toontown import locations
+
 from ..archipelago.definitions.util import ap_location_name_to_id
 
 
