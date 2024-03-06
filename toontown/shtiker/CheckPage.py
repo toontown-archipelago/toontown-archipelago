@@ -1,3 +1,5 @@
+from typing import Dict
+
 from . import ShtikerBook, ShtikerPage
 
 from apworld.toontown import items
@@ -76,6 +78,13 @@ class CheckPage(ShtikerPage.ShtikerPage):
 
     def updateCheckButtons(self):
         recItems = base.localAvatar.getReceivedItems()
+
+        # Maps item ids to the quantity that we have
+        itemsAndCount: Dict[int, int] = {}
+        for item in recItems:
+            index_received, item_id = item
+            itemsAndCount[item_id] = itemsAndCount.get(item_id, 0) + 1
+
         self.checkButtons = []
 
         itemDict = items.ITEM_DEFINITIONS
@@ -84,7 +93,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
             if defin.quantity == 0:
                 pass
             else:
-                button = self.makeCheckButton(defin.unique_name, recItems.count(defin.unique_id), defin.quantity)  # TODO: get true quantity of items obtained
+                button = self.makeCheckButton(defin.unique_name, itemsAndCount.get(defin.unique_id, 0), defin.quantity)  # TODO use actual pool from AP for quantity max
                 self.checkButtons.append(button[0])
 
     def makeCheckButton(self, checkName, checkCount, checkMax):

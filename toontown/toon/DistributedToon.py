@@ -201,7 +201,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
         self.baseGagSkillMultiplier = 1
         self.accessKeys: List[int] = []
-        self.receivedItems: List[int] = []
+        self.receivedItems: List[Tuple[int, int]] = []
         self.checkedLocations: List[int] = []
         self.hintPoints = 0
 
@@ -2792,14 +2792,14 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.accessKeys = keys
 
     # Set the AP items this toon has received
-    def setReceivedItems(self, receivedItems: List[int]):
+    def setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
         self.receivedItems = receivedItems
         if self.isLocal():
             if hasattr(base.localAvatar, 'checkPage'):
                 base.localAvatar.checkPage.regenerateScrollList()
 
     # Get a list of item IDs this toon has received via AP
-    def getReceivedItems(self) -> List[int]:
+    def getReceivedItems(self) -> List[Tuple[int, int]]:
         return self.receivedItems
 
     def setCheckedLocations(self, checkedLocations: List[int]) -> None:

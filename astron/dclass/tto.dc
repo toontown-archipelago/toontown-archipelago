@@ -961,6 +961,11 @@ struct LocationScoutsCache {
   string rewardName;
 }
 
+struct APItem {
+  uint32 index;
+  uint32 id;
+}
+
 dclass DistributedToon : DistributedPlayer {
   setDNAString(blob) required broadcast ownrecv db;
   setGM(uint8 = 0) required broadcast ownrecv db;
@@ -1155,7 +1160,7 @@ dclass DistributedToon : DistributedPlayer {
 
   setBaseGagSkillMultiplier(uint16=1) required ownrecv broadcast db;
   setAccessKeys(uint16[] = []) required ownrecv broadcast db;
-  setReceivedItems(uint32[]=[]) required ownrecv broadcast db;
+  setReceivedItems(APItem[]) required ownrecv broadcast db;
   setCheckedLocations(uint32[]=[]) required ownrecv broadcast db;
   sendArchipelagoMessage(string) ownrecv;
   updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;

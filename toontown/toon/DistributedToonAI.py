@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from otp.ai.AIBaseGlobal import *
 from otp.otpbase import OTPGlobals
@@ -217,7 +217,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
         self.baseGagSkillMultiplier = 1  # Multiplicative stacking gag xp multiplier to consider
         self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
-        self.receivedItems: List[int] = []  # List of AP items received so far
+        self.receivedItems: List[Tuple[int, int]] = []  # List of AP items received so far, [(index, itemid), (index, itemid)]
         self.checkedLocations: List[int] = []  # List of AP checks we have completed
         self.hintPoints = 0  # How many hint points the player has
 
@@ -4291,23 +4291,24 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setAccessKeys(self.accessKeys)
 
     # Set the AP items this toon has received from an AP client and tell the client
-    def b_setReceivedItems(self, receivedItems: List[int]):
+    def b_setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
         self.setReceivedItems(receivedItems)
         self.d_setReceivedItems(receivedItems)
 
     # Set the AP items this toon has received but only server side
-    def setReceivedItems(self, receivedItems: List[int]):
+    def setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
         self.receivedItems = receivedItems
 
     # Get a list of item IDs this toon has received via AP
-    def getReceivedItems(self) -> List[int]:
+    def getReceivedItems(self) -> List[Tuple[int, int]]:
         return self.receivedItems
 
     # Tell the client what items we have received via AP
-    def d_setReceivedItems(self, receivedItems: List[int]):
+    def d_setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
         self.sendUpdate('setReceivedItems', [receivedItems])
 
-    def addReceivedItem(self, item: int):
+    def addReceivedItem(self, index: int, ap_item_id: int):
+        item = (index, ap_item_id)
         self.receivedItems.append(item)
         self.b_setReceivedItems(self.receivedItems)
 
