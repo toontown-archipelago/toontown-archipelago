@@ -198,8 +198,8 @@ class FacilityAccessReward(APReward):
         FADoorCodes.OFFICE_C_ACCESS_MISSING: "Office C",
         FADoorCodes.OFFICE_D_ACCESS_MISSING: "Office D",
 
-        FADoorCodes.FRONT_THREE_ACCESS_MISSING: "Front Three",
-        FADoorCodes.MIDDLE_SIX_ACCESS_MISSING: "Middle Three",
+        FADoorCodes.FRONT_THREE_ACCESS_MISSING: "Front One",
+        FADoorCodes.MIDDLE_SIX_ACCESS_MISSING: "Middle Two",
         FADoorCodes.BACK_NINE_ACCESS_MISSING: "Back Three",
     }
 

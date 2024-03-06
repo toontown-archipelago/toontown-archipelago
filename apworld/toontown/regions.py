@@ -117,8 +117,8 @@ REGION_CJ = "Lawbot CJ"
 
 # BBHQ
 REGION_BBHQ_TUNNEL = "Bossbot HQ Tunnel"
-REGION_FRONT_THREE = "Front Three"
-REGION_MIDDLE_THREE = "Middle Three"
+REGION_FRONT_THREE = "Front One"
+REGION_MIDDLE_THREE = "Middle Two"
 REGION_BACK_THREE = "Back Three"
 REGION_CEO = "Bossbot CEO"
 
@@ -236,8 +236,8 @@ REGION_DEFINITIONS = (
 
     # BBHQ
     ToontownRegionDefinition(REGION_BBHQ_TUNNEL, locations=DISCOVER_BBHQ, connects_to=REGION_GROUP_BOSSBOT_HQ),
-    ToontownRegionDefinition(REGION_FRONT_THREE, locations=CLEAR_FRONT_THREE, locks=RegionLock({"Front Three Key": 1})),
-    ToontownRegionDefinition(REGION_MIDDLE_THREE, locations=CLEAR_MIDDLE_THREE, locks=RegionLock({"Middle Three Key": 1})),
+    ToontownRegionDefinition(REGION_FRONT_THREE, locations=CLEAR_FRONT_THREE, locks=RegionLock({"Front One Key": 1})),
+    ToontownRegionDefinition(REGION_MIDDLE_THREE, locations=CLEAR_MIDDLE_THREE, locks=RegionLock({"Middle Two Key": 1})),
     ToontownRegionDefinition(REGION_BACK_THREE, locations=CLEAR_BACK_THREE, locks=RegionLock({"Back Three Key": 1})),
     ToontownRegionDefinition(REGION_CEO, locations=[CLEAR_CEO, BOSSBOT_PROOF], locks=RegionLock({"Bossbot Disguise": 1})),
 
