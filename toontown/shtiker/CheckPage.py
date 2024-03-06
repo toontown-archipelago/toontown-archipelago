@@ -84,7 +84,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
             if defin.quantity == 0:
                 pass
             else:
-                button = self.makeCheckButton(defin.unique_name, 0, defin.quantity)  # TODO: get true quantity of items obtained
+                button = self.makeCheckButton(defin.unique_name, recItems.count(defin.unique_id), defin.quantity)  # TODO: get true quantity of items obtained
                 self.checkButtons.append(button[0])
 
     def makeCheckButton(self, checkName, checkCount, checkMax):

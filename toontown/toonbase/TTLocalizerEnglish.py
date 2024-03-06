@@ -3158,9 +3158,9 @@ FADoorCodes_OFFICE_B_ACCESS_MISSING = "No access!\n\nIn order to access this ele
 FADoorCodes_OFFICE_C_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Office C Entrance Key."
 FADoorCodes_OFFICE_D_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Office D Entrance Key."
 
-FADoorCodes_FRONT_THREE_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Front Three Entrance Key."
-FADoorCodes_MIDDLE_SIX_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Middle Six Entrance Key."
-FADoorCodes_BACK_NINE_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Back Nine Entrance Key."
+FADoorCodes_FRONT_THREE_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Front One Entrance Key."
+FADoorCodes_MIDDLE_SIX_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Middle Two Entrance Key."
+FADoorCodes_BACK_NINE_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Back Three Entrance Key."
 
 KnockKnockContestJokes = {2100: ['Wally', "Wally's not looking, hit him with a pie!"],
  2200: {28: ['Biscuit', 'Biscuit out of here the Cogs are coming!'],

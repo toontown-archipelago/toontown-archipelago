@@ -192,8 +192,8 @@ CLEAR_B_OFFICE = "B Office Cleared"
 CLEAR_C_OFFICE = "C Office Cleared"
 CLEAR_D_OFFICE = "D Office Cleared"
 
-CLEAR_FRONT_THREE = "Front Three Cleared"
-CLEAR_MIDDLE_THREE = "Middle Three Cleared"
+CLEAR_FRONT_THREE = "Front One Cleared"
+CLEAR_MIDDLE_THREE = "Middle Two Cleared"
 CLEAR_BACK_THREE = "Back Three Cleared"
 
 CLEAR_VP = "Clear VP"

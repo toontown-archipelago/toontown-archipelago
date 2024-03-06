@@ -46,8 +46,8 @@ class TestFacilityAccess(ToontownTestBase):
         self.assertAccessDependency([CLEAR_C_OFFICE], [["C Office Key"]])
         self.assertAccessDependency([CLEAR_D_OFFICE], [["D Office Key"]])
 
-        self.assertAccessDependency([CLEAR_FRONT_THREE], [["Front Three Key"]])
-        self.assertAccessDependency([CLEAR_MIDDLE_THREE], [["Middle Three Key"]])
+        self.assertAccessDependency([CLEAR_FRONT_THREE], [["Front One Key"]])
+        self.assertAccessDependency([CLEAR_MIDDLE_THREE], [["Middle Two Key"]])
         self.assertAccessDependency([CLEAR_BACK_THREE], [["Back Three Key"]])
 
 class TestBossAccess(ToontownTestBase):
