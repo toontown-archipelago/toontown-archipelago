@@ -82,6 +82,46 @@ ROBBER_BARRON_DEFEATED_LOCATION = "Cog Gallery (Robber Baron)"
 BIG_WIG_DEFEATED_LOCATION = "Cog Gallery (Big Wig)"
 BIG_CHEESE_DEFEATED_LOCATION = "Cog Gallery (Big Cheese)"
 
+COLD_CALLER_MAXED_LOCATION = "Cog Gallery Maxed (Cold Caller)"
+SHORT_CHANGE_MAXED_LOCATION = "Cog Gallery Maxed (Short Change)"
+BOTTOM_FEEDER_MAXED_LOCATION = "Cog Gallery Maxed (Bottom Feeder)"
+FLUNKY_MAXED_LOCATION = "Cog Gallery Maxed (Flunky)"
+
+TELEMARKETER_MAXED_LOCATION = "Cog Gallery Maxed (Telemarketer)"
+PENNY_PINCHER_MAXED_LOCATION = "Cog Gallery Maxed (Penny Pincher)"
+BLOODSUCKER_MAXED_LOCATION = "Cog Gallery Maxed (Bloodsucker)"
+PENCIL_PUSHER_MAXED_LOCATION = "Cog Gallery Maxed (Pencil Pusher)"
+
+NAME_DROPPER_MAXED_LOCATION = "Cog Gallery Maxed (Name Dropper)"
+TIGHTWAD_MAXED_LOCATION = "Cog Gallery Maxed (Tightwad)"
+DOUBLE_TALKER_MAXED_LOCATION = "Cog Gallery Maxed (Double Talker)"
+YESMAN_MAXED_LOCATION = "Cog Gallery Maxed (Yesman)"
+
+GLAD_HANDER_MAXED_LOCATION = "Cog Gallery Maxed (Glad Hander)"
+BEAN_COUNTER_MAXED_LOCATION = "Cog Gallery Maxed (Bean Counter)"
+AMBULANCE_CHASER_MAXED_LOCATION = "Cog Gallery Maxed (Ambulance Chaser)"
+MICROMANAGER_MAXED_LOCATION = "Cog Gallery Maxed (Micromanager)"
+
+MOVER_AND_SHAKER_MAXED_LOCATION = "Cog Gallery Maxed (Mover and Shaker)"
+NUMBER_CRUNCHER_MAXED_LOCATION = "Cog Gallery Maxed (Number Cruncher)"
+BACKSTABBER_MAXED_LOCATION = "Cog Gallery Maxed (Backstabber)"
+DOWNSIZER_MAXED_LOCATION = "Cog Gallery Maxed (Downsizer)"
+
+TWO_FACE_MAXED_LOCATION = "Cog Gallery Maxed (Two Face)"
+MONEY_BAGS_MAXED_LOCATION = "Cog Gallery Maxed (Money Bags)"
+SPIN_DOCTOR_MAXED_LOCATION = "Cog Gallery Maxed (Spin Doctor)"
+HEAD_HUNTER_MAXED_LOCATION = "Cog Gallery Maxed (Head Hunter)"
+
+MINGLER_MAXED_LOCATION = "Cog Gallery Maxed (Mingler)"
+LOAN_SHARK_MAXED_LOCATION = "Cog Gallery Maxed (Loan Shark)"
+LEGAL_EAGLE_MAXED_LOCATION = "Cog Gallery Maxed (Legal Eagle)"
+CORPORATE_RAIDER_MAXED_LOCATION = "Cog Gallery Maxed (Corporate Raider)"
+
+MR_HOLLYWOOD_MAXED_LOCATION = "Cog Gallery Maxed (Mr. Hollywood)"
+ROBBER_BARRON_MAXED_LOCATION = "Cog Gallery Maxed (Robber Baron)"
+BIG_WIG_MAXED_LOCATION = "Cog Gallery Maxed (Big Wig)"
+BIG_CHEESE_MAXED_LOCATION = "Cog Gallery Maxed (Big Cheese)"
+
 FISHING_10_SPECIES = "(Fishing) 10 Species Caught Trophy"
 FISHING_20_SPECIES = "(Fishing) 20 Species Caught Trophy"
 FISHING_30_SPECIES = "(Fishing) 30 Species Caught Trophy"
