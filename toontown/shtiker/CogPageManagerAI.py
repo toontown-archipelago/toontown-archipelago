@@ -33,7 +33,7 @@ class CogPageManagerAI:
             if toon.getDoId() in suit['activeToons']:
 
                 # AP location check
-                cog_location_unique_name = cog_code_to_ap_location(suit['type'])
+                cog_location_unique_name = cog_code_to_ap_location(suit['type'])[0]
                 location_id = ap_location_name_to_id(cog_location_unique_name)
                 if location_id > 0:
                     toon.addCheckedLocation(location_id)
@@ -50,6 +50,10 @@ class CogPageManagerAI:
                     cogStatus[suitIndex] = COG_COMPLETE1
                 else:
                     cogStatus[suitIndex] = COG_COMPLETE2
+                    cog_location_unique_name = cog_code_to_ap_location(suit['type'])[1]
+                    location_id = ap_location_name_to_id(cog_location_unique_name)
+                    if location_id > 0:
+                        toon.addCheckedLocation(location_id)
 
         toon.b_setCogStatus(cogStatus)
         toon.b_setCogCount(cogCount)

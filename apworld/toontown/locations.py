@@ -453,6 +453,47 @@ LIST_OF_LOCATION_DEFINITIONS: Set[ToontownLocationDefinition] = {
 
     ToontownLocationDefinition(DISCOVER_GS, BASE_ID + 143, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
     ToontownLocationDefinition(DISCOVER_AA, BASE_ID + 144, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+
+    # Cog Gallery Maxing (32)
+    ToontownLocationDefinition(COLD_CALLER_MAXED_LOCATION, BASE_ID + 145, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(SHORT_CHANGE_MAXED_LOCATION, BASE_ID + 146, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(BOTTOM_FEEDER_MAXED_LOCATION, BASE_ID + 147, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(FLUNKY_MAXED_LOCATION, BASE_ID + 148, location_type=ToontownLocationType.GALLERY),
+
+    ToontownLocationDefinition(TELEMARKETER_MAXED_LOCATION, BASE_ID + 149, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(PENNY_PINCHER_MAXED_LOCATION, BASE_ID + 150, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(BLOODSUCKER_MAXED_LOCATION, BASE_ID + 151, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(PENCIL_PUSHER_MAXED_LOCATION, BASE_ID + 152, location_type=ToontownLocationType.GALLERY),
+
+    ToontownLocationDefinition(NAME_DROPPER_MAXED_LOCATION, BASE_ID + 153, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(TIGHTWAD_MAXED_LOCATION, BASE_ID + 154, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(DOUBLE_TALKER_MAXED_LOCATION, BASE_ID + 155, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(YESMAN_MAXED_LOCATION, BASE_ID + 156, location_type=ToontownLocationType.GALLERY),
+
+    ToontownLocationDefinition(GLAD_HANDER_MAXED_LOCATION, BASE_ID + 157, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(BEAN_COUNTER_MAXED_LOCATION, BASE_ID + 158, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(AMBULANCE_CHASER_MAXED_LOCATION, BASE_ID + 159, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(MICROMANAGER_MAXED_LOCATION, BASE_ID + 160, location_type=ToontownLocationType.GALLERY),
+
+    ToontownLocationDefinition(MOVER_AND_SHAKER_MAXED_LOCATION, BASE_ID + 161, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(NUMBER_CRUNCHER_MAXED_LOCATION, BASE_ID + 162, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(BACKSTABBER_MAXED_LOCATION, BASE_ID + 163, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(DOWNSIZER_MAXED_LOCATION, BASE_ID + 164, location_type=ToontownLocationType.GALLERY),
+
+    ToontownLocationDefinition(TWO_FACE_MAXED_LOCATION, BASE_ID + 165, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(MONEY_BAGS_MAXED_LOCATION, BASE_ID + 166, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(SPIN_DOCTOR_MAXED_LOCATION, BASE_ID + 167, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(HEAD_HUNTER_MAXED_LOCATION, BASE_ID + 168, location_type=ToontownLocationType.GALLERY),
+
+    ToontownLocationDefinition(MINGLER_MAXED_LOCATION, BASE_ID + 169, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(LOAN_SHARK_MAXED_LOCATION, BASE_ID + 170, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(LEGAL_EAGLE_MAXED_LOCATION, BASE_ID + 171, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(CORPORATE_RAIDER_MAXED_LOCATION, BASE_ID + 172, location_type=ToontownLocationType.GALLERY),
+
+    ToontownLocationDefinition(MR_HOLLYWOOD_MAXED_LOCATION, BASE_ID + 173, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(ROBBER_BARRON_MAXED_LOCATION, BASE_ID + 174, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(BIG_WIG_MAXED_LOCATION, BASE_ID + 175, location_type=ToontownLocationType.GALLERY),
+    ToontownLocationDefinition(BIG_CHEESE_MAXED_LOCATION, BASE_ID + 176, location_type=ToontownLocationType.GALLERY),
 }
 
 # Maps Location Definitions by location name -> location definition

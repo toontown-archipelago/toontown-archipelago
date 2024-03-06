@@ -4434,7 +4434,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         # Revoke rewards
         self.resetNPCFriendsDict()
         self.b_setResistanceMessages([])
-        self.b_setCogSummonsEarned([])
+        self.b_setCogSummonsEarned([0] * 32)
         self.b_setPinkSlips(0)
 
         # We haven't seen any cogs
