@@ -29,7 +29,12 @@ class ItemClassification(IntFlag):
 
 
 class CollectionState:
-    pass
+
+    def has(self, item: str, player_slot: int, quantity: int) -> bool:
+        return False
+
+    def count(self, item: str, player :int) -> bool:
+        return False
 
 
 class Item:

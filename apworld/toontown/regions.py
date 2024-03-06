@@ -1,27 +1,10 @@
-from typing import Dict
-
-from BaseClasses import CollectionState
-
-from .locations import *
+from typing import Dict, List
 
 
-class RegionLock:
-
-    def __init__(self, locks: Dict[str, int]):
-        self.locks: Dict[str, int] = locks
-
-    # Wrapper function so we can avoid using lambda
-    def get_lock_function(self, player):
-        def ret(state: CollectionState):
-            # Loop through all the items contained in the lock
-            for item, quantity_needed in self.locks.items():
-                # If we do not have the required items needed we cannot progress
-                if not state.has(item, player, quantity_needed):
-                    return False
-            # We had all required items, we can progress
-            return True
-
-        return ret
+from . import locations, items
+from .locks.ItemLock import ItemLock
+from .locks.LockBase import LockBase
+from .locks.MultiItemLock import MultiItemLock
 
 
 class ToontownRegionDefinition:
@@ -35,7 +18,7 @@ class ToontownRegionDefinition:
 
     """
 
-    def __init__(self, unique_name: str, locations=None, connects_to=None, locks: RegionLock = None):
+    def __init__(self, unique_name: str, locations=None, connects_to=None, locks: LockBase = None):
 
         # check if we have locations, if not, empty list, if one was given, contain it in a list
         if locations is None:
@@ -57,7 +40,7 @@ class ToontownRegionDefinition:
         self.unique_name: str = unique_name
         self.locations: List[str] = locations
         self.connects_to: List[str] = connects_to
-        self.lock: RegionLock = locks
+        self.lock: LockBase = locks
 
     def always_unlocked(self):
         return self.lock is None
@@ -183,66 +166,66 @@ REGION_DEFINITIONS = (
     ToontownRegionDefinition(REGION_MENU, connects_to=REGION_GROUP_INITIAL_ACCESSIBLE_REGIONS),
 
     # Collection of checks received for logging in
-    ToontownRegionDefinition(REGION_LOGIN, locations=LOGIN_LOCATIONS),
+    ToontownRegionDefinition(REGION_LOGIN, locations=locations.LOGIN_LOCATIONS),
 
     # Cog Gallery is always accessible right away, has 32 checks and is the end of its branch
-    ToontownRegionDefinition(REGION_GALLERY, locations=GALLERY_LOCATIONS),
+    ToontownRegionDefinition(REGION_GALLERY, locations=locations.GALLERY_LOCATIONS),
 
-    ToontownRegionDefinition(REGION_DISCOVER_PLAYGROUNDS, locations=DISCOVER_PLAYGROUND_LOCATIONS),
+    ToontownRegionDefinition(REGION_DISCOVER_PLAYGROUNDS, locations=locations.DISCOVER_PLAYGROUND_LOCATIONS),
 
     # Fishing is a linear progression track where every 10 species you unlock the next check, 7 checks
-    ToontownRegionDefinition(REGION_FISHING_10, locations=FISHING_10_SPECIES, connects_to=REGION_FISHING_20),
-    ToontownRegionDefinition(REGION_FISHING_20, locations=FISHING_20_SPECIES, connects_to=REGION_FISHING_30),
-    ToontownRegionDefinition(REGION_FISHING_30, locations=FISHING_30_SPECIES, connects_to=REGION_FISHING_40),
-    ToontownRegionDefinition(REGION_FISHING_40, locations=FISHING_40_SPECIES, connects_to=REGION_FISHING_50),
-    ToontownRegionDefinition(REGION_FISHING_50, locations=FISHING_50_SPECIES, connects_to=REGION_FISHING_60),
-    ToontownRegionDefinition(REGION_FISHING_60, locations=FISHING_60_SPECIES, connects_to=REGION_FISHING_70),
-    ToontownRegionDefinition(REGION_FISHING_70, locations=FISHING_COMPLETE_ALBUM),
+    ToontownRegionDefinition(REGION_FISHING_10, locations=locations.FISHING_10_SPECIES, connects_to=REGION_FISHING_20),
+    ToontownRegionDefinition(REGION_FISHING_20, locations=locations.FISHING_20_SPECIES, connects_to=REGION_FISHING_30),
+    ToontownRegionDefinition(REGION_FISHING_30, locations=locations.FISHING_30_SPECIES, connects_to=REGION_FISHING_40),
+    ToontownRegionDefinition(REGION_FISHING_40, locations=locations.FISHING_40_SPECIES, connects_to=REGION_FISHING_50),
+    ToontownRegionDefinition(REGION_FISHING_50, locations=locations.FISHING_50_SPECIES, connects_to=REGION_FISHING_60),
+    ToontownRegionDefinition(REGION_FISHING_60, locations=locations.FISHING_60_SPECIES, connects_to=REGION_FISHING_70),
+    ToontownRegionDefinition(REGION_FISHING_70, locations=locations.FISHING_COMPLETE_ALBUM),
 
     # Players spawn in Toontown Central, have 12 tasks (checks) to complete, and that is it for this branch
-    ToontownRegionDefinition(REGION_TTC, locations=TTC_TASK_LOCATIONS),
+    ToontownRegionDefinition(REGION_TTC, locations=locations.TTC_TASK_LOCATIONS),
 
     # For the other 5, same as TTC, except it is locked behind its HQ clearance item
-    ToontownRegionDefinition(REGION_DD, locations=DD_TASK_LOCATIONS,   locks=RegionLock({"Donald's Dock HQ Clearance": 1})),
-    ToontownRegionDefinition(REGION_DG, locations=DG_TASK_LOCATIONS,   locks=RegionLock({"Daisy Gardens HQ Clearance": 1})),
-    ToontownRegionDefinition(REGION_MM, locations=MM_TASK_LOCATIONS,   locks=RegionLock({"Minnie's Melodyland HQ Clearance": 1})),
-    ToontownRegionDefinition(REGION_TB, locations=TB_TASK_LOCATIONS,   locks=RegionLock({"The Brrrgh HQ Clearance": 1})),
-    ToontownRegionDefinition(REGION_DDL, locations=DDL_TASK_LOCATIONS, locks=RegionLock({"Donald's Dreamland HQ Clearance": 1})),
+    ToontownRegionDefinition(REGION_DD, locations=locations.DD_TASK_LOCATIONS,   locks=ItemLock(items.ITEM_DD_HQ_ACCESS)),
+    ToontownRegionDefinition(REGION_DG, locations=locations.DG_TASK_LOCATIONS,   locks=ItemLock(items.ITEM_DG_HQ_ACCESS)),
+    ToontownRegionDefinition(REGION_MM, locations=locations.MM_TASK_LOCATIONS,   locks=ItemLock(items.ITEM_MML_HQ_ACCESS)),
+    ToontownRegionDefinition(REGION_TB, locations=locations.TB_TASK_LOCATIONS,   locks=ItemLock(items.ITEM_TB_HQ_ACCESS)),
+    ToontownRegionDefinition(REGION_DDL, locations=locations.DDL_TASK_LOCATIONS, locks=ItemLock(items.ITEM_DDL_HQ_ACCESS)),
 
     # For Sellbot HQ, we first need to hit the tunnel region (accessible always) then we unlock all the activities
     # in the HQ, however these activities have locks behind them and can be done in any order
-    ToontownRegionDefinition(REGION_SBHQ_TUNNEL, locations=DISCOVER_SBHQ, connects_to=REGION_GROUP_SELLBOT_HQ),
+    ToontownRegionDefinition(REGION_SBHQ_TUNNEL, locations=locations.DISCOVER_SBHQ, connects_to=REGION_GROUP_SELLBOT_HQ),
     # Now for all the regions defined in REGION_GROUP_SELLBOT_HQ, and define their locks. They are end of branch
-    ToontownRegionDefinition(REGION_FRONT_FACTORY, locations=CLEAR_FRONT_FACTORY, locks=RegionLock({"Front Factory Key": 1})),
-    ToontownRegionDefinition(REGION_SIDE_FACTORY, locations=CLEAR_SIDE_FACTORY, locks=RegionLock({"Side Factory Key": 1})),
+    ToontownRegionDefinition(REGION_FRONT_FACTORY, locations=locations.CLEAR_FRONT_FACTORY, locks=ItemLock(items.ITEM_FRONT_FACTORY_ACCESS)),
+    ToontownRegionDefinition(REGION_SIDE_FACTORY, locations=locations.CLEAR_SIDE_FACTORY, locks=ItemLock(items.ITEM_SIDE_FACTORY_ACCESS)),
     # Boss will connect to flippy for the victory condition check
-    ToontownRegionDefinition(REGION_VP, locations=[CLEAR_VP, SELLBOT_PROOF], locks=RegionLock({"Sellbot Disguise": 1})),
+    ToontownRegionDefinition(REGION_VP, locations=[locations.CLEAR_VP, locations.SELLBOT_PROOF], locks=ItemLock(items.ITEM_SELLBOT_DISGUISE)),
 
     # Now repeat for the other 3 HQs
     # CBHQ
-    ToontownRegionDefinition(REGION_CBHQ_TUNNEL, locations=DISCOVER_CBHQ, connects_to=REGION_GROUP_CASHBOT_HQ),
-    ToontownRegionDefinition(REGION_COIN_MINT, locations=CLEAR_COIN_MINT, locks=RegionLock({"Coin Mint Key": 1})),
-    ToontownRegionDefinition(REGION_DOLLAR_MINT, locations=CLEAR_DOLLAR_MINT, locks=RegionLock({"Dollar Mint Key": 1})),
-    ToontownRegionDefinition(REGION_BULLION_MINT, locations=CLEAR_BULLION_MINT, locks=RegionLock({"Bullion Mint Key": 1})),
-    ToontownRegionDefinition(REGION_CFO, locations=[CLEAR_CFO, CASHBOT_PROOF], locks=RegionLock({"Cashbot Disguise": 1})),
+    ToontownRegionDefinition(REGION_CBHQ_TUNNEL, locations=locations.DISCOVER_CBHQ, connects_to=REGION_GROUP_CASHBOT_HQ),
+    ToontownRegionDefinition(REGION_COIN_MINT, locations=locations.CLEAR_COIN_MINT, locks=ItemLock(items.ITEM_COIN_MINT_ACCESS)),
+    ToontownRegionDefinition(REGION_DOLLAR_MINT, locations=locations.CLEAR_DOLLAR_MINT, locks=ItemLock(items.ITEM_DOLLAR_MINT_ACCESS)),
+    ToontownRegionDefinition(REGION_BULLION_MINT, locations=locations.CLEAR_BULLION_MINT, locks=ItemLock(REGION_BULLION_MINT)),
+    ToontownRegionDefinition(REGION_CFO, locations=[locations.CLEAR_CFO, locations.CASHBOT_PROOF], locks=ItemLock(items.ITEM_CASHBOT_DISGUISE)),
 
     # LBHQ
-    ToontownRegionDefinition(REGION_LBHQ_TUNNEL, locations=DISCOVER_LBHQ, connects_to=REGION_GROUP_LAWBOT_HQ),
-    ToontownRegionDefinition(REGION_OFFICE_A, locations=CLEAR_A_OFFICE, locks=RegionLock({"A Office Key": 1})),
-    ToontownRegionDefinition(REGION_OFFICE_B, locations=CLEAR_B_OFFICE, locks=RegionLock({"B Office Key": 1})),
-    ToontownRegionDefinition(REGION_OFFICE_C, locations=CLEAR_C_OFFICE, locks=RegionLock({"C Office Key": 1})),
-    ToontownRegionDefinition(REGION_OFFICE_D, locations=CLEAR_D_OFFICE, locks=RegionLock({"D Office Key": 1})),
-    ToontownRegionDefinition(REGION_CJ, locations=[CLEAR_CJ, LAWBOT_PROOF], locks=RegionLock({"Lawbot Disguise": 1})),
+    ToontownRegionDefinition(REGION_LBHQ_TUNNEL, locations=locations.DISCOVER_LBHQ, connects_to=REGION_GROUP_LAWBOT_HQ),
+    ToontownRegionDefinition(REGION_OFFICE_A, locations=locations.CLEAR_A_OFFICE, locks=ItemLock(items.ITEM_A_OFFICE_ACCESS)),
+    ToontownRegionDefinition(REGION_OFFICE_B, locations=locations.CLEAR_B_OFFICE, locks=ItemLock(items.ITEM_B_OFFICE_ACCESS)),
+    ToontownRegionDefinition(REGION_OFFICE_C, locations=locations.CLEAR_C_OFFICE, locks=ItemLock(items.ITEM_C_OFFICE_ACCESS)),
+    ToontownRegionDefinition(REGION_OFFICE_D, locations=locations.CLEAR_D_OFFICE, locks=ItemLock(items.ITEM_D_OFFICE_ACCESS)),
+    ToontownRegionDefinition(REGION_CJ, locations=[locations.CLEAR_CJ, locations.LAWBOT_PROOF], locks=ItemLock(items.ITEM_LAWBOT_DISGUISE)),
 
     # BBHQ
-    ToontownRegionDefinition(REGION_BBHQ_TUNNEL, locations=DISCOVER_BBHQ, connects_to=REGION_GROUP_BOSSBOT_HQ),
-    ToontownRegionDefinition(REGION_FRONT_THREE, locations=CLEAR_FRONT_THREE, locks=RegionLock({"Front One Key": 1})),
-    ToontownRegionDefinition(REGION_MIDDLE_THREE, locations=CLEAR_MIDDLE_THREE, locks=RegionLock({"Middle Two Key": 1})),
-    ToontownRegionDefinition(REGION_BACK_THREE, locations=CLEAR_BACK_THREE, locks=RegionLock({"Back Three Key": 1})),
-    ToontownRegionDefinition(REGION_CEO, locations=[CLEAR_CEO, BOSSBOT_PROOF], locks=RegionLock({"Bossbot Disguise": 1})),
+    ToontownRegionDefinition(REGION_BBHQ_TUNNEL, locations=locations.DISCOVER_BBHQ, connects_to=REGION_GROUP_BOSSBOT_HQ),
+    ToontownRegionDefinition(REGION_FRONT_THREE, locations=locations.CLEAR_FRONT_THREE, locks=ItemLock(items.ITEM_FRONT_THREE_ACCESS)),
+    ToontownRegionDefinition(REGION_MIDDLE_THREE, locations=locations.CLEAR_MIDDLE_THREE, locks=ItemLock(items.ITEM_MIDDLE_THREE_ACCESS)),
+    ToontownRegionDefinition(REGION_BACK_THREE, locations=locations.CLEAR_BACK_THREE, locks=ItemLock(items.ITEM_BACK_THREE_ACCESS)),
+    ToontownRegionDefinition(REGION_CEO, locations=[locations.CLEAR_CEO, locations.BOSSBOT_PROOF], locks=ItemLock(items.ITEM_BOSSBOT_DISGUISE)),
 
     # Flippy's office basically, talk to him and win the game
-    ToontownRegionDefinition(REGION_FLIPPY_COMPLETE, locations=SAVED_TOONTOWN, locks=RegionLock({"Sellbot Proof": 1, "Cashbot Proof": 1, "Lawbot Proof": 1, "Bossbot Proof": 1})),
+    ToontownRegionDefinition(REGION_FLIPPY_COMPLETE, locations=locations.SAVED_TOONTOWN, locks=MultiItemLock(items.ITEM_SELLBOT_PROOF, items.ITEM_CASHBOT_PROOF, items.ITEM_LAWBOT_PROOF, items.ITEM_BOSSBOT_PROOF))
 
 )
 

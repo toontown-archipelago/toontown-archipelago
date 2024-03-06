@@ -234,6 +234,16 @@ class ToontownWorld(World):
 
         self.multiworld.regions.extend(all_regions.values())
 
+        # Now loop through all locations and make sure they have their individual locks as well
+        for loc in locations.LIST_OF_LOCATION_DEFINITIONS:
+            # Does this location have a lock?
+            if loc.always_unlocked():
+                continue
+
+            # Place the lock function
+            multiworld_location = self.multiworld.get_location(loc.unique_name, self.player)
+            set_rule(multiworld_location, loc.lock.get_lock_function())
+
         # Place our starter items
         self._force_item_placement(locations.STARTING_NEW_GAME_LOCATION, items.ITEM_TTC_HQ_ACCESS)
         self._force_item_placement(locations.STARTING_TRACK_ONE_LOCATION, self.first_track)

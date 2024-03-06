@@ -2,6 +2,7 @@ from enum import IntEnum
 from typing import Optional, List, Set
 
 from BaseClasses import Location, Region, LocationProgressType
+from .locks import LockBase
 
 # Fill in if some items need more context
 LOCATION_DESCRIPTIONS = {
@@ -26,15 +27,22 @@ class ToontownLocationDefinition:
 
     unique_name will be used as the name shown in game and for others
     classification is the type of location it is to be used for the placement algorithm
+    lock is an optional argument that lets you define a lock object that this location is locked behind (i.e. must have some item)
 
     """
 
     def __init__(self, unique_name: str, unique_id: int, location_type: ToontownLocationType = ToontownLocationType.BASE,
-                 classification: LocationProgressType = LocationProgressType.DEFAULT):
+                 classification: LocationProgressType = LocationProgressType.DEFAULT, lock: LockBase=None):
         self.unique_name: str = unique_name
         self.unique_id: int = unique_id
         self.location_type: ToontownLocationType = location_type
         self.classification: LocationProgressType = classification
+        self.lock: LockBase=None
+
+    # Returns True if this location is always accessible
+    # Note: regions defined in regions.py can have their own locks as well if this location is contained in one
+    def always_unlocked(self) -> bool:
+        return self.lock is None
 
 
 # Name of every location as a string for easy access
