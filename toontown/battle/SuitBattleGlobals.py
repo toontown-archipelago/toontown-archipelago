@@ -131,6 +131,9 @@ def getSuitAttack(suitName, suitLevel, attackNum = -1):
     return adict
 
 
+MAX_SUIT_DEFENSE = 55
+
+
 # Formatted by Jake S. - You're welcome!
 SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
        'singularname': TTLocalizer.SuitFlunkyS, # cogs singular name, for tasks

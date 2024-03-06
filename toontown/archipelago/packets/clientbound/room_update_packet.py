@@ -27,5 +27,18 @@ class RoomUpdatePacket(RoomInfoPacket, ConnectedPacket):
         # especially from a coop partner in the same slot.
         self.checked_locations: List[int] = self.read_raw_field('checked_locations', ignore_missing=True)
 
+    def handle_hint_points_update(self, av):
+
+        # This packet did not contain the hint_points field, nothing to update
+        if self.hint_points is None:
+            return
+
+        new_hint_points = self.hint_points
+        # Do something with our new hint points on av: DistributedToonAI
+
     def handle(self, client):
-        self.debug(f"Handling packet")
+
+        self.debug("Handling packet")
+
+        # Attempt to handle a hint point update if this packet contains one
+        self.handle_hint_points_update(client.av)

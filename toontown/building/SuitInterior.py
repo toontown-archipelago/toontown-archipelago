@@ -151,6 +151,7 @@ class SuitInterior(Place.Place):
     def enterBattle(self, event):
         mult = ToontownBattleGlobals.getInteriorCreditMultiplier(self.numFloors)
         self.townBattle.enter(event, self.fsm.getStateNamed('battle'), bldg=1, creditMultiplier=mult)
+        self.enterFLM()
         base.localAvatar.b_setAnimState('off', 1)
         base.localAvatar.cantLeaveGame = 1
 

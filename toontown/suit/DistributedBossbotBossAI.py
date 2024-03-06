@@ -107,14 +107,14 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             if simbase.config.GetBool('bossbot-boss-cheat', 0):
                 listVersion[14] = weakenedValue
                 SuitBuildingGlobals.SuitBuildingInfo = tuple(listVersion)
-            retval = self.invokeSuitPlanner(14, 0)
+            retval = self.invokeSuitPlanner(14, 0, 15)
             return retval
         else:
             suits = self.generateDinerSuits()
             return suits
 
-    def invokeSuitPlanner(self, buildingCode, skelecog):
-        suits = DistributedBossCogAI.DistributedBossCogAI.invokeSuitPlanner(self, buildingCode, skelecog)
+    def invokeSuitPlanner(self, buildingCode, skelecog, reviveChance):
+        suits = DistributedBossCogAI.DistributedBossCogAI.invokeSuitPlanner(self, buildingCode, skelecog, reviveChance)
         activeSuits = suits['activeSuits'][:]
         reserveSuits = suits['reserveSuits'][:]
         if len(activeSuits) + len(reserveSuits) >= 4:
@@ -263,7 +263,12 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for table in self.tables:
             table.turnOn()
 
-        self.barrier = self.beginBarrier('BattleTwo', self.involvedToons, ToontownGlobals.BossbotBossServingDuration + 1, self.__doneBattleTwo)
+        if len(self.involvedToons) > 1:
+            timer = ToontownGlobals.BossbotBossServingDuration
+        else:
+            timer = ToontownGlobals.BossbotBossServingDurationSolo
+
+        self.barrier = self.beginBarrier('BattleTwo', self.involvedToons, timer + 1, self.__doneBattleTwo)
 
     def exitBattleTwo(self):
         self.ignoreBarrier(self.barrier)

@@ -1,4 +1,5 @@
 import functools
+import math
 
 from otp.ai.AIBaseGlobal import *
 import random
@@ -11,7 +12,7 @@ from toontown.suit import DistributedSuitAI
 class SuitPlannerInteriorAI:
     notify = DirectNotifyGlobal.directNotify.newCategory('SuitPlannerInteriorAI')
 
-    def __init__(self, numFloors, bldgLevel, bldgTrack, zone, respectInvasions=1):
+    def __init__(self, numFloors, bldgLevel, bldgTrack, zone, respectInvasions=1, solo=False):
         self.dbg_nSuits1stRound = config.GetBool('n-suits-1st-round', 0)
         self.dbg_4SuitsPerFloor = config.GetBool('4-suits-per-floor', 0)
         self.dbg_1SuitPerFloor = config.GetBool('1-suit-per-floor', 0)
@@ -26,7 +27,7 @@ class SuitPlannerInteriorAI:
         if isinstance(bldgLevel, bytes):
             self.notify.warning('bldgLevel is a string!')
             bldgLevel = int(bldgLevel)
-        self._genSuitInfos(numFloors, bldgLevel, bldgTrack)
+        self._genSuitInfos(numFloors, bldgLevel, bldgTrack, solo)
         return
 
     def __genJoinChances(self, num):
@@ -37,12 +38,12 @@ class SuitPlannerInteriorAI:
         joinChances.sort(key=functools.cmp_to_key(cmp))
         return joinChances
 
-    def _genSuitInfos(self, numFloors, bldgLevel, bldgTrack):
+    def _genSuitInfos(self, numFloors, bldgLevel, bldgTrack, solo):
         self.suitInfos = []
         self.notify.debug('\n\ngenerating suitsInfos with numFloors (' + str(numFloors) + ') bldgLevel (' + str(bldgLevel) + '+1) and bldgTrack (' + str(bldgTrack) + ')')
         for currFloor in range(numFloors):
             infoDict = {}
-            lvls = self.__genLevelList(bldgLevel, currFloor, numFloors)
+            lvls = self.__genLevelList(bldgLevel, currFloor, numFloors, solo)
             activeDicts = []
             maxActive = min(4, len(lvls))
             if self.dbg_nSuits1stRound:
@@ -101,14 +102,20 @@ class SuitPlannerInteriorAI:
             return self.dbg_defaultSuitType
         return SuitDNA.getRandomSuitType(lvl)
 
-    def __genLevelList(self, bldgLevel, currFloor, numFloors):
+    def __genLevelList(self, bldgLevel, currFloor, numFloors, solo):
         bldgInfo = SuitBuildingGlobals.SuitBuildingInfo[bldgLevel]
         if self.dbg_1SuitPerFloor:
             return [1]
         else:
             if self.dbg_4SuitsPerFloor:
                 return [5, 6, 7, 10]
-        lvlPoolRange = bldgInfo[SuitBuildingGlobals.SUIT_BLDG_INFO_LVL_POOL]
+        if solo:
+            lvlPoolRangeList = []
+            for range in list(bldgInfo[SuitBuildingGlobals.SUIT_BLDG_INFO_LVL_POOL]):
+                lvlPoolRangeList.append(math.ceil(range/2))
+            lvlPoolRange = (lvlPoolRangeList[0], lvlPoolRangeList[1])
+        else:
+            lvlPoolRange = bldgInfo[SuitBuildingGlobals.SUIT_BLDG_INFO_LVL_POOL]
         maxFloors = bldgInfo[SuitBuildingGlobals.SUIT_BLDG_INFO_FLOORS][1]
         lvlPoolMults = bldgInfo[SuitBuildingGlobals.SUIT_BLDG_INFO_LVL_POOL_MULTS]
         floorIdx = min(currFloor, maxFloors - 1)
