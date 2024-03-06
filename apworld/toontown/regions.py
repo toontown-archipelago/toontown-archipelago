@@ -89,7 +89,7 @@ REGION_DISCOVER_PLAYGROUNDS = "Discover Playgrounds"
 # Playgrounds
 REGION_TTC = "Toontown Central"
 REGION_DD = "Donald's Dock"
-REGION_DG = "Daisy's Gardens"
+REGION_DG = "Daisy Gardens"
 REGION_MM = "Minnie's Melodyland"
 REGION_TB = "The Brrrgh"
 REGION_DDL = "Donald's Dreamland"
@@ -204,7 +204,7 @@ REGION_DEFINITIONS = (
 
     # For the other 5, same as TTC, except it is locked behind its HQ clearance item
     ToontownRegionDefinition(REGION_DD, locations=DD_TASK_LOCATIONS,   locks=RegionLock({"Donald's Dock HQ Clearance": 1})),
-    ToontownRegionDefinition(REGION_DG, locations=DG_TASK_LOCATIONS,   locks=RegionLock({"Daisy's Gardens HQ Clearance": 1})),
+    ToontownRegionDefinition(REGION_DG, locations=DG_TASK_LOCATIONS,   locks=RegionLock({"Daisy Gardens HQ Clearance": 1})),
     ToontownRegionDefinition(REGION_MM, locations=MM_TASK_LOCATIONS,   locks=RegionLock({"Minnie's Melodyland HQ Clearance": 1})),
     ToontownRegionDefinition(REGION_TB, locations=TB_TASK_LOCATIONS,   locks=RegionLock({"The Brrrgh HQ Clearance": 1})),
     ToontownRegionDefinition(REGION_DDL, locations=DDL_TASK_LOCATIONS, locks=RegionLock({"Donald's Dreamland HQ Clearance": 1})),

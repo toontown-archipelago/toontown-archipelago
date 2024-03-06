@@ -8,6 +8,7 @@ from apworld.toontown import items
 from toontown.building import FADoorCodes
 from toontown.coghq.CogDisguiseGlobals import PartsPerSuitBitmasks
 from toontown.fishing import FishGlobals
+from toontown.toonbase import ToontownBattleGlobals
 from toontown.toonbase import ToontownGlobals
 
 # Typing hack, can remove later
@@ -138,7 +139,7 @@ class TeleportAccessUpgradeReward(APReward):
     ZONE_TO_DISPLAY_NAME = {
         TOONTOWN_CENTRAL: "Toontown Central",
         DONALDS_DOCK: "Donald's Dock",
-        DAISYS_GARDENS: "Daisy's Gardens",
+        DAISYS_GARDENS: "Daisy Gardens",
         MINNIES_MELODYLAND: "Minnie's Melodyland",
         THE_BRRRGH: "The Brrrgh",
         DONALDS_DREAMLAND: "Donald's Dreamland",
@@ -168,7 +169,7 @@ class TaskAccessReward(APReward):
     ZONE_TO_DISPLAY_NAME = {
         TOONTOWN_CENTRAL: "Toontown Central",
         DONALDS_DOCK: "Donald's Dock",
-        DAISYS_GARDENS: "Daisy's Gardens",
+        DAISYS_GARDENS: "Daisy Gardens",
         MINNIES_MELODYLAND: "Minnie's Melodyland",
         THE_BRRRGH: "The Brrrgh",
         DONALDS_DREAMLAND: "Donald's Dreamland",
@@ -267,6 +268,16 @@ class DripTrapAward(APReward):
         av.b_setHat(random.randint(1, 56), 0, 0)
         av.d_setSystemMessage(0, "Did someone say the door to drip?")
 
+class GagExpBundleAward(APReward):
+
+    def __init__(self, amount: int):
+        self.amount: int = amount
+
+    def apply(self, av: "DistributedToonAI"):
+        for index, _ in enumerate(ToontownBattleGlobals.Tracks):
+            av.experience.addExp(index, self.amount)
+        av.b_setExperience(av.experience.getCurrentExperience())
+        av.d_setSystemMessage(0, f"You were given a bundle of {self.amount} gag experience!")
 
 class ProofReward(APReward):
     class ProofType(IntEnum):
@@ -389,6 +400,12 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     items.ITEM_500_MONEY: JellybeanReward(500),
     items.ITEM_1000_MONEY: JellybeanReward(1000),
     items.ITEM_2000_MONEY: JellybeanReward(2000),
+
+    items.ITEM_500_XP: GagExpBundleAward(500),
+    items.ITEM_1000_XP: GagExpBundleAward(1000),
+    items.ITEM_1500_XP: GagExpBundleAward(1500),
+    items.ITEM_2000_XP: GagExpBundleAward(2000),
+    items.ITEM_2500_XP: GagExpBundleAward(2500),
 
     items.ITEM_UBER_TRAP: UberTrapAward(),
     items.ITEM_DRIP_TRAP: DripTrapAward(),

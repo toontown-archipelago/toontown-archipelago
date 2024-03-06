@@ -106,6 +106,12 @@ ITEM_500_MONEY = "500 Jellybeans"
 ITEM_1000_MONEY = "1000 Jellybeans"
 ITEM_2000_MONEY = "2000 Jellybeans"
 
+ITEM_500_XP = "500 Gag XP Bundle"
+ITEM_1000_XP = "1000 Gag XP Bundle"
+ITEM_1500_XP = "1500 Gag XP Bundle"
+ITEM_2000_XP = "2000 Gag XP Bundle"
+ITEM_2500_XP = "2500 Gag XP Bundle"
+
 ITEM_UBER_TRAP = "Uber Trap"
 ITEM_DRIP_TRAP = "Drip Trap"
 
@@ -207,13 +213,19 @@ LIST_OF_ITEM_DEFINITIONS: Set[ToontownItemDefinition] = {
     ToontownItemDefinition(ITEM_1000_MONEY, BASE_ITEM_ID+61, ItemClassification.filler),
     ToontownItemDefinition(ITEM_2000_MONEY, BASE_ITEM_ID+62, ItemClassification.filler),
 
+    ToontownItemDefinition(ITEM_500_XP, BASE_ITEM_ID + 63, ItemClassification.filler),
+    ToontownItemDefinition(ITEM_1000_XP, BASE_ITEM_ID + 64, ItemClassification.filler),
+    ToontownItemDefinition(ITEM_1500_XP, BASE_ITEM_ID + 65, ItemClassification.filler),
+    ToontownItemDefinition(ITEM_2000_XP, BASE_ITEM_ID + 66, ItemClassification.filler),
+    ToontownItemDefinition(ITEM_2500_XP, BASE_ITEM_ID + 67, ItemClassification.filler),
+
     # Items added in hindsight, #todo do this better
-    ToontownItemDefinition(ITEM_TTC_HQ_ACCESS, BASE_ITEM_ID+63, ItemClassification.progression, quantity=0),
-    ToontownItemDefinition(ITEM_VICTORY, BASE_ITEM_ID+64, ItemClassification.progression, quantity=0),
+    ToontownItemDefinition(ITEM_TTC_HQ_ACCESS, BASE_ITEM_ID+68, ItemClassification.progression, quantity=0),
+    ToontownItemDefinition(ITEM_VICTORY, BASE_ITEM_ID+69, ItemClassification.progression, quantity=0),
 
     # Traps
-    ToontownItemDefinition(ITEM_UBER_TRAP, BASE_ITEM_ID+65, ItemClassification.trap),
-    ToontownItemDefinition(ITEM_DRIP_TRAP, BASE_ITEM_ID+66, ItemClassification.trap),
+    ToontownItemDefinition(ITEM_UBER_TRAP, BASE_ITEM_ID+70, ItemClassification.trap),
+    ToontownItemDefinition(ITEM_DRIP_TRAP, BASE_ITEM_ID+71, ItemClassification.trap),
 }
 
 ITEM_DEFINITIONS = {

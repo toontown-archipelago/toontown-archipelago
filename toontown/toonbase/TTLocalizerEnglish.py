@@ -3141,7 +3141,7 @@ FADoorCodes_BB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon
 
 FADoorCodes_TTC_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Toontown Central HQ Clearance before you can enter and complete toontasks here."
 FADoorCodes_DD_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Donald's Dock HQ Clearance before you can enter and complete toontasks here."
-FADoorCodes_DG_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Daisy's Gardens HQ Clearance before you can enter and complete toontasks here."
+FADoorCodes_DG_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Daisy Gardens HQ Clearance before you can enter and complete toontasks here."
 FADoorCodes_MM_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Minnie's Melodyland HQ Clearance before you can enter and complete toontasks here."
 FADoorCodes_TB_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need The Brrrgh HQ Clearance before you can enter and complete toontasks here."
 FADoorCodes_DDL_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Donald's Dreamland HQ Clearance before you can enter and complete toontasks here."
