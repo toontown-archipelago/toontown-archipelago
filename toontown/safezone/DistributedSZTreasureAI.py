@@ -1,3 +1,4 @@
+import math
 from . import DistributedTreasureAI
 from toontown.toonbase import ToontownGlobals
 
@@ -17,4 +18,4 @@ class DistributedSZTreasureAI(DistributedTreasureAI.DistributedTreasureAI):
         DistributedTreasureAI.DistributedTreasureAI.d_setGrab(self, avId)
         if avId in self.air.doId2do:
             av = self.air.doId2do[avId]
-            av.toonUp(av.maxHp * self.healAmount)
+            av.toonUp(math.ceil(av.maxHp * self.healAmount))

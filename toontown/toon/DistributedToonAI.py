@@ -1,3 +1,4 @@
+import math
 from typing import List, Tuple
 
 from otp.ai.AIBaseGlobal import *
@@ -2512,7 +2513,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         taskMgr.doMethodLater(self.healFrequency, self.toonUpTask, self.uniqueName('safeZoneToonUp'))
 
     def __getPassiveToonupAmount(self):
-        return self.getMaxHp() * ToontownGlobals.PassiveHealPercentage
+        return math.ceil(self.getMaxHp() * ToontownGlobals.PassiveHealPercentage)
 
     def toonUpTask(self, task):
         self.toonUp(self.__getPassiveToonupAmount())
