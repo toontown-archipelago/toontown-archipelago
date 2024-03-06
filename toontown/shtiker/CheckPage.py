@@ -30,9 +30,9 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.arrowButtonScale = 1.3
         self.itemFrameXorigin = -0.237
         self.itemFrameZorigin = 0.365
-        self.buttonXstart = self.itemFrameXorigin + 0.293
+        self.buttonXstart = self.itemFrameXorigin + 0.425
         self.regenerateScrollList()
-        self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % 'TODO',
+        self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % 0,
                                             text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None,
                                             pos=(0, 0, 0.525))
         scrollTitle = DirectFrame(parent=self.scrollList, text=TTLocalizer.ShardPageScrollTitle, text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None, pos=(self.buttonXstart, 0, self.itemFrameZorigin + 0.127))
@@ -49,6 +49,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
             selectedIndex = self.scrollList.getSelectedIndex()
             for button in self.checkButtons:
                 button.detachNode()
+                del button
             self.updateCheckButtons()
 
             self.scrollList.destroy()
@@ -69,7 +70,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
         return
 
     def updateHintPointText(self):
-        self.hintPointsTitle['text'] = TTLocalizer.HintPointsTitle % 'TODO'  # base.localAvatar.hintPoints
+        self.hintPointsTitle['text'] = TTLocalizer.HintPointsTitle % base.localAvatar.hintPoints
 
     def updateCheckButtons(self):
         recItems = base.localAvatar.getReceivedItems()
@@ -86,7 +87,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
 
     def makeCheckButton(self, checkName, checkCount, checkMax):
         checkButtonParent = DirectFrame()
-        checkCount = 1
         checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=checkName, text_scale=0.06, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=None)
         model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         check = model.find('**/checkmark')

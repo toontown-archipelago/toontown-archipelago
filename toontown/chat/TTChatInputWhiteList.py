@@ -174,39 +174,4 @@ class TTChatInputWhiteList(ChatInputWhiteListFrame):
             self.whisperLabel.hide()
 
     def applyFilter(self, keyArgs, strict = False):
-        text = self.chatEntry.get(plain=True)
-        if len(text) > 0 and text[0] in ['~', '>']:
-            self.okayToSubmit = True
-        else:
-            words = text.split(' ')
-            newwords = []
-            self.okayToSubmit = True
-            flag = 0
-            for friendId, flags in base.localAvatar.friendsList:
-                if flags & ToontownGlobals.FriendChat:
-                    flag = 1
-
-            for word in words:
-                if word == '' or self.whiteList.isWord(word) or not base.cr.whiteListChatEnabled:
-                    newwords.append(word)
-                else:
-                    if self.checkBeforeSend:
-                        self.okayToSubmit = False
-                    else:
-                        self.okayToSubmit = True
-                    if flag:
-                        newwords.append('\x01WLDisplay\x01' + word + '\x02')
-                    else:
-                        newwords.append('\x01WLEnter\x01' + word + '\x02')
-
-            if not strict:
-                lastword = words[-1]
-                if lastword == '' or self.whiteList.isPrefix(lastword) or not base.cr.whiteListChatEnabled:
-                    newwords[-1] = lastword
-                elif flag:
-                    newwords[-1] = '\x01WLDisplay\x01' + lastword + '\x02'
-                else:
-                    newwords[-1] = '\x01WLEnter\x01' + lastword + '\x02'
-            newtext = ' '.join(newwords)
-            self.chatEntry.set(newtext)
-        self.chatEntry.guiItem.setAcceptEnabled(self.okayToSubmit)
+        self.chatEntry.guiItem.setAcceptEnabled(True)
