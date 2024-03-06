@@ -545,13 +545,8 @@ class NameShop(StateData.StateData):
                 return TTLocalizer.NCGeneric
 
     def nameIsValid(self, name):
-        self.notify.debug('nameIsValid')
-        if name in self.usedNames:
-            return TTLocalizer.ToonAlreadyExists % name
-        problem = NameCheck.checkName(name, [self._checkNpcNames], font=self.nameEntry.getFont())
-        if problem:
-            return problem
-        return None
+        # I am sure this is fine, slots need to always be valid based on what they put in for AP slot
+        return None  # Don't return a problem found in the name
 
     def setShopsVisited(self, list):
         self.shopsVisited = list
@@ -772,14 +767,13 @@ class NameShop(StateData.StateData):
         self.notify.debug('__typedAName')
         self.nameEntry['focus'] = 0
         name = self.nameEntry.get()
-        name = TextEncoder().decodeText(name)
         name = name.strip()
-        name = TextEncoder().encodeWtext(name)
         self.nameEntry.enterText(name)
         problem = self.nameIsValid(self.nameEntry.get())
-        if problem:
+        if problem is not None:
             self.rejectName(problem)
             return
+
         self.checkNameTyped(justCheck=True)
 
     def exitTypeANameState(self):
