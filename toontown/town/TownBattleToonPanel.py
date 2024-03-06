@@ -126,10 +126,16 @@ class TownBattleToonPanel(DirectFrame):
             dmg = getAvPropDamage(track, level, self.avatar.experience, self.avatar.trackBonusLevel[track] >= level)
             operator = '+' if track == HEAL_TRACK else '-'
             if track == LURE_TRACK:
-                dmg = AvLureRounds[level]
-                operator = ''
-            color = (0, 1, 0, 1) if track in (HEAL_TRACK, LURE_TRACK) else (1, 0, 0, 1)
-            self.gagDamageText['text'] = f"{operator}{int(dmg)}"
+                operator = ' KB'
+                color = (1, 0.5, 0, 1)
+            if track == HEAL_TRACK:
+                color = (0, 1, 0, 1)
+            elif track != LURE_TRACK:
+                color = (1, 0, 0, 1)
+            if track == LURE_TRACK:
+                self.gagDamageText['text'] = f"{int(dmg)}{operator}"
+            else:
+                self.gagDamageText['text'] = f"{operator}{int(dmg)}"
             self.gagDamageText['text_fg'] = color
             self.gagDamageText.show()
             if numTargets is not None and targetIndex is not None and localNum is not None:
