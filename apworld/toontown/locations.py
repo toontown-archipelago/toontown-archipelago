@@ -175,6 +175,9 @@ DISCOVER_MM = "Discover Minnie's Melodyland"
 DISCOVER_TB = "Discover The Brrrgh"
 DISCOVER_DDL = "Discover Donald's Dreamland"
 
+DISCOVER_GS = "Discover Goofy Speedway"
+DISCOVER_AA = "Discover Acorn Acres"
+
 DISCOVER_SBHQ = "Discover Sellbot HQ"
 DISCOVER_CBHQ = "Discover Cashbot HQ"
 DISCOVER_LBHQ = "Discover Lawbot HQ"
@@ -407,6 +410,9 @@ LIST_OF_LOCATION_DEFINITIONS: Set[ToontownLocationDefinition] = {
     ToontownLocationDefinition(DISCOVER_MM, BASE_ID+140, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
     ToontownLocationDefinition(DISCOVER_TB, BASE_ID+141, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
     ToontownLocationDefinition(DISCOVER_DDL, BASE_ID+142, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+
+    ToontownLocationDefinition(DISCOVER_GS, BASE_ID + 143, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
+    ToontownLocationDefinition(DISCOVER_AA, BASE_ID + 144, location_type=ToontownLocationType.DISCOVER_PLAYGROUND),
 }
 
 # Maps Location Definitions by location name -> location definition

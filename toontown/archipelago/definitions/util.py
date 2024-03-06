@@ -67,6 +67,9 @@ def get_zone_discovery_id(zoneId: int) -> int:
         ToontownGlobals.TheBrrrgh: locations.DISCOVER_TB,
         ToontownGlobals.DonaldsDreamland: locations.DISCOVER_DDL,
 
+        ToontownGlobals.GoofySpeedway: locations.DISCOVER_GS,
+        ToontownGlobals.OutdoorZone: locations.DISCOVER_AA,
+
         ToontownGlobals.SellbotHQ: locations.DISCOVER_SBHQ,
         ToontownGlobals.CashbotHQ: locations.DISCOVER_CBHQ,
         ToontownGlobals.LawbotHQ: locations.DISCOVER_LBHQ,
