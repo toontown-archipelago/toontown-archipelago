@@ -21,7 +21,7 @@ class ToontownTestPlaygroundAccess(ToontownTestBase):
             self.assertTrue(self.can_reach_location(f"Toontown Central Task #{i + 1}"))
 
         # Test task + clearance working correctly
-        for pg_name in ("Donald's Dock", "Daisy's Gardens", "Minnie's Melodyland", "The Brrrgh", "Donald's Dreamland"):
+        for pg_name in ("Donald's Dock", "Daisy Gardens", "Minnie's Melodyland", "The Brrrgh", "Donald's Dreamland"):
 
             for i in range(12):
                 self.assertFalse(self.can_reach_location(f"{pg_name} Task #{i + 1}"))
