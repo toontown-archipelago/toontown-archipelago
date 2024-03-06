@@ -4728,7 +4728,7 @@ RemapPrompt = 'Choose the keys you wish to remap.'
 RemapPopup = 'Press the key you wish to remap this control to.'
 Controls = ['Move Up:', 'Move Left:', 'Move Down:', 'Move Right:', 'Jump:', 'Action Key:', 'Options Hotkey:', 'Chatbox Hotkey:',
             'Screenshot Key:', 'Crane Grab Key:', 'Sprint Key:', 'Alt. Action Key:']
-OptionsTabTitle = 'Options\n& Codes'
+OptionsTabTitle = 'Options'
 OptionsPagePurchase = 'Subscribe'
 OptionsPageLogout = 'Logout'
 OptionsPageExitToontown = 'Exit Toontown'

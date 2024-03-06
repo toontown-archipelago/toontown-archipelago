@@ -16,7 +16,7 @@ notify-level-chan warning
 notify-level-gobj warning
 notify-level-loader warning
 notify-integrate false
-notify-timestamp true
+notify-timestamp false
 default-directnotify-level info
 
 # Server settings
@@ -59,3 +59,4 @@ early-event-sphere true
 server-data-folder backups/
 isclient-check false
 model-cache-dir
+texture-anisotropic-degree 16
