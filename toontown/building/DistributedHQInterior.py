@@ -126,7 +126,7 @@ class DistributedHQInterior(DistributedObject.DistributedObject):
         self.leaderAvIds = avIds
         self.leaderNames = names
         self.leaderScores = scores
-        self.updateLeaderBoard()
+        #self.updateLeaderBoard()
 
     def chooseDoor(self):
         doorModelName = 'door_double_round_ul'
