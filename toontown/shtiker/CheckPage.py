@@ -1,8 +1,8 @@
-from typing import Dict
+from typing import Dict, List
 
 from . import ShtikerBook, ShtikerPage
 
-from apworld.toontown import items
+from apworld.toontown import items, ToontownItemDefinition
 
 from toontown.toonbase import TTLocalizer
 from direct.fsm import StateData
@@ -88,12 +88,13 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.checkButtons = []
 
         itemDict = items.ITEM_DEFINITIONS
-        for check in itemDict.keys():
-            defin = itemDict.get(check)
-            if defin.quantity == 0:
+        allItems: List[ToontownItemDefinition] = list(itemDict.values())
+        allItems.sort(key=lambda _item: _item.unique_id)
+        for check in allItems:
+            if check.quantity == 0:
                 pass
             else:
-                button = self.makeCheckButton(defin.unique_name, itemsAndCount.get(defin.unique_id, 0), defin.quantity)  # TODO use actual pool from AP for quantity max
+                button = self.makeCheckButton(check.unique_name, itemsAndCount.get(check.unique_id, 0), check.quantity)  # TODO use actual pool from AP for quantity max
                 self.checkButtons.append(button[0])
 
     def makeCheckButton(self, checkName, checkCount, checkMax):
