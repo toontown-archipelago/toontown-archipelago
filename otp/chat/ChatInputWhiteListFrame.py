@@ -169,7 +169,7 @@ class ChatInputWhiteListFrame(FSM.FSM, DirectFrame):
         self.chatEntry['focus'] = 1
         self.show()
         self.active = 1
-        self.chatEntry.guiItem.setAcceptEnabled(False)
+        self.chatEntry.guiItem.setAcceptEnabled(True)
 
     def deactivate(self):
         self.chatEntry.set('')
@@ -322,30 +322,4 @@ class ChatInputWhiteListFrame(FSM.FSM, DirectFrame):
                 return str(exception)
 
     def applyFilter(self, keyArgs, strict = False):
-        text = self.chatEntry.get(plain=True)
-        if len(text) > 0 and text[0] in ['~', '>']:
-            self.okayToSubmit = True
-        else:
-            words = text.split(' ')
-            newwords = []
-            self.notify.debug('%s' % words)
-            self.okayToSubmit = True
-            for word in words:
-                if word == '' or self.whiteList.isWord(word):
-                    newwords.append(word)
-                else:
-                    if self.checkBeforeSend:
-                        self.okayToSubmit = False
-                    else:
-                        self.okayToSubmit = True
-                    newwords.append('\x01WLEnter\x01' + word + '\x02')
-
-            if not strict:
-                lastword = words[-1]
-                if lastword == '' or self.whiteList.isPrefix(lastword):
-                    newwords[-1] = lastword
-                else:
-                    newwords[-1] = '\x01WLEnter\x01' + lastword + '\x02'
-            newtext = ' '.join(newwords)
-            self.chatEntry.set(newtext)
-        self.chatEntry.guiItem.setAcceptEnabled(self.okayToSubmit)
+        self.chatEntry.guiItem.setAcceptEnabled(True)
