@@ -4411,8 +4411,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setBaseGagSkillMultiplier(1)
 
         # Default money
-        self.b_setMaxMoney(50)
-        self.b_setMoney(50)
+        self.b_setMaxMoney(1000)
+        self.b_setMoney(100)
         self.b_setBankMoney(0)
 
         # Fishing
