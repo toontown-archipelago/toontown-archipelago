@@ -18,7 +18,6 @@ from toontown.shtiker import MapPage
 from toontown.shtiker import OptionsPage
 from toontown.shtiker import ShardPage
 from toontown.shtiker import QuestPage
-from toontown.shtiker import TrackPage
 from toontown.shtiker import KartPage
 from toontown.shtiker import GardenPage
 from toontown.shtiker import GolfPage
@@ -29,6 +28,7 @@ from toontown.shtiker import FishPage
 from toontown.shtiker import NPCFriendPage
 from toontown.shtiker import EventsPage
 from toontown.shtiker import TIPPage
+from toontown.shtiker import CheckPage
 from toontown.quest import Quests
 from toontown.quest import QuestParser
 from toontown.toonbase.ToontownGlobals import *
@@ -266,7 +266,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         del self.disguisePage
         del self.fishPage
         del self.gardenPage
-        del self.trackPage
         del self.wordPage
         del self.book
         if base.wantKarts:
@@ -336,6 +335,9 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.shardPage = ShardPage.ShardPage()
         self.shardPage.load()
         self.book.addPage(self.shardPage, pageName=TTLocalizer.ShardPageTitle)
+        self.checkPage = CheckPage.CheckPage()
+        self.checkPage.load()
+        self.book.addPage(self.checkPage, pageName=TTLocalizer.CheckPageTitle)
         self.mapPage = MapPage.MapPage()
         self.mapPage.load()
         self.book.addPage(self.mapPage, pageName=TTLocalizer.MapPageTitle)
@@ -345,9 +347,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.questPage = QuestPage.QuestPage()
         self.questPage.load()
         self.book.addPage(self.questPage, pageName=TTLocalizer.QuestPageToonTasks)
-        self.trackPage = TrackPage.TrackPage()
-        self.trackPage.load()
-        self.book.addPage(self.trackPage, pageName=TTLocalizer.TrackPageShortTitle)
         self.suitPage = SuitPage.SuitPage()
         self.suitPage.load()
         self.book.addPage(self.suitPage, pageName=TTLocalizer.SuitPageTitle)
