@@ -1,5 +1,7 @@
 from . import ShtikerBook, ShtikerPage
-from toontown.archipelago.definitions import items
+
+from apworld.toontown import items
+
 from toontown.toonbase import TTLocalizer
 from direct.fsm import StateData
 from direct.gui.DirectGui import *

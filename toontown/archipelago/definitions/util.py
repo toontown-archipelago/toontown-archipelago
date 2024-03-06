@@ -1,4 +1,5 @@
-from toontown.archipelago.definitions import locations
+from apworld.toontown import locations
+
 from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
 

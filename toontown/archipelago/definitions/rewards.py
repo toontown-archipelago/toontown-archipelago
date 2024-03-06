@@ -3,12 +3,12 @@ from enum import IntEnum
 
 import random
 
-from toontown.archipelago.definitions import items
-from toontown.archipelago.definitions.items import ToontownItemDefinition
+from apworld.toontown import items
+
 from toontown.building import FADoorCodes
 from toontown.coghq.CogDisguiseGlobals import PartsPerSuitBitmasks
 from toontown.fishing import FishGlobals
-from toontown.toonbase import ToontownGlobals, TTLocalizer
+from toontown.toonbase import ToontownGlobals
 
 # Typing hack, can remove later
 TYPING = False

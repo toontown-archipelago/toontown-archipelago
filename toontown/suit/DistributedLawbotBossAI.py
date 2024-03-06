@@ -20,7 +20,9 @@ from toontown.suit import DistributedLawbotBossSuitAI
 from toontown.coghq import DistributedLawbotCannonAI
 from toontown.coghq import DistributedLawbotChairAI
 from toontown.toonbase import ToontownBattleGlobals
-from ..archipelago.definitions import locations
+
+from apworld.toontown import locations
+
 from ..archipelago.definitions.util import ap_location_name_to_id
 
 
