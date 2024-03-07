@@ -1,5 +1,8 @@
+from typing import List
+
 from panda3d.core import *
 
+from toontown.archipelago.definitions.util import track_and_level_to_location, ap_location_name_to_id
 from toontown.toonbase import ToontownBattleGlobals
 from direct.directnotify import DirectNotifyGlobal
 from otp.otpbase import OTPGlobals
@@ -37,6 +40,26 @@ class Experience:
         trackExperienceCap = max(0, trackExperienceCap)
         return trackExperienceCap
 
+    def getAllowedGagLevels(self, track):
+
+        levels: List[int] = []
+
+        # Grab the exp requirements for this track
+        thresholds = ToontownBattleGlobals.Levels[track]
+
+        # Loop through the thresholds
+        for gagIndex, requiredExp in enumerate(thresholds):
+
+            # No track not valid
+            if not self.owner.hasTrackAccess(track):
+                continue
+
+            # if we have the required experience to learn this gag
+            if self.experience[track] >= requiredExp:
+                levels.append(gagIndex)
+
+        return levels
+
     def addExp(self, track, amount=1):
 
         self.notify.debug('adding %d exp to track %d' % (amount, track))
@@ -46,6 +69,15 @@ class Experience:
         # Add the xp, and make sure that it does not go above our cap
         newXp = self.experience[track] + amount
         self.experience[track] = min(trackExperienceCap, newXp)
+
+        # Now determine the checks that we are eligible for
+        allowedGagLevelsForTrack = self.getAllowedGagLevels(track)
+        apChecks = []
+        for gagLevel in allowedGagLevelsForTrack:
+            apCheckID = ap_location_name_to_id(track_and_level_to_location(track, gagLevel))
+            apChecks.append(apCheckID)
+
+        self.owner.addCheckedLocations(apChecks)
 
     # Call when we decrement track access levels, this will decrease our xp to correct values
     def fixTrackAccessLimits(self):
@@ -65,6 +97,7 @@ class Experience:
         if type(track) == type(''):
             track = ToontownBattleGlobals.Tracks.index(track)
         self.experience[track] = exp
+        self.addExp(track, 0)
 
     def getExpLevel(self, track):
         if type(track) == type(''):

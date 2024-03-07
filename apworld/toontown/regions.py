@@ -105,6 +105,8 @@ REGION_MIDDLE_THREE = "Middle Two"
 REGION_BACK_THREE = "Back Three"
 REGION_CEO = "Bossbot CEO"
 
+REGION_GAG_TRAINING = "Gag Training"
+
 # Win condition
 REGION_FLIPPY_COMPLETE = "Flippy (Saved Toontown)"
 
@@ -126,7 +128,8 @@ REGION_GROUP_INITIAL_ACCESSIBLE_REGIONS = [
     REGION_CBHQ_TUNNEL,
     REGION_LBHQ_TUNNEL,
     REGION_BBHQ_TUNNEL,
-    REGION_FLIPPY_COMPLETE
+    REGION_FLIPPY_COMPLETE,
+    REGION_GAG_TRAINING
 ]
 
 # Regions for grouping activities in cog HQs
@@ -158,6 +161,7 @@ REGION_GROUP_BOSSBOT_HQ = [
     REGION_CEO
 ]
 
+
 # A list of all regions in the game. Regions are progression stages that contain "checks"
 # A region is typically defined as something that needs progression for a group of locations to be unlocked
 REGION_DEFINITIONS = (
@@ -167,6 +171,9 @@ REGION_DEFINITIONS = (
 
     # Collection of checks received for logging in
     ToontownRegionDefinition(REGION_LOGIN, locations=locations.LOGIN_LOCATIONS),
+
+    # Collection of checks for training gags. Locks are defined on the individual locations
+    ToontownRegionDefinition(REGION_GAG_TRAINING, locations.GAG_TRAINING_LOCATIONS),
 
     # Cog Gallery is always accessible right away, has 32 checks and is the end of its branch
     ToontownRegionDefinition(REGION_GALLERY, locations=locations.GALLERY_LOCATIONS),

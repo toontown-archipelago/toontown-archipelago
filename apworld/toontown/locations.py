@@ -3,6 +3,7 @@ from typing import Optional, List, Set
 
 from BaseClasses import Location, Region, LocationProgressType
 from .locks import LockBase
+from .locks.GagItemLock import GagItemLock
 
 # Fill in if some items need more context
 LOCATION_DESCRIPTIONS = {
@@ -17,8 +18,9 @@ class ToontownLocationType(IntEnum):
     BOSSES = 4  # Locations for clearing bosses
     FISHING = 5  # Locations for fishing trophies
     DISCOVER_PLAYGROUND = 6  # Locations for discovering playgrounds
+    GAG_TRAINING = 7  # Locations for training gags
 
-    STARTER = 7  # Location that is considered a "starting" check on login, typically we force checks here
+    STARTER = 8  # Location that is considered a "starting" check on login, typically we force checks here
 
 
 class ToontownLocationDefinition:
@@ -129,6 +131,62 @@ MR_HOLLYWOOD_MAXED_LOCATION = "Cog Gallery Maxed (Mr. Hollywood)"
 ROBBER_BARRON_MAXED_LOCATION = "Cog Gallery Maxed (Robber Baron)"
 BIG_WIG_MAXED_LOCATION = "Cog Gallery Maxed (Big Wig)"
 BIG_CHEESE_MAXED_LOCATION = "Cog Gallery Maxed (Big Cheese)"
+
+TOONUP_FEATHER_UNLOCKED = "Feather Unlocked (Toon-up Training)"
+TOONUP_MEGAPHONE_UNLOCKED = "Megaphone Unlocked (Toon-up Training)"
+TOONUP_LIPSTICK_UNLOCKED = "Lipstick Unlocked (Toon-up Training)"
+TOONUP_CANE_UNLOCKED = "Bamboo Cane Unlocked (Toon-up Training)"
+TOONUP_PIXIE_UNLOCKED = "Pixie Dust Unlocked (Toon-up Training)"
+TOONUP_JUGGLING_UNLOCKED = "Juggling Cubes Unlocked (Toon-up Training)"
+TOONUP_HIGHDIVE_UNLOCKED = "High Dive Unlocked (MAXED Toon-up)"
+
+TRAP_BANANA_UNLOCKED = "Banana Peel Unlocked (Trap Training)"
+TRAP_RAKE_UNLOCKED = "Rake Unlocked (Trap Training)"
+TRAP_MARBLES_UNLOCKED = "Marbles Unlocked (Trap Training)"
+TRAP_QUICKSAND_UNLOCKED = "Quicksand Unlocked (Trap Training)"
+TRAP_TRAPDOOR_UNLOCKED = "Trapdoor Unlocked (Trap Training)"
+TRAP_TNT_UNLOCKED = "TNT Unlocked (Trap Training)"
+TRAP_TRAIN_UNLOCKED = "Railroad Unlocked (MAXED Trap)"
+
+LURE_ONEBILL_UNLOCKED = "$1 Bill Unlocked (Lure Training)"
+LURE_SMALLMAGNET_UNLOCKED = "Small Magnet Unlocked (Lure Training)"
+LURE_FIVEBILL_UNLOCKED = "$5 Bill Unlocked (Lure Training)"
+LURE_BIGMAGNET_UNLOCKED = "Big Magnet Unlocked (Lure Training)"
+LURE_TENBILL_UNLOCKED = "$10 Bill Unlocked (Lure Training)"
+LURE_HYPNO_UNLOCKED = "Hypno-Goggles Unlocked (Lure Training)"
+LURE_PRESENTATION_UNLOCKED = "Presentation Unlocked (MAXED Lure)"
+
+SOUND_BIKEHORN_UNLOCKED = "Bike Horn Unlocked (Sound Training)"
+SOUND_WHISTLE_UNLOCKED = "Whistle Unlocked (Sound Training)"
+SOUND_BUGLE_UNLOCKED = "Bugle Unlocked (Sound Training)"
+SOUND_AOOGAH_UNLOCKED = "Aoogah Unlocked (Sound Training)"
+SOUND_TRUNK_UNLOCKED = "Elephant Trunk Unlocked (Sound Training)"
+SOUND_FOG_UNLOCKED = "Foghorn Unlocked (Sound Training)"
+SOUND_OPERA_UNLOCKED = "Opera Singer Unlocked (MAXED Sound)"
+
+THROW_CUPCAKE_UNLOCKED = "Cupcake Unlocked (Throw Training)"
+THROW_FRUITPIESLICE_UNLOCKED = "Fruit Pie Slice Unlocked (Throw Training)"
+THROW_CREAMPIESLICE_UNLOCKED = "Cream Pie Slice Unlocked (Throw Training)"
+THROW_WHOLEFRUIT_UNLOCKED = "Whole Fruit Pie Unlocked (Throw Training)"
+THROW_WHOLECREAM_UNLOCKED = "Whole Cream Pie Unlocked (Throw Training)"
+THROW_CAKE_UNLOCKED = "Birthday Cake Unlocked (Throw Training)"
+THROW_WEDDING_UNLOCKED = "Wedding Cake Unlocked (MAXED Throw)"
+
+SQUIRT_SQUIRTFLOWER_UNLOCKED = "Squirting Flower Unlocked (Squirt Training)"
+SQUIRT_GLASS_UNLOCKED = "Glass of Water Unlocked (Squirt Training)"
+SQUIRT_SQUIRTGUN_UNLOCKED = "Squirt Gun Unlocked (Squirt Training)"
+SQUIRT_SELTZER_UNLOCKED = "Seltzer Bottle Unlocked (Squirt Training)"
+SQUIRT_HOSE_UNLOCKED = "Firehose Unlocked (Squirt Training)"
+SQUIRT_CLOUD_UNLOCKED = "Stormcloud Unlocked (Squirt Training)"
+SQUIRT_GEYSER_UNLOCKED = "Geyser Unlocked (MAXED Squirt)"
+
+DROP_FLOWERPOT_UNLOCKED = "Flowerpot Unlocked (Drop Training)"
+DROP_SANDBAG_UNLOCKED = "Sandbag Unlocked (Drop Training)"
+DROP_ANVIL_UNLOCKED = "Anvil Unlocked (Drop Training)"
+DROP_BIGWEIGHT_UNLOCKED = "Big Weight Unlocked (Drop Training)"
+DROP_SAFE_UNLOCKED = "Safe Unlocked (Drop Training)"
+DROP_PIANO_UNLOCKED = "Piano Unlocked (Drop Training)"
+DROP_BOAT_UNLOCKED = "Toontanic Unlocked (MAXED Drop)"
 
 FISHING_10_SPECIES = "(Fishing) 10 Species Caught Trophy"
 FISHING_20_SPECIES = "(Fishing) 20 Species Caught Trophy"
@@ -502,6 +560,64 @@ LIST_OF_LOCATION_DEFINITIONS: Set[ToontownLocationDefinition] = {
     ToontownLocationDefinition(ROBBER_BARRON_MAXED_LOCATION, BASE_ID + 174, location_type=ToontownLocationType.GALLERY),
     ToontownLocationDefinition(BIG_WIG_MAXED_LOCATION, BASE_ID + 175, location_type=ToontownLocationType.GALLERY),
     ToontownLocationDefinition(BIG_CHEESE_MAXED_LOCATION, BASE_ID + 176, location_type=ToontownLocationType.GALLERY),
+
+    # Gag Training (49)
+    ToontownLocationDefinition(TOONUP_FEATHER_UNLOCKED, BASE_ID+177, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TOONUP, 1)),
+    ToontownLocationDefinition(TOONUP_MEGAPHONE_UNLOCKED, BASE_ID+178, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TOONUP, 2)),
+    ToontownLocationDefinition(TOONUP_LIPSTICK_UNLOCKED, BASE_ID+179, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TOONUP, 3)),
+    ToontownLocationDefinition(TOONUP_CANE_UNLOCKED, BASE_ID+180, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TOONUP, 4)),
+    ToontownLocationDefinition(TOONUP_PIXIE_UNLOCKED, BASE_ID+181, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TOONUP, 5)),
+    ToontownLocationDefinition(TOONUP_JUGGLING_UNLOCKED, BASE_ID+182, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TOONUP, 6)),
+    ToontownLocationDefinition(TOONUP_HIGHDIVE_UNLOCKED, BASE_ID+183, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TOONUP, 7)),
+
+    ToontownLocationDefinition(TRAP_BANANA_UNLOCKED, BASE_ID+184, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TRAP, 1)),
+    ToontownLocationDefinition(TRAP_RAKE_UNLOCKED, BASE_ID+185, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TRAP, 2)),
+    ToontownLocationDefinition(TRAP_MARBLES_UNLOCKED, BASE_ID+186, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TRAP, 3)),
+    ToontownLocationDefinition(TRAP_QUICKSAND_UNLOCKED, BASE_ID+187, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TRAP, 4)),
+    ToontownLocationDefinition(TRAP_TRAPDOOR_UNLOCKED, BASE_ID+188, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TRAP, 5)),
+    ToontownLocationDefinition(TRAP_TNT_UNLOCKED, BASE_ID+189, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TRAP, 6)),
+    ToontownLocationDefinition(TRAP_TRAIN_UNLOCKED, BASE_ID+190, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.TRAP, 7)),
+
+    ToontownLocationDefinition(LURE_ONEBILL_UNLOCKED, BASE_ID+191, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.LURE, 1)),
+    ToontownLocationDefinition(LURE_SMALLMAGNET_UNLOCKED, BASE_ID+192, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.LURE, 2)),
+    ToontownLocationDefinition(LURE_FIVEBILL_UNLOCKED, BASE_ID+193, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.LURE, 3)),
+    ToontownLocationDefinition(LURE_BIGMAGNET_UNLOCKED, BASE_ID+194, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.LURE, 4)),
+    ToontownLocationDefinition(LURE_TENBILL_UNLOCKED, BASE_ID+195, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.LURE, 5)),
+    ToontownLocationDefinition(LURE_HYPNO_UNLOCKED, BASE_ID+196, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.LURE, 6)),
+    ToontownLocationDefinition(LURE_PRESENTATION_UNLOCKED, BASE_ID+197, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.LURE, 7)),
+
+    ToontownLocationDefinition(SOUND_BIKEHORN_UNLOCKED, BASE_ID+198, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SOUND, 1)),
+    ToontownLocationDefinition(SOUND_WHISTLE_UNLOCKED, BASE_ID+199, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SOUND, 2)),
+    ToontownLocationDefinition(SOUND_BUGLE_UNLOCKED, BASE_ID+200, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SOUND, 3)),
+    ToontownLocationDefinition(SOUND_AOOGAH_UNLOCKED, BASE_ID+201, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SOUND, 4)),
+    ToontownLocationDefinition(SOUND_TRUNK_UNLOCKED, BASE_ID+202, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SOUND, 5)),
+    ToontownLocationDefinition(SOUND_FOG_UNLOCKED, BASE_ID+203, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SOUND, 6)),
+    ToontownLocationDefinition(SOUND_OPERA_UNLOCKED, BASE_ID+204, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SOUND, 7)),
+
+    ToontownLocationDefinition(THROW_CUPCAKE_UNLOCKED, BASE_ID+205, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.THROW, 1)),
+    ToontownLocationDefinition(THROW_FRUITPIESLICE_UNLOCKED, BASE_ID+206, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.THROW, 2)),
+    ToontownLocationDefinition(THROW_CREAMPIESLICE_UNLOCKED, BASE_ID+207, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.THROW, 3)),
+    ToontownLocationDefinition(THROW_WHOLEFRUIT_UNLOCKED, BASE_ID+208, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.THROW, 4)),
+    ToontownLocationDefinition(THROW_WHOLECREAM_UNLOCKED, BASE_ID+209, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.THROW, 5)),
+    ToontownLocationDefinition(THROW_CAKE_UNLOCKED, BASE_ID+210, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.THROW, 6)),
+    ToontownLocationDefinition(THROW_WEDDING_UNLOCKED, BASE_ID+211, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.THROW, 7)),
+
+    ToontownLocationDefinition(SQUIRT_SQUIRTFLOWER_UNLOCKED, BASE_ID+212, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SQUIRT, 1)),
+    ToontownLocationDefinition(SQUIRT_GLASS_UNLOCKED, BASE_ID+213, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SQUIRT, 2)),
+    ToontownLocationDefinition(SQUIRT_SQUIRTGUN_UNLOCKED, BASE_ID+214, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SQUIRT, 3)),
+    ToontownLocationDefinition(SQUIRT_SELTZER_UNLOCKED, BASE_ID+215, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SQUIRT, 4)),
+    ToontownLocationDefinition(SQUIRT_HOSE_UNLOCKED, BASE_ID+216, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SQUIRT, 5)),
+    ToontownLocationDefinition(SQUIRT_CLOUD_UNLOCKED, BASE_ID+217, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SQUIRT, 6)),
+    ToontownLocationDefinition(SQUIRT_GEYSER_UNLOCKED, BASE_ID+218, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.SQUIRT, 7)),
+
+    ToontownLocationDefinition(DROP_FLOWERPOT_UNLOCKED, BASE_ID+219, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.DROP, 1)),
+    ToontownLocationDefinition(DROP_SANDBAG_UNLOCKED, BASE_ID+220, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.DROP, 2)),
+    ToontownLocationDefinition(DROP_ANVIL_UNLOCKED, BASE_ID+221, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.DROP, 3)),
+    ToontownLocationDefinition(DROP_BIGWEIGHT_UNLOCKED, BASE_ID+222, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.DROP, 4)),
+    ToontownLocationDefinition(DROP_SAFE_UNLOCKED, BASE_ID+223, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.DROP, 5)),
+    ToontownLocationDefinition(DROP_PIANO_UNLOCKED, BASE_ID+224, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.DROP, 6)),
+    ToontownLocationDefinition(DROP_BOAT_UNLOCKED, BASE_ID+225, location_type=ToontownLocationType.GAG_TRAINING, lock=GagItemLock(GagItemLock.Track.DROP, 7)),
+
 }
 
 # Maps Location Definitions by location name -> location definition
@@ -528,6 +644,10 @@ FISHING_LOCATIONS: List[str] = [
 
 DISCOVER_PLAYGROUND_LOCATIONS: List[str] = [
     check.unique_name for check in LIST_OF_LOCATION_DEFINITIONS if check.location_type == ToontownLocationType.DISCOVER_PLAYGROUND
+]
+
+GAG_TRAINING_LOCATIONS: List[str] = [
+    check.unique_name for check in LIST_OF_LOCATION_DEFINITIONS if check.location_type == ToontownLocationType.GAG_TRAINING
 ]
 
 

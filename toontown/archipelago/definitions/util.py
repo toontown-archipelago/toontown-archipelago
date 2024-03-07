@@ -50,7 +50,7 @@ def cog_code_to_ap_location(cog_code: str) -> str:
 
 # Given the string representation of a location, retrieve the numeric ID
 def ap_location_name_to_id(location_name: str) -> int:
-    return locations.LOCATION_DEFINITIONS.get(location_name, -1).unique_id
+    return locations.LOCATION_DEFINITIONS[location_name].unique_id
 
 
 # Given a Zone ID, give the ID of an AP location award the player.
@@ -124,3 +124,15 @@ def hood_to_task_locations(hoodId: int):
         ToontownGlobals.DonaldsDreamland: locations.DDL_TASK_LOCATIONS,
     }.get(hoodId, [])
 
+
+def track_and_level_to_location(track: int, level: int):
+    trackAndLevels = (
+        (locations.TOONUP_FEATHER_UNLOCKED, locations.TOONUP_MEGAPHONE_UNLOCKED, locations.TOONUP_LIPSTICK_UNLOCKED, locations.TOONUP_CANE_UNLOCKED, locations.TOONUP_PIXIE_UNLOCKED, locations.TOONUP_JUGGLING_UNLOCKED, locations.TOONUP_HIGHDIVE_UNLOCKED),
+        (locations.LURE_ONEBILL_UNLOCKED, locations.LURE_SMALLMAGNET_UNLOCKED, locations.LURE_FIVEBILL_UNLOCKED, locations.LURE_BIGMAGNET_UNLOCKED, locations.LURE_TENBILL_UNLOCKED, locations.LURE_HYPNO_UNLOCKED, locations.LURE_PRESENTATION_UNLOCKED),
+        (locations.TRAP_BANANA_UNLOCKED, locations.TRAP_RAKE_UNLOCKED, locations.TRAP_MARBLES_UNLOCKED, locations.TRAP_QUICKSAND_UNLOCKED, locations.TRAP_TRAPDOOR_UNLOCKED, locations.TRAP_TNT_UNLOCKED, locations.TRAP_TRAIN_UNLOCKED),
+        (locations.SOUND_BIKEHORN_UNLOCKED, locations.SOUND_WHISTLE_UNLOCKED, locations.SOUND_BUGLE_UNLOCKED, locations.SOUND_AOOGAH_UNLOCKED, locations.SOUND_TRUNK_UNLOCKED, locations.SOUND_FOG_UNLOCKED, locations.SOUND_OPERA_UNLOCKED),
+        (locations.THROW_CUPCAKE_UNLOCKED, locations.THROW_FRUITPIESLICE_UNLOCKED, locations.THROW_CREAMPIESLICE_UNLOCKED, locations.THROW_WHOLEFRUIT_UNLOCKED, locations.THROW_WHOLECREAM_UNLOCKED, locations.THROW_CAKE_UNLOCKED, locations.THROW_WEDDING_UNLOCKED),
+        (locations.SQUIRT_SQUIRTFLOWER_UNLOCKED, locations.SQUIRT_GLASS_UNLOCKED, locations.SQUIRT_SQUIRTGUN_UNLOCKED, locations.SQUIRT_SELTZER_UNLOCKED, locations.SQUIRT_HOSE_UNLOCKED, locations.SQUIRT_CLOUD_UNLOCKED, locations.SQUIRT_GEYSER_UNLOCKED),
+        (locations.DROP_FLOWERPOT_UNLOCKED, locations.DROP_SANDBAG_UNLOCKED, locations.DROP_ANVIL_UNLOCKED, locations.DROP_BIGWEIGHT_UNLOCKED, locations.DROP_SAFE_UNLOCKED, locations.DROP_PIANO_UNLOCKED, locations.DROP_BOAT_UNLOCKED),
+    )
+    return trackAndLevels[track][level]

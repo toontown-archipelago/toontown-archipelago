@@ -94,6 +94,12 @@ class GagTrainingFrameReward(APReward):
         bonusArray[self.track] = -1
         av.b_setTrackBonusLevel(bonusArray)
 
+        # Add exp to trigger the training gag location check
+        # Only add if this is not a new track
+        xpToAdd = 1 if newLevel > 1 else 0
+        av.experience.addExp(track=self.track, amount=xpToAdd)
+        av.b_setExperience(av.experience.getCurrentExperience())
+
         # Consider the case where we just learned a new gag track, we should give them as many of them as possible
         if newLevel == 1:
             av.inventory.addItemsWithListMax([(self.track, 0)])

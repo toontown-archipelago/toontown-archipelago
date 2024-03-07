@@ -4344,6 +4344,17 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if self.archipelago_session:
             self.archipelago_session.complete_check(location)
 
+    def addCheckedLocations(self, locations: List[int]):
+
+        self.checkedLocations.extend(locations)
+        unique = set(self.checkedLocations)
+        self.checkedLocations = list(unique)
+
+        self.b_setCheckedLocations(self.checkedLocations)
+
+        if self.archipelago_session:
+            self.archipelago_session.complete_checks(self.checkedLocations)
+
     # Called to announce to Archipelago that we need to know what this location ID is so we can receive
     # A LocationInfo packet and keep track of it
     def scoutLocation(self, location: int):
@@ -4371,7 +4382,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Sent by client to request hint points from the arch session
     def requestHintPoints(self):
-        print("Requesting hint points")
         self.sendUpdate('hintPointResp', [self.hintPoints])
 
     # Checks whether or not this toon has "beat" their archipelago goal
