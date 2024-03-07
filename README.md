@@ -18,6 +18,7 @@ On top of that, this source code has also been updated to Python 3, utilizing a 
 Credits:
 * [The Toontown Offline Team](https://ttoffline.com) for the foundation of this codebase (Toontown Schoolhouse)
 * [The Corporate Clash Crew](https://corporateclash.net) for toon models, some various textures, and assistance with implementing v1.2.8 craning
+* Polygon for making the Corporate Clash toon models
 * [Open Toontown](https://github.com/open-toontown) for providing a great reference for a Toontown codebase ported to Python 3
 * Toontown Infinite for Bossbot HQ suit paths
 * [Astron](https://github.com/Astron/Astron)
@@ -41,19 +42,16 @@ If you are on a non-Windows operating system, please refer to the [Panda3D SDK s
 - [Linux](https://github.com/open-toontown/open-toontown/blob/develop/README.md#linux-building-your-own)
 
 
-# Libuv 
-This source code requires libuv.dll in the astrond folder to run. Here are links to the 32 bit dll and 64 bit dll.
-
-- [Libuv.dll (32-bit)](https://cdn.discordapp.com/attachments/638485243560460309/640339222682664973/libuv.dll)
-- [Libuv.dll(64-bit)](https://cdn.discordapp.com/attachments/638485243560460309/640339153346887696/libuv.dll)
-
-
-After downloading the file just drop it in the astron folder.
-
 # Running the Source
 
 First, navigate to the `PPYTHON_PATH` file in the root directory and open it. Make sure that the path to your Panda3D install is present. If you left default options while running the Panda3D installer, it should be `"C:/Panda3D-1.11.0-x64/python/ppython.exe"
 ` in almost all cases.
+
+### pip install requirements
+
+- Once you've assured that your `PPYTHON_PATH` is set properly you'll want to go back to the root `toontown-archipelago` directory and press `Shift + Right-Click` on any blank area of the folder.
+- Click on either `Open PowerShell window here` or `Open command window here`, whichever appears for you.
+- Paste/type in the following command and run it to install the additional requirements: `ppython -m pip install -r requirements.txt`
 
 Once you have done all the proper setup covered in this README, you can now navigate to the `win32` folder in the root directory.
 Once you are there, you need to run the `.bat` files present in the following order:
