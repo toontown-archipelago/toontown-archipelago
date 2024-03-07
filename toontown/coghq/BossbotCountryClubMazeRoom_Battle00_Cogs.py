@@ -40,5 +40,5 @@ CogData = [{'parentEntId': CogParent,
   'behavior': 'stand',
   'path': None,
   'skeleton': 0,
-  'revives': 1}]
+  'revives': 0}]
 ReserveCogData = []
