@@ -1,5 +1,6 @@
 from .BattleBase import *
 import random
+import math
 from direct.directnotify import DirectNotifyGlobal
 from otp.otpbase import OTPLocalizer
 from toontown.toonbase import TTLocalizer
@@ -113,7 +114,7 @@ def getSuitAttack(suitName, suitLevel, attackNum = -1):
     adict['animName'] = SuitAttacks[name][0]
 
     if suitLevel > (len(attack[1]) - 1):
-        adict['hp'] = attack[1][(len(attack[1]) - 1)] * (1.1 ** (suitLevel - len(attack[1])))
+        adict['hp'] = math.ceil(attack[1][(len(attack[1]) - 1)] * (1.05 ** (suitLevel - len(attack[1]))))
     else:
         adict['hp'] = attack[1][suitLevel]
 
