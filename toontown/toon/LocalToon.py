@@ -665,6 +665,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
     def __zeroPowerToss(self):
         self.__beginTossPie(0)
+        self.__endTossPie(0)
 
     def localPresentPie(self, time):
         from otp.avatar import Emote
