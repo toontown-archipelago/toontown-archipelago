@@ -247,6 +247,16 @@ ITEM_DEFINITIONS = {
     item_def.unique_name: item_def for item_def in LIST_OF_ITEM_DEFINITIONS
 }
 
+GAG_TRAINING_FRAMES = (
+    ITEM_TOONUP_FRAME,
+    ITEM_TRAP_FRAME,
+    ITEM_LURE_FRAME,
+    ITEM_SOUND_FRAME,
+    ITEM_THROW_FRAME,
+    ITEM_SQUIRT_FRAME,
+    ITEM_DROP_FRAME
+)
+
 # Junk items are items where they are classified as filler
 # todo add quality/rarity to filler items and add weighting options as a setting so junk is better sometimes
 JUNK_ITEMS = [

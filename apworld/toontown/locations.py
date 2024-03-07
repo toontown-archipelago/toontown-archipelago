@@ -3,6 +3,7 @@ from typing import Optional, List, Set
 
 from BaseClasses import Location, Region, LocationProgressType
 from .locks import LockBase
+from .locks.GagFrameQuantityLock import GagFrameQuantityLock
 from .locks.GagItemLock import GagItemLock
 
 # Fill in if some items need more context
@@ -497,15 +498,15 @@ LIST_OF_LOCATION_DEFINITIONS: Set[ToontownLocationDefinition] = {
     # CFO Victory (2)
     # CJ Victory (2)
     # CEO Victory (2)
-    ToontownLocationDefinition(CLEAR_VP, BASE_ID+128, location_type=ToontownLocationType.BOSSES),
-    ToontownLocationDefinition(CLEAR_CFO, BASE_ID+129, location_type=ToontownLocationType.BOSSES),
-    ToontownLocationDefinition(CLEAR_CJ, BASE_ID+130, location_type=ToontownLocationType.BOSSES),
-    ToontownLocationDefinition(CLEAR_CEO, BASE_ID+131, location_type=ToontownLocationType.BOSSES),
+    ToontownLocationDefinition(CLEAR_VP, BASE_ID+128, location_type=ToontownLocationType.BOSSES, lock=GagFrameQuantityLock(30)),
+    ToontownLocationDefinition(CLEAR_CFO, BASE_ID+129, location_type=ToontownLocationType.BOSSES, lock=GagFrameQuantityLock(35)),
+    ToontownLocationDefinition(CLEAR_CJ, BASE_ID+130, location_type=ToontownLocationType.BOSSES, lock=GagFrameQuantityLock(40)),
+    ToontownLocationDefinition(CLEAR_CEO, BASE_ID+131, location_type=ToontownLocationType.BOSSES, lock=GagFrameQuantityLock(45)),
 
-    ToontownLocationDefinition(SELLBOT_PROOF, BASE_ID+132, location_type=ToontownLocationType.BOSSES),
-    ToontownLocationDefinition(CASHBOT_PROOF, BASE_ID+133, location_type=ToontownLocationType.BOSSES),
-    ToontownLocationDefinition(LAWBOT_PROOF, BASE_ID+134, location_type=ToontownLocationType.BOSSES),
-    ToontownLocationDefinition(BOSSBOT_PROOF, BASE_ID+135, location_type=ToontownLocationType.BOSSES),
+    ToontownLocationDefinition(SELLBOT_PROOF, BASE_ID+132, location_type=ToontownLocationType.BOSSES, lock=GagFrameQuantityLock(30)),
+    ToontownLocationDefinition(CASHBOT_PROOF, BASE_ID+133, location_type=ToontownLocationType.BOSSES, lock=GagFrameQuantityLock(35)),
+    ToontownLocationDefinition(LAWBOT_PROOF, BASE_ID+134, location_type=ToontownLocationType.BOSSES, lock=GagFrameQuantityLock(40)),
+    ToontownLocationDefinition(BOSSBOT_PROOF, BASE_ID+135, location_type=ToontownLocationType.BOSSES, lock=GagFrameQuantityLock(45)),
 
     ToontownLocationDefinition(SAVED_TOONTOWN, BASE_ID+136),
 
