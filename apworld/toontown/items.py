@@ -31,16 +31,16 @@ ITEM_3_LAFF_BOOST = "+3 Laff Boost"
 ITEM_4_LAFF_BOOST = "+4 Laff Boost"
 ITEM_5_LAFF_BOOST = "+5 Laff Boost"
 
+ITEM_5_GAG_CAPACITY = "+5 Gag Capacity"
 ITEM_10_GAG_CAPACITY = "+10 Gag Capacity"
 ITEM_15_GAG_CAPACITY = "+15 Gag Capacity"
-ITEM_20_GAG_CAPACITY = "+20 Gag Capacity"
 
-ITEM_150_MONEY_CAP = "+150 Jellybean Jar Capacity"
-ITEM_250_MONEY_CAP = "+250 Jellybean Jar Capacity"
-ITEM_500_MONEY_CAP = "+500 Jellybean Jar Capacity"
 ITEM_750_MONEY_CAP = "+750 Jellybean Jar Capacity"
 ITEM_1000_MONEY_CAP = "+1000 Jellybean Jar Capacity"
 ITEM_1250_MONEY_CAP = "+1250 Jellybean Jar Capacity"
+ITEM_1500_MONEY_CAP = "+1500 Jellybean Jar Capacity"
+ITEM_2000_MONEY_CAP = "+2000 Jellybean Jar Capacity"
+ITEM_2500_MONEY_CAP = "+2500 Jellybean Jar Capacity"
 
 ITEM_TOONUP_FRAME = "Toon-up Gag Training Frame"
 ITEM_TRAP_FRAME = "Trap Gag Training Frame"
@@ -115,32 +115,37 @@ ITEM_2500_XP = "2500 Gag XP Bundle"
 ITEM_UBER_TRAP = "Uber Trap"
 ITEM_DRIP_TRAP = "Drip Trap"
 
-# Used to offset all item ids to be compatible in the multiworld
+# Used to offset all item ids to be compatible in the multiworld, this is essentially just a random number
+# and can be changed to anything that will not conflict with any other AP games
 BASE_ITEM_ID = 0x501100
 
+
+# When defining base quantities for items (quantity=x argument), try and get the required pool of items to be around
+# 80-90% of the pool so that we can maintain a good ratio of meaningful checks to give/receive and reduce the amount
+# of junk, for example if we have 225 checks in the game, we should aim for about 190-205 ish meaningful items
 
 # Definition for unique instances of items and how much we should guarantee in the pool
 LIST_OF_ITEM_DEFINITIONS: Set[ToontownItemDefinition] = {
 
-    # Laff boosts
-    ToontownItemDefinition(ITEM_1_LAFF_BOOST, BASE_ITEM_ID+0, ItemClassification.useful, quantity=0),
-    ToontownItemDefinition(ITEM_2_LAFF_BOOST, BASE_ITEM_ID+1, ItemClassification.useful, quantity=1),
+    # Laff boosts (Ideally we have 100 laff in the pool, subject to change however)
+    ToontownItemDefinition(ITEM_1_LAFF_BOOST, BASE_ITEM_ID+0, ItemClassification.useful, quantity=44),
+    ToontownItemDefinition(ITEM_2_LAFF_BOOST, BASE_ITEM_ID+1, ItemClassification.useful, quantity=9),
     ToontownItemDefinition(ITEM_3_LAFF_BOOST, BASE_ITEM_ID+2, ItemClassification.useful, quantity=5),
-    ToontownItemDefinition(ITEM_4_LAFF_BOOST, BASE_ITEM_ID+3, ItemClassification.useful, quantity=7),
-    ToontownItemDefinition(ITEM_5_LAFF_BOOST, BASE_ITEM_ID+4, ItemClassification.useful, quantity=11),
+    ToontownItemDefinition(ITEM_4_LAFF_BOOST, BASE_ITEM_ID+3, ItemClassification.useful, quantity=3),
+    ToontownItemDefinition(ITEM_5_LAFF_BOOST, BASE_ITEM_ID+4, ItemClassification.useful, quantity=2),
 
     # Gag Cap+
-    ToontownItemDefinition(ITEM_10_GAG_CAPACITY, BASE_ITEM_ID+5, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ITEM_15_GAG_CAPACITY, BASE_ITEM_ID+6, ItemClassification.useful, quantity=2),
-    ToontownItemDefinition(ITEM_20_GAG_CAPACITY, BASE_ITEM_ID+7, ItemClassification.useful, quantity=2),
+    ToontownItemDefinition(ITEM_5_GAG_CAPACITY, BASE_ITEM_ID + 5, ItemClassification.useful, quantity=9),
+    ToontownItemDefinition(ITEM_10_GAG_CAPACITY, BASE_ITEM_ID + 6, ItemClassification.useful, quantity=2),
+    ToontownItemDefinition(ITEM_15_GAG_CAPACITY, BASE_ITEM_ID + 7, ItemClassification.useful, quantity=1),
 
-    # Jellybean Cap+
-    ToontownItemDefinition(ITEM_150_MONEY_CAP, BASE_ITEM_ID+8,   ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ITEM_250_MONEY_CAP, BASE_ITEM_ID+9,   ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ITEM_500_MONEY_CAP, BASE_ITEM_ID+10,   ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ITEM_750_MONEY_CAP, BASE_ITEM_ID+11,   ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ITEM_1000_MONEY_CAP, BASE_ITEM_ID+12, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ITEM_1250_MONEY_CAP, BASE_ITEM_ID+13, ItemClassification.useful, quantity=1),
+    # Jellybean Cap+ (We should go from 1,000 -> 10,000 cap)
+    ToontownItemDefinition(ITEM_750_MONEY_CAP, BASE_ITEM_ID + 8, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ITEM_1000_MONEY_CAP, BASE_ITEM_ID + 9, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ITEM_1250_MONEY_CAP, BASE_ITEM_ID + 10, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ITEM_1500_MONEY_CAP, BASE_ITEM_ID + 11, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ITEM_2000_MONEY_CAP, BASE_ITEM_ID + 12, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ITEM_2500_MONEY_CAP, BASE_ITEM_ID + 13, ItemClassification.useful, quantity=1),
 
     # Gag Training Frames (assume all are in pool, remove starting tracks before generation
     ToontownItemDefinition(ITEM_TOONUP_FRAME, BASE_ITEM_ID+14, ItemClassification.progression, quantity=8),
@@ -152,8 +157,8 @@ LIST_OF_ITEM_DEFINITIONS: Set[ToontownItemDefinition] = {
     ToontownItemDefinition(ITEM_DROP_FRAME, BASE_ITEM_ID+20, ItemClassification.progression, quantity=8),
 
     # Gag Training Multipliers
-    ToontownItemDefinition(ITEM_1_GAG_MULTIPLIER, BASE_ITEM_ID+21, ItemClassification.useful, quantity=3),
-    ToontownItemDefinition(ITEM_2_GAG_MULTIPLIER, BASE_ITEM_ID+22, ItemClassification.useful, quantity=3),
+    ToontownItemDefinition(ITEM_1_GAG_MULTIPLIER, BASE_ITEM_ID+21, ItemClassification.useful, quantity=9),
+    ToontownItemDefinition(ITEM_2_GAG_MULTIPLIER, BASE_ITEM_ID+22, ItemClassification.useful, quantity=2),
 
     # Fishing Rod Upgrades
     ToontownItemDefinition(ITEM_FISHING_ROD_UPGRADE, BASE_ITEM_ID+23, ItemClassification.progression, quantity=4),
@@ -201,7 +206,7 @@ LIST_OF_ITEM_DEFINITIONS: Set[ToontownItemDefinition] = {
     ToontownItemDefinition(ITEM_LAWBOT_DISGUISE, BASE_ITEM_ID+53, ItemClassification.progression, quantity=1),
     ToontownItemDefinition(ITEM_BOSSBOT_DISGUISE, BASE_ITEM_ID+54, ItemClassification.progression, quantity=1),
 
-    # Proofs
+    # Proofs (These have a quantity of 0 because we force place these under all circumstances)
     ToontownItemDefinition(ITEM_SELLBOT_PROOF, BASE_ITEM_ID+55, ItemClassification.progression, quantity=0),
     ToontownItemDefinition(ITEM_CASHBOT_PROOF, BASE_ITEM_ID+56, ItemClassification.progression, quantity=0),
     ToontownItemDefinition(ITEM_LAWBOT_PROOF, BASE_ITEM_ID+57, ItemClassification.progression, quantity=0),
@@ -258,3 +263,22 @@ def random_junk() -> ToontownItemDefinition:
 
 def random_trap() -> ToontownItemDefinition:
     return random.choice(TRAP_ITEMS)
+
+
+# A quick debug script for various purposes, use this to hit our item "target" when changing amounts of items in pool
+if __name__ == "__main__":
+    pool: Dict[str, int] = {}
+    for item_name, item in ITEM_DEFINITIONS.items():
+        if item.quantity <= 0:
+            continue
+
+        pool[item_name] = item.quantity
+
+    sorted_keys = list(pool.keys())
+    sorted_keys.sort()
+
+    for item_name in sorted_keys:
+        print(pool[item_name], item_name)
+
+    print(f"\n\n{len(pool)} item types in the required pool")
+    print(f"{sum(pool.values())} total item count in the required pool")

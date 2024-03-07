@@ -331,16 +331,16 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     items.ITEM_4_LAFF_BOOST: LaffBoostReward(4),
     items.ITEM_5_LAFF_BOOST: LaffBoostReward(5),
 
+    items.ITEM_5_GAG_CAPACITY: GagCapacityReward(5),
     items.ITEM_10_GAG_CAPACITY: GagCapacityReward(10),
     items.ITEM_15_GAG_CAPACITY: GagCapacityReward(15),
-    items.ITEM_20_GAG_CAPACITY: GagCapacityReward(20),
 
-    items.ITEM_150_MONEY_CAP: JellybeanJarUpgradeReward(150),
-    items.ITEM_250_MONEY_CAP: JellybeanJarUpgradeReward(250),
-    items.ITEM_500_MONEY_CAP: JellybeanJarUpgradeReward(500),
     items.ITEM_750_MONEY_CAP: JellybeanJarUpgradeReward(750),
     items.ITEM_1000_MONEY_CAP: JellybeanJarUpgradeReward(1000),
     items.ITEM_1250_MONEY_CAP: JellybeanJarUpgradeReward(1250),
+    items.ITEM_1500_MONEY_CAP: JellybeanJarUpgradeReward(1500),
+    items.ITEM_2000_MONEY_CAP: JellybeanJarUpgradeReward(2000),
+    items.ITEM_2500_MONEY_CAP: JellybeanJarUpgradeReward(2500),
 
     items.ITEM_TOONUP_FRAME: GagTrainingFrameReward(GagTrainingFrameReward.TOONUP),
     items.ITEM_TRAP_FRAME: GagTrainingFrameReward(GagTrainingFrameReward.TRAP),
