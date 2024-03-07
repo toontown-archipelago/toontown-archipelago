@@ -10,6 +10,8 @@ from toontown.coghq.CogDisguiseGlobals import PartsPerSuitBitmasks
 from toontown.fishing import FishGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.toonbase import ToontownGlobals
+from toontown.toon import NPCToons
+from toontown.chat import ResistanceChat
 
 # Typing hack, can remove later
 TYPING = False
@@ -289,6 +291,32 @@ class GagExpBundleAward(APReward):
         av.b_setExperience(av.experience.getCurrentExperience())
         av.d_setSystemMessage(0, f"You were given a bundle of {self.amount} gag experience!")
 
+
+class BossRewardAward(APReward):
+    SOS = 0
+    UNITE = 1
+    PINK_SLIP = 2
+
+    def __init__(self, reward: int):
+        self.reward: int = reward
+
+    def apply(self, av: "DistributedToonAI"):
+        if self.reward == BossRewardAward.SOS:
+            av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 4)))
+            av.d_setSystemMessage(0, "You were given a random SOS card!")
+        elif self.reward == BossRewardAward.UNITE:
+            uniteType = random.choice([ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK])
+            av.addResistanceMessage(random.choice(ResistanceChat.getItems(uniteType)))
+            av.d_setSystemMessage(0, "You were given a random unite!")
+        elif self.reward == BossRewardAward.PINK_SLIP:
+            slipAmount = random.randint(1, 3)
+            av.addPinkSlips(slipAmount)
+            if slipAmount > 1:
+                av.d_setSystemMessage(0, f"You were given {slipAmount} pink slips!")
+            else:
+                av.d_setSystemMessage(0, f"You were given {slipAmount} pink slip!")
+
+
 class ProofReward(APReward):
     class ProofType(IntEnum):
         SellbotBossFirstTime = 0
@@ -416,6 +444,10 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     items.ITEM_1500_XP: GagExpBundleAward(1500),
     items.ITEM_2000_XP: GagExpBundleAward(2000),
     items.ITEM_2500_XP: GagExpBundleAward(2500),
+
+    items.ITEM_SOS_REWARD: BossRewardAward(BossRewardAward.SOS),
+    items.ITEM_UNITE_REWARD: BossRewardAward(BossRewardAward.UNITE),
+    items.ITEM_PINK_SLIP_REWARD: BossRewardAward(BossRewardAward.PINK_SLIP),
 
     items.ITEM_UBER_TRAP: UberTrapAward(),
     items.ITEM_DRIP_TRAP: DripTrapAward(),

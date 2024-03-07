@@ -3,12 +3,6 @@ from typing import Dict, Set
 
 from BaseClasses import Item, ItemClassification
 
-# Fill in if some items need more context
-ITEM_DESCRIPTIONS = {
-    "Sellbot Disguise": "Grants access to fight the Sellbot VP"
-}
-
-
 class ToontownItemDefinition:
     """
     Define items to be registered as drops in the multiworld.
@@ -112,8 +106,20 @@ ITEM_1500_XP = "1500 Gag XP Bundle"
 ITEM_2000_XP = "2000 Gag XP Bundle"
 ITEM_2500_XP = "2500 Gag XP Bundle"
 
+ITEM_SOS_REWARD = "Random SOS Card"
+ITEM_UNITE_REWARD = "Random Unite"
+ITEM_PINK_SLIP_REWARD = "Pink Slip Bundle"
+
 ITEM_UBER_TRAP = "Uber Trap"
 ITEM_DRIP_TRAP = "Drip Trap"
+
+# Fill in if some items need more context
+ITEM_DESCRIPTIONS = {
+    ITEM_SELLBOT_DISGUISE: "Grants access to fight the Sellbot VP",
+    ITEM_CASHBOT_DISGUISE: "Grants access to fight the Cashbot CFO",
+    ITEM_LAWBOT_DISGUISE: "Grants access to fight the Lawbot CJ",
+    ITEM_BOSSBOT_DISGUISE: "Grants access to fight the Bossbot CEO",
+}
 
 # Used to offset all item ids to be compatible in the multiworld, this is essentially just a random number
 # and can be changed to anything that will not conflict with any other AP games
@@ -224,13 +230,17 @@ LIST_OF_ITEM_DEFINITIONS: Set[ToontownItemDefinition] = {
     ToontownItemDefinition(ITEM_2000_XP, BASE_ITEM_ID + 66, ItemClassification.filler),
     ToontownItemDefinition(ITEM_2500_XP, BASE_ITEM_ID + 67, ItemClassification.filler),
 
+    ToontownItemDefinition(ITEM_SOS_REWARD, BASE_ITEM_ID + 68, ItemClassification.filler),
+    ToontownItemDefinition(ITEM_UNITE_REWARD, BASE_ITEM_ID + 69, ItemClassification.filler),
+    ToontownItemDefinition(ITEM_PINK_SLIP_REWARD, BASE_ITEM_ID + 70, ItemClassification.filler),
+
     # Items added in hindsight, #todo do this better
-    ToontownItemDefinition(ITEM_TTC_HQ_ACCESS, BASE_ITEM_ID+68, ItemClassification.progression, quantity=0),
-    ToontownItemDefinition(ITEM_VICTORY, BASE_ITEM_ID+69, ItemClassification.progression, quantity=0),
+    ToontownItemDefinition(ITEM_TTC_HQ_ACCESS, BASE_ITEM_ID+71, ItemClassification.progression, quantity=0),
+    ToontownItemDefinition(ITEM_VICTORY, BASE_ITEM_ID+72, ItemClassification.progression, quantity=0),
 
     # Traps
-    ToontownItemDefinition(ITEM_UBER_TRAP, BASE_ITEM_ID+70, ItemClassification.trap),
-    ToontownItemDefinition(ITEM_DRIP_TRAP, BASE_ITEM_ID+71, ItemClassification.trap),
+    ToontownItemDefinition(ITEM_UBER_TRAP, BASE_ITEM_ID+73, ItemClassification.trap),
+    ToontownItemDefinition(ITEM_DRIP_TRAP, BASE_ITEM_ID+74, ItemClassification.trap),
 }
 
 ITEM_DEFINITIONS = {
