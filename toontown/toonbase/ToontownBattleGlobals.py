@@ -335,7 +335,7 @@ AvPropTarget = (0, 3, 0, 2, 3, 3, 3)
 
 
 def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
-                    organicBonus=False, propBonus=False, propAndOrganicBonusStack=False):
+                    organicBonus=False, propBonus=False, propAndOrganicBonusStack=False, npc=False):
 
     exp = experience.getExp(attackTrack)
 
@@ -351,8 +351,9 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
     if damage <= 0:
         damage = minD
 
-    multiplier = experience.getUberDamageBonus(attackTrack)
-    damage *= multiplier
+    if not npc:
+        multiplier = experience.getUberDamageBonus(attackTrack)
+        damage *= multiplier
 
     if propAndOrganicBonusStack:
         originalDamage = damage

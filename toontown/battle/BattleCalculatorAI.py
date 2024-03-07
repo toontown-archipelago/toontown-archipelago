@@ -1595,7 +1595,10 @@ class BattleCalculatorAI:
             suit.effectHandler.addEffect('BattleEffectLureKnockbackAI')
             lureEff = suit.effectHandler.children['knockbackBonus']
             lureEff.children['timer'] = maxRounds
-            lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience)
+            if npc:
+                lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, npc=True)
+            else:
+                lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience)
         self.notify.debug('__addLuredSuitInfo: currLuredSuits -> %s' % repr(self.currentlyLuredSuits))
         return availLureId
 

@@ -11625,9 +11625,9 @@ HQnpcFriends = {
     3007: (ToontownBattleGlobals.TRAP_TRACK, 4, 120, 4),
     1001: (ToontownBattleGlobals.TRAP_TRACK, 3, 80, 3),
 
-    3112: (ToontownBattleGlobals.LURE_TRACK, 5, 75, 5),
-    1323: (ToontownBattleGlobals.LURE_TRACK, 5, 60, 4),
-    2308: (ToontownBattleGlobals.LURE_TRACK, 5, 50, 3),
+    3112: (ToontownBattleGlobals.LURE_TRACK, 5, 60, 4),
+    1323: (ToontownBattleGlobals.LURE_TRACK, 3, 50, 4),
+    2308: (ToontownBattleGlobals.LURE_TRACK, 1, 40, 3),
 
     4119: (ToontownBattleGlobals.SOUND_TRACK, 5, 70, 5),
     4219: (ToontownBattleGlobals.SOUND_TRACK, 4, 30, 4),
