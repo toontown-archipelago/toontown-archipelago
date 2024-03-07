@@ -82,27 +82,31 @@ class GagTrainingFrameReward(APReward):
 
         bonusArray = av.getTrackBonusLevel()
 
-        # If we get a frame when we already maxed, make the track organic
+        # If we get a frame when we already maxed, make the track organic. No need to do anything else
         if newLevel > 7:
             bonusArray[self.track] = 7
             av.b_setTrackBonusLevel(bonusArray)
             av.d_setSystemMessage(0, f"Your {self.TRACK_TO_NAME[self.track]} gags are now organic!")
             return
 
+        # Before we do anything, we need to see if they were capped before this so we can award them gags later
+        wasCapped = av.experience.getExp(self.track) == av.experience.getExperienceCapForTrack(self.track)
+
         # Otherwise increment the gag level allowed and make sure it is not organic
         av.setTrackAccessLevel(self.track, newLevel)
         bonusArray[self.track] = -1
         av.b_setTrackBonusLevel(bonusArray)
 
-        # Add exp to trigger the training gag location check
-        # Only add if this is not a new track
-        xpToAdd = 1 if newLevel > 1 else 0
-        av.experience.addExp(track=self.track, amount=xpToAdd)
-        av.b_setExperience(av.experience.getCurrentExperience())
-
         # Consider the case where we just learned a new gag track, we should give them as many of them as possible
         if newLevel == 1:
             av.inventory.addItemsWithListMax([(self.track, 0)])
+            av.b_setInventory(av.inventory.makeNetString())
+        # Now consider the case where we were maxed previously and want to upgrade by giving 1 xp and giving new gags
+        # This will also trigger the new gag check to unlock :3
+        elif wasCapped:
+            av.experience.addExp(track=self.track, amount=1)  # Give them enough xp to learn the gag :)
+            av.b_setExperience(av.experience.getCurrentExperience())
+            av.inventory.addItemsWithListMax([self.track, newLevel-1])  # Give the new gags!!
             av.b_setInventory(av.inventory.makeNetString())
 
         av.d_setSystemMessage(0, f"You can now train {self.TRACK_TO_NAME[self.track]} gags up to {newLevel}!")
