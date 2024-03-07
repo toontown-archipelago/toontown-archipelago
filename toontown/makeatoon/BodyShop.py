@@ -259,10 +259,10 @@ class BodyShop(StateData.StateData):
         self.__updateHead()
 
     def __swapSpecies(self, offset):
-        length = len(ToonDNA.toonSpeciesTypesBodyShop)
+        length = len(ToonDNA.toonSpeciesTypes)
         self.speciesChoice = (self.speciesChoice + offset) % length
         self.__updateScrollButtons(self.speciesChoice, length, self.speciesStart, self.speciesLButton, self.speciesRButton)
-        self.species = ToonDNA.toonSpeciesTypesBodyShop[self.speciesChoice]
+        self.species = ToonDNA.toonSpeciesTypes[self.speciesChoice]
         self.headList = ToonDNA.getHeadList(self.species)
         self.__changeSpeciesName(self.species)
         maxHeadChoice = len(self.headList) - 1
