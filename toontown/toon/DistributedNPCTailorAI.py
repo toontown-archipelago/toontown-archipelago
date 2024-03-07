@@ -71,12 +71,12 @@ class DistributedNPCTailorAI(DistributedNPCToonBaseAI):
          self.npcId,
          avId,
          ClockDelta.globalClockDelta.getRealNetworkTime()])
-        taskMgr.doMethodLater(NPCToons.TAILOR_COUNTDOWN_TIME, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
+        taskMgr.doMethodLater(NPCToons.TAILOR_COUNTDOWN_TIME, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
 
     def rejectAvatar(self, avId):
         self.notify.warning('rejectAvatar: should not be called by a Tailor!')
 
-    def sendTimeoutMovie(self, avId, task):
+    def sendTimeoutMovie(self, task):
         toon = self.air.doId2do.get(self.customerId)
         if toon != None and self.customerDNA:
             toon.b_setDNAString(self.customerDNA.makeNetString())

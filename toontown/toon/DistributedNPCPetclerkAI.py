@@ -37,7 +37,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
         self.acceptOnce(self.air.getAvatarExitEvent(avId), self.__handleUnexpectedExit, extraArgs=[avId])
         flag = NPCToons.SELL_MOVIE_START
         self.d_setMovie(avId, flag)
-        taskMgr.doMethodLater(PetConstants.PETCLERK_TIMER, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
+        taskMgr.doMethodLater(PetConstants.PETCLERK_TIMER, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
         DistributedNPCToonBaseAI.avatarEnter(self)
 
     def rejectAvatar(self, avId):
@@ -50,7 +50,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
          extraArgs,
          ClockDelta.globalClockDelta.getRealNetworkTime()])
 
-    def sendTimeoutMovie(self, avId, task):
+    def sendTimeoutMovie(self, task):
         self.d_setMovie(self.busy, NPCToons.SELL_MOVIE_TIMEOUT)
         self.sendClearMovie(None)
         return Task.done

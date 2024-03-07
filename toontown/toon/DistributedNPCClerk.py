@@ -14,7 +14,7 @@ class DistributedNPCClerk(DistributedNPCToonBase):
     def __init__(self, cr):
         DistributedNPCToonBase.__init__(self, cr)
         self.purchase = None
-        self.isLocalToon = False
+        self.isLocalToon = 0
         self.av = None
         self.purchaseDoneEvent = 'purchaseDone'
         self.cameraLerp = None
@@ -55,7 +55,9 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         return
 
     def allowedToEnter(self):
-        return True
+        if hasattr(base, 'ttAccess') and base.ttAccess and base.ttAccess.canAccess():
+            return True
+        return False
 
     def handleOkTeaser(self):
         self.dialog.destroy()
@@ -65,21 +67,22 @@ class DistributedNPCClerk(DistributedNPCToonBase):
             place.fsm.request('walk')
 
     def handleCollisionSphereEnter(self, collEntry):
-        base.cr.playGame.getPlace().fsm.request('purchase')
-        self.sendUpdate('avatarEnter', [])
+        if self.allowedToEnter():
+            base.cr.playGame.getPlace().fsm.request('purchase')
+            self.sendUpdate('avatarEnter', [])
+        else:
+            place = base.cr.playGame.getPlace()
+            if place:
+                place.fsm.request('stopped')
+            self.dialog = TeaserPanel.TeaserPanel(pageName='otherGags', doneFunc=self.handleOkTeaser)
 
     def __handleUnexpectedExit(self):
         self.notify.warning('unexpected exit')
         self.av = None
         return
 
-    def cleanupPurchase(self):
-
-        if not self.isLocalToon:
-            return
-
-        self.isLocalToon = False
-        self.freeAvatar()
+    def resetClerk(self):
+        self.ignoreAll()
         taskMgr.remove(self.uniqueName('popupPurchaseGUI'))
         if self.cameraLerp:
             self.cameraLerp.finish()
@@ -88,44 +91,32 @@ class DistributedNPCClerk(DistributedNPCToonBase):
             self.purchase.exit()
             self.purchase.unload()
             self.purchase = None
-
-    def resetClerk(self):
-
-        self.initToonState()
-
-        if not self.isLocalToon:
-            return Task.done
-
-        self.cleanupPurchase()
-        self.ignoreAll()
         self.clearMat()
         self.startLookAround()
         self.detectAvatars()
+        if self.isLocalToon:
+            self.freeAvatar()
 
+        self.initToonState()
         return Task.done
 
     def setMovie(self, mode, npcId, avId, timestamp):
         timeStamp = ClockDelta.globalClockDelta.localElapsedTime(timestamp)
         self.remain = NPCToons.CLERK_COUNTDOWN_TIME - timeStamp
-
-        isLocal = avId == base.localAvatar.doId
-
+        self.isLocalToon = avId == base.localAvatar.doId
         if mode == NPCToons.PURCHASE_MOVIE_CLEAR:
             return
-
         if mode == NPCToons.PURCHASE_MOVIE_TIMEOUT:
-
-            self.setChatAbsolute(TTLocalizer.STOREOWNER_TOOKTOOLONG, CFSpeech | CFTimeout)
-
-            if not isLocal:
-                return
-
-            self.freeAvatar()
             taskMgr.remove(self.uniqueName('popupPurchaseGUI'))
-            self.ignore(self.purchaseDoneEvent)
+            if self.cameraLerp:
+                self.cameraLerp.finish()
+                self.cameraLerp = None
+            if self.isLocalToon:
+                self.ignore(self.purchaseDoneEvent)
             if self.purchase:
                 self.__handlePurchaseDone()
-
+            self.setChatAbsolute(TTLocalizer.STOREOWNER_TOOKTOOLONG, CFSpeech | CFTimeout)
+            self.resetClerk()
         elif mode == NPCToons.PURCHASE_MOVIE_START:
             self.av = base.cr.doId2do.get(avId)
             if self.av is None:
@@ -134,23 +125,19 @@ class DistributedNPCClerk(DistributedNPCToonBase):
             else:
                 self.accept(self.av.uniqueName('disable'), self.__handleUnexpectedExit)
             self.setupAvatars(self.av)
-            if isLocal:
+            if self.isLocalToon:
                 camera.wrtReparentTo(render)
                 self.cameraLerp = LerpPosQuatInterval(camera, 1, Point3(-5, 9, self.getHeight() - 0.5), Point3(-150, -2, 0), other=self, blendType='easeOut', name=self.uniqueName('lerpCamera'))
                 self.cameraLerp.start()
             self.setChatAbsolute(TTLocalizer.STOREOWNER_GREETING, CFSpeech | CFTimeout)
-            if isLocal:
+            if self.isLocalToon:
                 taskMgr.doMethodLater(1.0, self.popupPurchaseGUI, self.uniqueName('popupPurchaseGUI'))
         elif mode == NPCToons.PURCHASE_MOVIE_COMPLETE:
             self.setChatAbsolute(TTLocalizer.STOREOWNER_GOODBYE, CFSpeech | CFTimeout)
-
-            if isLocal:
-                self.cleanupPurchase()
-                self.initToonState()
-                self.freeAvatar()
-
+            self.resetClerk()
         elif mode == NPCToons.PURCHASE_MOVIE_NO_MONEY:
             self.setChatAbsolute(TTLocalizer.STOREOWNER_NEEDJELLYBEANS, CFSpeech | CFTimeout)
+            self.resetClerk()
         return
 
     def popupPurchaseGUI(self, task):
@@ -171,7 +158,6 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         self.purchase.exit()
         self.purchase.unload()
         self.purchase = None
-        self.cleanupPurchase()
         return
 
     def d_setInventory(self, invString, money, done):

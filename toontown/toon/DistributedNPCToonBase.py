@@ -112,6 +112,7 @@ class DistributedNPCToonBase(DistributedToon.DistributedToon):
         pass
 
     def setupAvatars(self, av):
+        self.ignoreAvatars()
         av.headsUp(self, 0, 0, 0)
         self.headsUp(av, 0, 0, 0)
         av.stopLookAround()

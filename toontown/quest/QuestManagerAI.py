@@ -190,17 +190,10 @@ class QuestManagerAI:
     def avatarCancelled(self, avId):
         pass
 
-    def avatarChoseQuest(self, avId, npc, questId):
+    def avatarChoseQuest(self, avId, npc, questId, rewardId, toNpcId):
         av = self.air.doId2do.get(avId)
         if not av:
             return
-
-        # Avatar chose to cancel their quest
-        if questId <= 0:
-            return
-
-        rewardId = Quests.getQuestReward(questId)
-        toNpcId = Quests.getQuestToNpcId(questId)
 
         self.npcGiveQuest(npc, av, questId, rewardId, toNpcId, storeReward=True)
 

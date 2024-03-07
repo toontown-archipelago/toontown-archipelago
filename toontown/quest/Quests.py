@@ -2063,9 +2063,9 @@ def getQuestDialog(id):
     return QuestDict.get(id)[QuestDictDialogIndex]
 
 
-def getQuestReward(_id):
-    return QuestDict.get(_id)[QuestDictRewardIndex]
-
+def getQuestReward(id, av):
+    baseRewardId = QuestDict.get(id)[QuestDictRewardIndex]
+    return transformReward(baseRewardId, av)
 
 def isQuestJustForFun(questId, rewardId):
     return True

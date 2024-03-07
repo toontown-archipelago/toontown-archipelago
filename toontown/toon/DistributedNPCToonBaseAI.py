@@ -15,6 +15,7 @@ class DistributedNPCToonBaseAI(DistributedToonAI.DistributedToonAI):
         DistributedToonAI.DistributedToonAI.__init__(self, air)
         self.air = air
         self.npcId = npcId
+        self.busy = 0
         self.questCallback = questCallback
         self.givesQuests = 1
 
@@ -47,7 +48,7 @@ class DistributedNPCToonBaseAI(DistributedToonAI.DistributedToonAI):
         pass
 
     def isBusy(self):
-        return False
+        return self.busy > 0
 
     def getNpcId(self):
         return self.npcId
