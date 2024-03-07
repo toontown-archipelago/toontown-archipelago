@@ -11,7 +11,6 @@ class DistributedNPCToonAI(DistributedNPCToonBaseAI):
         DistributedNPCToonBaseAI.__init__(self, air, npcId, questCallback)
         self.hq = hq
         self.tutorial = 0
-        self.pendingAvId = None
         return
 
     def getTutorial(self):
@@ -32,99 +31,24 @@ class DistributedNPCToonAI(DistributedNPCToonBaseAI):
     def chooseQuest(self, questId):
         avId = self.air.getAvatarIdFromSender()
         self.notify.debug('chooseQuest: avatar %s choseQuest %s' % (avId, questId))
-        if not self.pendingAvId:
-            self.notify.warning('chooseQuest: not expecting an answer from any avatar: %s' % avId)
-            return
-        if self.pendingAvId != avId:
-            self.notify.warning('chooseQuest: not expecting an answer from this avatar: %s' % avId)
-            return
-        if self.pendingQuests is None:
-            self.notify.warning('chooseQuest: not expecting a quest choice from this avatar: %s' % avId)
-            self.air.writeServerEvent('suspicious', avId, 'unexpected chooseQuest')
-            return
-        if questId == 0:
-            self.pendingAvId = None
-            self.pendingQuests = None
+
+        if questId <= 0:
             self.air.questManager.avatarCancelled(avId)
             self.cancelChoseQuest(avId)
             return
-        if questId == 401:
-            av = self.air.getDo(avId)
-            if not av:
-                self.notify.warning('chooseQuest: av not present: %s' % avId)
-                return
-            if av.getGameAccess() != ToontownGlobals.AccessFull:
-                simbase.air.writeServerEvent('suspicious', avId, 'NPCToonAI.chooseQuest: non-paid player choosing task beyond velvet rope')
-                self.sendTimeoutMovie(None)
-                if self.FourthGagVelvetRopeBan:
-                    av.ban('fourth gag track velvet rope hacking')
-                return
-        for quest in self.pendingQuests:
-            if questId == quest[0]:
-                self.pendingAvId = None
-                self.pendingQuests = None
-                self.air.questManager.avatarChoseQuest(avId, self, *quest)
-                return
 
-        self.notify.warning('chooseQuest: avatar: %s chose a quest not offered: %s' % (avId, questId))
-        self.pendingAvId = None
-        self.pendingQuests = None
-        return
+        self.air.questManager.avatarChoseQuest(avId, self, questId)
 
-    def chooseTrack(self, trackId):
-        avId = self.air.getAvatarIdFromSender()
-        self.notify.debug('chooseTrack: avatar %s choseTrack %s' % (avId, trackId))
-        if not self.pendingAvId:
-            self.notify.warning('chooseTrack: not expecting an answer from any avatar: %s' % avId)
-            return
-        if self.pendingAvId != avId:
-            self.notify.warning('chooseTrack: not expecting an answer from this avatar: %s' % avId)
-            return
-        if self.pendingTracks is None:
-            self.notify.warning('chooseTrack: not expecting a track choice from this avatar: %s' % avId)
-            self.air.writeServerEvent('suspicious', avId, 'unexpected chooseTrack')
-            return
-        if trackId == -1:
-            self.pendingAvId = None
-            self.pendingTracks = None
-            self.pendingTrackQuest = None
-            self.air.questManager.avatarCancelled(avId)
-            self.cancelChoseTrack(avId)
-            return
-        for track in self.pendingTracks:
-            if trackId == track:
-                self.air.questManager.avatarChoseTrack(avId, self, self.pendingTrackQuest, trackId)
-                self.pendingAvId = None
-                self.pendingTracks = None
-                self.pendingTrackQuest = None
-                return
-
-        self.notify.warning('chooseTrack: avatar: %s chose a track not offered: %s' % (avId, trackId))
-        self.pendingAvId = None
-        self.pendingTracks = None
-        self.pendingTrackQuest = None
-        return
-
-    def sendTimeoutMovie(self, task):
-        self.pendingAvId = None
-        self.pendingQuests = None
-        self.pendingTracks = None
-        self.pendingTrackQuest = None
+    def sendTimeoutMovie(self, avId, task):
         self.sendUpdate('setMovie', [NPCToons.QUEST_MOVIE_TIMEOUT,
          self.npcId,
-         self.busy,
+         avId,
          [],
          ClockDelta.globalClockDelta.getRealNetworkTime()])
-        self.sendClearMovie(None)
-        self.busy = 0
+        self.sendClearMovie(avId, None)
         return Task.done
 
-    def sendClearMovie(self, task):
-        self.pendingAvId = None
-        self.pendingQuests = None
-        self.pendingTracks = None
-        self.pendingTrackQuest = None
-        self.busy = 0
+    def sendClearMovie(self, avId, task):
         self.sendUpdate('setMovie', [NPCToons.QUEST_MOVIE_CLEAR,
          self.npcId,
          0,
@@ -133,47 +57,33 @@ class DistributedNPCToonAI(DistributedNPCToonBaseAI):
         return Task.done
 
     def rejectAvatar(self, avId):
-        self.busy = avId
         self.sendUpdate('setMovie', [NPCToons.QUEST_MOVIE_REJECT,
          self.npcId,
          avId,
          [],
          ClockDelta.globalClockDelta.getRealNetworkTime()])
         if not self.tutorial:
-            taskMgr.doMethodLater(5.5, self.sendClearMovie, self.uniqueName('clearMovie'))
-
-    def rejectAvatarTierNotDone(self, avId):
-        self.busy = avId
-        self.sendUpdate('setMovie', [NPCToons.QUEST_MOVIE_TIER_NOT_DONE,
-         self.npcId,
-         avId,
-         [],
-         ClockDelta.globalClockDelta.getRealNetworkTime()])
-        if not self.tutorial:
-            taskMgr.doMethodLater(5.5, self.sendClearMovie, self.uniqueName('clearMovie'))
+            taskMgr.doMethodLater(5.5, self.sendClearMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
 
     def completeQuest(self, avId, questId, rewardId):
-        self.busy = avId
         self.sendUpdate('setMovie', [NPCToons.QUEST_MOVIE_COMPLETE,
          self.npcId,
          avId,
          [questId, rewardId, 0],
          ClockDelta.globalClockDelta.getRealNetworkTime()])
         if not self.tutorial:
-            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
+            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
 
     def incompleteQuest(self, avId, questId, completeStatus, toNpcId):
-        self.busy = avId
         self.sendUpdate('setMovie', [NPCToons.QUEST_MOVIE_INCOMPLETE,
          self.npcId,
          avId,
          [questId, completeStatus, toNpcId],
          ClockDelta.globalClockDelta.getRealNetworkTime()])
         if not self.tutorial:
-            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
+            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
 
     def assignQuest(self, avId, questId, rewardId, toNpcId):
-        self.busy = avId
         if self.questCallback:
             self.questCallback()
         self.sendUpdate('setMovie', [NPCToons.QUEST_MOVIE_ASSIGN,
@@ -182,12 +92,9 @@ class DistributedNPCToonAI(DistributedNPCToonBaseAI):
          [questId, rewardId, toNpcId],
          ClockDelta.globalClockDelta.getRealNetworkTime()])
         if not self.tutorial:
-            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
+            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
 
     def presentQuestChoice(self, avId, quests):
-        self.busy = avId
-        self.pendingAvId = avId
-        self.pendingQuests = quests
         flatQuests = []
         for quest in quests:
             flatQuests.extend(quest)
@@ -198,48 +105,37 @@ class DistributedNPCToonAI(DistributedNPCToonBaseAI):
          flatQuests,
          ClockDelta.globalClockDelta.getRealNetworkTime()])
         if not self.tutorial:
-            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
+            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
 
     def presentTrackChoice(self, avId, questId, tracks):
-        self.busy = avId
-        self.pendingAvId = avId
-        self.pendingTracks = tracks
-        self.pendingTrackQuest = questId
         self.sendUpdate('setMovie', [NPCToons.QUEST_MOVIE_TRACK_CHOICE,
          self.npcId,
          avId,
          tracks,
          ClockDelta.globalClockDelta.getRealNetworkTime()])
         if not self.tutorial:
-            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
+            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
 
     def cancelChoseQuest(self, avId):
-        self.busy = avId
         self.sendUpdate('setMovie', [NPCToons.QUEST_MOVIE_QUEST_CHOICE_CANCEL,
          self.npcId,
          avId,
          [],
          ClockDelta.globalClockDelta.getRealNetworkTime()])
         if not self.tutorial:
-            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
+            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
 
     def cancelChoseTrack(self, avId):
-        self.busy = avId
         self.sendUpdate('setMovie', [NPCToons.QUEST_MOVIE_TRACK_CHOICE_CANCEL,
          self.npcId,
          avId,
          [],
          ClockDelta.globalClockDelta.getRealNetworkTime()])
         if not self.tutorial:
-            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
+            taskMgr.doMethodLater(60.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
 
     def setMovieDone(self):
         avId = self.air.getAvatarIdFromSender()
-        self.notify.debug('setMovieDone busy: %s avId: %s' % (self.busy, avId))
-        if self.busy == avId:
-            taskMgr.remove(self.uniqueName('clearMovie'))
-            self.sendClearMovie(None)
-        elif self.busy:
-            self.air.writeServerEvent('suspicious', avId, 'DistributedNPCToonAI.setMovieDone busy with %s' % self.busy)
-            self.notify.warning('somebody called setMovieDone that I was not busy with! avId: %s' % avId)
-        return
+        self.notify.debug('setMovieDone busy: avId: %s' % avId)
+        taskMgr.remove(self.uniqueName('clearMovie'))
+        self.sendClearMovie(avId, None)

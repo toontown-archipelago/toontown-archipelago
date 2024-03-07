@@ -41,7 +41,7 @@ class DistributedNPCPartyPersonAI(DistributedNPCToonBaseAI):
         elif av.canPlanParty():
             flag = NPCToons.PARTY_MOVIE_START
             self.d_setMovie(avId, flag)
-            taskMgr.doMethodLater(30.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
+            taskMgr.doMethodLater(30.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
         else:
             flag = NPCToons.PARTY_MOVIE_ALREADYHOSTING
             self.d_setMovie(avId, flag)
@@ -59,7 +59,7 @@ class DistributedNPCPartyPersonAI(DistributedNPCToonBaseAI):
          extraArgs,
          ClockDelta.globalClockDelta.getRealNetworkTime()])
 
-    def sendTimeoutMovie(self, task):
+    def sendTimeoutMovie(self, avId, task):
         self.d_setMovie(self.busy, NPCToons.PARTY_MOVIE_TIMEOUT)
         self.sendClearMovie(None)
         return Task.done

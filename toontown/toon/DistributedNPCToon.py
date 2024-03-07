@@ -32,12 +32,6 @@ class DistributedNPCToon(DistributedNPCToonBase):
         DistributedNPCToonBase.disable(self)
 
     def cleanupMovie(self):
-        self.clearChat()
-        self.ignore('chooseQuest')
-        if self.questChoiceGui:
-            self.questChoiceGui.destroy()
-            self.questChoiceGui = None
-        self.ignore(self.uniqueName('doneChatPage'))
         if self.curQuestMovie:
             self.curQuestMovie.timeout(fFinish=1)
             self.curQuestMovie.cleanup()
@@ -48,30 +42,16 @@ class DistributedNPCToon(DistributedNPCToonBase):
         return
 
     def allowedToTalk(self):
-        if base.cr.isPaid():
-            return True
-        place = base.cr.playGame.getPlace()
-        myHoodId = ZoneUtil.getCanonicalHoodId(place.zoneId)
-        if hasattr(place, 'id'):
-            myHoodId = place.id
-        if myHoodId in (ToontownGlobals.ToontownCentral,
-         ToontownGlobals.MyEstate,
-         ToontownGlobals.GoofySpeedway,
-         ToontownGlobals.Tutorial):
-            return True
-        return False
+        return True
 
     def handleCollisionSphereEnter(self, collEntry):
-        if self.allowedToTalk():
-            base.cr.playGame.getPlace().fsm.request('quest', [self])
-            self.sendUpdate('avatarEnter', [])
-            self.nametag3d.setDepthTest(0)
-            self.nametag3d.setBin('fixed', 0)
-        else:
-            place = base.cr.playGame.getPlace()
-            if place:
-                place.fsm.request('stopped')
-            self.dialog = TeaserPanel.TeaserPanel(pageName='quests', doneFunc=self.handleOkTeaser)
+        if not self.allowedToTalk():
+            return
+
+        base.cr.playGame.getPlace().fsm.request('quest', [self])
+        self.sendUpdate('avatarEnter', [])
+        self.nametag3d.setDepthTest(0)
+        self.nametag3d.setBin('fixed', 0)
 
     def handleOkTeaser(self):
         self.dialog.destroy()
@@ -81,12 +61,24 @@ class DistributedNPCToon(DistributedNPCToonBase):
             place.fsm.request('walk')
 
     def finishMovie(self, av, isLocalToon, elapsedTime):
+
+        if not isLocalToon:
+            return
+
         self.cleanupMovie()
         av.startLookAround()
         self.startLookAround()
         self.detectAvatars()
         self.initPos()
         if isLocalToon:
+
+            if self.questChoiceGui:
+                self.questChoiceGui.destroy()
+                self.questChoiceGui = None
+
+            self.ignore('chooseQuest')
+            self.ignore(self.uniqueName('doneChatPage'))
+
             if self.cameraLerp:
                 self.cameraLerp.finish()
                 self.cameraLerp = None
@@ -95,6 +87,8 @@ class DistributedNPCToon(DistributedNPCToonBase):
             self.sendUpdate('setMovieDone', [])
             self.nametag3d.clearDepthTest()
             self.nametag3d.clearBin()
+            self.freeAvatar()
+            self.clearChat()
 
     def setupCamera(self, mode):
         camera.wrtReparentTo(render)
@@ -112,6 +106,10 @@ class DistributedNPCToon(DistributedNPCToonBase):
     def setMovie(self, mode, npcId, avId, quests, timestamp):
         timeStamp = ClockDelta.globalClockDelta.localElapsedTime(timestamp)
         isLocalToon = avId == base.localAvatar.doId
+
+        if not isLocalToon:
+            return
+
         if mode == NPCToons.QUEST_MOVIE_CLEAR:
             self.cleanupMovie()
             return
@@ -125,9 +123,11 @@ class DistributedNPCToon(DistributedNPCToonBase):
             self.detectAvatars()
             return
         av = base.cr.doId2do.get(avId)
+
         if av is None:
             self.notify.warning('Avatar %d not found in doId' % avId)
             return
+
         if mode == NPCToons.QUEST_MOVIE_REJECT:
             rejectString = Quests.chooseQuestDialogReject()
             rejectString = Quests.fillInQuestNames(rejectString, avName=av._name)

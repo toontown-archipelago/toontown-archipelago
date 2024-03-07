@@ -33,11 +33,11 @@ class DistributedNPCFishermanAI(DistributedNPCToonBaseAI):
         if value > 0:
             flag = NPCToons.SELL_MOVIE_START
             self.d_setMovie(avId, flag)
-            taskMgr.doMethodLater(30.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
+            taskMgr.doMethodLater(30.0, self.sendTimeoutMovie, self.uniqueName('clearMovie'), extraArgs=[avId])
         else:
             flag = NPCToons.SELL_MOVIE_NOFISH
             self.d_setMovie(avId, flag)
-            self.sendClearMovie(None)
+            self.sendClearMovie(avId, None)
         DistributedNPCToonBaseAI.avatarEnter(self)
         return
 
@@ -51,12 +51,12 @@ class DistributedNPCFishermanAI(DistributedNPCToonBaseAI):
          extraArgs,
          ClockDelta.globalClockDelta.getRealNetworkTime()])
 
-    def sendTimeoutMovie(self, task):
+    def sendTimeoutMovie(self, avId, task):
         self.d_setMovie(self.busy, NPCToons.SELL_MOVIE_TIMEOUT)
-        self.sendClearMovie(None)
+        self.sendClearMovie(avId, None)
         return Task.done
 
-    def sendClearMovie(self, task):
+    def sendClearMovie(self, avId, task):
         self.ignore(self.air.getAvatarExitEvent(self.busy))
         taskMgr.remove(self.uniqueName('clearMovie'))
         self.busy = 0
@@ -84,12 +84,12 @@ class DistributedNPCFishermanAI(DistributedNPCToonBaseAI):
             av = simbase.air.doId2do.get(avId)
             if av:
                 self.d_setMovie(avId, NPCToons.SELL_MOVIE_NOFISH)
-        self.sendClearMovie(None)
+        self.sendClearMovie(avId, None)
         return
 
     def __handleUnexpectedExit(self, avId):
         self.notify.warning('avatar:' + str(avId) + ' has exited unexpectedly')
         self.notify.warning('not busy with avId: %s, busy: %s ' % (avId, self.busy))
         taskMgr.remove(self.uniqueName('clearMovie'))
-        self.sendClearMovie(None)
+        self.sendClearMovie(avId, None)
         return
