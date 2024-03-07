@@ -49,6 +49,17 @@ DuckDialogueArray = []
 MonkeyDialogueArray = []
 BearDialogueArray = []
 PigDialogueArray = []
+ArmadilloDialogueArray = []
+BatDialogueArray = []
+BeaverDialogueArray = []
+DeerDialogueArray = []
+FoxDialogueArray = []
+GatorDialogueArray = []
+KangarooDialogueArray = []
+KiwiDialogueArray = []
+KoalaDialogueArray = []
+RaccoonDialogueArray = []
+TurkeyDialogueArray = []
 LegsAnimDict = {}
 TorsoAnimDict = {}
 HeadAnimDict = {}
@@ -444,6 +455,69 @@ def loadDialog():
     for file in pigDialogueFiles:
         PigDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
 
+    armadilloDialogueFiles = ('AV_armadillo_short', 'AV_armadillo_med', 'AV_armadillo_long', 'AV_armadillo_question', 'AV_armadillo_exclaim', 'AV_armadillo_howl')
+    global ArmadilloDialogueArray
+    for file in armadilloDialogueFiles:
+        ArmadilloDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
+    batDialogueFiles = ('AV_bat_short', 'AV_bat_med', 'AV_bat_long', 'AV_bat_question', 'AV_bat_exclaim', 'AV_bat_howl')
+    global BatDialogueArray
+    for file in batDialogueFiles:
+        BatDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
+    beaverDialogueFiles = ('AV_beaver_short', 'AV_beaver_med', 'AV_beaver_long', 'AV_beaver_question', 'AV_beaver_exclaim', 'AV_beaver_howl')
+    global BeaverDialogueArray
+    for file in beaverDialogueFiles:
+        BeaverDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
+    deerDialogueFiles = (
+    'AV_deer_short', 'AV_deer_med', 'AV_deer_long', 'AV_deer_question', 'AV_deer_exclaim', 'AV_deer_howl')
+    global DeerDialogueArray
+    for file in deerDialogueFiles:
+        DeerDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
+    foxDialogueFiles = (
+        'AV_fox_short', 'AV_fox_med', 'AV_fox_long', 'AV_fox_question', 'AV_fox_exclaim', 'AV_fox_howl')
+    global FoxDialogueArray
+    for file in foxDialogueFiles:
+        FoxDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
+    gatorDialogueFiles = (
+        'AV_gator_short', 'AV_gator_med', 'AV_gator_long', 'AV_gator_question', 'AV_gator_exclaim', 'AV_gator_howl')
+    global GatorDialogueArray
+    for file in gatorDialogueFiles:
+        GatorDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
+    kangarooDialogueFiles = (
+        'AV_kangaroo_short', 'AV_kangaroo_med', 'AV_kangaroo_long', 'AV_kangaroo_question', 'AV_kangaroo_exclaim', 'AV_kangaroo_howl')
+    global KangarooDialogueArray
+    for file in kangarooDialogueFiles:
+        KangarooDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
+    kiwiDialogueFiles = (
+        'AV_kiwi_short', 'AV_kiwi_med', 'AV_kiwi_long', 'AV_kiwi_question', 'AV_kiwi_exclaim', 'AV_kiwi_howl')
+    global KiwiDialogueArray
+    for file in kiwiDialogueFiles:
+        KiwiDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
+    koalaDialogueFiles = (
+        'AV_koala_short', 'AV_koala_med', 'AV_koala_long', 'AV_koala_question', 'AV_koala_exclaim', 'AV_koala_howl')
+    global KoalaDialogueArray
+    for file in koalaDialogueFiles:
+        KoalaDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
+    raccoonDialogueFiles = (
+        'AV_raccoon_short', 'AV_raccoon_med', 'AV_raccoon_long', 'AV_raccoon_question', 'AV_raccoon_exclaim', 'AV_raccoon_howl')
+    global RaccoonDialogueArray
+    for file in raccoonDialogueFiles:
+        RaccoonDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
+    turkeyDialogueFiles = (
+        'AV_turkey_short', 'AV_turkey_med', 'AV_turkey_long', 'AV_turkey_question', 'AV_turkey_exclaim', 'AV_turkey_howl')
+    global TurkeyDialogueArray
+    for file in turkeyDialogueFiles:
+        TurkeyDialogueArray.append(base.loader.loadSfx(loadPath + file + '.ogg'))
+
 
 def unloadDialog():
     global CatDialogueArray
@@ -455,6 +529,17 @@ def unloadDialog():
     global DogDialogueArray
     global HorseDialogueArray
     global MonkeyDialogueArray
+    global ArmadilloDialogueArray
+    global BatDialogueArray
+    global BeaverDialogueArray
+    global DeerDialogueArray
+    global FoxDialogueArray
+    global GatorDialogueArray
+    global KangarooDialogueArray
+    global KiwiDialogueArray
+    global KoalaDialogueArray
+    global RaccoonDialogueArray
+    global TurkeyDialogueArray
     DogDialogueArray = []
     CatDialogueArray = []
     HorseDialogueArray = []
@@ -464,6 +549,17 @@ def unloadDialog():
     MonkeyDialogueArray = []
     BearDialogueArray = []
     PigDialogueArray = []
+    ArmadilloDialogueArray = []
+    BatDialogueArray = []
+    BeaverDialogueArray = []
+    DeerDialogueArray = []
+    FoxDialogueArray = []
+    GatorDialogueArray = []
+    KangarooDialogueArray = []
+    KiwiDialogueArray = []
+    KoalaDialogueArray = []
+    RaccoonDialogueArray = []
+    TurkeyDialogueArray = []
 
 
 class Toon(Avatar.Avatar, ToonHead):
@@ -1254,6 +1350,28 @@ class Toon(Avatar.Avatar, ToonHead):
             dialogueArray = BearDialogueArray
         elif animalType == 'pig':
             dialogueArray = PigDialogueArray
+        elif animalType == 'armadillo':
+            dialogueArray = ArmadilloDialogueArray
+        elif animalType == 'bat':
+            dialogueArray = BatDialogueArray
+        elif animalType == 'beaver':
+            dialogueArray = BeaverDialogueArray
+        elif animalType == 'deer':
+            dialogueArray = DeerDialogueArray
+        elif animalType == 'fox':
+            dialogueArray = FoxDialogueArray
+        elif animalType == 'alligator':
+            dialogueArray = GatorDialogueArray
+        elif animalType == 'kangaroo':
+            dialogueArray = KangarooDialogueArray
+        elif animalType == 'kiwi':
+            dialogueArray = KiwiDialogueArray
+        elif animalType == 'koala':
+            dialogueArray = KoalaDialogueArray
+        elif animalType == 'raccoon':
+            dialogueArray = RaccoonDialogueArray
+        elif animalType == 'turkey':
+            dialogueArray = TurkeyDialogueArray
         else:
             dialogueArray = None
         return dialogueArray
