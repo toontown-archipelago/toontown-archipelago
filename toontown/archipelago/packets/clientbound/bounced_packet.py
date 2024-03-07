@@ -19,7 +19,7 @@ class BouncedPacket(ClientBoundPacketBase):
         self.tags: List[str] = self.read_raw_field('tags', ignore_missing=True)
 
         # The data in the Bounce package copied
-        self.data: Dict[Any, Any] = self.read_raw_field('data')
+        self.data: Dict[Any, Any] = self.read_raw_field('data', ignore_missing=True)
 
     def handle(self, client):
         self.debug("Handling packet")
