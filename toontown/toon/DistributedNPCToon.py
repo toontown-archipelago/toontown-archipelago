@@ -16,7 +16,7 @@ class DistributedNPCToon(DistributedNPCToonBase):
         self.questChoiceGui = None
         self.trackChoiceGui = None
         self.cameraLerp = None
-        return
+
 
     def delayDelete(self):
         DistributedNPCToonBase.delayDelete(self)
@@ -48,37 +48,14 @@ class DistributedNPCToon(DistributedNPCToonBase):
         return
 
     def allowedToTalk(self):
-        if base.cr.isPaid():
-            return True
-        place = base.cr.playGame.getPlace()
-        myHoodId = ZoneUtil.getCanonicalHoodId(place.zoneId)
-        if hasattr(place, 'id'):
-            myHoodId = place.id
-        if myHoodId in (ToontownGlobals.ToontownCentral,
-         ToontownGlobals.MyEstate,
-         ToontownGlobals.GoofySpeedway,
-         ToontownGlobals.Tutorial):
-            return True
-        return False
+        return True
 
     def handleCollisionSphereEnter(self, collEntry):
-        if self.allowedToTalk():
-            base.cr.playGame.getPlace().fsm.request('quest', [self])
-            self.sendUpdate('avatarEnter', [])
-            self.nametag3d.setDepthTest(0)
-            self.nametag3d.setBin('fixed', 0)
-        else:
-            place = base.cr.playGame.getPlace()
-            if place:
-                place.fsm.request('stopped')
-            self.dialog = TeaserPanel.TeaserPanel(pageName='quests', doneFunc=self.handleOkTeaser)
-
-    def handleOkTeaser(self):
-        self.dialog.destroy()
-        del self.dialog
-        place = base.cr.playGame.getPlace()
-        if place:
-            place.fsm.request('walk')
+        base.cr.playGame.getPlace().fsm.request('quest', [self])
+        self.sendUpdate('avatarEnter', [])
+        self.nametag3d.setDepthTest(0)
+        self.nametag3d.setBin('fixed', 0)
+        self.setBusyWithLocalToon(True)
 
     def finishMovie(self, av, isLocalToon, elapsedTime):
         self.cleanupMovie()
@@ -95,6 +72,7 @@ class DistributedNPCToon(DistributedNPCToonBase):
             self.sendUpdate('setMovieDone', [])
             self.nametag3d.clearDepthTest()
             self.nametag3d.clearBin()
+            self.setBusyWithLocalToon(False)
 
     def setupCamera(self, mode):
         camera.wrtReparentTo(render)
@@ -112,6 +90,14 @@ class DistributedNPCToon(DistributedNPCToonBase):
     def setMovie(self, mode, npcId, avId, quests, timestamp):
         timeStamp = ClockDelta.globalClockDelta.localElapsedTime(timestamp)
         isLocalToon = avId == base.localAvatar.doId
+
+        # No matter what under any circumstances, if we are busy with this NPC and the movie we are receiving
+        # is NOT due to us, just completely ignore it
+        if self.isBusyWithLocalToon() and not isLocalToon:
+            return
+
+        # Now, either someone else is talking to this NPC or they are talking to us
+
         if mode == NPCToons.QUEST_MOVIE_CLEAR:
             self.cleanupMovie()
             return
@@ -122,7 +108,6 @@ class DistributedNPCToon(DistributedNPCToonBase):
             self.setPageNumber(0, -1)
             self.clearChat()
             self.startLookAround()
-            self.detectAvatars()
             return
         av = base.cr.doId2do.get(avId)
         if av is None:

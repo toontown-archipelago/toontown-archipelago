@@ -288,7 +288,7 @@ class QuestPoster(DirectFrame):
             return
         if rewardId == Quests.NA:
             finalReward = Quests.getFinalRewardId(questId, fAll=1)
-            transformedReward = Quests.transformReward(finalReward, base.localAvatar)
+            transformedReward = Quests.transformReward(finalReward)
             reward = Quests.getReward(transformedReward)
         else:
             reward = Quests.getReward(rewardId)

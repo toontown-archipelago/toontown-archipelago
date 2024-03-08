@@ -26,6 +26,14 @@ class DistributedNPCToonBase(DistributedToon.DistributedToon):
             self.setPickable(0)
             self.setPlayerType(NametagGroup.CCNonPlayer)
 
+            self.busyWithLocalToon = False  # When True, we ignore events from other toons so we don't have to worry about other players
+
+    def isBusyWithLocalToon(self):
+        return self.busyWithLocalToon
+
+    def setBusyWithLocalToon(self, busy: bool):
+        self.busyWithLocalToon = busy
+
     def disable(self):
         self.ignore('enter' + self.cSphereNode.getName())
         DistributedToon.DistributedToon.disable(self)
@@ -112,7 +120,6 @@ class DistributedNPCToonBase(DistributedToon.DistributedToon):
         pass
 
     def setupAvatars(self, av):
-        self.ignoreAvatars()
         av.headsUp(self, 0, 0, 0)
         self.headsUp(av, 0, 0, 0)
         av.stopLookAround()

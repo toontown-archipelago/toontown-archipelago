@@ -2063,9 +2063,9 @@ def getQuestDialog(id):
     return QuestDict.get(id)[QuestDictDialogIndex]
 
 
-def getQuestReward(id, av):
-    baseRewardId = QuestDict.get(id)[QuestDictRewardIndex]
-    return transformReward(baseRewardId, av)
+def getQuestReward(questId):
+    baseRewardId = QuestDict.get(questId)[QuestDictRewardIndex]
+    return transformReward(baseRewardId)
 
 def isQuestJustForFun(questId, rewardId):
     return True
@@ -2608,7 +2608,7 @@ def getNextQuest(id, currentNpc, av):
     return nextQuest, nextToNpcId
 
 
-def transformReward(baseRewardId, av):
+def transformReward(baseRewardId):
     return baseRewardId
 
 
@@ -4168,7 +4168,7 @@ def avatarWorkingOnRequiredRewards(av):
     tier = av.getRewardTier()
     rewardList = list(getRewardsInTier(tier))
     for i in range(len(rewardList)):
-        actualRewardId = transformReward(rewardList[i], av)
+        actualRewardId = transformReward(rewardList[i])
         rewardList[i] = actualRewardId
 
     for questDesc in av.quests:
@@ -4177,7 +4177,7 @@ def avatarWorkingOnRequiredRewards(av):
         if rewardId in rewardList:
             return 1
         elif rewardId == NA:
-            rewardId = transformReward(getFinalRewardId(questId, fAll=1), av)
+            rewardId = transformReward(getFinalRewardId(questId, fAll=1))
             if rewardId in rewardList:
                 return 1
 
@@ -4204,7 +4204,7 @@ def avatarHasAllRequiredRewards(av, tier):
                     notify.debug('avatarHasAllRequiredRewards: rewardId 900 not found')
                 return 0
         else:
-            actualRewardId = transformReward(rewardId, av)
+            actualRewardId = transformReward(rewardId)
             if actualRewardId in rewardHistory:
                 rewardHistory.remove(actualRewardId)
             elif getRewardClass(rewardId) == CogSuitPartReward:

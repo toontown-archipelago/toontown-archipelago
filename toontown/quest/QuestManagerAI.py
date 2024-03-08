@@ -198,7 +198,7 @@ class QuestManagerAI:
         self.npcGiveQuest(npc, av, questId, rewardId, toNpcId, storeReward=True)
 
     def npcGiveQuest(self, npc, av, questId, rewardId, toNpcId, storeReward=False):
-        rewardId = Quests.transformReward(rewardId, av)
+        rewardId = Quests.transformReward(rewardId)
         finalReward = rewardId if storeReward else 0
         progress = 0
         av.addQuest((questId, npc.getDoId(), toNpcId, rewardId, progress), finalReward)
