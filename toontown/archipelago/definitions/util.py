@@ -1,6 +1,8 @@
 from apworld.toontown import consts, ToontownLocationName, LOCATION_DEFINITIONS
 from apworld.toontown.locations import TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS, MML_TASK_LOCATIONS, TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS
 
+from typing import Union
+
 from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
 
@@ -50,12 +52,12 @@ def cog_code_to_ap_location(cog_code: str) -> str:
 
 
 # Given the string representation of a location, retrieve the numeric ID
-def ap_location_name_to_id(location_name: str) -> int:
+def ap_location_name_to_id(location_name: Union[str, ToontownLocationName]) -> int:
     for i, loc in enumerate(LOCATION_DEFINITIONS):
-        if loc.name == location_name:
+        if (type(location_name) is str and loc.name.value == location_name) or \
+           (type(location_name) is ToontownLocationName and loc.name == location_name):
             return loc.unique_id
-    print("AP location could not be found")
-    return -1
+    raise Exception("AP location could not be found")
 
 
 # Given a Zone ID, give the ID of an AP location award the player.

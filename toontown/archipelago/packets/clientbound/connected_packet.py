@@ -145,9 +145,9 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.av.scoutLocations(locations.SCOUTING_REQUIRED_LOCATIONS)
 
         # Login location rewarding
-        new_game = ap_location_name_to_id(locations.ToontownLocationName.STARTING_NEW_GAME_LOCATION.value)
-        track_one_check = ap_location_name_to_id(locations.ToontownLocationName.STARTING_TRACK_ONE_LOCATION.value)
-        track_two_check = ap_location_name_to_id(locations.ToontownLocationName.STARTING_TRACK_TWO_LOCATION.value)
+        new_game = ap_location_name_to_id(locations.ToontownLocationName.STARTING_NEW_GAME.value)
+        track_one_check = ap_location_name_to_id(locations.ToontownLocationName.STARTING_TRACK_ONE.value)
+        track_two_check = ap_location_name_to_id(locations.ToontownLocationName.STARTING_TRACK_TWO.value)
         client.av.addCheckedLocation(new_game)
         client.av.addCheckedLocation(track_one_check)
         client.av.addCheckedLocation(track_two_check)

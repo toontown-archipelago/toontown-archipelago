@@ -441,9 +441,9 @@ def get_ap_reward_from_id(_id: int) -> APReward:
     if not definition:
         return UndefinedReward(_id)
 
-    ap_reward: APReward = ITEM_NAME_TO_AP_REWARD.get(definition.name)
+    ap_reward: APReward = ITEM_NAME_TO_AP_REWARD.get(definition.name.value)
 
     if not ap_reward:
-        ap_reward = UndefinedReward(definition.name)
+        ap_reward = UndefinedReward(definition.name.value)
 
     return ap_reward
