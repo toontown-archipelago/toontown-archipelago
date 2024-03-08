@@ -168,7 +168,7 @@ class ToontownWorld(World):
         # Spawn each defined item.
         for item in ITEM_DEFINITIONS:
             for _ in range(item.quantity):
-                if item in exclude_items:
+                if item.name in exclude_items:
                     continue
                 pool.append(self.create_item(item.name.value))
 
