@@ -202,13 +202,13 @@ class FishManagerAI:
     def checkForFishingLocationCompletions(self, av):
 
         thresholdToLocation = {
-            10: locations.FISHING_10_SPECIES,
-            20: locations.FISHING_20_SPECIES,
-            30: locations.FISHING_30_SPECIES,
-            40: locations.FISHING_40_SPECIES,
-            50: locations.FISHING_50_SPECIES,
-            60: locations.FISHING_60_SPECIES,
-            70: locations.FISHING_COMPLETE_ALBUM,
+            10: locations.ToontownLocationName.FISHING_10_SPECIES.value,
+            20: locations.ToontownLocationName.FISHING_20_SPECIES.value,
+            30: locations.ToontownLocationName.FISHING_30_SPECIES.value,
+            40: locations.ToontownLocationName.FISHING_40_SPECIES.value,
+            50: locations.ToontownLocationName.FISHING_50_SPECIES.value,
+            60: locations.ToontownLocationName.FISHING_60_SPECIES.value,
+            70: locations.ToontownLocationName.FISHING_COMPLETE_ALBUM.value,
         }
 
         numFish = len(av.fishCollection)

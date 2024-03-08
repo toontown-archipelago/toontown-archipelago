@@ -88,12 +88,11 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.checkButtons = []
 
         allItems: List[ToontownItemDefinition] = items.ITEM_DEFINITIONS[:]
-        allItems.sort(key=lambda _item: _item.unique_id)
-        for check in allItems:
+        for i, check in enumerate(allItems):
             if check.quantity == 0:
                 pass
             else:
-                button = self.makeCheckButton(check.unique_name, itemsAndCount.get(check.unique_id, 0), check.quantity)  # TODO use actual pool from AP for quantity max
+                button = self.makeCheckButton(check.name, itemsAndCount.get(check.unique_id, 0), check.quantity)  # TODO use actual pool from AP for quantity max
                 self.checkButtons.append(button[0])
 
     def makeCheckButton(self, checkName, checkCount, checkMax):

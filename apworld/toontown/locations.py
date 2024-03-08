@@ -3,6 +3,7 @@ from enum import IntEnum, Enum, auto
 from typing import List, Dict
 
 from BaseClasses import LocationProgressType
+from . import consts
 from .regions import ToontownRegionName
 from .rules import Rule
 
@@ -262,6 +263,7 @@ class ToontownLocationDefinition:
     rules: List[Rule] = field(default_factory=list)
     progress_type: LocationProgressType = LocationProgressType.DEFAULT
     rule_logic_or: bool = False  # By default, rule logic ANDs values in the list
+    unique_id: int = 0  # Set in post
 
 
 LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
@@ -500,16 +502,22 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DROP_PIANO_UNLOCKED,          ToontownLocationType.GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSix]),
     ToontownLocationDefinition(ToontownLocationName.DROP_BOAT_UNLOCKED,           ToontownLocationType.GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSeven]),
     # endregion
+    # region Bosses
+    ToontownLocationDefinition(ToontownLocationName.SELLBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.SBHQ, [Rule.CanFightVP]),
+    ToontownLocationDefinition(ToontownLocationName.CASHBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.CBHQ, [Rule.CanFightCFO]),
+    ToontownLocationDefinition(ToontownLocationName.LAWBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.LBHQ, [Rule.CanFightCJ]),
+    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.BBHQ, [Rule.CanFightCEO]),
+    # endregion
 ]
 
 
 EVENT_DEFINITIONS: List[ToontownLocationDefinition] = [
-    ToontownLocationDefinition(ToontownLocationName.SELLBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.SBHQ, [Rule.CanFightVP]),
-    ToontownLocationDefinition(ToontownLocationName.CASHBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.CBHQ, [Rule.CanFightCFO]),
-    ToontownLocationDefinition(ToontownLocationName.LAWBOT_PROOF,   ToontownLocationType.BOSSES, ToontownRegionName.LBHQ, [Rule.CanFightCJ]),
-    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.BBHQ, [Rule.CanFightCEO]),
     ToontownLocationDefinition(ToontownLocationName.SAVED_TOONTOWN, ToontownLocationType.MISC,   ToontownRegionName.TTC, [Rule.AllBossesDefeated]),
 ]
+
+
+for i in range(len(LOCATION_DEFINITIONS)):
+    LOCATION_DEFINITIONS[i].unique_id = i + consts.BASE_ID
 
 LOCATION_DESCRIPTIONS: Dict[str, str] = {
 
@@ -523,12 +531,12 @@ MML_TASK_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_de
 TB_TASK_LOCATIONS  = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.TB_TASKS]
 DDL_TASK_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.DDL_TASKS]
 ALL_TASK_LOCATIONS_SPLIT = (
-        TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS,
-        MML_TASK_LOCATIONS, TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS,
+    TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS,
+    MML_TASK_LOCATIONS, TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS,
 )
 ALL_TASK_LOCATIONS = (
-        TTC_TASK_LOCATIONS + DD_TASK_LOCATIONS + DG_TASK_LOCATIONS
-        + MML_TASK_LOCATIONS + TB_TASK_LOCATIONS + DDL_TASK_LOCATIONS
+    TTC_TASK_LOCATIONS + DD_TASK_LOCATIONS + DG_TASK_LOCATIONS
+    + MML_TASK_LOCATIONS + TB_TASK_LOCATIONS + DDL_TASK_LOCATIONS
 )
 
 SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy()

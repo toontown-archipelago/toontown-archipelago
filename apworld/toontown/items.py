@@ -108,9 +108,6 @@ class ToontownItemName(enum.Enum):
     UBER_TRAP = "Uber Trap"
     DRIP_TRAP = "Drip Trap"
 
-    ### Victory ###
-    VICTORY = "Victory"
-
 
 @dataclass
 class ToontownItemDefinition:
@@ -118,6 +115,7 @@ class ToontownItemDefinition:
     classification: ItemClassification
     quantity: int = 0  # 0 implies manually/dynamically generated in World
     description: Optional[str] = None
+    unique_id: int = 0
 
 
 ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
@@ -223,6 +221,10 @@ ITEM_DESCRIPTIONS = {
     ToontownItemName.LAWBOT_DISGUISE:  "Grants access to fight the Lawbot CJ",
     ToontownItemName.BOSSBOT_DISGUISE: "Grants access to fight the Bossbot CEO",
 }
+
+
+for i in range(len(ITEM_DEFINITIONS)):
+    ITEM_DEFINITIONS[i].unique_id = i + consts.BASE_ID
 
 GAG_TRAINING_FRAMES = (
     ToontownItemName.TOONUP_FRAME,

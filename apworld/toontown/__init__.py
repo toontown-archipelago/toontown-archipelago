@@ -118,7 +118,7 @@ class ToontownWorld(World):
             # Do some progress type overrides as necessary.
             logical_tasks_per_pg = self.options.logical_tasks_per_playground.value
             for loc_list in ALL_TASK_LOCATIONS_SPLIT:
-                if location in loc_list[12 - logical_tasks_per_pg:]:
+                if location_data.name in loc_list[12 - logical_tasks_per_pg:]:
                     location.progress_type = LocationProgressType.EXCLUDED
             if self.options.logical_maxed_cog_gallery.value:
                 if location.type == ToontownLocationType.GALLERY_MAX:

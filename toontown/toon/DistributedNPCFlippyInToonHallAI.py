@@ -42,7 +42,7 @@ class DistributedNPCFlippyInToonHallAI(DistributedNPCToonAI):
     def doAvatarVictory(self, av: DistributedToonAI):
 
         # Toon won their game, give them the check and play the cutscene
-        won_id = util.ap_location_name_to_id(locations.SAVED_TOONTOWN)
+        won_id = util.ap_location_name_to_id(locations.ToontownLocationName.SAVED_TOONTOWN.value)
         av.addCheckedLocation(won_id)
         av.APVictory()
 

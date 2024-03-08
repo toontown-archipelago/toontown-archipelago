@@ -1136,8 +1136,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                toon.addCheckedLocation(ap_location_name_to_id(locations.CLEAR_CFO))
-                toon.addCheckedLocation(ap_location_name_to_id(locations.CASHBOT_PROOF))
+                toon.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.CASHBOT_PROOF.value))
                 toon.b_promote(self.deptIndex)
 
                 for rewardId in rewards:
