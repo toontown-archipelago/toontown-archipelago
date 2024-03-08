@@ -87,8 +87,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
 
         self.checkButtons = []
 
-        itemDict = items.ITEM_DEFINITIONS
-        allItems: List[ToontownItemDefinition] = list(itemDict.values())
+        allItems: List[ToontownItemDefinition] = items.ITEM_DEFINITIONS[:]
         allItems.sort(key=lambda _item: _item.unique_id)
         for check in allItems:
             if check.quantity == 0:

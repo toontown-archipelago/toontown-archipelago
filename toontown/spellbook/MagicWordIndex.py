@@ -3276,7 +3276,7 @@ class Archipelago(MagicWord):
 
         # Add a random location check
         if operation in ('check', 'addcheck'):
-            check: ToontownLocationDefinition = random.choice(list(locations.LOCATION_DEFINITIONS.values()))
+            check: ToontownLocationDefinition = random.choice(locations.LOCATION_DEFINITIONS)
             toon.addCheckedLocation(check.unique_id)
             return f"Gave {toon.getName()} the {check.unique_name} check!"
 

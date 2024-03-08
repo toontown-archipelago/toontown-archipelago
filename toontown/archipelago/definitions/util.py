@@ -1,4 +1,4 @@
-from apworld.toontown import locations
+from apworld.toontown import locations, consts
 
 from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
@@ -50,7 +50,11 @@ def cog_code_to_ap_location(cog_code: str) -> str:
 
 # Given the string representation of a location, retrieve the numeric ID
 def ap_location_name_to_id(location_name: str) -> int:
-    return locations.LOCATION_DEFINITIONS[location_name].unique_id
+    for i, loc in enumerate(locations.LOCATION_DEFINITIONS):
+        if loc.name == location_name:
+            return i + consts.BASE_ID
+    print("AP location could not be found")
+    return -1
 
 
 # Given a Zone ID, give the ID of an AP location award the player.
@@ -119,7 +123,7 @@ def hood_to_task_locations(hoodId: int):
         ToontownGlobals.ToontownCentral: locations.TTC_TASK_LOCATIONS,
         ToontownGlobals.DonaldsDock: locations.DD_TASK_LOCATIONS,
         ToontownGlobals.DaisyGardens: locations.DG_TASK_LOCATIONS,
-        ToontownGlobals.MinniesMelodyland: locations.MM_TASK_LOCATIONS,
+        ToontownGlobals.MinniesMelodyland: locations.MML_TASK_LOCATIONS,
         ToontownGlobals.TheBrrrgh: locations.TB_TASK_LOCATIONS,
         ToontownGlobals.DonaldsDreamland: locations.DDL_TASK_LOCATIONS,
     }.get(hoodId, [])

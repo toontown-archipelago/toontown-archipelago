@@ -17,7 +17,7 @@ class GagFrameQuantityLock(LockBase):
 
             # Loop through all gag frame items and count how many we have
             for frame in items.GAG_TRAINING_FRAMES:
-                num_frames += state.count(frame, player)
+                num_frames += state.count(frame.value, player)
 
             # If we have enough this is unlocked
             return num_frames >= self.amount

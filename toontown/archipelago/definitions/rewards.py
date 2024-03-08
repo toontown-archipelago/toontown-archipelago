@@ -3,7 +3,7 @@ from enum import IntEnum
 
 import random
 
-from apworld.toontown import items
+from apworld.toontown import ToontownItemName
 
 from toontown.building import FADoorCodes
 from toontown.coghq.CogDisguiseGlobals import PartsPerSuitBitmasks
@@ -357,23 +357,20 @@ class UndefinedReward(APReward):
 
 
 ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
-    items.ITEM_1_LAFF_BOOST: LaffBoostReward(1),
-    items.ITEM_2_LAFF_BOOST: LaffBoostReward(2),
-    items.ITEM_3_LAFF_BOOST: LaffBoostReward(3),
-    items.ITEM_4_LAFF_BOOST: LaffBoostReward(4),
-    items.ITEM_5_LAFF_BOOST: LaffBoostReward(5),
-
+    ToontownItemName.LAFF_BOOST_1.value: LaffBoostReward(1),
+    ToontownItemName.LAFF_BOOST_2.value: LaffBoostReward(2),
+    ToontownItemName.LAFF_BOOST_3.value: LaffBoostReward(3),
+    ToontownItemName.LAFF_BOOST_4.value: LaffBoostReward(4),
+    ToontownItemName.LAFF_BOOST_5.value: LaffBoostReward(5),
     items.ITEM_5_GAG_CAPACITY: GagCapacityReward(5),
     items.ITEM_10_GAG_CAPACITY: GagCapacityReward(10),
     items.ITEM_15_GAG_CAPACITY: GagCapacityReward(15),
-
     items.ITEM_750_MONEY_CAP: JellybeanJarUpgradeReward(750),
     items.ITEM_1000_MONEY_CAP: JellybeanJarUpgradeReward(1000),
     items.ITEM_1250_MONEY_CAP: JellybeanJarUpgradeReward(1250),
     items.ITEM_1500_MONEY_CAP: JellybeanJarUpgradeReward(1500),
     items.ITEM_2000_MONEY_CAP: JellybeanJarUpgradeReward(2000),
     items.ITEM_2500_MONEY_CAP: JellybeanJarUpgradeReward(2500),
-
     items.ITEM_TOONUP_FRAME: GagTrainingFrameReward(GagTrainingFrameReward.TOONUP),
     items.ITEM_TRAP_FRAME: GagTrainingFrameReward(GagTrainingFrameReward.TRAP),
     items.ITEM_LURE_FRAME: GagTrainingFrameReward(GagTrainingFrameReward.LURE),
@@ -381,74 +378,58 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     items.ITEM_THROW_FRAME: GagTrainingFrameReward(GagTrainingFrameReward.THROW),
     items.ITEM_SQUIRT_FRAME: GagTrainingFrameReward(GagTrainingFrameReward.SQUIRT),
     items.ITEM_DROP_FRAME: GagTrainingFrameReward(GagTrainingFrameReward.DROP),
-
     items.ITEM_1_GAG_MULTIPLIER: GagTrainingMultiplierReward(1),
     items.ITEM_2_GAG_MULTIPLIER: GagTrainingMultiplierReward(2),
-
     items.ITEM_FISHING_ROD_UPGRADE: FishingRodUpgradeReward(),
-
     items.ITEM_TTC_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.TOONTOWN_CENTRAL),
     items.ITEM_DD_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.DONALDS_DOCK),
     items.ITEM_DG_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.DAISYS_GARDENS),
     items.ITEM_MML_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.MINNIES_MELODYLAND),
     items.ITEM_TB_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.THE_BRRRGH),
     items.ITEM_DDL_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.DONALDS_DREAMLAND),
-
     items.ITEM_SBHQ_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.SELLBOT_HQ),
     items.ITEM_CBHQ_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.CASHBOT_HQ),
     items.ITEM_LBHQ_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.LAWBOT_HQ),
     items.ITEM_BBHQ_TELEPORT: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.BOSSBOT_HQ),
-
     items.ITEM_TTC_HQ_ACCESS: TaskAccessReward(TaskAccessReward.TOONTOWN_CENTRAL),
     items.ITEM_DD_HQ_ACCESS: TaskAccessReward(TaskAccessReward.DONALDS_DOCK),
     items.ITEM_DG_HQ_ACCESS: TaskAccessReward(TaskAccessReward.DAISYS_GARDENS),
     items.ITEM_MML_HQ_ACCESS: TaskAccessReward(TaskAccessReward.MINNIES_MELODYLAND),
     items.ITEM_TB_HQ_ACCESS: TaskAccessReward(TaskAccessReward.THE_BRRRGH),
     items.ITEM_DDL_HQ_ACCESS: TaskAccessReward(TaskAccessReward.DONALDS_DREAMLAND),
-
     items.ITEM_FRONT_FACTORY_ACCESS: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
     items.ITEM_SIDE_FACTORY_ACCESS: FacilityAccessReward(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING),
-
     items.ITEM_COIN_MINT_ACCESS: FacilityAccessReward(FADoorCodes.COIN_MINT_ACCESS_MISSING),
     items.ITEM_DOLLAR_MINT_ACCESS: FacilityAccessReward(FADoorCodes.DOLLAR_MINT_ACCESS_MISSING),
     items.ITEM_BULLION_MINT_ACCESS: FacilityAccessReward(FADoorCodes.BULLION_MINT_ACCESS_MISSING),
-
     items.ITEM_A_OFFICE_ACCESS: FacilityAccessReward(FADoorCodes.OFFICE_A_ACCESS_MISSING),
     items.ITEM_B_OFFICE_ACCESS: FacilityAccessReward(FADoorCodes.OFFICE_B_ACCESS_MISSING),
     items.ITEM_C_OFFICE_ACCESS: FacilityAccessReward(FADoorCodes.OFFICE_C_ACCESS_MISSING),
     items.ITEM_D_OFFICE_ACCESS: FacilityAccessReward(FADoorCodes.OFFICE_D_ACCESS_MISSING),
-
     items.ITEM_FRONT_THREE_ACCESS: FacilityAccessReward(FADoorCodes.FRONT_THREE_ACCESS_MISSING),
     items.ITEM_MIDDLE_THREE_ACCESS: FacilityAccessReward(FADoorCodes.MIDDLE_SIX_ACCESS_MISSING),
     items.ITEM_BACK_THREE_ACCESS: FacilityAccessReward(FADoorCodes.BACK_NINE_ACCESS_MISSING),
-
     items.ITEM_SELLBOT_DISGUISE: CogDisguiseReward(CogDisguiseReward.SELLBOT),
     items.ITEM_CASHBOT_DISGUISE: CogDisguiseReward(CogDisguiseReward.CASHBOT),
     items.ITEM_LAWBOT_DISGUISE: CogDisguiseReward(CogDisguiseReward.LAWBOT),
     items.ITEM_BOSSBOT_DISGUISE: CogDisguiseReward(CogDisguiseReward.BOSSBOT),
-
     items.ITEM_SELLBOT_PROOF: ProofReward(ProofReward.ProofType.SellbotBossFirstTime),
     items.ITEM_CASHBOT_PROOF: ProofReward(ProofReward.ProofType.CashbotBossFirstTime),
     items.ITEM_LAWBOT_PROOF: ProofReward(ProofReward.ProofType.LawbotBossFirstTime),
     items.ITEM_BOSSBOT_PROOF: ProofReward(ProofReward.ProofType.BossbotBossFirstTime),
-
     items.ITEM_VICTORY: VictoryReward(),
-
     items.ITEM_250_MONEY: JellybeanReward(250),
     items.ITEM_500_MONEY: JellybeanReward(500),
     items.ITEM_1000_MONEY: JellybeanReward(1000),
     items.ITEM_2000_MONEY: JellybeanReward(2000),
-
     items.ITEM_500_XP: GagExpBundleAward(500),
     items.ITEM_1000_XP: GagExpBundleAward(1000),
     items.ITEM_1500_XP: GagExpBundleAward(1500),
     items.ITEM_2000_XP: GagExpBundleAward(2000),
     items.ITEM_2500_XP: GagExpBundleAward(2500),
-
     items.ITEM_SOS_REWARD: BossRewardAward(BossRewardAward.SOS),
     items.ITEM_UNITE_REWARD: BossRewardAward(BossRewardAward.UNITE),
     items.ITEM_PINK_SLIP_REWARD: BossRewardAward(BossRewardAward.PINK_SLIP),
-
     items.ITEM_UBER_TRAP: UberTrapAward(),
     items.ITEM_DRIP_TRAP: DripTrapAward(),
 }
@@ -460,7 +441,7 @@ def get_ap_reward_from_name(name: str) -> APReward:
 
 # The id we are given from a packet from archipelago
 def get_ap_reward_from_id(_id: int) -> APReward:
-    definition = items.ID_TO_ITEM_DEFINITION.get(_id, None)
+    definition = items.get_item_def_from_id(_id)
 
     if not definition:
         return UndefinedReward(_id)

@@ -601,8 +601,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                toon.addCheckedLocation(ap_location_name_to_id(locations.CLEAR_CEO))
-                toon.addCheckedLocation(ap_location_name_to_id(locations.BOSSBOT_PROOF))
+                toon.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.BOSSBOT_PROOF))
                 self.givePinkSlipReward(toon)
                 toon.b_promote(self.deptIndex)
 

@@ -1,15 +1,25 @@
 from typing import Dict, Any, List
 
-from BaseClasses import Tutorial, Region, ItemClassification, CollectionState
+from BaseClasses import Tutorial, Region, ItemClassification, CollectionState, Item, Location, LocationProgressType
 from worlds.AutoWorld import World, WebWorld
 from worlds.generic.Rules import set_rule
 
-from . import regions
-from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, ToontownItem
-from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, ToontownLocation
+from . import regions, consts
+from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName
+from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT
 from .options import ToontownOptions
+from .regions import REGION_DEFINITIONS, ToontownRegionName
+from .ruledefs import test_location, test_entrance
 
 DEBUG_MODE = False
+
+
+class ToontownItem(Item):
+    game: str = "Toontown"
+
+
+class ToontownLocation(Location):
+    game: str = "Toontown"
 
 
 class ToontownWeb(WebWorld):
@@ -33,85 +43,196 @@ class ToontownWorld(World):
     game = "Toontown"
     web = ToontownWeb()
 
-    # v0.1.0
-    required_client_version = (0, 1, 0)
+    required_client_version = (0, 4, 4)
     options_dataclass = ToontownOptions
     options: ToontownOptions
 
-    item_name_to_id = {
-        item.unique_name: item.unique_id for item in ITEM_DEFINITIONS.values()
-    }
-
-    location_name_to_id = {
-        location.unique_name: location.unique_id for location in LOCATION_DEFINITIONS.values()
-    }
+    item_name_to_id = {item.name: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}
+    location_name_to_id = {location.name: i + consts.BASE_ID for i, location in enumerate(LOCATION_DEFINITIONS)}
 
     location_descriptions = LOCATION_DESCRIPTIONS
     item_descriptions = ITEM_DESCRIPTIONS
 
-    # HELPER METHODS
+    def set_rules(self):
+        # Add location rules.
+        for i, location_data in enumerate(LOCATION_DEFINITIONS):
+            location: Location = self.multiworld.get_location(location_data.name.value, self.player)
+            location.access_rule = lambda state, i=i: test_location(
+                LOCATION_DEFINITIONS[i], state, self.multiworld, self.player, self.options)
 
-    # Returns two items to be force added to the start inventory so we have two gag tracks on a new seed
-    def calculate_starting_tracks(self):
+        for i, location_data in enumerate(EVENT_DEFINITIONS):
+            location: Location = self.multiworld.get_location(location_data.name.value, self.player)
+            location.access_rule = lambda state, i=i: test_location(
+                EVENT_DEFINITIONS[i], state, self.multiworld, self.player, self.options)
 
-        # Define lists to pull gags from so we don't give two support tracks
-        OFFENSIVE: List[str] = [items.ITEM_TRAP_FRAME, items.ITEM_SOUND_FRAME, items.ITEM_THROW_FRAME,
-                                items.ITEM_SQUIRT_FRAME, items.ITEM_DROP_FRAME]
-        SUPPORT: List[str] = [items.ITEM_TOONUP_FRAME, items.ITEM_LURE_FRAME]
-        ALL: List[str] = OFFENSIVE + SUPPORT
-
-        # First force pick an offensive track
-        rng = self.multiworld.random
-        first_track = rng.choice(OFFENSIVE)
-
-        # Edge case, if we got trap then second track MUST be lure
-        if first_track == items.ITEM_TRAP_FRAME:
-            second_track = items.ITEM_LURE_FRAME
-            return first_track, second_track
-
-        # Otherwise we can choose any track that isn't the first one
-        choices = ALL.copy()
-        choices.remove(first_track)
-        second_track = rng.choice(choices)
-
-        return first_track, second_track
-
-    def create_and_place_event(self, region_name: str, location_name: str, event_name: str, locked_by: Dict[str, int]):
-
-        def can_access(state: CollectionState) -> bool:
-            requirement_satisfied = True
-            for item_name, amount_needed in locked_by.items():
-                if state.count(item_name, self.player) < amount_needed:
-                    requirement_satisfied = False
-
-            return requirement_satisfied
-
-        event = self.create_event(event_name)
-        region = self.multiworld.get_region(region_name, self.player)
-        location = ToontownLocation(self.player, location_name, None, region)
-        region.locations.append(location)
-        location.place_locked_item(event)
-        set_rule(location, can_access)
-
-    # OVERRIDES
+        # Add entrance rules.
+        for i, region_data in enumerate(REGION_DEFINITIONS):
+            for o, entrance_data in enumerate(region_data.connects_to):
+                entrance_name = f"{region_data.name.value} -> {entrance_data.connects_to.value}"
+                entrance = self.multiworld.get_entrance(entrance_name, self.player)
+                entrance.access_rule = lambda state, i=i, o=o: test_entrance(
+                    REGION_DEFINITIONS[i].connects_to[o], state, self.multiworld, self.player, self.options)
 
     def create_item(self, name: str) -> ToontownItem:
-        item_definition: ToontownItemDefinition = ITEM_DEFINITIONS[name]
-        item: ToontownItem = ToontownItem(item_definition.unique_name, item_definition.classification,
-                                          self.item_name_to_id[name], self.player)
-        return item
+        item_id: int = self.item_name_to_id[name]
+        item_def: ToontownItemDefinition = get_item_def_from_id(item_id)
+        return ToontownItem(name, item_def.classification, item_id, self.player)
 
     def create_event(self, event: str) -> ToontownItem:
         return ToontownItem(event, ItemClassification.progression_skip_balancing, None, self.player)
 
     def generate_early(self) -> None:
-
         # Calculate what our starting gag tracks should be
         first_track, second_track = self.calculate_starting_tracks()
 
         # Save as attributes so we can reference this later in fill_slot_data()
         self.first_track = first_track
         self.second_track = second_track
+
+    def create_regions(self) -> None:
+        player = self.player
+
+        # Create all regions.
+        regions: Dict[ToontownRegionName, Region] = {}
+        for region_data in REGION_DEFINITIONS:
+            region = Region(region_data.name.value, player, self.multiworld)
+            regions[region_data.name.value] = region
+            self.multiworld.regions.append(region)
+
+        # Create all entrances.
+        for region_data in REGION_DEFINITIONS:
+            parent_region = regions[region_data.name.value]
+            for entrance_data in region_data.connects_to:
+                entrance_name = f"{region_data.name.value} -> {entrance_data.connects_to.value}"
+                child_region = regions[entrance_data.connects_to.value]
+                parent_region.connect(child_region, entrance_name)
+
+        # Create all locations.
+        # TODO - set logical stuff here
+        for i, location_data in enumerate(LOCATION_DEFINITIONS):
+            region = regions[location_data.region.value]
+            location = ToontownLocation(player, location_data.name.value, self.location_name_to_id[location_data.name.value], region)
+            location.progress_type = location_data.progress_type
+            region.locations.append(location)
+
+            # Do some progress type overrides as necessary.
+            logical_tasks_per_pg = self.options.logical_tasks_per_playground.value
+            for loc_list in ALL_TASK_LOCATIONS_SPLIT:
+                if location in loc_list[12 - logical_tasks_per_pg:]:
+                    location.progress_type = LocationProgressType.EXCLUDED
+            if self.options.logical_maxed_cog_gallery.value:
+                if location.type == ToontownLocationType.GALLERY_MAX:
+                    location.progress_type = LocationProgressType.EXCLUDED
+
+        for i, location_data in enumerate(EVENT_DEFINITIONS):
+            region = regions[location_data.region.value]
+            location = ToontownLocation(player, location_data.name.value, None, region)
+            region.locations.append(location)
+
+            if location_data.name == ToontownLocationName.SAVED_TOONTOWN:
+                location.place_locked_item(self.create_event("Saved Toontown"))
+                self.multiworld.completion_condition[player] = lambda state: state.has("Saved Toontown", player)
+            else:
+                location.place_locked_item(self.create_event(location_data.name.value))
+
+        # Force various item placements.
+        self._force_item_placement(ToontownLocationName.STARTING_NEW_GAME,  ToontownItemName.TTC_HQ_ACCESS)
+        self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.first_track)
+        self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.second_track)
+
+        # Do we have force teleport access? if so place our tps
+        if self.options.force_playground_visit_teleport_access_unlocks.value:
+            self._force_item_placement(ToontownLocationName.DISCOVER_TTC, ToontownItemName.TTC_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DISCOVER_DD,  ToontownItemName.DD_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DISCOVER_DG,  ToontownItemName.DG_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DISCOVER_MM,  ToontownItemName.MML_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DISCOVER_TB,  ToontownItemName.TB_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DISCOVER_DDL, ToontownItemName.DDL_TELEPORT)
+
+        # Same for cog hqs
+        if self.options.force_coghq_visit_teleport_access_unlocks.value:
+            self._force_item_placement(ToontownLocationName.DISCOVER_SBHQ, ToontownItemName.SBHQ_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DISCOVER_CBHQ, ToontownItemName.CBHQ_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DISCOVER_LBHQ, ToontownItemName.LBHQ_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DISCOVER_BBHQ, ToontownItemName.BBHQ_TELEPORT)
+
+        # Debug, use this to print a pretty picture to make sure our regions are set up correctly
+        if DEBUG_MODE:
+            from Utils import visualize_regions
+            visualize_regions(self.multiworld.get_region("Menu", self.player), "toontown.puml")
+
+    def create_items(self) -> None:
+        pool = []
+        exclude_items: List[ToontownItemName] = self._get_excluded_items()
+
+        # Spawn each defined item.
+        for item in ITEM_DEFINITIONS:
+            for _ in range(item.quantity):
+                if item in exclude_items:
+                    continue
+                pool.append(self.create_item(item.name))
+
+        # Dynamically generate laff boosts.
+        LAFF_TO_GIVE = self.options.max_hp.value - self.options.starting_hp.value
+        if LAFF_TO_GIVE < 0:
+            print(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
+                  f"WARNING: Too low max HP. Setting max HP to starting HP.")
+            LAFF_TO_GIVE = 0
+        FIVE_LAFF_BOOSTS = round(consts.FIVE_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
+        while FIVE_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 5:
+            FIVE_LAFF_BOOSTS -= 1
+            LAFF_TO_GIVE -= 5
+            pool.append(self.create_item(ToontownItemName.LAFF_BOOST_5.value))
+        FOUR_LAFF_BOOSTS = round(consts.FOUR_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
+        while FOUR_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 4:
+            FOUR_LAFF_BOOSTS -= 1
+            LAFF_TO_GIVE -= 4
+            pool.append(self.create_item(ToontownItemName.LAFF_BOOST_4.value))
+        THREE_LAFF_BOOSTS = round(consts.THREE_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
+        while THREE_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 3:
+            THREE_LAFF_BOOSTS -= 1
+            LAFF_TO_GIVE -= 3
+            pool.append(self.create_item(ToontownItemName.LAFF_BOOST_3.value))
+        TWO_LAFF_BOOSTS = round(consts.TWO_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
+        while TWO_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 2:
+            TWO_LAFF_BOOSTS -= 1
+            LAFF_TO_GIVE -= 2
+            pool.append(self.create_item(ToontownItemName.LAFF_BOOST_2.value))
+
+        for _ in range(LAFF_TO_GIVE):
+            pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
+
+        # Dynamically generate training frames.
+        for frame in items.GAG_TRAINING_FRAMES:
+            quantity = 8 if frame not in (self.first_track, self.second_track) else 7
+            for _ in range(quantity):
+                pool.append(self.create_item(frame.value))
+
+        # Dynamically generate training multipliers.
+        GAG_MULTI_TO_GIVE = self.options.max_gag_xp_multiplier_from_items.value
+        TWO_GAG_MULTI_BOOSTS = round(consts.TWO_XP_BOOST_RATIO * GAG_MULTI_TO_GIVE)
+        while TWO_GAG_MULTI_BOOSTS > 0 and GAG_MULTI_TO_GIVE > 2:
+            TWO_GAG_MULTI_BOOSTS -= 1
+            GAG_MULTI_TO_GIVE -= 2
+            pool.append(self.create_item(ToontownItemName.GAG_MULTIPLIER_2.value))
+        for _ in range(GAG_MULTI_TO_GIVE):
+            pool.append(self.create_item(ToontownItemName.GAG_MULTIPLIER_1.value))
+
+        # Fill the rest of the room with junk.
+        junk: int = len(self.multiworld.get_unfilled_locations(self.player)) - len(pool)
+        if junk < 0:
+            raise Exception(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
+                            f"Generated with too many items ({-junk}). Please tweak settings.")
+
+        trap: int = round(junk * (self.options.trap_percent / 100))
+        filler: int = junk - trap
+        for i in range(trap):
+            pool.append(self.create_item(items.random_trap().name.value))
+        for i in range(filler):
+            pool.append(self.create_item(items.random_junk().name.value))
+
+        # Finalize item pool.
+        self.multiworld.itempool += pool
 
     def fill_slot_data(self) -> Dict[str, Any]:
 
@@ -122,22 +243,46 @@ class ToontownWorld(World):
             "starting_hp": self.options.starting_hp.value,
             "starting_money": self.options.starting_money.value,
             "starting_gag_xp_multiplier": self.options.starting_base_gag_xp_multiplier.value,
-            "first_track": self.first_track,
-            "second_track": self.second_track
+            "first_track": self.first_track.value,
+            "second_track": self.second_track.value,
         }
 
-    # Get what items we should exclude from the pool that is marked as required
-    def _get_excluded_items(self) -> List[str]:
+    def calculate_starting_tracks(self):
+        # Define lists to pull gags from so we don't give two support tracks
+        OFFENSIVE: List[ToontownItemName] = [
+            ToontownItemName.TRAP_FRAME,
+            ToontownItemName.SOUND_FRAME,
+            ToontownItemName.THROW_FRAME,
+            ToontownItemName.SQUIRT_FRAME,
+            ToontownItemName.DROP_FRAME,
+        ]
+        SUPPORT: List[ToontownItemName] = [
+            ToontownItemName.TOONUP_FRAME,
+            ToontownItemName.LURE_FRAME,
+        ]
+        ALL: List[ToontownItemName] = OFFENSIVE + SUPPORT
 
+        # First force pick an offensive track
+        rng = self.multiworld.random
+        first_track = rng.choice(OFFENSIVE)
+
+        # Edge case, if we got trap then second track MUST be lure
+        if first_track == ToontownItemName.TRAP_FRAME:
+            second_track = ToontownItemName.LURE_FRAME
+            return first_track, second_track
+
+        # Otherwise we can choose any track that isn't the first one
+        choices = ALL.copy()
+        choices.remove(first_track)
+        second_track = rng.choice(choices)
+
+        return first_track, second_track
+
+    def _get_excluded_items(self) -> List[ToontownItemName]:
         items_to_exclude = []
-
-        # Exclude our starting tracks
-        items_to_exclude.append(self.first_track)
-        items_to_exclude.append(self.second_track)
 
         # If we have the force tp access setting...
         if self.options.force_playground_visit_teleport_access_unlocks.value:
-
             # Add all teleport access
             items_to_exclude.append(items.ITEM_TTC_TELEPORT)
             items_to_exclude.append(items.ITEM_DD_TELEPORT)
@@ -155,131 +300,5 @@ class ToontownWorld(World):
         # Done return our items
         return items_to_exclude
 
-    def create_items(self) -> None:
-
-        num_items_in_pool = 0
-
-        # todo calculate dynamically based on settings
-        num_locations = len(LOCATION_DEFINITIONS)
-
-        items_to_exclude = self._get_excluded_items()
-
-        # Go through all the defined items and make sure the requirements are in
-        for item in ITEM_DEFINITIONS.values():
-            # Put as many as needed, most of these are 1
-            for _ in range(item.quantity):
-
-                # If this item needs to be excluded skip
-                if item.unique_name in items_to_exclude:
-                    items_to_exclude.remove(item.unique_name)
-                    continue
-
-                self.multiworld.itempool.append(self.create_item(item.unique_name))
-                num_items_in_pool += 1
-
-        # If there are fewer locations than items, we have a problem
-        if num_locations < num_items_in_pool:
-            raise Exception(f"Not enough locations for {num_items_in_pool} items ({num_locations} locations)")
-
-        # Amount of things we need to fill in is the difference of total locations and number of items
-        rng = self.multiworld.random
-        num_junk = num_locations - num_items_in_pool
-        for _ in range(num_junk):
-
-            # Do a check for a trap...
-            if self.options.trap_percent.value >= rng.randint(1, 100):
-                item = items.random_trap()
-            else:
-                item = items.random_junk()
-
-            item = item.unique_name
-            self.multiworld.itempool.append(self.create_item(item))
-
-    def _force_item_placement(self, location: str, item: str) -> None:
-        self.multiworld.get_location(location, self.player).place_locked_item(self.create_item(item))
-
-    def create_regions(self) -> None:
-
-        all_regions: Dict[str, Region] = {}
-
-        # Make all the regions
-        for region_definition in regions.REGION_DEFINITIONS:
-            new_region = Region(region_definition.unique_name, self.player, self.multiworld)
-            all_regions[region_definition.unique_name] = new_region
-
-            location_name_to_address_for_region = {}
-            for location_name in region_definition.locations:
-                location_name_to_address_for_region[location_name] = self.location_name_to_id[location_name]
-            new_region.add_locations(location_name_to_address_for_region, ToontownLocation)
-
-        # Make the connections and define any locks
-        for region_definition in regions.REGION_DEFINITIONS:
-            region = all_regions.get(region_definition.unique_name)
-
-            # No connections, we can skip
-            if len(region_definition.connects_to) <= 0:
-                continue
-
-            # Get all the regions that we connect to
-            for connection in region_definition.connects_to:
-                connecting_region = all_regions.get(connection)
-                connecting_region_definition = regions.REGION_NAME_TO_REGION_DEFINITION[connection]
-
-                # See if this region is locked behind an item
-                if not connecting_region_definition.always_unlocked():
-                    region.connect(connecting_region,
-                                   rule=connecting_region_definition.lock.get_lock_function(self.player))
-                else:
-                    region.connect(connecting_region)
-
-        self.multiworld.regions.extend(all_regions.values())
-
-        # Now loop through all locations and make sure they have their individual locks as well
-        for loc in locations.LIST_OF_LOCATION_DEFINITIONS:
-            # Does this location have a lock?
-            if loc.always_unlocked():
-                continue
-
-            # Place the lock function
-            multiworld_location = self.multiworld.get_location(loc.unique_name, self.player)
-            set_rule(multiworld_location, loc.lock.get_lock_function())
-
-        # Place our starter items
-        self._force_item_placement(locations.STARTING_NEW_GAME_LOCATION, items.ITEM_TTC_HQ_ACCESS)
-        self._force_item_placement(locations.STARTING_TRACK_ONE_LOCATION, self.first_track)
-        self._force_item_placement(locations.STARTING_TRACK_TWO_LOCATION, self.second_track)
-
-        # Do we have force teleport access? if so place our tps
-        if self.options.force_playground_visit_teleport_access_unlocks.value:
-            self._force_item_placement(locations.DISCOVER_TTC, items.ITEM_TTC_TELEPORT)
-            self._force_item_placement(locations.DISCOVER_DD, items.ITEM_DD_TELEPORT)
-            self._force_item_placement(locations.DISCOVER_DG, items.ITEM_DG_TELEPORT)
-            self._force_item_placement(locations.DISCOVER_MM, items.ITEM_MML_TELEPORT)
-            self._force_item_placement(locations.DISCOVER_TB, items.ITEM_TB_TELEPORT)
-            self._force_item_placement(locations.DISCOVER_DDL, items.ITEM_DDL_TELEPORT)
-
-        # Same for cog hqs
-        if self.options.force_coghq_visit_teleport_access_unlocks.value:
-            self._force_item_placement(locations.DISCOVER_SBHQ, items.ITEM_SBHQ_TELEPORT)
-            self._force_item_placement(locations.DISCOVER_CBHQ, items.ITEM_CBHQ_TELEPORT)
-            self._force_item_placement(locations.DISCOVER_LBHQ, items.ITEM_LBHQ_TELEPORT)
-            self._force_item_placement(locations.DISCOVER_BBHQ, items.ITEM_BBHQ_TELEPORT)
-
-        # Place our proofs
-        self._force_item_placement(locations.SELLBOT_PROOF, items.ITEM_SELLBOT_PROOF)
-        self._force_item_placement(locations.CASHBOT_PROOF, items.ITEM_CASHBOT_PROOF)
-        self._force_item_placement(locations.LAWBOT_PROOF, items.ITEM_LAWBOT_PROOF)
-        self._force_item_placement(locations.BOSSBOT_PROOF, items.ITEM_BOSSBOT_PROOF)
-
-        # Place our victory
-        self._force_item_placement(locations.SAVED_TOONTOWN, items.ITEM_VICTORY)
-
-
-        # Debug, use this to print a pretty picture to make sure our regions are set up correctly
-        if DEBUG_MODE:
-            from Utils import visualize_regions
-            visualize_regions(self.multiworld.get_region("Menu", self.player), "toontown.puml")
-
-    def generate_basic(self) -> None:
-        # Set win condition
-        self.multiworld.completion_condition[self.player] = lambda state: state.has(items.ITEM_VICTORY, self.player)
+    def _force_item_placement(self, location: str, item: ToontownItemName) -> None:
+        self.multiworld.get_location(location, self.player).place_locked_item(self.create_item(item.value))
