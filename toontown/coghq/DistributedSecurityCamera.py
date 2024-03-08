@@ -243,7 +243,7 @@ class DistributedSecurityCamera(BasicEntities.DistributedNodePathEntity):
         return
 
     def __updateTrack(self, task):
-        if self.target and self.level and hasattr(self.level, 'entities'):
+        if hasattr(self, 'level') and self.target and self.level and hasattr(self.level, 'entities'):
             thing = self.level.entities.get(self.target, None)
             self.targetX = thing.getPos(self)[0]
             self.targetY = thing.getPos(self)[1]
