@@ -13,7 +13,7 @@ Toontown:
 
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 9999
-  starting_money: 100
+  starting_money: 1000
 
   # The starting base gag experience multiplier when starting a new game.
   # This multiplier will multiplicatively stack with other gag experience bonuses throughout the game.
