@@ -122,7 +122,7 @@ def get_facility_id(facility_id: int) -> int:
 
 # Given a hood ID, return a list of AP check location names present in that hood
 def hood_to_task_locations(hoodId: int):
-    return {
+    locs = {
         ToontownGlobals.ToontownCentral: TTC_TASK_LOCATIONS,
         ToontownGlobals.DonaldsDock: DD_TASK_LOCATIONS,
         ToontownGlobals.DaisyGardens: DG_TASK_LOCATIONS,
@@ -130,6 +130,13 @@ def hood_to_task_locations(hoodId: int):
         ToontownGlobals.TheBrrrgh: TB_TASK_LOCATIONS,
         ToontownGlobals.DonaldsDreamland: DDL_TASK_LOCATIONS,
     }.get(hoodId, [])
+
+    # Because of the way AP is setup, we need to extract the raw string value from the location enums
+    ret = []
+    for loc in locs:
+        ret.append(loc.value)
+
+    return ret
 
 
 def track_and_level_to_location(track: int, level: int):

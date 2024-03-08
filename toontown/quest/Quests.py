@@ -3676,7 +3676,7 @@ for rewardID, rewardDescription in RewardDict.items():
 # Given an AP location name (locations.DONALDS_DREAMLAND_TASK_11 for example) return the reward ID that corresponds w it
 # Returns -1 if not a valid AP location
 def getRewardIdFromAPLocationName(location_name: str) -> int:
-    return __AP_LOCATION_TO_REWARD_ID.get(location_name, -1)
+    return __AP_LOCATION_TO_REWARD_ID[location_name]
 
 
 # Given a hood ID, return a list of reward IDs that this hood will have
