@@ -9,14 +9,14 @@ import os
 extensions = ('.pyc', '.pyo')
 trashFiles = ('parsetab.py',)
 
-print 'Changing to root directory...'
+print('Changing to root directory...')
 os.chdir('../')
 
-print 'Scanning for garbage files...'
+print('Scanning for garbage files...')
 
 
 def delete(filepath):
-    print "Removing '{0}'...".format(filepath)
+    print ("Removing '{0}'...".format(filepath))
     os.unlink(filepath)
 
 
@@ -28,5 +28,5 @@ for root, folders, files in os.walk('.'):
         elif filename in trashFiles:
             delete(filepath)
 
-print 'Done.'
+print('Done.')
 os.system('pause')

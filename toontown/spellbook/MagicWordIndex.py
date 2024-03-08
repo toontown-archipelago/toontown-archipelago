@@ -2363,6 +2363,19 @@ class SetQP(MagicWord):
         return questIds
 
 
+class CompleteQuests(MagicWord):
+    aliases = ["cq", "completequest"]
+    desc = "Completes all quests on the target."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        for index in range(len(toon.quests)):
+            toon.quests[index][4] = 2**16
+        toon.b_setQuests(toon.quests)
+        return f"Completed {len(toon.quests)} of {toon.getName()}'s quests!"
+
+
 class SetUnites(MagicWord):
     aliases = ["unites", "restockunites"]
     desc = "Restocks the target's unites. The default amount is 999."
@@ -3276,9 +3289,9 @@ class Archipelago(MagicWord):
 
         # Add a random location check
         if operation in ('check', 'addcheck'):
-            check: ToontownLocationDefinition = random.choice(list(locations.LOCATION_DEFINITIONS.values()))
+            check: ToontownLocationDefinition = random.choice(locations.LOCATION_DEFINITIONS)
             toon.addCheckedLocation(check.unique_id)
-            return f"Gave {toon.getName()} the {check.unique_name} check!"
+            return f"Gave {toon.getName()} the {check.name} check!"
 
         if operation in ('wipe', 'reset', 'clear'):
             toon.newToon()

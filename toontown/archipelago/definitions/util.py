@@ -1,4 +1,8 @@
-from apworld.toontown import locations
+from apworld.toontown import consts, ToontownLocationName, LOCATION_DEFINITIONS
+from apworld.toontown.locations import TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS, MML_TASK_LOCATIONS, \
+    TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS, EVENT_DEFINITIONS
+
+from typing import Union
 
 from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
@@ -9,48 +13,52 @@ from toontown.toonbase import ToontownGlobals
 def cog_code_to_ap_location(cog_code: str) -> str:
 
     return {
-        'cc': (locations.COLD_CALLER_DEFEATED_LOCATION, locations.COLD_CALLER_MAXED_LOCATION),
-        'tm': (locations.TELEMARKETER_DEFEATED_LOCATION, locations.TELEMARKETER_MAXED_LOCATION),
-        'nd': (locations.NAME_DROPPER_DEFEATED_LOCATION, locations.NAME_DROPPER_MAXED_LOCATION),
-        'gh': (locations.GLAD_HANDER_DEFEATED_LOCATION, locations.GLAD_HANDER_MAXED_LOCATION),
-        'ms': (locations.MOVER_AND_SHAKER_DEFEATED_LOCATION, locations.MOVER_AND_SHAKER_MAXED_LOCATION),
-        'tf': (locations.TWO_FACE_DEFEATED_LOCATION, locations.TWO_FACE_MAXED_LOCATION),
-        'm': (locations.MINGLER_DEFEATED_LOCATION, locations.MINGLER_MAXED_LOCATION),
-        'mh': (locations.MR_HOLLYWOOD_DEFEATED_LOCATION, locations.MR_HOLLYWOOD_MAXED_LOCATION),
+        'cc': (ToontownLocationName.COLD_CALLER_DEFEATED.value, ToontownLocationName.COLD_CALLER_MAXED.value),
+        'tm': (ToontownLocationName.TELEMARKETER_DEFEATED.value, ToontownLocationName.TELEMARKETER_MAXED.value),
+        'nd': (ToontownLocationName.NAME_DROPPER_DEFEATED.value, ToontownLocationName.NAME_DROPPER_MAXED.value),
+        'gh': (ToontownLocationName.GLAD_HANDER_DEFEATED.value, ToontownLocationName.GLAD_HANDER_MAXED.value),
+        'ms': (ToontownLocationName.MOVER_AND_SHAKER_DEFEATED.value, ToontownLocationName.MOVER_AND_SHAKER_MAXED.value),
+        'tf': (ToontownLocationName.TWO_FACE_DEFEATED.value, ToontownLocationName.TWO_FACE_MAXED.value),
+        'm': (ToontownLocationName.MINGLER_DEFEATED.value, ToontownLocationName.MINGLER_MAXED.value),
+        'mh': (ToontownLocationName.MR_HOLLYWOOD_DEFEATED.value, ToontownLocationName.MR_HOLLYWOOD_MAXED.value),
 
-        'sc': (locations.SHORT_CHANGE_DEFEATED_LOCATION, locations.SHORT_CHANGE_MAXED_LOCATION),
-        'pp': (locations.PENNY_PINCHER_DEFEATED_LOCATION, locations.PENNY_PINCHER_MAXED_LOCATION),
-        'tw': (locations.TIGHTWAD_DEFEATED_LOCATION, locations.TIGHTWAD_MAXED_LOCATION),
-        'bc': (locations.BEAN_COUNTER_DEFEATED_LOCATION, locations.BEAN_COUNTER_MAXED_LOCATION),
-        'nc': (locations.NUMBER_CRUNCHER_DEFEATED_LOCATION, locations.NUMBER_CRUNCHER_MAXED_LOCATION),
-        'mb': (locations.MONEY_BAGS_DEFEATED_LOCATION, locations.MONEY_BAGS_MAXED_LOCATION),
-        'ls': (locations.LOAN_SHARK_DEFEATED_LOCATION, locations.LOAN_SHARK_MAXED_LOCATION),
-        'rb': (locations.ROBBER_BARRON_DEFEATED_LOCATION, locations.ROBBER_BARRON_MAXED_LOCATION),
+        'sc': (ToontownLocationName.SHORT_CHANGE_DEFEATED.value, ToontownLocationName.SHORT_CHANGE_MAXED.value),
+        'pp': (ToontownLocationName.PENNY_PINCHER_DEFEATED.value, ToontownLocationName.PENNY_PINCHER_MAXED.value),
+        'tw': (ToontownLocationName.TIGHTWAD_DEFEATED.value, ToontownLocationName.TIGHTWAD_MAXED.value),
+        'bc': (ToontownLocationName.BEAN_COUNTER_DEFEATED.value, ToontownLocationName.BEAN_COUNTER_MAXED.value),
+        'nc': (ToontownLocationName.NUMBER_CRUNCHER_DEFEATED.value, ToontownLocationName.NUMBER_CRUNCHER_MAXED.value),
+        'mb': (ToontownLocationName.MONEY_BAGS_DEFEATED.value, ToontownLocationName.MONEY_BAGS_MAXED.value),
+        'ls': (ToontownLocationName.LOAN_SHARK_DEFEATED.value, ToontownLocationName.LOAN_SHARK_MAXED.value),
+        'rb': (ToontownLocationName.ROBBER_BARRON_DEFEATED.value, ToontownLocationName.ROBBER_BARRON_MAXED.value),
 
-        'bf': (locations.BOTTOM_FEEDER_DEFEATED_LOCATION, locations.BOTTOM_FEEDER_MAXED_LOCATION),
-        'b': (locations.BLOODSUCKER_DEFEATED_LOCATION, locations.BLOODSUCKER_MAXED_LOCATION),
-        'dt': (locations.DOUBLE_TALKER_DEFEATED_LOCATION, locations.DOUBLE_TALKER_MAXED_LOCATION),
-        'ac': (locations.AMBULANCE_CHASER_DEFEATED_LOCATION, locations.AMBULANCE_CHASER_MAXED_LOCATION),
-        'bs': (locations.BACKSTABBER_DEFEATED_LOCATION, locations.BACKSTABBER_MAXED_LOCATION),
-        'sd': (locations.SPIN_DOCTOR_DEFEATED_LOCATION, locations.SPIN_DOCTOR_MAXED_LOCATION),
-        'le': (locations.LEGAL_EAGLE_DEFEATED_LOCATION, locations.LEGAL_EAGLE_MAXED_LOCATION),
-        'bw': (locations.BIG_WIG_DEFEATED_LOCATION, locations.BIG_WIG_MAXED_LOCATION),
+        'bf': (ToontownLocationName.BOTTOM_FEEDER_DEFEATED.value, ToontownLocationName.BOTTOM_FEEDER_MAXED.value),
+        'b': (ToontownLocationName.BLOODSUCKER_DEFEATED.value, ToontownLocationName.BLOODSUCKER_MAXED.value),
+        'dt': (ToontownLocationName.DOUBLE_TALKER_DEFEATED.value, ToontownLocationName.DOUBLE_TALKER_MAXED.value),
+        'ac': (ToontownLocationName.AMBULANCE_CHASER_DEFEATED.value, ToontownLocationName.AMBULANCE_CHASER_MAXED.value),
+        'bs': (ToontownLocationName.BACKSTABBER_DEFEATED.value, ToontownLocationName.BACKSTABBER_MAXED.value),
+        'sd': (ToontownLocationName.SPIN_DOCTOR_DEFEATED.value, ToontownLocationName.SPIN_DOCTOR_MAXED.value),
+        'le': (ToontownLocationName.LEGAL_EAGLE_DEFEATED.value, ToontownLocationName.LEGAL_EAGLE_MAXED.value),
+        'bw': (ToontownLocationName.BIG_WIG_DEFEATED.value, ToontownLocationName.BIG_WIG_MAXED.value),
 
-        'f': (locations.FLUNKY_DEFEATED_LOCATION, locations.FLUNKY_MAXED_LOCATION),
-        'p': (locations.PENCIL_PUSHER_DEFEATED_LOCATION, locations.PENCIL_PUSHER_MAXED_LOCATION),
-        'ym': (locations.YESMAN_DEFEATED_LOCATION, locations.YESMAN_MAXED_LOCATION),
-        'mm': (locations.MICROMANAGER_DEFEATED_LOCATION, locations.MICROMANAGER_MAXED_LOCATION),
-        'ds': (locations.DOWNSIZER_DEFEATED_LOCATION, locations.DOWNSIZER_MAXED_LOCATION),
-        'hh': (locations.HEAD_HUNTER_DEFEATED_LOCATION, locations.HEAD_HUNTER_MAXED_LOCATION),
-        'cr': (locations.CORPORATE_RAIDER_DEFEATED_LOCATION, locations.CORPORATE_RAIDER_MAXED_LOCATION),
-        'tbc': (locations.BIG_CHEESE_DEFEATED_LOCATION, locations.BIG_CHEESE_MAXED_LOCATION)
+        'f': (ToontownLocationName.FLUNKY_DEFEATED.value, ToontownLocationName.FLUNKY_MAXED.value),
+        'p': (ToontownLocationName.PENCIL_PUSHER_DEFEATED.value, ToontownLocationName.PENCIL_PUSHER_MAXED.value),
+        'ym': (ToontownLocationName.YESMAN_DEFEATED.value, ToontownLocationName.YESMAN_MAXED.value),
+        'mm': (ToontownLocationName.MICROMANAGER_DEFEATED.value, ToontownLocationName.MICROMANAGER_MAXED.value),
+        'ds': (ToontownLocationName.DOWNSIZER_DEFEATED.value, ToontownLocationName.DOWNSIZER_MAXED.value),
+        'hh': (ToontownLocationName.HEAD_HUNTER_DEFEATED.value, ToontownLocationName.HEAD_HUNTER_MAXED.value),
+        'cr': (ToontownLocationName.CORPORATE_RAIDER_DEFEATED.value, ToontownLocationName.CORPORATE_RAIDER_MAXED.value),
+        'tbc': (ToontownLocationName.BIG_CHEESE_DEFEATED.value, ToontownLocationName.BIG_CHEESE_MAXED.value)
 
     }.get(cog_code, '')
 
 
 # Given the string representation of a location, retrieve the numeric ID
-def ap_location_name_to_id(location_name: str) -> int:
-    return locations.LOCATION_DEFINITIONS[location_name].unique_id
+def ap_location_name_to_id(location_name: Union[str, ToontownLocationName]) -> int:
+    for location_definition in (LOCATION_DEFINITIONS + EVENT_DEFINITIONS):
+        if (type(location_name) is str and location_definition.name.value == location_name) or \
+           (type(location_name) is ToontownLocationName and location_definition.name == location_name):
+            return location_definition.unique_id
+    raise KeyError(f"AP location: {location_name}<type={location_name}> is not defined in Location/Event definitions")
 
 
 # Given a Zone ID, give the ID of an AP location award the player.
@@ -60,20 +68,20 @@ def get_zone_discovery_id(zoneId: int) -> int:
     pgZone = ZoneUtil.getHoodId(zoneId)
 
     ZONE_TO_LOCATION = {
-        ToontownGlobals.ToontownCentral: locations.DISCOVER_TTC,
-        ToontownGlobals.DonaldsDock: locations.DISCOVER_DD,
-        ToontownGlobals.DaisyGardens: locations.DISCOVER_DG,
-        ToontownGlobals.MinniesMelodyland: locations.DISCOVER_MM,
-        ToontownGlobals.TheBrrrgh: locations.DISCOVER_TB,
-        ToontownGlobals.DonaldsDreamland: locations.DISCOVER_DDL,
+        ToontownGlobals.ToontownCentral: ToontownLocationName.DISCOVER_TTC.value,
+        ToontownGlobals.DonaldsDock: ToontownLocationName.DISCOVER_DD.value,
+        ToontownGlobals.DaisyGardens: ToontownLocationName.DISCOVER_DG.value,
+        ToontownGlobals.MinniesMelodyland: ToontownLocationName.DISCOVER_MML.value,
+        ToontownGlobals.TheBrrrgh: ToontownLocationName.DISCOVER_TB.value,
+        ToontownGlobals.DonaldsDreamland: ToontownLocationName.DISCOVER_DDL.value,
 
-        ToontownGlobals.GoofySpeedway: locations.DISCOVER_GS,
-        ToontownGlobals.OutdoorZone: locations.DISCOVER_AA,
+        ToontownGlobals.GoofySpeedway: ToontownLocationName.DISCOVER_GS.value,
+        ToontownGlobals.OutdoorZone: ToontownLocationName.DISCOVER_AA.value,
 
-        ToontownGlobals.SellbotHQ: locations.DISCOVER_SBHQ,
-        ToontownGlobals.CashbotHQ: locations.DISCOVER_CBHQ,
-        ToontownGlobals.LawbotHQ: locations.DISCOVER_LBHQ,
-        ToontownGlobals.BossbotHQ: locations.DISCOVER_BBHQ,
+        ToontownGlobals.SellbotHQ: ToontownLocationName.DISCOVER_SBHQ.value,
+        ToontownGlobals.CashbotHQ: ToontownLocationName.DISCOVER_CBHQ.value,
+        ToontownGlobals.LawbotHQ: ToontownLocationName.DISCOVER_LBHQ.value,
+        ToontownGlobals.BossbotHQ: ToontownLocationName.DISCOVER_BBHQ.value,
     }
 
     # Valid zone?
@@ -89,21 +97,21 @@ def get_zone_discovery_id(zoneId: int) -> int:
 def get_facility_id(facility_id: int) -> int:
 
     FACILITY_LOCATION_CHECKS = {
-        ToontownGlobals.SellbotFactoryInt: locations.CLEAR_FRONT_FACTORY,
-        ToontownGlobals.SellbotFactoryIntS: locations.CLEAR_SIDE_FACTORY,
+        ToontownGlobals.SellbotFactoryInt: ToontownLocationName.CLEAR_FRONT_FACTORY.value,
+        ToontownGlobals.SellbotFactoryIntS: ToontownLocationName.CLEAR_SIDE_FACTORY.value,
 
-        ToontownGlobals.CashbotMintIntA: locations.CLEAR_COIN_MINT,
-        ToontownGlobals.CashbotMintIntB: locations.CLEAR_DOLLAR_MINT,
-        ToontownGlobals.CashbotMintIntC: locations.CLEAR_BULLION_MINT,
+        ToontownGlobals.CashbotMintIntA: ToontownLocationName.CLEAR_COIN_MINT.value,
+        ToontownGlobals.CashbotMintIntB: ToontownLocationName.CLEAR_DOLLAR_MINT.value,
+        ToontownGlobals.CashbotMintIntC: ToontownLocationName.CLEAR_BULLION_MINT.value,
 
-        ToontownGlobals.LawbotStageIntA: locations.CLEAR_A_OFFICE,
-        ToontownGlobals.LawbotStageIntB: locations.CLEAR_B_OFFICE,
-        ToontownGlobals.LawbotStageIntC: locations.CLEAR_C_OFFICE,
-        ToontownGlobals.LawbotStageIntD: locations.CLEAR_D_OFFICE,
+        ToontownGlobals.LawbotStageIntA: ToontownLocationName.CLEAR_A_OFFICE.value,
+        ToontownGlobals.LawbotStageIntB: ToontownLocationName.CLEAR_B_OFFICE.value,
+        ToontownGlobals.LawbotStageIntC: ToontownLocationName.CLEAR_C_OFFICE.value,
+        ToontownGlobals.LawbotStageIntD: ToontownLocationName.CLEAR_D_OFFICE.value,
 
-        ToontownGlobals.BossbotCountryClubIntA: locations.CLEAR_FRONT_THREE,
-        ToontownGlobals.BossbotCountryClubIntB: locations.CLEAR_MIDDLE_THREE,
-        ToontownGlobals.BossbotCountryClubIntC: locations.CLEAR_BACK_THREE,
+        ToontownGlobals.BossbotCountryClubIntA: ToontownLocationName.CLEAR_FRONT_ONE.value,
+        ToontownGlobals.BossbotCountryClubIntB: ToontownLocationName.CLEAR_MIDDLE_TWO.value,
+        ToontownGlobals.BossbotCountryClubIntC: ToontownLocationName.CLEAR_BACK_THREE.value,
     }
 
     loc = FACILITY_LOCATION_CHECKS.get(facility_id)
@@ -115,24 +123,31 @@ def get_facility_id(facility_id: int) -> int:
 
 # Given a hood ID, return a list of AP check location names present in that hood
 def hood_to_task_locations(hoodId: int):
-    return {
-        ToontownGlobals.ToontownCentral: locations.TTC_TASK_LOCATIONS,
-        ToontownGlobals.DonaldsDock: locations.DD_TASK_LOCATIONS,
-        ToontownGlobals.DaisyGardens: locations.DG_TASK_LOCATIONS,
-        ToontownGlobals.MinniesMelodyland: locations.MM_TASK_LOCATIONS,
-        ToontownGlobals.TheBrrrgh: locations.TB_TASK_LOCATIONS,
-        ToontownGlobals.DonaldsDreamland: locations.DDL_TASK_LOCATIONS,
+    locs = {
+        ToontownGlobals.ToontownCentral: TTC_TASK_LOCATIONS,
+        ToontownGlobals.DonaldsDock: DD_TASK_LOCATIONS,
+        ToontownGlobals.DaisyGardens: DG_TASK_LOCATIONS,
+        ToontownGlobals.MinniesMelodyland: MML_TASK_LOCATIONS,
+        ToontownGlobals.TheBrrrgh: TB_TASK_LOCATIONS,
+        ToontownGlobals.DonaldsDreamland: DDL_TASK_LOCATIONS,
     }.get(hoodId, [])
+
+    # Because of the way AP is setup, we need to extract the raw string value from the location enums
+    ret = []
+    for loc in locs:
+        ret.append(loc.value)
+
+    return ret
 
 
 def track_and_level_to_location(track: int, level: int):
     trackAndLevels = (
-        (locations.TOONUP_FEATHER_UNLOCKED, locations.TOONUP_MEGAPHONE_UNLOCKED, locations.TOONUP_LIPSTICK_UNLOCKED, locations.TOONUP_CANE_UNLOCKED, locations.TOONUP_PIXIE_UNLOCKED, locations.TOONUP_JUGGLING_UNLOCKED, locations.TOONUP_HIGHDIVE_UNLOCKED),
-        (locations.TRAP_BANANA_UNLOCKED, locations.TRAP_RAKE_UNLOCKED, locations.TRAP_MARBLES_UNLOCKED, locations.TRAP_QUICKSAND_UNLOCKED, locations.TRAP_TRAPDOOR_UNLOCKED, locations.TRAP_TNT_UNLOCKED, locations.TRAP_TRAIN_UNLOCKED),
-        (locations.LURE_ONEBILL_UNLOCKED, locations.LURE_SMALLMAGNET_UNLOCKED, locations.LURE_FIVEBILL_UNLOCKED, locations.LURE_BIGMAGNET_UNLOCKED, locations.LURE_TENBILL_UNLOCKED, locations.LURE_HYPNO_UNLOCKED, locations.LURE_PRESENTATION_UNLOCKED),
-        (locations.SOUND_BIKEHORN_UNLOCKED, locations.SOUND_WHISTLE_UNLOCKED, locations.SOUND_BUGLE_UNLOCKED, locations.SOUND_AOOGAH_UNLOCKED, locations.SOUND_TRUNK_UNLOCKED, locations.SOUND_FOG_UNLOCKED, locations.SOUND_OPERA_UNLOCKED),
-        (locations.THROW_CUPCAKE_UNLOCKED, locations.THROW_FRUITPIESLICE_UNLOCKED, locations.THROW_CREAMPIESLICE_UNLOCKED, locations.THROW_WHOLEFRUIT_UNLOCKED, locations.THROW_WHOLECREAM_UNLOCKED, locations.THROW_CAKE_UNLOCKED, locations.THROW_WEDDING_UNLOCKED),
-        (locations.SQUIRT_SQUIRTFLOWER_UNLOCKED, locations.SQUIRT_GLASS_UNLOCKED, locations.SQUIRT_SQUIRTGUN_UNLOCKED, locations.SQUIRT_SELTZER_UNLOCKED, locations.SQUIRT_HOSE_UNLOCKED, locations.SQUIRT_CLOUD_UNLOCKED, locations.SQUIRT_GEYSER_UNLOCKED),
-        (locations.DROP_FLOWERPOT_UNLOCKED, locations.DROP_SANDBAG_UNLOCKED, locations.DROP_ANVIL_UNLOCKED, locations.DROP_BIGWEIGHT_UNLOCKED, locations.DROP_SAFE_UNLOCKED, locations.DROP_PIANO_UNLOCKED, locations.DROP_BOAT_UNLOCKED),
+        (ToontownLocationName.TOONUP_FEATHER_UNLOCKED.value, ToontownLocationName.TOONUP_MEGAPHONE_UNLOCKED.value, ToontownLocationName.TOONUP_LIPSTICK_UNLOCKED.value, ToontownLocationName.TOONUP_CANE_UNLOCKED.value, ToontownLocationName.TOONUP_PIXIE_UNLOCKED.value, ToontownLocationName.TOONUP_JUGGLING_UNLOCKED.value, ToontownLocationName.TOONUP_HIGHDIVE_UNLOCKED.value),
+        (ToontownLocationName.TRAP_BANANA_UNLOCKED.value, ToontownLocationName.TRAP_RAKE_UNLOCKED.value, ToontownLocationName.TRAP_MARBLES_UNLOCKED.value, ToontownLocationName.TRAP_QUICKSAND_UNLOCKED.value, ToontownLocationName.TRAP_TRAPDOOR_UNLOCKED.value, ToontownLocationName.TRAP_TNT_UNLOCKED.value, ToontownLocationName.TRAP_TRAIN_UNLOCKED.value),
+        (ToontownLocationName.LURE_ONEBILL_UNLOCKED.value, ToontownLocationName.LURE_SMALLMAGNET_UNLOCKED.value, ToontownLocationName.LURE_FIVEBILL_UNLOCKED.value, ToontownLocationName.LURE_BIGMAGNET_UNLOCKED.value, ToontownLocationName.LURE_TENBILL_UNLOCKED.value, ToontownLocationName.LURE_HYPNO_UNLOCKED.value, ToontownLocationName.LURE_PRESENTATION_UNLOCKED.value),
+        (ToontownLocationName.SOUND_BIKEHORN_UNLOCKED.value, ToontownLocationName.SOUND_WHISTLE_UNLOCKED.value, ToontownLocationName.SOUND_BUGLE_UNLOCKED.value, ToontownLocationName.SOUND_AOOGAH_UNLOCKED.value, ToontownLocationName.SOUND_TRUNK_UNLOCKED.value, ToontownLocationName.SOUND_FOG_UNLOCKED.value, ToontownLocationName.SOUND_OPERA_UNLOCKED.value),
+        (ToontownLocationName.THROW_CUPCAKE_UNLOCKED.value, ToontownLocationName.THROW_FRUITPIESLICE_UNLOCKED.value, ToontownLocationName.THROW_CREAMPIESLICE_UNLOCKED.value, ToontownLocationName.THROW_WHOLEFRUIT_UNLOCKED.value, ToontownLocationName.THROW_WHOLECREAM_UNLOCKED.value, ToontownLocationName.THROW_CAKE_UNLOCKED.value, ToontownLocationName.THROW_WEDDING_UNLOCKED.value),
+        (ToontownLocationName.SQUIRT_SQUIRTFLOWER_UNLOCKED.value, ToontownLocationName.SQUIRT_GLASS_UNLOCKED.value, ToontownLocationName.SQUIRT_SQUIRTGUN_UNLOCKED.value, ToontownLocationName.SQUIRT_SELTZER_UNLOCKED.value, ToontownLocationName.SQUIRT_HOSE_UNLOCKED.value, ToontownLocationName.SQUIRT_CLOUD_UNLOCKED.value, ToontownLocationName.SQUIRT_GEYSER_UNLOCKED.value),
+        (ToontownLocationName.DROP_FLOWERPOT_UNLOCKED.value, ToontownLocationName.DROP_SANDBAG_UNLOCKED.value, ToontownLocationName.DROP_ANVIL_UNLOCKED.value, ToontownLocationName.DROP_BIGWEIGHT_UNLOCKED.value, ToontownLocationName.DROP_SAFE_UNLOCKED.value, ToontownLocationName.DROP_PIANO_UNLOCKED.value, ToontownLocationName.DROP_BOAT_UNLOCKED.value),
     )
     return trackAndLevels[track][level]

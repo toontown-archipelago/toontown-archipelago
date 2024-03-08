@@ -87,19 +87,17 @@ class CheckPage(ShtikerPage.ShtikerPage):
 
         self.checkButtons = []
 
-        itemDict = items.ITEM_DEFINITIONS
-        allItems: List[ToontownItemDefinition] = list(itemDict.values())
-        allItems.sort(key=lambda _item: _item.unique_id)
-        for check in allItems:
+        allItems: List[ToontownItemDefinition] = items.ITEM_DEFINITIONS[:]
+        for i, check in enumerate(allItems):
             if check.quantity == 0:
                 pass
             else:
-                button = self.makeCheckButton(check.unique_name, itemsAndCount.get(check.unique_id, 0), check.quantity)  # TODO use actual pool from AP for quantity max
+                button = self.makeCheckButton(check.name, itemsAndCount.get(check.unique_id, 0), check.quantity)  # TODO use actual pool from AP for quantity max
                 self.checkButtons.append(button[0])
 
     def makeCheckButton(self, checkName, checkCount, checkMax):
         checkButtonParent = DirectFrame()
-        checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=checkName, text_scale=0.06, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=None)
+        checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=checkName.value, text_scale=0.06, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=None)
         model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         check = model.find('**/checkmark')
         x = model.find('**/x')

@@ -379,9 +379,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-
-                toon.addCheckedLocation(ap_location_name_to_id(locations.CLEAR_VP))
-                toon.addCheckedLocation(ap_location_name_to_id(locations.SELLBOT_PROOF))
+                toon.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.SELLBOT_PROOF.value))
 
                 configMax = simbase.config.GetInt('max-sos-cards', 16)
                 if configMax == 8:

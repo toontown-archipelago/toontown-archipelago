@@ -30,7 +30,7 @@ class ItemClassification(IntFlag):
 
 class CollectionState:
 
-    def has(self, item: str, player_slot: int, quantity: int) -> bool:
+    def has(self, item: str, player_slot: int, quantity: int = 1) -> bool:
         return False
 
     def count(self, item: str, player :int) -> bool:
@@ -52,3 +52,7 @@ class Region:
 class Tutorial:
     def __init__(self, *args):
         pass
+
+
+class MultiWorld:
+    pass

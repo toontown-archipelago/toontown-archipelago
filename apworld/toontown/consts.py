@@ -1,0 +1,12 @@
+"""
+Constants for Archipelago generation.
+"""
+
+BASE_ID = 0x501100
+
+TWO_LAFF_BOOST_RATIO = 9 / 100
+THREE_LAFF_BOOST_RATIO = 5 / 100
+FOUR_LAFF_BOOST_RATIO = 3 / 100
+FIVE_LAFF_BOOST_RATIO = 2 / 100
+
+TWO_XP_BOOST_RATIO = 2 / 13
