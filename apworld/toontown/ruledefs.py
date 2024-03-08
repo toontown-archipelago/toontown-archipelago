@@ -240,14 +240,14 @@ def CanFightCFO(state: CollectionState, world: MultiWorld, player: int, options:
 def CanFightCJ(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, world, player, options)
     return passes_rule(Rule.CanReachLBHQ, *args) and passes_rule(Rule.LawbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSixOffenseGag, *args)
+            and passes_rule(Rule.HasLevelSevenOffenseGag, *args)
 
 
 @rule(Rule.CanFightCEO)
 def CanFightCEO(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, world, player, options)
     return passes_rule(Rule.CanReachBBHQ, *args) and passes_rule(Rule.BossbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSixOffenseGag, *args)
+            and passes_rule(Rule.HasLevelSevenOffenseGag, *args)
 
 
 @rule(Rule.AllBossesDefeated)

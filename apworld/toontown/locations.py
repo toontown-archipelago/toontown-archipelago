@@ -438,18 +438,18 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DISCOVER_BBHQ, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
     # endregion
     # region Facilities
-    ToontownLocationDefinition(ToontownLocationName.CLEAR_FRONT_FACTORY, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.CLEAR_FRONT_FACTORY, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFourOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_SIDE_FACTORY,  ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.SideFactoryKey,  Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_COIN_MINT,     ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.CoinMintKey,     Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_DOLLAR_MINT,   ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.DollarMintKey,   Rule.HasLevelFiveOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.CLEAR_BULLION_MINT,  ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.BullionMintKey,  Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.CLEAR_BULLION_MINT,  ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.BullionMintKey,  Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_A_OFFICE,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeAKey,      Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_B_OFFICE,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeBKey,      Rule.HasLevelFiveOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.CLEAR_C_OFFICE,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeCKey,      Rule.HasLevelFiveOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.CLEAR_D_OFFICE,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeDKey,      Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.CLEAR_C_OFFICE,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeCKey,      Rule.HasLevelSixOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.CLEAR_D_OFFICE,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeDKey,      Rule.HasLevelSevenOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_FRONT_ONE,     ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.FrontOneKey,     Rule.HasLevelFiveOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.CLEAR_MIDDLE_TWO,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.MiddleTwoKey,    Rule.HasLevelFiveOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.CLEAR_BACK_THREE,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.CLEAR_MIDDLE_TWO,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.MiddleTwoKey,    Rule.HasLevelSixOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.CLEAR_BACK_THREE,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag]),
     # endregion
     # region Gag Unlocks
     ToontownLocationDefinition(ToontownLocationName.TOONUP_FEATHER_UNLOCKED,      ToontownLocationType.GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.ToonUpOne]),
