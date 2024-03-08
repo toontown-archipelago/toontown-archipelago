@@ -47,8 +47,8 @@ class ToontownWorld(World):
     options_dataclass = ToontownOptions
     options: ToontownOptions
 
-    item_name_to_id = {item.name: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}
-    location_name_to_id = {location.name: i + consts.BASE_ID for i, location in enumerate(LOCATION_DEFINITIONS)}
+    item_name_to_id = {item.name.value: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}
+    location_name_to_id = {location.name.value: i + consts.BASE_ID for i, location in enumerate(LOCATION_DEFINITIONS)}
 
     location_descriptions = LOCATION_DESCRIPTIONS
     item_descriptions = ITEM_DESCRIPTIONS
@@ -96,21 +96,21 @@ class ToontownWorld(World):
         regions: Dict[ToontownRegionName, Region] = {}
         for region_data in REGION_DEFINITIONS:
             region = Region(region_data.name.value, player, self.multiworld)
-            regions[region_data.name.value] = region
+            regions[region_data.name] = region
             self.multiworld.regions.append(region)
 
         # Create all entrances.
         for region_data in REGION_DEFINITIONS:
-            parent_region = regions[region_data.name.value]
+            parent_region = regions[region_data.name]
             for entrance_data in region_data.connects_to:
                 entrance_name = f"{region_data.name.value} -> {entrance_data.connects_to.value}"
-                child_region = regions[entrance_data.connects_to.value]
+                child_region = regions[entrance_data.connects_to]
                 parent_region.connect(child_region, entrance_name)
 
         # Create all locations.
         # TODO - set logical stuff here
         for i, location_data in enumerate(LOCATION_DEFINITIONS):
-            region = regions[location_data.region.value]
+            region = regions[location_data.region]
             location = ToontownLocation(player, location_data.name.value, self.location_name_to_id[location_data.name.value], region)
             location.progress_type = location_data.progress_type
             region.locations.append(location)
@@ -118,14 +118,14 @@ class ToontownWorld(World):
             # Do some progress type overrides as necessary.
             logical_tasks_per_pg = self.options.logical_tasks_per_playground.value
             for loc_list in ALL_TASK_LOCATIONS_SPLIT:
-                if location_data.name in loc_list[12 - logical_tasks_per_pg:]:
+                if location_data.name in loc_list[logical_tasks_per_pg:]:
                     location.progress_type = LocationProgressType.EXCLUDED
-            if self.options.logical_maxed_cog_gallery.value:
-                if location.type == ToontownLocationType.GALLERY_MAX:
+            if not self.options.logical_maxed_cog_gallery.value:
+                if location_data.type == ToontownLocationType.GALLERY_MAX:
                     location.progress_type = LocationProgressType.EXCLUDED
 
         for i, location_data in enumerate(EVENT_DEFINITIONS):
-            region = regions[location_data.region.value]
+            region = regions[location_data.region]
             location = ToontownLocation(player, location_data.name.value, None, region)
             region.locations.append(location)
 
@@ -145,7 +145,7 @@ class ToontownWorld(World):
             self._force_item_placement(ToontownLocationName.DISCOVER_TTC, ToontownItemName.TTC_TELEPORT)
             self._force_item_placement(ToontownLocationName.DISCOVER_DD,  ToontownItemName.DD_TELEPORT)
             self._force_item_placement(ToontownLocationName.DISCOVER_DG,  ToontownItemName.DG_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DISCOVER_MM,  ToontownItemName.MML_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DISCOVER_MML, ToontownItemName.MML_TELEPORT)
             self._force_item_placement(ToontownLocationName.DISCOVER_TB,  ToontownItemName.TB_TELEPORT)
             self._force_item_placement(ToontownLocationName.DISCOVER_DDL, ToontownItemName.DDL_TELEPORT)
 
@@ -170,7 +170,7 @@ class ToontownWorld(World):
             for _ in range(item.quantity):
                 if item in exclude_items:
                     continue
-                pool.append(self.create_item(item.name))
+                pool.append(self.create_item(item.name.value))
 
         # Dynamically generate laff boosts.
         LAFF_TO_GIVE = self.options.max_hp.value - self.options.starting_hp.value
@@ -235,7 +235,6 @@ class ToontownWorld(World):
         self.multiworld.itempool += pool
 
     def fill_slot_data(self) -> Dict[str, Any]:
-
         # Return any information that the district is going to need from generation
         return {
             "seed": self.multiworld.seed,
@@ -279,26 +278,26 @@ class ToontownWorld(World):
         return first_track, second_track
 
     def _get_excluded_items(self) -> List[ToontownItemName]:
-        items_to_exclude = []
+        items_to_exclude: List[ToontownItemName] = []
 
         # If we have the force tp access setting...
         if self.options.force_playground_visit_teleport_access_unlocks.value:
             # Add all teleport access
-            items_to_exclude.append(items.ITEM_TTC_TELEPORT)
-            items_to_exclude.append(items.ITEM_DD_TELEPORT)
-            items_to_exclude.append(items.ITEM_DG_TELEPORT)
-            items_to_exclude.append(items.ITEM_MML_TELEPORT)
-            items_to_exclude.append(items.ITEM_TB_TELEPORT)
-            items_to_exclude.append(items.ITEM_DDL_TELEPORT)
+            items_to_exclude.append(ToontownItemName.TTC_TELEPORT)
+            items_to_exclude.append(ToontownItemName.DD_TELEPORT)
+            items_to_exclude.append(ToontownItemName.DG_TELEPORT)
+            items_to_exclude.append(ToontownItemName.MML_TELEPORT)
+            items_to_exclude.append(ToontownItemName.TB_TELEPORT)
+            items_to_exclude.append(ToontownItemName.DDL_TELEPORT)
 
         if self.options.force_coghq_visit_teleport_access_unlocks.value:
-            items_to_exclude.append(items.ITEM_SBHQ_TELEPORT)
-            items_to_exclude.append(items.ITEM_CBHQ_TELEPORT)
-            items_to_exclude.append(items.ITEM_LBHQ_TELEPORT)
-            items_to_exclude.append(items.ITEM_BBHQ_TELEPORT)
+            items_to_exclude.append(ToontownItemName.SBHQ_TELEPORT)
+            items_to_exclude.append(ToontownItemName.CBHQ_TELEPORT)
+            items_to_exclude.append(ToontownItemName.LBHQ_TELEPORT)
+            items_to_exclude.append(ToontownItemName.BBHQ_TELEPORT)
 
         # Done return our items
         return items_to_exclude
 
-    def _force_item_placement(self, location: str, item: ToontownItemName) -> None:
-        self.multiworld.get_location(location, self.player).place_locked_item(self.create_item(item.value))
+    def _force_item_placement(self, location: ToontownLocationName, item: ToontownItemName) -> None:
+        self.multiworld.get_location(location.value, self.player).place_locked_item(self.create_item(item.value))

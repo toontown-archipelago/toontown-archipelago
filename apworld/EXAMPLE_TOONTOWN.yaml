@@ -8,8 +8,8 @@ Toontown:
 
   # The max laff you can get from items throughout the run.
   # Must be above or equal to the starting_hp.
-  # Range: 1 to 137
-  max_laff: 137
+  # Range: 1 to 150
+  max_laff: 150
 
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 9999

@@ -149,8 +149,8 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.DROP_FRAME,   ItemClassification.progression),
     # endregion
     # region Gag Training Multipliers
-    ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_1, ItemClassification.useful),
-    ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_2, ItemClassification.useful),
+    ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_1, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_2, ItemClassification.progression),
     # endregion
     # region Fishing Rod Upgrades
     ToontownItemDefinition(ToontownItemName.FISHING_ROD_UPGRADE, ItemClassification.progression, quantity=4),
@@ -216,10 +216,10 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
 ]
 
 ITEM_DESCRIPTIONS = {
-    ToontownItemName.SELLBOT_DISGUISE: "Grants access to fight the Sellbot VP",
-    ToontownItemName.CASHBOT_DISGUISE: "Grants access to fight the Cashbot CFO",
-    ToontownItemName.LAWBOT_DISGUISE:  "Grants access to fight the Lawbot CJ",
-    ToontownItemName.BOSSBOT_DISGUISE: "Grants access to fight the Bossbot CEO",
+    ToontownItemName.SELLBOT_DISGUISE.value: "Grants access to fight the Sellbot VP",
+    ToontownItemName.CASHBOT_DISGUISE.value: "Grants access to fight the Cashbot CFO",
+    ToontownItemName.LAWBOT_DISGUISE.value:  "Grants access to fight the Lawbot CJ",
+    ToontownItemName.BOSSBOT_DISGUISE.value: "Grants access to fight the Bossbot CEO",
 }
 
 

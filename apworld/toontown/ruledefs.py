@@ -13,8 +13,9 @@ rules_to_func: Dict[Rule, Callable] = {}
 def rule(rule: Rule, *argument: Any):
     def decorator(f):
         def wrapper(*args, **kwargs):
-            return f(*args, argument=argument, **kwargs)
-        rules_to_func[rule] = f
+            kwargs['argument'] = kwargs.get('argument') or argument
+            return f(*args, **kwargs)
+        rules_to_func[rule] = wrapper
         return wrapper
     return decorator
 
@@ -40,11 +41,11 @@ def rule(rule: Rule, *argument: Any):
 @rule(Rule.TierOneCogs)
 @rule(Rule.TierTwoCogs)
 @rule(Rule.TierThreeCogs)
-def AlwaysTrueRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple):
+@rule(Rule.HasTTCHQAccess)
+def AlwaysTrueRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return True
 
 
-@rule(Rule.HasTTCHQAccess,  ToontownItemName.TTC_HQ_ACCESS)
 @rule(Rule.HasDDHQAccess,   ToontownItemName.DD_HQ_ACCESS)
 @rule(Rule.HasDGHQAccess,   ToontownItemName.DG_HQ_ACCESS)
 @rule(Rule.HasMMLHQAccess,  ToontownItemName.MML_HQ_ACCESS)
@@ -115,15 +116,15 @@ def AlwaysTrueRule(state: CollectionState, world: MultiWorld, player: int, optio
 @rule(Rule.DropFive,        ToontownItemName.DROP_FRAME, 5)
 @rule(Rule.DropSix,         ToontownItemName.DROP_FRAME, 6)
 @rule(Rule.DropSeven,       ToontownItemName.DROP_FRAME, 7)
-@rule(Rule.TwigRod,   ToontownItemName.FISHING_ROD_UPGRADE, 0)
-@rule(Rule.BambooRod, ToontownItemName.FISHING_ROD_UPGRADE, 1)
-@rule(Rule.WoodRod,   ToontownItemName.FISHING_ROD_UPGRADE, 2)
-@rule(Rule.SteelRod,  ToontownItemName.FISHING_ROD_UPGRADE, 3)
-@rule(Rule.GoldRod,   ToontownItemName.FISHING_ROD_UPGRADE, 4)
-def HasItemRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple):
+@rule(Rule.TwigRod,         ToontownItemName.FISHING_ROD_UPGRADE, 0)
+@rule(Rule.BambooRod,       ToontownItemName.FISHING_ROD_UPGRADE, 1)
+@rule(Rule.WoodRod,         ToontownItemName.FISHING_ROD_UPGRADE, 2)
+@rule(Rule.SteelRod,        ToontownItemName.FISHING_ROD_UPGRADE, 3)
+@rule(Rule.GoldRod,         ToontownItemName.FISHING_ROD_UPGRADE, 4)
+def HasItemRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     if len(argument) == 2:
-        return state.has(argument[0], player, argument[1])
-    return state.has(argument[0], player)
+        return state.has(argument[0].value, player, argument[1])
+    return state.has(argument[0].value, player)
 
 
 @rule(Rule.CanReachTTC,  ToontownRegionName.TTC)
@@ -138,13 +139,13 @@ def HasItemRule(state: CollectionState, world: MultiWorld, player: int, options:
 @rule(Rule.CanReachCBHQ, ToontownRegionName.CBHQ)
 @rule(Rule.CanReachLBHQ, ToontownRegionName.LBHQ)
 @rule(Rule.CanReachBBHQ, ToontownRegionName.BBHQ)
-def ReachLocationRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
-    if type(argument) is ToontownLocationName:
+def ReachLocationRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    if type(argument[0]) is ToontownLocationName:
         return state.can_reach(argument[0].value, "Location", player)
-    elif type(argument) is ToontownRegionName:
+    elif type(argument[0]) is ToontownRegionName:
         return state.can_reach(argument[0].value, None, player)
     else:
-        raise NotImplementedError("ReachLocationRule does not know how to interpret %s" % repr(argument))
+        raise NotImplementedError("ReachLocationRule does not know how to interpret %s" % repr(argument[0]))
 
 
 @rule(Rule.OnePlaygroundAccessible,    1)
@@ -153,7 +154,7 @@ def ReachLocationRule(state: CollectionState, world: MultiWorld, player: int, op
 @rule(Rule.FourPlaygroundsAccessible,  4)
 @rule(Rule.FivePlaygroundsAccessible,  5)
 @rule(Rule.SixPlaygroundsAccessible,   6)
-def PlaygroundCountRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
+def PlaygroundCountRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     pgs = [
         ToontownRegionName.TTC,
         ToontownRegionName.DD,
@@ -163,12 +164,12 @@ def PlaygroundCountRule(state: CollectionState, world: MultiWorld, player: int, 
         ToontownRegionName.DDL,
         ToontownRegionName.AA,
     ]
-    return sum(int(state.can_reach(pg, None, player)) for pg in pgs) >= argument[0]
+    return sum(int(state.can_reach(pg.value, None, player)) for pg in pgs) >= argument[0]
 
 
 @rule(Rule.TierFourCogs)
 @rule(Rule.TierFiveCogs)
-def ReachPastTTC(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
+def ReachPastTTC(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     pgs = [
         ToontownRegionName.DD,
         ToontownRegionName.DG,
@@ -176,29 +177,29 @@ def ReachPastTTC(state: CollectionState, world: MultiWorld, player: int, options
         ToontownRegionName.TB,
         ToontownRegionName.DDL,
     ]
-    return any(ReachLocationRule(state, world, player, options, pg) for pg in pgs)
+    return any(ReachLocationRule(state, world, player, options, argument=[pg]) for pg in pgs)
 
 
 @rule(Rule.TierSixCogs)
 @rule(Rule.TierSevenCogs)
-def ReachPastDD(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
+def ReachPastDD(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     pgs = [
         ToontownRegionName.DG,
         ToontownRegionName.MML,
         ToontownRegionName.TB,
         ToontownRegionName.DDL,
     ]
-    return any(ReachLocationRule(state, world, player, options, pg) for pg in pgs)
+    return any(ReachLocationRule(state, world, player, options, argument=[pg]) for pg in pgs)
 
 
 @rule(Rule.TierEightCogs)
-def TierEightCogs(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
+def TierEightCogs(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     pgs = [
         ToontownRegionName.MML,
         ToontownRegionName.TB,
         ToontownRegionName.DDL,
     ]
-    return any(ReachLocationRule(state, world, player, options, pg) for pg in pgs)
+    return any(ReachLocationRule(state, world, player, options, argument=[pg]) for pg in pgs)
 
 
 @rule(Rule.HasLevelOneOffenseGag,   1)
@@ -209,48 +210,48 @@ def TierEightCogs(state: CollectionState, world: MultiWorld, player: int, option
 @rule(Rule.HasLevelSixOffenseGag,   6)
 @rule(Rule.HasLevelSevenOffenseGag, 7)
 @rule(Rule.HasLevelEightOffenseGag, 8)
-def HasOffensiveLevel(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
+def HasOffensiveLevel(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return any(
-        state.has(offensive_frame, player, argument[0])
+        state.has(offensive_frame.value, player, argument[0])
         for offensive_frame in [
             ToontownItemName.THROW_FRAME,
             ToontownItemName.SQUIRT_FRAME,
             ToontownItemName.DROP_FRAME,
             ToontownItemName.TRAP_FRAME
         ]
-    ) and state.has(ToontownItemName.LURE_FRAME, player, min(argument[0], 4))
+    ) and state.has(ToontownItemName.LURE_FRAME.value, player, min(argument[0], 4))
 
 
 @rule(Rule.CanFightVP)
-def CanFightVP(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
+def CanFightVP(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, world, player, options)
     return passes_rule(Rule.CanReachSBHQ, *args) and passes_rule(Rule.SellbotDisguise, *args) \
             and passes_rule(Rule.HasLevelSixOffenseGag, *args)
 
 
 @rule(Rule.CanFightCFO)
-def CanFightCFO(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
+def CanFightCFO(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, world, player, options)
     return passes_rule(Rule.CanReachCBHQ, *args) and passes_rule(Rule.CashbotDisguise, *args) \
             and passes_rule(Rule.HasLevelSixOffenseGag, *args)
 
 
 @rule(Rule.CanFightCJ)
-def CanFightCJ(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
+def CanFightCJ(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, world, player, options)
     return passes_rule(Rule.CanReachLBHQ, *args) and passes_rule(Rule.LawbotDisguise, *args) \
             and passes_rule(Rule.HasLevelSixOffenseGag, *args)
 
 
 @rule(Rule.CanFightCEO)
-def CanFightCEO(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
+def CanFightCEO(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, world, player, options)
     return passes_rule(Rule.CanReachBBHQ, *args) and passes_rule(Rule.BossbotDisguise, *args) \
             and passes_rule(Rule.HasLevelSixOffenseGag, *args)
 
 
 @rule(Rule.AllBossesDefeated)
-def AllBossesDefeated(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Any):
+def AllBossesDefeated(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, world, player, options)
     return passes_rule(Rule.CanFightVP, *args) and passes_rule(Rule.CanFightCFO, *args) \
             and passes_rule(Rule.CanFightCJ, *args) and passes_rule(Rule.CanFightCEO, *args) \

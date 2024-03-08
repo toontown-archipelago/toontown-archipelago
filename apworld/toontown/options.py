@@ -19,8 +19,8 @@ class MaxHPOption(Range):
     """
     display_name = "Max Laff"
     range_start = 1
-    range_end = 137
-    default = 137
+    range_end = 150
+    default = 150
 
 
 class StartMoneyOption(Range):
@@ -112,7 +112,7 @@ class TrapPercentOption(Range):
     display_name = "Trap Percentage"
     range_start = 1
     range_end = 100
-    default = 10
+    default = 20
 
 
 @dataclass

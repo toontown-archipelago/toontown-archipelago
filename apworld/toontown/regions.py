@@ -54,6 +54,9 @@ REGION_DEFINITIONS = (
             ToontownEntranceDefinition(ToontownRegionName.TRAINING),
         ]
     ),
+    ToontownRegionDefinition(ToontownRegionName.GALLERY),
+    ToontownRegionDefinition(ToontownRegionName.FISHING),
+    ToontownRegionDefinition(ToontownRegionName.TRAINING),
     ToontownRegionDefinition(
         ToontownRegionName.TTC,
         [
