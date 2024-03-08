@@ -2363,6 +2363,19 @@ class SetQP(MagicWord):
         return questIds
 
 
+class CompleteQuests(MagicWord):
+    aliases = ["cq", "completequest"]
+    desc = "Completes all quests on the target."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        for index in range(len(toon.quests)):
+            toon.quests[index][4] = 2**16
+        toon.b_setQuests(toon.quests)
+        return f"Completed {len(toon.quests)} of {toon.getName()}'s quests!"
+
+
 class SetUnites(MagicWord):
     aliases = ["unites", "restockunites"]
     desc = "Restocks the target's unites. The default amount is 999."
