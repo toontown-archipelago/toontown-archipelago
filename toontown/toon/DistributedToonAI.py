@@ -1459,14 +1459,14 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.d_promote(dept)
 
     def promote(self, dept):
-        if self.cogLevels[dept] < ToontownGlobals.MaxCogSuitLevel:
-            self.cogMerits[dept] = 0
+        # if self.cogLevels[dept] < ToontownGlobals.MaxCogSuitLevel:
+        #     self.cogMerits[dept] = 0
         self.incCogLevel(dept)
 
     def d_promote(self, dept):
         merits = self.getCogMerits()
-        if self.cogLevels[dept] < ToontownGlobals.MaxCogSuitLevel:
-            merits[dept] = 0
+        # if self.cogLevels[dept] < ToontownGlobals.MaxCogSuitLevel:
+        #     merits[dept] = 0
         self.d_setCogMerits(merits)
 
     def readyForPromotion(self, dept):
@@ -4437,7 +4437,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setCogParts([0, 0, 0, 0])
         self.b_setCogTypes([0, 0, 0, 0])
         self.b_setCogLevels([0, 0, 0, 0])
-        self.b_setCogMerits([0, 0, 0, 0])
+        self.b_setCogMerits([30000, 30000, 30000, 30000])
 
         # Revoke rewards
         self.resetNPCFriendsDict()
