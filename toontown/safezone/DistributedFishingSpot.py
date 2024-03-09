@@ -427,9 +427,26 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         if not self.pityLabel:
             return
 
-        if len(localAvatar.fishCollection) >= 70:
+        fishCount = len(localAvatar.fishCollection)
+
+        if fishCount >= 70:
             self.pityLabel.hide()
             return
+
+        if fishCount < 10:
+            fishNumberColor = 'red'
+        elif fishCount < 20:
+            fishNumberColor = 'salmon'
+        elif fishCount < 40:
+            fishNumberColor = 'yellow'
+        elif fishCount < 50:
+            fishNumberColor = 'green'
+        elif fishCount < 60:
+            fishNumberColor = 'green'
+        elif fishCount < 70:
+            fishNumberColor = 'cyan'
+        else:
+            fishNumberColor = 'white'  # won't show but just to be safe
 
         if self.pity < .10:
             color = 'red'
@@ -445,6 +462,9 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         clean_pity = int(round(self.pity * 100))
 
         msg_parts = [
+            MinimalJsonMessagePart("Fish: "),
+            MinimalJsonMessagePart(f"{fishCount}", color=fishNumberColor),
+            MinimalJsonMessagePart(f" / 70\n"),
             MinimalJsonMessagePart("Pity: "),
             MinimalJsonMessagePart(f"{clean_pity}", color=color),
         ]
@@ -649,7 +669,7 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         self.arrow.setColorScale(0.9, 0.9, 0.1, 0.7)
         self.arrow.hide()
         self.jar = DirectLabel(parent=self.castGui, relief=None, text=str(self.av.getMoney()), text_scale=0.16, text_fg=(0.95, 0.95, 0, 1), text_font=ToontownGlobals.getSignFont(), pos=(-1.12, 0, -1.3))
-        self.pityLabel = DirectLabel(self.castGui, relief=None, text=f"Pity: NA", text_scale=.1, text_fg=(1, 1, 1, 1), text_shadow=(0, 0, 0, 1),text_font=ToontownGlobals.getSignFont(), pos=(-.6, 0, -1.4))
+        self.pityLabel = DirectLabel(self.castGui, relief=None, text_align=TextNode.ALeft, text=f"Species: NA/NA\nPity: NA", text_scale=.1, text_fg=(1, 1, 1, 1), text_shadow=(0, 0, 0, 1),text_font=ToontownGlobals.getSignFont(), pos=(-.8, 0, -1.3))
         self.__updatePityLabel()
         self.bucket = DirectLabel(parent=self.castGui, relief=None, text='', text_scale=0.09, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), pos=(1.14, 0, -1.33))
         self.__updateFishTankGui()
