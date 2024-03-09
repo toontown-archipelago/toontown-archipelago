@@ -12,6 +12,7 @@ from toontown.toonbase import TTLocalizer, ToontownGlobals
 from toontown.hood import ZoneUtil
 from toontown.toonbase.ToontownBattleGlobals import Tracks, Levels
 from .Experience import Experience
+from ..battle.GagTrackBarGUI import GagTrackBarGUI
 
 globalAvatarDetail = None
 
@@ -214,8 +215,11 @@ class ToonAvatarDetailPanel(DirectFrame):
         inventoryModels = loader.loadModel('phase_3.5/models/gui/inventory_gui')
         buttonModel = inventoryModels.find('**/InventoryButtonUp')
         for track in range(0, len(Tracks)):
-            DirectLabel(parent=self, relief=None, text=TextEncoder.upper(TTLocalizer.BattleGlobalTracks[track]), text_scale=TTLocalizer.TADPtrackLabel, text_align=TextNode.ALeft, pos=(-0.9, 0, TTLocalizer.TADtrackLabelPosZ + track * ySpacing))
+            # DirectLabel(parent=self, relief=None, text=TextEncoder.upper(TTLocalizer.BattleGlobalTracks[track]), text_scale=TTLocalizer.TADPtrackLabel, text_align=TextNode.ALeft, pos=(-0.9, 0, TTLocalizer.TADtrackLabelPosZ + track * ySpacing))
             if self.avatar.hasTrackAccess(track):
+                gagTrackBar = GagTrackBarGUI(track, parent=self, scale=0.25, pos=(-0.76, 0, TTLocalizer.TADtrackLabelPosZ + track * ySpacing))
+                # gagTrackBar.makeSkinny()
+                gagTrackBar.showExperience(self.avatar.experience, track)
                 curExp, nextExp = inventory.getCurAndNextExpValues(track)
                 for item in range(0, len(Levels[track])):
                     level = Levels[track][item]
