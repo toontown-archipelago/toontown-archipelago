@@ -63,4 +63,4 @@ Once you are there, you need to run the `.bat` files present in the following or
 The game should start up and you should be good to start playing!
 
 **NOTE:** If you are playing with someone who is hosting a server, you only need to run `join_server.bat` and enter their IP when prompted.
-If you are hosting a server, you will need to port forward (default port is `7199`) via your router to allow people to connect to you.
+If you are hosting a server, you will need to port forward (default port is `7198`) via your router to allow people to connect to you.
