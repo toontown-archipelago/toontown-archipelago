@@ -236,7 +236,7 @@ class RewardPanel(DirectFrame):
                 if totalMerits:
                     meritBar['range'] = totalMerits
                     meritBar['value'] = merits
-                    if merits == totalMerits:
+                    if merits >= totalMerits:
                         meritBar['text'] = TTLocalizer.RewardPanelMeritAlert
                     else:
                         meritBar['text'] = '%s/%s %s' % (merits, totalMerits, TTLocalizer.RewardPanelMeritBarLabels[i])

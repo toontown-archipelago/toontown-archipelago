@@ -1435,6 +1435,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setCogParts(parts)
 
     def b_setCogMerits(self, merits):
+        # We do not care about changing merits at all in this game
+        merits = [30000, 30000, 30000, 30000]
         self.setCogMerits(merits)
         self.d_setCogMerits(merits)
 

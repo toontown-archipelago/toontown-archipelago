@@ -1124,7 +1124,6 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         return False
 
     def setPity(self, pity: float):
-        print(f'setting pity to {pity}')
         self.pity = pity
 
         if self.localToonFishing:
