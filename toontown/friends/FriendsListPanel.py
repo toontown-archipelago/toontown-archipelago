@@ -5,6 +5,7 @@ from direct.gui.DirectGui import *
 from direct.fsm import StateData
 from toontown.toon import ToonAvatarPanel
 from toontown.friends import ToontownFriendSecret
+from toontown.toon.DistributedToon import DistributedToon
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from otp.otpbase import OTPGlobals
@@ -37,6 +38,10 @@ def determineFriendName(friendTuple):
             handle = base.cr.playerFriendsManager.getAvHandleFromId(avId)
         if handle:
             friendName = handle.getName()
+
+    if avId == base.localAvatar.doId:
+        return base.localAvatar.getName()
+
     return friendName
 
 
@@ -223,7 +228,9 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
             friendName = playerName
             rolloverName = toonName
         else:
-            if not toonName:
+            if not toonName and base.localAvatar.doId == avId:
+                toonName = base.localAvatar.getName()
+            elif not toonName:
                 base.cr.fillUpFriendsMap()
                 return
             friendName = toonName
@@ -338,6 +345,10 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
         handle = base.cr.identifyFriend(friendId)
         if not handle and hasManager:
             handle = base.cr.playerFriendsManager.getAvHandleFromId(friendId)
+
+        if handle is None and friendId == base.localAvatar.doId:
+            handle = base.localAvatar
+
         if handle != None:
             self.notify.info("Clicked on name in friend's list. doId = %s" % handle.doId)
             messenger.send('clickedNametag', [handle])
@@ -557,11 +568,11 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
                          0))
 
         if self.panelType == FLPPets:
-            for objId, obj in list(base.cr.doId2do.items()):
-                from toontown.pets import DistributedPet
-                if isinstance(obj, DistributedPet.DistributedPet):
-                    friendPair = (objId, 0)
-                    petFriends.append(friendPair)
+            toonIds = list(base.cr.getObjectsOfExactClass(DistributedToon).keys())
+            for toonId in toonIds + [base.localAvatar.doId]:
+                playerId = base.cr.playerFriendsManager.findPlayerIdFromAvId(toonId)
+                friendPair = (toonId, 0, playerId, 0)
+                petFriends.append(friendPair)
 
         if self.panelType == FLPEnemies:
             for ignored in base.localAvatar.ignoreList:
@@ -641,7 +652,7 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
         elif self.panelType == FLPAll:
             self.title['text'] = TTLocalizer.FriendsListPanelAllFriends
         elif self.panelType == FLPPets:
-            self.title['text'] = TTLocalizer.FriendsListPanelPets
+            self.title['text'] = TTLocalizer.FriendsListPanelNearbyToons
         elif self.panelType == FLPPlayers:
             self.title['text'] = TTLocalizer.FriendsListPanelPlayers
         elif self.panelType == FLPOnlinePlayers:

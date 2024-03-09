@@ -186,7 +186,7 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
 
 
 
-        if base.cr.avatarFriendsManager.checkIgnored(self.avId):
+        if self.avId == base.localAvatar.doId or base.cr.avatarFriendsManager.checkIgnored(self.avId):
             self.whisperButton['state'] = DGG.DISABLED
 
         self.secretsButton = DirectButton(
@@ -244,6 +244,9 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
             text_align=TextNode.ALeft,
             command=ignoreCmd)
 
+        if self.avId == base.localAvatar.doId:
+            self.ignoreButton['state'] = DGG.DISABLED
+
 
         if base.cr.productName not in ['JP', 'DE', 'BR', 'FR']:
             self.reportButton = DirectButton(
@@ -266,6 +269,9 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
                 text_pos=(0.06, -0.015),
                 text_align=TextNode.ALeft,
                 command=self.handleReport)
+
+            if self.avId == base.localAvatar.doId:
+                self.reportButton['state'] = DGG.DISABLED
 
 
         if not base.localAvatar.isTeleportAllowed():
