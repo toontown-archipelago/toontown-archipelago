@@ -89,7 +89,6 @@ class DistributedNPCClerk(DistributedNPCToonBase):
             self.freeAvatar()
 
         self.initToonState()
-        self.setBusyWithLocalToon(False)
         return Task.done
 
     def setMovie(self, mode, npcId, avId, timestamp):
@@ -156,6 +155,8 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         self.purchase.exit()
         self.purchase.unload()
         self.purchase = None
+        self.setBusyWithLocalToon(False)
+        self.freeAvatar()
         return
 
     def d_setInventory(self, invString, money, done):

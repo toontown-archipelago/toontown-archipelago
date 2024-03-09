@@ -45,6 +45,7 @@ class DistributedNPCToon(DistributedNPCToonBase):
         if self.trackChoiceGui:
             self.trackChoiceGui.destroy()
             self.trackChoiceGui = None
+        self.setBusyWithLocalToon(False)
         return
 
     def allowedToTalk(self):
@@ -72,7 +73,6 @@ class DistributedNPCToon(DistributedNPCToonBase):
             self.sendUpdate('setMovieDone', [])
             self.nametag3d.clearDepthTest()
             self.nametag3d.clearBin()
-            self.setBusyWithLocalToon(False)
 
     def setupCamera(self, mode):
         camera.wrtReparentTo(render)
