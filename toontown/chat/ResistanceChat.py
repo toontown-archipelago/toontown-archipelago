@@ -149,19 +149,12 @@ def doEffect(textId, speakingToon, nearbyToons):
         invModel.setScale(4)
         invModel.flattenLight()
         icons = []
-        if itemValue != -1:
-            for item in range(6):
-                iconName = ToontownBattleGlobals.AvPropsNew[itemValue][item]
-                icons.append(invModel.find('**/%s' % iconName))
-
-        else:
-            tracks = list(range(7))
-            random.shuffle(tracks)
-            for i in range(6):
-                track = tracks[i]
-                item = random.randint(0, 5)
-                iconName = ToontownBattleGlobals.AvPropsNew[track][item]
-                icons.append(invModel.find('**/%s' % iconName))
+        tracks = list(range(7))
+        random.shuffle(tracks)
+        for i in range(6):
+            track = tracks[i]
+            iconName = ToontownBattleGlobals.AvPropsNew[track][itemValue]
+            icons.append(invModel.find('**/%s' % iconName))
 
         iconDict = {'particles-1': icons[0],
          'particles-2': icons[1],
