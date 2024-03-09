@@ -112,8 +112,8 @@ class DistributedBattleFinal(DistributedBattleBase.DistributedBattleBase):
                 destHpr = VBase3(h, 0, 0)
             else:
                 destPos, destHpr = self.getActorPosHpr(suit, self.suits)
-            suitTrack.append(Track((delay, self.createAdjustInterval(suit, destPos, destHpr)), (delay + 1.5, suit.scaleInterval(1.5, 1))))
-            delay += 1
+            suitTrack.append(Track((delay, self.createAdjustInterval(suit, destPos, destHpr)), (delay + 0.1875, suit.scaleInterval(0.1875, 1))))
+            delay += 0.125
 
         if self.hasLocalToon():
             camera.reparentTo(self)
