@@ -96,6 +96,10 @@ class DistributedNPCToon(DistributedNPCToonBase):
         if self.isBusyWithLocalToon() and not isLocalToon:
             return
 
+        # Hack fix for race condition when loading this object from an astron ram update
+        if base.cr.playGame.getPlace() is None or not hasattr(base.cr.playGame, 'getPlace'):
+            return
+
         # Now, either someone else is talking to this NPC or they are talking to us
 
         if mode == NPCToons.QUEST_MOVIE_CLEAR:
