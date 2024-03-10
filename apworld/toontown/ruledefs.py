@@ -1,6 +1,7 @@
 from typing import Dict, Callable, Any, Tuple
 
 from BaseClasses import CollectionState, MultiWorld
+from .consts import XP_RATIO_FOR_GAG_LEVEL
 from .items import ToontownItemName
 from .options import ToontownOptions
 from .locations import ToontownLocationDefinition, ToontownLocationName
@@ -18,6 +19,16 @@ def rule(rule: Rule, *argument: Any):
         rules_to_func[rule] = wrapper
         return wrapper
     return decorator
+
+
+def has_collected_xp_for_gag_level(state: CollectionState, player: int, options: ToontownOptions, level: int) -> bool:
+    # Determines if a given player has collected a sufficient amount of the XP items in the run.
+    # always returns True if the player has 2 or less XP multis in the pool (aka, assumes they don't care)
+    xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
+    max_xp = options.max_gag_xp_multiplier_from_items.value
+    if max_xp <= 2:
+        return True
+    return XP_RATIO_FOR_GAG_LEVEL.get(level) >= (xp / max_xp)
 
 
 @rule(Rule.LoopyLane)          # NOTE - Streets are always enabled for now.
@@ -66,6 +77,17 @@ def AlwaysTrueRule(state: CollectionState, world: MultiWorld, player: int, optio
 @rule(Rule.CashbotDisguise, ToontownItemName.CASHBOT_DISGUISE)
 @rule(Rule.LawbotDisguise,  ToontownItemName.LAWBOT_DISGUISE)
 @rule(Rule.BossbotDisguise, ToontownItemName.BOSSBOT_DISGUISE)
+@rule(Rule.TwigRod,         ToontownItemName.FISHING_ROD_UPGRADE, 0)
+@rule(Rule.BambooRod,       ToontownItemName.FISHING_ROD_UPGRADE, 1)
+@rule(Rule.WoodRod,         ToontownItemName.FISHING_ROD_UPGRADE, 2)
+@rule(Rule.SteelRod,        ToontownItemName.FISHING_ROD_UPGRADE, 3)
+@rule(Rule.GoldRod,         ToontownItemName.FISHING_ROD_UPGRADE, 4)
+def HasItemRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    if len(argument) == 2:
+        return state.has(argument[0].value, player, argument[1])
+    return state.has(argument[0].value, player)
+
+
 @rule(Rule.ToonUpOne,       ToontownItemName.TOONUP_FRAME, 1)
 @rule(Rule.ToonUpTwo,       ToontownItemName.TOONUP_FRAME, 2)
 @rule(Rule.ToonUpThree,     ToontownItemName.TOONUP_FRAME, 3)
@@ -115,15 +137,9 @@ def AlwaysTrueRule(state: CollectionState, world: MultiWorld, player: int, optio
 @rule(Rule.DropFive,        ToontownItemName.DROP_FRAME, 5)
 @rule(Rule.DropSix,         ToontownItemName.DROP_FRAME, 6)
 @rule(Rule.DropSeven,       ToontownItemName.DROP_FRAME, 7)
-@rule(Rule.TwigRod,         ToontownItemName.FISHING_ROD_UPGRADE, 0)
-@rule(Rule.BambooRod,       ToontownItemName.FISHING_ROD_UPGRADE, 1)
-@rule(Rule.WoodRod,         ToontownItemName.FISHING_ROD_UPGRADE, 2)
-@rule(Rule.SteelRod,        ToontownItemName.FISHING_ROD_UPGRADE, 3)
-@rule(Rule.GoldRod,         ToontownItemName.FISHING_ROD_UPGRADE, 4)
-def HasItemRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
-    if len(argument) == 2:
-        return state.has(argument[0].value, player, argument[1])
-    return state.has(argument[0].value, player)
+def GagTraining(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    return state.has(argument[0].value, player, argument[1]) \
+            and has_collected_xp_for_gag_level(argument[1])
 
 
 @rule(Rule.CanReachTTC,  ToontownRegionName.TTC)
@@ -231,7 +247,8 @@ def HasOffensiveLevel(state: CollectionState, world: MultiWorld, player: int, op
             ToontownItemName.DROP_FRAME,
             ToontownItemName.TRAP_FRAME
         ]
-    ) and state.has(ToontownItemName.LURE_FRAME.value, player, min(argument[0], 4))
+    ) and state.has(ToontownItemName.LURE_FRAME.value, player, min(argument[0], 4)) \
+        and has_collected_xp_for_gag_level(state, player, options, argument[0])
 
 
 @rule(Rule.CanFightVP)
