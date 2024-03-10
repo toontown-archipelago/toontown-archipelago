@@ -139,7 +139,7 @@ def HasItemRule(state: CollectionState, world: MultiWorld, player: int, options:
 @rule(Rule.DropSeven,       ToontownItemName.DROP_FRAME, 7)
 def GagTraining(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return state.has(argument[0].value, player, argument[1]) \
-            and has_collected_xp_for_gag_level(argument[1])
+            and has_collected_xp_for_gag_level(state, player, options, argument[1])
 
 
 @rule(Rule.CanReachTTC,  ToontownRegionName.TTC)
