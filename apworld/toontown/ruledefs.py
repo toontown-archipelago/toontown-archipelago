@@ -28,7 +28,7 @@ def has_collected_xp_for_gag_level(state: CollectionState, player: int, options:
     max_xp = options.max_gag_xp_multiplier_from_items.value
     if max_xp <= 2:
         return True
-    return XP_RATIO_FOR_GAG_LEVEL.get(level) >= (xp / max_xp)
+    return XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp)
 
 
 @rule(Rule.LoopyLane)          # NOTE - Streets are always enabled for now.
