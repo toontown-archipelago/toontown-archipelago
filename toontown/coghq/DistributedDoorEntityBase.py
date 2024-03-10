@@ -13,7 +13,7 @@ class LockBase:
     stateDurations = [None,
      3.5,
      None,
-     4.0,
+     2.0,
      None]
 
 
@@ -24,7 +24,7 @@ class DistributedDoorEntityBase:
      'closing',
      'closed']
     stateDurations = [None,
-     5.0,
+     2.5,
      1.0,
      6.0,
      None]
