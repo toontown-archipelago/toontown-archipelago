@@ -314,7 +314,7 @@ class DistributedTrolley(DistributedObject.DistributedObject):
         self.clockNode.setFont(ToontownGlobals.getSignFont())
         self.clockNode.setAlign(TextNode.ACenter)
         self.clockNode.setTextColor(0.9, 0.1, 0.1, 1)
-        self.clockNode.setText('10')
+        self.clockNode.setText('5')
         self.clock = self.trolleyStation.attachNewNode(self.clockNode)
         self.clock.setBillboardAxis()
         self.clock.setPosHprScale(15.86, 13.82, 11.68, -0.0, 0.0, 0.0, 3.02, 3.02, 3.02)
