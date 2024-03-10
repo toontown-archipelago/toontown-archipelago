@@ -40,7 +40,6 @@ def rule(rule: Rule, *argument: Any):
 @rule(Rule.PajamaPlace)
 @rule(Rule.TierOneCogs)
 @rule(Rule.TierTwoCogs)
-@rule(Rule.TierThreeCogs)
 @rule(Rule.HasTTCHQAccess)
 def AlwaysTrueRule(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return True
@@ -167,9 +166,14 @@ def PlaygroundCountRule(state: CollectionState, world: MultiWorld, player: int, 
     return sum(int(state.can_reach(pg.value, None, player)) for pg in pgs) >= argument[0]
 
 
+@rule(Rule.TierThreeCogs)
+def TierThreeCogs(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    return passes_rule(Rule.HasLevelTwoOffenseGag, state, world, player, options)
+
+
 @rule(Rule.TierFourCogs)
 @rule(Rule.TierFiveCogs)
-def ReachPastTTC(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+def TierFiveCogs(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     pgs = [
         ToontownRegionName.DD,
         ToontownRegionName.DG,
@@ -177,7 +181,8 @@ def ReachPastTTC(state: CollectionState, world: MultiWorld, player: int, options
         ToontownRegionName.TB,
         ToontownRegionName.DDL,
     ]
-    return any(ReachLocationRule(state, world, player, options, argument=[pg]) for pg in pgs)
+    return any(ReachLocationRule(state, world, player, options, argument=[pg]) for pg in pgs) \
+           and passes_rule(Rule.HasLevelThreeOffenseGag, state, world, player, options)
 
 
 @rule(Rule.TierSixCogs)
@@ -189,17 +194,24 @@ def ReachPastDD(state: CollectionState, world: MultiWorld, player: int, options:
         ToontownRegionName.TB,
         ToontownRegionName.DDL,
     ]
-    return any(ReachLocationRule(state, world, player, options, argument=[pg]) for pg in pgs)
+    return any(ReachLocationRule(state, world, player, options, argument=[pg]) for pg in pgs) \
+           and passes_rule(Rule.HasLevelFourOffenseGag, state, world, player, options)
 
 
-@rule(Rule.TierEightCogs)
+@rule(Rule.TierEightSellbot, ToontownRegionName.SBHQ)
+@rule(Rule.TierEightCashbot, ToontownRegionName.CBHQ)
+@rule(Rule.TierEightLawbot,  ToontownRegionName.LBHQ)
+@rule(Rule.TierEightBossbot, ToontownRegionName.BBHQ)
 def TierEightCogs(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     pgs = [
         ToontownRegionName.MML,
         ToontownRegionName.TB,
         ToontownRegionName.DDL,
     ]
-    return any(ReachLocationRule(state, world, player, options, argument=[pg]) for pg in pgs)
+    if argument:
+        pgs.append(argument[0])
+    return any(ReachLocationRule(state, world, player, options, argument=[pg]) for pg in pgs) \
+           and passes_rule(Rule.HasLevelFourOffenseGag, state, world, player, options)
 
 
 @rule(Rule.HasLevelOneOffenseGag,   1)

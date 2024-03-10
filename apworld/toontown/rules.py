@@ -62,7 +62,11 @@ class Rule(Enum):
     TierFiveCogs  = auto()
     TierSixCogs   = auto()
     TierSevenCogs = auto()
-    TierEightCogs = auto()
+
+    TierEightSellbot = auto()
+    TierEightCashbot = auto()
+    TierEightLawbot  = auto()
+    TierEightBossbot = auto()
 
     ### Facility Keys ###
 
