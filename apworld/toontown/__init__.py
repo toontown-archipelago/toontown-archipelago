@@ -1,25 +1,18 @@
 from typing import Dict, Any, List
 
-from BaseClasses import Tutorial, Region, ItemClassification, CollectionState, Item, Location, LocationProgressType
+from BaseClasses import Tutorial, Region, ItemClassification, CollectionState, Location, LocationProgressType
 from worlds.AutoWorld import World, WebWorld
 from worlds.generic.Rules import set_rule
 
 from . import regions, consts
-from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName
-from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT
+from .consts import ToontownItem, ToontownLocation
+from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, ITEM_NAME_TO_ID
+from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID
 from .options import ToontownOptions
 from .regions import REGION_DEFINITIONS, ToontownRegionName
-from .ruledefs import test_location, test_entrance
+from .ruledefs import test_location, test_entrance, test_item_location
 
 DEBUG_MODE = False
-
-
-class ToontownItem(Item):
-    game: str = "Toontown"
-
-
-class ToontownLocation(Location):
-    game: str = "Toontown"
 
 
 class ToontownWeb(WebWorld):
@@ -47,8 +40,8 @@ class ToontownWorld(World):
     options_dataclass = ToontownOptions
     options: ToontownOptions
 
-    item_name_to_id = {item.name.value: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}
-    location_name_to_id = {location.name.value: i + consts.BASE_ID for i, location in enumerate(LOCATION_DEFINITIONS)}
+    item_name_to_id = ITEM_NAME_TO_ID
+    location_name_to_id = LOCATION_NAME_TO_ID
 
     location_descriptions = LOCATION_DESCRIPTIONS
     item_descriptions = ITEM_DESCRIPTIONS
@@ -59,6 +52,8 @@ class ToontownWorld(World):
             location: Location = self.multiworld.get_location(location_data.name.value, self.player)
             location.access_rule = lambda state, i=i: test_location(
                 LOCATION_DEFINITIONS[i], state, self.multiworld, self.player, self.options)
+            location.item_rule = lambda item, i=i: test_item_location(
+                LOCATION_DEFINITIONS[i], item, self.multiworld, self.player, self.options)
 
         for i, location_data in enumerate(EVENT_DEFINITIONS):
             location: Location = self.multiworld.get_location(location_data.name.value, self.player)

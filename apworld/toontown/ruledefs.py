@@ -1,17 +1,17 @@
-from typing import Dict, Callable, Any, Tuple
+from typing import Dict, Callable, Any, Tuple, Union
 
 from BaseClasses import CollectionState, MultiWorld
-from .consts import XP_RATIO_FOR_GAG_LEVEL
+from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem
 from .items import ToontownItemName
 from .options import ToontownOptions
-from .locations import ToontownLocationDefinition, ToontownLocationName
+from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID
 from .regions import ToontownEntranceDefinition, ToontownRegionName
-from .rules import Rule
+from .rules import Rule, ItemRule
 
-rules_to_func: Dict[Rule, Callable] = {}
+rules_to_func: Dict[Union[Rule, ItemRule], Callable] = {}
 
 
-def rule(rule: Rule, *argument: Any):
+def rule(rule: Union[Rule, ItemRule], *argument: Any):
     def decorator(f):
         def wrapper(*args, **kwargs):
             kwargs['argument'] = kwargs.get('argument') or argument
@@ -287,13 +287,27 @@ def AllBossesDefeated(state: CollectionState, world: MultiWorld, player: int, op
             and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
 
 
+@rule(ItemRule.RestrictDisguises)
+def RestrictDisguises(item: ToontownItem, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    DISGUISE_ITEM_IDS = list(map(
+        lambda name: LOCATION_NAME_TO_ID.get(name),
+        [
+            ToontownItemName.SELLBOT_DISGUISE.value,
+            ToontownItemName.CASHBOT_DISGUISE.value,
+            ToontownItemName.LAWBOT_DISGUISE.value,
+            ToontownItemName.BOSSBOT_DISGUISE.value,
+        ]
+    ))
+    return item.code not in DISGUISE_ITEM_IDS
+
+
 """
 Meta location testing
 """
 
 
-def passes_rule(rule: Rule, state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions) -> bool:
-    return rules_to_func[rule](state, world, player, options)
+def passes_rule(rule: Rule, state_or_item: Union[CollectionState, ToontownItem], world: MultiWorld, player: int, options: ToontownOptions) -> bool:
+    return rules_to_func[rule](state_or_item, world, player, options)
 
 
 def test_location(location_def: ToontownLocationDefinition, state: CollectionState,
@@ -301,6 +315,15 @@ def test_location(location_def: ToontownLocationDefinition, state: CollectionSta
                   options: ToontownOptions) -> bool:
     if location_def.rules:
         return (any if location_def.rule_logic_or else all)(passes_rule(r, state, world, player, options) for r in location_def.rules)
+    else:
+        return True
+
+
+def test_item_location(location_def: ToontownLocationDefinition, item: ToontownItem,
+                       world: MultiWorld, player: int,
+                       options: ToontownOptions) -> bool:
+    if location_def.item_rules:
+        return all(passes_rule(r, item, world, player, options) for r in location_def.item_rules)
     else:
         return True
 
