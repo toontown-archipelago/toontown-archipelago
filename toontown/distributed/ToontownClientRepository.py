@@ -195,18 +195,17 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         self.gameServicesManager.sendAcknowledgeAvatarName(avid, lambda: self.loginFSM.request('waitForAvatarList'))
 
     def enterChooseAvatar(self, avList):
-
         ModelPool.garbageCollect()
         TexturePool.garbageCollect()
         self.sendSetAvatarIdMsg(0)
         self.clearFriendState()
-        if self.music == None and base.musicManagerIsValid:
+        if self.music is None and base.musicManagerIsValid:
             self.music = base.musicManager.getSound('phase_3/audio/bgm/tt_theme.ogg')
             if self.music:
                 self.music.setLoop(1)
-                self.music.setVolume(0.9)
+                self.music.setVolume(base.settings.get("music-volume") ** 2)
                 self.music.play()
-        base.playMusic(self.music, looping=1, volume=0.9, interrupt=None)
+        base.playMusic(self.music, looping=1, volume=base.settings.get("music-volume") ** 2, interrupt=None)
         self.handler = self.handleMessageType
         self.avChoiceDoneEvent = 'avatarChooserDone'
         self.avChoice = AvatarChooser.AvatarChooser(avList, self.loginFSM, self.avChoiceDoneEvent)

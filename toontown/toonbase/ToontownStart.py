@@ -79,7 +79,7 @@ if base.musicManagerIsValid:
     music = base.musicManager.getSound('phase_3/audio/bgm/tt_theme.ogg')
     if music:
         music.setLoop(1)
-        music.setVolume(0.9)
+        music.setVolume(base.settings.get("music-volume") ** 2)
         music.play()
     print('ToontownStart: Loading default gui sounds')
     DirectGuiGlobals.setDefaultRolloverSound(base.loader.loadSfx('phase_3/audio/sfx/GUI_rollover.ogg'))
