@@ -8,6 +8,8 @@ from direct.fsm.FSM import FSM
 from direct.gui.DirectGui import *
 from direct.showbase.MessengerGlobal import messenger
 
+from otp.otpbase.OTPLocalizerEnglish import SpeedChatStaticTextToontown
+from otp.speedchat.SpeedChatGlobals import speedChatStyles
 from toontown.settings.Settings import Setting
 from toontown.shtiker.ShtikerPage import ShtikerPage
 from toontown.toonbase import TTLocalizer
@@ -19,6 +21,7 @@ class OptionTypes(IntEnum):
     BUTTON = auto()
     SLIDER = auto()
     CONTROL = auto()
+    BUTTON_SPEEDCHAT = auto()
 
 
 OptionToType = {
@@ -28,6 +31,7 @@ OptionToType = {
     'movement_mode': OptionTypes.BUTTON,
     'fovEffects': OptionTypes.BUTTON,
     'cam-toggle-lock': OptionTypes.BUTTON,
+    'speedchat-style': OptionTypes.BUTTON_SPEEDCHAT,
 
     # Privacy
     "accepting-friends": OptionTypes.BUTTON,
@@ -122,7 +126,8 @@ class OptionsTabPage(DirectFrame, FSM):
             'camSensitivityY',
             'movement_mode',
             'fovEffects',
-            'cam-toggle-lock'
+            'cam-toggle-lock',
+            'speedchat-style'
         ],
         "Privacy": [
             "accepting-friends",
@@ -390,6 +395,8 @@ class OptionElement(DirectFrame):
 
         if self.optionType == OptionTypes.CONTROL:
             currSetting = self.formatKeybind(base.settings.getControl(name))
+        elif self.optionType == OptionTypes.BUTTON_SPEEDCHAT:
+            currSetting = self.formatSpeedchat(base.localAvatar.getSpeedChatStyleIndex())
         else:
             currSetting = base.settings.get(name)
 
@@ -405,7 +412,7 @@ class OptionElement(DirectFrame):
 
         # Make the button which will appear on the right-hand side of
         # the page.
-        if self.optionType in (OptionTypes.BUTTON, OptionTypes.CONTROL):
+        if self.optionType in (OptionTypes.BUTTON, OptionTypes.CONTROL, OptionTypes.BUTTON_SPEEDCHAT):
             self.optionModifier = DirectButton(
                 parent=self, relief=None, pos=(0.4, 0, z),
                 text=self.formatSetting(currSetting),
@@ -468,6 +475,10 @@ class OptionElement(DirectFrame):
     @staticmethod
     def formatKeybind(keybind: str) -> str:
         return " ".join(keybind.split("_")).title()
+
+    @staticmethod
+    def formatSpeedchat(index: int) -> str:
+        return SpeedChatStaticTextToontown[speedChatStyles[index][0]]
 
     def formatSetting(self, setting: Setting) -> str:
         """Given the type of setting we're dealing with, handle
@@ -541,6 +552,20 @@ class OptionElement(DirectFrame):
 
             messenger.send("disable-hotkeys")
             self.accept(self.controlTask, self.registerKey)
+            return
+
+        elif self.optionType == OptionTypes.BUTTON_SPEEDCHAT:
+            # Increment the speedchat index.
+            current = base.localAvatar.getSpeedChatStyleIndex()
+            new = current + 1
+            if new >= len(speedChatStyles):
+                new = 0
+
+            # We handle this differently, as it gets saved on the toon itself.
+            base.localAvatar.b_setSpeedChatStyleIndex(new)
+
+            # Update the button text with the new setting.
+            self.optionModifier["text"] = self.formatSpeedchat(new)
             return
 
         # Get the current setting.

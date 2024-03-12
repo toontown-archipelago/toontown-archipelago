@@ -9910,6 +9910,7 @@ OptionNames = {
     "movement_mode": "Movement Mode",
     "fovEffects": "Sprinting FOV Effects",
     "cam-toggle-lock": "Camera Toggle Lock",
+    "speedchat-style": "Speedchat Color",
 
     # Privacy
     "accepting-friends": "Accepting New Friends",
