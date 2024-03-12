@@ -292,6 +292,7 @@ class DistributedGolfSpot(DistributedObject.DistributedObject, FSM.FSM):
         self.accept('escape', self.__exitGolfSpot)
         self.accept(base.controls.JUMP, self.__controlPressed)
         self.accept(base.controls.JUMP + '-up', self.__controlReleased)
+        base.localAvatar.enableCraneControls()
         self.accept('InputState-forward', self.__upArrow)
         self.accept('InputState-reverse', self.__downArrow)
         self.accept('InputState-turnLeft', self.__leftArrow)
@@ -316,6 +317,7 @@ class DistributedGolfSpot(DistributedObject.DistributedObject, FSM.FSM):
         self.ignore('InputState-reverse')
         self.ignore('InputState-turnLeft')
         self.ignore('InputState-turnRight')
+        base.localAvatar.disableCraneControls()
         self.arrowVert = 0
         self.arrowHorz = 0
         taskMgr.remove('watchGolfSpotControls')
