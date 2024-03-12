@@ -1,5 +1,5 @@
 @echo off
-title Toontown Online - UberDOG Server
+title Toontown Archipelago - UberDOG Server
 cd..
 
 rem Read the contents of PPYTHON_PATH into %PPYTHON_PATH%:

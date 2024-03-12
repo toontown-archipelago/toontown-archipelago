@@ -1,5 +1,5 @@
 @echo off
-title Toontown Online - Game Client
+title Toontown Archipelago - Game Client
 cd..
 
 rem Read the contents of PPYTHON_PATH into %PPYTHON_PATH%:

@@ -1,11 +1,11 @@
 @echo off
-title Toontown Online - Developer Mini-Server Launcher
+title Toontown Archipelago - Developer Mini-Server Launcher
 cd..
 
 rem Read the contents of PPYTHON_PATH into %PPYTHON_PATH%:
 set /P PPYTHON_PATH=<PPYTHON_PATH
 
-echo Toontown Online Developer Mini-Server Launcher
+echo Toontown Archipelago Developer Mini-Server Launcher
 echo.
 echo NOTE: Make sure that "mini-server" is enabled in your settings.json!
 echo.
