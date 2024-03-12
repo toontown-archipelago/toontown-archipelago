@@ -577,8 +577,10 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         
         self.accept('escape', self.__exitCrane)
         
-        self.accept(base.CRANE_GRAB_KEY, self.__controlPressed)
-        self.accept(base.CRANE_GRAB_KEY + '-up', self.__controlReleased)
+        self.accept(base.controls.CRANE_GRAB_KEY, self.__controlPressed)
+        self.accept(base.controls.CRANE_GRAB_KEY + '-up', self.__controlReleased)
+
+        base.localAvatar.enableCraneControls()
         self.accept('InputState-forward', self.__upArrow)
         self.accept('InputState-reverse', self.__downArrow)
         self.accept('InputState-turnLeft', self.__leftArrow)
@@ -608,12 +610,13 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.__cleanupMagnetAdvice()
         
         self.ignore('escape')
-        self.ignore(base.CRANE_GRAB_KEY)
-        self.ignore('control-up')
+        self.ignore(base.controls.CRANE_GRAB_KEY)
+        self.ignore(f'{base.controls.CRANE_GRAB_KEY}-up')
         self.ignore('InputState-forward')
         self.ignore('InputState-reverse')
         self.ignore('InputState-turnLeft')
         self.ignore('InputState-turnRight')
+        base.localAvatar.disableCraneControls()
         
         self.arrowVert = 0
         self.arrowHorz = 0
@@ -1231,7 +1234,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.boss.toFinalBattleMode()
 
             # Go back to the defined setting for FOV effects
-            base.WANT_FOV_EFFECTS = base.settings.getBool('game', 'fovEffects', True)
+            base.WANT_FOV_EFFECTS = base.settings.get('fovEffects')
             
         self.__straightenCable()
 

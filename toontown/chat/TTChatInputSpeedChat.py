@@ -13,7 +13,7 @@ from direct.fsm import State
 import string
 from otp.otpbase import OTPLocalizer
 from otp.otpbase import OTPGlobals
-from toontown.shtiker.OptionsPage import speedChatStyles
+from otp.speedchat.SpeedChatGlobals import speedChatStyles
 from toontown.toonbase import TTLocalizer
 from toontown.parties.PartyGlobals import ActivityIds, DecorationIds
 from toontown.toonbase import ToontownGlobals

@@ -111,8 +111,8 @@ class ShtikerBook(DirectFrame, StateData.StateData):
         self.ignore('shtiker-page-done')
         self.ignore(ToontownGlobals.StickerBookHotkey)
         self.ignore(ToontownGlobals.OptionsPageHotkey)
-        self.ignore(base.MOVE_RIGHT)
-        self.ignore(base.MOVE_LEFT)
+        self.ignore(base.controls.MOVE_RIGHT)
+        self.ignore(base.controls.MOVE_LEFT)
         if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: SHTICKERBOOK: Close')
 
@@ -422,14 +422,14 @@ class ShtikerBook(DirectFrame, StateData.StateData):
 
     def __checkForNewsPage(self):
         from toontown.shtiker import NewsPage
-        self.ignore(base.MOVE_LEFT)
-        self.ignore(base.MOVE_RIGHT)
+        self.ignore(base.controls.MOVE_LEFT)
+        self.ignore(base.controls.MOVE_RIGHT)
         if isinstance(self.pages[self.currPageIndex], NewsPage.NewsPage):
-            self.ignore(base.MOVE_LEFT)
-            self.ignore(base.MOVE_RIGHT)
+            self.ignore(base.controls.MOVE_LEFT)
+            self.ignore(base.controls.MOVE_RIGHT)
         else:
-            self.accept(base.MOVE_RIGHT, self.__pageChange, [1])
-            self.accept(base.MOVE_LEFT, self.__pageChange, [-1])
+            self.accept(base.controls.MOVE_RIGHT, self.__pageChange, [1])
+            self.accept(base.controls.MOVE_LEFT, self.__pageChange, [-1])
 
     def goToNewsPage(self, page):
         messenger.send('wakeup')

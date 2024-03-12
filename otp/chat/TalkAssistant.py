@@ -622,7 +622,7 @@ class TalkAssistant(DirectObject.DirectObject):
     def sendOpenTalk(self, message):
         error = None
         magicWordPrefix = '~'
-        magicWordActivatorIndex = base.settings.getInt('game', 'magic-word-activator', 0)
+        magicWordActivatorIndex = base.settings.get('magic-word-activator')
         MW_PREFIX_ALLOWED = ['~', '?', '/', '<', ':', ';']
         if not config.GetBool('exec-chat', 0):
             MW_PREFIX_ALLOWED.append('>')

@@ -104,19 +104,16 @@ class TownBattleSuitPanel(DirectFrame):
         self.hpText['text'] = str(self.hp) + '/' + str(self.maxHp)
 
     def show(self):
-        if base.settings.getBool('game', 'show-cog-levels', True):
-            if self.cog:
-                try:
-                    self.updateHealthBar()
-                except:
-                    pass
-            self.hidden = False
-            self.healthNode.show()
-            self.button.show()
-            self.glow.show()
-            DirectFrame.show(self)
-        else:
-            self.notify.debug('Tried to unhide Cog levels when settings have not been updated!')
+        if self.cog:
+            try:
+                self.updateHealthBar()
+            except:
+                pass
+        self.hidden = False
+        self.healthNode.show()
+        self.button.show()
+        self.glow.show()
+        DirectFrame.show(self)
 
     def __handleToggle(self):
         if self.cog:

@@ -1,3 +1,5 @@
+from direct.showbase.MessengerGlobal import messenger
+
 from otp.otpbase import OTPBase
 from otp.otpbase import OTPLauncherGlobals
 from otp.otpbase import OTPGlobals
@@ -16,13 +18,14 @@ import math
 from toontown.toonbase import ToontownAccess
 from toontown.toonbase import TTLocalizer
 from toontown.toonbase import ToontownBattleGlobals
-from toontown.toonbase import ToontownSettings
 from toontown.launcher import ToontownDownloadWatcher
 import tempfile
 import atexit
 import shutil
 
 import toontown.archipelago.util.global_text_properties as global_text_properties
+from ..settings.Settings import Settings, ControlSettings
+
 
 class ToonBase(OTPBase.OTPBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('ToonBase')
@@ -31,11 +34,26 @@ class ToonBase(OTPBase.OTPBase):
 
         self.global_text_properties = global_text_properties
 
-        if not config.GetInt('ignore-user-options', 0):
-            self.settings = ToontownSettings.ToontownSettings()
-            self.loadFromSettings()
-        else:
-            self.settings = None
+        self.settings = Settings()
+
+        mode = self.settings.get("borderless")
+        music = self.settings.get("music")
+        sfx = self.settings.get("sfx")
+        toonChatSounds = self.settings.get("toon-chat-sounds")
+        musicVol = self.settings.get("music-volume")
+        sfxVol = self.settings.get("sfx-volume")
+        res = self.settings.get("resolution")
+        fpsMeter = self.settings.get("frame-rate-meter")  # or __debug__
+
+        loadPrcFileData("toonBase Settings Window Res", f"win-size {res[0]} {res[1]}")
+        loadPrcFileData("toonBase Settings Window FullScreen", f"fullscreen {mode}")
+        loadPrcFileData("toonBase Settings Music Active", f"audio-music-active {music}")
+        loadPrcFileData("toonBase Settings Sound Active", f"audio-sfx-active {sfx}")
+        loadPrcFileData("toonBase Settings Music Volume", f"audio-master-music-volume {musicVol}")
+        loadPrcFileData("toonBase Settings Sfx Volume", f"audio-master-sfx-volume {sfxVol}")
+        loadPrcFileData("toonBase Settings Toon Chat Sounds", f"toon-chat-sounds {toonChatSounds}")
+        loadPrcFileData("toonBase Settings Frame Rate Meter", f"show-frame-rate-meter {fpsMeter}")
+
         OTPBase.OTPBase.__init__(self)
         if not self.isMainWindowOpen():
             try:
@@ -144,26 +162,16 @@ class ToonBase(OTPBase.OTPBase):
         self.aspectRatio = float(self.oldX) / self.oldY
         self.aspect2d.setAntialias(AntialiasAttrib.MMultisample)
 
-        self.wantCustomKeybinds = self.settings.getBool('game', 'customKeybinds', False)
-
-        self.MOVE_UP = 'arrow_up'   
-        self.MOVE_DOWN = 'arrow_down'
-        self.MOVE_LEFT = 'arrow_left'      
-        self.MOVE_RIGHT = 'arrow_right'
-        self.JUMP = 'control'
-        self.ACTION_BUTTON = 'delete'
-        self.SCREENSHOT_KEY = 'f9'
-        self.CRANE_GRAB_KEY = 'control'
-        self.SPRINT = 'shift'
-        self.SECONDARY_ACTION = 'insert'
-
-        self.reloadControls()
-
-        self.WANT_FOV_EFFECTS = self.settings.getBool('game', 'fovEffects', True)
-        self.CAM_TOGGLE_LOCK = self.settings.getBool('game', 'cam-toggle-lock', False)
+        self.WANT_FOV_EFFECTS = self.settings.get('fovEffects')
+        self.CAM_TOGGLE_LOCK = self.settings.get('cam-toggle-lock')
 
         self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {base.config.GetString('version', 'v???')}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)
-        return
+
+        self.enableHotkeys()
+
+        self.setAntiAliasing()
+        self.setAnisotropicFilter()
+        self.setVerticalSync()
 
     def openMainWindow(self, *args, **kw):
         result = OTPBase.OTPBase.openMainWindow(self, *args, **kw)
@@ -450,64 +458,143 @@ class ToonBase(OTPBase.OTPBase):
     def playMusic(self, music, looping = 0, interrupt = 1, volume = None, time = 0.0):
         OTPBase.OTPBase.playMusic(self, music, looping, interrupt, volume, time)
 
-    def loadFromSettings(self):
-        if not config.GetInt('ignore-user-options', 0):
-            wantCustomKeybinds = self.settings.getBool('game', 'customKeybinds', False)
-            keymap = self.settings.getOption('game', 'keymap', {})
-            fullscreen = self.settings.getBool('game', 'fullscreen', False)
-            music = self.settings.getBool('game', 'music', True)
-            sfx = self.settings.getBool('game', 'sfx', True)
-            toonChatSounds = self.settings.getBool('game', 'toon-chat-sounds', True)
-            musicVol = self.settings.getFloat('game', 'music-volume', 1.0)
-            sfxVol = self.settings.getFloat('game', 'sfx-volume', 1.0)
-            res = self.settings.getList('game', 'resolution', [800, 600])
-            antialias = self.settings.getInt('game', 'antialiasing', 0)
-            if antialias:
-                loadPrcFileData('toonBase Settings Framebuffer MSAA', 'framebuffer-multisample 1')
-                loadPrcFileData('toonBase Settings MSAA Level', 'multisamples %i' % antialias)
-            else:
-                self.settings.updateSetting('game', 'antialiasing', antialias)
-                loadPrcFileData('toonBase Settings Framebuffer MSAA', 'framebuffer-multisample 0')
-            loadPrcFileData('toonBase Settings Window Res', 'win-size %s %s' % (res[0], res[1]))
-            loadPrcFileData('toonBase Settings Window FullScreen', 'fullscreen %s' % fullscreen)
-            loadPrcFileData('toonBase Settings Music Active', 'audio-music-active %s' % music)
-            loadPrcFileData('toonBase Settings Sound Active', 'audio-sfx-active %s' % sfx)
-            loadPrcFileData('toonBase Settings Music Volume', 'audio-master-music-volume %s' % musicVol)
-            loadPrcFileData('toonBase Settings Sfx Volume', 'audio-master-sfx-volume %s' % sfxVol)
-            loadPrcFileData('toonBase Settings Toon Chat Sounds', 'toon-chat-sounds %s' % toonChatSounds)
-            loadPrcFileData('toonBase Settings Custom Keybinds', 'customKeybinds %s' % wantCustomKeybinds)
-            loadPrcFileData('toonBase Settings Keymap', 'keymap %s' % keymap)
-            self.settings.loadFromSettings()
+    @property
+    def controls(self) -> ControlSettings:
+        return self.settings.controls
 
-    def reloadControls(self):
-        self.ignore(self.SCREENSHOT_KEY)
-        keymap = self.settings.getOption("game", "keymap", {})
-        self.CHAT_HOTKEY = keymap.get("CHAT_HOTKEY", "t")
-        if self.wantCustomKeybinds:
-            self.MOVE_UP = keymap.get("MOVE_UP", self.MOVE_UP)
-            self.MOVE_DOWN = keymap.get("MOVE_DOWN", self.MOVE_DOWN)
-            self.MOVE_LEFT = keymap.get("MOVE_LEFT", self.MOVE_LEFT)
-            self.MOVE_RIGHT = keymap.get("MOVE_RIGHT", self.MOVE_RIGHT)
-            self.JUMP = keymap.get("JUMP", self.JUMP)
-            self.ACTION_BUTTON = keymap.get("ACTION_BUTTON", self.ACTION_BUTTON)
-            self.CRANE_GRAB_KEY = keymap.get('CRANE_GRAB_KEY', self.CRANE_GRAB_KEY)
-            self.SPRINT = keymap.get("SPRINT_KEY", self.SPRINT)
-            self.SECONDARY_ACTION = keymap.get("SECONDARY_ACTION", self.SECONDARY_ACTION)
-            ToontownGlobals.OptionsPageHotkey = keymap.get(
-                "OPTIONS-PAGE", ToontownGlobals.OptionsPageHotkey
-            )
+    def acceptHotkeys(self) -> None:
+        # Accept the screenshot key
+        self.accept(self.controls.SCREENSHOT, self.takeScreenShot)
+        self.accept(
+            self.controls.MAP_PAGE_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.StickerBookHotkey]
+        )
+        self.accept(
+            self.controls.FRIENDS_LIST_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.FriendsListHotkey]
+        )
+        self.accept(
+            self.controls.STREET_MAP_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.MapHotkey]
+        )
+        self.accept(
+            self.controls.INVENTORY_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.InventoryHotkeyOn]
+        )
+        self.accept(
+            f"{self.controls.INVENTORY_HOTKEY}-up",
+            messenger.send,
+            extraArgs=[ToontownGlobals.InventoryHotkeyOff]
+        )
+        self.accept(
+            self.controls.QUEST_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.QuestsHotkeyOn]
+        )
+        self.accept(
+            f"{self.controls.QUEST_HOTKEY}-up",
+            messenger.send,
+            extraArgs=[ToontownGlobals.QuestsHotkeyOff]
+        )
+        self.accept(
+            self.controls.CHAT_HOTKEY,
+            messenger.send,
+            extraArgs=["enterNormalChat"]
+        )
+
+    def ignoreHotkeys(self) -> None:
+        # Ignore the screenshot key
+        self.ignore(self.controls.SCREENSHOT)
+        self.ignore(self.controls.MAP_PAGE_HOTKEY)
+        self.ignore(self.controls.FRIENDS_LIST_HOTKEY)
+        self.ignore(self.controls.STREET_MAP_HOTKEY)
+        self.ignore(self.controls.INVENTORY_HOTKEY)
+        self.ignore(f"{self.controls.INVENTORY_HOTKEY}-up")
+        self.ignore(self.controls.QUEST_HOTKEY)
+        self.ignore(f"{self.controls.QUEST_HOTKEY}-up")
+        self.ignore(self.controls.CHAT_HOTKEY)
+
+    def enableHotkeys(self) -> None:
+        self.ignore("enable-hotkeys")
+        self.acceptHotkeys()
+        self.accept("disable-hotkeys", self.disableHotkeys)
+
+    def disableHotkeys(self) -> None:
+        self.ignore("disable-hotkeys")
+        self.ignoreHotkeys()
+        self.accept("enable-hotkeys", self.enableHotkeys)
+
+    def setAntiAliasing(self) -> None:
+        if self.settings.get("anti-aliasing"):
+            loadPrcFileData("", "framebuffer-multisample 1")
+            loadPrcFileData("", "multisamples 4")
+            self.render.setAntialias(AntialiasAttrib.MMultisample, 4)
+            self.aspect2d.setAntialias(AntialiasAttrib.MMultisample, 4)
         else:
-            self.MOVE_UP = "arrow_up"
-            self.MOVE_DOWN = "arrow_down"
-            self.MOVE_LEFT = "arrow_left"
-            self.MOVE_RIGHT = "arrow_right"
-            self.JUMP = "control"
-            self.ACTION_BUTTON = "delete"
-            self.CRANE_GRAB_KEY = 'control'
-            self.SPRINT = 'shift'
-            self.SECONDARY_ACTION = "insert"
+            loadPrcFileData("", "framebuffer-multisample 0")
+            loadPrcFileData("", "multisamples 0")
+            self.render.setAntialias(AntialiasAttrib.MNone)
+            self.aspect2d.setAntialias(AntialiasAttrib.MNone)
 
-        self.accept(self.SCREENSHOT_KEY, self.takeScreenShot)
+    def setAnisotropicFilter(self) -> None:
+        level = self.settings.get("anisotropic-filter")
+        loadPrcFileData('', f'texture-anisotropic-degree {level}')
 
-        if hasattr(base, 'localAvatar'):
-            base.localAvatar.reloadSprintControls()
+    def setVerticalSync(self) -> None:
+        vsync = self.settings.get("vertical-sync")
+        loadPrcFileData('', f'sync-video {vsync}')
+
+    def updateDisplay(self) -> None:
+        self.setAntiAliasing()
+        self.setAnisotropicFilter()
+        self.setVerticalSync()
+
+        xSize, ySize = self.settings.get("resolution")
+        borderless = self.settings.get("borderless")
+
+        properties = WindowProperties()
+        properties.setSize(xSize, ySize)
+        properties.setFullscreen(borderless)
+
+        # Force all the textures to reload.
+        gsg = self.win.getGsg()
+        if gsg:
+            self.render.prepareScene(gsg)
+            render2d.prepareScene(gsg)
+            aspect2d.prepareScene(gsg)
+
+        if not self.openMainWindow(props=properties, gsg=gsg, keepCamera=True):
+            self.notify.error(f"Failed to update display in self.updateDisplay()")
+            return
+
+        self.disableShowbaseMouse()
+        NametagGlobals.setCamera(self.cam)
+        NametagGlobals.setMouseWatcher(self.mouseWatcherNode)
+
+        # Force a frame to render for good measure.  This should
+        # force the window open right now, which helps us avoid
+        # starting the countdown timer before the window is open.
+        # Also, we can check to see if the window actually opened
+        # or not.
+        self.graphicsEngine.renderFrame()
+        self.graphicsEngine.renderFrame()
+        self.graphicsEngine.openWindows()
+
+    @property
+    def possibleScreenSizes(self) -> list[list[int]]:
+        screenSizes = []
+
+        displayInfo = self.pipe.getDisplayInformation()
+
+        for i in range(displayInfo.getTotalDisplayModes()):
+            width = displayInfo.getDisplayModeWidth(i)
+            height = displayInfo.getDisplayModeHeight(i)
+            size = [width, height]
+            if size not in screenSizes:
+                screenSizes.append(size)
+
+        return sorted(screenSizes)

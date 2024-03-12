@@ -290,8 +290,8 @@ class DistributedGolfSpot(DistributedObject.DistributedObject, FSM.FSM):
          gui.find('**/CloseBtn_Rllvr'),
          gui.find('**/CloseBtn_UP')), relief=None, scale=2, text=TTLocalizer.BossbotGolfSpotLeave, text_scale=0.04, text_pos=(0, -0.07), text_fg=VBase4(1, 1, 1, 1), pos=(1.05, 0, -0.82), command=self.__exitGolfSpot)
         self.accept('escape', self.__exitGolfSpot)
-        self.accept(base.JUMP, self.__controlPressed)
-        self.accept(base.JUMP + '-up', self.__controlReleased)
+        self.accept(base.controls.JUMP, self.__controlPressed)
+        self.accept(base.controls.JUMP + '-up', self.__controlReleased)
         self.accept('InputState-forward', self.__upArrow)
         self.accept('InputState-reverse', self.__downArrow)
         self.accept('InputState-turnLeft', self.__leftArrow)
@@ -310,8 +310,8 @@ class DistributedGolfSpot(DistributedObject.DistributedObject, FSM.FSM):
             self.closeButton = None
         self.__cleanupGolfSpotAdvice()
         self.ignore('escape')
-        self.ignore(base.JUMP)
-        self.ignore('control-up')
+        self.ignore(base.controls.JUMP)
+        self.ignore(f'{base.controls.JUMP}-up')
         self.ignore('InputState-forward')
         self.ignore('InputState-reverse')
         self.ignore('InputState-turnLeft')

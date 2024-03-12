@@ -148,7 +148,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         
         self.setCursor(True)
 
-        self.subject.controlManager.setWASDTurn(0)
+        self.subject.controlManager.setTurn(0)
 
     def disableMouseControl(self, pressed, disabledByMouse=True):
         self.ignore("InputState-RMB")
@@ -170,7 +170,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
             )
             self.setCursor(False)
 
-        self.subject.controlManager.setWASDTurn(1)
+        self.subject.controlManager.setTurn(1)
     
     def setCursor(self, cursor):
         wp = WindowProperties()
@@ -219,8 +219,8 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         else:
             hNode = self
         
-        camSensitivityX = base.settings.getFloat("game", "camSensitivityX", .25)
-        camSensitivityY = base.settings.getFloat("game", "camSensitivityY", .1)
+        camSensitivityX = base.settings.get("camSensitivityX")
+        camSensitivityY = base.settings.get("camSensitivityY")
 
         if self.mouseDelta[0] or self.mouseDelta[1]:
             (dx, dy) = self.mouseDelta

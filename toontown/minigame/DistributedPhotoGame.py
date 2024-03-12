@@ -55,11 +55,6 @@ class DistributedPhotoGame(DistributedMinigame, PhotoGameBase.PhotoGameBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedPhotoGame')
     font = ToontownGlobals.getToonFont()
     LOCAL_PHOTO_MOVE_TASK = 'localPhotoMoveTask'
-    FIRE_KEY = base.JUMP
-    UP_KEY = base.MOVE_UP
-    DOWN_KEY = base.MOVE_DOWN
-    LEFT_KEY = base.MOVE_LEFT
-    RIGHT_KEY = base.MOVE_RIGHT
     INTRO_TASK_NAME = 'PhotoGameIntro'
     INTRO_TASK_NAME_CAMERA_LERP = 'PhotoGameIntroCamera'
 
@@ -1158,74 +1153,76 @@ class DistributedPhotoGame(DistributedMinigame, PhotoGameBase.PhotoGameBase):
         pass
 
     def __enableAimInterface(self):
-        self.accept(self.FIRE_KEY, self.__fireKeyPressed)
-        self.accept(self.UP_KEY, self.__upKeyPressed)
-        self.accept(self.DOWN_KEY, self.__downKeyPressed)
-        self.accept(self.LEFT_KEY, self.__leftKeyPressed)
-        self.accept(self.RIGHT_KEY, self.__rightKeyPressed)
+        # listen for key presses
+        self.accept(base.controls.JUMP, self.__fireKeyPressed)
+        self.accept(base.controls.MOVE_UP, self.__upKeyPressed)
+        self.accept(base.controls.MOVE_DOWN, self.__downKeyPressed)
+        self.accept(base.controls.MOVE_LEFT, self.__leftKeyPressed)
+        self.accept(base.controls.MOVE_RIGHT, self.__rightKeyPressed)
         self.__spawnLocalPhotoMoveTask()
 
     def __disableAimInterface(self):
-        self.ignore(self.FIRE_KEY)
-        self.ignore(self.UP_KEY)
-        self.ignore(self.DOWN_KEY)
-        self.ignore(self.LEFT_KEY)
-        self.ignore(self.RIGHT_KEY)
-        self.ignore(self.FIRE_KEY + '-up')
-        self.ignore(self.UP_KEY + '-up')
-        self.ignore(self.DOWN_KEY + '-up')
-        self.ignore(self.LEFT_KEY + '-up')
-        self.ignore(self.RIGHT_KEY + '-up')
+        self.ignore(base.controls.JUMP)
+        self.ignore(base.controls.MOVE_UP)
+        self.ignore(base.controls.MOVE_DOWN)
+        self.ignore(base.controls.MOVE_LEFT)
+        self.ignore(base.controls.MOVE_RIGHT)
+        self.ignore(base.controls.JUMP + "-up")
+        self.ignore(base.controls.MOVE_UP + "-up")
+        self.ignore(base.controls.MOVE_DOWN + "-up")
+        self.ignore(base.controls.MOVE_LEFT + "-up")
+        self.ignore(base.controls.MOVE_RIGHT + "-up")
         self.__killLocalPhotoMoveTask()
 
+    # keypress handlers
     def __fireKeyPressed(self):
-        self.ignore(self.FIRE_KEY)
-        self.accept(self.FIRE_KEY + '-up', self.__fireKeyReleased)
+        self.ignore(base.controls.JUMP)
+        self.accept(base.controls.JUMP + "-up", self.__fireKeyReleased)
         self.__firePressed()
 
     def __upKeyPressed(self):
-        self.ignore(self.UP_KEY)
-        self.accept(self.UP_KEY + '-up', self.__upKeyReleased)
+        self.ignore(base.controls.MOVE_UP)
+        self.accept(base.controls.MOVE_UP + "-up", self.__upKeyReleased)
         self.__upPressed()
 
     def __downKeyPressed(self):
-        self.ignore(self.DOWN_KEY)
-        self.accept(self.DOWN_KEY + '-up', self.__downKeyReleased)
+        self.ignore(base.controls.MOVE_DOWN)
+        self.accept(base.controls.MOVE_DOWN + "-up", self.__downKeyReleased)
         self.__downPressed()
 
     def __leftKeyPressed(self):
-        self.ignore(self.LEFT_KEY)
-        self.accept(self.LEFT_KEY + '-up', self.__leftKeyReleased)
+        self.ignore(base.controls.MOVE_LEFT)
+        self.accept(base.controls.MOVE_LEFT + "-up", self.__leftKeyReleased)
         self.__leftPressed()
 
     def __rightKeyPressed(self):
-        self.ignore(self.RIGHT_KEY)
-        self.accept(self.RIGHT_KEY + '-up', self.__rightKeyReleased)
+        self.ignore(base.controls.MOVE_RIGHT)
+        self.accept(base.controls.MOVE_RIGHT + "-up", self.__rightKeyReleased)
         self.__rightPressed()
 
     def __fireKeyReleased(self):
-        self.ignore(self.FIRE_KEY + '-up')
-        self.accept(self.FIRE_KEY, self.__fireKeyPressed)
+        self.ignore(base.controls.JUMP + "-up")
+        self.accept(base.controls.JUMP, self.__fireKeyPressed)
         self.__fireReleased()
 
     def __leftKeyReleased(self):
-        self.ignore(self.LEFT_KEY + '-up')
-        self.accept(self.LEFT_KEY, self.__leftKeyPressed)
+        self.ignore(base.controls.MOVE_LEFT + "-up")
+        self.accept(base.controls.MOVE_LEFT, self.__leftKeyPressed)
         self.__leftReleased()
 
     def __rightKeyReleased(self):
-        self.ignore(self.RIGHT_KEY + '-up')
-        self.accept(self.RIGHT_KEY, self.__rightKeyPressed)
+        self.ignore(base.controls.MOVE_RIGHT + "-up")
+        self.accept(base.controls.MOVE_RIGHT, self.__rightKeyPressed)
         self.__rightReleased()
 
     def __upKeyReleased(self):
-        self.ignore(self.UP_KEY + '-up')
-        self.accept(self.UP_KEY, self.__upKeyPressed)
+        self.ignore(base.controls.MOVE_UP + "-up")
+        self.accept(base.controls.MOVE_UP, self.__upKeyPressed)
         self.__upReleased()
 
     def __downKeyReleased(self):
-        self.ignore(self.DOWN_KEY + '-up')
-        self.accept(self.DOWN_KEY, self.__downKeyPressed)
+        self.ignore(base.controls.MOVE_DOWN + "-up")
+        self.accept(base.controls.MOVE_DOWN, self.__downKeyPressed)
         self.__downReleased()
 
     def __firePressed(self):

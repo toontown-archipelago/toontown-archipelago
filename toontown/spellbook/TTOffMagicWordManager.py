@@ -24,7 +24,7 @@ class TTOffMagicWordManager(DistributedObject.DistributedObject):
 
     def announceGenerate(self):
         DistributedObject.DistributedObject.announceGenerate(self)
-        activatorIndex = base.settings.getInt('game', 'magic-word-activator', 0)
+        activatorIndex = base.settings.get('magic-word-activator')
         if 0 <= activatorIndex <= (len(PREFIX_ALLOWED) - 1):
             self.chatPrefix = PREFIX_ALLOWED[activatorIndex]
 
