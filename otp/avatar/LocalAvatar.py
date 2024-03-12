@@ -124,25 +124,34 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.isSprinting = 0
 
         self.currentMovementMode = self.TTCC_MOVEMENT_VALUES
+        self.updateMovementMode()
 
-        move_setting = base.settings.getInt('game', 'movement_mode', 0)
+        self.lastForwardPress = 0
+        self.listenForSprint()
 
-        if move_setting == 1:
+        self.allowSprinting = False
+
+    def updateMovementMode(self):
+        move_setting = base.settings.get('movement_mode')
+
+        if move_setting == "TTR":
             self.setSprintMode('ttr')
         else:
             self.setSprintMode('ttcc')
 
-        self.lastForwardPress = 0
-        self.reloadSprintControls()
+    def listenForSprint(self):
+        controls = base.controls
+        self.accept(controls.MOVE_UP, self.__handleForwardPress)
+        self.accept(controls.MOVE_UP + '-up', self.__handleForwardRelease)
+        self.accept(controls.SPRINT, self.__handleSprintPress)
+        self.accept(controls.SPRINT + '-up', self.__handleSprintRelease)
 
-        self.allowSprinting = False
-
-
-    def reloadSprintControls(self):
-        self.accept(base.MOVE_UP, self.__handleForwardPress)
-        self.accept(base.MOVE_UP + '-up', self.__handleForwardRelease)
-        self.accept(base.SPRINT, self.__handleSprintPress)
-        self.accept(base.SPRINT + '-up', self.__handleSprintRelease)
+    def ignoreSprint(self):
+        controls = base.controls
+        self.ignore(controls.MOVE_UP)
+        self.ignore(controls.MOVE_UP + '-up')
+        self.ignore(controls.SPRINT)
+        self.ignore(controls.SPRINT + '-up')
 
     # Pass in either 'ttcc' or 'ttr'
     def setSprintMode(self, game):
@@ -586,7 +595,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
             return
         self.avatarControlsEnabled = 0
         self.ignoreAnimationEvents()
-        self.controlManager.setWASDTurn(1)
+        self.controlManager.setTurn(1)
         self.controlManager.disable()
         self.clearPageUpDown()
 
@@ -1119,24 +1128,24 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         return self.animMultiplier
 
     def enableRun(self):
-        self.accept(base.MOVE_UP, self.startRunWatch)
-        self.accept(base.MOVE_UP + '-up', self.stopRunWatch)
-        self.accept('control-'+ base.MOVE_UP, self.startRunWatch)
-        self.accept('control-'+ base.MOVE_UP + '-up', self.stopRunWatch)
-        self.accept('alt-'+ base.MOVE_UP, self.startRunWatch)
-        self.accept('alt-'+ base.MOVE_UP + '-up', self.stopRunWatch)
-        self.accept('shift-' + base.MOVE_UP, self.startRunWatch)
-        self.accept('shift-' + base.MOVE_UP + '-up', self.stopRunWatch)
+        self.accept(base.controls.MOVE_UP, self.startRunWatch)
+        self.accept(base.controls.MOVE_UP + '-up', self.stopRunWatch)
+        self.accept('control-'+ base.controls.MOVE_UP, self.startRunWatch)
+        self.accept('control-'+ base.controls.MOVE_UP + '-up', self.stopRunWatch)
+        self.accept('alt-'+ base.controls.MOVE_UP, self.startRunWatch)
+        self.accept('alt-'+ base.controls.MOVE_UP + '-up', self.stopRunWatch)
+        self.accept('shift-' + base.controls.MOVE_UP, self.startRunWatch)
+        self.accept('shift-' + base.controls.MOVE_UP + '-up', self.stopRunWatch)
 
     def disableRun(self):
-        self.ignore(base.MOVE_UP)
-        self.ignore(base.MOVE_UP + '-up')
-        self.ignore('control-'+ base.MOVE_UP)
-        self.ignore('control-' + base.MOVE_UP + '-up')
-        self.ignore('alt-' + base.MOVE_UP)
-        self.ignore('alt-' + base.MOVE_UP + '-up')
-        self.ignore('shift-' + base.MOVE_UP)
-        self.ignore('shift-' + base.MOVE_UP + '-up')
+        self.ignore(base.controls.MOVE_UP)
+        self.ignore(base.controls.MOVE_UP + '-up')
+        self.ignore('control-'+ base.controls.MOVE_UP)
+        self.ignore('control-' + base.controls.MOVE_UP + '-up')
+        self.ignore('alt-' + base.controls.MOVE_UP)
+        self.ignore('alt-' + base.controls.MOVE_UP + '-up')
+        self.ignore('shift-' + base.controls.MOVE_UP)
+        self.ignore('shift-' + base.controls.MOVE_UP + '-up')
         self.exitSprinting()
 
     def startRunWatch(self):

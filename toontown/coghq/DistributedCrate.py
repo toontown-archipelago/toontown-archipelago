@@ -11,10 +11,6 @@ from . import DistributedCrushableEntity
 
 class DistributedCrate(DistributedCrushableEntity.DistributedCrushableEntity):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCrate')
-    UP_KEY = base.MOVE_UP
-    DOWN_KEY = base.MOVE_DOWN
-    LEFT_KEY = base.MOVE_LEFT
-    RIGHT_KEY = base.MOVE_RIGHT
     ModelPaths = ('phase_9/models/cogHQ/woodCrateB', 'phase_10/models/cashbotHQ/CBWoodCrate')
 
     def __init__(self, cr):
@@ -58,8 +54,8 @@ class DistributedCrate(DistributedCrushableEntity.DistributedCrushableEntity):
         taskMgr.remove(self.taskName('crushTask'))
         if self.pushable:
             self.__listenForCollisions(0)
-            self.ignore(base.MOVE_UP)
-            self.ignore('arrow_up-up')
+            self.ignore(base.controls.MOVE_UP)
+            self.ignore(f'{base.controls.MOVE_UP}-up')
         DistributedCrushableEntity.DistributedCrushableEntity.disable(self)
 
     def delete(self):
@@ -80,7 +76,7 @@ class DistributedCrate(DistributedCrushableEntity.DistributedCrushableEntity):
         self.modCrateCollisions()
         if self.pushable:
             self.__listenForCollisions(1)
-            self.accept(base.MOVE_UP, self.__upKeyPressed)
+            self.accept(base.controls.MOVE_UP, self.__upKeyPressed)
 
     def modCrateCollisions(self):
         cNode = self.find('**/wall')
@@ -92,13 +88,13 @@ class DistributedCrate(DistributedCrushableEntity.DistributedCrushableEntity):
         floor2.setZ(-.8)
 
     def __upKeyPressed(self):
-        self.ignore(base.MOVE_UP)
-        self.accept('arrow_up-up', self.__upKeyReleased)
+        self.ignore(base.controls.MOVE_UP)
+        self.accept(f'{base.controls.MOVE_UP}-up', self.__upKeyReleased)
         self.upPressed = 1
 
     def __upKeyReleased(self):
-        self.ignore('arrow_up-up')
-        self.accept(base.MOVE_UP, self.__upKeyPressed)
+        self.ignore(f'{base.controls.MOVE_UP}-up')
+        self.accept(base.controls.MOVE_UP, self.__upKeyPressed)
         self.upPressed = 0
         if self.stuckToCrate:
             self.__resetStick()
@@ -203,13 +199,13 @@ class DistributedCrate(DistributedCrushableEntity.DistributedCrushableEntity):
     def __listenForCancelEvents(self, on):
         self.notify.debug('%s, __listenForCancelEvents(%s)' % (self.doId, on))
         if on:
-            self.accept(base.MOVE_DOWN, self.__resetStick)
-            self.accept(base.MOVE_LEFT, self.__resetStick)
-            self.accept(base.MOVE_RIGHT, self.__resetStick)
+            self.accept(base.controls.MOVE_DOWN, self.__resetStick)
+            self.accept(base.controls.MOVE_LEFT, self.__resetStick)
+            self.accept(base.controls.MOVE_RIGHT, self.__resetStick)
         else:
-            self.ignore(base.MOVE_DOWN)
-            self.ignore(base.MOVE_LEFT)
-            self.ignore(base.MOVE_RIGHT)
+            self.ignore(base.controls.MOVE_DOWN)
+            self.ignore(base.controls.MOVE_LEFT)
+            self.ignore(base.controls.MOVE_RIGHT)
 
     def setMoveTo(self, avId, x0, y0, z0, x1, y1, z1):
         self.notify.debug('setMoveTo')

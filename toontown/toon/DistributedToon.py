@@ -26,7 +26,7 @@ from direct.showbase import PythonUtil
 from toontown.catalog import CatalogItemList
 from toontown.catalog import CatalogItem
 from . import TTEmote
-from toontown.shtiker.OptionsPage import speedChatStyles
+from otp.speedchat.SpeedChatGlobals import speedChatStyles
 from toontown.fishing import FishCollection
 from toontown.fishing import FishTank
 from toontown.suit import SuitDNA

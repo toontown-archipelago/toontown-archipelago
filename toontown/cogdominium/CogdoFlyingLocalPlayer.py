@@ -712,9 +712,9 @@ class CogdoFlyingLocalPlayer(CogdoFlyingPlayer):
             self.notify.debug('Pressed Control and have fuel')
             self.request('FlyingUp')
         else:
-            self.ignore(base.JUMP)
+            self.ignore(base.controls.JUMP)
             self.ignore('lcontrol')
-            self.acceptOnce(base.JUMP, self.pressedControlWhileRunning)
+            self.acceptOnce(base.controls.JUMP, self.pressedControlWhileRunning)
             self.acceptOnce('lcontrol', self.pressedControlWhileRunning)
 
     def setPropellerState(self, propState):
@@ -879,9 +879,9 @@ class CogdoFlyingLocalPlayer(CogdoFlyingPlayer):
             self._collideSfx.play()
         self.orthoWalk.start()
         self.setPropellerState(CogdoFlyingLocalPlayer.PropStates.Normal)
-        self.ignore(base.JUMP)
+        self.ignore(base.controls.JUMP)
         self.ignore('lcontrol')
-        self.acceptOnce(base.JUMP, self.pressedControlWhileRunning)
+        self.acceptOnce(base.controls.JUMP, self.pressedControlWhileRunning)
         self.acceptOnce('lcontrol', self.pressedControlWhileRunning)
 
     def filterRunning(self, request, args):

@@ -1,9 +1,6 @@
 from panda3d.core import *
 from direct.showbase.DirectObject import DirectObject
-ARROW_KEYCODE_MAP = {base.MOVE_UP: 'u',
- base.MOVE_DOWN: 'd',
- base.MOVE_LEFT: 'l',
- base.MOVE_RIGHT: 'r'}
+ARROW_KEYCODE_MAP = {}
 KEYCODE_TIMEOUT_SECONDS = 1.5
 
 class KeyCodes(DirectObject):

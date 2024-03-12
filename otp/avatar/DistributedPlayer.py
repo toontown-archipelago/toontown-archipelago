@@ -222,7 +222,7 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
 
     def b_setChat(self, chatString, chatFlags):
         magicWordPrefix = '~'
-        magicWordActivatorIndex = base.settings.getInt('game', 'magic-word-activator', 0)
+        magicWordActivatorIndex = base.settings.get('magic-word-activator')
         MW_PREFIX_ALLOWED = ['~', '?', '/', '<', ':', ';']
         if not config.GetBool('exec-chat', 0):
             MW_PREFIX_ALLOWED.append('>')

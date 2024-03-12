@@ -44,7 +44,6 @@ class ChatManager(DirectObject.DirectObject):
     def __init__(self, cr, localAvatar):
         self.cr = cr
         self.localAvatar = localAvatar
-        self.wantBackgroundFocus = not base.wantCustomKeybinds
         self.__scObscured = 0
         self.__normalObscured = 0
         self.openChatWarning = None
@@ -215,11 +214,7 @@ class ChatManager(DirectObject.DirectObject):
     def enterMainMenu(self):
         self.checkObscurred()
         if self.localAvatar.canChat() or self.cr.wantMagicWords:
-            if self.wantBackgroundFocus:
-                self.chatInputNormal.chatEntry['backgroundFocus'] = 1
             self.acceptOnce('enterNormalChat', self.fsm.request, ['normalChat'])
-            if not self.wantBackgroundFocus:
-                self.accept(base.CHAT_HOTKEY, messenger.send, ['enterNormalChat'])
 
     def checkObscurred(self):
         if not self.__scObscured:
@@ -231,8 +226,6 @@ class ChatManager(DirectObject.DirectObject):
         self.scButton.hide()
         self.normalButton.hide()
         self.ignore('enterNormalChat')
-        if self.wantBackgroundFocus:
-            self.chatInputNormal.chatEntry['backgroundFocus'] = 0
 
     def whisperTo(self, avatarName, avatarId, playerId = None):
         self.fsm.request('whisper', [avatarName, avatarId, playerId])
@@ -245,24 +238,18 @@ class ChatManager(DirectObject.DirectObject):
 
     def enterWhiteListOpenChat(self):
         self.checkObscurred()
-        if self.wantBackgroundFocus:
-            self.chatInputNormal.chatEntry['backgroundFocus'] = 0
         base.localAvatar.chatMgr.chatInputWhiteList.activateByData()
 
     def exitWhiteListOpenChat(self):
         pass
 
     def enterWhiteListAvatarChat(self, receiverId):
-        if self.wantBackgroundFocus:
-            self.chatInputNormal.chatEntry['backgroundFocus'] = 0
         base.localAvatar.chatMgr.chatInputWhiteList.activateByData(receiverId, 0)
 
     def exitWhiteListAvatarChat(self):
         pass
 
     def enterWhiteListPlayerChat(self, receiverId):
-        if self.wantBackgroundFocus:
-            self.chatInputNormal.chatEntry['backgroundFocus'] = 0
         base.localAvatar.chatMgr.chatInputWhiteList.activateByData(receiverId, 1)
 
     def exitWhiteListPlayerChat(self):
@@ -318,12 +305,8 @@ class ChatManager(DirectObject.DirectObject):
         self.refreshWhisperFrame()
         if avatarUnderstandable or playerUnderstandable:
             if playerId and not chatToToon:
-                if self.wantBackgroundFocus:
-                    self.chatInputNormal.chatEntry['backgroundFocus'] = 1
                 self.acceptOnce('enterNormalChat', self.fsm.request, ['whisperChatPlayer', [avatarName, playerId]])
             elif online and chatToToon:
-                if self.wantBackgroundFocus:
-                    self.chatInputNormal.chatEntry['backgroundFocus'] = 1
                 self.acceptOnce('enterNormalChat', self.fsm.request, ['whisperChat', [avatarName, avatarId]])
         if base.cr.config.GetBool('force-typed-whisper-enabled', 0):
             self.whisperButton['state'] = 'normal'
@@ -349,8 +332,6 @@ class ChatManager(DirectObject.DirectObject):
 
     def enterWhisperSpeedChat(self, avatarId):
         self.whisperFrame.show()
-        if self.wantBackgroundFocus:
-            self.chatInputNormal.chatEntry['backgroundFocus'] = 0
         self.chatInputSpeedChat.show(avatarId)
 
     def exitWhisperSpeedChat(self):
@@ -359,8 +340,6 @@ class ChatManager(DirectObject.DirectObject):
 
     def enterWhisperSpeedChatPlayer(self, playerId):
         self.whisperFrame.show()
-        if self.wantBackgroundFocus:
-            self.chatInputNormal.chatEntry['backgroundFocus'] = 0
         self.chatInputSpeedChat.show(playerId, 1)
 
     def exitWhisperSpeedChatPlayer(self):
@@ -390,8 +369,6 @@ class ChatManager(DirectObject.DirectObject):
             self.scButton.show()
         if not self.__normalObscured:
             self.normalButton.show()
-        if self.wantBackgroundFocus:
-            self.chatInputNormal.chatEntry['backgroundFocus'] = 0
         self.chatInputSpeedChat.show()
 
     def exitSpeedChat(self):
@@ -399,16 +376,19 @@ class ChatManager(DirectObject.DirectObject):
         self.normalButton.hide()
         self.chatInputSpeedChat.hide()
 
-    def enterNormalChat(self):
-        if base.wantCustomKeybinds:
-            base.localAvatar.controlManager.disableWASD()
+    def enterNormalChat(self) -> None:
         result = self.chatInputNormal.activateByData()
+
+        messenger.send("disableControls")
+        messenger.send("disable-hotkeys")
+
         return result
 
-    def exitNormalChat(self):
-        if base.wantCustomKeybinds:
-            base.localAvatar.controlManager.enableWASD()
+    def exitNormalChat(self) -> None:
         self.chatInputNormal.deactivate()
+
+        messenger.send("enableControls")
+        messenger.send("enable-hotkeys")
 
     def enterOpenChatWarning(self):
         self.notify.error('called enterOpenChatWarning() on parent class')
@@ -521,10 +501,3 @@ class ChatManager(DirectObject.DirectObject):
 
     def __privacyPolicyDone(self):
         self.fsm.request('activateChat')
-
-    def reloadWASD(self):
-        self.wantBackgroundFocus = not base.wantCustomKeybinds
-        if self.wantBackgroundFocus:
-            self.chatInputNormal.chatEntry['backgroundFocus'] = 1
-        else:
-            self.chatInputNormal.chatEntry['backgroundFocus'] = 0

@@ -16,7 +16,7 @@ class CogThiefWalk(Walk.Walk):
 
     def exit(self):
         self.fsm.request('off')
-        self.ignore(base.JUMP)
+        self.ignore(base.controls.JUMP)
         base.localAvatar.disableAvatarControls()
         base.localAvatar.stopPosHprBroadcast()
         base.localAvatar.stopBlink()

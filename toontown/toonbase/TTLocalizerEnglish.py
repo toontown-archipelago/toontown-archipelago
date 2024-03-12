@@ -9891,3 +9891,71 @@ AccessoriesPageBackpack = 'Backpack IDs'
 AccessoriesPageShoes = 'Shoes IDs'
 TeleportGUITitle = 'Teleport'
 TeleportGUITeleport = 'Go!'
+
+
+# Options page
+
+OptionsPageTabs = {
+    0: "Gameplay",
+    1: "Privacy",
+    2: "Controls",
+    3: "Video",
+    4: "Audio",
+}
+
+OptionNames = {
+    # Gameplay
+    "camSensitivityX": "Camera X Sensitivity",
+    "camSensitivityY": "Camera Y Sensitivity",
+    "movement_mode": "Movement Mode",
+    "fovEffects": "Sprinting FOV Effects",
+    "cam-toggle-lock": "Camera Toggle Lock",
+    "speedchat-style": "Speedchat Color",
+
+    # Privacy
+    "accepting-friends": "Accepting New Friends",
+
+    # Controls
+    "JUMP": "Jump",
+    "MOVE_UP": "Move Up",
+    "MOVE_DOWN": "Move Down",
+    "MOVE_LEFT": "Move Left",
+    "MOVE_RIGHT": "Move Right",
+    "SPRINT": "Sprint",
+    "SCREENSHOT": "Screenshot",
+    "MAP_PAGE_HOTKEY": "Map Page Hotkey",
+    "FRIENDS_LIST_HOTKEY": "Friends List Hotkey",
+    "STREET_MAP_HOTKEY": "Street Map Hotkey",
+    "INVENTORY_HOTKEY": "Gag Menu Hotkey",
+    "QUEST_HOTKEY": "ToonTask Hotkey",
+    "CRANE_GRAB_KEY": "Crane Grab Key",
+    "ACTION_BUTTON": "Action Button",
+    "SECONDARY_ACTION": "Secondary Action Button",
+    "CHAT_HOTKEY": "Chat Button",
+
+    # Video
+    "borderless": "Borderless Window",
+    "resolution": "Window Resolution",
+    "vertical-sync": "Vertical Sync",
+    "anisotropic-filter": "Anisotropic Filtering",
+    "anti-aliasing": "Anti-Aliasing",
+    "frame-rate-meter": "FPS Meter",
+
+    # Audio
+    "music": "Music",
+    "sfx": "Sound Effects",
+    "music-volume": "Music Volume",
+    "sfx-volume": "Sound Effects Volume",
+    "toon-chat-sounds": "Toon Chat Sounds",
+}
+
+OptionAnisotropic = {
+    0: "Off",
+    2: "Lowest",
+    4: "Low",
+    8: "High",
+    16: "Highest",
+}
+
+OptionEnabled = "Enabled"
+OptionDisabled = "Disabled"

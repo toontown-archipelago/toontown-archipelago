@@ -691,7 +691,7 @@ class Help(MagicWord):
             mw_prefix = MagicWordConfig.PREFIX_ALLOWED[0]
         else:
             # we're actually client; get the actual prefix, or '~' if invalid
-            idx = settings.getInt('game', 'magic-word-activator', 0)
+            idx = settings.get('magic-word-activator')
             idx = idx if 0 <= idx < len(MagicWordConfig.PREFIX_ALLOWED) else 0
             mw_prefix = MagicWordConfig.PREFIX_ALLOWED[idx]
         return "Refer to your Shticker Book for a list of all commands! Some may require a higher access level. Clicking a Toon's nametag and then using 2 '{}' characters will run a command on them.".format(

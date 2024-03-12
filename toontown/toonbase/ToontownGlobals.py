@@ -5,9 +5,7 @@ from otp.otpbase.OTPGlobals import *
 from direct.showbase.PythonUtil import invertDict
 from panda3d.core import BitMask32, Vec4
 import collections
-MapHotkeyOn = 'alt'
-MapHotkeyOff = 'alt-up'
-MapHotkey = 'alt'
+MapHotkey = 'MapHotkey'
 AccountDatabaseChannelId = 4008
 ToonDatabaseChannelId = 4021
 DoodleDatabaseChannelId = 4023

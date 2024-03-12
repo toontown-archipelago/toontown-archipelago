@@ -266,14 +266,14 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         self.accept('teleportQuery', self.handleTeleportQuery)
         base.localAvatar.setTeleportAvailable(1)
         base.localAvatar.b_setAnimState('SitStart', 1)
-        self.accept(base.MOVE_UP, self.fsm.request, extraArgs=['walk'])
+        self.accept(base.controls.MOVE_UP, self.fsm.request, extraArgs=['walk'])
 
     def exitSit(self):
         self.exitFLM()
         base.localAvatar.laffMeter.stop()
         base.localAvatar.setTeleportAvailable(0)
         self.ignore('teleportQuery')
-        self.ignore(base.MOVE_UP)
+        self.ignore(base.controls.MOVE_UP)
 
     def enterDrive(self):
         self.enterFLM()
