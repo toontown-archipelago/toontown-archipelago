@@ -616,10 +616,10 @@ class OptionElement(DirectFrame):
 
         # Save the new option and update the gui.
         if self.optionName == "music-volume":
-            base.musicManager.setVolume(newSetting)
+            base.musicManager.setVolume(newSetting ** 2)
         elif self.optionName == "sfx-volume":
             for sfm in base.sfxManagerList:
-                sfm.setVolume(newSetting)
+                sfm.setVolume(newSetting ** 2)
 
         self.sliderLabel["text"] = str(round(newSetting * 100))
         base.settings.set(self.optionName, newSetting)
