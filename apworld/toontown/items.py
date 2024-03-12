@@ -78,7 +78,7 @@ class ToontownItemName(enum.Enum):
 
     FRONT_ONE_ACCESS  = "Front One Key"
     MIDDLE_TWO_ACCESS = "Middle Two Key"
-    BACK_THREE_ACCESS   = "Back Three Key"
+    BACK_THREE_ACCESS = "Back Three Key"
 
     ### Cog Disguises ###
     SELLBOT_DISGUISE = "Sellbot Disguise"
