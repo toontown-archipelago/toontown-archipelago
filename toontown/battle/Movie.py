@@ -262,9 +262,19 @@ class Movie(DirectObject.DirectObject):
         for toon in self.battle.toons:
             self.track.delayDeletes.append(DelayDelete.DelayDelete(toon, 'Movie.play'))
 
-        self.track.start(ts)
-        self.track.setPlayRate(2)
+        playRate = 2
+        self.setPlayRate(self.track, playRate)
+        self.track.start(ts, playRate=playRate)
         return None
+
+    def setTrackPlayRate(self, track, playRate):
+        for seq in track:
+            if isinstance(seq, SoundInterval):
+                if seq.sound is None:
+                    continue
+                seq.sound.setPlayRate(playRate)
+            elif isinstance(seq, MetaInterval):
+                self.setTrackPlayRate(seq, playRate)
 
     def finish(self):
         self.track.finish()
