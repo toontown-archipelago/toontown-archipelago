@@ -5,7 +5,7 @@ from typing import List, Dict
 from BaseClasses import LocationProgressType
 from . import consts
 from .regions import ToontownRegionName
-from .rules import Rule
+from .rules import Rule, ItemRule
 
 
 class ToontownLocationName(Enum):
@@ -260,7 +260,8 @@ class ToontownLocationDefinition:
     name: ToontownLocationName
     type: ToontownLocationType
     region: ToontownRegionName
-    rules: List[Rule] = field(default_factory=list)
+    rules: List[Rule] = field(default_factory=list)       # rules for if the player can access this location
+    item_rules: List[ItemRule] = field(default_factory=list)  # rules for if certain items should fill this location
     progress_type: LocationProgressType = LocationProgressType.DEFAULT
     rule_logic_or: bool = False  # By default, rule logic ANDs values in the list
     unique_id: int = 0  # Set in post
@@ -503,10 +504,10 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DROP_BOAT_UNLOCKED,           ToontownLocationType.GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSeven]),
     # endregion
     # region Bosses
-    ToontownLocationDefinition(ToontownLocationName.SELLBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.SBHQ, [Rule.CanFightVP]),
-    ToontownLocationDefinition(ToontownLocationName.CASHBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.CBHQ, [Rule.CanFightCFO]),
-    ToontownLocationDefinition(ToontownLocationName.LAWBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.LBHQ, [Rule.CanFightCJ]),
-    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.BBHQ, [Rule.CanFightCEO]),
+    ToontownLocationDefinition(ToontownLocationName.SELLBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.SBHQ, [Rule.CanFightVP],  [ItemRule.RestrictDisguises]),
+    ToontownLocationDefinition(ToontownLocationName.CASHBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.CBHQ, [Rule.CanFightCFO], [ItemRule.RestrictDisguises]),
+    ToontownLocationDefinition(ToontownLocationName.LAWBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.LBHQ, [Rule.CanFightCJ],  [ItemRule.RestrictDisguises]),
+    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.BBHQ, [Rule.CanFightCEO], [ItemRule.RestrictDisguises]),
     # endregion
 ]
 
@@ -522,7 +523,6 @@ for i in range(len(LOCATION_DEFINITIONS)):
 LOCATION_DESCRIPTIONS: Dict[str, str] = {
 
 }
-
 
 TTC_TASK_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.TTC_TASKS]
 DD_TASK_LOCATIONS  = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.DD_TASKS]
@@ -540,3 +540,5 @@ ALL_TASK_LOCATIONS = (
 )
 
 SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy()
+
+LOCATION_NAME_TO_ID = {location.name.value: i + consts.BASE_ID for i, location in enumerate(LOCATION_DEFINITIONS)}

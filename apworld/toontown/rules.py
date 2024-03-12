@@ -176,3 +176,7 @@ class Rule(Enum):
     CanFightCEO = auto()
 
     AllBossesDefeated = auto()
+
+
+class ItemRule(Enum):
+    RestrictDisguises = auto()

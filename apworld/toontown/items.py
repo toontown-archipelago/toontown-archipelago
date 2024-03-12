@@ -236,7 +236,6 @@ GAG_TRAINING_FRAMES = (
     ToontownItemName.DROP_FRAME
 )
 
-
 # todo add quality/rarity to filler items
 JUNK_ITEMS = [item for item in ITEM_DEFINITIONS if item.classification == ItemClassification.filler]
 TRAP_ITEMS = [item for item in ITEM_DEFINITIONS if item.classification == ItemClassification.trap]
@@ -255,3 +254,6 @@ def random_junk() -> ToontownItemDefinition:
 
 def random_trap() -> ToontownItemDefinition:
     return random.choice(TRAP_ITEMS)
+
+
+ITEM_NAME_TO_ID = {item.name.value: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}
