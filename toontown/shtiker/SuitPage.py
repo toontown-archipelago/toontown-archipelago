@@ -164,41 +164,49 @@ class SuitPage(ShtikerPage.ShtikerPage):
     def load(self):
         ShtikerPage.ShtikerPage.load(self)
         frameModel = loader.loadModel('phase_3.5/models/gui/suitpage_frame')
-        frameModel.setScale(0.03375, 1, 0.045)
-        frameModel.setPos(0, 10, -0.575)
-        self.guiTop = NodePath('guiTop')
-        self.guiTop.reparentTo(self)
-        self.frameNode = NodePath('frameNode')
-        self.frameNode.reparentTo(self.guiTop)
+
+        self.guiTop = DirectFrame(
+            self, relief=None,
+            image=frameModel.find("**/frame"),
+            image_scale=(0.045, 1, 0.045),
+            image_pos=(0, 10, -0.575),
+        )
         self.panelNode = NodePath('panelNode')
         self.panelNode.reparentTo(self.guiTop)
-        self.iconNode = NodePath('iconNode')
-        self.iconNode.reparentTo(self.guiTop)
+
+        self.iconNode = DirectFrame(
+            self.guiTop, relief=None,
+            image=frameModel.find("**/screws"),
+            image_scale=(0.045, 1, 0.045),
+            image_pos=(0, 10, -0.575),
+        )
+
         self.enlargedPanelNode = NodePath('enlargedPanelNode')
         self.enlargedPanelNode.reparentTo(self.guiTop)
-        frame = frameModel.find('**/frame')
-        frame.wrtReparentTo(self.frameNode)
-        screws = frameModel.find('**/screws')
-        screws.wrtReparentTo(self.iconNode)
         icons = frameModel.find('**/icons')
-        del frameModel
+        frameModel.removeNode()
         self.title = DirectLabel(parent=self.iconNode, relief=None, text=TTLocalizer.SuitPageTitle, text_scale=0.1, text_pos=(0.04, 0), textMayChange=0)
-        self.radarButtons = []
-        icon = icons.find('**/corp_icon')
-        self.corpRadarButton = DirectButton(parent=self.iconNode, relief=None, state=DGG.DISABLED, image=icon, image_scale=(0.03375, 1, 0.045), image2_color=Vec4(1.0, 1.0, 1.0, 0.75), pos=(-0.2, 10, -0.575), command=self.toggleRadar, extraArgs=[0])
-        self.radarButtons.append(self.corpRadarButton)
-        icon = icons.find('**/legal_icon')
-        self.legalRadarButton = DirectButton(parent=self.iconNode, relief=None, state=DGG.DISABLED, image=icon, image_scale=(0.03375, 1, 0.045), image2_color=Vec4(1.0, 1.0, 1.0, 0.75), pos=(-0.2, 10, -0.575), command=self.toggleRadar, extraArgs=[1])
-        self.radarButtons.append(self.legalRadarButton)
-        icon = icons.find('**/money_icon')
-        self.moneyRadarButton = DirectButton(parent=self.iconNode, relief=None, state=DGG.DISABLED, image=(icon, icon, icon), image_scale=(0.03375, 1, 0.045), image2_color=Vec4(1.0, 1.0, 1.0, 0.75), pos=(-0.2, 10, -0.575), command=self.toggleRadar, extraArgs=[2])
-        self.radarButtons.append(self.moneyRadarButton)
-        icon = icons.find('**/sales_icon')
-        self.salesRadarButton = DirectButton(parent=self.iconNode, relief=None, state=DGG.DISABLED, image=(icon, icon, icon), image_scale=(0.03375, 1, 0.045), image2_color=Vec4(1.0, 1.0, 1.0, 0.75), pos=(-0.2, 10, -0.575), command=self.toggleRadar, extraArgs=[3])
-        self.radarButtons.append(self.salesRadarButton)
-        for radarButton in self.radarButtons:
-            radarButton.building = 0
-            radarButton.buildingRadarLabel = None
+        self.radarButtons: list[DirectButton] = []
+
+        for i, iconName in enumerate(("corp_icon", "legal_icon", "money_icon", "sales_icon")):
+            icon = icons.find(f"**/{iconName}")
+
+            button = DirectButton(
+                parent=self.iconNode,
+                relief=None,
+                state=DGG.DISABLED,
+                image=icon,
+                image_scale=(0.03375, 1, 0.045),
+                # stand in for rollover art
+                image2_color=Vec4(1.0, 1.0, 1.0, 0.75),
+                pos=(-0.2, 10, -0.575),
+                command=self.toggleRadar,
+                extraArgs=[i],
+            )
+            self.radarButtons.append(button)
+
+            button.building = 0
+            button.buildingRadarLabel = None
 
         gui = loader.loadModel('phase_3.5/models/gui/suitpage_gui')
         self.panelModel = gui.find('**/card')
@@ -228,10 +236,9 @@ class SuitPage(ShtikerPage.ShtikerPage):
     def unload(self):
         self.ignoreAll()
         self.title.destroy()
-        self.corpRadarButton.destroy()
-        self.legalRadarButton.destroy()
-        self.moneyRadarButton.destroy()
-        self.salesRadarButton.destroy()
+        for button in self.radarButtons:
+            button.destroy()
+        self.radarButtons = []
         for panel in self.panels:
             panel.destroy()
 
