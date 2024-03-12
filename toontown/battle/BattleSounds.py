@@ -12,6 +12,7 @@ class BattleSounds:
             self.isValid = 1
             limit = base.config.GetInt('battle-sound-cache-size', 15)
             self.mgr.setCacheLimit(limit)
+            self.mgr.setVolume(base.settings.get("sfx-volume"))
             base.addSfxManager(self.mgr)
             self.setupSearchPath()
         return

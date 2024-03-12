@@ -73,7 +73,9 @@ class ToonBase(OTPBase.OTPBase):
         camera.setPosHpr(0, 0, 0, 0, 0, 0)
         self.camLens.setMinFov(ToontownGlobals.DefaultCameraFov / (4. / 3.))
         self.camLens.setNearFar(ToontownGlobals.DefaultCameraNear, ToontownGlobals.DefaultCameraFar)
-        self.musicManager.setVolume(0.65)
+        self.musicManager.setVolume(music)
+        for sfm in self.sfxManagerList:
+            sfm.setVolume(sfxVol)
         self.setBackgroundColor(ToontownGlobals.DefaultBackgroundColor)
         tpm = TextPropertiesManager.getGlobalPtr()
         candidateActive = TextProperties()

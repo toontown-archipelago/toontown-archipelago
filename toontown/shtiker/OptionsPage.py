@@ -618,7 +618,8 @@ class OptionElement(DirectFrame):
         if self.optionName == "music-volume":
             base.musicManager.setVolume(newSetting)
         elif self.optionName == "sfx-volume":
-            base.sfxManagerList[0].setVolume(newSetting)
+            for sfm in base.sfxManagerList:
+                sfm.setVolume(newSetting)
 
         self.sliderLabel["text"] = str(round(newSetting * 100))
         base.settings.set(self.optionName, newSetting)
