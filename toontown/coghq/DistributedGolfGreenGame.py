@@ -1,33 +1,26 @@
-from panda3d.core import *
-from direct.interval.IntervalGlobal import *
-from direct.particles import ParticleEffect
-from .StomperGlobals import *
-from direct.distributed import ClockDelta
-from direct.showbase.PythonUtil import lerp
 import math
-from otp.level import DistributedEntity
-from direct.directnotify import DirectNotifyGlobal
-from otp.level import BasicEntities
-from direct.task import Task
-from toontown.toonbase import ToontownGlobals
-from toontown.coghq import BattleBlocker
-from toontown.toonbase import TTLocalizer
-from toontown.toonbase import ToontownBattleGlobals
-from direct.distributed.ClockDelta import *
-from toontown.golf import BuildGeometry
-from direct.gui.DirectGui import *
 import random
-from direct.showbase import RandomNumGen
-from . import GameSprite3D
 from math import pi
-import math
-import random
-from toontown.distributed import DelayDelete
-from toontown.toon import ToonHeadFrame
+
+from direct.distributed.ClockDelta import *
+from direct.gui.DirectGui import *
+from direct.interval.IntervalGlobal import *
+from direct.task import Task
+from panda3d.core import *
+
+from otp.level import BasicEntities
 from toontown.battle import BattleParticles
 from toontown.battle import MovieUtil
-import time
+from toontown.coghq import BattleBlocker
+from toontown.distributed import DelayDelete
+from toontown.golf import BuildGeometry
+from toontown.toon import ToonHeadFrame
+from toontown.toonbase import TTLocalizer
+from toontown.toonbase import ToontownBattleGlobals
+from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownTimer
+from . import GameSprite3D
+
 
 class DistributedGolfGreenGame(BattleBlocker.BattleBlocker):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedGolfGreenGame')
@@ -1085,7 +1078,7 @@ class DistributedGolfGreenGame(BattleBlocker.BattleBlocker):
             self.standbySprite.face()
             self.attackCounter += 1
 
-        self.standbySprite.runColor()
+        self.standbySprite.runColor(timeDelta)
         for sprite in self.sprites:
             if sprite.deleteFlag:
                 self.sprites.remove(sprite)

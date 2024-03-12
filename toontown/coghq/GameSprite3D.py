@@ -170,7 +170,7 @@ class GameSprite:
             self.multiColorIndex = 0
             self.multiColorNext = 1
             self.multiColorLevel = 0.0
-            self.multiColorStep = 0.15
+            self.multiColorStep = 1.5
         elif colorType == 8:
             myColor = GameSprite.colorAqua
             self.multiColor = 1
@@ -181,7 +181,7 @@ class GameSprite:
             self.multiColorIndex = 0
             self.multiColorNext = 1
             self.multiColorLevel = 0.0
-            self.multiColorStep = 0.1
+            self.multiColorStep = 1.0
         elif colorType == 9:
             myModel = 'phase_12/models/bossbotHQ/bust_a_cog_ball_steel'
             if not myModel:
@@ -215,14 +215,14 @@ class GameSprite:
         tilt = -95.0 + (self.getZ() + frameZ) * 2.0
         self.nodeObj.setP(-tilt)
 
-    def runColor(self):
+    def runColor(self, timeDelta):
         if self.multiColor:
             c1 = GameSprite.colorList[self.multiColorList[self.multiColorIndex]]
             c2 = GameSprite.colorList[self.multiColorList[self.multiColorNext]]
             iLevel = 1.0 - self.multiColorLevel
             mixColor = c1 * iLevel + c2 * self.multiColorLevel
             self.nodeObj.setColorScale(mixColor)
-            self.multiColorLevel += self.multiColorStep
+            self.multiColorLevel += self.multiColorStep * timeDelta
             if self.multiColorLevel > 1.0:
                 self.multiColorLevel = 0.0
                 self.multiColorIndex += 1
@@ -235,7 +235,7 @@ class GameSprite:
     def run(self, timeDelta):
         if self.facing:
             self.face()
-        self.runColor()
+        self.runColor(timeDelta)
         if self.isActive and not self.isQue:
             self.prevX = self.spriteBase.getX()
             self.prevZ = self.spriteBase.getZ()
