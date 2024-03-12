@@ -507,6 +507,16 @@ class ToonBase(OTPBase.OTPBase):
             messenger.send,
             extraArgs=["enterNormalChat"]
         )
+        self.accept(
+            self.controls.MOVE_LEFT,
+            messenger.send,
+            extraArgs=[ToontownGlobals.StickerBookPageLeft]
+        )
+        self.accept(
+            self.controls.MOVE_RIGHT,
+            messenger.send,
+            extraArgs=[ToontownGlobals.StickerBookPageRight]
+        )
 
     def ignoreHotkeys(self) -> None:
         # Ignore the screenshot key
@@ -519,6 +529,8 @@ class ToonBase(OTPBase.OTPBase):
         self.ignore(self.controls.QUEST_HOTKEY)
         self.ignore(f"{self.controls.QUEST_HOTKEY}-up")
         self.ignore(self.controls.CHAT_HOTKEY)
+        self.ignore(self.controls.MOVE_LEFT)
+        self.ignore(self.controls.MOVE_RIGHT)
 
     def enableHotkeys(self) -> None:
         self.ignore("enable-hotkeys")
