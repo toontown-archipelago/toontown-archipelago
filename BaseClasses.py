@@ -38,7 +38,7 @@ class CollectionState:
 
 
 class Item:
-    pass
+    name: str
 
 
 class Location:
