@@ -65,10 +65,26 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel, DirectObject.DirectObject):
         self.currentInterval = self.__getOpenSequence()
         self.currentInterval.start()
 
+        self.labelInterval = None
+
         self.frame.setBin("gui-popup", 0)
         self.frame.show()
         messenger.send('avPanelDone')
+
+        self.accept(avatar.uniqueName('suitHpUpdate'), self.__updateHp)
         return
+
+    def __updateHp(self, currHp, maxHp, delta):
+        def __updateLabel(tempHp):
+            self.hpLabel['text'] = TTLocalizer.AvatarPanelCogHP % (int(tempHp), maxHp)
+
+        self.labelInterval = Parallel(
+            LerpColorScaleInterval(self.hpLabel, duration=.2, startColorScale=(1, 0, 0, 1), colorScale=(1, 1, 1, 1), blendType='easeInOut'),
+            LerpFunctionInterval(__updateLabel, duration=.2, fromData=currHp+delta, toData=currHp, blendType='easeInOut')
+        )
+        self.labelInterval.start()
+
+
 
     def __getOpenSequence(self) -> Sequence:
         return Sequence(
@@ -88,7 +104,12 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel, DirectObject.DirectObject):
             self.currentInterval.finish()
             self.currentInterval = None
 
+        if self.labelInterval:
+            self.labelInterval.finish()
+            self.labelInterval = None
+
     def cleanup(self):
+        self.ignoreAll()
         self.__cleanupSequence()
 
         if self.frame:

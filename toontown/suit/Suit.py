@@ -878,6 +878,7 @@ class Suit(Avatar.Avatar):
         if hp > self.currHP:
             hp = self.currHP
         self.currHP -= hp
+        messenger.send(self.uniqueName('suitHpUpdate'), [self.currHP, self.maxHP, hp])
         health = float(self.currHP) / float(self.maxHP)
 
         if self.isImmune:
