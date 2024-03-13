@@ -2105,7 +2105,7 @@ dclass PurchaseManager : DistributedObject {
   setPlayerIds(uint32, uint32, uint32, uint32) required broadcast ram;
   setNewbieIds(uint32[]) required broadcast ram;
   setMinigamePoints(uint8, uint8, uint8, uint8) required broadcast ram;
-  setPlayerMoney(uint8, uint8, uint8, uint8) required broadcast ram;
+  setPlayerMoney(uint32, uint32, uint32, uint32) required broadcast ram;
   setPlayerStates(uint8, uint8, uint8, uint8) required broadcast ram;
   setCountdown(int16) required broadcast ram;
   setMetagameRound(int8) required broadcast ram;

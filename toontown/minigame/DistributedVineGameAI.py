@@ -3,6 +3,7 @@ from direct.fsm import ClassicFSM, State
 from direct.fsm import State
 from . import VineGameGlobals
 
+
 class DistributedVineGameAI(DistributedMinigameAI):
 
     def __init__(self, air, minigameId):
@@ -11,10 +12,11 @@ class DistributedVineGameAI(DistributedMinigameAI):
         except:
             self.DistributedVineGameAI_initialized = 1
             DistributedMinigameAI.__init__(self, air, minigameId)
-            self.gameFSM = ClassicFSM.ClassicFSM('DistributedVineGameAI', [State.State('inactive', self.enterInactive, self.exitInactive, ['play']),
-             State.State('play', self.enterPlay, self.exitPlay, ['cleanup', 'waitShowScores']),
-             State.State('waitShowScores', self.enterWaitShowScores, self.exitWaitShowScores, ['cleanup']),
-             State.State('cleanup', self.enterCleanup, self.exitCleanup, ['inactive'])], 'inactive', 'inactive')
+            self.gameFSM = ClassicFSM.ClassicFSM('DistributedVineGameAI', [
+                State.State('inactive', self.enterInactive, self.exitInactive, ['play']),
+                State.State('play', self.enterPlay, self.exitPlay, ['cleanup', 'waitShowScores']),
+                State.State('waitShowScores', self.enterWaitShowScores, self.exitWaitShowScores, ['cleanup']),
+                State.State('cleanup', self.enterCleanup, self.exitCleanup, ['inactive'])], 'inactive', 'inactive')
             self.toonInfo = {}
             self.addChildGameFSM(self.gameFSM)
             self.vineSections = []
@@ -77,16 +79,17 @@ class DistributedVineGameAI(DistributedMinigameAI):
             timeLeftList.append(self.finishedTimeLeft[avId])
 
         totalBats = len(VineGameGlobals.BatInfo[self.getSafezoneId()])
-        self.air.writeServerEvent('minigame_vine', self.doId, '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s' % (ToontownGlobals.VineGameId,
-         self.getSafezoneId(),
-         self.avIdList,
-         scoreList,
-         self.vineSections,
-         finishedList,
-         timeLeftList,
-         vineReached,
-         self.totalSpiders,
-         totalBats))
+        self.air.writeServerEvent('minigame_vine', self.doId,
+                                  '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s' % (ToontownGlobals.VineGameId,
+                                                                     self.getSafezoneId(),
+                                                                     self.avIdList,
+                                                                     scoreList,
+                                                                     self.vineSections,
+                                                                     finishedList,
+                                                                     timeLeftList,
+                                                                     vineReached,
+                                                                     self.totalSpiders,
+                                                                     totalBats))
         self.gameFSM.request('cleanup')
         DistributedMinigameAI.gameOver(self)
 
@@ -119,10 +122,12 @@ class DistributedVineGameAI(DistributedMinigameAI):
             return
         avId = self.air.getAvatarIdFromSender()
         if avId not in self.scoreDict:
-            self.notify.warning('PROBLEM: avatar %s called claimTreasure(%s) but he is not in the scoreDict: %s. avIdList is: %s' % (avId,
-             treasureNum,
-             self.scoreDict,
-             self.avIdList))
+            self.notify.warning(
+                'PROBLEM: avatar %s called claimTreasure(%s) but he is not in the scoreDict: %s. avIdList is: %s' % (
+                    avId,
+                    treasureNum,
+                    self.scoreDict,
+                    self.avIdList))
             return
         if treasureNum < 0 or treasureNum >= self.numTreasures:
             self.air.writeServerEvent('warning', treasureNum, 'MazeGameAI.claimTreasure treasureNum out of range')
@@ -144,7 +149,8 @@ class DistributedVineGameAI(DistributedMinigameAI):
     def enterWaitShowScores(self):
         self.notify.debug('enterWaitShowScores')
         self.awardPartialBeans()
-        taskMgr.doMethodLater(VineGameGlobals.ShowScoresDuration, self.__doneShowingScores, self.taskName('waitShowScores'))
+        taskMgr.doMethodLater(VineGameGlobals.ShowScoresDuration, self.__doneShowingScores,
+                              self.taskName('waitShowScores'))
 
     def __doneShowingScores(self, task):
         self.notify.debug('doneShowingScores')
@@ -173,9 +179,9 @@ class DistributedVineGameAI(DistributedMinigameAI):
             return
         oldVineIndex = self.toonInfo[avId][0]
         debugStr = 'setNewVine doId=%s avId=%d vineIndex=%s oldVineIndex=%s' % (self.doId,
-         avId,
-         vineIndex,
-         oldVineIndex)
+                                                                                avId,
+                                                                                vineIndex,
+                                                                                oldVineIndex)
         self.updateToonInfo(avId, vineIndex=vineIndex, vineT=vineT, facingRight=facingRight)
         if not oldVineIndex == vineIndex:
             self.checkForEndVine(avId)
@@ -200,12 +206,15 @@ class DistributedVineGameAI(DistributedMinigameAI):
             timeLeft = VineGameGlobals.GameDuration - curTime
             self.notify.debug('curTime =%s timeLeft = %s' % (curTime, timeLeft))
             if avId not in self.scoreDict:
-                self.notify.warning('PROBLEM: avatar %s called claimTreasure(%s) but he is not in the scoreDict: %s. avIdList is: %s' % (avId,
-                 treasureNum,
-                 self.scoreDict,
-                 self.avIdList))
+                self.notify.warning(
+                    'PROBLEM: avatar %s called claimTreasure(%s) but he is not in the scoreDict: %s. avIdList is: %s' % (
+                        avId,
+                        treasureNum,
+                        self.scoreDict,
+                        self.avIdList))
                 return
-            addBonus = int(VineGameGlobals.BaseBonusOnEndVine[self.getSafezoneId()] + VineGameGlobals.BonusPerSecondLeft * timeLeft)
+            addBonus = int(VineGameGlobals.BaseBonusOnEndVine[
+                               self.getSafezoneId()] + VineGameGlobals.BonusPerSecondLeft * timeLeft)
             self.notify.debug('addBOnus = %d' % addBonus)
             if addBonus < 0:
                 addBonus = 0
@@ -215,7 +224,8 @@ class DistributedVineGameAI(DistributedMinigameAI):
             self.scoreDict[avId] += addBonus
             self.sendUpdate('setScore', [avId, self.scoreDict[avId]])
 
-    def updateToonInfo(self, avId, vineIndex = None, vineT = None, posX = None, posZ = None, facingRight = None, climbDir = None, velX = None, velZ = None):
+    def updateToonInfo(self, avId, vineIndex=None, vineT=None, posX=None, posZ=None, facingRight=None, climbDir=None,
+                       velX=None, velZ=None):
         newVineIndex = vineIndex
         newVineT = vineT
         newPosX = posX
@@ -258,13 +268,13 @@ class DistributedVineGameAI(DistributedMinigameAI):
         if newVelZ is None or newVelZ < -1000 or newVelZ > 1000:
             newVelZ = 0
         newInfo = [newVineIndex,
-         newVineT,
-         newPosX,
-         newPosZ,
-         newFacingRight,
-         newClimbDir,
-         newVelX,
-         newVelZ]
+                   newVineT,
+                   newPosX,
+                   newPosZ,
+                   newFacingRight,
+                   newClimbDir,
+                   newVelX,
+                   newVelZ]
         self.toonInfo[avId] = newInfo
         return
 
@@ -272,11 +282,11 @@ class DistributedVineGameAI(DistributedMinigameAI):
         szId = self.getSafezoneId()
         courseWeights = VineGameGlobals.CourseWeights[szId]
         pool = [[],
-         [],
-         [],
-         [],
-         [],
-         []]
+                [],
+                [],
+                [],
+                [],
+                []]
         for weights in courseWeights:
             section, chances = weights
             numSpiders = VineGameGlobals.getNumSpidersInSection(section)
