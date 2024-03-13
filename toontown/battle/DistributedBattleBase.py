@@ -1084,11 +1084,10 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         for toon in self.toons:
             if toon.hp <= 0:
                 toon.loop('sad-neutral')
-        
-        resetPanels = Sequence(Wait(0.01), Func(self.resetStatusEffects))
-        resetPanels.start()
 
-        return None
+        if self.localToonActive():
+            self.resetStatusEffects()
+
 
     def exitWaitForInput(self):
         self.notify.debug('exitWaitForInput()')
