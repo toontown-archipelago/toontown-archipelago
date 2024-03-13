@@ -588,6 +588,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.setupAnimationEvents()
         self.controlManager.enable()
         self.listenForSprint()
+        self.accept("disableControls", self.disableControls)
 
     def disableAvatarControls(self):
         if not self.avatarControlsEnabled:
@@ -599,6 +600,8 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.clearPageUpDown()
         self.exitSprinting(lerpFov=False)
         self.ignoreSprint()
+        self.ignore("disableControls")
+        self.ignore("enableControls")
 
     def setWalkSpeedNormal(self):
         self.controlManager.setSpeeds(OTPGlobals.ToonForwardSpeed, OTPGlobals.ToonJumpForce, OTPGlobals.ToonReverseSpeed, OTPGlobals.ToonRotateSpeed)

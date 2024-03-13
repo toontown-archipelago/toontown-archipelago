@@ -379,7 +379,6 @@ class ChatManager(DirectObject.DirectObject):
     def enterNormalChat(self) -> None:
         result = self.chatInputNormal.activateByData()
 
-        base.localAvatar.allowControls = False
         messenger.send("disableControls")
         messenger.send("disable-hotkeys")
 
@@ -388,7 +387,6 @@ class ChatManager(DirectObject.DirectObject):
     def exitNormalChat(self) -> None:
         self.chatInputNormal.deactivate()
 
-        base.localAvatar.allowControls = True
         messenger.send("enableControls")
         messenger.send("enable-hotkeys")
 
