@@ -149,7 +149,7 @@ anything in the game with no restrictions.
 ### I was playing and my game crashed :(
 
 Toontown: Archipelago is currently in an early alpha build so many issues are expected to be present. If you found a
-crash/bug, feel free to [create an Issue] on the GitHub page for the repository. Developers/contributors
+crash/bug, feel free to [create an Issue](https://github.com/DevvyDont/toontown-archipelago/issues/new) on the GitHub page for the repository. Developers/contributors
 use this as a "todo list". If you choose to do this, try and be as descriptive as possible on what caused the crash, and 
 any sort of possible steps that can be taken to reproduce it.
 
