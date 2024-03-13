@@ -86,7 +86,7 @@ class DistributedBattleDiners(DistributedBattleFinal.DistributedBattleFinal):
             camera.setPosHpr(camX, -15, 7, camHeading, 0, 0)
         done = Func(callback)
         track = Sequence(suitTrack, done, name=name)
-        track.start(ts)
+        track.start(ts, playRate=3.0)
         self.storeInterval(track, name)
         return
 

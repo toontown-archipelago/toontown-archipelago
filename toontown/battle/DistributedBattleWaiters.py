@@ -84,7 +84,7 @@ class DistributedBattleWaiters(DistributedBattleFinal.DistributedBattleFinal):
                 camera.setPosHpr(-20, -4, 7, -60, 0, 0)
         done = Func(callback)
         track = Sequence(suitTrack, done, name=name)
-        track.start(ts)
+        track.start(ts, playRate=3.0)
         self.storeInterval(track, name)
         return
 
