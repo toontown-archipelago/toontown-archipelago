@@ -148,6 +148,8 @@ class DistributedBattleBldgAI(DistributedBattleBaseAI.DistributedBattleBaseAI):
         return None
 
     def enterReward(self):
+        # Revive dead toons to 1 laff
+        self.reviveDeadToons()
         self.timer.startCallback(FLOOR_REWARD_TIMEOUT, self.serverRewardDone)
         return None
 

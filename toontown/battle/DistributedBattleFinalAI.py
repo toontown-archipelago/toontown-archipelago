@@ -111,6 +111,7 @@ class DistributedBattleFinalAI(DistributedBattleBaseAI.DistributedBattleBaseAI):
         return None
 
     def enterReward(self):
+        self.reviveDeadToons()
         self.timer.startCallback(FLOOR_REWARD_TIMEOUT + 5, self.serverRewardDone)
         return None
 

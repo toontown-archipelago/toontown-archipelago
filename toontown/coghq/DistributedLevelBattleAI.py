@@ -142,6 +142,7 @@ class DistributedLevelBattleAI(DistributedBattleAI.DistributedBattleAI):
     def enterReward(self):
         self.joinableFsm.request('Unjoinable')
         self.runableFsm.request('Unrunable')
+        self.reviveDeadToons()
         self.timer.startCallback(FLOOR_REWARD_TIMEOUT, self.serverRewardDone)
         return None
 

@@ -152,10 +152,6 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
 
     for toon in activeToonList:
 
-        # If this toon is dead set them to 1 hp so they aren't sad when they are done dancing
-        if toon.hp <= 0:
-            toon.b_setHp(1)
-
         # New gags [(track, level), (track, level), ....]
         newGags: List[tuple[int, int]] = []
 

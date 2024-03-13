@@ -996,11 +996,32 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             self.timer.stop()
             self.timer.startCallback(TIMEOUT_PER_USER, self.serverRewardDone)
 
+    def getDeadToons(self):
+        toons = []
+        for avId in self.activeToons:
+            toon = self.air.doId2do.get(avId)
+            if not toon:
+                continue
+
+            if toon.hp > 0:
+                continue
+
+            toons.append(toon)
+
+        return toons
+
+    # Call to find all toons in the battle that are currently dead and set them to some hp
+    def reviveDeadToons(self, hp=1):
+        for toon in self.getDeadToons():
+            toon.b_setHp(hp)
+
     def assignRewards(self):
         if self.rewardHasPlayed == 1:
             self.notify.debug('handleRewardDone() - reward has already played')
             return
         self.rewardHasPlayed = 1
+        # Revive toons that are dead
+        self.reviveDeadToons()
         BattleExperienceAI.assignRewards(self.activeToons, self.battleCalc.toonSkillPtsGained, self.suitsKilled, self.getTaskZoneId(), self.helpfulToons)
 
     def joinDone(self, avId):
