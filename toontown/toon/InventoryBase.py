@@ -282,12 +282,6 @@ class InventoryBase(DirectObject.DirectObject):
             return 0
         newItemTotal = self.countPropsInList(newInventory)
         oldItemTotal = self.totalProps
-        if newItemTotal > oldItemTotal + currentMoney:
-            self.notify.warning('Somebody overspent! Rejecting purchase.')
-            return 0
-        if newItemTotal - oldItemTotal > currentMoney - newMoney:
-            self.notify.warning('Too many items based on money spent! Rejecting purchase.')
-            return 0
         if newItemTotal > self.toon.getMaxCarry():
             self.notify.warning('Cannot carry %s items! Rejecting purchase.' % newItemTotal)
             return 0
