@@ -229,33 +229,33 @@ class DistributedVineGameAI(DistributedMinigameAI):
             oldInfo = self.toonInfo[avId]
             if vineIndex == None:
                 newVineIndex = oldInfo[0]
-            if vineT == None:
+            if vineT is None:
                 newVineT = oldInfo[1]
-            if posX == None:
+            if posX is None:
                 newPosX = oldInfo[2]
-            if posZ == None:
+            if posZ is None:
                 newPosZ = oldInfo[3]
-            if facingRight == None:
+            if facingRight is None:
                 newFacingRight = oldInfo[4]
-            if climbDir == None:
+            if climbDir is None:
                 newClimbDir = oldInfo[5]
-            if velX == None:
+            if velX is None:
                 newVelX = oldInfo[6]
-            if velZ == None:
+            if velZ is None:
                 newVelZ = oldInfo[7]
-        if newVineIndex < -1 or newVineIndex >= VineGameGlobals.NumVines:
+        if newVineIndex is None or newVineIndex < -1 or newVineIndex >= VineGameGlobals.NumVines:
             newVineIndex = 0
-        if newVineT < 0 or newVineT > 1:
+        if newVineT is None or newVineT < 0 or newVineT > 1:
             pass
         if not newFacingRight == 0 and not newFacingRight == 1:
             newFacingRight = 1
-        if newPosX < -1000 or newPosX > 2000:
+        if newPosX is None or newPosX < -1000 or newPosX > 2000:
             newPosX = 0
-        if newPosZ < -100 or newPosZ > 1000:
+        if newPosZ is None or newPosZ < -100 or newPosZ > 1000:
             newPosZ = 0
-        if newVelX < -1000 or newVelX > 1000:
+        if newVelX is None or newVelX < -1000 or newVelX > 1000:
             newVelX = 0
-        if newVelZ < -1000 or newVelZ > 1000:
+        if newVelZ is None or newVelZ < -1000 or newVelZ > 1000:
             newVelZ = 0
         newInfo = [newVineIndex,
          newVineT,
