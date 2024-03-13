@@ -17,6 +17,9 @@ from panda3d.core import *
 class SuitAvatarPanel(AvatarPanel.AvatarPanel, DirectObject.DirectObject):
     currentAvatarPanel = None
 
+    POPUP_ANIMATION_DURATION = 0.1
+    POPOUT_ANIMATION_DURATION = 0.1
+
     def __init__(self, avatar):
         AvatarPanel.AvatarPanel.__init__(self, avatar, FriendsListPanel=FriendsListPanel)
         self.avName = avatar.getName()
@@ -69,14 +72,14 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel, DirectObject.DirectObject):
 
     def __getOpenSequence(self) -> Sequence:
         return Sequence(
-            LerpScaleInterval(self.frame, 0.25, Vec3(1.2, 1.2, 1.2), Vec3(0, 0, 0), blendType='easeIn'),
-            LerpScaleInterval(self.frame, 0.15, Vec3(1, 1, 1), Vec3(1.2, 1.2, 1.2), blendType='easeInOut'),
+            LerpScaleInterval(self.frame, self.POPUP_ANIMATION_DURATION, Vec3(1.2, 1.2, 1.2), Vec3(0, 0, 0), blendType='easeIn'),
+            LerpScaleInterval(self.frame, self.POPUP_ANIMATION_DURATION/2.0, Vec3(1, 1, 1), Vec3(1.2, 1.2, 1.2), blendType='easeInOut'),
         )
 
     def __getCloseSequence(self) -> Sequence:
         return Sequence(
-            LerpScaleInterval(self.frame, 0.25, Vec3(1.2, 1.2, 1.2), Vec3(1, 1, 1), blendType='easeIn'),
-            LerpScaleInterval(self.frame, 0.15, Vec3(0, 0, 0), Vec3(1.2, 1.2, 1.2),blendType='easeInOut'),
+            LerpScaleInterval(self.frame, self.POPOUT_ANIMATION_DURATION, Vec3(1.2, 1.2, 1.2), Vec3(1, 1, 1), blendType='easeIn'),
+            LerpScaleInterval(self.frame, self.POPOUT_ANIMATION_DURATION/2.0, Vec3(0, 0, 0), Vec3(1.2, 1.2, 1.2),blendType='easeInOut'),
             Func(self.cleanup),
         )
 
