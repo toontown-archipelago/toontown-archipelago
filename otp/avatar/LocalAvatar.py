@@ -53,6 +53,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         base.pushCTrav(self.cTrav)
         self.cTrav.setRespectPrevTransform(1)
         self.avatarControlsEnabled = 0
+        self.allowControls = True
         self.controlManager = ToontownControlManager.ToontownControlManager(True)
         self.initializeCollisions()
         self.initializeSmartCamera()
@@ -581,7 +582,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.ignore('page_down-up')
 
     def enableAvatarControls(self):
-        if self.avatarControlsEnabled:
+        if self.avatarControlsEnabled or not self.allowControls:
             return
         self.avatarControlsEnabled = 1
         self.setupAnimationEvents()

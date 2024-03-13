@@ -2008,8 +2008,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.controlManager.disableCraneControls()
 
     def enableControls(self) -> None:
-        if not self.avatarControlsEnabled:
-            return
+        self.allowControls = True
 
         self.ignore("enableControls")
         self.accept("disableControls", self.disableControls)
@@ -2019,6 +2018,8 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.listenForSprint()
 
     def disableControls(self) -> None:
+        self.allowControls = False
+
         self.ignore("disableControls")
         self.accept("enableControls", self.enableControls)
 
