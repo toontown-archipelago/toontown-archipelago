@@ -25,7 +25,7 @@ def has_collected_xp_for_gag_level(state: CollectionState, player: int, options:
     # Determines if a given player has collected a sufficient amount of the XP items in the run.
     # always returns True if the player has 2 or less XP multis in the pool (aka, assumes they don't care)
     xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
-    max_xp = options.max_gag_xp_multiplier_from_items.value
+    max_xp = options.max_global_gag_xp.value
     if max_xp <= 2:
         return True
     return XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp)

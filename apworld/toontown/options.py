@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from Options import PerGameCommonOptions, StartInventoryPool, Range, Choice, Toggle
 
 
-class StartHPOption(Range):
+class StartLaffOption(Range):
     """
-    The starting amount of max Laff Points (HP) to have when starting a new game.
+    The starting amount of max Laff Points to have when starting a new game.
     """
     display_name = "Starting Laff"
     range_start = 1
@@ -13,9 +13,10 @@ class StartHPOption(Range):
     default = 20
 
 
-class MaxHPOption(Range):
+class MaxLaffOption(Range):
     """
-    The max HP you can get from items throughout the run.
+    The max laff you can get from items throughout the run.
+    Must be above or equal to the starting_laff.
     """
     display_name = "Max Laff"
     range_start = 1
@@ -33,22 +34,24 @@ class StartMoneyOption(Range):
     default = 50
 
 
-class BaseGagXPMultiplierOption(Range):
+class BaseGlobalGagXPRange(Range):
     """
-    The starting base gag experience multiplier when starting a new game.
-    This multiplier will multiplicatively stack with other gag experience bonuses throughout the game
+    The base global gag experience multiplier when starting a new game.
+    This multiplier is globally multiplicative on top of in-game boosts.
     """
-    display_name = "Starting Base Gag XP Multiplier"
+    display_name = "Base Global Gag XP"
     range_start = 1
     range_end = 10
     default = 2
 
 
-class MaxGagXPMultiplierFromItems(Range):
+class MaxGlobalGagXPRange(Range):
     """
-    The max gag multiplier that can be obtained from items.
+    Additional global gag experience that can be obtained from items.
+    Stacks additively onto the base value above.
+    Must be above or equal to the base_global_gag_xp.
     """
-    display_name = "Max Gag XP Multiplier From Items"
+    display_name = "Max Global Gag XP"
     range_start = 0
     range_end = 30
     default = 15
@@ -117,11 +120,11 @@ class TrapPercentOption(Range):
 
 @dataclass
 class ToontownOptions(PerGameCommonOptions):
-    max_hp: MaxHPOption
-    starting_hp: StartHPOption
+    max_laff: MaxLaffOption
+    starting_laff: StartLaffOption
     starting_money: StartMoneyOption
-    starting_base_gag_xp_multiplier: BaseGagXPMultiplierOption
-    max_gag_xp_multiplier_from_items: MaxGagXPMultiplierFromItems
+    base_global_gag_xp: BaseGlobalGagXPRange
+    max_global_gag_xp: MaxGlobalGagXPRange
     logical_tasks_per_playground: LogicalTasksPerPlayground
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     force_playground_visit_teleport_access_unlocks: ForcePlaygroundVisitTeleportAccessUnlocksOption

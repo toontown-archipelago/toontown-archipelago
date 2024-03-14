@@ -64,14 +64,14 @@ class ConnectedPacket(ClientBoundPacketBase):
         av.newToon()
 
         # Set their max HP
-        av.b_setMaxHp(self.slot_data.get('starting_hp', 15))
+        av.b_setMaxHp(self.slot_data.get('starting_laff', 15))
         av.b_setHp(av.getMaxHp())
 
         # Set their starting money
         av.b_setMoney(self.slot_data.get('starting_money', 50))
 
         # Set their starting gag xp multiplier
-        av.b_setBaseGagSkillMultiplier(self.slot_data.get('starting_gag_xp_multiplier', 2))
+        av.b_setBaseGagSkillMultiplier(self.slot_data.get('base_global_gag_xp', 2))
 
     # Given the option defined in the YAML for RNG generation and the seed of the AP playthrough
     # Return a new modified seed based on what option was chosen in the YAML
