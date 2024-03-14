@@ -112,7 +112,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if avId not in self.involvedToons or toonId not in self.involvedToons:
             return
         toon = self.air.doId2do.get(toonId)
-        if toon:
+        if toon and toon.hp > 0:
             self.healToon(toon, self.pieHitToonup)
 
     def getDamageMultiplier(self):
