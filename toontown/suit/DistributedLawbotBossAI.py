@@ -184,7 +184,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         if avId not in self.involvedToons or toonId not in self.involvedToons:
             return
         toon = self.air.doId2do.get(toonId)
-        if toon:
+        if toon and toon.hp > 0:
             self.healToon(toon, self.toonupValue)
             self.sendUpdate('toonGotHealed', [toonId])
 
@@ -912,7 +912,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.numBonusStates += 1
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
-            if toon:
+            if toon and toon.hp > 0:
                 self.healToon(toon, ToontownGlobals.LawbotBossBonusToonup)
 
         # Calculate point handouts for people who helped stunned
