@@ -26,6 +26,10 @@ Toontown:
   # Range: 0 to 9999
   starting_money: 1000
 
+  # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
+  # Range: 0 to 4
+  cog_bosses_required: 4
+
   # Determines the amount of tasks per playground that are in logic.
   # Range: 0 to 12
   logical_tasks_per_playground: 12

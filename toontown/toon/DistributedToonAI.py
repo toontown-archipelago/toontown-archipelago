@@ -223,6 +223,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.hintPoints = 0  # How many hint points the player has
 
         self.archipelago_session: ArchipelagoSession = None
+        self.slot_data = {}  # set in connected_packet.py
 
     def generate(self):
         DistributedPlayerAI.DistributedPlayerAI.generate(self)
@@ -4387,12 +4388,17 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Default goal is to default all 4 bosses at least once
     # todo add more win conditions, maybe even a field on toons that keeps track of flags from APReward 's that we get
     def winConditionSatisfied(self):
-
-        # Win condition for defeat all bosses satisfied? (Toon has a suit that isn't level 1 in any boss)
+        # Determines how many bosses has been defeated (level > 0 => they have beaten it)
+        bosses_defeated = 0
         for level in self.getCogLevels():
-            if level <= 0:
-                return False
+            if level > 0:
+                bosses_defeated += 1
 
+        # Ensure they've defeated enough bosses.
+        if bosses_defeated < self.slot_data.get('cog_bosses_required', 4):
+            return False
+
+        # Win condition is satisfied!
         return True
 
     # Sets this toons stats as if they were a freshly created toon

@@ -243,6 +243,7 @@ class ToontownWorld(World):
             "base_global_gag_xp": self.options.base_global_gag_xp.value,
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
+            "cog_bosses_required": self.options.cog_bosses_required.value,
         }
 
     def calculate_starting_tracks(self):

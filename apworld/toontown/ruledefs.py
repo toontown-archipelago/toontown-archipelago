@@ -282,9 +282,14 @@ def CanFightCEO(state: CollectionState, world: MultiWorld, player: int, options:
 @rule(Rule.AllBossesDefeated)
 def AllBossesDefeated(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, world, player, options)
-    return passes_rule(Rule.CanFightVP, *args) and passes_rule(Rule.CanFightCFO, *args) \
-            and passes_rule(Rule.CanFightCJ, *args) and passes_rule(Rule.CanFightCEO, *args) \
-            and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
+    boss_rules = [
+        Rule.CanFightVP,
+        Rule.CanFightCFO,
+        Rule.CanFightCJ,
+        Rule.CanFightCEO,
+    ]
+    bosses_defeated = sum(passes_rule(rule, *args) for rule in boss_rules)
+    return bosses_defeated >= options.cog_bosses_required.value and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
 
 
 @rule(ItemRule.RestrictDisguises)

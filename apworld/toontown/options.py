@@ -24,16 +24,6 @@ class MaxLaffOption(Range):
     default = 150
 
 
-class StartMoneyOption(Range):
-    """
-    The starting amount of jellybeans to have when starting a new game.
-    """
-    display_name = "Starting Jellybeans"
-    range_start = 0
-    range_end = 9999
-    default = 50
-
-
 class BaseGlobalGagXPRange(Range):
     """
     The base global gag experience multiplier when starting a new game.
@@ -55,6 +45,26 @@ class MaxGlobalGagXPRange(Range):
     range_start = 0
     range_end = 30
     default = 15
+
+
+class StartMoneyOption(Range):
+    """
+    The starting amount of jellybeans to have when starting a new game.
+    """
+    display_name = "Starting Jellybeans"
+    range_start = 0
+    range_end = 9999
+    default = 50
+
+
+class CogBossesRequired(Range):
+    """
+    How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
+    """
+    display_name = "Cog Bosses Required"
+    range_start = 0
+    range_end = 4
+    default = 4
 
 
 class LogicalTasksPerPlayground(Range):
@@ -122,9 +132,10 @@ class TrapPercentOption(Range):
 class ToontownOptions(PerGameCommonOptions):
     max_laff: MaxLaffOption
     starting_laff: StartLaffOption
-    starting_money: StartMoneyOption
     base_global_gag_xp: BaseGlobalGagXPRange
     max_global_gag_xp: MaxGlobalGagXPRange
+    starting_money: StartMoneyOption
+    cog_bosses_required: CogBossesRequired
     logical_tasks_per_playground: LogicalTasksPerPlayground
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     force_playground_visit_teleport_access_unlocks: ForcePlaygroundVisitTeleportAccessUnlocksOption
