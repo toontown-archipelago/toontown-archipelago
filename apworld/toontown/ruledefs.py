@@ -247,7 +247,7 @@ def HasOffensiveLevel(state: CollectionState, world: MultiWorld, player: int, op
             ToontownItemName.DROP_FRAME,
             ToontownItemName.TRAP_FRAME
         ]
-    ) and state.has(ToontownItemName.LURE_FRAME.value, player, min(argument[0], 4)) \
+    ) and state.has(ToontownItemName.LURE_FRAME.value, player, argument[0]) \
         and has_collected_xp_for_gag_level(state, player, options, argument[0])
 
 
