@@ -6,7 +6,7 @@ from apworld.toontown import locations
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
-from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus
+from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 
 
@@ -53,6 +53,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.slot_id_to_slot_name.clear()
         for id_string, network_slot in self.slot_info.items():
             client.slot_id_to_slot_name[int(id_string)] = network_slot
+
+        # If there wasn't a "console player", add it, this is so when we cheat items in we don't crash the socket thread
+        if 0 not in client.slot_id_to_slot_name:
+            client.slot_id_to_slot_name[0] = NetworkSlot("Console", "No game", SlotType.spectator, [])
 
         # Cache this successful connection on the ai
         slot_info = self.get_slot_info(self.slot)
