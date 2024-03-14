@@ -71,9 +71,14 @@ class ArchipelagoSession:
         if self.client.state in (APClientEnums.DISCONNECTED, APClientEnums.CONNECTING):
             return
 
+        # Get a clean version of the message, if there is no useful content in this string skip it
+        clean = message.strip()
+        if len(clean) <= 0:
+            return
+
         # Anything else just send as an archipelago message
         packet = SayPacket()
-        packet.text = message
+        packet.text = clean
         self.client.send_packet(packet)
 
     # Called right when we get connected to the server, makes sure our locations are synced in case we got stuff
