@@ -3029,7 +3029,10 @@ class dna(MagicWord):
         if part == 'torso':
             if dna.gender not in ('m', 'f'):
                 return 'Unknown gender.'
-            value = int(value)
+            try:
+                value = int(value)
+            except:
+                return 'Invalid value type for: ' + part
             if (dna.gender == 'm') and (not 0 <= value <= 2):
                 return 'Male torso index out of range (0-2).'
             if (dna.gender == 'f') and (not 3 <= value <= 8):
@@ -3039,7 +3042,10 @@ class dna(MagicWord):
             return 'Torso set to: ' + dna.torso
 
         if part == 'legs':
-            value = int(value)
+            try:
+                value = int(value)
+            except:
+                return 'Invalid value type for: ' + part
             if not 0 <= value <= len(ToonDNA.toonLegTypes):
                 return 'Legs index out of range (0-%d).' % len(ToonDNA.toonLegTypes)
             dna.legs = ToonDNA.toonLegTypes[value]
@@ -3093,7 +3099,10 @@ class dna(MagicWord):
             return 'Color index set to: ' + str(dna.headColor)
 
         if part == 'gloves':
-            value = int(value)
+            try:
+                value = int(value)
+            except:
+                return 'Invalid value type for: ' + part
             if value != 0:
                 return 'Invalid glove color: ' + str(value)
             dna.gloveColor = value
