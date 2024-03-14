@@ -2,33 +2,39 @@ Toontown:
   progression_balancing: 50
   accessibility: items
 
-  # The starting amount of max Laff Points (HP) to have when starting a new game.
+  # The starting amount of max Laff Points to have when starting a new game.
   # Range: 1 to 80
-  starting_hp: 20
+  starting_laff: 20
 
   # The max laff you can get from items throughout the run.
-  # Must be above or equal to the starting_hp.
+  # Must be above or equal to the starting_laff.
   # Range: 1 to 150
   max_laff: 150
+
+  # The base global gag experience multiplier when starting a new game.
+  # This multiplier is globally multiplicative on top of in-game boosts.
+  # Range: 1 to 10
+  base_global_gag_xp: 2
+
+  # Additional global gag experience that can be obtained from items.
+  # Stacks additively onto the base value above.
+  # Must be above or equal to the base_global_gag_xp.
+  # Range: 0 to 30
+  max_global_gag_xp: 15
 
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 9999
   starting_money: 1000
 
-  # The starting base gag experience multiplier when starting a new game.
-  # This multiplier will multiplicatively stack with other gag experience bonuses throughout the game.
-  # Range: 1 to 10
-  starting_base_gag_xp_multiplier: 2
-
-  # The max gag multiplier that can be obtained from items.
-  # Range: 0 to 30
-  max_gag_xp_multiplier_from_items: 15
+  # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
+  # Range: 0 to 4
+  cog_bosses_required: 4
 
   # Determines the amount of tasks per playground that are in logic.
   # Range: 0 to 12
   logical_tasks_per_playground: 12
 
-  # Enable to make Cog Gallery Maxed checks be in logic.
+  # Enable to have Cog Gallery Maxed checks include progression items.
   logical_maxed_cog_gallery: 'true'
 
   # Enable to force your playground teleport access to be on its corresponding "Visit Location" check

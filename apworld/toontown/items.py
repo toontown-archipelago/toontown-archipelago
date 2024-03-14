@@ -23,16 +23,16 @@ class ToontownItemName(enum.Enum):
     MONEY_CAP_2500 = "+2500 Jellybean Jar Capacity"
 
     ### Fishing ###
-    FISHING_ROD_UPGRADE = "Progressional Fishing Rod"
+    FISHING_ROD_UPGRADE = "Progressive Fishing Rod"
 
     ### Gag Training Frames ###
-    TOONUP_FRAME = "Toon-up Gag Training Frame"
-    TRAP_FRAME   = "Trap Gag Training Frame"
-    LURE_FRAME   = "Lure Gag Training Frame"
-    SOUND_FRAME  = "Sound Gag Training Frame"
-    THROW_FRAME  = "Throw Gag Training Frame"
-    SQUIRT_FRAME = "Squirt Gag Training Frame"
-    DROP_FRAME   = "Drop Gag Training Frame"
+    TOONUP_FRAME = "Toon-Up Training Frame"
+    TRAP_FRAME   = "Trap Training Frame"
+    LURE_FRAME   = "Lure Training Frame"
+    SOUND_FRAME  = "Sound Training Frame"
+    THROW_FRAME  = "Throw Training Frame"
+    SQUIRT_FRAME = "Squirt Training Frame"
+    DROP_FRAME   = "Drop Training Frame"
 
     ### Gag Capacity ###
     GAG_CAPACITY_5  = "+5 Gag Capacity"
@@ -47,7 +47,7 @@ class ToontownItemName(enum.Enum):
     TTC_TELEPORT  = "TTC Teleport Access"
     DD_TELEPORT   = "DD Teleport Access"
     DG_TELEPORT   = "DG Teleport Access"
-    MML_TELEPORT  = "MM Teleport Access"
+    MML_TELEPORT  = "MML Teleport Access"
     TB_TELEPORT   = "TB Teleport Access"
     DDL_TELEPORT  = "DDL Teleport Access"
     SBHQ_TELEPORT = "SBHQ Teleport Access"
