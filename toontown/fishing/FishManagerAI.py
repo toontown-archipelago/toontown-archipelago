@@ -126,6 +126,9 @@ class FishManagerAI:
                 itemType = FishGlobals.ProbabilityDict[cutoff]
                 break
 
+        # For now in this game, we are always going to force fish. If you want vanilla fishing behavior delete this line
+        itemType = FishGlobals.FishItem
+
         # Process if this av used commands to cheat a fish
         if av.doId in self.requestedFish:
             genus, species = self.requestedFish[av.doId]
