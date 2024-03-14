@@ -247,13 +247,13 @@ AvPropDamage = (
         ((200, 200), (Levels[0][6], MaxSkill))
     ),
     (   # Trap
-        ((12, 15), (Levels[1][0], Levels[1][1])),
-        ((20, 25), (Levels[1][1], Levels[1][2])),
-        ((35, 40), (Levels[1][2], Levels[1][3])),
-        ((50, 60), (Levels[1][3], Levels[1][4])),
-        ((70, 85), (Levels[1][4], Levels[1][5])),
-        ((95, 185), (Levels[1][5], Levels[1][6])),
-        ((195, 195), (Levels[1][6], MaxSkill))
+        ((12, 18), (Levels[1][0], Levels[1][1])),
+        ((24, 30), (Levels[1][1], Levels[1][2])),
+        ((35, 45), (Levels[1][2], Levels[1][3])),
+        ((50, 75), (Levels[1][3], Levels[1][4])),
+        ((85, 100), (Levels[1][4], Levels[1][5])),
+        ((110, 195), (Levels[1][5], Levels[1][6])),
+        ((205, 205), (Levels[1][6], MaxSkill))
     ),
     (   # Lure
         ((30, 40), (Levels[2][0], Levels[2][1])),
