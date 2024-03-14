@@ -51,7 +51,7 @@ class RoomInfoPacket(ClientBoundPacketBase):
 
     def update_data_packages(self, client):
 
-        data_package_packet = GetDataPackagePacket()
+        missing_games = []
 
         for game_name, checksum in self.datapackage_checksums.items():
 
@@ -63,15 +63,20 @@ class RoomInfoPacket(ClientBoundPacketBase):
                 # Otherwise, we can add this to the client
                 client.data_packages[game_name] = package
                 client.global_data_package.merge(package)
+                self.debug(f"Loaded DataPackage for {game_name} from cache!")
             except:
-                pass
+                self.debug(f"Missing DataPackage for {game_name}")
 
             if not package:
-                data_package_packet.games.append(game_name)
+                missing_games.append(game_name)
 
-        # Send the packet if we need to get some game info
-        if len(data_package_packet.games) > 0:
-            client.send_packet(data_package_packet)
+        # Send the packets if we need to get some game info
+        if len(missing_games) > 0:
+            for missing_game in missing_games:
+                self.debug(f"Retreving DataPackage for {missing_game} and sending a packet to the server!")
+                data_package_packet = GetDataPackagePacket()
+                data_package_packet.games.append(missing_game)
+                client.send_packet(data_package_packet)
 
     def handle(self, client):
         self.debug("Handling packet")
