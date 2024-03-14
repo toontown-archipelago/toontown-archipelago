@@ -43,7 +43,7 @@ class Settings:
         "music-volume": 0.65,
         "sfx-volume": 1.0,
         "accepting-friends": True,
-        "anti-aliasing": True,
+        "anti-aliasing": False,
         "anisotropic-filter": 8,
         "frame-blending": True,
         "controls": asdict(controls),
