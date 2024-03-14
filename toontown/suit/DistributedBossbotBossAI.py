@@ -889,6 +889,9 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             toon = simbase.air.doId2do.get(avId)
             if toon:
                 grantRequest = True
+
+                if toon.hp <= 0:
+                    grantRequest = False
         if grantRequest:
             self.toonupsGranted.insert(0, (beltIndex, toonupNum))
             if len(self.toonupsGranted) > 8:
