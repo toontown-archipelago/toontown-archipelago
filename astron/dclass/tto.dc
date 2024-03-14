@@ -1269,6 +1269,7 @@ dclass DistributedBossCog : DistributedNode {
   setAttackCode(uint8, uint32) broadcast;
   updateTimer(uint32/255) broadcast ram;
   timesUp() broadcast ram;
+  teamWiped() broadcast ram;
 };
 
 dclass DistributedSellbotBoss : DistributedBossCog {

@@ -35,7 +35,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.reserveSuits = []
         self.barrier = None
         self.keyStates = [
-         'BattleOne', 'BattleTwo', 'BattleThree', 'Victory']
+         'BattleOne', 'BattleTwo', 'BattleThree', 'Victory', 'Defeat']
         self.bossDamage = 0
         self.battleThreeStart = 0
         self.battleThreeDuration = 1800
@@ -93,34 +93,6 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             self.acceptOnce(event, self.__handleUnexpectedExit, extraArgs=[avId])
 
     def removeToon(self, avId, died=False):
-        resendIds = 0
-        try:
-            self.looseToons.remove(avId)
-        except:
-            pass
-
-        if not died:
-            try:
-                self.involvedToons.remove(avId)
-                resendIds = 1
-            except:
-                pass
-
-        try:
-            self.toonsA.remove(avId)
-        except:
-            pass
-
-        try:
-            self.toonsB.remove(avId)
-        except:
-            pass
-
-        try:
-            self.nearToons.remove(avId)
-        except:
-            pass
-
         event = self.air.getAvatarExitEvent(avId)
         self.ignore(event)
         if not self.hasToons():
@@ -146,6 +118,20 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
                     alive = 1
 
         return alive
+
+    def getDeadToons(self):
+        toons = []
+        for toonId in self.involvedToons:
+            toon = self.air.doId2do.get(toonId)
+            if toon:
+                if toon.getHp() <= 0:
+                    toons.append(toon)
+
+        return toons
+
+    def reviveDeadToons(self, hp=1):
+        for toon in self.getDeadToons():
+            toon.b_setHp(hp)
 
     def isToonKnown(self, toonId):
         return toonId in self.involvedToons or toonId in self.looseToons
@@ -198,9 +184,10 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def toonDied(self, toon):
         self.sendUpdate('toonDied', [toon.doId])
-        # empty = InventoryBase.InventoryBase(toon)
-        # toon.b_setInventory(empty.makeNetString())
-        self.removeToon(toon.doId, died=True)
+
+        # Check if there are no toons left alive, if so this boss is over
+        if not self.hasToonsAlive():
+            self.setState('Defeat')
 
     def healToon(self, toon, increment):
         toon.toonUp(increment)
@@ -322,7 +309,21 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
     def exitBattleOne(self):
         self.resetBattles()
 
+    def kickToons(self):
+        self.sendUpdate('teamWiped')
+
+    def enterDefeat(self):
+        self.kickToons()
+        taskMgr.doMethodLater(20.0, self.__doneDefeat, self.uniqueName('doneDefeat'))
+
+    def __doneDefeat(self, task=None):
+        self.__bossDone(None)
+
+    def exitDefeat(self):
+        pass
+
     def enterReward(self):
+        self.reviveDeadToons()
         self.resetBattles()
         self.barrier = self.beginBarrier('Reward', self.involvedToons, BattleBase.BUILDING_REWARD_TIMEOUT, self.__doneReward)
 

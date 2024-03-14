@@ -1,3 +1,4 @@
+from direct.gui.OnscreenText import OnscreenText
 from panda3d.core import *
 from libotp import *
 from direct.interval.IntervalGlobal import *
@@ -604,7 +605,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         if avId == localAvatar.doId:
             self.localToonDied()
 
-    def localToonToSafeZone(self):
+    def localToonToSafeZone(self, task=None):
         target_sz = ZoneUtil.getSafeZoneId(localAvatar.defaultZone)
         place = self.cr.playGame.getPlace()
         place.fsm.request('teleportOut', [{'loader': ZoneUtil.getLoaderName(target_sz),
@@ -616,6 +617,61 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
           'avId': -1,
           'battle': 1}])
         return
+
+    def localToonToSafeZoneDied(self, task=None):
+        target_sz = ZoneUtil.getSafeZoneId(localAvatar.defaultZone)
+        place = self.cr.playGame.getPlace()
+        place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
+          'where': ZoneUtil.getWhereName(target_sz, 1),
+          'how': 'teleportIn',
+          'hoodId': target_sz,
+          'zoneId': target_sz,
+          'shardId': None,
+          'avId': -1,
+          'battle': 1}])
+
+    def displayDefeatText(self):
+        title = OnscreenText(parent=aspect2d, text='Defeat!', style=3, fg=(.8, .2, .2, 1),
+                             align=TextNode.ACenter, scale=.15, pos=(0, .35))
+        sub = OnscreenText(parent=aspect2d, text='Everyone is being sent to the playground!', style=3,
+                           fg=(.8, .8, .8, 1),
+                           align=TextNode.ACenter, scale=.09, pos=(0, .2))
+
+        Parallel(
+            Sequence(
+                LerpColorScaleInterval(title, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0),
+                                       blendType='easeInOut'),
+                Wait(3.75),
+                LerpColorScaleInterval(title, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1),
+                                       blendType='easeInOut'),
+                Func(lambda: title.cleanup())
+            ),
+            Sequence(
+                LerpColorScaleInterval(sub, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0),
+                                       blendType='easeInOut'),
+                Wait(3.75),
+                LerpColorScaleInterval(sub, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1),
+                                       blendType='easeInOut'),
+                Func(lambda: sub.cleanup())
+            ),
+        ).start()
+
+    def teamWiped(self):
+        for avId in self.involvedToons:
+            if avId == base.localAvatar.doId:
+                continue
+
+            av = base.cr.doId2do.get(avId)
+            if av:
+                av.stunToon(knockdown=1)
+                taskMgr.doMethodLater(3.0, self.otherToonDied, av.uniqueName('dieLaterTask'), extraArgs=[av])
+
+        base.localAvatar.stunToon(knockdown=1)
+        self.displayDefeatText()
+        taskMgr.doMethodLater(3.0, self.localToonToSafeZoneDied, self.uniqueName('localToonDiedTpTask'))
+
+    def otherToonDied(self, av, task=None):
+        pass
 
     def localToonDied(self):
         target_sz = ZoneUtil.getSafeZoneId(localAvatar.defaultZone)
