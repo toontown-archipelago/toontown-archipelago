@@ -671,7 +671,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         taskMgr.doMethodLater(3.0, self.localToonToSafeZoneDied, self.uniqueName('localToonDiedTpTask'))
 
     def otherToonDied(self, av, task=None):
-        pass
+        av.setAnimState('Died')
 
     def localToonDied(self):
         target_sz = ZoneUtil.getSafeZoneId(localAvatar.defaultZone)

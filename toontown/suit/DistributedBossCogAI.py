@@ -310,6 +310,11 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.resetBattles()
 
     def kickToons(self):
+        for avId in self.involvedToons:
+            toon = self.air.doId2do.get(avId)
+            if toon and toon.hp > 0:
+                toon.b_setHp(0)
+
         self.sendUpdate('teamWiped')
 
     def enterDefeat(self):

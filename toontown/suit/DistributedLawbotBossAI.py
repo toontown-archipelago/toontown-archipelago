@@ -810,14 +810,9 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.takeAwayPies()
 
     def enterDefeat(self):
+        super().enterDefeat()
+        self.takeAwayPies()
         self.resetBattles()
-        self.barrier = self.beginBarrier('Defeat', self.involvedToons, 10, self.__doneDefeat)
-
-    def __doneDefeat(self, avIds):
-        for toonId in self.involvedToons:
-            toon = self.air.doId2do.get(toonId)
-            if toon:
-                toon.b_setHp(0)
 
     def exitDefeat(self):
         self.takeAwayPies()
