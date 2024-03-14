@@ -168,7 +168,7 @@ class ToontownWorld(World):
                 pool.append(self.create_item(item.name.value))
 
         # Dynamically generate laff boosts.
-        LAFF_TO_GIVE = self.options.max_hp.value - self.options.starting_hp.value
+        LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
         if LAFF_TO_GIVE < 0:
             print(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
                   f"WARNING: Too low max HP. Setting max HP to starting HP.")
@@ -204,7 +204,11 @@ class ToontownWorld(World):
                 pool.append(self.create_item(frame.value))
 
         # Dynamically generate training multipliers.
-        GAG_MULTI_TO_GIVE = self.options.max_gag_xp_multiplier_from_items.value
+        GAG_MULTI_TO_GIVE = self.options.max_global_gag_xp.value - self.options.base_global_gag_xp.value
+        if GAG_MULTI_TO_GIVE < 0:
+            print(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
+                  f"WARNING: Too low max global gag XP. Setting max global gag XP to base global gag XP.")
+            GAG_MULTI_TO_GIVE = 0
         TWO_GAG_MULTI_BOOSTS = round(consts.TWO_XP_BOOST_RATIO * GAG_MULTI_TO_GIVE)
         while TWO_GAG_MULTI_BOOSTS > 0 and GAG_MULTI_TO_GIVE > 2:
             TWO_GAG_MULTI_BOOSTS -= 1
@@ -234,11 +238,12 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "seed_generation_type": self.options.seed_generation_type.value,
-            "starting_hp": self.options.starting_hp.value,
+            "starting_laff": self.options.starting_laff.value,
             "starting_money": self.options.starting_money.value,
-            "starting_gag_xp_multiplier": self.options.starting_base_gag_xp_multiplier.value,
+            "base_global_gag_xp": self.options.base_global_gag_xp.value,
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
+            "cog_bosses_required": self.options.cog_bosses_required.value,
         }
 
     def calculate_starting_tracks(self):

@@ -25,7 +25,7 @@ def has_collected_xp_for_gag_level(state: CollectionState, player: int, options:
     # Determines if a given player has collected a sufficient amount of the XP items in the run.
     # always returns True if the player has 2 or less XP multis in the pool (aka, assumes they don't care)
     xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
-    max_xp = options.max_gag_xp_multiplier_from_items.value
+    max_xp = options.max_global_gag_xp.value
     if max_xp <= 2:
         return True
     return XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp)
@@ -247,7 +247,7 @@ def HasOffensiveLevel(state: CollectionState, world: MultiWorld, player: int, op
             ToontownItemName.DROP_FRAME,
             ToontownItemName.TRAP_FRAME
         ]
-    ) and state.has(ToontownItemName.LURE_FRAME.value, player, min(argument[0], 4)) \
+    ) and state.has(ToontownItemName.LURE_FRAME.value, player, argument[0]) \
         and has_collected_xp_for_gag_level(state, player, options, argument[0])
 
 
@@ -282,9 +282,14 @@ def CanFightCEO(state: CollectionState, world: MultiWorld, player: int, options:
 @rule(Rule.AllBossesDefeated)
 def AllBossesDefeated(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, world, player, options)
-    return passes_rule(Rule.CanFightVP, *args) and passes_rule(Rule.CanFightCFO, *args) \
-            and passes_rule(Rule.CanFightCJ, *args) and passes_rule(Rule.CanFightCEO, *args) \
-            and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
+    boss_rules = [
+        Rule.CanFightVP,
+        Rule.CanFightCFO,
+        Rule.CanFightCJ,
+        Rule.CanFightCEO,
+    ]
+    bosses_defeated = sum(passes_rule(rule, *args) for rule in boss_rules)
+    return bosses_defeated >= options.cog_bosses_required.value and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
 
 
 @rule(ItemRule.RestrictDisguises)
