@@ -199,7 +199,7 @@ class ToontownWorld(World):
 
         # Dynamically generate training frames.
         for frame in items.GAG_TRAINING_FRAMES:
-            quantity = 8 if frame not in (self.first_track, self.second_track) else 7
+            quantity = 9 if frame not in (self.first_track, self.second_track) else 8
             for _ in range(quantity):
                 pool.append(self.create_item(frame.value))
 

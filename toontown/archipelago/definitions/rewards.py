@@ -84,8 +84,8 @@ class GagTrainingFrameReward(APReward):
 
         bonusArray = av.getTrackBonusLevel()
 
-        # If we get a frame when we already maxed, make the track organic. No need to do anything else
-        if newLevel > 7:
+        # If we get a frame when we already maxed and can overflow, make the track organic. No need to do anything else
+        if newLevel > 8:
             bonusArray[self.track] = 7
             av.b_setTrackBonusLevel(bonusArray)
             av.d_setSystemMessage(0, f"Your {self.TRACK_TO_NAME[self.track]} gags are now organic!")
@@ -93,6 +93,9 @@ class GagTrainingFrameReward(APReward):
 
         # Before we do anything, we need to see if they were capped before this so we can award them gags later
         wasCapped = av.experience.getExp(self.track) == av.experience.getExperienceCapForTrack(self.track)
+        # Edge case, we were not technically capped if we are unlocking the "overflow xp" mechanic
+        if newLevel == 8:
+            wasCapped = False
 
         # Otherwise increment the gag level allowed and make sure it is not organic
         av.setTrackAccessLevel(self.track, newLevel)
@@ -110,6 +113,12 @@ class GagTrainingFrameReward(APReward):
             av.b_setExperience(av.experience.getCurrentExperience())
             av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
             av.b_setInventory(av.inventory.makeNetString())
+
+        # Alert them
+        # Edge case, did we unlock ability to overflow?
+        if newLevel == 8:
+            av.d_setSystemMessage(0, f"You can now overflow {self.TRACK_TO_NAME[self.track]} gag experience")
+            return
 
         av.d_setSystemMessage(0, f"You can now train {self.TRACK_TO_NAME[self.track]} gags up to {newLevel}!")
 

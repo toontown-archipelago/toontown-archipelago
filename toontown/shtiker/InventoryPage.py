@@ -80,11 +80,21 @@ class InventoryPage(ShtikerPage.ShtikerPage):
             curExp, nextExp = base.localAvatar.inventory.getCurAndNextExpValues(trackIndex)
             cap = base.localAvatar.experience.getExperienceCapForTrack(trackIndex)
 
+            # If we are overflowing our xp for this track:
             if curExp >= ToontownBattleGlobals.regMaxSkill:
                 boost = ToontownBattleGlobals.getUberDamageBonusString(curExp)
                 newTrackInfoText = TTLocalizer.InventoryPageTrackFull % (trackName, boost)
+            # If we are able to overflow our xp, have all our gags, but haven't hit that part yet
+            elif cap > ToontownBattleGlobals.regMaxSkill and curExp >= ToontownBattleGlobals.Levels[trackIndex][-1]:
+                morePoints = ToontownBattleGlobals.regMaxSkill - curExp
+                newTrackInfoText = TTLocalizer.InventoryPageOverflowSinglePoint % {'trackName': trackName, 'numPoints': morePoints} if morePoints == 1 else TTLocalizer.InventoryPageOverflowPluralPoints % {'trackName': trackName, 'numPoints': morePoints}
+            # If we have all of our gags but cannot overflow our xp yet:
+            elif cap < ToontownBattleGlobals.regMaxSkill and curExp >= ToontownBattleGlobals.Levels[trackIndex][-1]:
+                newTrackInfoText = TTLocalizer.InventoryPageTrackOverflowLocked % trackName
+            # If we are missing gags for this track and we don't have access to them yet:
             elif cap < nextExp:
                 newTrackInfoText = TTLocalizer.InventoryPageTrackLocked % trackName
+            # Otherwise, we can learn new gags!
             else:
                 morePoints = nextExp - curExp
                 newTrackInfoText = TTLocalizer.InventoryPageSinglePoint % {'trackName': trackName, 'numPoints': morePoints} if morePoints == 1 else TTLocalizer.InventoryPagePluralPoints % {'trackName': trackName, 'numPoints': morePoints}
