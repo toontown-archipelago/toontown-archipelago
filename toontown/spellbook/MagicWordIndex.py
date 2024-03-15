@@ -32,7 +32,8 @@ import time
 import random
 import json
 
-from apworld.toontown import locations
+from apworld.toontown import locations, items
+from toontown.archipelago.definitions import rewards
 
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
@@ -3305,6 +3306,15 @@ class Archipelago(MagicWord):
         if operation in ('wipe', 'reset', 'clear'):
             toon.newToon()
             return f"Wiped {toon.getName()}'s progress!"
+
+        if operation in ('reward', 'gift'):
+            # Get a random reward, apply it and show it just like the packet does
+            for _ in range(random.randint(1, 20)):
+                item_def = random.choice(items.ITEM_DEFINITIONS)
+                reward = rewards.get_ap_reward_from_id(item_def.unique_id)
+                reward.apply(toon)
+                toon.d_showReward(item_def.unique_id, "The Spellbook", False)
+            return f"Gave {toon.getName()} a few random AP rewards"
 
         return f"Invalid argument, valid arguments are: check"
 

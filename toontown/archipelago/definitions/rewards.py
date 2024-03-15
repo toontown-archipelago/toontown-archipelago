@@ -4,6 +4,8 @@ from enum import IntEnum
 import random
 
 from apworld.toontown import ToontownItemName, get_item_def_from_id
+from toontown.archipelago.util import global_text_properties
+from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 
 from toontown.building import FADoorCodes
 from toontown.coghq.CogDisguiseGlobals import PartsPerSuitBitmasks
@@ -20,6 +22,30 @@ if TYPING:
 
 
 class APReward:
+
+    # Return a color formatted header to display in the on screen display, this should be overridden
+    def formatted_header(self):
+        return f"UNIMPLEMENTED REWARD STR:\n{self.__class__.__name__}"
+
+    # Returns a color formatted footer so we don't have to call this ugly code a million times
+    def _formatted_footer(self, player, isSelf=False):
+        color = 'yellow' if not isSelf else 'magenta'
+        name = player if not isSelf else "You"
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("\n\nFrom: "),
+            MinimalJsonMessagePart(f"{name}", color=color)
+        ])
+
+    # Override to set an image path to show up on the display, assumes png and square shaped
+    # If not overridden, will show the AP logo
+    def get_image_path(self) -> str:
+        return 'phase_14/maps/ap_icon.png'
+
+    # Returns a string to show on the display when received, should follow the basic format like so:
+    # Your x is now y!\n\nFrom: {fromPlayer}
+    def get_reward_string(self, fromPlayer: str, isSelf=False) -> str:
+        return f"{self.formatted_header()}{self._formatted_footer(fromPlayer, isSelf)}"
+
     def apply(self, av: "DistributedToonAI"):
         raise NotImplementedError("Please implement the apply() method!")
 
@@ -28,10 +54,16 @@ class LaffBoostReward(APReward):
     def __init__(self, amount: int):
         self.amount = amount
 
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Increased your\nmax laff by "),
+            MinimalJsonMessagePart(f"+{self.amount}", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxHp(av.maxHp + self.amount)
         av.toonUp(self.amount)
-        av.d_setSystemMessage(0, f"Increased your max laff by {self.amount}!")
 
 
 class GagCapacityReward(APReward):
@@ -39,9 +71,15 @@ class GagCapacityReward(APReward):
     def __init__(self, amount: int):
         self.amount: int = amount
 
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Increased your gag\npouch capacity by "),
+            MinimalJsonMessagePart(f"+{self.amount}", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxCarry(av.maxCarry + self.amount)
-        av.d_setSystemMessage(0, f"Increased your gag pouch capacity by {self.amount}!")
 
 
 class JellybeanJarUpgradeReward(APReward):
@@ -49,9 +87,15 @@ class JellybeanJarUpgradeReward(APReward):
     def __init__(self, amount: int):
         self.amount: int = amount
 
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Increased your jellybean\njar capacity by "),
+            MinimalJsonMessagePart(f"+{self.amount}", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxMoney(av.maxMoney + self.amount)
-        av.d_setSystemMessage(0, f"Increased your jellybean jar capacity by {self.amount}!")
 
 
 class GagTrainingFrameReward(APReward):
@@ -73,8 +117,28 @@ class GagTrainingFrameReward(APReward):
         DROP: "Drop",
     }
 
+    TRACK_TO_COLOR = {
+        TOONUP: 'slateblue',
+        TRAP: 'yellow',
+        LURE: 'green',
+        SOUND: 'plum',
+        THROW: 'yellow',  #  todo add a gold text property
+        SQUIRT: 'slateblue',  # todo add a pinkish text property
+        DROP: 'cyan'
+    }
+
     def __init__(self, track):
         self.track = track
+
+    # todo: find a way to show dynamic info based on what this reward did for us exactly
+    # todo: new system was two steps forward one step back in this regard
+    def formatted_header(self) -> str:
+        track_name_color = self.TRACK_TO_COLOR.get(self.track)
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Received a training frame!\nYour "),
+            MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
+            MinimalJsonMessagePart(" gags have more potential!"),
+        ])
 
     def apply(self, av: "DistributedToonAI"):
 
@@ -88,7 +152,6 @@ class GagTrainingFrameReward(APReward):
         if newLevel > 8:
             bonusArray[self.track] = 7
             av.b_setTrackBonusLevel(bonusArray)
-            av.d_setSystemMessage(0, f"Your {self.TRACK_TO_NAME[self.track]} gags are now organic!")
             return
 
         # Before we do anything, we need to see if they were capped before this so we can award them gags later
@@ -114,34 +177,39 @@ class GagTrainingFrameReward(APReward):
             av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
             av.b_setInventory(av.inventory.makeNetString())
 
-        # Alert them
-        # Edge case, did we unlock ability to overflow?
-        if newLevel == 8:
-            av.d_setSystemMessage(0, f"You can now overflow {self.TRACK_TO_NAME[self.track]} gag experience")
-            return
-
-        av.d_setSystemMessage(0, f"You can now train {self.TRACK_TO_NAME[self.track]} gags up to {newLevel}!")
-
 
 class GagTrainingMultiplierReward(APReward):
 
     def __init__(self, amount: int):
         self.amount: int = amount
 
+    # todo, again nice to have this tell us WHAT it is, not what we got
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Increased your global XP\nmultiplier by "),
+            MinimalJsonMessagePart(f"+{self.amount}", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         oldMultiplier = av.getBaseGagSkillMultiplier()
         newMultiplier = oldMultiplier + self.amount
         av.b_setBaseGagSkillMultiplier(newMultiplier)
-        av.d_setSystemMessage(0, f"Your base gag XP multiplier is now {newMultiplier}x!")
 
 
 class FishingRodUpgradeReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Your "),
+            MinimalJsonMessagePart(f"Fishing Rod", color='plum'),
+            MinimalJsonMessagePart("\nhas been upgraded!"),
+        ])
 
     def apply(self, av: "DistributedToonAI"):
         nextRodID = min(av.fishingRod + 1, FishGlobals.MaxRodId)
 
         av.b_setFishingRod(nextRodID)
-        av.d_setSystemMessage(0, f"Upgraded your fishing rod!")
 
 
 class TeleportAccessUpgradeReward(APReward):
@@ -173,10 +241,15 @@ class TeleportAccessUpgradeReward(APReward):
     def __init__(self, playground: int):
         self.playground: int = playground
 
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You can now teleport\nto "),
+            MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         av.addTeleportAccess(self.playground)
-        av.d_setSystemMessage(0,
-                              f"You can now teleport to {self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}!")
 
 
 class TaskAccessReward(APReward):
@@ -199,11 +272,17 @@ class TaskAccessReward(APReward):
     def __init__(self, playground: int):
         self.playground: int = playground
 
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You may now complete ToonTasks\nin "),
+            MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         # Get the key ID for this playground
         key = FADoorCodes.ZONE_TO_ACCESS_CODE[self.playground]
         av.addAccessKey(key)
-        av.d_setSystemMessage(0,f"You have been given {self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'UNKNOWN PG ' + str(self.playground))} HQ Clearance and can now complete toontasks there!")
 
 
 class FacilityAccessReward(APReward):
@@ -228,11 +307,17 @@ class FacilityAccessReward(APReward):
     def __init__(self, key):
         self.key = key
 
+    def formatted_header(self) -> str:
+        key_name = self.FACILITY_ID_TO_DISPLAY.get(self.key, f"UNKNOWN-KEY[{self.key}]")
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You may now infiltrate\nthe "),
+            MinimalJsonMessagePart(f"{key_name}", color='salmon'),
+            MinimalJsonMessagePart(" facility!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         # Get the key ID for this playground
         av.addAccessKey(self.key)
-        key_name = self.FACILITY_ID_TO_DISPLAY.get(self.key, f"UNKNOWN-KEY[{self.key}]")
-        av.d_setSystemMessage(0, f"You have been given a {key_name} key and can now infiltrate this facility!")
 
 
 class CogDisguiseReward(APReward):
@@ -252,11 +337,18 @@ class CogDisguiseReward(APReward):
     def __init__(self, dept: int):
         self.dept: int = dept
 
+    def formatted_header(self) -> str:
+        dept = self.ENUM_TO_NAME[self.dept]
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You were given\nyour "),
+            MinimalJsonMessagePart(f"{dept} Disguise", color='plum'),
+            MinimalJsonMessagePart("!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         parts = av.getCogParts()
         parts[self.dept] = PartsPerSuitBitmasks[self.dept]
         av.b_setCogParts(parts)
-        av.d_setSystemMessage(0, f"You were given your {self.ENUM_TO_NAME[self.dept]} disguise!")
 
 
 class JellybeanReward(APReward):
@@ -264,22 +356,39 @@ class JellybeanReward(APReward):
     def __init__(self, amount: int):
         self.amount: int = amount
 
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You were given\n"),
+            MinimalJsonMessagePart(f"+{self.amount} jellybeans", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         av.addMoney(self.amount)
-        av.d_setSystemMessage(0, f"You were given {self.amount} jellybeans!")
 
 
 class UberTrapAward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("UBER TRAP\n", color='salmon'),
+            MinimalJsonMessagePart(f"Don't get hit!"),
+        ])
 
     def apply(self, av: "DistributedToonAI"):
         av.playSound('phase_4/audio/sfx/avatar_emotion_very_sad.ogg')
         av.b_setHp(15)
         av.inventory.NPCMaxOutInv(maxLevel=6)
         av.b_setInventory(av.inventory.makeNetString())
-        av.d_setSystemMessage(0, "Don't get hit!")
 
 
 class DripTrapAward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("DRIP TRAP\n", color='salmon'),
+            MinimalJsonMessagePart(f"Did someone say the door to drip?"),
+        ])
 
     def apply(self, av: "DistributedToonAI"):
         av.playSound('phase_4/audio/sfx/avatar_emotion_drip.ogg')
@@ -287,18 +396,24 @@ class DripTrapAward(APReward):
         av.b_setBackpack(random.randint(1, 24), 0, 0)
         av.b_setGlasses(random.randint(1, 21), 0, 0)
         av.b_setHat(random.randint(1, 56), 0, 0)
-        av.d_setSystemMessage(0, "Did someone say the door to drip?")
+
 
 class GagExpBundleAward(APReward):
 
     def __init__(self, amount: int):
         self.amount: int = amount
 
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You were given a\nbundle of "),
+            MinimalJsonMessagePart(f"{self.amount} gag experience", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         for index, _ in enumerate(ToontownBattleGlobals.Tracks):
             av.experience.addExp(index, self.amount)
         av.b_setExperience(av.experience.getCurrentExperience())
-        av.d_setSystemMessage(0, f"You were given a bundle of {self.amount} gag experience!")
 
 
 class BossRewardAward(APReward):
@@ -306,24 +421,31 @@ class BossRewardAward(APReward):
     UNITE = 1
     PINK_SLIP = 2
 
+    REWARD_TO_DISPLAY_STR = {
+        SOS: "SOS Card",
+        UNITE: "Unite",
+        PINK_SLIP: "amount of Pink Slips",
+    }
+
     def __init__(self, reward: int):
         self.reward: int = reward
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You were given a\nrandom "),
+            MinimalJsonMessagePart(f"{self.REWARD_TO_DISPLAY_STR[self.reward]}", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
 
     def apply(self, av: "DistributedToonAI"):
         if self.reward == BossRewardAward.SOS:
             av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 4)))
-            av.d_setSystemMessage(0, "You were given a random SOS card!")
         elif self.reward == BossRewardAward.UNITE:
             uniteType = random.choice([ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK])
             av.addResistanceMessage(random.choice(ResistanceChat.getItems(uniteType)))
-            av.d_setSystemMessage(0, "You were given a random unite!")
         elif self.reward == BossRewardAward.PINK_SLIP:
             slipAmount = random.randint(1, 3)
             av.addPinkSlips(slipAmount)
-            if slipAmount > 1:
-                av.d_setSystemMessage(0, f"You were given {slipAmount} pink slips!")
-            else:
-                av.d_setSystemMessage(0, f"You were given {slipAmount} pink slip!")
 
 
 class ProofReward(APReward):
@@ -344,16 +466,27 @@ class ProofReward(APReward):
     def __init__(self, proofType: ProofType):
         self.proofType: ProofReward.ProofType = proofType
 
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Proof Obtained!\n", color='green'),
+            MinimalJsonMessagePart(f"{self.proofType.to_display()}"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         # todo keep track of these
-        av.d_setSystemMessage(0, f"Proof obtained!: {self.proofType.to_display()}")
+        pass
 
 
 class VictoryReward(APReward):
 
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("VICTORY!\n", color='green'),
+            MinimalJsonMessagePart(f"You have completed your goal!"),
+        ])
+
     def apply(self, av: "DistributedToonAI"):
         av.APVictory()
-        av.d_setSystemMessage(0, "DEBUG: Victory condition achieved")
 
 
 class UndefinedReward(APReward):
