@@ -60,6 +60,15 @@ class ArchipelagoRewardDisplay(DirectLabel):
 
         self._reward_queue: List[APRewardGift] = []
         self._slide_sequence = None
+        self.__holding_shift = False
+        self.accept('shift', self.__shift_press)
+        self.accept('shift-up', self.__shift_up)
+
+    def __shift_press(self):
+        self.__holding_shift = True
+
+    def __shift_up(self):
+        self.__holding_shift = False
 
     # Call to reset all options to default, ideally only need to do this once
     def set_default_options(self):
@@ -130,6 +139,11 @@ class ArchipelagoRewardDisplay(DirectLabel):
 
     # Perform a slide transition to immediately force this off screen
     def _do_hide_sequence(self):
+
+        # If holding shift, we shift clicked the close button
+        if self.__holding_shift:
+            self._reward_queue.clear()
+
         self._cleanup_intervals()
 
         self._slide_sequence = Sequence(
@@ -168,6 +182,7 @@ class ArchipelagoRewardDisplay(DirectLabel):
             self._slide_sequence = None
 
     def destroy(self):
+        self.ignoreAll()
         self._cleanup_intervals()
         super().destroy()
 
