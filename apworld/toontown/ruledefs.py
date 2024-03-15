@@ -239,16 +239,35 @@ def TierEightCogs(state: CollectionState, world: MultiWorld, player: int, option
 @rule(Rule.HasLevelSevenOffenseGag, 7)
 @rule(Rule.HasLevelEightOffenseGag, 8)
 def HasOffensiveLevel(state: CollectionState, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
-    return any(
-        state.has(offensive_frame.value, player, argument[0])
+    LEVEL = argument[0]
+    OVERLEVEL = min(argument[0] + 1, 7)
+    UNDERLEVEL = max(0, argument[0] - 1)
+
+    # To pass the check, we must have:
+    # - A way to kill enemies (OR):
+    #   - Throw or Squirt at-level and Lure at level
+    #   - Drop level + 1
+    #   - Trap level + 1 and Lure at level
+    #   - Sound level + 1
+    # - Sufficient healing (Toon-up level - 1)
+    # - EXP required at level
+
+    powerful_lure_knockback = any(
+        state.has(offensive_frame.value, player, LEVEL)
         for offensive_frame in [
             ToontownItemName.THROW_FRAME,
             ToontownItemName.SQUIRT_FRAME,
-            ToontownItemName.DROP_FRAME,
-            ToontownItemName.TRAP_FRAME
         ]
-    ) and state.has(ToontownItemName.LURE_FRAME.value, player, argument[0]) \
-        and has_collected_xp_for_gag_level(state, player, options, argument[0])
+    ) and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
+    powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, OVERLEVEL)
+    powerful_trap = state.has(ToontownItemName.TRAP_FRAME.value, player, OVERLEVEL) \
+                    and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
+    powerful_sound = state.has(ToontownItemName.SOUND_FRAME.value, player, OVERLEVEL)
+    sufficient_healing = state.has(ToontownItemName.TOONUP_FRAME.value, player, UNDERLEVEL)
+    can_obtain_exp_required = has_collected_xp_for_gag_level(state, player, options, LEVEL)
+
+    return (powerful_lure_knockback or powerful_sound or powerful_trap or powerful_drop) \
+            and sufficient_healing and can_obtain_exp_required
 
 
 @rule(Rule.CanFightVP)
