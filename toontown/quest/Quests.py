@@ -2222,8 +2222,8 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     16062: APQuestDefinition((CogQuest, Anywhere, 9, Any), 5018),
     16063: APQuestDefinition((CogQuest, Anywhere, 10, Any), 5018),
     16064: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 2, 2008, Hard, Any), 5018),
-    16065: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 3, 2008, Hard, Any), 5018),
-    16066: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 4, 2008, Hard, Any), 5018),
+    16065: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 3, 2008, Medium, Any), 5018),
+    16066: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 4, 2008, Medium, Any), 5018),
 
     # Location Check #8 (DD) Defeat 10 level 3/4 cogs
     16070: APQuestDefinition((CogLevelQuest, Anywhere, 10, 3), 5019),
@@ -2297,8 +2297,8 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     17075: APQuestDefinition((RecoverItemQuest, ToontownGlobals.SellbotHQ, 4, 5013, Easy, "s", "track"), 5031),
 
     # Location Check #9 (DG) Infamous recover key from mingler/legal eagles
-    17080: APQuestDefinition((RecoverItemQuest, Anywhere, 1, 5012, Hard, "m"), 5032),
-    17081: APQuestDefinition((RecoverItemQuest, Anywhere, 1, 5012, Medium, "le"), 5032),
+    17080: APQuestDefinition((RecoverItemQuest, Anywhere, 1, 5012, Medium, "m"), 5032),
+    17081: APQuestDefinition((RecoverItemQuest, Anywhere, 1, 5012, Easy, "le"), 5032),
 
     # Location Check #10 (DG) Defeat x lvl 5s
     17090: APQuestDefinition((CogLevelQuest, Anywhere, 4, 5), 5033),
@@ -2428,9 +2428,9 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     19071: APQuestDefinition((CogQuest, ToontownGlobals.LawbotHQ, 2, 'bs'), 5055),
 
     # Location Check #9 (TB) Recover external temp sensors
-    19080: APQuestDefinition((RecoverItemQuest, Anywhere, 7, 3027, Hard, Any), 5056),
-    19081: APQuestDefinition((RecoverItemQuest, Anywhere, 12, 3027, Medium, Any), 5056),
-    19082: APQuestDefinition((RecoverItemQuest, Anywhere, 20, 3027, Easy, Any), 5056),
+    19080: APQuestDefinition((RecoverItemQuest, Anywhere, 7, 3027, Medium, Any), 5056),
+    19081: APQuestDefinition((RecoverItemQuest, Anywhere, 12, 3027, Easy, Any), 5056),
+    19082: APQuestDefinition((RecoverItemQuest, Anywhere, 20, 3027, VeryEasy, Any), 5056),
 
     # Location Check #10 (TB) Defeat x amount of level 7 cogs
     19090: APQuestDefinition((CogLevelQuest, Anywhere, 6, 7), 5057),
@@ -2512,7 +2512,7 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
 
     # Location Check #12 (DDL) Defeat a level 12 cog or recover Hard Pillows from lvl 11s
     20110: APQuestDefinition((CogLevelQuest, Anywhere, 1, 12), 5071),
-    20111: APQuestDefinition((RecoverItemQuest, Anywhere, 4, 7006, VeryHard, 11, "level"), 5071),
+    20111: APQuestDefinition((RecoverItemQuest, Anywhere, 4, 7006, Medium, 11, "level"), 5071),
 
 }
 
