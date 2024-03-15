@@ -157,7 +157,11 @@ class DistributedCountryClubRoom(DistributedLevel.DistributedLevel, CountryClubR
                 floorNum = self.countryClub.floorNum
             else:
                 floorNum = '???'
-            posStr = 'X: %.3f' % pos[0] + '\nY: %.3f' % pos[1] + '\nZ: %.3f' % pos[2] + '\nH: %.3f' % h + '\ncountryClubId: %s' % self.countryClubId + '\nfloor: %s' % floorNum + '\nroomId: %s' % self.roomId + '\nroomName: %s' % roomName
+
+            # Virgin py2 version that breaks the video game
+            # posStr = 'X: %.3f' % pos[0] + '\nY: %.3f' % pos[1] + '\nZ: %.3f' % pos[2] + '\nH: %.3f' % h + '\ncountryClubId: %s' % self.countryClubId + '\nfloor: %s' % floorNum + '\nroomId: %s' % self.roomId + '\nroomName: %s' % roomName
+            # Gigachad py3 version that uses FSTRINGS :D
+            posStr = f"X: {pos[0]:.3f}, Y: {pos[1]:.3f}, Z: {pos[2]:.3f}, H: {h:.3f}\ncountryClubID: {self.countryClubId}\nfloor: {floorNum}\nroomId: {self.roomId}\nroomName: {roomName}"
             base.localAvatar.setChatAbsolute(posStr, CFThought | CFTimeout)
             return
 

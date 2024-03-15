@@ -100,7 +100,10 @@ class DistributedFactory(DistributedLevel.DistributedLevel, FactoryBase.FactoryB
             pos = base.localAvatar.getPos(self.getZoneNode(self.lastToonZone))
             h = base.localAvatar.getH(self.getZoneNode(self.lastToonZone))
             print('factory pos: %s, h: %s, zone %s' % (repr(pos), h, self.lastToonZone))
-            posStr = 'X: %.3f' % pos[0] + '\nY: %.3f' % pos[1] + '\nZ: %.3f' % pos[2] + '\nH: %.3f' % h + '\nZone: %s' % str(self.lastToonZone)
+            # Virgin py2 version that breaks the video game
+            # posStr = 'X: %.3f' % pos[0] + '\nY: %.3f' % pos[1] + '\nZ: %.3f' % pos[2] + '\nH: %.3f' % h + '\nZone: %s' % str(self.lastToonZone)
+            # Gigachad py3 version that uses FSTRINGS :D
+            posStr = f"X: {pos[0]:.3f}, Y: {pos[1]:.3f}, Z: {pos[2]:.3f}, H: {h:.3f}\nZone: {self.lastToonZone}"
             base.localAvatar.setChatAbsolute(posStr, CFThought | CFTimeout)
 
         self.accept('f2', printPos)
