@@ -27,7 +27,7 @@ class CogPageManagerAI:
         cogStatus = toon.getCogStatus()
         cogCount = toon.getCogCount()
         for suit in suitsKilled:
-            if suit['isSkelecog'] or suit['isVP'] or suit['isCFO']:
+            if suit['isVP'] or suit['isCFO']:
                 continue
 
             if toon.getDoId() in suit['activeToons']:

@@ -2268,7 +2268,7 @@ class SpawnCog(MagicWord):
             return "Unable to spawn a level %d %s in current zone." % (level, name)
         pointmap = sp.streetPointList
         try:
-            sp.createNewSuit([], pointmap, suitName=name, suitLevel=level)
+            sp.createNewSuit([], pointmap, suitName=name, suitLevel=level, skelecog=specialSuit)
             return "Spawned a level %d %s in current zone." % (level, name)
         except IndexError:
             return "Level %d is out of range for %s." % (level, name)
