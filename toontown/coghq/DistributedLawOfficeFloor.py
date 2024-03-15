@@ -94,6 +94,14 @@ class DistributedLawOfficeFloor(DistributedLevel.DistributedLevel, LawOfficeBase
         loader.endBulkLoad('factory')
         messenger.send('LawOffice_Spec_Loaded')
 
+        def printPos(self = self):
+            pos = base.localAvatar.getPos(self.getZoneNode(self.lastToonZone))
+            h = base.localAvatar.getH(self.getZoneNode(self.lastToonZone))
+            print('factory pos: %s, h: %s, zone %s' % (repr(pos), h, self.lastToonZone))
+            posStr = 'X: %.3f' % pos[0] + '\nY: %.3f' % pos[1] + '\nZ: %.3f' % pos[2] + '\nH: %.3f' % h + '\nZone: %s' % str(self.lastToonZone)
+            base.localAvatar.setChat(posStr, CFThought, 0)
+
+        self.accept('f2', printPos)
         base.localAvatar.setCameraCollisionsCanMove(1)
         self.acceptOnce('leavingFactory', self.announceLeaving)
 

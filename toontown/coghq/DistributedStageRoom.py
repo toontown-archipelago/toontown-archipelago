@@ -146,6 +146,23 @@ class DistributedStageRoom(DistributedLevel.DistributedLevel, StageRoomBase.Stag
         if self.stage is not None:
             self.stage.currentRoomName = StageRoomSpecs.CashbotStageRoomId2RoomName[self.roomId]
 
+        def printPos(self = self):
+            thisZone = self.getZoneNode(LevelConstants.UberZoneEntId)
+            pos = base.localAvatar.getPos(thisZone)
+            h = base.localAvatar.getH(thisZone)
+            roomName = StageRoomSpecs.CashbotStageRoomId2RoomName[self.roomId]
+            print('stage pos: %s, h: %s, room: %s' % (repr(pos), h, roomName))
+            if self.stage is not None:
+                floorNum = self.stage.floorNum
+            else:
+                floorNum = '???'
+            posStr = 'X: %.3f' % pos[0] + '\nY: %.3f' % pos[1] + '\nZ: %.3f' % pos[2] + '\nH: %.3f' % h + '\nstageId: %s' % self.stageId + '\nfloor: %s' % floorNum + '\nroomId: %s' % self.roomId + '\nroomName: %s' % roomName
+            base.localAvatar.setChatAbsolute(posStr, CFThought | CFTimeout)
+            return
+
+        self.accept('f2', printPos)
+        return
+
     def handleSOSPanel(self, panel):
         avIds = []
         for avId in self.avIdList:
