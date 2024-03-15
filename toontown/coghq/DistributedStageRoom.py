@@ -146,6 +146,27 @@ class DistributedStageRoom(DistributedLevel.DistributedLevel, StageRoomBase.Stag
         if self.stage is not None:
             self.stage.currentRoomName = StageRoomSpecs.CashbotStageRoomId2RoomName[self.roomId]
 
+        def printPos(self = self):
+            thisZone = self.getZoneNode(LevelConstants.UberZoneEntId)
+            pos = base.localAvatar.getPos(thisZone)
+            h = base.localAvatar.getH(thisZone)
+            roomName = StageRoomSpecs.CashbotStageRoomId2RoomName[self.roomId]
+            print('stage pos: %s, h: %s, room: %s' % (repr(pos), h, roomName))
+            if self.stage is not None:
+                floorNum = self.stage.floorNum
+            else:
+                floorNum = '???'
+            # Virgin py2 version that breaks the video game
+            # posStr = 'X: %.3f' % pos[0] + '\nY: %.3f' % pos[1] + '\nZ: %.3f' % pos[2] + '\nH: %.3f' % h + '\nstageId: %s' % self.stageId + '\nfloor: %s' % floorNum + '\nroomId: %s' % self.roomId + '\nroomName: %s' % roomName
+            # Gigachad py3 version that uses FSTRINGS :D
+            posStr = f"X: {pos[0]:.3f}, Y: {pos[1]:.3f}, Z: {pos[2]:.3f}, H: {h:.3f}\nstageId: {self.stageId}\nfloor: {floorNum}\nroomId: {self.roomId}\nroomName: {roomName}"
+
+            base.localAvatar.setChatAbsolute(posStr, CFThought | CFTimeout)
+            return
+
+        self.accept('f2', printPos)
+        return
+
     def handleSOSPanel(self, panel):
         avIds = []
         for avId in self.avIdList:
