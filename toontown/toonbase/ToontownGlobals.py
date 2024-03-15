@@ -273,9 +273,9 @@ MintNumFloors = {CashbotMintIntA: 20,
 CashbotMintCogLevel = 10
 CashbotMintSkelecogLevel = 11
 CashbotMintBossLevel = 12
-MintNumBattles = {CashbotMintIntA: 4,
- CashbotMintIntB: 6,
- CashbotMintIntC: 8}
+MintNumBattles = {CashbotMintIntA: 3,
+ CashbotMintIntB: 4,
+ CashbotMintIntC: 5}
 MintCogBuckRewards = {CashbotMintIntA: 8,
  CashbotMintIntB: 14,
  CashbotMintIntC: 20}

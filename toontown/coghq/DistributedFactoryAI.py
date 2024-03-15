@@ -125,7 +125,16 @@ class DistributedFactoryAI(DistributedLevelAI.DistributedLevelAI, FactoryBase.Fa
         pass
 
     def getCogLevel(self):
-        return self.cogLevel
+        levelAdjustment = 0
+        if self.factoryId == ToontownGlobals.SellbotFactoryIntS:
+            levelAdjustment += 1
+
+        if 1 < self.numPlayers < 4:
+            levelAdjustment += 1
+        elif self.numPlayers == 4:
+            levelAdjustment += 2
+
+        return self.cogLevel + levelAdjustment
 
     def d_setSuits(self):
         self.sendUpdate('setSuits', [self.getSuits(), self.getReserveSuits()])
