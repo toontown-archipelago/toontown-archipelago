@@ -685,7 +685,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if currState == 'BattleThree':
             taskName = self.uniqueName('NextHelmet')
             taskMgr.remove(taskName)
-            delayTime = self.progressValue(45, 15)
+            delayTime = self.progressValue(60, 30)
             taskMgr.doMethodLater(delayTime, self.__donHelmet, taskName)
             self.debug(content='Next auto-helmet in %s seconds' % delayTime)
             self.waitingForHelmet = 1
