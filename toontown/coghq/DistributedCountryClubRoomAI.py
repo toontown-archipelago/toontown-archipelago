@@ -22,6 +22,13 @@ class DistributedCountryClubRoomAI(DistributedLevelAI.DistributedLevelAI, Countr
         self.countryClubDoId = countryClubDoId
         self.battleExpAggreg = battleExpAggreg
 
+    def getFloorNum(self):
+        countryClub = self.air.getDo(self.countryClubDoId)
+        if countryClub is None:
+            self.notify.warning('getFloorNum: could not find stage %s' % self.stageDoId)
+            return 0
+        return countryClub.floorNum
+
     def createEntityCreator(self):
         return FactoryEntityCreatorAI.FactoryEntityCreatorAI(level=self)
 

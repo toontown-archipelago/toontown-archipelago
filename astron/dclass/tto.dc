@@ -183,6 +183,7 @@ from toontown.coghq import DistributedBarrelBase/AI
 from toontown.coghq import DistributedGagBarrel/AI
 from toontown.coghq import DistributedBeanBarrel/AI
 from toontown.coghq import DistributedHealBarrel/AI
+from toontown.coghq import DistributedAPCheckBarrel/AI
 from toontown.coghq import DistributedGrid/AI
 from toontown.coghq import ActiveCell/AI
 from toontown.coghq import DirectionalCell/AI
@@ -2942,6 +2943,10 @@ dclass DistributedBeanBarrel : DistributedBarrelBase {
 };
 
 dclass DistributedHealBarrel : DistributedBarrelBase {
+};
+
+dclass DistributedAPCheckBarrel : DistributedBarrelBase {
+  setLocationCheckId(uint32) required broadcast ram;
 };
 
 dclass DistributedGrid : DistributedEntity {

@@ -4157,7 +4157,8 @@ LauncherPhaseNames = {0: 'Initialization',
  10: Cashbot + ' HQ',
  11: Lawbot + ' HQ',
  12: Bossbot + ' HQ',
- 13: 'Parties'}
+ 13: 'Parties',
+ 14: 'AP'}
 LauncherProgress = '%(name)s (%(current)s of %(total)s)'
 LauncherStartingMessage = "Starting Toontown Online... "
 LauncherDownloadFile = 'Downloading update for ' + LauncherProgress + '...'

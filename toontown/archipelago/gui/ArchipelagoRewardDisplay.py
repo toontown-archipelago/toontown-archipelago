@@ -48,7 +48,7 @@ class ArchipelagoRewardDisplay(DirectLabel):
     SHOW_DURATION = 10.0
     SLIDE_DURATION = .25
 
-    DEFAULT_IMAGE_PATH = 'resources/phase_14/maps/ap_icon.png'
+    DEFAULT_IMAGE_PATH = 'phase_14/maps/ap_icon.png'
 
     def __init__(self, **kw):
         super().__init__(**kw)

@@ -58,7 +58,7 @@ def ap_location_name_to_id(location_name: Union[str, ToontownLocationName]) -> i
         if (type(location_name) is str and location_definition.name.value == location_name) or \
            (type(location_name) is ToontownLocationName and location_definition.name == location_name):
             return location_definition.unique_id
-    raise KeyError(f"AP location: {location_name}<type={location_name}> is not defined in Location/Event definitions")
+    raise KeyError(f"AP location: {location_name}<type={type(location_name)}> is not defined in Location/Event definitions")
 
 
 # Given a Zone ID, give the ID of an AP location award the player.
