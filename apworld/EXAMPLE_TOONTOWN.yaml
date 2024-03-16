@@ -59,7 +59,7 @@ Toontown:
   # you must remove the corresponding link described below.
   # By default, we link ALL Toontown players facility keys so that there is only ONE global facility key
   # in the pool for all Toontown Players. If you are playing solo on a district with no other toons,
-  # I would recommend you item links completely.
+  # I would recommend you remove item links completely.
   item_links:
     - name: Facility Keys
       item_pool:
