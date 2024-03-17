@@ -30,11 +30,14 @@ class Experience:
         trackExperienceCap = ToontownBattleGlobals.MaxSkill
 
         # If we have an access level below the # of levels of gags, determine the max xp we can obtain
+        # If none of these checks pass, we are allowed to go to 999,999 exp
         highestLevelGagAllowed = self.owner.getTrackAccessLevel(track)
         highestLevelGagAllowed = max(0, highestLevelGagAllowed)  # Allow negative to just mean 0
         if highestLevelGagAllowed <= ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL:
-            trackExperienceCap = ToontownBattleGlobals.Levels[track][highestLevelGagAllowed]
-            trackExperienceCap -= 1
+            trackExperienceCap = ToontownBattleGlobals.Levels[track][highestLevelGagAllowed] - 1
+        # Do we have access to the max gag level but not overflowing?
+        elif highestLevelGagAllowed == ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL+1:
+            trackExperienceCap = ToontownBattleGlobals.regMaxSkill - 1
 
         # Make sure it is not negative
         trackExperienceCap = max(0, trackExperienceCap)

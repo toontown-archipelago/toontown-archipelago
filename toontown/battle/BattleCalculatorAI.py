@@ -857,7 +857,7 @@ class BattleCalculatorAI:
                         if self.notify.getDebug():
                             self.notify.debug('Applying hp bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_HPBONUS_COL]))
                     elif len(attack[TOON_KBBONUS_COL]) > tgtPos:
-                        attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * (currTgt[currAtkType][0][2] / 100.0) # {4: [[0, 11000, 6000]]}
+                        attack[TOON_KBBONUS_COL][tgtPos] = math.ceil(totalDmgs * (currTgt[currAtkType][0][2] / 100.0)) # {4: [[0, 11000, 6000]]}
                         if self.notify.getDebug():
                             self.notify.debug('Applying kb bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_KBBONUS_COL][tgtPos]) + ' to target ' + str(tgtPos))
                     else:

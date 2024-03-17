@@ -22,6 +22,13 @@ class DistributedCountryClubRoomAI(DistributedLevelAI.DistributedLevelAI, Countr
         self.countryClubDoId = countryClubDoId
         self.battleExpAggreg = battleExpAggreg
 
+    def getFloorNum(self):
+        countryClub = self.air.getDo(self.countryClubDoId)
+        if countryClub is None:
+            self.notify.warning('getFloorNum: could not find stage %s' % self.stageDoId)
+            return 0
+        return countryClub.floorNum
+
     def createEntityCreator(self):
         return FactoryEntityCreatorAI.FactoryEntityCreatorAI(level=self)
 
@@ -75,12 +82,18 @@ class DistributedCountryClubRoomAI(DistributedLevelAI.DistributedLevelAI, Countr
         return self.roomNum
 
     def getCogLevel(self):
+        levelAdjustment = 0
         if self.countryClubId == ToontownGlobals.BossbotCountryClubIntA:
-            return self.cogLevel
+            levelAdjustment -= 2
         elif self.countryClubId == ToontownGlobals.BossbotCountryClubIntB:
-            return self.cogLevel + 1
-        else:
-            return self.cogLevel + 2
+            levelAdjustment -= 1
+
+        if 1 < self.numPlayers < 4:
+            levelAdjustment += 1
+        elif self.numPlayers == 4:
+            levelAdjustment += 2
+
+        return self.cogLevel + levelAdjustment
 
     def d_setSuits(self):
         self.sendUpdate('setSuits', [self.getSuits(), self.getReserveSuits()])

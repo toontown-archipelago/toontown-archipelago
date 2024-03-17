@@ -47,7 +47,9 @@ from . import Toon
 from . import LaffMeter
 from toontown.quest import QuestMap
 from toontown.archipelago.gui.ArchipelagoOnscreenLog import ArchipelagoOnscreenLog
-from ..archipelago.util.location_scouts_cache import LocationScoutsCache
+from toontown.archipelago.definitions.rewards import get_ap_reward_from_id
+from toontown.archipelago.gui.ArchipelagoRewardDisplay import ArchipelagoRewardDisplay, APRewardGift
+from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
 
 WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
 from toontown.toontowngui import NewsPageButtonManager
@@ -173,6 +175,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.camera = camera
 
             self.archipelagoLog: ArchipelagoOnscreenLog = None
+            self.archipelagoRewardDisplay: ArchipelagoRewardDisplay = None
             self.locationScoutsCache: LocationScoutsCache = LocationScoutsCache()
             self.currentlyInHQ = False
 
@@ -278,6 +281,8 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         taskMgr.removeTasksMatching('*ioorrd234*')
         self.archipelagoLog.destroy()
         del self.archipelagoLog
+        self.archipelagoRewardDisplay.destroy()
+        del self.archipelagoRewardDisplay
         self.ignoreAll()
         DistributedToon.DistributedToon.disable(self)
 
@@ -390,6 +395,19 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             base.setCellsAvailable([base.bottomCells[4]], 0)
 
         self.archipelagoLog = ArchipelagoOnscreenLog()
+        self.archipelagoRewardDisplay = ArchipelagoRewardDisplay(
+            frameColor=(0.1, 0.1, 0.1, .9),
+            frameSize=(0, .9, 0, .2),
+            pos=(-1, 0, -.4),
+            text='',
+            text_scale=.035,
+            text_align=TextNode.ACenter,
+            text_fg=(1, 1, 1, 1),
+            text_pos=(.55, 0.138)
+        )
+        self.archipelagoRewardDisplay.reparentTo(base.a2dTopLeft)
+        self.archipelagoRewardDisplay.set_default_options()
+        self.archipelagoRewardDisplay.hide()
 
         controls = base.controls
         self.accept(controls.SECONDARY_ACTION, self.__zeroPowerToss)
@@ -1988,11 +2006,16 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def sendArchipelagoMessage(self, message: str) -> None:
         self.archipelagoLog.addToLog(message)
 
+    # Shows a reward that we were given, called from the AI
+    def showReward(self, rewardId: int, playerName: str, isLocal: bool) -> None:
+        apReward = get_ap_reward_from_id(rewardId)
+        rewardGift = APRewardGift(apReward, playerName, isLocal)
+        self.archipelagoRewardDisplay.queue_reward(rewardGift)
+
     # Called from the ai, update our location scouts for quest poster display
     def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
         new_cache = LocationScoutsCache.from_struct(cacheTuples)
         self.locationScoutsCache.merge(new_cache, update=True)
-        print(self.locationScoutsCache._data_cache)
 
     # Call this method to get the cached location that we have stored
     def getCachedLocationReward(self, locationId: int) -> str:

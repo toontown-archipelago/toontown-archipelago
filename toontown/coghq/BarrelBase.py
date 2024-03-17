@@ -30,6 +30,14 @@ class BarrelBase:
                 self._gagTrack = self.gagTrack
         return self._gagTrack
 
+    def getAPRewardIndex(self):
+
+        # No attribute defined in the spec, return -1
+        if not hasattr(self, 'apRewardIndex'):
+            return -1
+
+        return self.apRewardIndex
+
     if __dev__:
 
         def setRewardPerGrab(self, rewardPerGrab):

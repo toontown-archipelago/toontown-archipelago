@@ -2813,6 +2813,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         pass
 
     # To be overridden in LocalToon, just here for safety
+    def showReward(self, rewardId: int, playerName: str, isLocal: bool) -> None:
+        pass
+
+    # To be overridden in LocalToon, just here for safety
     def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
         pass
 

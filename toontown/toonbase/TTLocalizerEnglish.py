@@ -2772,7 +2772,7 @@ SuitAttackTaunts = {'Audit': ["I believe your books don't balance.",
               "You aren't above the law!",
               'There should be a law against you.',
               "There's no ex post facto with me!",
-              "The opinions expressed in this attack are not those of Toontown Online.",
+              "The opinions expressed in this attack are not those of Toontown: Archipelago.",
               'We cannot be held responsible for damages suffered in this attack.',
               'Your results for this attack may vary.',
               'This attack is void where prohibited.',
@@ -4157,7 +4157,8 @@ LauncherPhaseNames = {0: 'Initialization',
  10: Cashbot + ' HQ',
  11: Lawbot + ' HQ',
  12: Bossbot + ' HQ',
- 13: 'Parties'}
+ 13: 'Parties',
+ 14: 'AP'}
 LauncherProgress = '%(name)s (%(current)s of %(total)s)'
 LauncherStartingMessage = "Starting Toontown Online... "
 LauncherDownloadFile = 'Downloading update for ' + LauncherProgress + '...'
@@ -4220,8 +4221,11 @@ InventoryPageTitle = 'Gags'
 InventoryPageDeleteTitle = 'Delete Gags'
 InventoryPageTrackFull = 'You have all the gags in the %s track. Your gags in this track are %s%% more effective!'
 InventoryPageTrackLocked = 'You must obtain a %s Training Frame to learn additional gags in this track.'
+InventoryPageTrackOverflowLocked = 'You must obtain a %s Training Frame to start overflowing your experience in this track.'
 InventoryPagePluralPoints = 'You will get a new\n%(trackName)s gag when you\nget %(numPoints)s more %(trackName)s points.'
 InventoryPageSinglePoint = 'You will get a new\n%(trackName)s gag when you\nget %(numPoints)s more %(trackName)s point.'
+InventoryPageOverflowSinglePoint = 'You will start to overflow %(trackName)s gag experience when you get %(numPoints)s more %(trackName)s point.'
+InventoryPageOverflowPluralPoints = 'You will start to overflow %(trackName)s gag experience when you get %(numPoints)s more %(trackName)s point.'
 InventoryPageNoAccess = 'You do not have access to the %s track yet.'
 NPCFriendPageTitle = 'SOS Toons'
 PartyDateFormat = '%(mm)s %(dd)d, %(yyyy).4d'

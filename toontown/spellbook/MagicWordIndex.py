@@ -32,7 +32,9 @@ import time
 import random
 import json
 
-from apworld.toontown import locations
+from apworld.toontown import locations, items
+from toontown.archipelago.definitions import rewards
+
 
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
@@ -3176,7 +3178,7 @@ class dna(MagicWord):
 
 # Start new magic words implemented for crane league debugging
 class ShowScoreboard(MagicWord):
-    aliases = ['sb', 'scoreboard']
+    aliases = ['scoreboard']
     desc = 'make scoreboard appear'
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
 
@@ -3306,7 +3308,34 @@ class Archipelago(MagicWord):
             toon.newToon()
             return f"Wiped {toon.getName()}'s progress!"
 
+        if operation in ('reward', 'gift'):
+            # Get a random reward, apply it and show it just like the packet does
+            for _ in range(random.randint(1, 20)):
+                item_def = random.choice(items.ITEM_DEFINITIONS)
+                reward = rewards.get_ap_reward_from_id(item_def.unique_id)
+                reward.apply(toon)
+                toon.d_showReward(item_def.unique_id, "The Spellbook", False)
+            return f"Gave {toon.getName()} a few random AP rewards"
+
         return f"Invalid argument, valid arguments are: check"
+
+
+# Use this command template for spawning objects client side to tweak attributes quickly
+# class SpawnObject(MagicWord):
+#     aliases = ["sb"]
+#     desc = "Spawn barrel."
+#     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+#
+#     def handleWord(self, invoker, avId, toon, *args):
+#         from ..coghq.DistributedAPCheckBarrel import DistributedAPCheckBarrel
+#         b = DistributedAPCheckBarrel(base.cr)
+#         b.generateInit()
+#         b.reparentTo(render)
+#         b.loadModel()
+#         b.applyLabel()
+#         pos = base.localAvatar.getPos()
+#         b.setPos(pos[0]+5, pos[1], pos[2])
+#         return "Spawned a barrel"
 
 
 # Instantiate all classes defined here to register them.

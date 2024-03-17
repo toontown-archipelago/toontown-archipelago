@@ -4380,6 +4380,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def d_sendArchipelagoMessage(self, message: str) -> None:
         self.sendUpdate('sendArchipelagoMessage', [message])
 
+    # Tell this toon to display a certain AP reward, and the string to go along with it
+    # The reason we provide the string here is because the client has no clue what maps things such as player
+    # IDs, item IDs, etc etc so we do that work on the AI
+    def d_showReward(self, rewardId: int, displayString: str, isLocal: bool) -> None:
+        self.sendUpdate('showReward', [rewardId, displayString, isLocal])
+
     # Sent by client to request hint points from the arch session
     def requestHintPoints(self):
         self.sendUpdate('hintPointResp', [self.hintPoints])

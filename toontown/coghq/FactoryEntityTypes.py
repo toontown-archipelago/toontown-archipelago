@@ -46,6 +46,11 @@ class HealBarrel(BarrelBase):
     type = 'healBarrel'
 
 
+class APBarrel(BarrelBase):
+    type = 'apBarrel'
+    attribs = (('apBarrelIndex', 0, 'int'))
+
+
 class Switch(Nodepath):
     abstract = 1
     output = 'bool'

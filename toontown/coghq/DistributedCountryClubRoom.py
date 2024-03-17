@@ -147,6 +147,27 @@ class DistributedCountryClubRoom(DistributedLevel.DistributedLevel, CountryClubR
         if self.countryClub is not None:
             self.countryClub.currentRoomName = CountryClubRoomSpecs.BossbotCountryClubRoomId2RoomName[self.roomId]
 
+        def printPos(self = self):
+            thisZone = self.getZoneNode(LevelConstants.UberZoneEntId)
+            pos = base.localAvatar.getPos(thisZone)
+            h = base.localAvatar.getH(thisZone)
+            roomName = CountryClubRoomSpecs.BossbotCountryClubRoomId2RoomName[self.roomId]
+            print('countryClub pos: %s, h: %s, room: %s' % (repr(pos), h, roomName))
+            if self.countryClub is not None:
+                floorNum = self.countryClub.floorNum
+            else:
+                floorNum = '???'
+
+            # Virgin py2 version that breaks the video game
+            # posStr = 'X: %.3f' % pos[0] + '\nY: %.3f' % pos[1] + '\nZ: %.3f' % pos[2] + '\nH: %.3f' % h + '\ncountryClubId: %s' % self.countryClubId + '\nfloor: %s' % floorNum + '\nroomId: %s' % self.roomId + '\nroomName: %s' % roomName
+            # Gigachad py3 version that uses FSTRINGS :D
+            posStr = f"X: {pos[0]:.3f}, Y: {pos[1]:.3f}, Z: {pos[2]:.3f}, H: {h:.3f}\ncountryClubID: {self.countryClubId}\nfloor: {floorNum}\nroomId: {self.roomId}\nroomName: {roomName}"
+            base.localAvatar.setChatAbsolute(posStr, CFThought | CFTimeout)
+            return
+
+        self.accept('f2', printPos)
+        return
+
     def handleSOSPanel(self, panel):
         avIds = []
         for avId in self.avIdList:
