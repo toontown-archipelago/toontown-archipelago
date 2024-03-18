@@ -384,40 +384,40 @@ def getInteriorCreditMultiplier(numFloors):
 def getFactoryCreditMultiplier(factoryId):
 
     if factoryId == ToontownGlobals.SellbotFactoryIntS:
-        return 4.0
+        return 6.0
 
-    return 3.0
+    return 5.0
 
 
 def getFactoryMeritMultiplier(factoryId):
     if factoryId == ToontownGlobals.SellbotFactoryIntS:
-        return 5.0
+        return 6.0
 
-    return 4.0
+    return 5.0
 
 
 def getMintCreditMultiplier(mintId):
     return {
-        CashbotMintIntA: 4.0,
-        CashbotMintIntB: 5.0,
-        CashbotMintIntC: 6.0
+        CashbotMintIntA: 5.0,
+        CashbotMintIntB: 6.0,
+        CashbotMintIntC: 7.0
     }.get(mintId, 3.0)
 
 
 def getStageCreditMultiplier(stageId):
     return {
-        LawbotStageIntA: 4.0,
-        LawbotStageIntB: 5.0,
-        LawbotStageIntC: 6.0,
-        LawbotStageIntD: 7.0,
+        LawbotStageIntA: 6.0,
+        LawbotStageIntB: 7.0,
+        LawbotStageIntC: 8.0,
+        LawbotStageIntD: 9.0,
     }.get(stageId, 4.0)
 
 
 def getCountryClubCreditMultiplier(countryClubId):
     return {
-        BossbotCountryClubIntA: 5.0,
-        BossbotCountryClubIntB: 6.0,
-        BossbotCountryClubIntC: 7.0
+        BossbotCountryClubIntA: 7.0,
+        BossbotCountryClubIntB: 8.0,
+        BossbotCountryClubIntC: 9.0
     }.get(countryClubId, 4.0)
 
 
