@@ -30,7 +30,7 @@ GlobalEntities = {1000: {'type': 'levelMgr',
          'scale': Vec3(1, 1, 1),
          'cellId': 0,
          'radius': 15.0},
- 10002: {'type': 'healBarrel',  # ARCHI BARREL PLACEMENT - FLOOR BATTLE ROOM
+ 10002: {'type': 'apBarrel',  # ARCHI BARREL PLACEMENT - FLOOR BATTLE ROOM
          'name': 'archi-2',
          'comment': '',
          'parentEntId': 0,

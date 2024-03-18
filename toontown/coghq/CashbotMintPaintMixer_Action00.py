@@ -39,7 +39,7 @@ GlobalEntities = {1000: {'type': 'levelMgr',
          'scale': Vec3(1.0, 1.0, 1.0),
          'rewardPerGrab': 8,
          'rewardPerGrabMax': 0},
- 10011: {'type': 'healBarrel',  # ARCHI BARREL PLACEMENT
+ 10011: {'type': 'apBarrel',  # ARCHI BARREL PLACEMENT
          'name': 'archi-3',
          'comment': '',
          'parentEntId': 0,

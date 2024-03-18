@@ -216,41 +216,60 @@ class ToontownLocationName(Enum):
     DISCOVER_CBHQ =                             "Discover Cashbot HQ"
     DISCOVER_LBHQ =                             "Discover Lawbot HQ"
     DISCOVER_BBHQ =                             "Discover Bossbot HQ"
-    FRONT_FACTORY_BARREL_1 =                    "Front Factory Warehouse Barrel"
-    FRONT_FACTORY_BARREL_2 =                    "Front Factory Middle Silo Barrel"
+    FRONT_FACTORY_BARREL_1 =                    "Front Factory West Silo Barrel"
+    FRONT_FACTORY_BARREL_2 =                    "Front Factory East Silo Barrel"
+    FRONT_FACTORY_BARREL_3 =                    "Front Factory Warehouse Barrel"
     CLEAR_FRONT_FACTORY =                       "Front Factory Cleared"
-    SIDE_FACTORY_BARREL_1 =                     "Side Factory Warehouse Barrel"
-    SIDE_FACTORY_BARREL_2 =                     "Side Factory Middle Silo Barrel"
+    SIDE_FACTORY_BARREL_1 =                     "Side Factory West Silo Barrel"
+    SIDE_FACTORY_BARREL_2 =                     "Side Factory East Silo Barrel"
+    SIDE_FACTORY_BARREL_3 =                     "Side Factory Warehouse Barrel"
     CLEAR_SIDE_FACTORY =                        "Side Factory Cleared"
     COIN_MINT_BARREL_1 =                        "Coin Mint Parkour Barrel"
     COIN_MINT_BARREL_2 =                        "Coin Mint Stomper Barrel"
+    COIN_MINT_BARREL_3 =                        "Coin Mint Paint Mixer Barrel"
     CLEAR_COIN_MINT =                           "Coin Mint Cleared"
     DOLLAR_MINT_BARREL_1 =                      "Dollar Mint Parkour Barrel"
     DOLLAR_MINT_BARREL_2 =                      "Dollar Mint Stomper Barrel"
+    DOLLAR_MINT_BARREL_3 =                      "Dollar Mint Paint Mixer Barrel"
     CLEAR_DOLLAR_MINT =                         "Dollar Mint Cleared"
     BULLION_MINT_BARREL_1 =                     "Bullion Mint Parkour Barrel"
     BULLION_MINT_BARREL_2 =                     "Bullion Mint Stomper Barrel"
+    BULLION_MINT_BARREL_3 =                     "Bullion Mint Paint Mixer Barrel"
     CLEAR_BULLION_MINT =                        "Bullion Mint Cleared"
-    A_OFFICE_BARREL_1 =                         "A Office Barrel (Floor 1)"
-    A_OFFICE_BARREL_2 =                         "A Office Barrel (Floor 2)"
+    A_OFFICE_BARREL_1 =                         "A Office Platform Barrel (Floor 1)"
+    A_OFFICE_BARREL_2 =                         "A Office Platform Barrel (Floor 2)"
+    A_OFFICE_BARREL_3 =                         "A Office Battle Barrel (Floor 1)"
+    A_OFFICE_BARREL_4 =                         "A Office Battle Barrel (Floor 2)"
     CLEAR_A_OFFICE =                            "A Office Cleared"
-    B_OFFICE_BARREL_1 =                         "B Office Barrel (Floor 1)"
-    B_OFFICE_BARREL_2 =                         "B Office Barrel (Floor 2)"
+    B_OFFICE_BARREL_1 =                         "B Office Platform Barrel (Floor 1)"
+    B_OFFICE_BARREL_2 =                         "B Office Platform Barrel (Floor 2)"
+    B_OFFICE_BARREL_3 =                         "B Office Battle Barrel (Floor 1)"
+    B_OFFICE_BARREL_4 =                         "B Office Battle Barrel (Floor 2)"
     CLEAR_B_OFFICE =                            "B Office Cleared"
-    C_OFFICE_BARREL_1 =                         "C Office Barrel (Floor 1)"
-    C_OFFICE_BARREL_2 =                         "C Office Barrel (Floor 2)"
+    C_OFFICE_BARREL_1 =                         "C Office Platform Barrel (Floor 1)"
+    C_OFFICE_BARREL_2 =                         "C Office Platform Barrel (Floor 2)"
+    C_OFFICE_BARREL_3 =                         "C Office Battle Barrel (Floor 1)"
+    C_OFFICE_BARREL_4 =                         "C Office Battle Barrel (Floor 2)"
     CLEAR_C_OFFICE =                            "C Office Cleared"
-    D_OFFICE_BARREL_1 =                         "D Office Barrel (Floor 1)"
-    D_OFFICE_BARREL_2 =                         "D Office Barrel (Floor 2)"
+    D_OFFICE_BARREL_1 =                         "D Office Platform Barrel (Floor 1)"
+    D_OFFICE_BARREL_2 =                         "D Office Platform Barrel (Floor 2)"
+    D_OFFICE_BARREL_3 =                         "D Office Battle Barrel (Floor 1)"
+    D_OFFICE_BARREL_4 =                         "D Office Battle Barrel (Floor 2)"
     CLEAR_D_OFFICE =                            "D Office Cleared"
     FRONT_ONE_BARREL_1 =                        "Front One Fairway Barrel"
+    FRONT_ONE_BARREL_2 =                        "Front One Golfing Barrel"
     CLEAR_FRONT_ONE =                           "Front One Cleared"
     MIDDLE_TWO_BARREL_1 =                       "Middle Two Fairway Barrel (Hole 1)"
     MIDDLE_TWO_BARREL_2 =                       "Middle Two Fairway Barrel (Hole 2)"
+    MIDDLE_TWO_BARREL_3 =                       "Middle Two Golfing Barrel (Hole 1)"
+    MIDDLE_TWO_BARREL_4 =                       "Middle Two Golfing Barrel (Hole 2)"
     CLEAR_MIDDLE_TWO =                          "Middle Two Cleared"
     BACK_THREE_BARREL_1 =                       "Back Three Fairway Barrel (Hole 1)"
     BACK_THREE_BARREL_2 =                       "Back Three Fairway Barrel (Hole 2)"
     BACK_THREE_BARREL_3 =                       "Back Three Fairway Barrel (Hole 3)"
+    BACK_THREE_BARREL_4 =                       "Back Three Golfing Barrel (Hole 1)"
+    BACK_THREE_BARREL_5 =                       "Back Three Golfing Barrel (Hole 2)"
+    BACK_THREE_BARREL_6 =                       "Back Three Golfing Barrel (Hole 3)"
     CLEAR_BACK_THREE =                          "Back Three Cleared"
     SELLBOT_PROOF =                             "Sellbot Proof"
     CASHBOT_PROOF =                             "Cashbot Proof"
@@ -465,39 +484,58 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     # region Facilities
     ToontownLocationDefinition(ToontownLocationName.FRONT_FACTORY_BARREL_1, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFourOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.FRONT_FACTORY_BARREL_2, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFourOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.FRONT_FACTORY_BARREL_3, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFourOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_FRONT_FACTORY,    ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFourOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.SIDE_FACTORY_BARREL_1,  ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.SideFactoryKey,  Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.SIDE_FACTORY_BARREL_2,  ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.SideFactoryKey,  Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.SIDE_FACTORY_BARREL_3,  ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.SideFactoryKey,  Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_SIDE_FACTORY,     ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.SideFactoryKey,  Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.COIN_MINT_BARREL_1,     ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.CoinMintKey,     Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.COIN_MINT_BARREL_2,     ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.CoinMintKey,     Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.COIN_MINT_BARREL_3,     ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.CoinMintKey,     Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_COIN_MINT,        ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.CoinMintKey,     Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DOLLAR_MINT_BARREL_1,   ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.DollarMintKey,   Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DOLLAR_MINT_BARREL_2,   ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.DollarMintKey,   Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.DOLLAR_MINT_BARREL_3,   ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.DollarMintKey,   Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_DOLLAR_MINT,      ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.DollarMintKey,   Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.BULLION_MINT_BARREL_1,  ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.BullionMintKey,  Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.BULLION_MINT_BARREL_2,  ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.BullionMintKey,  Rule.HasLevelSixOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.BULLION_MINT_BARREL_3,  ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.BullionMintKey,  Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_BULLION_MINT,     ToontownLocationType.FACILITIES, ToontownRegionName.CBHQ, [Rule.BullionMintKey,  Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.A_OFFICE_BARREL_1,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeAKey,      Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.A_OFFICE_BARREL_2,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeAKey,      Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.A_OFFICE_BARREL_3,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeAKey,      Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.A_OFFICE_BARREL_4,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeAKey,      Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_A_OFFICE,         ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeAKey,      Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.B_OFFICE_BARREL_1,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeBKey,      Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.B_OFFICE_BARREL_2,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeBKey,      Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.B_OFFICE_BARREL_3,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeBKey,      Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.B_OFFICE_BARREL_4,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeBKey,      Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_B_OFFICE,         ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeBKey,      Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.C_OFFICE_BARREL_1,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeCKey,      Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.C_OFFICE_BARREL_2,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeCKey,      Rule.HasLevelSixOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.C_OFFICE_BARREL_3,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeCKey,      Rule.HasLevelSixOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.C_OFFICE_BARREL_4,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeCKey,      Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_C_OFFICE,         ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeCKey,      Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.D_OFFICE_BARREL_1,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeDKey,      Rule.HasLevelSevenOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.D_OFFICE_BARREL_2,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeDKey,      Rule.HasLevelSevenOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.D_OFFICE_BARREL_3,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeDKey,      Rule.HasLevelSevenOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.D_OFFICE_BARREL_4,      ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeDKey,      Rule.HasLevelSevenOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_D_OFFICE,         ToontownLocationType.FACILITIES, ToontownRegionName.LBHQ, [Rule.OfficeDKey,      Rule.HasLevelSevenOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.FRONT_ONE_BARREL_1,     ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.FrontOneKey,     Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.FRONT_ONE_BARREL_2,     ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.FrontOneKey,     Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_FRONT_ONE,        ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.FrontOneKey,     Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.MIDDLE_TWO_BARREL_1,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.MiddleTwoKey,    Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.MIDDLE_TWO_BARREL_2,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.MiddleTwoKey,    Rule.HasLevelSixOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.MIDDLE_TWO_BARREL_3,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.MiddleTwoKey,    Rule.HasLevelSixOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.MIDDLE_TWO_BARREL_4,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.MiddleTwoKey,    Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_MIDDLE_TWO,       ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.MiddleTwoKey,    Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.BACK_THREE_BARREL_1,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.BACK_THREE_BARREL_2,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.BACK_THREE_BARREL_3,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.BACK_THREE_BARREL_4,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.BACK_THREE_BARREL_5,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.BACK_THREE_BARREL_6,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_BACK_THREE,       ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag]),
     # endregion
     # region Gag Unlocks

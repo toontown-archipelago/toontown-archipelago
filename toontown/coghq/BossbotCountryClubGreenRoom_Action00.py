@@ -60,7 +60,7 @@ GlobalEntities = {1000: {'type': 'levelMgr',
          'pos': Point3(0, 0, 0),
          'hpr': Vec3(0, 0, 0),
          'scale': 1},
- 10011: {'type': 'healBarrel',  # ARCHI BARREL PLACEMENT - POST GOLFING
+ 10011: {'type': 'apBarrel',  # ARCHI BARREL PLACEMENT - POST GOLFING
          'name': 'archi-2',
          'comment': '',
          'parentEntId': 0,

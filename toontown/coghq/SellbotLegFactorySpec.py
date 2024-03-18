@@ -2425,7 +2425,7 @@ GlobalEntities = {1000: {'type': 'levelMgr',
          'apRewardIndex': 1,
          'rewardPerGrab': 5,
          'rewardPerGrabMax': 0},
- 20121: {'type': 'healBarrel',  # ARCHI BARREL PLACEMENT - WAREHOUSE
+ 20121: {'type': 'apBarrel',  # ARCHI BARREL PLACEMENT - WAREHOUSE
          'name': 'archi-3',
          'comment': '',
          'parentEntId': 0,

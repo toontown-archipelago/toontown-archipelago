@@ -20,34 +20,53 @@ class DistributedAPCheckBarrelAI(DistributedBarrelBaseAI.DistributedBarrelBaseAI
         # Factory barrels (2nd number in tuple is the ApBarrelIndex, 3rd is floor (0) bc we don't have floors)
         (ToontownGlobals.SellbotFactoryInt, 0, 0): locations.ToontownLocationName.FRONT_FACTORY_BARREL_1.value,
         (ToontownGlobals.SellbotFactoryInt, 1, 0): locations.ToontownLocationName.FRONT_FACTORY_BARREL_2.value,
+        (ToontownGlobals.SellbotFactoryInt, 2, 0): locations.ToontownLocationName.FRONT_FACTORY_BARREL_3.value,
         (ToontownGlobals.SellbotFactoryIntS, 0, 0): locations.ToontownLocationName.SIDE_FACTORY_BARREL_1.value,
         (ToontownGlobals.SellbotFactoryIntS, 1, 0): locations.ToontownLocationName.SIDE_FACTORY_BARREL_2.value,
+        (ToontownGlobals.SellbotFactoryIntS, 2, 0): locations.ToontownLocationName.SIDE_FACTORY_BARREL_3.value,
 
         # Mint barrels (2nd number in tuple is the ApBarrelIndex, 3rd is floor (0) bc we don't have floors)
         (ToontownGlobals.CashbotMintIntA, 0, 0): locations.ToontownLocationName.COIN_MINT_BARREL_1.value,
         (ToontownGlobals.CashbotMintIntA, 1, 0): locations.ToontownLocationName.COIN_MINT_BARREL_2.value,
+        (ToontownGlobals.CashbotMintIntA, 2, 0): locations.ToontownLocationName.COIN_MINT_BARREL_3.value,
         (ToontownGlobals.CashbotMintIntB, 0, 0): locations.ToontownLocationName.DOLLAR_MINT_BARREL_1.value,
         (ToontownGlobals.CashbotMintIntB, 1, 0): locations.ToontownLocationName.DOLLAR_MINT_BARREL_2.value,
+        (ToontownGlobals.CashbotMintIntB, 2, 0): locations.ToontownLocationName.DOLLAR_MINT_BARREL_3.value,
         (ToontownGlobals.CashbotMintIntC, 0, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_1.value,
         (ToontownGlobals.CashbotMintIntC, 1, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_2.value,
+        (ToontownGlobals.CashbotMintIntC, 2, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_3.value,
 
         # Office barrels (2nd is apBarrelIndex like before, 3rd number in tuple is the floorNum)
         (ToontownGlobals.LawbotStageIntA, 0, 0): locations.ToontownLocationName.A_OFFICE_BARREL_1.value,
         (ToontownGlobals.LawbotStageIntA, 0, 1): locations.ToontownLocationName.A_OFFICE_BARREL_2.value,
+        (ToontownGlobals.LawbotStageIntA, 1, 0): locations.ToontownLocationName.A_OFFICE_BARREL_3.value,
+        (ToontownGlobals.LawbotStageIntA, 1, 1): locations.ToontownLocationName.A_OFFICE_BARREL_4.value,
         (ToontownGlobals.LawbotStageIntB, 0, 0): locations.ToontownLocationName.B_OFFICE_BARREL_1.value,
         (ToontownGlobals.LawbotStageIntB, 0, 1): locations.ToontownLocationName.B_OFFICE_BARREL_2.value,
+        (ToontownGlobals.LawbotStageIntB, 1, 0): locations.ToontownLocationName.B_OFFICE_BARREL_3.value,
+        (ToontownGlobals.LawbotStageIntB, 1, 1): locations.ToontownLocationName.B_OFFICE_BARREL_4.value,
         (ToontownGlobals.LawbotStageIntC, 0, 0): locations.ToontownLocationName.C_OFFICE_BARREL_1.value,
         (ToontownGlobals.LawbotStageIntC, 0, 1): locations.ToontownLocationName.C_OFFICE_BARREL_2.value,
+        (ToontownGlobals.LawbotStageIntC, 1, 0): locations.ToontownLocationName.C_OFFICE_BARREL_3.value,
+        (ToontownGlobals.LawbotStageIntC, 1, 1): locations.ToontownLocationName.C_OFFICE_BARREL_4.value,
         (ToontownGlobals.LawbotStageIntD, 0, 0): locations.ToontownLocationName.D_OFFICE_BARREL_1.value,
         (ToontownGlobals.LawbotStageIntD, 0, 1): locations.ToontownLocationName.D_OFFICE_BARREL_2.value,
+        (ToontownGlobals.LawbotStageIntD, 1, 0): locations.ToontownLocationName.D_OFFICE_BARREL_3.value,
+        (ToontownGlobals.LawbotStageIntD, 1, 1): locations.ToontownLocationName.D_OFFICE_BARREL_4.value,
 
         # CGC barrels (2nd is apBarrelIndex like before, 3rd number in tuple is the floorNum)
         (ToontownGlobals.BossbotCountryClubIntA, 0, 0): locations.ToontownLocationName.FRONT_ONE_BARREL_1.value,
+        (ToontownGlobals.BossbotCountryClubIntA, 1, 0): locations.ToontownLocationName.FRONT_ONE_BARREL_2.value,
         (ToontownGlobals.BossbotCountryClubIntB, 0, 0): locations.ToontownLocationName.MIDDLE_TWO_BARREL_1.value,
         (ToontownGlobals.BossbotCountryClubIntB, 0, 1): locations.ToontownLocationName.MIDDLE_TWO_BARREL_2.value,
+        (ToontownGlobals.BossbotCountryClubIntB, 1, 0): locations.ToontownLocationName.MIDDLE_TWO_BARREL_3.value,
+        (ToontownGlobals.BossbotCountryClubIntB, 1, 1): locations.ToontownLocationName.MIDDLE_TWO_BARREL_4.value,
         (ToontownGlobals.BossbotCountryClubIntC, 0, 0): locations.ToontownLocationName.BACK_THREE_BARREL_1.value,
         (ToontownGlobals.BossbotCountryClubIntC, 0, 1): locations.ToontownLocationName.BACK_THREE_BARREL_2.value,
         (ToontownGlobals.BossbotCountryClubIntC, 0, 2): locations.ToontownLocationName.BACK_THREE_BARREL_3.value,
+        (ToontownGlobals.BossbotCountryClubIntC, 1, 0): locations.ToontownLocationName.BACK_THREE_BARREL_4.value,
+        (ToontownGlobals.BossbotCountryClubIntC, 1, 1): locations.ToontownLocationName.BACK_THREE_BARREL_5.value,
+        (ToontownGlobals.BossbotCountryClubIntC, 1, 2): locations.ToontownLocationName.BACK_THREE_BARREL_6.value,
     }
 
     def __init__(self, level, entId):

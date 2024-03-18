@@ -52,7 +52,7 @@ GlobalEntities = {1000: {'type': 'levelMgr',
          'radius': 6.0,
          'showSolid': 0,
          'solidType': 'tube'},
- 10004: {'type': 'healBarrel',  # ARCHI BARREL PLACEMENT - FLOOR BATTLE ROOM
+ 10004: {'type': 'apBarrel',  # ARCHI BARREL PLACEMENT - FLOOR BATTLE ROOM
          'name': 'archi-2',
          'comment': '',
          'parentEntId': 0,
