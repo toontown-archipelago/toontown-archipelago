@@ -718,14 +718,16 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.d_setBattleExperience()
         self.b_setState('Reward')
         BattleExperienceAI.assignRewards(self.involvedToons, self.toonSkillPtsGained, self.suitsKilled, ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
-        preferredDept = random.randrange(len(SuitDNA.suitDepts))
-        typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3
-        preferredSummonType = random.choice(typeWeights)
+        numRewards = 6
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
                 toon.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.LAWBOT_PROOF.value))
-                self.giveCogSummonReward(toon, preferredDept, preferredSummonType)
+                for reward in range(numRewards):
+                    preferredDept = random.randrange(len(SuitDNA.suitDepts))
+                    typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3
+                    preferredSummonType = random.choice(typeWeights)
+                    self.giveCogSummonReward(toon, preferredDept, preferredSummonType)
                 toon.b_promote(self.deptIndex)
 
         for comboTracker in self.comboTrackers.values():
