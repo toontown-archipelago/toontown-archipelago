@@ -378,7 +378,10 @@ class UberTrapAward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.b_setHp(15)
+        newHp = 15 if av.getHp() > 15 else 1
+        damage = av.getHp() - newHp
+        if av.getHp() > 0:
+            av.takeDamage(damage)
         av.inventory.NPCMaxOutInv(maxLevel=6)
         av.b_setInventory(av.inventory.makeNetString())
 
