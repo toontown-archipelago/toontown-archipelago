@@ -95,8 +95,18 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
     def removeToon(self, avId, died=False):
         event = self.air.getAvatarExitEvent(avId)
         self.ignore(event)
+        if avId in self.involvedToons:
+            self.involvedToons.remove(avId)
+        if avId in self.looseToons:
+            self.looseToons.remove(avId)
         if not self.hasToons():
             taskMgr.doMethodLater(10, self.__bossDone, self.uniqueName('BossDone'))
+        else:
+            self.considerDefeat()
+
+    def considerDefeat(self):
+        if not self.hasToonsAlive():
+            self.setState("Defeat")
 
     def __bossDone(self, task):
         if self.air:
@@ -186,8 +196,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.sendUpdate('toonDied', [toon.doId])
 
         # Check if there are no toons left alive, if so this boss is over
-        if not self.hasToonsAlive():
-            self.setState('Defeat')
+        self.considerDefeat()
 
     def healToon(self, toon, increment):
         toon.toonUp(increment)
