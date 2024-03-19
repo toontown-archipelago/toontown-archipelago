@@ -378,10 +378,12 @@ class UberTrapAward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.playSound('phase_4/audio/sfx/avatar_emotion_very_sad.ogg')
         av.b_setHp(15)
         av.inventory.NPCMaxOutInv(maxLevel=6)
         av.b_setInventory(av.inventory.makeNetString())
+
+        av.d_broadcastHpString("UBERFIED!", (.35, .7, .35))
+        av.d_playEmote(EmoteFuncDict['Cry'], 1)
 
 
 class DripTrapAward(APReward):
@@ -398,6 +400,9 @@ class DripTrapAward(APReward):
         av.b_setBackpack(random.randint(1, 24), 0, 0)
         av.b_setGlasses(random.randint(1, 21), 0, 0)
         av.b_setHat(random.randint(1, 56), 0, 0)
+
+        av.d_broadcastHpString("FASHION STATEMENT!", (.9, .8, .2))
+        av.d_playEmote(EmoteFuncDict['Surprise'], 1)
 
 
 class GagShuffleAward(APReward):
