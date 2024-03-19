@@ -107,6 +107,7 @@ class ToontownItemName(enum.Enum):
     ### Traps ###
     UBER_TRAP = "Uber Trap"
     DRIP_TRAP = "Drip Trap"
+    GAG_SHUFFLE_TRAP = "Gag Shuffle Trap"
 
 
 @dataclass
@@ -210,8 +211,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD, ItemClassification.filler),
     # endregion
     # region Traps
-    ToontownItemDefinition(ToontownItemName.UBER_TRAP, ItemClassification.trap),
-    ToontownItemDefinition(ToontownItemName.DRIP_TRAP, ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.UBER_TRAP,        ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.DRIP_TRAP,        ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.GAG_SHUFFLE_TRAP, ItemClassification.trap),
     # endregion
 ]
 

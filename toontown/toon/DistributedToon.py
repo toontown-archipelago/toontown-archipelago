@@ -925,6 +925,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.doEmote(animIndex, animMultiplier, ts, callback, extraArgs)
         return
 
+    def playEmote(self, emoteIndex, animMultiplier, timestamp):
+        self.setEmoteState(emoteIndex, animMultiplier, timestamp)
+
     def setCogStatus(self, cogStatusList):
         self.cogs = cogStatusList
 
