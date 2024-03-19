@@ -579,22 +579,13 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.ignore('page_down')
         self.ignore('page_down-up')
 
-    def __fullyEnableControls(self):
-        self.enableControls()
-        self.enableAvatarControls()
-
     def enableAvatarControls(self):
-
-        if not self.allowControls:
-            self.accept("enableControls", self.__fullyEnableControls)
-
         if self.avatarControlsEnabled or not self.allowControls:
             return
         self.avatarControlsEnabled = 1
         self.setupAnimationEvents()
         self.controlManager.enable()
         self.listenForSprint()
-        self.accept("disableControls", self.disableControls)
 
     def disableAvatarControls(self):
         if not self.avatarControlsEnabled:
@@ -606,8 +597,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.clearPageUpDown()
         self.exitSprinting(lerpFov=False)
         self.ignoreSprint()
-        self.ignore("disableControls")
-        self.ignore("enableControls")
 
     def setWalkSpeedNormal(self):
         self.controlManager.setSpeeds(OTPGlobals.ToonForwardSpeed, OTPGlobals.ToonJumpForce, OTPGlobals.ToonReverseSpeed, OTPGlobals.ToonRotateSpeed)
