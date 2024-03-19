@@ -421,10 +421,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
         self.servingTimer = ToontownTimer.ToontownTimer()
         self.servingTimer.posInTopRightCorner()
-        if len(self.involvedToons) > 1:
-            self.servingTimer.countdown(ToontownGlobals.BossbotBossServingDuration)
-        else:
-            self.servingTimer.countdown(ToontownGlobals.BossbotBossServingDurationSolo)
+        self.servingTimer.countdown(ToontownGlobals.BossbotBossServingDuration)
         base.playMusic(self.phaseTwoMusic, looping=1, volume=0.9)
 
     def exitBattleTwo(self):

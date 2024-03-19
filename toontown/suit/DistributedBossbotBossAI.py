@@ -241,7 +241,10 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         diffInfo = ToontownGlobals.BossbotBossDifficultySettings[self.battleDifficulty]
         self.diffInfo = diffInfo
         self.numTables = diffInfo[0]
-        self.numDinersPerTable = diffInfo[1]
+        if len(self.involvedToons) == 1:
+            self.numDinersPerTable = math.ceil(diffInfo[1] * 0.75)
+        else:
+            self.numDinersPerTable = diffInfo[1]
         dinerLevel = diffInfo[2]
         for i in range(self.numTables):
             newTable = DistributedBanquetTableAI.DistributedBanquetTableAI(self.air, self, i, self.numDinersPerTable, dinerLevel)
@@ -264,10 +267,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for table in self.tables:
             table.turnOn()
 
-        if len(self.involvedToons) > 1:
-            timer = ToontownGlobals.BossbotBossServingDuration
-        else:
-            timer = ToontownGlobals.BossbotBossServingDurationSolo
+        timer = ToontownGlobals.BossbotBossServingDuration
 
         self.barrier = self.beginBarrier('BattleTwo', self.involvedToons, timer + 1, self.__doneBattleTwo)
 
@@ -607,7 +607,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def givePinkSlipReward(self, toon):
         self.notify.debug('TODO give pink slip to %s' % toon)
-        toon.addPinkSlips(self.battleDifficulty + 1)
+        toon.addPinkSlips(self.battleDifficulty + 6)  # 6 Base Tier 1
 
     def getThreat(self, toonId):
         if toonId in self.threatDict:
