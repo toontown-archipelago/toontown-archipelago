@@ -442,9 +442,10 @@ class BossRewardAward(APReward):
             av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 4)))
         elif self.reward == BossRewardAward.UNITE:
             uniteType = random.choice([ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK])
-            av.addResistanceMessage(random.choice(ResistanceChat.getItems(uniteType)))
+            uniteChoice = random.choice(ResistanceChat.getItems(uniteType))
+            av.addResistanceMessage(ResistanceChat.encodeId(uniteType, uniteChoice))
         elif self.reward == BossRewardAward.PINK_SLIP:
-            slipAmount = random.randint(1, 3)
+            slipAmount = random.randint(2, 3)
             av.addPinkSlips(slipAmount)
 
 
