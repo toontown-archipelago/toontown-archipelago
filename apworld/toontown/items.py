@@ -93,11 +93,11 @@ class ToontownItemName(enum.Enum):
     MONEY_2000 = "2000 Jellybeans"
 
     ### Gag XP Bundles ###
-    XP_500  = "500 Gag XP Bundle"
+    # XP_500  = "500 Gag XP Bundle"
     XP_1000 = "1000 Gag XP Bundle"
     XP_1500 = "1500 Gag XP Bundle"
     XP_2000 = "2000 Gag XP Bundle"
-    XP_2500 = "2500 Gag XP Bundle"
+    # XP_2500 = "2500 Gag XP Bundle"
 
     ### Reward Bundles ###
     SOS_REWARD       = "Random SOS Card"
@@ -200,11 +200,11 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.MONEY_500,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_2000,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_500,           ItemClassification.filler),
+    # ToontownItemDefinition(ToontownItemName.XP_500,           ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_1000,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_1500,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_2000,          ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_2500,          ItemClassification.filler),
+    # ToontownItemDefinition(ToontownItemName.XP_2500,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.SOS_REWARD,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.UNITE_REWARD,     ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD, ItemClassification.filler),
