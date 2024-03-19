@@ -12,6 +12,7 @@ from toontown.toon import InventoryBase
 from toontown.toonbase import TTLocalizer
 from toontown.battle import BattleBase
 from toontown.toon import NPCToons
+from toontown.chat import ResistanceChat
 from toontown.building import SuitBuildingGlobals
 from . import SuitDNA
 import random
@@ -719,6 +720,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.b_setState('Reward')
         BattleExperienceAI.assignRewards(self.involvedToons, self.toonSkillPtsGained, self.suitsKilled, ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
         numRewards = 6
+        numOtherRewards = 2
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
@@ -728,6 +730,17 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
                     typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3
                     preferredSummonType = random.choice(typeWeights)
                     self.giveCogSummonReward(toon, preferredDept, preferredSummonType)
+                for reward in range(numOtherRewards):
+                    randomSOS = random.choice(NPCToons.npcFriendsMinMaxStars(4, 5))
+                    toon.attemptAddNPCFriend(randomSOS)
+                    uniteType = random.choice([ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK])
+                    if uniteType == ResistanceChat.RESISTANCE_RESTOCK:
+                        restockItems = ResistanceChat.getItems(uniteType)
+                        uniteChoice = restockItems[random.randint(3, 6)]
+                    else:
+                        uniteChoice = random.choice(ResistanceChat.getItems(uniteType))
+                    toon.addResistanceMessage(ResistanceChat.encodeId(uniteType, uniteChoice))
+                toon.addPinkSlips(numOtherRewards)
                 toon.b_promote(self.deptIndex)
 
         for comboTracker in self.comboTrackers.values():
