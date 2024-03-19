@@ -382,9 +382,15 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 if configMax == 8:
                     maxNumCalls = 1
                 else:
-                    maxNumCalls = 2
-                if not toon.attemptAddNPCFriend(self.cagedToonNpcId, numCalls=maxNumCalls):
-                    self.notify.info('%s.unable to add NPCFriend %s to %s.' % (self.doId, self.cagedToonNpcId, toonId))
+                    maxNumCalls = 6
+                for call in range(1, maxNumCalls):
+                    if call == 1:
+                        if not toon.attemptAddNPCFriend(self.cagedToonNpcId):
+                            self.notify.info('%s.unable to add NPCFriend %s to %s.' % (self.doId, self.cagedToonNpcId, toonId))
+                    else:
+                        randomSOS = random.choice(NPCToons.npcFriendsMinMaxStars(3, 5))
+                        if not toon.attemptAddNPCFriend(randomSOS):
+                            self.notify.info('%s.unable to add NPCFriend %s to %s.' % (self.doId, randomSOS, toonId))
                 if self.__shouldPromoteToon(toon):
                     toon.b_promote(self.deptIndex)
                     self.sendUpdateToAvatarId(toonId, 'toonPromoted', [1])
