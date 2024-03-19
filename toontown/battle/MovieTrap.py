@@ -268,9 +268,6 @@ def __createThrownTrapMultiTrack(trap, propList, propName, propPos = None, propH
         throwTrack.append(createCartoonExplosionTrack(dustNode, 'dust', explosionPoint=Point3(0, 0, 0)))
         throwTrack.append(Func(battle.removeTrap, suit))
     else:
-        if suit.battleTrap != NO_TRAP:
-            notify.debug('trapSuit() - trap: %d destroyed existing trap: %d' % (level, suit.battleTrap))
-            battle.removeTrap(suit)
         throwTrack.append(Func(placeTrap, trapProp, suit))
         if trapName == 'tnt':
             tip = trapProp.find('**/joint_attachEmitter')
