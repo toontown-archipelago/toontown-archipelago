@@ -114,11 +114,20 @@ def __createFishingPoleMultiTrack(lure, dollar, dollarName, dollarType):
                 suitTrack.append(Parallel(moveTrack, reachTrack))
             else:
                 suitTrack.append(ActorInterval(suit, 'reach', duration=reachAnimDuration))
+
+            def __doubleTrapHackFix(trapProp, node):
+                if trapProp.isEmpty():
+                    return
+                try:
+                    trapProp.wrtReparentTo(node)
+                except:
+                    pass
+
             if trapProp:
-                suitTrack.append(Func(trapProp.wrtReparentTo, battle))
+                suitTrack.append(Func(__doubleTrapHackFix, trapProp, battle))
             suitTrack.append(Func(suit.setPos, battle, reachPos))
             if trapProp:
-                suitTrack.append(Func(trapProp.wrtReparentTo, suit))
+                suitTrack.append(Func(__doubleTrapHackFix, trapProp, suit))
                 suit.battleTrapProp = trapProp
             suitTrack.append(Func(suit.loop, 'neutral'))
             suitTrack.append(Func(battle.lureSuit, suit))
