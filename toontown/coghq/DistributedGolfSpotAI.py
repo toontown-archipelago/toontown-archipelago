@@ -27,14 +27,27 @@ class DistributedGolfSpotAI(DistributedObjectAI.DistributedObjectAI, FSM.FSM):
         if not self.allowControl:
             return
         avId = self.air.getAvatarIdFromSender()
-        if avId in self.boss.involvedToons and self.avId == 0 and self.state != 'Off':
-            golfSpotId = self.__getGolfSpotId(avId)
-            if golfSpotId == 0:
-                grantRequest = True
-                if self.boss and not self.boss.isToonRoaming(avId):
-                    grantRequest = False
-                if grantRequest:
-                    self.request('Controlled', avId)
+        toon = self.air.doId2do.get(avId)
+        if not toon:
+            return
+
+        if avId not in self.boss.involvedToons:
+            return
+
+        if self.avId != 0 or self.state == 'Off':
+            return
+
+        golfSpotId = self.__getGolfSpotId(avId)
+        if golfSpotId != 0:
+            return
+
+        if self.boss and not self.boss.isToonRoaming(avId):
+            return
+
+        if toon.getHp() <= 0:
+            return
+
+        self.request('Controlled', avId)
 
     def requestFree(self, gotHitByBoss):
         avId = self.air.getAvatarIdFromSender()

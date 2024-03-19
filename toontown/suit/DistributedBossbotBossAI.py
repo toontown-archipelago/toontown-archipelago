@@ -728,6 +728,9 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         result = []
         uprightTables = self.getUprightTables()
         for toonId in self.involvedToons:
+            toon = self.air.doId2do.get(toonId)
+            if toon and toon.getHp() <= 0:
+                continue
             toonTable = self.getToonTableIndex(toonId)
             if toonTable >= 0 and toonTable not in uprightTables:
                 pass
@@ -741,6 +744,9 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         maxThreat = 0
         maxToons = []
         for toonId in self.threatDict:
+            toon = self.air.doId2do.get(toonId)
+            if toon and toon.getHp() <= 0:
+                continue
             curThreat = self.threatDict[toonId]
             tableIndex = self.getToonTableIndex(toonId)
             if tableIndex > -1 and self.tables[tableIndex].state == 'Flat':
@@ -868,17 +874,6 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def __doGolfAreaAttack(self):
         self.numGolfAreaAttacks += 1
         self.b_setAttackCode(ToontownGlobals.BossCogGolfAreaAttack)
-
-    def hitToon(self, toonId):
-        avId = self.air.getAvatarIdFromSender()
-        if not self.validate(avId, avId != toonId, 'hitToon on self'):
-            return
-        if avId not in self.involvedToons or toonId not in self.involvedToons:
-            return
-        toon = self.air.doId2do.get(toonId)
-        if toon:
-            self.healToon(toon, 1)
-            self.sendUpdate('toonGotHealed', [toonId])
 
     def requestGetToonup(self, beltIndex, toonupIndex, toonupNum):
         grantRequest = False

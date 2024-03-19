@@ -1367,7 +1367,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         toons = []
         for toonId in self.involvedToons:
             toon = base.cr.doId2do.get(toonId)
-            if toon:
+            if toon and toon.getHp() > 0:
                 toons.append(toon)
 
         if not toons:

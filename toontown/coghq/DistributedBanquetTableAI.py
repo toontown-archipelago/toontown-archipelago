@@ -160,14 +160,24 @@ class DistributedBanquetTableAI(DistributedObjectAI.DistributedObjectAI, FSM.FSM
 
     def requestControl(self):
         avId = self.air.getAvatarIdFromSender()
-        if avId in self.boss.involvedToons and self.avId == 0 and self.state == 'Free':
-            tableId = self.__getTableId(avId)
-            if tableId == 0:
-                grantRequest = True
-                if self.boss and not self.boss.isToonRoaming(avId):
-                    grantRequest = False
-                if grantRequest:
-                    self.b_setState('Controlled', avId)
+        if self.avId != 0 or self.state != 'Free':
+            return
+
+        if avId not in self.boss.involvedToons:
+            return
+
+        tableId = self.__getTableId(avId)
+        if tableId != 0:
+            return
+
+        if self.boss and not self.boss.isToonRoaming(avId):
+            return
+
+        toon = self.air.doId2do.get(avId)
+        if not toon or toon.getHp() <= 0:
+            return
+
+        self.b_setState('Controlled', avId)
 
     def forceControl(self, avId):
         self.notify.debug('forceContrl  tableIndex=%d avId=%d' % (self.index, avId))
