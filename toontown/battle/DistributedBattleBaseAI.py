@@ -600,9 +600,11 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                 self.newSuits.remove(suit)
 
     def __makeToonRun(self, toonId, updateAttacks):
-        self.activeToons.remove(toonId)
+        if toonId in self.activeToons:
+            self.activeToons.remove(toonId)
         self.toonGone = 1
-        self.runningToons.append(toonId)
+        if toonId not in self.runningToons:
+            self.runningToons.append(toonId)
         taskName = self.taskName('running-toon-%d' % toonId)
         taskMgr.doMethodLater(TOON_RUN_T, self.__serverRunDone, taskName, extraArgs=(toonId, updateAttacks, taskName))
         self.taskNames.append(taskName)
