@@ -128,6 +128,8 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             return
         if not self.validate(avId, avId in self.involvedToons, 'touchCage from unknown avatar'):
             return
+        if not self.isToonAlive(avId):
+            return
         toon = simbase.air.doId2do.get(avId)
         if toon:
             toon.b_setNumPies(self.numPies)
