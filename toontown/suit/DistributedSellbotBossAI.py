@@ -306,6 +306,12 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.setPieType()
         self.b_setBossDamage(0, 0, 0)
         self.battleThreeStart = globalClock.getFrameTime()
+        self.bossMaxDamage = min((self.bossMaxDamage + (len(self.involvedToons) * 100)), 500)
+        if len(self.involvedToons) > 1:
+            hitCount = 0.35
+        else:
+            hitCount = 0.45
+        self.hitCountDamage = math.ceil(self.bossMaxDamage * hitCount)  # This is so the damage-based unstuns are similar to 100 hp 1 dmg
         for toonId in self.involvedToons:
             toon = simbase.air.doId2do.get(toonId)
             if toon:
