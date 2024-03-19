@@ -75,7 +75,6 @@ def __createFishingPoleMultiTrack(lure, dollar, dollarName, dollarType):
     died = target['died']
     revived = target['revived']
     reachAnimDuration = 3.5
-    trapProp = suit.battleTrapProp
     pole = globalPropPool.getProp('fishing-pole')
     pole2 = MovieUtil.copyProp(pole)
     poles = [pole, pole2]
@@ -108,17 +107,31 @@ def __createFishingPoleMultiTrack(lure, dollar, dollarName, dollarType):
             suitName = suit.getStyleName()
             retardPos, retardHpr = battle.getActorPosHpr(suit)
             retardPos.setY(retardPos.getY() + MovieUtil.SUIT_EXTRA_REACH_DISTANCE)
+            trapProp = suit.battleTrapProp
+            if trapProp and trapProp.isEmpty():
+                trapProp = None
+                suit.battleTrapProp = None
+            print(f"Trap Prop: {trapProp}")
             if suitName in MovieUtil.largeSuits:
                 moveTrack = lerpSuit(suit, 0.0, reachAnimDuration / 2.5, retardPos, battle, trapProp)
                 reachTrack = ActorInterval(suit, 'reach', duration=reachAnimDuration)
                 suitTrack.append(Parallel(moveTrack, reachTrack))
             else:
                 suitTrack.append(ActorInterval(suit, 'reach', duration=reachAnimDuration))
+
+            def __doubleTrapHackFix(trapProp, node):
+                if trapProp.isEmpty():
+                    return
+                try:
+                    trapProp.wrtReparentTo(node)
+                except:
+                    pass
+
             if trapProp:
-                suitTrack.append(Func(trapProp.wrtReparentTo, battle))
+                suitTrack.append(Func(__doubleTrapHackFix, trapProp, battle))
             suitTrack.append(Func(suit.setPos, battle, reachPos))
             if trapProp:
-                suitTrack.append(Func(trapProp.wrtReparentTo, suit))
+                suitTrack.append(Func(__doubleTrapHackFix, trapProp, suit))
                 suit.battleTrapProp = trapProp
             suitTrack.append(Func(suit.loop, 'neutral'))
             suitTrack.append(Func(battle.lureSuit, suit))
