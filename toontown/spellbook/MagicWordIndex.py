@@ -2060,6 +2060,28 @@ class FillJury(MagicWord):
             boss.chairs[i].requestToonJuror()
         return "Filled chairs."
 
+class rss(MagicWord):
+    desc = "Restarts the seltzer round"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("round", str, False, "next")]
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        battle = args[0]
+        from toontown.suit.DistributedBossbotBossAI import DistributedBossbotBossAI
+        boss = None
+        for do in list(simbase.air.doId2do.values()):
+            if isinstance(do, DistributedBossbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "You aren't in a CEO!"
+
+        boss.exitIntroduction()
+        boss.b_setState('BattleFour')
+        return "Restarting Seltzer Round"
+
 
 class SkipVP(MagicWord):
     desc = "Skips to the indicated round of the VP."
