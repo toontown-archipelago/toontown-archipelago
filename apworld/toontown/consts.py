@@ -46,7 +46,6 @@ XP_RATIO_FOR_GAG_LEVEL = {
     8: 0.60
 }
 
-
 # Max species obtainable for each rod tier.
 ## WARNING !!! FISHING LOCATION RULES MUST BE UPDATED IF THIS DICT IS CHANGED !!!
 MAX_SPECIES_PER_ROD_TIER = {

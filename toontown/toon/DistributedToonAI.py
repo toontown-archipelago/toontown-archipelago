@@ -1570,10 +1570,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def getFishTank(self):
         return self.fishTank.getNetLists()
 
-    def makeRandomFishTank(self):
-        self.fishTank.generateRandomTank()
-        self.d_setFishTank(*self.fishTank.getNetLists())
-
     def addFishToTank(self, fish):
         numFish = len(self.fishTank)
         if numFish >= self.maxFishTank:
