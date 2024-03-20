@@ -3242,8 +3242,8 @@ class ShowScoreboard(MagicWord):
         global DEBUG_HEAT
 
         if not DEBUG_SCOREBOARD:
-            from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
-            DEBUG_SCOREBOARD = CashbotBossScoreboard()
+            from toontown.coghq.CogBossScoreboard import CogBossScoreboard
+            DEBUG_SCOREBOARD = CogBossScoreboard()
             DEBUG_SCOREBOARD.show()
             DEBUG_HEAT = CraneLeagueHeatDisplay()
             # for toon in self.getNearbyToons():

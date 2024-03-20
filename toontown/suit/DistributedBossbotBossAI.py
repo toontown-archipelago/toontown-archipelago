@@ -13,7 +13,7 @@ from toontown.coghq import DistributedBanquetTableAI
 from toontown.coghq import DistributedGolfSpotAI
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
-from toontown.suit import DistributedBossCogAI
+from toontown.suit import DistributedBossCogAI, BossCogGlobals
 from toontown.suit import DistributedSuitAI
 from toontown.suit import SuitDNA
 from toontown.building import SuitBuildingGlobals
@@ -425,6 +425,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.setupBattleFourObjects()
         self.battleFourStart = globalClock.getFrameTime()
         self.waitForNextAttack(5)
+        self.initializeComboTrackers()
 
     def exitBattleFour(self):
         self.recordCeoInfo()
@@ -497,7 +498,11 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         elif dmg >= self.STUN_THRESHOLD:
             self.b_setAttackCode(ToontownGlobals.BossCogDizzyNow)
             self.hitCount = 0
+            self.d_stunBonus(avId, BossCogGlobals.POINTS_STUN_CEO)
+            self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 7.0))
 
+        self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 3.0))
+        self.d_damageDealt(avId, dmg)
         dmg = min(self.getBossDamage() + dmg, self.bossMaxDamage)
         self.b_setBossDamage(dmg, 0, 0)
         if self.bossDamage >= self.bossMaxDamage:
@@ -591,6 +596,10 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.addThreat(avId, 0.1)
 
     def enterVictory(self):
+        # Calculate how long the seltzer round took
+        seltzerTime = globalClock.getFrameTime()
+        actualTime = seltzerTime - self.battleFourTimeStarted
+        self.d_updateTimer(actualTime)
         self.resetBattles()
         for table in self.tables:
             table.turnOff()
@@ -892,13 +901,19 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if avId not in self.involvedToons or toonId not in self.involvedToons:
             return
         toon = self.air.doId2do.get(toonId)
-        if toon:
-            self.healToon(toon, 1)
+
+        # todo maybe make this a mechanic from hitting teammates w seltzers?
+        # i added a clamp check to support this if we want to
+        if toon and toon.hp > 0:
+            hp = min(1, toon.getMaxHp() - toon.getHp())
+            self.d_avHealed(avId, hp)
+            self.healToon(toon, hp)
             self.sendUpdate('toonGotHealed', [toonId])
 
     def requestGetToonup(self, beltIndex, toonupIndex, toonupNum):
         grantRequest = False
         avId = self.air.getAvatarIdFromSender()
+        toon = None
         if self.state != 'BattleFour':
             grantRequest = False
         elif (beltIndex, toonupNum) not in self.toonupsGranted:
@@ -908,7 +923,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
                 if toon.hp <= 0:
                     grantRequest = False
-        if grantRequest:
+        if toon and grantRequest:
             self.toonupsGranted.insert(0, (beltIndex, toonupNum))
             if len(self.toonupsGranted) > 8:
                 self.toonupsGranted = self.toonupsGranted[0:8]
@@ -917,7 +932,9 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
              toonupIndex,
              toonupNum])
             if toonupIndex < len(self.toonUpLevels):
-                self.healToon(toon, self.toonUpLevels[toonupIndex])
+                hp = min(toon.getMaxHp() - toon.getHp(), self.toonUpLevels[toonupIndex])
+                self.d_avHealed(avId, hp)
+                self.healToon(toon, hp)
                 self.numToonupGranted += 1
                 self.totalLaffHealed += self.toonUpLevels[toonupIndex]
             else:

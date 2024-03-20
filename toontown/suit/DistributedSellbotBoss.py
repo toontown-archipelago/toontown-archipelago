@@ -893,6 +893,8 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossDamageMovie.setT(self.bossDamage * self.bossDamageToMovie)
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
         self.bossHealthBar.initialize(self.bossMaxDamage - self.bossDamage, self.bossMaxDamage)
+        self.resetAndShowScoreboard()
+        self.startTimer()
 
     def __doneBattleThree(self):
         self.setState('NearVictory')
@@ -919,6 +921,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         taskMgr.remove(taskName)
         self.battleThreeMusicTime = self.battleThreeMusic.getTime()
         self.battleThreeMusic.stop()
+        self.bossSpeedrunTimer.stop_updating()
         return
 
     def enterNearVictory(self):

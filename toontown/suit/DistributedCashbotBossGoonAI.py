@@ -73,6 +73,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         self.cTrav = CollisionTraverser('goon')
         self.cQueue = CollisionHandlerQueue()
         self.cTrav.addCollider(self.feelerNodePath, self.cQueue)
+        self.lastAvToStun = None
 
     def requestBattle(self, pauseTime):
         avId = self.air.getAvatarIdFromSender()
@@ -256,6 +257,10 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI.doFree(self, task)
         self.demand('Walk')
         return Task.done
+
+    # Returns the avId of who last stunned this goon, None if nobody has stunned it yet
+    def getStunnedByAvId(self) -> int or None:
+        return self.lastAvToStun
         
     
     ### Messages ###
@@ -280,6 +285,8 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
             self.b_destroyGoon()
             self.boss.d_updateGoonKilledBySafe(avId)
             return
+
+        self.lastAvToStun = avId
             
         # Stop the goon right where he is.
         self.__stopWalk(pauseTime)
@@ -289,8 +296,6 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         
         # Update stats and add track combo for points
         self.boss.d_updateGoonsStomped(avId)
-        comboTracker = self.boss.comboTrackers[avId]
-        comboTracker.incrementCombo(math.ceil((comboTracker.combo+1.0) / 4.0))
         
         DistributedGoonAI.DistributedGoonAI.requestStunned(self, pauseTime)
 

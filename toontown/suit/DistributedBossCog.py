@@ -5,12 +5,12 @@ from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
 from direct.directnotify import DirectNotifyGlobal
 from otp.avatar import DistributedAvatar
-from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimer, BossSpeedrunTimedTimer
+from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimer
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.battle import BattleExperience
 from toontown.battle import BattleBase
-from . import BossCog
+from . import BossCog, BossCogGlobals
 from . import SuitDNA
 from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
 from toontown.coghq import BossHealthBar
@@ -25,6 +25,9 @@ from toontown.friends import FriendsListManager
 from direct.controls.ControlManager import CollisionHandlerRayStart
 from direct.showbase import PythonUtil
 import random
+
+from ..coghq.CogBossScoreboard import CogBossScoreboard
+
 
 class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBossCog')
@@ -65,6 +68,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.elevatorType = ElevatorConstants.ELEVATOR_VP
         self.bossSpeedrunTimer = BossSpeedrunTimer()
         self.bossSpeedrunTimer.hide()
+        self.scoreboard = CogBossScoreboard()
+        self.scoreboard.hide()
         return
 
     def announceGenerate(self):
@@ -124,9 +129,39 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bubbleF.setTag('attackCode', str(ToontownGlobals.BossCogFrontAttack))
         self.bubbleF.stash()
 
+    def startTimer(self):
+        self.bossSpeedrunTimer.reset()
+        self.bossSpeedrunTimer.start_updating()
+        self.bossSpeedrunTimer.show()
+
     def updateTimer(self, secs):
         self.bossSpeedrunTimer.override_time(secs)
         self.bossSpeedrunTimer.update_time()
+
+    def resetAndShowScoreboard(self):
+        self.scoreboard.clearToons()
+        for avId in self.involvedToons:
+            if avId in base.cr.doId2do:
+                self.scoreboard.addToon(avId)
+        self.scoreboard.show()
+
+    def damageDealt(self, avId, damage):
+        self.scoreboard.addDamage(avId, damage)
+        self.scoreboard.addScore(avId, damage)
+
+    def stunBonus(self, avId, pointBonus):
+        self.scoreboard.addScore(avId, pointBonus, reason='STUN!')
+        self.scoreboard.addStun(avId)
+
+    def avHealed(self, avId, hp):
+        self.scoreboard.addScore(avId, hp, reason='HEAL!')
+        self.scoreboard.addHealing(avId, hp)
+
+    def updateCombo(self, avId, comboLength):
+        self.scoreboard.setCombo(avId, comboLength)
+
+    def awardCombo(self, avId, comboLength, amount):
+        self.scoreboard.addScore(avId, amount, reason='COMBO x' + str(comboLength) + '!')
 
     def disable(self):
         DistributedAvatar.DistributedAvatar.disable(self)
@@ -145,6 +180,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.ignoreAll()
         self.bossHealthBar.cleanup()
         self.bossSpeedrunTimer.cleanup()
+        self.scoreboard.cleanup()
         return
 
     def delete(self):
@@ -604,6 +640,14 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def toonDied(self, avId):
         if avId == localAvatar.doId:
             self.localToonDied()
+
+        self.scoreboard.addScore(avId, BossCogGlobals.POINTS_PENALTY_SAD, BossCogGlobals.PENALTY_GO_SAD_TEXT)
+        self.scoreboard.toonDied(avId)
+
+    def revivedToon(self, avId):
+        self.scoreboard.toonRevived(avId)
+        if avId == base.localAvatar.doId:
+            base.localAvatar.stunToon()
 
     def localToonToSafeZone(self, task=None):
         target_sz = ZoneUtil.getSafeZoneId(localAvatar.defaultZone)
