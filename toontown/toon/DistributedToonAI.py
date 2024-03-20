@@ -2012,6 +2012,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.emoteAccess[id] = bit
         self.d_setEmoteAccess(self.emoteAccess)
 
+    def d_playEmote(self, emoteIndex: int, animMultiplier: float = 1.0, timestamp=None):
+        if timestamp is None:
+            timestamp = globalClockDelta.getRealNetworkTime()
+
+        self.sendUpdate('playEmote', [emoteIndex, animMultiplier, timestamp])
+
     def b_setHouseId(self, id):
         self.setHouseId(id)
         self.d_setHouseId(id)

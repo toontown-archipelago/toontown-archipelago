@@ -253,7 +253,7 @@ AvPropDamage = (
         ((50, 75), (Levels[1][3], Levels[1][4])),
         ((85, 100), (Levels[1][4], Levels[1][5])),
         ((110, 195), (Levels[1][5], Levels[1][6])),
-        ((205, 205), (Levels[1][6], regMaxSkill))
+        ((200, 240), (Levels[1][6], regMaxSkill))
     ),
     (   # Lure
         ((30, 40), (Levels[2][0], Levels[2][1])),

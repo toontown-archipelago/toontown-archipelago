@@ -93,11 +93,11 @@ class ToontownItemName(enum.Enum):
     MONEY_2000 = "2000 Jellybeans"
 
     ### Gag XP Bundles ###
-    XP_500  = "500 Gag XP Bundle"
+    # XP_500  = "500 Gag XP Bundle"
     XP_1000 = "1000 Gag XP Bundle"
     XP_1500 = "1500 Gag XP Bundle"
     XP_2000 = "2000 Gag XP Bundle"
-    XP_2500 = "2500 Gag XP Bundle"
+    # XP_2500 = "2500 Gag XP Bundle"
 
     ### Reward Bundles ###
     SOS_REWARD       = "Random SOS Card"
@@ -107,6 +107,7 @@ class ToontownItemName(enum.Enum):
     ### Traps ###
     UBER_TRAP = "Uber Trap"
     DRIP_TRAP = "Drip Trap"
+    GAG_SHUFFLE_TRAP = "Gag Shuffle Trap"
 
 
 @dataclass
@@ -127,9 +128,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.useful),
     # endregion
     # region Gag Capacity
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5, ItemClassification.useful,  quantity=9),
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5, ItemClassification.useful,  quantity=12),
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.useful, quantity=2),
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.useful, quantity=0),
     # endregion
     # region Jellybean Capacity
     ToontownItemDefinition(ToontownItemName.MONEY_CAP_750,  ItemClassification.useful, quantity=1),
@@ -200,18 +201,19 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.MONEY_500,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_2000,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_500,           ItemClassification.filler),
+    # ToontownItemDefinition(ToontownItemName.XP_500,           ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_1000,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_1500,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_2000,          ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_2500,          ItemClassification.filler),
+    # ToontownItemDefinition(ToontownItemName.XP_2500,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.SOS_REWARD,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.UNITE_REWARD,     ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD, ItemClassification.filler),
     # endregion
     # region Traps
-    ToontownItemDefinition(ToontownItemName.UBER_TRAP, ItemClassification.trap),
-    ToontownItemDefinition(ToontownItemName.DRIP_TRAP, ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.UBER_TRAP,        ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.DRIP_TRAP,        ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.GAG_SHUFFLE_TRAP, ItemClassification.trap),
     # endregion
 ]
 

@@ -219,7 +219,7 @@ class DistributedAvatar(DistributedActor, Avatar):
             self.hpTextSeq = Sequence(self.hpText.posInterval(1.0, Point3(0, 0, self.height + 1.5), blendType='easeOut'), Wait(0.85), self.hpText.colorInterval(0.1, Vec4(r, g, b, 0)), Func(self.hideHpText))
             self.hpTextSeq.start()
 
-    def showHpString(self, text, duration = 0.85, scale = 0.7, color = (1, 0, 0, 1)):
+    def showHpString(self, text, duration = 1.1, scale = 0.7, color = (1, 0, 0, 1)):
         if self.HpTextEnabled and not self.ghostMode:
             if text != '':
                 if self.hpText:
@@ -234,8 +234,11 @@ class DistributedAvatar(DistributedActor, Avatar):
                 self.hpText.setScale(scale)
                 self.hpText.setBillboardAxis()
                 self.hpText.setPos(0, 0, self.height / 2)
-                self.hpTextSeq = Sequence(self.hpText.posInterval(1.0, Point3(0, 0, self.height + 1.5), blendType='easeOut'), Wait(duration), self.hpText.colorScaleInterval(0.25, Vec4(color[0], color[1], color[2], 0)), Func(self.hideHpText))
+                self.hpTextSeq = Sequence(self.hpText.posInterval(1.0, Point3(0, 0, self.height + 2.2), blendType='easeOut'), Wait(duration), self.hpText.colorScaleInterval(0.25, Vec4(color[0], color[1], color[2], 0)), Func(self.hideHpText))
                 self.hpTextSeq.start()
+
+    def broadcastHpString(self, message: str, r: float, g: float, b: float):
+        self.showHpString(message, color=(r, g, b, 1))
 
     def hideHpText(self):
         if self.hpText:

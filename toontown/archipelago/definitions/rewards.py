@@ -4,8 +4,10 @@ from enum import IntEnum
 import random
 
 from apworld.toontown import ToontownItemName, get_item_def_from_id
+from otp.otpbase.OTPLocalizerEnglish import EmoteFuncDict
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
+from toontown.battle import BattleBase
 
 from toontown.building import FADoorCodes
 from toontown.coghq.CogDisguiseGlobals import PartsPerSuitBitmasks
@@ -376,10 +378,15 @@ class UberTrapAward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.playSound('phase_4/audio/sfx/avatar_emotion_very_sad.ogg')
-        av.b_setHp(15)
+        newHp = 15 if av.getHp() > 15 else 1
+        damage = av.getHp() - newHp
+        if av.getHp() > 0:
+            av.takeDamage(damage)
         av.inventory.NPCMaxOutInv(maxLevel=6)
         av.b_setInventory(av.inventory.makeNetString())
+
+        av.d_broadcastHpString("UBERFIED!", (.35, .7, .35))
+        av.d_playEmote(EmoteFuncDict['Cry'], 1)
 
 
 class DripTrapAward(APReward):
@@ -396,6 +403,40 @@ class DripTrapAward(APReward):
         av.b_setBackpack(random.randint(1, 24), 0, 0)
         av.b_setGlasses(random.randint(1, 21), 0, 0)
         av.b_setHat(random.randint(1, 56), 0, 0)
+
+        av.d_broadcastHpString("FASHION STATEMENT!", (.9, .8, .2))
+        av.d_playEmote(EmoteFuncDict['Surprise'], 1)
+
+
+class GagShuffleAward(APReward):
+
+    # How many times do we attempt to add gags to the inventory (failsafe for infinite loop)
+    GAG_ADD_ATTEMPTS = 50_000
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("GAG SHUFFLE TRAP\n", color='salmon'),
+            MinimalJsonMessagePart(f"Got gags?")
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+
+        # Clear inventory, randomly choose gags and add them until we fill up
+        av.inventory.zeroInv()
+        target = av.getMaxCarry()
+        gagsAdded = 0
+        # "infinite" loop, we just bound it as a failsafe
+        for _ in range(self.GAG_ADD_ATTEMPTS):
+            track = random.randint(BattleBase.HEAL, BattleBase.DROP)
+            level = random.randint(0, ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL)
+            gagsAdded += av.inventory.addItem(track, level)
+
+            if gagsAdded >= target:
+                break
+
+        av.b_setInventory(av.inventory.makeNetString())
+        av.d_broadcastHpString("GAG SHUFFLE!", (.3, .5, .8))
+        av.d_playEmote(EmoteFuncDict['Confused'], 1)
 
 
 class GagExpBundleAward(APReward):
@@ -442,9 +483,10 @@ class BossRewardAward(APReward):
             av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 4)))
         elif self.reward == BossRewardAward.UNITE:
             uniteType = random.choice([ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK])
-            av.addResistanceMessage(random.choice(ResistanceChat.getItems(uniteType)))
+            uniteChoice = random.choice(ResistanceChat.getItems(uniteType))
+            av.addResistanceMessage(ResistanceChat.encodeId(uniteType, uniteChoice))
         elif self.reward == BossRewardAward.PINK_SLIP:
-            slipAmount = random.randint(1, 3)
+            slipAmount = random.randint(2, 3)
             av.addPinkSlips(slipAmount)
 
 
@@ -559,16 +601,17 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MONEY_500.value: JellybeanReward(500),
     ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
     ToontownItemName.MONEY_2000.value: JellybeanReward(2000),
-    ToontownItemName.XP_500.value: GagExpBundleAward(500),
+    # ToontownItemName.XP_500.value: GagExpBundleAward(500),
     ToontownItemName.XP_1000.value: GagExpBundleAward(1000),
     ToontownItemName.XP_1500.value: GagExpBundleAward(1500),
     ToontownItemName.XP_2000.value: GagExpBundleAward(2000),
-    ToontownItemName.XP_2500.value: GagExpBundleAward(2500),
+    # ToontownItemName.XP_2500.value: GagExpBundleAward(2500),
     ToontownItemName.SOS_REWARD.value: BossRewardAward(BossRewardAward.SOS),
     ToontownItemName.UNITE_REWARD.value: BossRewardAward(BossRewardAward.UNITE),
     ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP),
     ToontownItemName.UBER_TRAP.value: UberTrapAward(),
     ToontownItemName.DRIP_TRAP.value: DripTrapAward(),
+    ToontownItemName.GAG_SHUFFLE_TRAP.value: GagShuffleAward(),
 }
 
 

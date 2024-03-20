@@ -30,6 +30,10 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
      3,
      4]
 
+    SQUIRT_BASE_DAMAGES = [0, 10, 25, 35]
+    STUN_THRESHOLD = SQUIRT_BASE_DAMAGES[-1]
+    STUN_HIT_LIMIT = 5
+
     def __init__(self, air):
         DistributedBossCogAI.DistributedBossCogAI.__init__(self, air, 'c')
         FSM.FSM.__init__(self, 'DistributedBossbotBossAI')
@@ -241,7 +245,10 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         diffInfo = ToontownGlobals.BossbotBossDifficultySettings[self.battleDifficulty]
         self.diffInfo = diffInfo
         self.numTables = diffInfo[0]
-        self.numDinersPerTable = diffInfo[1]
+        if len(self.involvedToons) == 1:
+            self.numDinersPerTable = math.ceil(diffInfo[1] * 0.75)
+        else:
+            self.numDinersPerTable = diffInfo[1]
         dinerLevel = diffInfo[2]
         for i in range(self.numTables):
             newTable = DistributedBanquetTableAI.DistributedBanquetTableAI(self.air, self, i, self.numDinersPerTable, dinerLevel)
@@ -264,10 +271,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for table in self.tables:
             table.turnOn()
 
-        if len(self.involvedToons) > 1:
-            timer = ToontownGlobals.BossbotBossServingDuration
-        else:
-            timer = ToontownGlobals.BossbotBossServingDurationSolo
+        timer = ToontownGlobals.BossbotBossServingDuration
 
         self.barrier = self.beginBarrier('BattleTwo', self.involvedToons, timer + 1, self.__doneBattleTwo)
 
@@ -414,7 +418,9 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def enterBattleFour(self):
         self.battleFourTimeStarted = globalClock.getFrameTime()
         self.numToonsAtStart = len(self.involvedToons)
-        self.bossMaxDamage = math.ceil((self.numToonsAtStart / 8) * self.bossMaxDamage)
+        # 500 + 100x where x is numtoons-1
+        ceoMaxHp = ToontownGlobals.BossbotBossMinMaxDamage + 100 * (len(self.involvedToons)-1)
+        self.bossMaxDamage = min(ToontownGlobals.BossbotBossMaxDamage, ceoMaxHp)
         self.resetBattles()
         self.setupBattleFourObjects()
         self.battleFourStart = globalClock.getFrameTime()
@@ -479,14 +485,21 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if not self.validate(avId, avId in self.involvedToons, 'hitBoss from unknown avatar'):
             return
         self.validate(avId, bossDamage <= 3, 'invalid bossDamage %s' % bossDamage)
-        if bossDamage < 1:
+        if bossDamage not in (1, 2, 3):
             return
         currState = self.getCurrentOrNextState()
         if currState != 'BattleFour':
             return
-        bossDamage *= 2
-        bossDamage = min(self.getBossDamage() + bossDamage, self.bossMaxDamage)
-        self.b_setBossDamage(bossDamage, 0, 0)
+        dmg = self.SQUIRT_BASE_DAMAGES[bossDamage]
+        if self.attackCode in (ToontownGlobals.BossCogDizzy, ToontownGlobals.BossCogDizzyNow):
+            dmg *= 1.5
+            dmg = int(math.ceil(dmg))
+        elif dmg >= self.STUN_THRESHOLD:
+            self.b_setAttackCode(ToontownGlobals.BossCogDizzyNow)
+            self.hitCount = 0
+
+        dmg = min(self.getBossDamage() + dmg, self.bossMaxDamage)
+        self.b_setBossDamage(dmg, 0, 0)
         if self.bossDamage >= self.bossMaxDamage:
             self.b_setState('Victory')
         else:
@@ -495,6 +508,10 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def __recordHit(self, bossDamage):
         now = globalClock.getFrameTime()
         self.hitCount += 1
+        if self.hitCount >= self.STUN_HIT_LIMIT and self.attackCode in (ToontownGlobals.BossCogDizzy, ToontownGlobals.BossCogDizzyNow):
+            self.b_setAttackCode(ToontownGlobals.BossCogRecoverDizzyAttack)
+            self.movingToTable = False
+            self.waitForNextAttack(self.progressValue(10, 3))
         avId = self.air.getAvatarIdFromSender()
         self.addThreat(avId, bossDamage)
 
@@ -607,7 +624,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def givePinkSlipReward(self, toon):
         self.notify.debug('TODO give pink slip to %s' % toon)
-        toon.addPinkSlips(self.battleDifficulty + 1)
+        toon.addPinkSlips(self.battleDifficulty + 6)  # 6 Base Tier 1
 
     def getThreat(self, toonId):
         if toonId in self.threatDict:
@@ -638,16 +655,17 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def doNextAttack(self, task):
         attackCode = -1
-        optionalParam = None
+        optionalParam = 0
         if self.movingToTable:
             self.waitForNextAttack(5)
         elif self.attackCode == ToontownGlobals.BossCogDizzyNow:
-            attackCode = ToontownGlobals.BossCogRecoverDizzyAttack
-        elif self.getBattleFourTime() > self.overtimeOneStart and not self.doneOvertimeOneAttack:
+            attackCode = ToontownGlobals.BossCogGolfAreaAttack
+            self.waitForNextAttack(3)
+        elif self.getHealthPercentage() <= 0.66 and not self.doneOvertimeOneAttack:
             attackCode = ToontownGlobals.BossCogOvertimeAttack
             self.doneOvertimeOneAttack = True
             optionalParam = 0
-        elif self.getBattleFourTime() > 1.0 and not self.doneOvertimeTwoAttack:
+        elif self.getHealthPercentage() <= 0.33 and not self.doneOvertimeTwoAttack:
             attackCode = ToontownGlobals.BossCogOvertimeAttack
             self.doneOvertimeTwoAttack = True
             optionalParam = 1
@@ -674,8 +692,6 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         t = max(t0, t1)
         progVal = fromValue + (toValue - fromValue) * min(t, 1)
         self.notify.debug('progVal=%s' % progVal)
-        import pdb
-        pdb.set_trace()
         return progVal
 
     def __doDirectedAttack(self):

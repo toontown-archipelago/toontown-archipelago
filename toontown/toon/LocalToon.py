@@ -2033,18 +2033,10 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def enableControls(self) -> None:
         self.allowControls = True
 
-        self.ignore("enableControls")
-        self.accept("disableControls", self.disableControls)
-
-        self.controlManager.enableControls()
-        self.controlManager.enable()
-        self.listenForSprint()
+        place = base.cr.playGame.getPlace()
+        if place and place.getState() in ("walk", "finalBattle"):
+            self.enableAvatarControls()
 
     def disableControls(self) -> None:
         self.allowControls = False
-
-        self.ignore("disableControls")
-        self.accept("enableControls", self.enableControls)
-
-        self.controlManager.disableControls()
-        self.ignoreSprint()
+        self.disableAvatarControls()

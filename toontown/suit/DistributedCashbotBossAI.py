@@ -24,7 +24,7 @@ from apworld.toontown import locations
 from ..archipelago.definitions.util import ap_location_name_to_id
 
 # How many unites do we award on victory
-NUM_RESISTANCE_REWARDS = 3
+NUM_RESISTANCE_REWARDS = 6
 
 
 class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
@@ -1147,7 +1147,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Figure out if we want a toonup unite or a restock unite
         TYPES = [ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK]
         typeToGive = random.choice(TYPES)
-        choice = random.choice(ResistanceChat.getItems(typeToGive))
+        if typeToGive == ResistanceChat.RESISTANCE_RESTOCK:
+            restockItems = ResistanceChat.getItems(typeToGive)
+            choice = restockItems[random.randint(3, 6)]
+        else:
+            choice = random.choice(ResistanceChat.getItems(typeToGive))
         return ResistanceChat.encodeId(typeToGive, choice)
 
     def exitVictory(self):

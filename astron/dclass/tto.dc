@@ -512,6 +512,7 @@ dclass DistributedAvatar : DistributedSmoothNode, TalkPath_owner, TalkPath_whisp
   friendsNotify(int32, int8) ownrecv airecv clsend;
   checkAvOnShard(uint32) clsend airecv;
   confirmAvOnShard(uint32, int8);
+  broadcastHpString(string, int32/100, int32/100, int32/100) ownrecv broadcast;
 };
 
 struct Friend {
@@ -1014,6 +1015,7 @@ dclass DistributedToon : DistributedPlayer {
   setAnimState(char [0-1024], int16/1000, int16) broadcast ram ownsend airecv;
   setEmoteState(int16, int16/1000, int16) broadcast ram ownsend;
   setEmoteAccess(uint8[] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0]) required ownrecv db;
+  playEmote(int16, int16/1000, int16) broadcast ownrecv;
   setCustomMessages(uint16[] = []) required ownrecv db;
   setSleepAutoReply(uint32) broadcast clsend ownrecv;
   setResistanceMessages(pair16 [] = []) required ownrecv db;

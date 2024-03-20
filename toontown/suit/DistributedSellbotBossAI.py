@@ -203,6 +203,9 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if self.attackCode != ToontownGlobals.BossCogDizzyNow:
             side = random.choice([0, 1])
             direction = random.choice([0, 1])
+            # If we are near the end, always force the front door to open
+            if self.getHealthPercentage() <= .06:
+                side = 0
             self.sendUpdate('doStrafe', [side, direction])
         delayTime = 9
         self.waitForNextStrafe(delayTime)
@@ -308,6 +311,12 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.setPieType()
         self.b_setBossDamage(0, 0, 0)
         self.battleThreeStart = globalClock.getFrameTime()
+        self.bossMaxDamage = min((self.bossMaxDamage + (len(self.involvedToons) * 100)), 500)
+        if len(self.involvedToons) > 1:
+            hitCount = 0.35
+        else:
+            hitCount = 0.45
+        self.hitCountDamage = math.ceil(self.bossMaxDamage * hitCount)  # This is so the damage-based unstuns are similar to 100 hp 1 dmg
         for toonId in self.involvedToons:
             toon = simbase.air.doId2do.get(toonId)
             if toon:
@@ -384,9 +393,11 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 if configMax == 8:
                     maxNumCalls = 1
                 else:
-                    maxNumCalls = 2
-                if not toon.attemptAddNPCFriend(self.cagedToonNpcId, numCalls=maxNumCalls):
-                    self.notify.info('%s.unable to add NPCFriend %s to %s.' % (self.doId, self.cagedToonNpcId, toonId))
+                    maxNumCalls = 6
+                for call in range(maxNumCalls):
+                    randomSOS = random.choice(NPCToons.npcFriendsMinMaxStars(3, 5))
+                    if not toon.attemptAddNPCFriend(randomSOS):
+                        self.notify.info('%s.unable to add NPCFriend %s to %s.' % (self.doId, randomSOS, toonId))
                 if self.__shouldPromoteToon(toon):
                     toon.b_promote(self.deptIndex)
                     self.sendUpdateToAvatarId(toonId, 'toonPromoted', [1])

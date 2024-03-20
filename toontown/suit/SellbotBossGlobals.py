@@ -3,8 +3,8 @@ from toontown.coghq import DistributedHealBarrelAI
 from toontown.coghq import DistributedGagBarrelAI
 PieToonup = 1
 PieToonupNerfed = 2
-PieDamageMult = 1.0
-PieDamageMultNerfed = 2.0
+PieDamageMult = 5.0
+PieDamageMultNerfed = 5.0
 AttackMult = 1.0
 AttackMultNerfed = 0.5
 HitCountDamage = 35

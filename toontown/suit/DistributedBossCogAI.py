@@ -37,6 +37,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.keyStates = [
          'BattleOne', 'BattleTwo', 'BattleThree', 'Victory', 'Defeat']
         self.bossDamage = 0
+        self.bossMaxDamage = 100
         self.battleThreeStart = 0
         self.battleThreeDuration = 1800
         self.attackCode = None
@@ -164,6 +165,17 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         else:
             self.notify.warning('isToonWearingRentalSuit: toonId %s does not exist' % toonId)
             return False
+
+    def getHealthRemaining(self):
+        return self.bossMaxDamage - self.bossDamage
+
+    def getMaxHealth(self):
+        return self.bossMaxDamage
+
+    def getHealthPercentage(self) -> float:
+        if self.getMaxHealth() <= 0:
+            return 0
+        return self.getHealthRemaining() / self.getMaxHealth()
 
     def __countNormalDisguiseToons(self):
         return len(self.involvedToons) + len(self.looseToons) - self.__countRentalDisguiseToons()
