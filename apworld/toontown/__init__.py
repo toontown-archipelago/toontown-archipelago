@@ -255,9 +255,9 @@ class ToontownWorld(World):
         trap: int = round(junk * (self.options.trap_percent / 100))
         filler: int = junk - trap
         for i in range(trap):
-            pool.append(self.create_item(items.random_trap().name.value))
+            pool.append(self.create_item(items.random_trap().value))
         for i in range(filler):
-            pool.append(self.create_item(items.random_junk().name.value))
+            pool.append(self.create_item(items.random_junk().value))
 
         # Finalize item pool.
         self.multiworld.itempool += pool
