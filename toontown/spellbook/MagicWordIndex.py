@@ -1681,6 +1681,29 @@ class LeaveRace(MagicWord):
         messenger.send('leaveRace')
 
 
+class rsp(MagicWord):
+    desc = "Restarts the pie round"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("round", str, False, "next")]
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        battle = args[0]
+        from toontown.suit.DistributedSellbotBossAI import DistributedSellbotBossAI
+        boss = None
+        for do in list(simbase.air.doId2do.values()):
+            if isinstance(do, DistributedSellbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "You aren't in a VP!"
+
+        boss.exitIntroduction()
+        boss.b_setState('BattleThree')
+        return "Restarting Pie Round"
+
+
 class SkipCFO(MagicWord):
     desc = "Skips to the indicated round of the CFO."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
