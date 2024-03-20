@@ -314,7 +314,6 @@ def can_catch_new_species(species: int, rod_tier: int) -> bool:
     return species < MAX_SPECIES_PER_ROD_TIER[rod_tier]
 
 
-
 """
 Location definitions
 """

@@ -1610,7 +1610,7 @@ dclass DistributedFishingSpot : DistributedObject {
   setPondDoId(uint32) required broadcast ram;
   setPosHpr(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10) required broadcast ram;
   requestEnter() airecv clsend;
-  rejectEnter();
+  rejectEnter(uint16);
   requestExit() airecv clsend;
   setOccupied(uint32) broadcast ram;
   doCast(uint8/255, int16/100) airecv clsend;

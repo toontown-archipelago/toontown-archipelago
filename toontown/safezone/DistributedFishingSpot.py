@@ -8,6 +8,8 @@ from direct.directnotify import DirectNotifyGlobal
 from apworld.toontown.fish import MAX_SPECIES_PER_ROD_TIER
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
+from toontown.building import FADoorCodes
+from toontown.distributed import DelayDelete
 from toontown.toonbase import ToontownGlobals
 from toontown.fishing import FishGlobals
 from toontown.shtiker import FishPage
@@ -190,8 +192,46 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
     def d_requestEnter(self):
         self.sendUpdate('requestEnter', [])
 
-    def rejectEnter(self):
+    def rejectEnter(self, reason: int):
         self.cr.playGame.getPlace().setState('walk')
+        if reason != 0:
+            message = FADoorCodes.reasonDict[reason]
+            self.__faRejectEnter(message)
+
+    ### DistributedDoor reject code ###
+
+    def __faRejectEnter(self, message):
+        self.rejectDialog = TTDialog.TTGlobalDialog(message=message, doneEvent='doorRejectAck', style=TTDialog.Acknowledge)
+        self.rejectDialog.show()
+        self.rejectDialog.delayDelete = DelayDelete.DelayDelete(self, '__faRejectEnter')
+        event = 'clientCleanup'
+        self.acceptOnce(event, self.__handleClientCleanup)
+        base.cr.playGame.getPlace().setState('stopped')
+        self.acceptOnce('doorRejectAck', self.__handleRejectAck)
+        self.acceptOnce('stoppedAsleep', self.__handleFallAsleepDoor)
+
+    def __handleClientCleanup(self):
+        if hasattr(self, 'rejectDialog') and self.rejectDialog:
+            self.rejectDialog.doneStatus = 'ok'
+        self.__handleRejectAck()
+
+    def __handleFallAsleepDoor(self):
+        self.rejectDialog.doneStatus = 'ok'
+        self.__handleRejectAck()
+
+    def __handleRejectAck(self):
+        self.ignore('doorRejectAck')
+        self.ignore('stoppedAsleep')
+        self.ignore('clientCleanup')
+        doneStatus = self.rejectDialog.doneStatus
+        if doneStatus != 'ok':
+            self.notify.error('Unrecognized doneStatus: ' + str(doneStatus))
+        self.cr.playGame.getPlace().setState('walk')
+        self.rejectDialog.delayDelete.destroy()
+        self.rejectDialog.cleanup()
+        del self.rejectDialog
+
+    ### END DistributedDoor reject code
 
     def d_requestExit(self):
         self.sendUpdate('requestExit', [])

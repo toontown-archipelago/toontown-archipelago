@@ -287,6 +287,41 @@ class TaskAccessReward(APReward):
         av.addAccessKey(key)
 
 
+class FishingLicenseReward(APReward):
+    TOONTOWN_CENTRAL = ToontownGlobals.ToontownCentral
+    DONALDS_DOCK = ToontownGlobals.DonaldsDock
+    DAISYS_GARDENS = ToontownGlobals.DaisyGardens
+    MINNIES_MELODYLAND = ToontownGlobals.MinniesMelodyland
+    THE_BRRRGH = ToontownGlobals.TheBrrrgh
+    DONALDS_DREAMLAND = ToontownGlobals.DonaldsDreamland
+
+    ZONE_TO_DISPLAY_NAME = {
+        TOONTOWN_CENTRAL: "Toontown Central",
+        DONALDS_DOCK: "Donald's Dock",
+        DAISYS_GARDENS: "Daisy Gardens",
+        MINNIES_MELODYLAND: "Minnie's Melodyland",
+        THE_BRRRGH: "The Brrrgh",
+        DONALDS_DREAMLAND: "Donald's Dreamland",
+    }
+
+    def __init__(self, playground: int):
+        self.playground: int = playground
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You may now "),
+            MinimalJsonMessagePart("Fish", color='cyan'),
+            MinimalJsonMessagePart(" in"),
+            MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        # Get the key ID for this playground
+        key = FADoorCodes.LICENSE_TO_ACCESS_CODE[self.playground]
+        av.addAccessKey(key)
+
+
 class FacilityAccessReward(APReward):
     FACILITY_ID_TO_DISPLAY = {
         FADoorCodes.FRONT_FACTORY_ACCESS_MISSING: "Front Factory",
@@ -581,6 +616,12 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MML_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.MINNIES_MELODYLAND),
     ToontownItemName.TB_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.THE_BRRRGH),
     ToontownItemName.DDL_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DONALDS_DREAMLAND),
+    ToontownItemName.TTC_FISHING.value: FishingLicenseReward(FishingLicenseReward.TOONTOWN_CENTRAL),
+    ToontownItemName.DD_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DOCK),
+    ToontownItemName.DG_FISHING.value: FishingLicenseReward(FishingLicenseReward.DAISYS_GARDENS),
+    ToontownItemName.MML_FISHING.value: FishingLicenseReward(FishingLicenseReward.MINNIES_MELODYLAND),
+    ToontownItemName.TB_FISHING.value: FishingLicenseReward(FishingLicenseReward.THE_BRRRGH),
+    ToontownItemName.DDL_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DREAMLAND),
     ToontownItemName.FRONT_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
     ToontownItemName.SIDE_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING),
     ToontownItemName.COIN_MINT_ACCESS.value: FacilityAccessReward(FADoorCodes.COIN_MINT_ACCESS_MISSING),
