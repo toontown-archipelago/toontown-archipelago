@@ -45,3 +45,18 @@ XP_RATIO_FOR_GAG_LEVEL = {
     7: 0.50,
     8: 0.60
 }
+
+
+# Max species obtainable for each rod tier.
+## WARNING !!! FISHING LOCATION RULES MUST BE UPDATED IF THIS DICT IS CHANGED !!!
+MAX_SPECIES_PER_ROD_TIER = {
+    0: 10,
+    1: 20,
+    2: 35,
+    3: 50,
+    4: 70,
+}
+
+
+def can_catch_new_species(species: int, rod_tier: int) -> bool:
+    return species < MAX_SPECIES_PER_ROD_TIER[rod_tier]

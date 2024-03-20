@@ -385,13 +385,13 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.BIG_CHEESE_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightBossbot]),
     # endregion
     # region Fishing
-    ToontownLocationDefinition(ToontownLocationName.FISHING_10_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.TwigRod,   Rule.OnePlaygroundAccessible]),
-    ToontownLocationDefinition(ToontownLocationName.FISHING_20_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.BambooRod, Rule.TwoPlaygroundsAccessible]),
-    ToontownLocationDefinition(ToontownLocationName.FISHING_30_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.WoodRod,   Rule.ThreePlaygroundsAccessible]),
-    ToontownLocationDefinition(ToontownLocationName.FISHING_40_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.SteelRod,  Rule.FourPlaygroundsAccessible]),
-    ToontownLocationDefinition(ToontownLocationName.FISHING_50_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.GoldRod,   Rule.FivePlaygroundsAccessible]),
-    ToontownLocationDefinition(ToontownLocationName.FISHING_60_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.GoldRod,   Rule.SixPlaygroundsAccessible]),
-    ToontownLocationDefinition(ToontownLocationName.FISHING_COMPLETE_ALBUM, ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.GoldRod,   Rule.SixPlaygroundsAccessible]),
+    ToontownLocationDefinition(ToontownLocationName.FISHING_10_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.TwigRod]),
+    ToontownLocationDefinition(ToontownLocationName.FISHING_20_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.BambooRod]),
+    ToontownLocationDefinition(ToontownLocationName.FISHING_30_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.WoodRod]),
+    ToontownLocationDefinition(ToontownLocationName.FISHING_40_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.SteelRod]),
+    ToontownLocationDefinition(ToontownLocationName.FISHING_50_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.SteelRod]),
+    ToontownLocationDefinition(ToontownLocationName.FISHING_60_SPECIES,     ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.GoldRod]),
+    ToontownLocationDefinition(ToontownLocationName.FISHING_COMPLETE_ALBUM, ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.GoldRod]),
     # endregion
     # region Tasking
     ToontownLocationDefinition(ToontownLocationName.TOONTOWN_CENTRAL_TASK_1,    ToontownLocationType.TTC_TASKS, ToontownRegionName.TTC, [Rule.HasTTCHQAccess]),

@@ -4,6 +4,7 @@ from typing import Dict
 from direct.directnotify import DirectNotifyGlobal
 
 from apworld.toontown import locations
+from apworld.toontown.consts import can_catch_new_species
 
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.fishing import FishGlobals
@@ -85,6 +86,39 @@ class FishManagerAI:
         assert fish is not None
         return fish
 
+    def attemptBlockNewSpecies(self, original_fish, av, zoneId):
+        # How many times should we try to block a new species
+        ATTEMPTS = 1000
+
+        # Simulate some amount of casts in the current pond to prioritize the fish here first
+        for _ in range(ATTEMPTS):
+            success, genus, species, weight = FishGlobals.getRandomFishVitals(zoneId, av.getFishingRod())
+            fish = FishBase(genus, species, weight)
+            result = av.fishCollection.getCollectResult(fish)  # Simulate us catching the fish but don't actually
+
+            # Return this fish if it's not a new species
+            if result != FishGlobals.COLLECT_NEW_ENTRY:
+                return fish
+
+        # Check across all fish we've caught (prevent zone cheese at all costs!)
+        all_fish = FishGlobals.getAllFish()
+        random.shuffle(all_fish)
+
+        for fish_data in all_fish:
+            genus, species = fish_data
+            weight = FishGlobals.getRandomWeight(genus, species, rodIndex=av.getFishingRod())
+            fish = FishBase(genus, species, weight)
+
+            # Simulate a catch, is this new?
+            result = av.fishCollection.getCollectResult(fish)
+
+            # Return this fish if it's not a new species
+            if result != FishGlobals.COLLECT_NEW_ENTRY:
+                return fish
+
+        # We failed reddit
+        return original_fish
+
     def shouldForceNewSpecies(self, av):
 
         # Maxed toons don't need this
@@ -94,6 +128,9 @@ class FishManagerAI:
         rng = random.random()
         threshold = self.newSpeciesPity.get(av.doId, 0)
         return rng < threshold
+
+    def shouldForceBlockNewSpecies(self, av):
+        return not can_catch_new_species(len(av.fishCollection), av.fishingRod)
 
     def addNewSpeciesPity(self, av):
 
@@ -155,8 +192,10 @@ class FishManagerAI:
             success, genus, species, weight = FishGlobals.getRandomFishVitals(zoneId, av.getFishingRod())
             fish = FishBase(genus, species, weight)
 
-            # Are we due to forcefully get a new species?
-            if self.shouldForceNewSpecies(av):
+            # Route species logic for pity/blocking
+            if self.shouldForceBlockNewSpecies(av):
+                fish = self.attemptBlockNewSpecies(fish, av, zoneId)
+            elif self.shouldForceNewSpecies(av):
                 fish = self.attemptForceNewSpecies(av, zoneId)
 
             # Catch the fish

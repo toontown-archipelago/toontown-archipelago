@@ -5,6 +5,7 @@ from direct.directtools.DirectGeometry import LineNodePath
 from direct.distributed import DistributedObject
 from direct.directnotify import DirectNotifyGlobal
 
+from apworld.toontown.consts import MAX_SPECIES_PER_ROD_TIER
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.toonbase import ToontownGlobals
@@ -433,28 +434,29 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
             self.pityLabel.hide()
             return
 
-        if fishCount < 10:
-            fishNumberColor = 'red'
-        elif fishCount < 20:
-            fishNumberColor = 'salmon'
-        elif fishCount < 40:
-            fishNumberColor = 'yellow'
-        elif fishCount < 50:
-            fishNumberColor = 'green'
-        elif fishCount < 60:
-            fishNumberColor = 'green'
-        elif fishCount < 70:
-            fishNumberColor = 'cyan'
-        else:
-            fishNumberColor = 'white'  # won't show but just to be safe
+        maxSpeciesForTier = MAX_SPECIES_PER_ROD_TIER[localAvatar.fishingRod]
+        fishCaughtRatio = fishCount / maxSpeciesForTier
 
-        if self.pity < .10:
+        if fishCount == 70:
+            fishNumberColor = 'plum'
+        elif fishCaughtRatio < 0.33:
+            fishNumberColor = 'red'
+        elif fishCaughtRatio < 0.66:
+            fishNumberColor = 'salmon'
+        elif fishCaughtRatio < 1.00:
+            fishNumberColor = 'yellow'
+        elif fishCaughtRatio < 1.01:
+            fishNumberColor = 'green'
+        else:
+            fishNumberColor = 'black'
+
+        if self.pity <= .10:
             color = 'red'
-        elif self.pity < .20:
+        elif self.pity <= .20:
             color = 'salmon'
-        elif self.pity < .50:
+        elif self.pity <= .50:
             color = 'yellow'
-        elif self.pity < .75:
+        elif self.pity <= .75:
             color = 'green'
         else:
             color = 'cyan'
@@ -464,7 +466,7 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         msg_parts = [
             MinimalJsonMessagePart("Fish: "),
             MinimalJsonMessagePart(f"{fishCount}", color=fishNumberColor),
-            MinimalJsonMessagePart(f" / 70\n"),
+            MinimalJsonMessagePart(f" / {maxSpeciesForTier}\n"),
             MinimalJsonMessagePart("Pity: "),
             MinimalJsonMessagePart(f"{clean_pity}", color=color),
         ]
