@@ -1,6 +1,6 @@
 from otp.ai.AIBaseGlobal import *
 from direct.distributed.ClockDelta import *
-from . import DistributedBossCogAI, SuitDNA
+from . import DistributedBossCogAI, SuitDNA, BossCogGlobals
 from direct.directnotify import DirectNotifyGlobal
 from otp.avatar import DistributedAvatarAI
 from . import DistributedSuitAI
@@ -88,6 +88,8 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             return
         if self.attackCode != ToontownGlobals.BossCogDizzyNow:
             return
+        self.d_damageDealt(avId, bossDamage)
+        self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 2.0))
         bossDamage = min(self.getBossDamage() + bossDamage, self.bossMaxDamage)
         self.b_setBossDamage(bossDamage, 0, 0)
         if self.bossDamage >= self.bossMaxDamage:
@@ -102,6 +104,8 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         currState = self.getCurrentOrNextState()
         if currState != 'BattleThree':
             return
+        self.d_stunBonus(avId, BossCogGlobals.POINTS_STUN_VP)
+        self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 5.0))
         self.b_setAttackCode(ToontownGlobals.BossCogDizzyNow)
         self.b_setBossDamage(self.getBossDamage(), 0, 0)
 
@@ -113,6 +117,8 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             return
         toon = self.air.doId2do.get(toonId)
         if toon and toon.hp > 0:
+            hp = min(self.pieHitToonup, toon.getMaxHp() - toon.getHp())
+            self.d_avHealed(avId, hp)
             self.healToon(toon, self.pieHitToonup)
 
     def getDamageMultiplier(self):
@@ -307,6 +313,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.ignoreBarrier(self.barrier)
 
     def enterBattleThree(self):
+        self.battleThreeTimeStarted = globalClock.getFrameTime()
         self.resetBattles()
         self.setPieType()
         self.b_setBossDamage(0, 0, 0)
@@ -326,6 +333,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.waitForNextStrafe(9)
         self.cagedToonDialogIndex = 100
         self.__saySomethingLater()
+        self.initializeComboTrackers()
 
     def __saySomething(self, task=None):
         index = None
@@ -375,6 +383,10 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         pass
 
     def enterVictory(self):
+        # Calculate how long the pie round took
+        pieTime = globalClock.getFrameTime()
+        actualTime = pieTime - self.battleThreeTimeStarted
+        self.d_updateTimer(actualTime)
         self.resetBattles()
         self.suitsKilled.append({'type': None, 'level': 0, 'track': self.dna.dept, 'isSkelecog': 0, 'isForeman': 0, 'isVP': 1, 'isCFO': 0, 'isSupervisor': 0, 'isVirtual': 0, 'activeToons': self.involvedToons[:]})
         self.barrier = self.beginBarrier('Victory', self.involvedToons, 10, self.__doneVictory)

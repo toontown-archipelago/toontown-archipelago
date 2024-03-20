@@ -35,6 +35,7 @@ OptionToType = {
 
     # Privacy
     "accepting-friends": OptionTypes.BUTTON,
+    "competitive-boss-scoring": OptionTypes.BUTTON,
 
     # Video
     "borderless": OptionTypes.BUTTON,
@@ -131,6 +132,7 @@ class OptionsTabPage(DirectFrame, FSM):
         ],
         "Privacy": [
             "accepting-friends",
+            "competitive-boss-scoring",
         ],
         "Controls": [*list(base.settings.getControls())],
         "Video": [
@@ -594,6 +596,8 @@ class OptionElement(DirectFrame):
             base.toonChatSounds = newSetting
         elif self.optionName == "accepting-friends":
             base.localAvatar.acceptingNewFriends = newSetting
+        elif self.optionName == 'competitive-boss-scoring':
+            base.localAvatar.wantCompetitiveBossScoring = newSetting
         elif self.optionName in ("borderless", "resolution", "vertical-sync",
                                  "anisotropic-filter", "anti-aliasing"):
             base.updateDisplay()

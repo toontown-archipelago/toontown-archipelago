@@ -678,10 +678,13 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossClub.reparentTo(self.rightHandJoint)
         self.generateHealthBar()
         self.updateHealthBar()
+        self.resetAndShowScoreboard()
+        self.startTimer()
         base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
 
 
     def exitBattleFour(self):
+        self.bossSpeedrunTimer.stop_updating()
         DistributedBossCog.DistributedBossCog.exitBattleFour(self)
         self.phaseFourMusic.stop()
 
@@ -726,6 +729,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossHealthBar.deinitialize()
         self.storeInterval(seq, intervalName)
         base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
+        self.bossSpeedrunTimer.stop_updating()
 
     def __continueVictory(self):
         self.notify.debug('----- __continueVictory')

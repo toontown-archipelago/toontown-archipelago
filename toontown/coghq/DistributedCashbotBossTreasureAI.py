@@ -11,6 +11,10 @@ class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTrea
         self.goonId = goon.doId
         self.style = style
         self.finalPosition = (fx, fy, fz)
+        self.responsibleAv = None  # The toonId who spawned this treasure
+
+    def setResponsibleAv(self, avId):
+        self.responsibleAv = avId
 
     def getGoonId(self):
         return self.goonId
@@ -57,17 +61,14 @@ class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTrea
             av = self.air.doId2do[avId]
             if av.hp > 0 and av.hp < av.maxHp:
 
+                hp = min(self.healAmount, av.maxHp - av.hp)
                 goon = self.air.doId2do.get(self.goonId)
                 if not goon:
-                    av.toonUp(self.healAmount)
+                    av.toonUp(hp)
                     return
 
                 boss = goon.boss
-
-                # Reset combo
-                if boss.ruleset.TREASURE_GRAB_RESETS_COMBO:
-                    boss.comboTrackers[avId].resetCombo()
-
+                boss.toonHealedFromTreasure(avId, self.responsibleAv, hp)
                 # Are we deducting points?
                 if boss.ruleset.TREASURE_POINT_PENALTY:
 

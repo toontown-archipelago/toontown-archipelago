@@ -3,7 +3,6 @@ import functools
 from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.PythonUtil import clamp
-from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCashbotBossCraneAI
 from toontown.coghq import DistributedCashbotBossSideCraneAI
@@ -82,8 +81,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.goonMinScale = 0.8
         self.goonMaxScale = 2.4
         self.safesWanted = 5
-
-        self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
 
         # A list of toon ids that are spectating
         self.spectators = []
@@ -548,12 +545,18 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             treasure.b_setStyle(style)
             treasure.b_setPosition(pos[0], pos[1], 0)
             treasure.b_setFinalPosition(fpos[0], fpos[1], 0)
+            treasure.setResponsibleAv(goon.getStunnedByAvId())
         else:
             # Create a new treasure object
             treasure = DistributedCashbotBossTreasureAI.DistributedCashbotBossTreasureAI(self.air, self, goon, style, fpos[0], fpos[1], 0)
+            treasure.setResponsibleAv(goon.getStunnedByAvId())
             treasure.generateWithRequired(self.zoneId)
         treasure.healAmount = healAmount
         self.treasures[treasure.doId] = treasure
+
+    # Called from treasures when they are picked up, tells us who should be credited for this healing
+    def toonHealedFromTreasure(self, avId, responsibleAv, healAmount):
+        self.d_avHealed(responsibleAv, healAmount)
 
     def grabAttempt(self, avId, treasureId):
         # An avatar has attempted to grab a treasure.
@@ -809,10 +812,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Award bonus points for hits with maximum impact
         if impact == 1.0:
             self.d_updateMaxImpactHits(avId)
-        self.d_updateDamageDealt(avId, damage)
+        self.d_damageDealt(avId, damage)
 
-        comboTracker = self.comboTrackers[avId]
-        comboTracker.incrementCombo((comboTracker.combo+1.0) / 10.0 * damage)
+        self.incrementCombo(avId, (self.getComboLength(avId)+1.0) / 10.0 * damage)
 
         self.debug(doId=avId, content='Damaged for %s with impact: %.2f' % (damage, impact))
 
@@ -837,7 +839,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             # A particularly good hit (when he's not already
             # dizzy) will make the boss dizzy for a little while.
             self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
-            self.d_updateStunCount(avId, craneId)
+            self.d_stunBonus(avId, self.ruleset.POINTS_STUN)
         else:
 
             if self.ruleset.CFO_FLINCHES_ON_HIT:
@@ -863,13 +865,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def d_killingBlowDealt(self, avId):
         self.sendUpdate('killingBlowDealt', [avId])
 
-    def d_updateDamageDealt(self, avId, damageDealt):
-        self.sendUpdate('updateDamageDealt', [avId, damageDealt])
-
-    def d_updateStunCount(self, avId, craneId):
-        self.sendUpdate('updateStunCount', [avId, craneId])
-
     def d_updateGoonsStomped(self, avId):
+        self.incrementCombo(avId, math.ceil((self.getComboLength(avId) + 1.0) / 4.0))
         self.sendUpdate('updateGoonsStomped', [avId])
 
     # call with 10 when we take a safe off, -20 when we put a safe on
@@ -1003,23 +1000,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         taskMgr.remove(self.uniqueName('failedCraneRound'))
         self.cancelReviveTasks()
 
-        for comboTracker in self.comboTrackers.values():
-            comboTracker.cleanup()
-
-        # heal all toons and setup a combo tracker for them
-        for avId in self.getInvolvedToonsNotSpectating():
-            if avId in self.air.doId2do:
-                self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
-                av = self.air.doId2do[avId]
-
-                if self.ruleset.FORCE_MAX_LAFF:
-                    # self.oldMaxLaffs[avId] = av.getMaxHp()
-                    # av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
-                    self.debug(content='Forcing max laff to %s' % self.ruleset.FORCE_MAX_LAFF_AMOUNT)
-
-                if self.ruleset.HEAL_TOONS_ON_START:
-                    av.b_setHp(av.getMaxHp())
-                    self.debug(content='Healing all toons')
+        self.initializeComboTrackers()
 
         self.toonsWon = False
         taskMgr.remove(self.uniqueName('times-up-task'))
@@ -1052,7 +1033,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.__restartCraneRoundTask(None)
         else:
             self.b_setState('Victory')
-
 
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
@@ -1094,14 +1074,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.barrier = self.beginBarrier('Victory', self.involvedToons, 30, self.__doneVictory)
         return
 
-    def d_updateTimer(self, time):
-        self.sendUpdate('updateTimer', [time])
-
     def __doneVictory(self, avIds):
-
-        # Cleanup the combo trackers we don't need them anymore
-        for comboTracker in self.comboTrackers.values():
-            comboTracker.cleanup()
 
         # Tell the client the information it needs to generate a
         # reward movie.
@@ -1189,12 +1162,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def toonDied(self, toon):
         DistributedBossCogAI.DistributedBossCogAI.toonDied(self, toon)
-
-        # Reset the toon's combo
-        ct = self.comboTrackers.get(toon.doId)
-        if ct:
-            ct.resetCombo()
-
         # If we want to revive toons, revive this toon later and don't do anything else past this point
         if self.ruleset.REVIVE_TOONS_UPON_DEATH and toon.doId in self.getInvolvedToonsNotSpectating():
             self.__reviveToonLater(toon)
@@ -1207,7 +1174,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             if toon and toon.getHp() > 0:
                 aliveToons += 1
 
-
         # Restart the crane round if toons are dead and we want to restart
         if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL and not aliveToons:
             taskMgr.remove(self.uniqueName('times-up-task'))
@@ -1219,11 +1185,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # todo if all toons are dead get rid of them
         print("CASHBOTBOSSAI: todo boot all toons out back to the playground, they lost")
 
-    def d_updateCombo(self, avId, comboLength):
-        self.sendUpdate('updateCombo', [avId, comboLength])
 
-    def d_awardCombo(self, avId, comboLength, amount):
-        self.sendUpdate('awardCombo', [avId, comboLength, amount])
 
     def d_updateGoonKilledBySafe(self, avId):
         self.sendUpdate('goonKilledBySafe', [avId])
