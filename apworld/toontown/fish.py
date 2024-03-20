@@ -273,30 +273,25 @@ def get_catchable_fish(zone: FishZone, rodId: int, location: FishLocation) -> Se
         for speciesIndex in range(len(FISH_DICT[fishGenus])):
             fishDef: FishDef = FISH_DICT[fishGenus][speciesIndex]
 
-            # In global locations, we collect all fish geni.
-            # We can catch anything and everything!
-            if location == FishLocation.Global:
-                fish_set.add((fishGenus, speciesIndex, fishDef.rarity))
-            else:
-                # Determine the valid zones this fish can spawn in.
-                for zoneIndex, fishZone in enumerate(fishDef.zone_list):
-                    # Ignore the fish if it is not catchable.
-                    if not can_catch_fish(fishDef, rodId):
-                        continue
+            # Determine the valid zones this fish can spawn in.
+            for zoneIndex, fishZone in enumerate(fishDef.zone_list):
+                # Ignore the fish if it is not catchable.
+                if not can_catch_fish(fishDef, rodId):
+                    continue
 
-                    # Just add the fish now if we're in global locations.
-                    if location == FishLocation.Global:
-                        fish_set.add((fishGenus, speciesIndex, fishDef.rarity))
-                        continue
-                    # Playground locations treat the fish zone like the playground zone.
-                    elif location == FishLocation.Playgrounds:
-                        fishZone = get_playground_fish_zone(fishZone)
+                # Just add the fish now if we're in global locations.
+                if location == FishLocation.Global:
+                    fish_set.add((fishGenus, speciesIndex, fishDef.rarity))
+                    continue
+                # Playground locations treat the fish zone like the playground zone.
+                elif location == FishLocation.Playgrounds:
+                    fishZone = get_playground_fish_zone(fishZone)
 
-                    # Are we fishing here?
-                    if zone == fishZone:
-                        # Add this fish.
-                        rarity = get_effective_rarity(fishDef.rarity, zoneIndex)
-                        fish_set.add((fishGenus, speciesIndex, rarity))
+                # Are we fishing here?
+                if zone == fishZone:
+                    # Add this fish.
+                    rarity = get_effective_rarity(fishDef.rarity, zoneIndex)
+                    fish_set.add((fishGenus, speciesIndex, rarity))
 
     # We're done here.
     __catchable_fish_cache[zone][rodId][location] = fish_set
