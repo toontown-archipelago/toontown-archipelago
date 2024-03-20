@@ -4,7 +4,7 @@ from typing import Dict
 from direct.directnotify import DirectNotifyGlobal
 
 from apworld.toontown import locations
-from apworld.toontown.consts import can_catch_new_species
+from apworld.toontown.fish import can_catch_new_species
 
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.fishing import FishGlobals

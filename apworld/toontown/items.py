@@ -24,6 +24,12 @@ class ToontownItemName(enum.Enum):
 
     ### Fishing ###
     FISHING_ROD_UPGRADE = "Progressive Fishing Rod"
+    TTC_FISHING = "TTC Fishing License"
+    DD_FISHING  = "DD Fishing License"
+    DG_FISHING  = "DG Fishing License"
+    MML_FISHING = "MML Fishing License"
+    TB_FISHING  = "TB Fishing License"
+    DDL_FISHING = "DDL Fishing License"
 
     ### Gag Training Frames ###
     TOONUP_FRAME = "Toon-Up Training Frame"
@@ -128,7 +134,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.useful),
     # endregion
     # region Gag Capacity
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5, ItemClassification.useful,  quantity=12),
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.useful, quantity=12),
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.useful, quantity=2),
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.useful, quantity=0),
     # endregion
@@ -153,8 +159,14 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_1, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_2, ItemClassification.progression),
     # endregion
-    # region Fishing Rod Upgrades
-    ToontownItemDefinition(ToontownItemName.FISHING_ROD_UPGRADE, ItemClassification.progression, quantity=4),
+    # region Fishing Items
+    ToontownItemDefinition(ToontownItemName.FISHING_ROD_UPGRADE, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.TTC_FISHING, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DD_FISHING,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DG_FISHING,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.MML_FISHING, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.TB_FISHING,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DDL_FISHING, ItemClassification.progression),
     # endregion
     # region Teleport Access
     ToontownItemDefinition(ToontownItemName.TTC_TELEPORT, ItemClassification.useful, quantity=1),
@@ -197,6 +209,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.BOSSBOT_DISGUISE, ItemClassification.progression, quantity=1),
     # endregion
     # region Filler Items
+    # TODO - remember to account for the Fish filler when implementing weights here
     ToontownItemDefinition(ToontownItemName.MONEY_250,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_500,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
@@ -236,6 +249,15 @@ GAG_TRAINING_FRAMES = (
     ToontownItemName.THROW_FRAME,
     ToontownItemName.SQUIRT_FRAME,
     ToontownItemName.DROP_FRAME
+)
+
+FISHING_LICENSES = (
+    ToontownItemName.TTC_FISHING,
+    ToontownItemName.DD_FISHING,
+    ToontownItemName.DG_FISHING,
+    ToontownItemName.MML_FISHING,
+    ToontownItemName.TB_FISHING,
+    ToontownItemName.DDL_FISHING,
 )
 
 # todo add quality/rarity to filler items

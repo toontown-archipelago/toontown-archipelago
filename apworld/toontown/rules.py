@@ -162,11 +162,9 @@ class Rule(Enum):
 
     ### Fishing ###
 
-    TwigRod   = auto()
-    BambooRod = auto()
-    WoodRod   = auto()
-    SteelRod  = auto()
-    GoldRod   = auto()
+    FishCatch   = auto()
+    FishGenus  = auto()
+    FishGallery = auto()
 
     ### General ###
 

@@ -6,6 +6,37 @@ from dataclasses import dataclass, field
 from enum import IntEnum, auto
 from typing import Tuple, Dict, List, Set, Optional
 
+from . import ToontownLocationName, ToontownItemName, ToontownRegionName
+
+
+class FishLocation(IntEnum):
+    """
+    Determines where fish can spawn.
+    """
+    Playgrounds = 0
+    Vanilla = 1
+    Global = 2
+
+
+class FishChecks(IntEnum):
+    """
+    Determines the amount of items that can be found from fishing.
+    """
+    AllSpecies = 0
+    AllGalleryAndGenus = 1
+    AllGallery = 2
+    Nonne = 3
+
+
+class FishProgression(IntEnum):
+    """
+    Determines the progression for fishing.
+    """
+    LicensesAndRods = 0
+    Licenses = 1
+    Rods = 2
+    Nonne = 3
+
 
 class FishGenus(IntEnum):
     BalloonFish    = 0
@@ -78,15 +109,6 @@ class FishDef:
     weight_range: Tuple[int, int]
     rarity: int
     zone_list: List[FishZone] = field(default_factory=list)
-
-
-class FishLocation(IntEnum):
-    """
-    Determines the locations for how fish can spawn.
-    """
-    Playgrounds = 0
-    Vanilla = 1
-    Global = 2
 
 
 # Fish dict is moved here from FishGlobals
@@ -232,6 +254,11 @@ def get_catchable_fish(zone: FishZone, rodId: int, location: FishLocation) -> Se
     """
     Gets all catchable fish within a given zone with the current rod.
     """
+    # Filter zone for their respective playground.
+    if location == FishLocation.Playgrounds:
+        zone = get_playground_fish_zone(zone)
+
+    # Check cache.
     __catchable_fish_cache.setdefault(zone, {})
     __catchable_fish_cache[zone].setdefault(rodId, {})
     __catchable_fish_cache[zone][rodId].setdefault(location, set())
@@ -241,10 +268,6 @@ def get_catchable_fish(zone: FishZone, rodId: int, location: FishLocation) -> Se
 
     # A set containg tuples of (FishGenus, SpeciesIndex, Rarity)
     fish_set: Set[Tuple[FishGenus, int, int]] = set()
-
-    # Filter zone for their respective playground.
-    if location == FishLocation.Playgrounds:
-        zone = get_playground_fish_zone(zone)
 
     for fishGenus in FISH_DICT:
         for speciesIndex in range(len(FISH_DICT[fishGenus])):
@@ -280,21 +303,188 @@ def get_catchable_fish(zone: FishZone, rodId: int, location: FishLocation) -> Se
     return fish_set
 
 
-__catchable_fish_no_rarity_cache = {}
+# Max species obtainable for each rod tier.
+MAX_SPECIES_PER_ROD_TIER = {}
+
+for rodTier in range(5):
+    MAX_SPECIES_PER_ROD_TIER[rodTier] = len(get_catchable_fish(FishZone.ToontownCentral, rodTier, FishLocation.Global))
 
 
-def get_catchable_fish_without_rarity(zone: FishZone, rodId: int, location: FishLocation) -> Set[Tuple[FishGenus, int]]:
-    # Get cached result.
-    __catchable_fish_no_rarity_cache.setdefault(zone, {})
-    __catchable_fish_no_rarity_cache[zone].setdefault(rodId, {})
-    __catchable_fish_no_rarity_cache[zone][rodId].setdefault(location, set())
-    __cached_result = __catchable_fish_no_rarity_cache[zone][rodId][location]
-    if __cached_result:
-        return __catchable_fish_no_rarity_cache[zone][rodId][location]
+def can_catch_new_species(species: int, rod_tier: int) -> bool:
+    return species < MAX_SPECIES_PER_ROD_TIER[rod_tier]
 
-    # Set cached result.
-    catchableFish = set()
-    for fishGenus, speciesIndex, rarity in get_catchable_fish(zone, rodId, location):
-        catchableFish.add((fishGenus, speciesIndex))
-    __catchable_fish_no_rarity_cache[zone][rodId][location] = catchableFish
-    return catchableFish
+
+
+"""
+Location definitions
+"""
+
+LOCATION_TO_GENUS_SPECIES: Dict[ToontownLocationName, Tuple[FishGenus, int]] = {
+    ToontownLocationName.BALLOON_FISH_0:    (FishGenus.BalloonFish, 0),
+    ToontownLocationName.BALLOON_FISH_1:    (FishGenus.BalloonFish, 1),
+    ToontownLocationName.BALLOON_FISH_2:    (FishGenus.BalloonFish, 2),
+    ToontownLocationName.BALLOON_FISH_3:    (FishGenus.BalloonFish, 3),
+    ToontownLocationName.BALLOON_FISH_4:    (FishGenus.BalloonFish, 4),
+
+    ToontownLocationName.JELLYFISH_0:       (FishGenus.PBJ_Fish, 0),
+    ToontownLocationName.JELLYFISH_1:       (FishGenus.PBJ_Fish, 1),
+    ToontownLocationName.JELLYFISH_2:       (FishGenus.PBJ_Fish, 2),
+    ToontownLocationName.JELLYFISH_3:       (FishGenus.PBJ_Fish, 3),
+    ToontownLocationName.JELLYFISH_4:       (FishGenus.PBJ_Fish, 4),
+
+    ToontownLocationName.CAT_FISH_0:        (FishGenus.CatFish, 0),
+    ToontownLocationName.CAT_FISH_1:        (FishGenus.CatFish, 1),
+    ToontownLocationName.CAT_FISH_2:        (FishGenus.CatFish, 2),
+    ToontownLocationName.CAT_FISH_3:        (FishGenus.CatFish, 3),
+    ToontownLocationName.CAT_FISH_4:        (FishGenus.CatFish, 4),
+
+    ToontownLocationName.CLOWN_FISH_0:      (FishGenus.Clownfish, 0),
+    ToontownLocationName.CLOWN_FISH_1:      (FishGenus.Clownfish, 1),
+    ToontownLocationName.CLOWN_FISH_2:      (FishGenus.Clownfish, 2),
+    ToontownLocationName.CLOWN_FISH_3:      (FishGenus.Clownfish, 3),
+
+    ToontownLocationName.FROZEN_FISH_0:     (FishGenus.Frozen_Fish, 0),
+
+    ToontownLocationName.STAR_FISH_0:       (FishGenus.Starfish, 0),
+    ToontownLocationName.STAR_FISH_1:       (FishGenus.Starfish, 1),
+    ToontownLocationName.STAR_FISH_2:       (FishGenus.Starfish, 2),
+    ToontownLocationName.STAR_FISH_3:       (FishGenus.Starfish, 3),
+    ToontownLocationName.STAR_FISH_4:       (FishGenus.Starfish, 4),
+
+    ToontownLocationName.HOLEY_MACKEREL_0:  (FishGenus.Holy_Mackerel, 0),
+
+    ToontownLocationName.DOG_FISH_0:        (FishGenus.Dog_Fish, 0),
+    ToontownLocationName.DOG_FISH_1:        (FishGenus.Dog_Fish, 1),
+    ToontownLocationName.DOG_FISH_2:        (FishGenus.Dog_Fish, 2),
+    ToontownLocationName.DOG_FISH_3:        (FishGenus.Dog_Fish, 3),
+    ToontownLocationName.DOG_FISH_4:        (FishGenus.Dog_Fish, 4),
+
+    ToontownLocationName.DEVIL_RAY_0:       (FishGenus.DevilRay, 0),
+
+    ToontownLocationName.AMORE_EEL_0:       (FishGenus.AmoreEel, 0),
+    ToontownLocationName.AMORE_EEL_1:       (FishGenus.AmoreEel, 1),
+
+    ToontownLocationName.NURSE_SHARK_0:     (FishGenus.Nurse_Shark, 0),
+    ToontownLocationName.NURSE_SHARK_1:     (FishGenus.Nurse_Shark, 1),
+    ToontownLocationName.NURSE_SHARK_2:     (FishGenus.Nurse_Shark, 2),
+
+    ToontownLocationName.KING_CRAB_0:       (FishGenus.King_Crab, 0),
+    ToontownLocationName.KING_CRAB_1:       (FishGenus.King_Crab, 1),
+    ToontownLocationName.KING_CRAB_2:       (FishGenus.King_Crab, 2),
+
+    ToontownLocationName.MOON_FISH_0:       (FishGenus.Moon_Fish, 0),
+    ToontownLocationName.MOON_FISH_1:       (FishGenus.Moon_Fish, 1),
+    ToontownLocationName.MOON_FISH_2:       (FishGenus.Moon_Fish, 2),
+    ToontownLocationName.MOON_FISH_3:       (FishGenus.Moon_Fish, 3),
+    ToontownLocationName.MOON_FISH_4:       (FishGenus.Moon_Fish, 4),
+    ToontownLocationName.MOON_FISH_5:       (FishGenus.Moon_Fish, 5),
+
+    ToontownLocationName.SEA_HORSE_0:       (FishGenus.Seahorse, 0),
+    ToontownLocationName.SEA_HORSE_1:       (FishGenus.Seahorse, 1),
+    ToontownLocationName.SEA_HORSE_2:       (FishGenus.Seahorse, 2),
+    ToontownLocationName.SEA_HORSE_3:       (FishGenus.Seahorse, 3),
+
+    ToontownLocationName.POOL_SHARK_0:      (FishGenus.Pool_Shark, 0),
+    ToontownLocationName.POOL_SHARK_1:      (FishGenus.Pool_Shark, 1),
+    ToontownLocationName.POOL_SHARK_2:      (FishGenus.Pool_Shark, 2),
+    ToontownLocationName.POOL_SHARK_3:      (FishGenus.Pool_Shark, 3),
+
+    ToontownLocationName.BEAR_ACUDA_0:      (FishGenus.Bear_Acuda, 0),
+    ToontownLocationName.BEAR_ACUDA_1:      (FishGenus.Bear_Acuda, 1),
+    ToontownLocationName.BEAR_ACUDA_2:      (FishGenus.Bear_Acuda, 2),
+    ToontownLocationName.BEAR_ACUDA_3:      (FishGenus.Bear_Acuda, 3),
+    ToontownLocationName.BEAR_ACUDA_4:      (FishGenus.Bear_Acuda, 4),
+    ToontownLocationName.BEAR_ACUDA_5:      (FishGenus.Bear_Acuda, 5),
+    ToontownLocationName.BEAR_ACUDA_6:      (FishGenus.Bear_Acuda, 6),
+    ToontownLocationName.BEAR_ACUDA_7:      (FishGenus.Bear_Acuda, 7),
+
+    ToontownLocationName.CUTTHROAT_TROUT_0: (FishGenus.CutThroatTrout, 0),
+    ToontownLocationName.CUTTHROAT_TROUT_1: (FishGenus.CutThroatTrout, 1),
+    ToontownLocationName.CUTTHROAT_TROUT_2: (FishGenus.CutThroatTrout, 2),
+
+    ToontownLocationName.PIANO_TUNA_0:      (FishGenus.Piano_Tuna, 0),
+    ToontownLocationName.PIANO_TUNA_1:      (FishGenus.Piano_Tuna, 1),
+    ToontownLocationName.PIANO_TUNA_2:      (FishGenus.Piano_Tuna, 2),
+    ToontownLocationName.PIANO_TUNA_3:      (FishGenus.Piano_Tuna, 3),
+    ToontownLocationName.PIANO_TUNA_4:      (FishGenus.Piano_Tuna, 4),
+}
+GENUS_SPECIES_TO_LOCATION: Dict[Tuple[FishGenus, int], ToontownLocationName] = {a: b for b, a in LOCATION_TO_GENUS_SPECIES.items()}
+
+
+LOCATION_TO_GENUS: Dict[ToontownLocationName, FishGenus] = {
+    ToontownLocationName.GENUS_BALLOON_FISH:    FishGenus.BalloonFish,
+    ToontownLocationName.GENUS_JELLYFISH:       FishGenus.CatFish,
+    ToontownLocationName.GENUS_CAT_FISH:        FishGenus.Clownfish,
+    ToontownLocationName.GENUS_CLOWN_FISH:      FishGenus.Frozen_Fish,
+    ToontownLocationName.GENUS_FROZEN_FISH:     FishGenus.Starfish,
+    ToontownLocationName.GENUS_STAR_FISH:       FishGenus.Holy_Mackerel,
+    ToontownLocationName.GENUS_HOLEY_MACKEREL:  FishGenus.Dog_Fish,
+    ToontownLocationName.GENUS_DOG_FISH:        FishGenus.AmoreEel,
+    ToontownLocationName.GENUS_DEVIL_RAY:       FishGenus.Nurse_Shark,
+    ToontownLocationName.GENUS_AMORE_EEL:       FishGenus.King_Crab,
+    ToontownLocationName.GENUS_NURSE_SHARK:     FishGenus.Moon_Fish,
+    ToontownLocationName.GENUS_KING_CRAB:       FishGenus.Seahorse,
+    ToontownLocationName.GENUS_MOON_FISH:       FishGenus.Pool_Shark,
+    ToontownLocationName.GENUS_SEA_HORSE:       FishGenus.Bear_Acuda,
+    ToontownLocationName.GENUS_POOL_SHARK:      FishGenus.CutThroatTrout,
+    ToontownLocationName.GENUS_BEAR_ACUDA:      FishGenus.Piano_Tuna,
+    ToontownLocationName.GENUS_CUTTHROAT_TROUT: FishGenus.PBJ_Fish,
+    ToontownLocationName.GENUS_PIANO_TUNA:      FishGenus.DevilRay,
+}
+GENUS_TO_LOCATION: Dict[FishGenus, ToontownLocationName] = {a: b for b, a in LOCATION_TO_GENUS.items()}
+
+
+FISH_ZONE_TO_LICENSE: Dict[FishZone, ToontownItemName] = {
+    FishZone.ToontownCentral:   ToontownItemName.TTC_FISHING,
+    FishZone.DonaldsDock:       ToontownItemName.DD_FISHING,
+    FishZone.DaisyGardens:      ToontownItemName.DG_FISHING,
+    FishZone.MinniesMelodyland: ToontownItemName.MML_FISHING,
+    FishZone.TheBrrrgh:         ToontownItemName.TB_FISHING,
+    FishZone.DonaldsDreamland:  ToontownItemName.DDL_FISHING,
+
+    FishZone.BarnacleBoulevard: ToontownItemName.DD_FISHING,
+    FishZone.SeaweedStreet:     ToontownItemName.DD_FISHING,
+    FishZone.LighthouseLane:    ToontownItemName.DD_FISHING,
+    FishZone.SillyStreet:       ToontownItemName.TTC_FISHING,
+    FishZone.LoopyLane:         ToontownItemName.TTC_FISHING,
+    FishZone.PunchlinePlace:    ToontownItemName.TTC_FISHING,
+    FishZone.WalrusWay:         ToontownItemName.TB_FISHING,
+    FishZone.SleetStreet:       ToontownItemName.TB_FISHING,
+    FishZone.PolarPlace:        ToontownItemName.TB_FISHING,
+    FishZone.AltoAvenue:        ToontownItemName.MML_FISHING,
+    FishZone.BaritoneBoulevard: ToontownItemName.MML_FISHING,
+    FishZone.TenorTerrace:      ToontownItemName.MML_FISHING,
+    FishZone.ElmStreet:         ToontownItemName.DG_FISHING,
+    FishZone.MapleStreet:       ToontownItemName.DG_FISHING,
+    FishZone.OakStreet:         ToontownItemName.DG_FISHING,
+    FishZone.LullabyLane:       ToontownItemName.DDL_FISHING,
+    FishZone.PajamaPlace:       ToontownItemName.DDL_FISHING,
+}
+
+FISH_ZONE_TO_REGION: Dict[FishZone, ToontownRegionName] = {
+    FishZone.ToontownCentral:   ToontownRegionName.TTC,
+    FishZone.DonaldsDock:       ToontownRegionName.DD,
+    FishZone.DaisyGardens:      ToontownRegionName.DG,
+    FishZone.MinniesMelodyland: ToontownRegionName.MML,
+    FishZone.TheBrrrgh:         ToontownRegionName.TB,
+    FishZone.DonaldsDreamland:  ToontownRegionName.DDL,
+
+    FishZone.BarnacleBoulevard: ToontownRegionName.DD,
+    FishZone.SeaweedStreet:     ToontownRegionName.DD,
+    FishZone.LighthouseLane:    ToontownRegionName.DD,
+    FishZone.SillyStreet:       ToontownRegionName.TTC,
+    FishZone.LoopyLane:         ToontownRegionName.TTC,
+    FishZone.PunchlinePlace:    ToontownRegionName.TTC,
+    FishZone.WalrusWay:         ToontownRegionName.TB,
+    FishZone.SleetStreet:       ToontownRegionName.TB,
+    FishZone.PolarPlace:        ToontownRegionName.TB,
+    FishZone.AltoAvenue:        ToontownRegionName.MML,
+    FishZone.BaritoneBoulevard: ToontownRegionName.MML,
+    FishZone.TenorTerrace:      ToontownRegionName.MML,
+    FishZone.ElmStreet:         ToontownRegionName.DG,
+    FishZone.MapleStreet:       ToontownRegionName.DG,
+    FishZone.OakStreet:         ToontownRegionName.DG,
+    FishZone.LullabyLane:       ToontownRegionName.DDL,
+    FishZone.PajamaPlace:       ToontownRegionName.DDL,
+}
+
