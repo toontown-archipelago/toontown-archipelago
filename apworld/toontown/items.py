@@ -30,6 +30,7 @@ class ToontownItemName(enum.Enum):
     MML_FISHING = "MML Fishing License"
     TB_FISHING  = "TB Fishing License"
     DDL_FISHING = "DDL Fishing License"
+    FISH = "Fish"
 
     ### Gag Training Frames ###
     TOONUP_FRAME = "Toon-Up Training Frame"
@@ -167,6 +168,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.MML_FISHING, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.TB_FISHING,  ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.DDL_FISHING, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.FISH, ItemClassification.filler),
     # endregion
     # region Teleport Access
     ToontownItemDefinition(ToontownItemName.TTC_TELEPORT, ItemClassification.useful, quantity=1),

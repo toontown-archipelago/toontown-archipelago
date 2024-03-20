@@ -121,23 +121,22 @@ class ToontownWorld(World):
                 if location_data.type == ToontownLocationType.GALLERY_MAX:
                     location.progress_type = LocationProgressType.EXCLUDED
 
-            # A flag to set this location as its own event.
-            set_as_event = False
+            # A flag to put a fish in this location.
+            fish_upon_ye = False
             fish_checks = FishChecks(self.options.fish_checks.value)
 
             if fish_checks != FishChecks.AllSpecies:
                 if location_data.type == ToontownLocationType.FISHING:
-                    set_as_event = True
+                    fish_upon_ye = True
             if fish_checks != FishChecks.AllGalleryAndGenus:
                 if location_data.type == ToontownLocationType.FISHING_GENUS:
-                    set_as_event = True
+                    fish_upon_ye = True
             if fish_checks not in (FishChecks.AllGalleryAndGenus, FishChecks.AllGallery):
                 if location_data.type == ToontownLocationType.FISHING_GALLERY:
-                    set_as_event = True
+                    fish_upon_ye = True
 
-            # Attempt dynamic event set.
-            if set_as_event:
-                location.place_locked_item(self.create_event(location_data.name.value))
+            if fish_upon_ye:
+                location.place_locked_item(self.create_item(ToontownItemName.FISH.value))
 
         for i, location_data in enumerate(EVENT_DEFINITIONS):
             region = regions[location_data.region]
