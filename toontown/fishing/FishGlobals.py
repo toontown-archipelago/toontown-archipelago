@@ -173,9 +173,9 @@ def getRandomWeight(genus: FishGenus, species: int, rodIndex = None, rNumGen = N
 __fish_rarity_cache = {}
 
 
-def getRandomFishVitals(zoneId, rodId, rNumGen = None, location = FishLocation.Vanilla):
+def getRandomFishVitals(zoneId, rodId, rNumGen = None, location = FishLocation.Vanilla, forceRarity = None):
     catchable_fish = get_catchable_fish(zoneId, rodId, location)
-    rolledRarity = __rollRarityDice(rodId, rNumGen)
+    rolledRarity = forceRarity or __rollRarityDice(rodId, rNumGen)
 
     # Obtain cached value for this rarity.
     __fish_rarity_cache.setdefault(zoneId, {})
