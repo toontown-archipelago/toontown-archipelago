@@ -24,12 +24,12 @@ class ToontownItemName(enum.Enum):
 
     ### Fishing ###
     FISHING_ROD_UPGRADE = "Progressive Fishing Rod"
-    TTC_FISHING = "TTC Fishing License"
-    DD_FISHING  = "DD Fishing License"
-    DG_FISHING  = "DG Fishing License"
-    MML_FISHING = "MML Fishing License"
-    TB_FISHING  = "TB Fishing License"
-    DDL_FISHING = "DDL Fishing License"
+    TTC_FISHING = "Toontown Central Fishing License"
+    DD_FISHING  = "Donald's Dock Fishing License"
+    DG_FISHING  = "Daisy Gardens Fishing License"
+    MML_FISHING = "Minnie's Melodyland Fishing License"
+    TB_FISHING  = "The Brrrgh Fishing License"
+    DDL_FISHING = "Donald's Dreamland Fishing License"
     FISH = "Fish"
 
     ### Gag Training Frames ###

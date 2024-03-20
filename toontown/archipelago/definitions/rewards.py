@@ -309,9 +309,7 @@ class FishingLicenseReward(APReward):
 
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("You may now "),
-            MinimalJsonMessagePart("Fish", color='cyan'),
-            MinimalJsonMessagePart(" in"),
+            MinimalJsonMessagePart("You may now Fish\nin "),
             MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
             MinimalJsonMessagePart("!"),
         ])

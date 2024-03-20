@@ -10,6 +10,7 @@ from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.building import FADoorCodes
 from toontown.distributed import DelayDelete
+from toontown.distributed.DelayDeletable import DelayDeletable
 from toontown.toonbase import ToontownGlobals
 from toontown.fishing import FishGlobals
 from toontown.shtiker import FishPage
@@ -32,7 +33,7 @@ from direct.fsm import State
 from toontown.hood import ZoneUtil
 from toontown.toontowngui import TeaserPanel
 
-class DistributedFishingSpot(DistributedObject.DistributedObject):
+class DistributedFishingSpot(DistributedObject.DistributedObject, DelayDeletable):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedFishingSpot')
     vZeroMax = 25.0
     angleMax = 30.0
