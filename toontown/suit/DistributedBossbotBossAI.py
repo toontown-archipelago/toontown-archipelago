@@ -753,6 +753,9 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         result = []
         uprightTables = self.getUprightTables()
         for toonId in self.involvedToons:
+            toon = self.air.doId2do.get(toonId)
+            if toon and toon.getHp() <= 0:
+                continue
             toonTable = self.getToonTableIndex(toonId)
             if toonTable >= 0 and toonTable not in uprightTables:
                 pass
@@ -766,6 +769,9 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         maxThreat = 0
         maxToons = []
         for toonId in self.threatDict:
+            toon = self.air.doId2do.get(toonId)
+            if toon and toon.getHp() <= 0:
+                continue
             curThreat = self.threatDict[toonId]
             tableIndex = self.getToonTableIndex(toonId)
             if tableIndex > -1 and self.tables[tableIndex].state == 'Flat':

@@ -1070,6 +1070,8 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
                 if toon == localAvatar:
                     self.boss.toCraneMode()
                     toon.b_setAnimState('neutral')
+                    if toon.getHp() <= 0:
+                        self.gotBossZapped()
                 toon.setAnimState('neutral')
                 toon.loop('leverNeutral')
 

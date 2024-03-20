@@ -79,15 +79,20 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def avatarNearEnter(self):
         avId = self.air.getAvatarIdFromSender()
+        if not self.isToonAlive(avId):
+            return
+
         if avId not in self.nearToons:
             self.nearToons.append(avId)
 
     def avatarNearExit(self):
         avId = self.air.getAvatarIdFromSender()
-        try:
+        if avId in self.nearToons:
             self.nearToons.remove(avId)
-        except:
-            pass
+
+    def isToonAlive(self, avId):
+        toon = self.air.doId2do.get(avId)
+        return avId in self.involvedToons and toon and toon.getHp() > 0
 
     def __handleUnexpectedExit(self, avId):
         self.removeToon(avId)
@@ -212,6 +217,9 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
     def toonDied(self, toon):
         self.resetCombo(toon.doId)
         self.sendUpdate('toonDied', [toon.doId])
+
+        if toon.doId in self.nearToons:
+            self.nearToons.remove(toon.doId)
 
         # Check if there are no toons left alive, if so this boss is over
         self.considerDefeat()
