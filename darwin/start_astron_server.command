@@ -1,5 +1,5 @@
-cd `dirname $0`
+#!/bin/sh
 cd ..
-cd astron
+cd astron || { echo "Could not find the astron directory!"; exit 1; }
 
 ./astrond-darwin --loglevel info config/astrond.yml

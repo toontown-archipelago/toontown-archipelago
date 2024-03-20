@@ -1,4 +1,4 @@
-cd `dirname $0`
+#!/bin/sh
 cd ..
 
-/usr/bin/python2.7 -m toontown.toonbase.ToontownStart --dummy
+/usr/local/bin/python3.9 -m toontown.toonbase.ToontownStart --dummy

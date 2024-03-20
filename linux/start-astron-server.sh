@@ -1,6 +1,6 @@
 #!/bin/sh
-cd ../astron
+cd astron/linux || { echo "Could not find the astron/linux directory!"; exit 1; }
 
 # This assumes that your astrond build is located in the
-# "astron" directory, and is named "astrond-linux".
-./astrond-linux --loglevel info config/astrond.yml
+# "astron/linux" directory.
+./astrond --loglevel info ../config/astrond.yml
