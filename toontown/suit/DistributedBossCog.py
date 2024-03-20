@@ -132,7 +132,11 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def startTimer(self):
         self.bossSpeedrunTimer.reset()
         self.bossSpeedrunTimer.start_updating()
-        self.bossSpeedrunTimer.show()
+
+        if base.localAvatar.wantCompetitiveBossScoring:
+            self.bossSpeedrunTimer.show()
+        else:
+            self.bossSpeedrunTimer.hide()
 
     def updateTimer(self, secs):
         self.bossSpeedrunTimer.override_time(secs)
@@ -143,7 +147,11 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         for avId in self.involvedToons:
             if avId in base.cr.doId2do:
                 self.scoreboard.addToon(avId)
-        self.scoreboard.show()
+
+        if base.localAvatar.wantCompetitiveBossScoring:
+            self.scoreboard.show()
+        else:
+            self.scoreboard.hide()
 
     def damageDealt(self, avId, damage):
         self.scoreboard.addDamage(avId, damage)

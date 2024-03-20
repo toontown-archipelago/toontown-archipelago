@@ -303,10 +303,12 @@ class CashbotBossScoreboardToonRow(DirectObject):
         del self.inc_ival
 
     def show(self):
+        self.frame.show()
         self.points_text.show()
         self.toon_head.show()
 
     def hide(self):
+        self.frame.hide()
         self.extra_stats_text.hide()
         self.points_text.hide()
         self.toon_head.hide()
@@ -364,8 +366,6 @@ class CogBossScoreboard(DirectObject):
     def addToon(self, avId):
         if avId not in self.rows:
             self.rows[avId] = CashbotBossScoreboardToonRow(self.frame, avId, len(self.rows))
-
-        self.show()
 
     def clearToons(self):
         for row in list(self.rows.values()):
@@ -431,6 +431,7 @@ class CogBossScoreboard(DirectObject):
         self.collapse()
 
     def show(self):
+        self.frame.show()
         self.expand_tip.show()
         self.expand_tip.setColorScale(1, 1, 1, 1)
         self.hide_tip_later()
@@ -441,6 +442,7 @@ class CogBossScoreboard(DirectObject):
         self.collapse()
 
     def hide(self):
+        self.frame.hide()
         self.expand_tip.hide()
         self.default_row_path.hide()
         for row in list(self.rows.values()):

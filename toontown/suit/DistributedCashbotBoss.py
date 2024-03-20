@@ -37,7 +37,6 @@ import math
 OneBossCog = None
 TTL = TTLocalizer
 from toontown.coghq import BossHealthBar
-from toontown.coghq.CogBossScoreboard import CogBossScoreboard
 from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 
 class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):

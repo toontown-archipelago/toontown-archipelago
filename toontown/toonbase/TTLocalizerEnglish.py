@@ -9919,6 +9919,7 @@ OptionNames = {
 
     # Privacy
     "accepting-friends": "Accepting New Friends",
+    "competitive-boss-scoring": "Want Competitive Boss Scoring",
 
     # Controls
     "JUMP": "Jump",

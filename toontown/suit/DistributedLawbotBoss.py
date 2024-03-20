@@ -14,7 +14,6 @@ from direct.fsm import ClassicFSM
 from direct.fsm import State
 from direct.directnotify import DirectNotifyGlobal
 from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimer
-from toontown.coghq.CogBossScoreboard import CogBossScoreboard
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from . import DistributedBossCog
@@ -90,7 +89,6 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.stunTextColor = (0, 0.3, 1.0, 1)
 
         self.bossSpeedrunTimer = None
-        self.scoreboard = None
         return
 
     def localToonDied(self):
@@ -176,9 +174,6 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         OneBossCog = self
 
         base.boss = self
-
-        self.scoreboard = CogBossScoreboard()
-        self.scoreboard.hide()
         return
 
     def disable(self):
@@ -1013,17 +1008,9 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             localAvatar.chatMgr.chatInputSpeedChat.removeCJMenu()
             localAvatar.chatMgr.chatInputSpeedChat.addCJMenu(self.bonusWeight)
 
-            # Display Boss Timer
+        # Display Boss Timer
         self.startTimer()
-
-        # Setup the scoreboard
-        self.scoreboard.clearToons()
-        for avId in self.involvedToons:
-            if avId in base.cr.doId2do:
-                self.scoreboard.addToon(avId)
-
-        # Make laff meters blink in uber mode
-        messenger.send('uberThreshold', [self.ruleset.LOW_LAFF_BONUS_THRESHOLD])
+        self.resetAndShowScoreboard()
 
     def __doneBattleThree(self):
         self.notify.debug('----- __doneBattleThree')
