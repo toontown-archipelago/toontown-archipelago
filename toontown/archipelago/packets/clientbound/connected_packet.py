@@ -2,12 +2,14 @@ import random
 from typing import List, Any, Dict
 
 from apworld.toontown import locations
+from apworld.toontown.fish import FishProgression
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
+from toontown.fishing import FishGlobals
 
 
 # Sent to clients when the connection handshake is successfully completed.
@@ -76,6 +78,12 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Set their starting gag xp multiplier
         av.b_setBaseGagSkillMultiplier(self.slot_data.get('base_global_gag_xp', 2))
+
+        # Give them gold rod if set in yaml
+        fish_progression = FishProgression(self.slot_data.get('fish_progression', 3))
+        need_gold_rod = fish_progression in (FishProgression.Licenses, FishProgression.Nonne)
+        if need_gold_rod:
+            av.b_setFishingRod(FishGlobals.MaxRodId)
 
     # Given the option defined in the YAML for RNG generation and the seed of the AP playthrough
     # Return a new modified seed based on what option was chosen in the YAML
