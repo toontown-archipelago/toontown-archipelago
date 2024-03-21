@@ -159,8 +159,8 @@ class FishManagerAI:
             # Do location checks on this.
             fishChecks = FishChecks(av.slotData.get('fish_checks', 1))
 
-            fishLocationName = GENUS_SPECIES_TO_LOCATION[genus, species]
-            genusLocationName = GENUS_TO_LOCATION[genus]
+            fishLocationName = GENUS_SPECIES_TO_LOCATION[fish.getGenus(), fish.getSpecies()]
+            genusLocationName = GENUS_TO_LOCATION[fish.getGenus()]
             if fishChecks == FishChecks.AllSpecies:
                 av.addCheckedLocation(ap_location_name_to_id(fishLocationName.value))
             if fishChecks == FishChecks.AllGalleryAndGenus:

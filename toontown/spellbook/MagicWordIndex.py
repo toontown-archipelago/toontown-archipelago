@@ -1073,6 +1073,16 @@ class SetFishingBucket(MagicWord):
         return "Max size of fish tank changed to " + str(tankVal)
 
 
+class ClearFishCollection(MagicWord):
+    aliases = ["clearfishcollection"]
+    desc = "Clears target's fish collection."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+        toon.b_setFishCollection([], [], [])
+        return "Cleared fish collection on target"
+
+
 class SetPlayRate(MagicWord):
     aliases = ["playrate"]
     desc = "Set target's play rate."
