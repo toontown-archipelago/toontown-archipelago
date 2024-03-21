@@ -5,6 +5,8 @@ from toontown.racing import DistributedStartingBlockAI
 from panda3d.core import *
 from panda3d.toontown import *
 from toontown.racing.RaceGlobals import *
+from toontown.safezone import ArchipelagoTreasurePlannerAI
+from toontown.safezone import DistributedArchiTreasureAI
 if __debug__:
     import pdb
 
@@ -24,6 +26,11 @@ class GSHoodDataAI(HoodDataAI.HoodDataAI):
         self.cycleDuration = 10
         self.createLeaderBoards()
         self.__cycleLeaderBoards()
+        self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
+                                ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 1)
+                                ]
+        for planner in self.treasurePlanner:
+            planner.start()
         messenger.send('GSHoodSpawned', [self])
 
     def shutdown(self):

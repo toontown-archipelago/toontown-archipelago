@@ -141,19 +141,19 @@ class FishProgression(Choice):
     default = 0
 
 
-class ForcePlaygroundVisitTeleportAccessUnlocksOption(Toggle):
+class ForcePlaygroundTreasureTeleportAccessUnlocksOption(Toggle):
     """
-    Enable to force your playground teleport access to be on its corresponding "Visit Location" check
+    Enable to force your playground teleport access to be on its corresponding "AP Treasure 1" check
     """
-    display_name = "Force Visit Playground Teleport Access Unlocks"
+    display_name = "Force AP Treasure Playground Teleport Access Unlocks"
     default = True
 
 
-class ForceCogHQVisitTeleportAccessUnlocksOption(Toggle):
+class ForceCogHQTreasureTeleportAccessUnlocksOption(Toggle):
     """
-    Enable to force your Cog HQ teleport access to be on its corresponding "Visit Location" check
+    Enable to force your Cog HQ teleport access to be on its corresponding "AP Treasure 1" check
     """
-    display_name = "Force Visit Cog HQ Teleport Access Unlocks"
+    display_name = "Force AP Treasure Cog HQ Teleport Access Unlocks"
 
 
 class SeedGenerationTypeOption(Choice):
@@ -198,7 +198,7 @@ class ToontownOptions(PerGameCommonOptions):
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression
-    force_playground_visit_teleport_access_unlocks: ForcePlaygroundVisitTeleportAccessUnlocksOption
-    force_coghq_visit_teleport_access_unlocks: ForceCogHQVisitTeleportAccessUnlocksOption
+    force_playground_treasure_teleport_access_unlocks: ForcePlaygroundTreasureTeleportAccessUnlocksOption
+    force_coghq_treasure_teleport_access_unlocks: ForceCogHQTreasureTeleportAccessUnlocksOption
     seed_generation_type: SeedGenerationTypeOption
     trap_percent: TrapPercentOption

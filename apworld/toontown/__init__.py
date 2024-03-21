@@ -155,20 +155,20 @@ class ToontownWorld(World):
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.second_track)
 
         # Do we have force teleport access? if so place our tps
-        if self.options.force_playground_visit_teleport_access_unlocks.value:
-            self._force_item_placement(ToontownLocationName.DISCOVER_TTC, ToontownItemName.TTC_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DISCOVER_DD,  ToontownItemName.DD_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DISCOVER_DG,  ToontownItemName.DG_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DISCOVER_MML, ToontownItemName.MML_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DISCOVER_TB,  ToontownItemName.TB_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DISCOVER_DDL, ToontownItemName.DDL_TELEPORT)
+        if self.options.force_playground_treasure_teleport_access_unlocks.value:
+            self._force_item_placement(ToontownLocationName.TTC_TREASURE_1, ToontownItemName.TTC_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DD_TREASURE_1,  ToontownItemName.DD_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DG_TREASURE_1,  ToontownItemName.DG_TELEPORT)
+            self._force_item_placement(ToontownLocationName.MML_TREASURE_1, ToontownItemName.MML_TELEPORT)
+            self._force_item_placement(ToontownLocationName.TB_TREASURE_1,  ToontownItemName.TB_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DDL_TREASURE_1, ToontownItemName.DDL_TELEPORT)
 
         # Same for cog hqs
-        if self.options.force_coghq_visit_teleport_access_unlocks.value:
-            self._force_item_placement(ToontownLocationName.DISCOVER_SBHQ, ToontownItemName.SBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DISCOVER_CBHQ, ToontownItemName.CBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DISCOVER_LBHQ, ToontownItemName.LBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DISCOVER_BBHQ, ToontownItemName.BBHQ_TELEPORT)
+        if self.options.force_coghq_treasure_teleport_access_unlocks.value:
+            self._force_item_placement(ToontownLocationName.SBHQ_TREASURE_1, ToontownItemName.SBHQ_TELEPORT)
+            self._force_item_placement(ToontownLocationName.CBHQ_TREASURE_1, ToontownItemName.CBHQ_TELEPORT)
+            self._force_item_placement(ToontownLocationName.LBHQ_TREASURE_1, ToontownItemName.LBHQ_TELEPORT)
+            self._force_item_placement(ToontownLocationName.BBHQ_TREASURE_1, ToontownItemName.BBHQ_TELEPORT)
 
         # Debug, use this to print a pretty picture to make sure our regions are set up correctly
         if DEBUG_MODE:
@@ -314,7 +314,7 @@ class ToontownWorld(World):
         items_to_exclude: List[ToontownItemName] = []
 
         # If we have the force tp access setting...
-        if self.options.force_playground_visit_teleport_access_unlocks.value:
+        if self.options.force_playground_treasure_teleport_access_unlocks.value:
             # Add all teleport access
             items_to_exclude.append(ToontownItemName.TTC_TELEPORT)
             items_to_exclude.append(ToontownItemName.DD_TELEPORT)
@@ -323,7 +323,7 @@ class ToontownWorld(World):
             items_to_exclude.append(ToontownItemName.TB_TELEPORT)
             items_to_exclude.append(ToontownItemName.DDL_TELEPORT)
 
-        if self.options.force_coghq_visit_teleport_access_unlocks.value:
+        if self.options.force_coghq_treasure_teleport_access_unlocks.value:
             items_to_exclude.append(ToontownItemName.SBHQ_TELEPORT)
             items_to_exclude.append(ToontownItemName.CBHQ_TELEPORT)
             items_to_exclude.append(ToontownItemName.LBHQ_TELEPORT)

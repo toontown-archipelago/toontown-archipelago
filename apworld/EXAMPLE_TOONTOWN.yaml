@@ -75,10 +75,10 @@ Toontown:
   ### Force Item Settings ###
 
   # Enable to force your playground teleport access to be on its corresponding "Visit Location" check
-  force_playground_visit_teleport_access_unlocks: 'true'
+  force_playground_treasure_teleport_access_unlocks: 'true'
 
   # Enable to force your Cog HQ teleport access to be on its corresponding "Visit Location" check
-  force_coghq_visit_teleport_access_unlocks: 'false'
+  force_coghq_treasure_teleport_access_unlocks: 'false'
 
   ### Seed Generation Settings ###
 
