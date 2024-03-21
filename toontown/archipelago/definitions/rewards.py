@@ -4,6 +4,7 @@ from enum import IntEnum
 import random
 
 from apworld.toontown import ToontownItemName, get_item_def_from_id
+from apworld.toontown.fish import LICENSE_TO_ACCESS_CODE
 from otp.otpbase.OTPLocalizerEnglish import EmoteFuncDict
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
@@ -316,7 +317,7 @@ class FishingLicenseReward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         # Get the key ID for this playground
-        key = FADoorCodes.LICENSE_TO_ACCESS_CODE[self.playground]
+        key = LICENSE_TO_ACCESS_CODE[self.playground]
         av.addAccessKey(key)
 
 

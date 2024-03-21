@@ -6,8 +6,6 @@ from dataclasses import dataclass, field
 from enum import IntEnum, auto
 from typing import Tuple, Dict, List, Set, Optional
 
-from toontown.building.FADoorCodes import LICENSE_TO_ACCESS_CODE
-from toontown.hood import ZoneUtil
 from . import ToontownLocationName, ToontownItemName, ToontownRegionName
 
 
@@ -310,11 +308,29 @@ def get_effective_rarity(rarity: int, offset: int) -> int:
     return min(10, rarity + offset)
 
 
+TTC_FISHING_MISSING = 32
+DD_FISHING_MISSING = 33
+DG_FISHING_MISSING = 34
+MM_FISHING_MISSING = 35
+TB_FISHING_MISSING = 36
+DDL_FISHING_MISSING = 37
+
+
+LICENSE_TO_ACCESS_CODE = {
+    FishZone.ToontownCentral: TTC_FISHING_MISSING,
+    FishZone.DonaldsDock: DD_FISHING_MISSING,
+    FishZone.DaisyGardens: DG_FISHING_MISSING,
+    FishZone.MinniesMelodyland: MM_FISHING_MISSING,
+    FishZone.TheBrrrgh: TB_FISHING_MISSING,
+    FishZone.DonaldsDreamland: DDL_FISHING_MISSING,
+}
+
+
 def can_av_fish_here(av, zoneId) -> int:
     fishProgression = FishProgression(av.slotData.get('fish_progression', 3))
     needLicense = fishProgression in (FishProgression.Licenses, FishProgression.LicensesAndRods)
     if needLicense:
-        hoodId = ZoneUtil.getHoodId(zoneId)
+        hoodId = zoneId - zoneId % 1000
         accessCode = LICENSE_TO_ACCESS_CODE.get(hoodId)
         if not accessCode:
             raise KeyError("This is a bug, tell Mica (zoneId=%s, hoodId=%s)" % (zoneId, hoodId))
@@ -350,7 +366,11 @@ def get_catchable_fish(zone: FishZone, rodId: int, location: FishLocation) -> Se
     """
     Gets all catchable fish within a given zone with the current rod.
     """
-    zone = ZoneUtil.getBranchZone(zone)
+    # Convert to branch ID.
+    zone = zone - zone % 100
+    if zone % 1000 >= 500:
+        zone -= 500
+
     # Filter zone for their respective playground.
     if location == FishLocation.Playgrounds:
         zone = get_playground_fish_zone(zone)
