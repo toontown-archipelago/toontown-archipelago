@@ -34,14 +34,21 @@ Toontown:
   # Range: 0 to 4
   cog_bosses_required: 4
 
-  ### Logic Settings ###
+  ### Task Settings ###
 
   # Determines the amount of tasks per playground that are in logic.
   # Range: 0 to 12
   logical_tasks_per_playground: 12
 
+  ### Cog Gallery Settings ###
+
   # Enable to have Cog Gallery Maxed checks include progression items.
-  logical_maxed_cog_gallery: 'true'
+  # Otherwise, they will just contain filler items (EXP bundles, rewards, etc).
+  logical_maxed_cog_gallery: 'false'
+
+  # The amount of Cogs required to reach its maxed Cog Gallery.
+  # Range: 0 to 10
+  maxed_cog_gallery_quota: 3
 
   ### Fish Settings ###
 

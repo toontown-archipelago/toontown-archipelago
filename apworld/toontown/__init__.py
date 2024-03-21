@@ -276,6 +276,7 @@ class ToontownWorld(World):
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,
             "fish_progression": self.options.fish_progression.value,
+            "maxed_cog_gallery_quota": self.options.maxed_cog_gallery_quota.value,
         }
 
     def calculate_starting_tracks(self):

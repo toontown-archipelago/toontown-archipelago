@@ -85,6 +85,16 @@ class LogicalMaxedCogGallery(Toggle):
     default = True
 
 
+class MaxedCogGalleryQuota(Range):
+    """
+    The amount of Cogs required to reach its maxed Cog Gallery.
+    """
+    display_name = "Maxed Cog Gallery Quota"
+    range_start = 0
+    range_end = 10
+    default = 3
+
+
 class FishLocations(Choice):
     """
     Determines where fish can spawn.
@@ -184,6 +194,7 @@ class ToontownOptions(PerGameCommonOptions):
     cog_bosses_required: CogBossesRequired
     logical_tasks_per_playground: LogicalTasksPerPlayground
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
+    maxed_cog_gallery_quota: MaxedCogGalleryQuota
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression

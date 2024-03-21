@@ -330,7 +330,7 @@ class MaxToon(MagicWord):
         toon.b_setCogLevels([ToontownGlobals.MaxCogSuitLevel] * 4)
         toon.b_setCogTypes([7] * 4)
 
-        toon.b_setCogCount(list(CogPageGlobals.COG_QUOTAS[1]) * 4)
+        toon.b_setCogCount([CogPageGlobals.get_max_cog_quota(toon)] * 8 * 4)
         cogStatus = [CogPageGlobals.COG_COMPLETE2] * SuitDNA.suitsPerDept
         toon.b_setCogStatus(cogStatus * 4)
         toon.b_setCogRadar([1] * 4)
@@ -2457,7 +2457,7 @@ class RestockSummons(MagicWord):
         cogCount = []
         for deptIndex in range(5):
             for cogIndex in range(9):
-                cogCount.append(CogPageGlobals.COG_QUOTAS[1][cogIndex] if cogIndex != 8 else 0)
+                cogCount.append(CogPageGlobals.get_max_cog_quota(invoker) if cogIndex != 8 else 0)
         invoker.b_setCogCount(cogCount)
         invoker.b_setCogStatus(([CogPageGlobals.COG_COMPLETE2] * 8 + [0]) * 5)
         invoker.restockAllCogSummons()
