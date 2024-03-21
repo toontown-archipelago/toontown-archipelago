@@ -456,7 +456,7 @@ class GagShuffleAward(APReward):
 
         # Clear inventory, randomly choose gags and add them until we fill up
         av.inventory.zeroInv()
-        target = av.getMaxCarry()
+        target = av.inventory.totalProps
         gagsAdded = 0
         # "infinite" loop, we just bound it as a failsafe
         for _ in range(self.GAG_ADD_ATTEMPTS):
