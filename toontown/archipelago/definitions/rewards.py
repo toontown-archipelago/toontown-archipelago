@@ -581,7 +581,9 @@ class UndefinedReward(APReward):
 
 
 class IgnoreReward(APReward):
-    pass
+
+    def apply(self, av: "DistributedToonAI"):
+        pass
 
 
 ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
