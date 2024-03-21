@@ -235,6 +235,7 @@ def __createThrownTrapMultiTrack(trap, propList, propName, propPos = None, propH
             return
         trapProp.wrtReparentTo(suit)
         trapProp.show()
+        suit.showHpString("WEAKENED!", color=(.3, .5, .8, 1))
         if trapName == 'rake':
             trapProp.setPos(0, MovieUtil.SUIT_TRAP_RAKE_DISTANCE, 0)
             trapProp.setHpr(Point3(0, 270, 0))
@@ -316,6 +317,7 @@ def __createPlacedTrapMultiTrack(trap, prop, propName, propPos = None, propHpr =
         trapTrack.append(Func(trapProp.reparentTo, suit))
         trapTrack.append(Func(trapProp.setPos, trapPoint))
         trapTrack.append(LerpScaleInterval(trapProp, 1.2, Point3(1.7, 1.7, 1.7)))
+        trapTrack.append(Func(suit.showHpString, "WEAKENED!", 1.1, 0.7, (.3, .5, .8, 1)))
         if explode == 1:
             dustNode = hidden.attachNewNode('DustNode')
             trapTrack.append(Func(trapProp.wrtReparentTo, hidden))
@@ -512,6 +514,9 @@ def __createPlacedGroupTrapTrack(trap, prop, propName, centerSuit, propPos = Non
         trapTrack.append(Func(trapProp.setPos, trapPoint))
         trapTrack.append(Func(trapProp.setH, 0))
         trapTrack.append(LerpScaleInterval(trapProp, 1.2, Point3(1.0, 1.0, 1.0)))
+        for target in trap['target']:
+            suit = target['suit']
+            trapTrack.append(Func(suit.showHpString, "WEAKENED!", 1.1, 0.7, (.3, .5, .8, 1)))
         if explode == 1:
             dustNode = hidden.attachNewNode('DustNode')
             removeTrapsParallel = Parallel()

@@ -1681,6 +1681,29 @@ class LeaveRace(MagicWord):
         messenger.send('leaveRace')
 
 
+class rsp(MagicWord):
+    desc = "Restarts the pie round"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("round", str, False, "next")]
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        battle = args[0]
+        from toontown.suit.DistributedSellbotBossAI import DistributedSellbotBossAI
+        boss = None
+        for do in list(simbase.air.doId2do.values()):
+            if isinstance(do, DistributedSellbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "You aren't in a VP!"
+
+        boss.exitIntroduction()
+        boss.b_setState('BattleThree')
+        return "Restarting Pie Round"
+
+
 class SkipCFO(MagicWord):
     desc = "Skips to the indicated round of the CFO."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
@@ -2059,6 +2082,28 @@ class FillJury(MagicWord):
             boss.chairs[i].b_setToonJurorIndex(0)
             boss.chairs[i].requestToonJuror()
         return "Filled chairs."
+
+class rss(MagicWord):
+    desc = "Restarts the seltzer round"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("round", str, False, "next")]
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        battle = args[0]
+        from toontown.suit.DistributedBossbotBossAI import DistributedBossbotBossAI
+        boss = None
+        for do in list(simbase.air.doId2do.values()):
+            if isinstance(do, DistributedBossbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "You aren't in a CEO!"
+
+        boss.exitIntroduction()
+        boss.b_setState('BattleFour')
+        return "Restarting Seltzer Round"
 
 
 class SkipVP(MagicWord):
@@ -3197,8 +3242,8 @@ class ShowScoreboard(MagicWord):
         global DEBUG_HEAT
 
         if not DEBUG_SCOREBOARD:
-            from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
-            DEBUG_SCOREBOARD = CashbotBossScoreboard()
+            from toontown.coghq.CogBossScoreboard import CogBossScoreboard
+            DEBUG_SCOREBOARD = CogBossScoreboard()
             DEBUG_SCOREBOARD.show()
             DEBUG_HEAT = CraneLeagueHeatDisplay()
             # for toon in self.getNearbyToons():

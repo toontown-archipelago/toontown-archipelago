@@ -1,6 +1,9 @@
+from typing import Dict
+
 from direct.directnotify import DirectNotifyGlobal
 from otp.avatar import DistributedAvatarAI
 from toontown.battle import BattleExperienceAI
+from toontown.coghq.BossComboTrackerAI import BossComboTrackerAI
 from toontown.suit import SuitDNA
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
@@ -37,6 +40,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.keyStates = [
          'BattleOne', 'BattleTwo', 'BattleThree', 'Victory', 'Defeat']
         self.bossDamage = 0
+        self.bossMaxDamage = 100
         self.battleThreeStart = 0
         self.battleThreeDuration = 1800
         self.attackCode = None
@@ -46,6 +50,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.nerfed = False
         self.numRentalDiguises = 0
         self.numNormalDiguises = 0
+        self.comboTrackers: Dict[int, BossComboTrackerAI] = {}
         AllBossCogs.append(self)
         return
 
@@ -54,6 +59,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         DistributedAvatarAI.DistributedAvatarAI.generateWithRequired(self, zoneId)
 
     def delete(self):
+        self.cleanupComboTrackers()
         self.ignoreAll()
         if self in AllBossCogs:
             i = AllBossCogs.index(self)
@@ -165,6 +171,17 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             self.notify.warning('isToonWearingRentalSuit: toonId %s does not exist' % toonId)
             return False
 
+    def getHealthRemaining(self):
+        return self.bossMaxDamage - self.bossDamage
+
+    def getMaxHealth(self):
+        return self.bossMaxDamage
+
+    def getHealthPercentage(self) -> float:
+        if self.getMaxHealth() <= 0:
+            return 0
+        return self.getHealthRemaining() / self.getMaxHealth()
+
     def __countNormalDisguiseToons(self):
         return len(self.involvedToons) + len(self.looseToons) - self.__countRentalDisguiseToons()
 
@@ -198,6 +215,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             self.toonDied(toon)
 
     def toonDied(self, toon):
+        self.resetCombo(toon.doId)
         self.sendUpdate('toonDied', [toon.doId])
 
         if toon.doId in self.nearToons:
@@ -757,3 +775,59 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def doNextAttack(self, task):
         self.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
+
+    def d_damageDealt(self, avId, dmg):
+        self.sendUpdate('damageDealt', [avId, dmg])
+
+    def d_stunBonus(self, avId, points):
+        self.sendUpdate('stunBonus', [avId, points])
+
+    def d_avHealed(self, avId, hp):
+        self.sendUpdate('avHealed', [avId, hp])
+
+    def initializeComboTrackers(self):
+        self.cleanupComboTrackers()
+        for avId in self.involvedToons:
+            if avId in self.air.doId2do:
+                self.comboTrackers[avId] = BossComboTrackerAI(self, avId)
+
+    def incrementCombo(self, avId, amount):
+        tracker = self.comboTrackers.get(avId)
+        if not tracker:
+            return
+
+        tracker.incrementCombo(amount)
+
+    def resetCombo(self, avId):
+        tracker = self.comboTrackers.get(avId)
+        if not tracker:
+            return
+
+        tracker.resetCombo()
+
+    def getComboLength(self, avId):
+        tracker = self.comboTrackers.get(avId)
+        if not tracker:
+            return 0
+
+        return tracker.combo
+
+    def getComboAmount(self, avId):
+        tracker = self.comboTrackers.get(avId)
+        if not tracker:
+            return 0
+
+        return tracker.pointBonus
+
+    def cleanupComboTrackers(self):
+        for comboTracker in self.comboTrackers.values():
+            comboTracker.cleanup()
+
+    def d_updateCombo(self, avId, comboLength):
+        self.sendUpdate('updateCombo', [avId, comboLength])
+
+    def d_awardCombo(self, avId, comboLength, amount):
+        self.sendUpdate('awardCombo', [avId, comboLength, amount])
+
+    def d_updateTimer(self, time):
+        self.sendUpdate('updateTimer', [time])

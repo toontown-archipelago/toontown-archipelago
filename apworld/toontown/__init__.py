@@ -6,11 +6,12 @@ from worlds.generic.Rules import set_rule
 
 from . import regions, consts
 from .consts import ToontownItem, ToontownLocation
-from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, ITEM_NAME_TO_ID
+from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, ITEM_NAME_TO_ID, FISHING_LICENSES
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID
 from .options import ToontownOptions
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
+from .fish import FishProgression, FishChecks
 
 DEBUG_MODE = False
 
@@ -115,9 +116,27 @@ class ToontownWorld(World):
             for loc_list in ALL_TASK_LOCATIONS_SPLIT:
                 if location_data.name in loc_list[logical_tasks_per_pg:]:
                     location.progress_type = LocationProgressType.EXCLUDED
+
             if not self.options.logical_maxed_cog_gallery.value:
                 if location_data.type == ToontownLocationType.GALLERY_MAX:
                     location.progress_type = LocationProgressType.EXCLUDED
+
+            # A flag to put a fish in this location.
+            fish_upon_ye = False
+            fish_checks = FishChecks(self.options.fish_checks.value)
+
+            if fish_checks != FishChecks.AllSpecies:
+                if location_data.type == ToontownLocationType.FISHING:
+                    fish_upon_ye = True
+            if fish_checks != FishChecks.AllGalleryAndGenus:
+                if location_data.type == ToontownLocationType.FISHING_GENUS:
+                    fish_upon_ye = True
+            if fish_checks not in (FishChecks.AllGalleryAndGenus, FishChecks.AllGallery):
+                if location_data.type == ToontownLocationType.FISHING_GALLERY:
+                    fish_upon_ye = True
+
+            if fish_upon_ye:
+                location.place_locked_item(self.create_item(ToontownItemName.FISH.value))
 
         for i, location_data in enumerate(EVENT_DEFINITIONS):
             region = regions[location_data.region]
@@ -217,6 +236,16 @@ class ToontownWorld(World):
         for _ in range(GAG_MULTI_TO_GIVE):
             pool.append(self.create_item(ToontownItemName.GAG_MULTIPLIER_1.value))
 
+        # Create fishing licenses.
+        if self.options.fish_progression.value in (FishProgression.LicensesAndRods, FishProgression.Licenses):
+            for fishLicense in FISHING_LICENSES:
+                pool.append(self.create_item(fishLicense.value))
+
+        # Create fishing rods.
+        if self.options.fish_progression.value in (FishProgression.LicensesAndRods, FishProgression.Rods):
+            for _ in range(4):
+                pool.append(self.create_item(ToontownItemName.FISHING_ROD_UPGRADE.value))
+
         # Fill the rest of the room with junk.
         junk: int = len(self.multiworld.get_unfilled_locations(self.player)) - len(pool)
         if junk < 0:
@@ -226,9 +255,9 @@ class ToontownWorld(World):
         trap: int = round(junk * (self.options.trap_percent / 100))
         filler: int = junk - trap
         for i in range(trap):
-            pool.append(self.create_item(items.random_trap().name.value))
+            pool.append(self.create_item(items.random_trap().value))
         for i in range(filler):
-            pool.append(self.create_item(items.random_junk().name.value))
+            pool.append(self.create_item(items.random_junk().value))
 
         # Finalize item pool.
         self.multiworld.itempool += pool
@@ -244,6 +273,9 @@ class ToontownWorld(World):
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
             "cog_bosses_required": self.options.cog_bosses_required.value,
+            "fish_locations": self.options.fish_locations.value,
+            "fish_checks": self.options.fish_checks.value,
+            "fish_progression": self.options.fish_progression.value,
         }
 
     def calculate_starting_tracks(self):

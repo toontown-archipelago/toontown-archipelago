@@ -53,16 +53,6 @@ class FishTank:
             del self.fishList[i]
             return 1
 
-    def generateRandomTank(self):
-        import random
-        numFish = random.randint(1, 20)
-        self.fishList = []
-        for i in range(numFish):
-            genus, species = FishGlobals.getRandomFish()
-            weight = FishGlobals.getRandomWeight(genus, species)
-            fish = FishBase.FishBase(genus, species, weight)
-            self.addFish(fish)
-
     def getTotalValue(self):
         value = 0
         for fish in self.fishList:

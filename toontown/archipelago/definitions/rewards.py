@@ -4,8 +4,10 @@ from enum import IntEnum
 import random
 
 from apworld.toontown import ToontownItemName, get_item_def_from_id
+from otp.otpbase.OTPLocalizerEnglish import EmoteFuncDict
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
+from toontown.battle import BattleBase
 
 from toontown.building import FADoorCodes
 from toontown.coghq.CogDisguiseGlobals import PartsPerSuitBitmasks
@@ -285,6 +287,39 @@ class TaskAccessReward(APReward):
         av.addAccessKey(key)
 
 
+class FishingLicenseReward(APReward):
+    TOONTOWN_CENTRAL = ToontownGlobals.ToontownCentral
+    DONALDS_DOCK = ToontownGlobals.DonaldsDock
+    DAISYS_GARDENS = ToontownGlobals.DaisyGardens
+    MINNIES_MELODYLAND = ToontownGlobals.MinniesMelodyland
+    THE_BRRRGH = ToontownGlobals.TheBrrrgh
+    DONALDS_DREAMLAND = ToontownGlobals.DonaldsDreamland
+
+    ZONE_TO_DISPLAY_NAME = {
+        TOONTOWN_CENTRAL: "Toontown Central",
+        DONALDS_DOCK: "Donald's Dock",
+        DAISYS_GARDENS: "Daisy Gardens",
+        MINNIES_MELODYLAND: "Minnie's Melodyland",
+        THE_BRRRGH: "The Brrrgh",
+        DONALDS_DREAMLAND: "Donald's Dreamland",
+    }
+
+    def __init__(self, playground: int):
+        self.playground: int = playground
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You may now Fish\nin "),
+            MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        # Get the key ID for this playground
+        key = FADoorCodes.LICENSE_TO_ACCESS_CODE[self.playground]
+        av.addAccessKey(key)
+
+
 class FacilityAccessReward(APReward):
     FACILITY_ID_TO_DISPLAY = {
         FADoorCodes.FRONT_FACTORY_ACCESS_MISSING: "Front Factory",
@@ -376,10 +411,15 @@ class UberTrapAward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.playSound('phase_4/audio/sfx/avatar_emotion_very_sad.ogg')
-        av.b_setHp(15)
+        newHp = 15 if av.getHp() > 15 else 1
+        damage = av.getHp() - newHp
+        if av.getHp() > 0:
+            av.takeDamage(damage)
         av.inventory.NPCMaxOutInv(maxLevel=6)
         av.b_setInventory(av.inventory.makeNetString())
+
+        av.d_broadcastHpString("UBERFIED!", (.35, .7, .35))
+        av.d_playEmote(EmoteFuncDict['Cry'], 1)
 
 
 class DripTrapAward(APReward):
@@ -396,6 +436,40 @@ class DripTrapAward(APReward):
         av.b_setBackpack(random.randint(1, 24), 0, 0)
         av.b_setGlasses(random.randint(1, 21), 0, 0)
         av.b_setHat(random.randint(1, 56), 0, 0)
+
+        av.d_broadcastHpString("FASHION STATEMENT!", (.9, .8, .2))
+        av.d_playEmote(EmoteFuncDict['Surprise'], 1)
+
+
+class GagShuffleAward(APReward):
+
+    # How many times do we attempt to add gags to the inventory (failsafe for infinite loop)
+    GAG_ADD_ATTEMPTS = 50_000
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("GAG SHUFFLE TRAP\n", color='salmon'),
+            MinimalJsonMessagePart(f"Got gags?")
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+
+        # Clear inventory, randomly choose gags and add them until we fill up
+        av.inventory.zeroInv()
+        target = av.getMaxCarry()
+        gagsAdded = 0
+        # "infinite" loop, we just bound it as a failsafe
+        for _ in range(self.GAG_ADD_ATTEMPTS):
+            track = random.randint(BattleBase.HEAL, BattleBase.DROP)
+            level = random.randint(0, ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL)
+            gagsAdded += av.inventory.addItem(track, level)
+
+            if gagsAdded >= target:
+                break
+
+        av.b_setInventory(av.inventory.makeNetString())
+        av.d_broadcastHpString("GAG SHUFFLE!", (.3, .5, .8))
+        av.d_playEmote(EmoteFuncDict['Confused'], 1)
 
 
 class GagExpBundleAward(APReward):
@@ -442,9 +516,10 @@ class BossRewardAward(APReward):
             av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 4)))
         elif self.reward == BossRewardAward.UNITE:
             uniteType = random.choice([ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK])
-            av.addResistanceMessage(random.choice(ResistanceChat.getItems(uniteType)))
+            uniteChoice = random.choice(ResistanceChat.getItems(uniteType))
+            av.addResistanceMessage(ResistanceChat.encodeId(uniteType, uniteChoice))
         elif self.reward == BossRewardAward.PINK_SLIP:
-            slipAmount = random.randint(1, 3)
+            slipAmount = random.randint(2, 3)
             av.addPinkSlips(slipAmount)
 
 
@@ -498,6 +573,10 @@ class UndefinedReward(APReward):
         av.d_setSystemMessage(0, f"Unknown AP reward: {self.desc}")
 
 
+class IgnoreReward(APReward):
+    pass
+
+
 ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.LAFF_BOOST_1.value: LaffBoostReward(1),
     ToontownItemName.LAFF_BOOST_2.value: LaffBoostReward(2),
@@ -539,6 +618,13 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MML_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.MINNIES_MELODYLAND),
     ToontownItemName.TB_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.THE_BRRRGH),
     ToontownItemName.DDL_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DONALDS_DREAMLAND),
+    ToontownItemName.TTC_FISHING.value: FishingLicenseReward(FishingLicenseReward.TOONTOWN_CENTRAL),
+    ToontownItemName.DD_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DOCK),
+    ToontownItemName.DG_FISHING.value: FishingLicenseReward(FishingLicenseReward.DAISYS_GARDENS),
+    ToontownItemName.MML_FISHING.value: FishingLicenseReward(FishingLicenseReward.MINNIES_MELODYLAND),
+    ToontownItemName.TB_FISHING.value: FishingLicenseReward(FishingLicenseReward.THE_BRRRGH),
+    ToontownItemName.DDL_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DREAMLAND),
+    ToontownItemName.FISH.value: IgnoreReward(),
     ToontownItemName.FRONT_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
     ToontownItemName.SIDE_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING),
     ToontownItemName.COIN_MINT_ACCESS.value: FacilityAccessReward(FADoorCodes.COIN_MINT_ACCESS_MISSING),
@@ -559,16 +645,17 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MONEY_500.value: JellybeanReward(500),
     ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
     ToontownItemName.MONEY_2000.value: JellybeanReward(2000),
-    ToontownItemName.XP_500.value: GagExpBundleAward(500),
+    # ToontownItemName.XP_500.value: GagExpBundleAward(500),
     ToontownItemName.XP_1000.value: GagExpBundleAward(1000),
     ToontownItemName.XP_1500.value: GagExpBundleAward(1500),
     ToontownItemName.XP_2000.value: GagExpBundleAward(2000),
-    ToontownItemName.XP_2500.value: GagExpBundleAward(2500),
+    # ToontownItemName.XP_2500.value: GagExpBundleAward(2500),
     ToontownItemName.SOS_REWARD.value: BossRewardAward(BossRewardAward.SOS),
     ToontownItemName.UNITE_REWARD.value: BossRewardAward(BossRewardAward.UNITE),
     ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP),
     ToontownItemName.UBER_TRAP.value: UberTrapAward(),
     ToontownItemName.DRIP_TRAP.value: DripTrapAward(),
+    ToontownItemName.GAG_SHUFFLE_TRAP.value: GagShuffleAward(),
 }
 
 

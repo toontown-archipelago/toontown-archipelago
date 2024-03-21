@@ -88,7 +88,7 @@ class ToonHood(Hood.Hood):
 
     def enterPurchase(self, pointsAwarded, playerMoney, playerIds, playerStates, remain, metagameRound = -1, votesArray = None):
         messenger.send('enterSafeZone')
-        DistributedAvatar.DistributedAvatar.HpTextEnabled = 0
+        DistributedAvatar.DistributedAvatar.HpTextEnabled = 1
         base.localAvatar.laffMeter.start()
         self.purchaseDoneEvent = 'purchaseDone'
         self.accept(self.purchaseDoneEvent, self.handlePurchaseDone)
@@ -173,7 +173,7 @@ class ToonHood(Hood.Hood):
 
     def enterMinigame(self, ignoredParameter = None):
         messenger.send('enterSafeZone')
-        DistributedAvatar.DistributedAvatar.HpTextEnabled = 0
+        DistributedAvatar.DistributedAvatar.HpTextEnabled = 1
         base.localAvatar.laffMeter.start()
         base.cr.forbidCheesyEffects(1)
         self.acceptOnce(self.minigameDoneEvent, self.handleMinigameDone)

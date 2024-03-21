@@ -43,6 +43,7 @@ class Settings:
         "music-volume": 0.65,
         "sfx-volume": 1.0,
         "accepting-friends": True,
+        "competitive-boss-scoring": True,
         "anti-aliasing": False,
         "anisotropic-filter": 8,
         "frame-blending": True,

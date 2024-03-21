@@ -85,6 +85,52 @@ class LogicalMaxedCogGallery(Toggle):
     default = True
 
 
+class FishLocations(Choice):
+    """
+    Determines where fish can spawn.
+    - playgrounds: Fish spawn in their vanilla locations. Street-exclusive fish can be found anywhere in their playgrounds.
+    - vanilla: Fish spawn in their vanilla locations. Street-exclusive fish remain in their vanilla locations.
+    - global: Fish can spawn anywhere.
+    """
+    display_name = "fish_locations"
+    option_playgrounds = 0
+    option_vanilla = 1
+    option_global = 2
+    default = 0
+
+
+class FishChecks(Choice):
+    """
+    Determines the amount of items that can be found from fishing.
+    - all_species: All 70 species will have an item.
+    - all_gallery_and_genus: Every 10 species and unique genus will have an item.
+    - all_gallery: Every 10 species will have an item.
+    - none: There are no items in fishing.
+    """
+    display_name = "fish_checks"
+    option_all_species = 0
+    option_all_gallery_and_genus = 1
+    option_all_gallery = 2
+    option_none = 3
+    default = 1
+
+
+class FishProgression(Choice):
+    """
+    Determines the progression for fishing.
+    - licenses_and_rods: Both 'licenses' and 'rods' progression are active.
+    - licenses: Playground fishing is restricted until their respective Fishing License is obtained. The player starts with a Gold Rod.
+    - rods: Progressive fishing rod items are added to the pool.
+    - none: All fishing areas are available. The player starts with a Gold Rod.
+    """
+    display_name = "fish_progression"
+    option_licenses_and_rods = 0
+    option_licenses = 1
+    option_rods = 2
+    option_none = 3
+    default = 0
+
+
 class ForcePlaygroundVisitTeleportAccessUnlocksOption(Toggle):
     """
     Enable to force your playground teleport access to be on its corresponding "Visit Location" check
@@ -138,6 +184,9 @@ class ToontownOptions(PerGameCommonOptions):
     cog_bosses_required: CogBossesRequired
     logical_tasks_per_playground: LogicalTasksPerPlayground
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
+    fish_locations: FishLocations
+    fish_checks: FishChecks
+    fish_progression: FishProgression
     force_playground_visit_teleport_access_unlocks: ForcePlaygroundVisitTeleportAccessUnlocksOption
     force_coghq_visit_teleport_access_unlocks: ForceCogHQVisitTeleportAccessUnlocksOption
     seed_generation_type: SeedGenerationTypeOption
