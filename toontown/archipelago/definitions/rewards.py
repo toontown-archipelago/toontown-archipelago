@@ -526,7 +526,7 @@ class BossRewardAward(APReward):
             uniteChoice = random.choice(ResistanceChat.getItems(uniteType))
             av.addResistanceMessage(ResistanceChat.encodeId(uniteType, uniteChoice))
         elif self.reward == BossRewardAward.PINK_SLIP:
-            slipAmount = random.randint(2, 3)
+            slipAmount = random.randint(1, 2)
             av.addPinkSlips(slipAmount)
 
 
@@ -654,7 +654,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MONEY_500.value: JellybeanReward(500),
     ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
     ToontownItemName.MONEY_2000.value: JellybeanReward(2000),
-    # ToontownItemName.XP_500.value: GagExpBundleAward(500),
+    ToontownItemName.XP_500.value: GagExpBundleAward(500),
     ToontownItemName.XP_1000.value: GagExpBundleAward(1000),
     ToontownItemName.XP_1500.value: GagExpBundleAward(1500),
     ToontownItemName.XP_2000.value: GagExpBundleAward(2000),
