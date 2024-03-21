@@ -205,6 +205,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.checkedLocations: List[int] = []
         self.hintPoints = 0
 
+        self.slotData = {}
         return
 
     def disable(self):
@@ -2827,3 +2828,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintPoints = pts
         if self.isLocal:
             base.localAvatar.checkPage.updateHintPointText()
+
+    def getSlotData(self) -> dict[str, int]:
+        return self.slotData
+
+    def setSlotData(self, slotKeys: list[str], slotVals: list[int]) -> None:
+        self.slotData = {k: v for k, v in zip(slotKeys, slotVals)}

@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from enum import IntEnum, auto
 from typing import Tuple, Dict, List, Set, Optional
 
+from toontown.building.FADoorCodes import LICENSE_TO_ACCESS_CODE
+from toontown.hood import ZoneUtil
 from . import ToontownLocationName, ToontownItemName, ToontownRegionName
 
 
@@ -87,13 +89,42 @@ class FishZone(IntEnum):
     PajamaPlace = 9200
 
 
+FishZoneToName: Dict[FishZone, str] = {
+    FishZone.Anywhere: 'Anywhere',
+    FishZone.MyEstate: 'My Estate',
+    FishZone.DonaldsDock: 'Donald\'s Dock',
+    FishZone.ToontownCentral: 'Toontown Central',
+    FishZone.TheBrrrgh: 'The Brrrgh',
+    FishZone.MinniesMelodyland: 'Minnie\'s Melodyland',
+    FishZone.DaisyGardens: 'Daisy Gardens',
+    FishZone.DonaldsDreamland: 'Donald\'s Dreamland',
+    FishZone.BarnacleBoulevard: 'Barnacle Boulevard',
+    FishZone.SeaweedStreet: 'Seaweed Street',
+    FishZone.LighthouseLane: 'Lighthouse Lane',
+    FishZone.SillyStreet: 'Silly Street',
+    FishZone.LoopyLane: 'Loopy Lane',
+    FishZone.PunchlinePlace: 'Punchline Place',
+    FishZone.WalrusWay: 'Walrus Way',
+    FishZone.SleetStreet: 'Sleet Street',
+    FishZone.PolarPlace: 'Polar Place',
+    FishZone.AltoAvenue: 'Alto Avenue',
+    FishZone.BaritoneBoulevard: 'Baritone Boulevard',
+    FishZone.TenorTerrace: 'Tenor Terrace',
+    FishZone.ElmStreet: 'Elm Street',
+    FishZone.MapleStreet: 'Maple Street',
+    FishZone.OakStreet: 'Oak Street',
+    FishZone.LullabyLane: 'Lullaby Lane',
+    FishZone.PajamaPlace: 'Pajama Place',
+}
+
+
 PlaygroundFishZoneGroups: Dict[FishZone, Set[FishZone]] = {
-    FishZone.DonaldsDock:       {FishZone.BarnacleBoulevard, FishZone.SeaweedStreet, FishZone.LighthouseLane},
-    FishZone.ToontownCentral:   {FishZone.SillyStreet, FishZone.LoopyLane, FishZone.PunchlinePlace},
-    FishZone.TheBrrrgh:         {FishZone.WalrusWay, FishZone.SleetStreet, FishZone.PolarPlace},
-    FishZone.MinniesMelodyland: {FishZone.AltoAvenue, FishZone.BaritoneBoulevard, FishZone.TenorTerrace},
-    FishZone.DaisyGardens:      {FishZone.ElmStreet, FishZone.MapleStreet, FishZone.OakStreet},
-    FishZone.DonaldsDreamland:  {FishZone.LullabyLane, FishZone.PajamaPlace},
+    FishZone.DonaldsDock:       {FishZone.BarnacleBoulevard, FishZone.SeaweedStreet,     FishZone.LighthouseLane},
+    FishZone.ToontownCentral:   {FishZone.SillyStreet,       FishZone.LoopyLane,         FishZone.PunchlinePlace},
+    FishZone.TheBrrrgh:         {FishZone.WalrusWay,         FishZone.SleetStreet,       FishZone.PolarPlace},
+    FishZone.MinniesMelodyland: {FishZone.AltoAvenue,        FishZone.BaritoneBoulevard, FishZone.TenorTerrace},
+    FishZone.DaisyGardens:      {FishZone.ElmStreet,         FishZone.MapleStreet,       FishZone.OakStreet},
+    FishZone.DonaldsDreamland:  {FishZone.LullabyLane,       FishZone.PajamaPlace},
 }
 
 
@@ -109,6 +140,28 @@ class FishDef:
     weight_range: Tuple[int, int]
     rarity: int
     zone_list: List[FishZone] = field(default_factory=list)
+
+    def get_filtered_zones(self, location: FishLocation) -> List[FishZone]:
+        if location == FishLocation.Global or FishZone.Anywhere in self.zone_list:
+            return [FishZone.Anywhere]
+
+        filtered_zones = set()
+        for zone in self.zone_list:
+            if zone == FishZone.MyEstate:
+                continue
+            if location == FishLocation.Playgrounds:
+                zone = get_playground_fish_zone(zone)
+            filtered_zones.add(zone)
+
+        # Remove redundant zones (aka, streets when their playground is already in)
+        for zone in filtered_zones.copy():
+            pgZone = get_playground_fish_zone(zone)
+            if pgZone == zone:
+                continue
+            if pgZone in filtered_zones:
+                filtered_zones.remove(zone)
+
+        return list(filtered_zones)
 
 
 # Fish dict is moved here from FishGlobals
@@ -237,13 +290,56 @@ ROD_DICT: Dict[int, FishingRodDef] = {
 }
 
 
+def get_fish_def(genus: FishGenus, species: int) -> FishDef:
+    return FISH_DICT[genus][species]
+
+
 def can_catch_fish(fish: FishDef, rodId: int) -> bool:
     rod = ROD_DICT[rodId]
     return rod.weight_range[0] <= fish.weight_range[1] and rod.weight_range[1] >= fish.weight_range[0]
 
 
+def get_required_rod(fish: FishDef) -> int:
+    for rodId in ROD_DICT:
+        if can_catch_fish(fish, rodId):
+            return rodId
+    raise KeyError(fish)
+
+
 def get_effective_rarity(rarity: int, offset: int) -> int:
     return min(10, rarity + offset)
+
+
+def can_av_fish_here(av, zoneId) -> int:
+    fishProgression = FishProgression(av.slotData.get('fish_progression', 3))
+    needLicense = fishProgression in (FishProgression.Licenses, FishProgression.LicensesAndRods)
+    if needLicense:
+        hoodId = ZoneUtil.getHoodId(zoneId)
+        accessCode = LICENSE_TO_ACCESS_CODE.get(hoodId)
+        if not accessCode:
+            raise KeyError("This is a bug, tell Mica (zoneId=%s, hoodId=%s)" % (zoneId, hoodId))
+        if accessCode not in av.getAccessKeys():
+            return accessCode
+    return -1
+
+
+def can_av_fish_at_zone(av, fishZone) -> bool:
+    if fishZone == FishZone.MyEstate:
+        return False
+    elif fishZone == FishZone.Anywhere:
+        fishProgression = FishProgression(av.slotData.get('fish_progression', 3))
+        needLicense = fishProgression in (FishProgression.Licenses, FishProgression.LicensesAndRods)
+        if needLicense:
+            # True as long as they have any license.
+            accessKeys = av.getAccessKeys()
+            return any(
+                accessCode in accessKeys
+                for accessCode in LICENSE_TO_ACCESS_CODE.values()
+            )
+        else:
+            return True
+    else:
+        return can_av_fish_here(av, fishZone) == -1
 
 
 # A cache for the below function.
@@ -254,6 +350,7 @@ def get_catchable_fish(zone: FishZone, rodId: int, location: FishLocation) -> Se
     """
     Gets all catchable fish within a given zone with the current rod.
     """
+    zone = ZoneUtil.getBranchZone(zone)
     # Filter zone for their respective playground.
     if location == FishLocation.Playgrounds:
         zone = get_playground_fish_zone(zone)
@@ -288,13 +385,44 @@ def get_catchable_fish(zone: FishZone, rodId: int, location: FishLocation) -> Se
                     fishZone = get_playground_fish_zone(fishZone)
 
                 # Are we fishing here?
-                if zone == fishZone:
+                if zone == fishZone or fishZone == FishZone.Anywhere:
                     # Add this fish.
                     rarity = get_effective_rarity(fishDef.rarity, zoneIndex)
                     fish_set.add((fishGenus, speciesIndex, rarity))
 
     # We're done here.
     __catchable_fish_cache[zone][rodId][location] = fish_set
+    return fish_set
+
+
+__catchable_fish_cache_no_rarity = {}
+
+
+def get_catchable_fish_no_rarity(zone: FishZone, rodId: int, location: FishLocation) -> Set[Tuple[FishGenus, int]]:
+    """
+    Gets all catchable fish within a given zone with the current rod (no rarity)
+    """
+    # Filter zone for their respective playground.
+    if location == FishLocation.Playgrounds:
+        zone = get_playground_fish_zone(zone)
+
+    # Check cache.
+    __catchable_fish_cache_no_rarity.setdefault(zone, {})
+    __catchable_fish_cache_no_rarity[zone].setdefault(rodId, {})
+    __catchable_fish_cache_no_rarity[zone][rodId].setdefault(location, set())
+    __cached_result = __catchable_fish_cache_no_rarity[zone][rodId][location]
+    if __cached_result:
+        return __catchable_fish_cache_no_rarity[zone][rodId][location]
+
+    # A set containg tuples of (FishGenus, SpeciesIndex)
+    fish_set: Set[Tuple[FishGenus, int]] = set()
+
+    for fishData in get_catchable_fish(zone, rodId, location):
+        genus, species, rarity = fishData
+        fish_set.add((genus, species))
+
+    # We're done here.
+    __catchable_fish_cache_no_rarity[zone][rodId][location] = fish_set
     return fish_set
 
 

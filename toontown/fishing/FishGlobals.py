@@ -116,8 +116,8 @@ def getSpecies(genus: FishGenus) -> Tuple[FishDef]:
     return FISH_DICT[genus]
 
 
-def getGenera() -> List[FishGenus]:
-    return list(FISH_DICT.keys())
+def getGenera() -> List[int]:
+    return [int(genus) for genus in FISH_DICT]
 
 
 def getNumRods():

@@ -4,7 +4,7 @@ from typing import Dict
 from direct.directnotify import DirectNotifyGlobal
 
 from apworld.toontown import locations
-from apworld.toontown.fish import can_catch_new_species, FishLocation
+from apworld.toontown.fish import can_catch_new_species, FishLocation, GENUS_SPECIES_TO_LOCATION, GENUS_TO_LOCATION, FishChecks
 
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.fishing import FishGlobals
@@ -14,7 +14,7 @@ from toontown.safezone.DistributedFishingSpotAI import DistributedFishingSpotAI
 
 
 # How much pity to add per rod (.01) = 1%
-FISHING_ROD_PITY = (0.02, 0.05, 0.10, 0.15, 0.25)
+FISHING_ROD_PITY = (0.10, 0.12, 0.15, 0.18, 0.20)
 
 
 class FishManagerAI:
@@ -49,7 +49,7 @@ class FishManagerAI:
         return fishingSpot
 
     def attemptForceNewSpecies(self, av, zoneId, oldFish):
-        location = FishLocation(av.slot_data.get('fish_locations', 1))
+        location = FishLocation(av.slotData.get('fish_locations', 1))
 
         # Perform many attempts
         for _ in range(10):
@@ -134,7 +134,7 @@ class FishManagerAI:
 
         # Process the item we rolled
         if itemType == FishGlobals.FishItem:
-            location = FishLocation(av.slot_data.get('fish_locations', 1))
+            location = FishLocation(av.slotData.get('fish_locations', 1))
             success, genus, species, weight = FishGlobals.getRandomFishVitals(zoneId, av.getFishingRod(), location=location)
             fish = FishBase(genus, species, weight)
 
@@ -155,6 +155,16 @@ class FishManagerAI:
                 itemType = FishGlobals.FishItemNewRecord
             else:
                 itemType = FishGlobals.FishItem
+
+            # Do location checks on this.
+            fishChecks = FishChecks(av.slotData.get('fish_checks', 1))
+
+            fishLocationName = GENUS_SPECIES_TO_LOCATION[genus, species]
+            genusLocationName = GENUS_TO_LOCATION[genus]
+            if fishChecks == FishChecks.AllSpecies:
+                av.addCheckedLocation(ap_location_name_to_id(fishLocationName.value))
+            if fishChecks == FishChecks.AllGalleryAndGenus:
+                av.addCheckedLocation(ap_location_name_to_id(genusLocationName.value))
 
             collectionNetList = av.fishCollection.getNetLists()
             av.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
@@ -186,6 +196,9 @@ class FishManagerAI:
         return False
 
     def checkForFishingLocationCompletions(self, av):
+        fishChecks = FishChecks(av.slotData.get('fish_checks', 1))
+        if fishChecks not in (FishChecks.AllGalleryAndGenus, FishChecks.AllGallery):
+            return
 
         thresholdToLocation = {
             10: locations.ToontownLocationName.FISHING_10_SPECIES.value,

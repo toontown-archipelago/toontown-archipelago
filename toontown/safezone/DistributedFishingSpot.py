@@ -5,7 +5,7 @@ from direct.directtools.DirectGeometry import LineNodePath
 from direct.distributed import DistributedObject
 from direct.directnotify import DirectNotifyGlobal
 
-from apworld.toontown.fish import MAX_SPECIES_PER_ROD_TIER
+from apworld.toontown.fish import MAX_SPECIES_PER_ROD_TIER, FishLocation, get_catchable_fish_no_rarity
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.building import FADoorCodes
@@ -469,18 +469,22 @@ class DistributedFishingSpot(DistributedObject.DistributedObject, DelayDeletable
         if not self.pityLabel:
             return
 
-        fishCount = len(localAvatar.fishCollection)
-
-        if fishCount >= 70:
+        if len(localAvatar.fishCollection) >= 70:
             self.pityLabel.hide()
             return
 
-        maxSpeciesForTier = MAX_SPECIES_PER_ROD_TIER[localAvatar.fishingRod]
+        fishLocation = FishLocation(localAvatar.slotData.get('fish_locations', 1))
+        catchableFish = get_catchable_fish_no_rarity(self.zoneId, localAvatar.fishingRod, fishLocation)
+
+        fishCount = 0
+        for genus, species in catchableFish:
+            if localAvatar.fishCollection.hasFish(genus, species):
+                fishCount += 1
+
+        maxSpeciesForTier = len(catchableFish)
         fishCaughtRatio = fishCount / maxSpeciesForTier
 
-        if fishCount == 70:
-            fishNumberColor = 'plum'
-        elif fishCaughtRatio < 0.33:
+        if fishCaughtRatio < 0.33:
             fishNumberColor = 'red'
         elif fishCaughtRatio < 0.66:
             fishNumberColor = 'salmon'

@@ -1169,6 +1169,7 @@ dclass DistributedToon : DistributedPlayer {
   updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
   requestHintPoints() ownsend airecv;
   hintPointResp(uint16) ownrecv;
+  setSlotData(string[], uint32[]) required ownrecv broadcast;
 };
 
 dclass DistributedCCharBase : DistributedObject {

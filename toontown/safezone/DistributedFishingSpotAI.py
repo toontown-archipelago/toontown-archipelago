@@ -1,7 +1,7 @@
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
-from apworld.toontown.fish import FishProgression
+from apworld.toontown.fish import FishProgression, can_av_fish_here
 from toontown.building.FADoorCodes import LICENSE_TO_ACCESS_CODE
 from toontown.fishing import FishGlobals
 from toontown.hood import ZoneUtil
@@ -67,17 +67,12 @@ class DistributedFishingSpotAI(DistributedObjectAI):
             return
 
         # Do they have their license?
-        fishProgression = FishProgression(av.slot_data.get('fish_progression', 3))
-        needLicense = fishProgression in (FishProgression.Licenses, FishProgression.LicensesAndRods)
-        if needLicense:
-            hoodId = ZoneUtil.getHoodId(self.zoneId)
-            accessCode = LICENSE_TO_ACCESS_CODE.get(hoodId)
-            if not accessCode:
-                raise KeyError("This is a bug, tell Mica (self.zoneId=%s, hoodId=%s)" % (self.zoneId, hoodId))
-            if accessCode not in av.getAccessKeys():
-                # They do not have the license to fish here.
-                self.sendUpdateToAvatarId(avId, 'rejectEnter', [accessCode])
-                return
+        hoodId = ZoneUtil.getHoodId(self.zoneId)
+        accessCode = can_av_fish_here(av, hoodId)
+        if accessCode != -1:
+            # They do not have the license to fish here.
+            self.sendUpdateToAvatarId(avId, 'rejectEnter', [accessCode])
+            return
 
         # Get them onboard.
         event = self.air.getAvatarExitEvent(avId)

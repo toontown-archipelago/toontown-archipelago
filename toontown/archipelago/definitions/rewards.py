@@ -573,6 +573,10 @@ class UndefinedReward(APReward):
         av.d_setSystemMessage(0, f"Unknown AP reward: {self.desc}")
 
 
+class IgnoreReward(APReward):
+    pass
+
+
 ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.LAFF_BOOST_1.value: LaffBoostReward(1),
     ToontownItemName.LAFF_BOOST_2.value: LaffBoostReward(2),
@@ -620,6 +624,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MML_FISHING.value: FishingLicenseReward(FishingLicenseReward.MINNIES_MELODYLAND),
     ToontownItemName.TB_FISHING.value: FishingLicenseReward(FishingLicenseReward.THE_BRRRGH),
     ToontownItemName.DDL_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DREAMLAND),
+    ToontownItemName.FISH.value: IgnoreReward(),
     ToontownItemName.FRONT_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
     ToontownItemName.SIDE_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING),
     ToontownItemName.COIN_MINT_ACCESS.value: FacilityAccessReward(FADoorCodes.COIN_MINT_ACCESS_MISSING),

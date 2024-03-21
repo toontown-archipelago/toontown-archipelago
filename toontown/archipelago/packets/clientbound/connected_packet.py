@@ -140,7 +140,7 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Is this this toon's first time? If so reset the toon's stats and initialize their settings from their YAML
         if len(self.checked_locations) == 0:
             self.handle_first_time_player(client.av)
-        client.av.slot_data = self.slot_data
+        client.av.b_setSlotData(self.slot_data)
 
         self.handle_yaml_settings(client.av)
 
