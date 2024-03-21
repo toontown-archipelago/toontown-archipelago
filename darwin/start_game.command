@@ -1,6 +1,6 @@
-cd `dirname $0`
+#!/bin/sh
 cd ..
 
 export TTOFF_LOGIN_TOKEN="dev"
 
-/usr/bin/python2.7 -m toontown.launcher.TTOffQuickStartLauncher
+/usr/local/bin/python3.9 -m toontown.launcher.TTOffQuickStartLauncher

@@ -138,6 +138,14 @@ __TEXT_PROPERTIES_UNDERLINE.setUnderscore(True)
 __register_property('underline', TEXT_PROPERTIES_CODE_UNDERLINE, __TEXT_PROPERTIES_UNDERLINE)
 
 
+# salmon text
+TEXT_PROPERTIES_CODE_FISH_SUBTEXT = "json_fish_subtext"
+__TEXT_PROPERTIES_FISH = TextProperties()
+__TEXT_PROPERTIES_FISH.setSlant(0.25)
+__TEXT_PROPERTIES_FISH.setTextScale(0.73)
+__register_property('fishSubtext', TEXT_PROPERTIES_CODE_FISH_SUBTEXT, __TEXT_PROPERTIES_FISH)
+
+
 # Called publically to get the TextProperties property code from a json color code
 def get_property_code_from_json_code(json_color_code: str) -> str:
     return __JSON_COLOR_CODE_TO_TEXT_PROPERTY.get(json_color_code, TEXT_PROPERTIES_CODE_WHITE)

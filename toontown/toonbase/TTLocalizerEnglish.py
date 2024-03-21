@@ -3162,6 +3162,13 @@ FADoorCodes_FRONT_THREE_ACCESS_MISSING = "No access!\n\nIn order to access this 
 FADoorCodes_MIDDLE_SIX_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Middle Two Entrance Key."
 FADoorCodes_BACK_NINE_ACCESS_MISSING = "No access!\n\nIn order to access this kart, you need the Back Three Entrance Key."
 
+FADoorCodes_TTC_FISHING_MISSING = "The Fisherman gives you a stern look.\n\nIn order to fish here, you'll need a Toontown Central Fishing License."
+FADoorCodes_DD_FISHING_MISSING  = "The Fisherman gives you a stern look.\n\nIn order to fish here, you'll need a Donald's Dock Fishing License."
+FADoorCodes_DG_FISHING_MISSING  = "The Fisherman gives you a stern look.\n\nIn order to fish here, you'll need a Daisy Gardens Fishing License."
+FADoorCodes_MM_FISHING_MISSING  = "The Fisherman gives you a stern look.\n\nIn order to fish here, you'll need a Minnie's Melodyland Fishing License."
+FADoorCodes_TB_FISHING_MISSING  = "The Fisherman gives you a stern look.\n\nIn order to fish here, you'll need The Brrrgh Fishing License."
+FADoorCodes_DDL_FISHING_MISSING = "The Fisherman gives you a stern look.\n\nIn order to fish here, you'll need a Donald's Dreamland Fishing License."
+
 KnockKnockContestJokes = {2100: ['Wally', "Wally's not looking, hit him with a pie!"],
  2200: {28: ['Biscuit', 'Biscuit out of here the Cogs are coming!'],
         41: ['Dewey', 'Dewey want to go defeat some more Cogs?'],

@@ -24,6 +24,13 @@ class ToontownItemName(enum.Enum):
 
     ### Fishing ###
     FISHING_ROD_UPGRADE = "Progressive Fishing Rod"
+    TTC_FISHING = "Toontown Central Fishing License"
+    DD_FISHING  = "Donald's Dock Fishing License"
+    DG_FISHING  = "Daisy Gardens Fishing License"
+    MML_FISHING = "Minnie's Melodyland Fishing License"
+    TB_FISHING  = "The Brrrgh Fishing License"
+    DDL_FISHING = "Donald's Dreamland Fishing License"
+    FISH = "Fish"
 
     ### Gag Training Frames ###
     TOONUP_FRAME = "Toon-Up Training Frame"
@@ -128,7 +135,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.useful),
     # endregion
     # region Gag Capacity
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5, ItemClassification.useful,  quantity=12),
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.useful, quantity=12),
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.useful, quantity=2),
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.useful, quantity=0),
     # endregion
@@ -153,8 +160,15 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_1, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_2, ItemClassification.progression),
     # endregion
-    # region Fishing Rod Upgrades
-    ToontownItemDefinition(ToontownItemName.FISHING_ROD_UPGRADE, ItemClassification.progression, quantity=4),
+    # region Fishing Items
+    ToontownItemDefinition(ToontownItemName.FISHING_ROD_UPGRADE, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.TTC_FISHING, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DD_FISHING,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DG_FISHING,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.MML_FISHING, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.TB_FISHING,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DDL_FISHING, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.FISH, ItemClassification.filler),
     # endregion
     # region Teleport Access
     ToontownItemDefinition(ToontownItemName.TTC_TELEPORT, ItemClassification.useful, quantity=1),
@@ -197,6 +211,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.BOSSBOT_DISGUISE, ItemClassification.progression, quantity=1),
     # endregion
     # region Filler Items
+    # TODO - remember to account for the Fish filler when implementing weights here
     ToontownItemDefinition(ToontownItemName.MONEY_250,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_500,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
@@ -238,9 +253,35 @@ GAG_TRAINING_FRAMES = (
     ToontownItemName.DROP_FRAME
 )
 
-# todo add quality/rarity to filler items
-JUNK_ITEMS = [item for item in ITEM_DEFINITIONS if item.classification == ItemClassification.filler]
-TRAP_ITEMS = [item for item in ITEM_DEFINITIONS if item.classification == ItemClassification.trap]
+FISHING_LICENSES = (
+    ToontownItemName.TTC_FISHING,
+    ToontownItemName.DD_FISHING,
+    ToontownItemName.DG_FISHING,
+    ToontownItemName.MML_FISHING,
+    ToontownItemName.TB_FISHING,
+    ToontownItemName.DDL_FISHING,
+)
+
+
+JUNK_WEIGHTS = {
+    ToontownItemName.MONEY_250:        0.5,
+    ToontownItemName.MONEY_500:        0.5,
+    ToontownItemName.MONEY_1000:       0.5,
+    ToontownItemName.MONEY_2000:       0.5,
+
+    ToontownItemName.XP_1000:          0.5,
+    ToontownItemName.XP_1500:          0.5,
+    ToontownItemName.XP_2000:          0.5,
+
+    ToontownItemName.SOS_REWARD:       1.0,
+    ToontownItemName.UNITE_REWARD:     1.0,
+    ToontownItemName.PINK_SLIP_REWARD: 1.0,
+}
+TRAP_WEIGHTS = {
+    ToontownItemName.UBER_TRAP:        1.0,
+    ToontownItemName.DRIP_TRAP:        0.5,
+    ToontownItemName.GAG_SHUFFLE_TRAP: 1.0,
+}
 
 
 def get_item_def_from_id(_id: int) -> Optional[ToontownItemDefinition]:
@@ -250,12 +291,14 @@ def get_item_def_from_id(_id: int) -> Optional[ToontownItemDefinition]:
     return None
 
 
-def random_junk() -> ToontownItemDefinition:
-    return random.choice(JUNK_ITEMS)
+def random_junk() -> ToontownItemName:
+    JUNK_ITEMS = list(JUNK_WEIGHTS.keys())
+    return random.choices(JUNK_ITEMS, weights=[JUNK_WEIGHTS[i] for i in JUNK_ITEMS])[0]
 
 
-def random_trap() -> ToontownItemDefinition:
-    return random.choice(TRAP_ITEMS)
+def random_trap() -> ToontownItemName:
+    TRAP_ITEMS = list(TRAP_WEIGHTS.keys())
+    return random.choices(TRAP_ITEMS, weights=[TRAP_WEIGHTS[i] for i in TRAP_ITEMS])[0]
 
 
 ITEM_NAME_TO_ID = {item.name.value: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}

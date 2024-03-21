@@ -1,7 +1,10 @@
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
+from apworld.toontown.fish import FishProgression, can_av_fish_here
+from toontown.building.FADoorCodes import LICENSE_TO_ACCESS_CODE
 from toontown.fishing import FishGlobals
+from toontown.hood import ZoneUtil
 
 
 class DistributedFishingSpotAI(DistributedObjectAI):
@@ -56,9 +59,22 @@ class DistributedFishingSpotAI(DistributedObjectAI):
             if self.avId == avId:
                 self.air.writeServerEvent('suspicious', avId, 'Toon requested to enter a fishing spot twice!')
 
-            self.sendUpdateToAvatarId(avId, 'rejectEnter', [])
+            self.sendUpdateToAvatarId(avId, 'rejectEnter', [0])
             return
 
+        av = self.air.doId2do.get(avId)
+        if not av:
+            return
+
+        # Do they have their license?
+        hoodId = ZoneUtil.getHoodId(self.zoneId)
+        accessCode = can_av_fish_here(av, hoodId)
+        if accessCode != -1:
+            # They do not have the license to fish here.
+            self.sendUpdateToAvatarId(avId, 'rejectEnter', [accessCode])
+            return
+
+        # Get them onboard.
         event = self.air.getAvatarExitEvent(avId)
         self.acceptOnce(event, self.__handleUnexpectedExit)
         self.b_setOccupied(avId)
@@ -72,9 +88,7 @@ class DistributedFishingSpotAI(DistributedObjectAI):
         self.lastFish = [None, None, None]
         self.cast = False
 
-        av = self.air.doId2do.get(avId)
-        if av:
-            self.d_setPity(self.air.fishManager.getAvPity(av))
+        self.d_setPity(self.air.fishManager.getAvPity(av))
 
     def requestExit(self):
         avId = self.air.getAvatarIdFromSender()

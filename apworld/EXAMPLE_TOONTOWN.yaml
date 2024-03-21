@@ -2,6 +2,8 @@ Toontown:
   progression_balancing: 50
   accessibility: items
 
+  ### Starting Settings ###
+
   # The starting amount of max Laff Points to have when starting a new game.
   # Range: 1 to 80
   starting_laff: 20
@@ -26,9 +28,13 @@ Toontown:
   # Range: 0 to 9999
   starting_money: 1000
 
+  ### Completion Settings ###
+
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
   # Range: 0 to 4
   cog_bosses_required: 4
+
+  ### Logic Settings ###
 
   # Determines the amount of tasks per playground that are in logic.
   # Range: 0 to 12
@@ -37,14 +43,39 @@ Toontown:
   # Enable to have Cog Gallery Maxed checks include progression items.
   logical_maxed_cog_gallery: 'true'
 
+  ### Fish Settings ###
+
+  # Determines where fish can spawn.
+  # - playgrounds: Fish spawn in their vanilla locations. Street-exclusive fish can be found anywhere in their playgrounds.
+  # - vanilla: Fish spawn in their vanilla locations. Street-exclusive fish remain in their vanilla locations.
+  # - global: Fish can spawn anywhere.
+  fish_locations: 'playgrounds'
+
+  # Determines the amount of items that can be found from fishing.
+  # - all_species: All 70 species will have an item.
+  # - all_gallery_and_genus: Every 10 species and unique genus will have an item.
+  # - all_gallery: Every 10 species will have an item.
+  # - none: There are no items in fishing.
+  fish_checks: 'all_gallery_and_genus'
+
+  # Determines the progression for fishing.
+  # - licenses_and_rods: Both 'licenses' and 'rods' progression are active.
+  # - licenses: Playground fishing is restricted until their respective Fishing License is obtained. The player starts with a Gold Rod.
+  # - rods: Progressive fishing rod items are added to the pool.
+  # - none: All fishing areas are available. The player starts with a Gold Rod.
+  fish_progression: 'licenses_and_rods'
+
+  ### Force Item Settings ###
+
   # Enable to force your playground teleport access to be on its corresponding "Visit Location" check
   force_playground_visit_teleport_access_unlocks: 'true'
 
   # Enable to force your Cog HQ teleport access to be on its corresponding "Visit Location" check
   force_coghq_visit_teleport_access_unlocks: 'false'
 
+  ### Seed Generation Settings ###
+
   # Type of seeding to use when RNG checks happen in game.
-  #
   # global: RNG elements are determined solely by the AP seed
   # slot_name: RNG elements are determined by AP seed and Slot Name
   # unique: RNG elements are determined by AP seed and internal toon ID
@@ -54,12 +85,14 @@ Toontown:
   # Percentage of junk items to be replaced with traps
   trap_percent: 20
 
+  ###
+  ### YAML Presets
+  ###
+
   # The following describe item links for facilities and disguises.
-  # If you do not wish for your facilities/disguises to be linked to other players,
-  # you must remove the corresponding link described below.
-  # By default, we link ALL Toontown players facility keys so that there is only ONE global facility key
-  # in the pool for all Toontown Players. If you are playing solo on a district with no other toons,
-  # I would recommend you remove item links completely.
+  # If you do not wish for your facilities/disguises to be linked to other players, you must remove the corresponding link described below.
+  # By default, we link ALL Toontown players facility keys so that there is only ONE global facility key in the pool for all Toontown Players.
+  # If you are playing solo on a district with no other toons, I would recommend you remove item links completely.
   item_links:
     - name: Facility Keys
       item_pool:

@@ -1169,6 +1169,7 @@ dclass DistributedToon : DistributedPlayer {
   updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
   requestHintPoints() ownsend airecv;
   hintPointResp(uint16) ownrecv;
+  setSlotData(string[], uint32[]) required ownrecv broadcast;
 };
 
 dclass DistributedCCharBase : DistributedObject {
@@ -1606,7 +1607,7 @@ dclass DistributedFishingSpot : DistributedObject {
   setPondDoId(uint32) required broadcast ram;
   setPosHpr(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10) required broadcast ram;
   requestEnter() airecv clsend;
-  rejectEnter();
+  rejectEnter(uint16);
   requestExit() airecv clsend;
   setOccupied(uint32) broadcast ram;
   doCast(uint8/255, int16/100) airecv clsend;

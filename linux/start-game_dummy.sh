@@ -1,4 +1,4 @@
 #!/bin/sh
 cd ..
 
-/usr/bin/python2 -m toontown.toonbase.ToontownStart --dummy
+python3 -m toontown.toonbase.ToontownStart --dummy
