@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from panda3d.core import *
 
@@ -62,6 +62,26 @@ class Experience:
                 levels.append(gagIndex)
 
         return levels
+
+    # Similarly to getAllowedGagLevels(), but does this for all the tracks in the game.
+    # returns a list of tuple pairs of (track, level) where every member is a gag that is able to be bought
+    def getAllowedGagsAndLevels(self) -> List[Tuple[int, int]]:
+        gags: List[Tuple[int, int]] = []
+
+        # Loop through all the tracks
+        for track in range(len(ToontownBattleGlobals.Tracks)):
+
+            # If we don't have access to the track skip it
+            if not self.owner.hasTrackAccess(track):
+                continue
+
+            # Get all the levels allowed and add them all
+            levelsForTrack: List[int] = self.getAllowedGagLevels(track)
+            for lvl in levelsForTrack:
+                gag = (track, lvl)
+                gags.append(gag)
+
+        return gags
 
     def addExp(self, track, amount=1):
 

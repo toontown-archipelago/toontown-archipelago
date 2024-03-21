@@ -2,6 +2,7 @@
 from enum import IntEnum
 
 import random
+from typing import List, Tuple
 
 from apworld.toontown import ToontownItemName, get_item_def_from_id
 from apworld.toontown.fish import LICENSE_TO_ACCESS_CODE
@@ -444,9 +445,6 @@ class DripTrapAward(APReward):
 
 class GagShuffleAward(APReward):
 
-    # How many times do we attempt to add gags to the inventory (failsafe for infinite loop)
-    GAG_ADD_ATTEMPTS = 50_000
-
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("GAG SHUFFLE TRAP\n", color='salmon'),
@@ -456,16 +454,24 @@ class GagShuffleAward(APReward):
     def apply(self, av: "DistributedToonAI"):
 
         # Clear inventory, randomly choose gags and add them until we fill up
-        av.inventory.zeroInv()
+        av.inventory.calcTotalProps()  # Might not be necessary, but just to be safe
         target = av.inventory.totalProps
-        gagsAdded = 0
-        # "infinite" loop, we just bound it as a failsafe
-        for _ in range(self.GAG_ADD_ATTEMPTS):
-            track = random.randint(BattleBase.HEAL, BattleBase.DROP)
-            level = random.randint(0, ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL)
-            gagsAdded += av.inventory.addItem(track, level)
+        av.inventory.zeroInv()  # Wipe inventory
+        # Get allowed track level pairs
+        allowedGags: List[Tuple[int, int]] = av.experience.getAllowedGagsAndLevels()
+        # Only do enough attempts to fill us back up to what we were
+        for _ in range(target):
+            # Randomly select a gag and attempt to add it
+            gag: Tuple[int, int] = random.choice(allowedGags)
+            track, level = gag
+            gagsAdded = av.inventory.addItem(track, level)
 
-            if gagsAdded >= target:
+            # If this gag failed to add, we can no longer query for this gag. Remove it.
+            if gagsAdded <= 0:
+                allowedGags.remove(gag)
+
+            # Edge case, if we are out of gags we need to stop (in theory this should never happen but let's be safe :p)
+            if len(allowedGags) <= 0:
                 break
 
         av.b_setInventory(av.inventory.makeNetString())
