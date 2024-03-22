@@ -421,10 +421,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
         self.servingTimer = ToontownTimer.ToontownTimer()
         self.servingTimer.posInTopRightCorner()
-        if len(self.involvedToons) > 1:
-            self.servingTimer.countdown(ToontownGlobals.BossbotBossServingDuration)
-        else:
-            self.servingTimer.countdown(ToontownGlobals.BossbotBossServingDurationSolo)
+        self.servingTimer.countdown(ToontownGlobals.BossbotBossServingDuration)
         base.playMusic(self.phaseTwoMusic, looping=1, volume=0.9)
 
     def exitBattleTwo(self):
@@ -671,8 +668,9 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
                 toon.takeOffSuit()
 
         diffInfo = ToontownGlobals.BossbotBossDifficultySettings[self.battleDifficulty]
-        self.bossMaxDamage = ToontownGlobals.BossbotBossMaxDamage
-        self.bossMaxDamage = math.ceil((len(self.involvedToons) / 8) * self.bossMaxDamage)
+        # 500 + 100x where x is numtoons-1
+        ceoMaxHp = ToontownGlobals.BossbotBossMinMaxDamage + 100 * (len(self.involvedToons)-1)
+        self.bossMaxDamage = min(ToontownGlobals.BossbotBossMaxDamage, ceoMaxHp)
         self.bossHealthBar.initialize(self.bossMaxDamage - self.bossDamage, self.bossMaxDamage)
         self.bossHealthBar.update(self.bossMaxDamage, self.bossMaxDamage)
         # For whatever reason, an update was needed here in order for the bar to show as soon as the round starts.
@@ -680,10 +678,13 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossClub.reparentTo(self.rightHandJoint)
         self.generateHealthBar()
         self.updateHealthBar()
+        self.resetAndShowScoreboard()
+        self.startTimer()
         base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
 
 
     def exitBattleFour(self):
+        self.bossSpeedrunTimer.stop_updating()
         DistributedBossCog.DistributedBossCog.exitBattleFour(self)
         self.phaseFourMusic.stop()
 
@@ -728,6 +729,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossHealthBar.deinitialize()
         self.storeInterval(seq, intervalName)
         base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
+        self.bossSpeedrunTimer.stop_updating()
 
     def __continueVictory(self):
         self.notify.debug('----- __continueVictory')
@@ -992,10 +994,12 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.cleanupAttacks()
             self.doGolfAttack(avId, attackCode)
         elif attackCode == ToontownGlobals.BossCogDizzy:
+            self.interruptMove()
             self.setDizzy(1)
             self.cleanupAttacks()
             self.doAnimate(None, raised=0, happy=1)
         elif attackCode == ToontownGlobals.BossCogDizzyNow:
+            self.interruptMove()
             self.setDizzy(1)
             self.cleanupAttacks()
             self.doAnimate('hit', happy=1, now=1)
@@ -1198,6 +1202,11 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         return
 
     def zapLocalToon(self, attackCode, origin = None):
+
+        # Don't hurt us if the boss is dizzy and we got hit by a golf ball flying at mach 10 (sequence finishing)
+        if self.attackCode in ToontownGlobals.BossCogDizzyStates and attackCode in (ToontownGlobals.BossCogGolfAttack, ToontownGlobals.BossCogGolfAreaAttack):
+            return
+
         if self.localToonIsSafe or localAvatar.ghostMode or localAvatar.isStunned:
             return
         if globalClock.getFrameTime() < self.lastZapLocalTime + 1.0:

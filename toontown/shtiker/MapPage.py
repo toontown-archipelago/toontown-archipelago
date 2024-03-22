@@ -1,5 +1,6 @@
 from typing import List
 
+from apworld.toontown.fish import can_av_fish_at_zone
 from . import ShtikerPage
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import PythonUtil
@@ -7,19 +8,9 @@ from toontown.hood import ZoneUtil
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.toonbase import TTLocalizer
-from .QuestsAvailablePoster import QuestsAvailablePoster
+from .QuestsAvailablePoster import QuestsAvailablePoster, FishAvailablePoster
 from ..building import FADoorCodes
 from ..quest.Quests import getRewardIdsFromHood
-
-
-QUEST_POSTER_POS = {
-    ToontownGlobals.ToontownCentral: (-0.05, 0, 0),
-    ToontownGlobals.DonaldsDock: (0.4, 0, -0.12),
-    ToontownGlobals.DaisyGardens: (-0.42, 0, -0.44),
-    ToontownGlobals.MinniesMelodyland: (0.01, 0, 0.3),
-    ToontownGlobals.TheBrrrgh: (0.35, 0, 0.4),
-    ToontownGlobals.DonaldsDreamland: (-0.27, 0, 0.55),
-}
 
 
 class MapPage(ShtikerPage.ShtikerPage):
@@ -80,6 +71,7 @@ class MapPage(ShtikerPage.ShtikerPage):
         self.clouds = []
 
         self.questsAvailableIcons: List[QuestsAvailablePoster] = []
+        self.fishAvailableIcons: List[FishAvailablePoster] = []
 
         guiButton = loader.loadModel('phase_3/models/gui/quit_button')
         buttonLoc = (0.45, 0, - 0.74)
@@ -125,8 +117,6 @@ class MapPage(ShtikerPage.ShtikerPage):
         self.hoodLabel.hide()
         cloudModel = loader.loadModel('phase_3.5/models/gui/cloud')
         cloudImage = cloudModel.find('**/cloud')
-        for hoodId, pos in QUEST_POSTER_POS.items():
-            self.questsAvailableIcons.append(QuestsAvailablePoster(hoodId, parent=self, pos=pos, scale=.1, sortOrder=1))
 
         for hood in self.allZones:
             abbrev = base.cr.hoodMgr.getNameFromId(hood)
@@ -147,9 +137,11 @@ class MapPage(ShtikerPage.ShtikerPage):
                 command=self.__buttonCallback,
                 extraArgs=[hood],
                 sortOrder=5)
-            label.bind(DGG.WITHIN, self.__hoverCallback, extraArgs=[1, hoodIndex])
-            label.bind(DGG.WITHOUT, self.__hoverCallback, extraArgs=[0, hoodIndex])
             label.resetFrameSize()
+            self.questsAvailableIcons.append(QuestsAvailablePoster(hood, parent=label, pos=(0, 0, 0.08), scale=.1, sortOrder=1))
+            self.fishAvailableIcons.append(FishAvailablePoster(hood, parent=label, pos=(0.13, 0, 0.08), scale=.1, sortOrder=1))
+            label.bind(DGG.WITHIN, self.showTasksAvailableFrame, extraArgs=[hood, hoodIndex])
+            label.bind(DGG.WITHOUT, self.hideTasksAvailableFrame, extraArgs=[hood,hoodIndex])
             self.labels.append(label)
             hoodClouds = []
             for cloudScale, cloudPos in zip(self.cloudScaleList[hoodIndex], self.cloudPosList[hoodIndex]):
@@ -169,41 +161,70 @@ class MapPage(ShtikerPage.ShtikerPage):
         self.resetFrameSize()
         return
 
+    def showTasksAvailableFrame(self, hood, hoodIndex, pos):
+        self.__hoverCallback(1, hoodIndex, pos)
+        for questPoster, fishPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons):
+            if hood == questPoster.getHoodId():
+                # Only show if we need to.
+                if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
+                    questPoster.show()
+                    fishPoster.show()
+            else:
+                continue
+
+    def hideTasksAvailableFrame(self, hood, hoodIndex, pos):
+        self.__hoverCallback(0, hoodIndex, pos)
+        for questPoster, fishPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons):
+            if hood == questPoster.getHoodId():
+                # Only show if we need to.
+                if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
+                    questPoster.hide()
+                    fishPoster.hide()
+            else:
+                continue
+
     def updateTasksAvailableFrames(self):
 
         # Loop through all the posters
-        for questPoster in self.questsAvailableIcons:
+        for questPoster, fishPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons):
             questPoster.hide()
+            fishPoster.hide()
             hoodId = questPoster.getHoodId()
 
             # Have we visited this hood?
             if hoodId not in base.localAvatar.hoodsVisited:
                 continue
 
-            questPoster.show()
+            # Can we fish here?
+            if not fishPoster.isVisible(base.localAvatar):
+                fishPoster.hide()
+            elif not can_av_fish_at_zone(base.localAvatar, hoodId):
+                fishPoster.showLocked()
+            else:
+                fishPoster.update(base.localAvatar)
 
             # Do we not have access to this hood?
-            if FADoorCodes.ZONE_TO_ACCESS_CODE[hoodId] not in base.localAvatar.getAccessKeys():
-                questPoster.showLocked()
-                continue
+            if hoodId in FADoorCodes.ZONE_TO_ACCESS_CODE:
+                if FADoorCodes.ZONE_TO_ACCESS_CODE[hoodId] not in base.localAvatar.getAccessKeys():
+                    questPoster.showLocked()
+                else:
+                    # Get the reward IDs from this playground
+                    rewardIds = getRewardIdsFromHood(hoodId)
 
-            # Get the reward IDs from this playground
-            rewardIds = getRewardIdsFromHood(hoodId)
+                    # Filter out the rewards we can't get bc we already earned them
+                    tier, rewardHistory = base.localAvatar.getRewardHistory()
+                    for earnedReward in rewardHistory:
+                        if earnedReward in rewardIds:
+                            rewardIds.remove(earnedReward)
 
-            # Filter out the rewards we can't get bc we already earned them
-            tier, rewardHistory = base.localAvatar.getRewardHistory()
-            for earnedReward in rewardHistory:
-                if earnedReward in rewardIds:
-                    rewardIds.remove(earnedReward)
+                    # Now filter out the rewards we are working on
+                    for quest in base.localAvatar.quests:
+                        questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
+                        if rewardId in rewardIds:
+                            rewardIds.remove(rewardId)
 
-            # Now filter out the rewards we are working on
-            for quest in base.localAvatar.quests:
-                questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
-                if rewardId in rewardIds:
-                    rewardIds.remove(rewardId)
-
-            # Now we have a number that tells us how many quests this person can learn here
-            questPoster.showNumAvailable(len(rewardIds))
+                    # Now we have a number that tells us how many quests this person can learn here
+                    questPoster.showNumAvailable(len(rewardIds))
 
     def unload(self):
         for labelButton in self.labels:

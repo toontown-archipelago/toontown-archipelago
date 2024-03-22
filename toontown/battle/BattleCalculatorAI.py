@@ -46,6 +46,7 @@ class BattleCalculatorAI:
         self.traps = {}
         self.npcTraps = {}
         self.suitAtkStats = {}
+        self.suitsTrappedThisTurn = set()
         self.__clearBonuses(hp=1)
         self.__clearBonuses(hp=0)
         self.delayedUnlures = []
@@ -1224,6 +1225,12 @@ class BattleCalculatorAI:
                 theSuit = self.battle.findSuit(attack[SUIT_ID_COL])
                 atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
                 result = atkInfo['hp']
+
+                # Divide attack damage by 2 if they were trapped this turn
+                if attack[SUIT_ID_COL] in self.suitsTrappedThisTurn:
+                    result /= 2
+                    result = int(math.ceil(result))
+
             targetIndex = self.battle.activeToons.index(toonId)
             attack[SUIT_HP_COL][targetIndex] = result
 
@@ -1349,7 +1356,15 @@ class BattleCalculatorAI:
         if self.notify.getDebug():
             self.notify.debug('Lured suits: ' + str(self.currentlyLuredSuits))
 
+    def __weakenSuitForTurn(self, suitId):
+        self.suitsTrappedThisTurn.add(suitId)
+
+    def __weakenAllSuitsForTurn(self):
+        for suit in self.battle.activeSuits:
+            self.suitsTrappedThisTurn.add(suit.doId)
+
     def __initRound(self):
+        self.suitsTrappedThisTurn.clear()
         if self.CLEAR_SUIT_ATTACKERS:
             self.SuitAttackers = {}
         self.toonAtkOrder = []
@@ -1367,10 +1382,15 @@ class BattleCalculatorAI:
                 sortedTraps = []
                 for atk in attacks:
                     if atk[TOON_TRACK_COL] == TRAP:
+                        if atk[TOON_LVL_COL] == UBER_GAG_LEVEL_INDEX:
+                            self.__weakenAllSuitsForTurn()
+                        else:
+                            self.__weakenSuitForTurn(atk[TOON_TGT_COL])
                         sortedTraps.append(atk)
 
                 for atk in attacks:
                     if atk[TOON_TRACK_COL] == NPCSOS:
+                        self.__weakenAllSuitsForTurn()
                         sortedTraps.append(atk)
 
                 attacks = sortedTraps

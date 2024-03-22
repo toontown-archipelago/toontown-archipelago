@@ -43,7 +43,6 @@ from toontown.suit import DistributedMintSuit/AI
 from toontown.suit import DistributedStageSuit/AI
 from toontown.suit import DistributedSellbotBoss/AI
 from toontown.suit import DistributedCashbotBoss/AI
-from toontown.suit import DistributedCashbotBossCL/AI
 from toontown.coghq import DistributedCashbotBossSafe/AI
 from toontown.coghq import DistributedCashbotBossCrane/AI
 from toontown.coghq import DistributedCashbotBossSideCrane/AI
@@ -101,6 +100,7 @@ from toontown.safezone import DistributedMMTreasure/AI
 from toontown.safezone import DistributedOZTreasure/AI
 from toontown.safezone import DistributedETreasure/AI
 from toontown.safezone import DistributedEFlyingTreasure/AI
+from toontown.safezone import DistributedArchiTreasure/AI
 from toontown.minigame import DistributedTagTreasure/AI
 from toontown.coghq import DistributedCashbotBossTreasure/AI
 from toontown.building import DistributedTrophyMgr/AI
@@ -512,6 +512,7 @@ dclass DistributedAvatar : DistributedSmoothNode, TalkPath_owner, TalkPath_whisp
   friendsNotify(int32, int8) ownrecv airecv clsend;
   checkAvOnShard(uint32) clsend airecv;
   confirmAvOnShard(uint32, int8);
+  broadcastHpString(string, int32/100, int32/100, int32/100) ownrecv broadcast;
 };
 
 struct Friend {
@@ -1014,6 +1015,7 @@ dclass DistributedToon : DistributedPlayer {
   setAnimState(char [0-1024], int16/1000, int16) broadcast ram ownsend airecv;
   setEmoteState(int16, int16/1000, int16) broadcast ram ownsend;
   setEmoteAccess(uint8[] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0]) required ownrecv db;
+  playEmote(int16, int16/1000, int16) broadcast ownrecv;
   setCustomMessages(uint16[] = []) required ownrecv db;
   setSleepAutoReply(uint32) broadcast clsend ownrecv;
   setResistanceMessages(pair16 [] = []) required ownrecv db;
@@ -1168,6 +1170,7 @@ dclass DistributedToon : DistributedPlayer {
   updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
   requestHintPoints() ownsend airecv;
   hintPointResp(uint16) ownrecv;
+  setSlotData(string[], uint32[]) required ownrecv broadcast;
 };
 
 dclass DistributedCCharBase : DistributedObject {
@@ -1265,11 +1268,17 @@ dclass DistributedBossCog : DistributedNode {
   avatarNearEnter() airecv clsend;
   avatarNearExit() airecv clsend;
   toonDied(uint32) broadcast;
+  revivedToon(uint32 avId) broadcast ram;
   setBattleExperience(int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], uint8[], uint32[]) required broadcast ram;
   zapToon(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, int8/100, int8/100, uint8, int16) airecv clsend;
   showZapToon(uint32, int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, uint8, int16) broadcast;
   setAttackCode(uint8, uint32) broadcast;
   updateTimer(uint32/255) broadcast ram;
+  damageDealt(uint32, uint32) broadcast;
+  stunBonus(uint32 avId, uint32) broadcast;
+  avHealed(uint32 avId, uint32) broadcast;
+  updateCombo(uint32 avId, uint8) broadcast ram;
+  awardCombo(uint32 avId, uint8, int32) broadcast ram;
   timesUp() broadcast ram;
   teamWiped() broadcast ram;
 };
@@ -1341,7 +1350,6 @@ struct ScaleLeagueRuleset {
 };
 
 dclass DistributedCashbotBoss : DistributedBossCog {
-  updateSpectators(uint32[]) broadcast ram;
   setRawRuleset(CraneLeagueRuleset) required broadcast ram;
   setModifiers(CraneLeagueModifier[]) broadcast ram;
   setToonSpawnpoints(uint8[]) broadcast ram;
@@ -1351,21 +1359,13 @@ dclass DistributedCashbotBoss : DistributedBossCog {
   setRewardId(uint16) broadcast ram;
   applyReward() airecv clsend;
   killingBlowDealt(uint32 avId) broadcast ram;
-  updateDamageDealt(uint32 avId, uint32) broadcast ram;
-  updateStunCount(uint32 avId, uint32) broadcast ram;
   updateGoonsStomped(uint32 avId) broadcast ram;
   updateSafePoints(uint32 avId, int32) broadcast ram;
   updateMaxImpactHits(uint32 avId) broadcast ram;
   updateLowImpactHits(uint32 avId) broadcast ram;
-  updateCombo(uint32 avId, uint8) broadcast ram;
-  awardCombo(uint32 avId, uint8, int32) broadcast ram;
   announceCraneRestart() broadcast ram;
-  revivedToon(uint32 avId) broadcast ram;
   goonKilledBySafe(uint32 avId) broadcast ram;
   updateUnstun(uint32 avId) broadcast ram;
-};
-
-dclass DistributedCashbotBossCL : DistributedCashbotBoss {
 };
 
 struct LinkPosition {
@@ -1608,7 +1608,7 @@ dclass DistributedFishingSpot : DistributedObject {
   setPondDoId(uint32) required broadcast ram;
   setPosHpr(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10) required broadcast ram;
   requestEnter() airecv clsend;
-  rejectEnter();
+  rejectEnter(uint16);
   requestExit() airecv clsend;
   setOccupied(uint32) broadcast ram;
   doCast(uint8/255, int16/100) airecv clsend;
@@ -2181,6 +2181,9 @@ dclass DistributedEFlyingTreasure : DistributedTreasure {
 };
 
 dclass DistributedTagTreasure : DistributedTreasure {
+};
+
+dclass DistributedArchiTreasure : DistributedTreasure {
 };
 
 dclass DistributedCashbotBossTreasure : DistributedTreasure {
@@ -3283,11 +3286,7 @@ dclass DistributedLawbotBoss : DistributedBossCog {
   enteredBonusState() broadcast;
   setBattleDifficulty(uint8) broadcast ram;
   setRawRuleset(ScaleLeagueRuleset) required broadcast ram;
-  damageDealt(uint32, uint32) broadcast;
-  updateCombo(uint32 avId, uint8) broadcast ram;
-  awardCombo(uint32 avId, uint8, int32) broadcast ram;
   lawyerDisabled(uint32 avid) broadcast;
-  stunBonus(uint32 avId, uint32) broadcast;
 };
 
 dclass DistributedLawbotBossSuit : DistributedSuitBase {

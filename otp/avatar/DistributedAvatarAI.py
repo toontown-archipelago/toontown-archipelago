@@ -99,3 +99,7 @@ class DistributedAvatarAI(DistributedNodeAI.DistributedNodeAI):
             self.air.writeServerEvent('Admin chat warning', senderId, 'using setParentStr to send "%s"' % parentToken)
             self.notify.warning('Admin chat warning: %s using setParentStr to send "%s"' % (senderId, parentToken))
         DistributedNodeAI.DistributedNodeAI.setParentStr(self, parentToken)
+
+    def d_broadcastHpString(self, message: str, color: tuple[float, float, float]):
+        assert len(color) == 3
+        self.sendUpdate('broadcastHpString', [message, *color])

@@ -167,9 +167,6 @@ class DistributedLawbotBossSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
             self.stunnedBy = avId
 
             self.boss.d_lawyerDisable(avId)
-            ct = self.boss.comboTrackers.get(avId)
-            if ct:
-                ct.incrementCombo(int(round(ct.combo / 5.0) + 2.0))
 
             taskName = self.uniqueName('unstun')
             taskMgr.doMethodLater(ToontownGlobals.LawbotBossLawyerStunTime, self.unStun, taskName)

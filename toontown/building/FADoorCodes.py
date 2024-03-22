@@ -1,3 +1,4 @@
+from apworld.toontown import fish
 from toontown.toonbase import TTLocalizer, ToontownGlobals
 
 UNLOCKED = 0
@@ -38,6 +39,13 @@ OFFICE_D_ACCESS_MISSING = 28
 FRONT_THREE_ACCESS_MISSING = 29
 MIDDLE_SIX_ACCESS_MISSING = 30
 BACK_NINE_ACCESS_MISSING = 31
+
+# TTC_FISHING_MISSING = 32  defined elsewhere
+# DD_FISHING_MISSING = 33   defined elsewhere
+# DG_FISHING_MISSING = 34   defined elsewhere
+# MM_FISHING_MISSING = 35   defined elsewhere
+# TB_FISHING_MISSING = 36   defined elsewhere
+# DDL_FISHING_MISSING = 37  defined elsewhere
 
 ZONE_TO_ACCESS_CODE = {
     ToontownGlobals.ToontownCentral: TTC_ACCESS_MISSING,
@@ -104,5 +112,10 @@ reasonDict = {
     MIDDLE_SIX_ACCESS_MISSING: TTLocalizer.FADoorCodes_MIDDLE_SIX_ACCESS_MISSING,
     BACK_NINE_ACCESS_MISSING: TTLocalizer.FADoorCodes_BACK_NINE_ACCESS_MISSING,
 
-
+    fish.TTC_FISHING_MISSING: TTLocalizer.FADoorCodes_TTC_FISHING_MISSING,
+    fish.DD_FISHING_MISSING: TTLocalizer.FADoorCodes_DD_FISHING_MISSING,
+    fish.DG_FISHING_MISSING: TTLocalizer.FADoorCodes_DG_FISHING_MISSING,
+    fish.MM_FISHING_MISSING: TTLocalizer.FADoorCodes_MM_FISHING_MISSING,
+    fish.TB_FISHING_MISSING: TTLocalizer.FADoorCodes_TB_FISHING_MISSING,
+    fish.DDL_FISHING_MISSING: TTLocalizer.FADoorCodes_DDL_FISHING_MISSING,
 }

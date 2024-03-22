@@ -205,6 +205,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.checkedLocations: List[int] = []
         self.hintPoints = 0
 
+        self.slotData = {}
         return
 
     def disable(self):
@@ -924,6 +925,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         extraArgs.insert(0, animIndex)
         self.doEmote(animIndex, animMultiplier, ts, callback, extraArgs)
         return
+
+    def playEmote(self, emoteIndex, animMultiplier, timestamp):
+        self.setEmoteState(emoteIndex, animMultiplier, timestamp)
 
     def setCogStatus(self, cogStatusList):
         self.cogs = cogStatusList
@@ -2824,3 +2828,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintPoints = pts
         if self.isLocal:
             base.localAvatar.checkPage.updateHintPointText()
+
+    def getSlotData(self) -> dict[str, int]:
+        return self.slotData
+
+    def setSlotData(self, slotKeys: list[str], slotVals: list[int]) -> None:
+        self.slotData = {k: v for k, v in zip(slotKeys, slotVals)}

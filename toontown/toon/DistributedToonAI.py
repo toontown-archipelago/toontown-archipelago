@@ -223,7 +223,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.hintPoints = 0  # How many hint points the player has
 
         self.archipelago_session: ArchipelagoSession = None
-        self.slot_data = {}  # set in connected_packet.py
+        self.slotData = {}  # set in connected_packet.py
 
     def generate(self):
         DistributedPlayerAI.DistributedPlayerAI.generate(self)
@@ -1570,10 +1570,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def getFishTank(self):
         return self.fishTank.getNetLists()
 
-    def makeRandomFishTank(self):
-        self.fishTank.generateRandomTank()
-        self.d_setFishTank(*self.fishTank.getNetLists())
-
     def addFishToTank(self, fish):
         numFish = len(self.fishTank)
         if numFish >= self.maxFishTank:
@@ -1886,9 +1882,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def addHoodVisited(self, hoodId):
 
-        zone_reward = get_zone_discovery_id(hoodId)
-        if zone_reward >= 0:
-            self.addCheckedLocation(zone_reward)
+        # zone_reward = get_zone_discovery_id(hoodId)
+        # if zone_reward >= 0:
+        #     self.addCheckedLocation(zone_reward)
 
         hoods = self.getHoodsVisited()
         if hoodId in hoods:
@@ -2011,6 +2007,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def setEmoteAccessId(self, id, bit):
         self.emoteAccess[id] = bit
         self.d_setEmoteAccess(self.emoteAccess)
+
+    def d_playEmote(self, emoteIndex: int, animMultiplier: float = 1.0, timestamp=None):
+        if timestamp is None:
+            timestamp = globalClockDelta.getRealNetworkTime()
+
+        self.sendUpdate('playEmote', [emoteIndex, animMultiplier, timestamp])
 
     def b_setHouseId(self, id):
         self.setHouseId(id)
@@ -4401,11 +4403,31 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 bosses_defeated += 1
 
         # Ensure they've defeated enough bosses.
-        if bosses_defeated < self.slot_data.get('cog_bosses_required', 4):
+        if bosses_defeated < self.slotData.get('cog_bosses_required', 4):
             return False
 
         # Win condition is satisfied!
         return True
+
+    def b_setSlotData(self, slotData: dict[str, int]):
+        slotKeys = list(slotData.keys())
+        slotVals = [slotData[k] for k in slotKeys]
+        self.setSlotData(slotKeys, slotVals)
+        self.d_setSlotData(slotKeys, slotVals)
+
+    def setSlotData(self, slotKeys: list[str], slotVals: list[int]):
+        self.slotData = {k: v for k, v in zip(slotKeys, slotVals)}
+
+    def getSlotData(self) -> Tuple[list[str], list[int]]:
+        slotKeys = list(self.slotData.keys())
+        slotVals = [self.slotData[k] for k in slotKeys]
+        return slotKeys, slotVals
+
+    def d_setSlotData(self, slotKeys: list[str], slotVals: list[int]):
+        for index in range(len(slotVals)):
+            if type(slotVals[index]) != int or not (0 <= slotVals[index] <= 2147483647):
+                slotVals[index] = 0
+        self.sendUpdate('setSlotData', [slotKeys, slotVals])
 
     # Sets this toons stats as if they were a freshly created toon
     # This should only be called when we detect an AP player connected for the very first time.
@@ -4444,7 +4466,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # TP access
         self.b_setHoodsVisited([])
-        self.addHoodVisited(ZoneUtil.getHoodId(self.zoneId))
         self.b_setTeleportAccess([])
 
         # Disguise stuff, revoke their disguises

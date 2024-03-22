@@ -66,7 +66,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.toonMopathInterval = []
         self.nerfed = ToontownGlobals.SELLBOT_NERF_HOLIDAY in base.cr.newsManager.getHolidayIdList()
         self.localToonPromoted = True
-        self.resetMaxDamage()
+        self.resetMaxDamage(setup=False)
         return
 
     def announceGenerate(self):
@@ -153,11 +153,11 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             OneBossCog = None
         return
 
-    def resetMaxDamage(self):
-        if self.nerfed:
-            self.bossMaxDamage = ToontownGlobals.SellbotBossMaxDamageNerfed
-        else:
+    def resetMaxDamage(self, setup=True):
+        if not setup:
             self.bossMaxDamage = ToontownGlobals.SellbotBossMaxDamage
+        else:
+            self.bossMaxDamage = min((ToontownGlobals.SellbotBossMaxDamage + (len(self.involvedToons) * 100)), 500)
 
     def d_hitBoss(self, bossDamage):
         self.sendUpdate('hitBoss', [bossDamage])
@@ -893,6 +893,8 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossDamageMovie.setT(self.bossDamage * self.bossDamageToMovie)
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
         self.bossHealthBar.initialize(self.bossMaxDamage - self.bossDamage, self.bossMaxDamage)
+        self.resetAndShowScoreboard()
+        self.startTimer()
 
     def __doneBattleThree(self):
         self.setState('NearVictory')
@@ -919,6 +921,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         taskMgr.remove(taskName)
         self.battleThreeMusicTime = self.battleThreeMusic.getTime()
         self.battleThreeMusic.stop()
+        self.bossSpeedrunTimer.stop_updating()
         return
 
     def enterNearVictory(self):
@@ -1225,7 +1228,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         gearRoot.setTag('attackCode', str(ToontownGlobals.BossCogStrafeAttack))
         gearModel = self.getGearFrisbee()
         gearModel.setScale(0.1)
-        t = self.getBossDamage() / 100.0
+        t = self.getBossDamage() / self.bossMaxDamage
         gearTrack = Parallel()
         numGears = int(4 + 6 * t + 0.5)
         time = 5.0 - 4.0 * t

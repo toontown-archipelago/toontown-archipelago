@@ -367,9 +367,9 @@ class SuitPage(ShtikerPage.ShtikerPage):
         index = self.panels.index(panel)
         count = str(base.localAvatar.cogCounts[index])
         if base.localAvatar.cogs[index] < COG_COMPLETE1:
-            quota = str(COG_QUOTAS[0][index % SuitDNA.suitsPerDept])
+            quota = str(get_min_cog_quota(base.localAvatar))
         else:
-            quota = str(COG_QUOTAS[1][index % SuitDNA.suitsPerDept])
+            quota = str(get_max_cog_quota(base.localAvatar))
         quotaLabel = DirectLabel(parent=panel, pos=(0.0, 0.0, -0.215), relief=None, state=DGG.DISABLED, text=TTLocalizer.SuitPageQuota % (count, quota), text_scale=0.045, text_fg=(0, 0, 0, 1), text_font=ToontownGlobals.getSuitFont())
         panel.quotaLabel = quotaLabel
         return
@@ -470,9 +470,9 @@ class SuitPage(ShtikerPage.ShtikerPage):
         elif status == COG_DEFEATED:
             count = str(base.localAvatar.cogCounts[index])
             if base.localAvatar.cogs[index] < COG_COMPLETE1:
-                quota = str(COG_QUOTAS[0][index % SuitDNA.suitsPerDept])
+                quota = str(get_min_cog_quota(base.localAvatar))
             else:
-                quota = str(COG_QUOTAS[1][index % SuitDNA.suitsPerDept])
+                quota = str(get_max_cog_quota(base.localAvatar))
             panel.quotaLabel['text'] = TTLocalizer.SuitPageQuota % (count, quota)
         elif status == COG_COMPLETE1:
             panel['image_color'] = PANEL_COLORS_COMPLETE1[index // SuitDNA.suitsPerDept]

@@ -12,7 +12,7 @@ from direct.interval.LerpInterval import LerpPosInterval, LerpFunctionInterval
 from direct.interval.MetaInterval import Sequence
 from panda3d.core import TextNode, TransparencyAttrib
 
-from toontown.archipelago.definitions.rewards import APReward
+from toontown.archipelago.definitions.rewards import APReward, IgnoreReward
 
 
 # A wrapper class for an AP reward that was obtained, stores the APReward and the person who gave it to us
@@ -26,6 +26,9 @@ class APRewardGift:
 
     def get_display_string(self) -> str:
         return self.reward.get_reward_string(self.gifter, self.isLocal)
+
+    def shouldDisplay(self) -> bool:
+        return type(self.reward) is not IgnoreReward
 
 
 class ArchipelagoRewardDisplay(DirectLabel):
@@ -156,6 +159,8 @@ class ArchipelagoRewardDisplay(DirectLabel):
 
     # Called from elsewhere (LocalToon) to queue up a reward and display it if we already aren't
     def queue_reward(self, reward: APRewardGift):
+        if not reward.shouldDisplay():
+            return
         self._reward_queue.append(reward)
         self._update_extra_items_remaining()
         self._process_queue(fromSeq=False)

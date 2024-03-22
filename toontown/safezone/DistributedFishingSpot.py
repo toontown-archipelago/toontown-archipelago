@@ -5,8 +5,12 @@ from direct.directtools.DirectGeometry import LineNodePath
 from direct.distributed import DistributedObject
 from direct.directnotify import DirectNotifyGlobal
 
+from apworld.toontown.fish import MAX_SPECIES_PER_ROD_TIER, FishLocation, get_catchable_fish_no_rarity
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
+from toontown.building import FADoorCodes
+from toontown.distributed import DelayDelete
+from toontown.distributed.DelayDeletable import DelayDeletable
 from toontown.toonbase import ToontownGlobals
 from toontown.fishing import FishGlobals
 from toontown.shtiker import FishPage
@@ -29,7 +33,7 @@ from direct.fsm import State
 from toontown.hood import ZoneUtil
 from toontown.toontowngui import TeaserPanel
 
-class DistributedFishingSpot(DistributedObject.DistributedObject):
+class DistributedFishingSpot(DistributedObject.DistributedObject, DelayDeletable):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedFishingSpot')
     vZeroMax = 25.0
     angleMax = 30.0
@@ -189,8 +193,46 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
     def d_requestEnter(self):
         self.sendUpdate('requestEnter', [])
 
-    def rejectEnter(self):
+    def rejectEnter(self, reason: int):
         self.cr.playGame.getPlace().setState('walk')
+        if reason != 0:
+            message = FADoorCodes.reasonDict[reason]
+            self.__faRejectEnter(message)
+
+    ### DistributedDoor reject code ###
+
+    def __faRejectEnter(self, message):
+        self.rejectDialog = TTDialog.TTGlobalDialog(message=message, doneEvent='doorRejectAck', style=TTDialog.Acknowledge)
+        self.rejectDialog.show()
+        self.rejectDialog.delayDelete = DelayDelete.DelayDelete(self, '__faRejectEnter')
+        event = 'clientCleanup'
+        self.acceptOnce(event, self.__handleClientCleanup)
+        base.cr.playGame.getPlace().setState('stopped')
+        self.acceptOnce('doorRejectAck', self.__handleRejectAck)
+        self.acceptOnce('stoppedAsleep', self.__handleFallAsleepDoor)
+
+    def __handleClientCleanup(self):
+        if hasattr(self, 'rejectDialog') and self.rejectDialog:
+            self.rejectDialog.doneStatus = 'ok'
+        self.__handleRejectAck()
+
+    def __handleFallAsleepDoor(self):
+        self.rejectDialog.doneStatus = 'ok'
+        self.__handleRejectAck()
+
+    def __handleRejectAck(self):
+        self.ignore('doorRejectAck')
+        self.ignore('stoppedAsleep')
+        self.ignore('clientCleanup')
+        doneStatus = self.rejectDialog.doneStatus
+        if doneStatus != 'ok':
+            self.notify.error('Unrecognized doneStatus: ' + str(doneStatus))
+        self.cr.playGame.getPlace().setState('walk')
+        self.rejectDialog.delayDelete.destroy()
+        self.rejectDialog.cleanup()
+        del self.rejectDialog
+
+    ### END DistributedDoor reject code
 
     def d_requestExit(self):
         self.sendUpdate('requestExit', [])
@@ -427,34 +469,39 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         if not self.pityLabel:
             return
 
-        fishCount = len(localAvatar.fishCollection)
-
-        if fishCount >= 70:
+        if len(localAvatar.fishCollection) >= 70:
             self.pityLabel.hide()
             return
 
-        if fishCount < 10:
-            fishNumberColor = 'red'
-        elif fishCount < 20:
-            fishNumberColor = 'salmon'
-        elif fishCount < 40:
-            fishNumberColor = 'yellow'
-        elif fishCount < 50:
-            fishNumberColor = 'green'
-        elif fishCount < 60:
-            fishNumberColor = 'green'
-        elif fishCount < 70:
-            fishNumberColor = 'cyan'
-        else:
-            fishNumberColor = 'white'  # won't show but just to be safe
+        fishLocation = FishLocation(localAvatar.slotData.get('fish_locations', 1))
+        catchableFish = get_catchable_fish_no_rarity(self.zoneId, localAvatar.fishingRod, fishLocation)
 
-        if self.pity < .10:
+        fishCount = 0
+        for genus, species in catchableFish:
+            if localAvatar.fishCollection.hasFish(genus, species):
+                fishCount += 1
+
+        maxSpeciesForTier = len(catchableFish)
+        fishCaughtRatio = fishCount / maxSpeciesForTier
+
+        if fishCaughtRatio < 0.33:
+            fishNumberColor = 'red'
+        elif fishCaughtRatio < 0.66:
+            fishNumberColor = 'salmon'
+        elif fishCaughtRatio < 1.00:
+            fishNumberColor = 'yellow'
+        elif fishCaughtRatio < 1.01:
+            fishNumberColor = 'green'
+        else:
+            fishNumberColor = 'black'
+
+        if self.pity <= .10:
             color = 'red'
-        elif self.pity < .20:
+        elif self.pity <= .20:
             color = 'salmon'
-        elif self.pity < .50:
+        elif self.pity <= .50:
             color = 'yellow'
-        elif self.pity < .75:
+        elif self.pity <= .75:
             color = 'green'
         else:
             color = 'cyan'
@@ -464,7 +511,7 @@ class DistributedFishingSpot(DistributedObject.DistributedObject):
         msg_parts = [
             MinimalJsonMessagePart("Fish: "),
             MinimalJsonMessagePart(f"{fishCount}", color=fishNumberColor),
-            MinimalJsonMessagePart(f" / 70\n"),
+            MinimalJsonMessagePart(f" / {maxSpeciesForTier}\n"),
             MinimalJsonMessagePart("Pity: "),
             MinimalJsonMessagePart(f"{clean_pity}", color=color),
         ]

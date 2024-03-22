@@ -330,7 +330,7 @@ class MaxToon(MagicWord):
         toon.b_setCogLevels([ToontownGlobals.MaxCogSuitLevel] * 4)
         toon.b_setCogTypes([7] * 4)
 
-        toon.b_setCogCount(list(CogPageGlobals.COG_QUOTAS[1]) * 4)
+        toon.b_setCogCount([CogPageGlobals.get_max_cog_quota(toon)] * 8 * 4)
         cogStatus = [CogPageGlobals.COG_COMPLETE2] * SuitDNA.suitsPerDept
         toon.b_setCogStatus(cogStatus * 4)
         toon.b_setCogRadar([1] * 4)
@@ -1073,6 +1073,16 @@ class SetFishingBucket(MagicWord):
         return "Max size of fish tank changed to " + str(tankVal)
 
 
+class ClearFishCollection(MagicWord):
+    aliases = ["clearfishcollection"]
+    desc = "Clears target's fish collection."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+        toon.b_setFishCollection([], [], [])
+        return "Cleared fish collection on target"
+
+
 class SetPlayRate(MagicWord):
     aliases = ["playrate"]
     desc = "Set target's play rate."
@@ -1681,6 +1691,29 @@ class LeaveRace(MagicWord):
         messenger.send('leaveRace')
 
 
+class rsp(MagicWord):
+    desc = "Restarts the pie round"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("round", str, False, "next")]
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        battle = args[0]
+        from toontown.suit.DistributedSellbotBossAI import DistributedSellbotBossAI
+        boss = None
+        for do in list(simbase.air.doId2do.values()):
+            if isinstance(do, DistributedSellbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "You aren't in a VP!"
+
+        boss.exitIntroduction()
+        boss.b_setState('BattleThree')
+        return "Restarting Pie Round"
+
+
 class SkipCFO(MagicWord):
     desc = "Skips to the indicated round of the CFO."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
@@ -2060,6 +2093,28 @@ class FillJury(MagicWord):
             boss.chairs[i].requestToonJuror()
         return "Filled chairs."
 
+class rss(MagicWord):
+    desc = "Restarts the seltzer round"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("round", str, False, "next")]
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        battle = args[0]
+        from toontown.suit.DistributedBossbotBossAI import DistributedBossbotBossAI
+        boss = None
+        for do in list(simbase.air.doId2do.values()):
+            if isinstance(do, DistributedBossbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "You aren't in a CEO!"
+
+        boss.exitIntroduction()
+        boss.b_setState('BattleFour')
+        return "Restarting Seltzer Round"
+
 
 class SkipVP(MagicWord):
     desc = "Skips to the indicated round of the VP."
@@ -2412,7 +2467,7 @@ class RestockSummons(MagicWord):
         cogCount = []
         for deptIndex in range(5):
             for cogIndex in range(9):
-                cogCount.append(CogPageGlobals.COG_QUOTAS[1][cogIndex] if cogIndex != 8 else 0)
+                cogCount.append(CogPageGlobals.get_max_cog_quota(invoker) if cogIndex != 8 else 0)
         invoker.b_setCogCount(cogCount)
         invoker.b_setCogStatus(([CogPageGlobals.COG_COMPLETE2] * 8 + [0]) * 5)
         invoker.restockAllCogSummons()
@@ -3197,8 +3252,8 @@ class ShowScoreboard(MagicWord):
         global DEBUG_HEAT
 
         if not DEBUG_SCOREBOARD:
-            from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
-            DEBUG_SCOREBOARD = CashbotBossScoreboard()
+            from toontown.coghq.CogBossScoreboard import CogBossScoreboard
+            DEBUG_SCOREBOARD = CogBossScoreboard()
             DEBUG_SCOREBOARD.show()
             DEBUG_HEAT = CraneLeagueHeatDisplay()
             # for toon in self.getNearbyToons():

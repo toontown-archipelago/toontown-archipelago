@@ -68,20 +68,20 @@ def get_zone_discovery_id(zoneId: int) -> int:
     pgZone = ZoneUtil.getHoodId(zoneId)
 
     ZONE_TO_LOCATION = {
-        ToontownGlobals.ToontownCentral: ToontownLocationName.DISCOVER_TTC.value,
-        ToontownGlobals.DonaldsDock: ToontownLocationName.DISCOVER_DD.value,
-        ToontownGlobals.DaisyGardens: ToontownLocationName.DISCOVER_DG.value,
-        ToontownGlobals.MinniesMelodyland: ToontownLocationName.DISCOVER_MML.value,
-        ToontownGlobals.TheBrrrgh: ToontownLocationName.DISCOVER_TB.value,
-        ToontownGlobals.DonaldsDreamland: ToontownLocationName.DISCOVER_DDL.value,
+        ToontownGlobals.ToontownCentral: ToontownLocationName.TTC_TREASURE_1.value,
+        ToontownGlobals.DonaldsDock: ToontownLocationName.DD_TREASURE_1.value,
+        ToontownGlobals.DaisyGardens: ToontownLocationName.DG_TREASURE_1.value,
+        ToontownGlobals.MinniesMelodyland: ToontownLocationName.MML_TREASURE_1.value,
+        ToontownGlobals.TheBrrrgh: ToontownLocationName.TB_TREASURE_1.value,
+        ToontownGlobals.DonaldsDreamland: ToontownLocationName.DDL_TREASURE_1.value,
 
-        ToontownGlobals.GoofySpeedway: ToontownLocationName.DISCOVER_GS.value,
-        ToontownGlobals.OutdoorZone: ToontownLocationName.DISCOVER_AA.value,
+        ToontownGlobals.GoofySpeedway: ToontownLocationName.GS_TREASURE_1.value,
+        ToontownGlobals.OutdoorZone: ToontownLocationName.AA_TREASURE_1.value,
 
-        ToontownGlobals.SellbotHQ: ToontownLocationName.DISCOVER_SBHQ.value,
-        ToontownGlobals.CashbotHQ: ToontownLocationName.DISCOVER_CBHQ.value,
-        ToontownGlobals.LawbotHQ: ToontownLocationName.DISCOVER_LBHQ.value,
-        ToontownGlobals.BossbotHQ: ToontownLocationName.DISCOVER_BBHQ.value,
+        ToontownGlobals.SellbotHQ: ToontownLocationName.SBHQ_TREASURE_1.value,
+        ToontownGlobals.CashbotHQ: ToontownLocationName.CBHQ_TREASURE_1.value,
+        ToontownGlobals.LawbotHQ: ToontownLocationName.LBHQ_TREASURE_1.value,
+        ToontownGlobals.BossbotHQ: ToontownLocationName.BBHQ_TREASURE_1.value,
     }
 
     # Valid zone?

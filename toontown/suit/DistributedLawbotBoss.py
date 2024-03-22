@@ -13,8 +13,7 @@ from direct.fsm import FSM
 from direct.fsm import ClassicFSM
 from direct.fsm import State
 from direct.directnotify import DirectNotifyGlobal
-from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimedTimer, BossSpeedrunTimer
-from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
+from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimer
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from . import DistributedBossCog
@@ -90,45 +89,20 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.stunTextColor = (0, 0.3, 1.0, 1)
 
         self.bossSpeedrunTimer = None
-        self.scoreboard = None
         return
-
-    def toonDied(self, avId):
-        self.scoreboard.addScore(avId, -50, reason='DIED!', ignoreLaff=True)
-        self.scoreboard.toonDied(avId)
-        DistributedBossCog.DistributedBossCog.toonDied(self, avId)
 
     def localToonDied(self):
         pass
 
-    def stunBonus(self, avId, pointBonus):
-        self.scoreboard.addScore(avId, pointBonus, reason='STUN!')
-        self.scoreboard.addStun(avId)
-
     def lawyerDisabled(self, avId):
         self.scoreboard.addScore(avId, 3, reason='LAWYER!')
-        self.scoreboard.addStomp(avId)
-
-    def updateCombo(self, avId, comboLength):
-        self.scoreboard.setCombo(avId, comboLength)
-
-    def awardCombo(self, avId, comboLength, amount):
-        self.scoreboard.addScore(avId, amount, reason='COMBO x' + str(comboLength) + '!')
-
-    def damageDealt(self, avId, damage):
-        self.scoreboard.addDamage(avId, damage)
-        self.scoreboard.addScore(avId, damage)
 
     def updateRequiredElements(self):
         if self.bossSpeedrunTimer:
             self.bossSpeedrunTimer.cleanup()
 
-        self.bossSpeedrunTimer = BossSpeedrunTimedTimer(time_limit=self.ruleset.TIMER_MODE_TIME_LIMIT) if self.ruleset.TIMER_MODE else BossSpeedrunTimer()
+        self.bossSpeedrunTimer = BossSpeedrunTimer()
         self.bossSpeedrunTimer.hide()
-        # If the scoreboard was made then update the ruleset
-        if self.scoreboard:
-            self.scoreboard.set_ruleset(self.ruleset)
-
         # self.heatDisplay.update(self.calculateHeat(), self.modifiers)
 
 
@@ -200,9 +174,6 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         OneBossCog = self
 
         base.boss = self
-
-        self.scoreboard = CashbotBossScoreboard(ruleset=self.ruleset)
-        self.scoreboard.hide()
         return
 
     def disable(self):
@@ -241,8 +212,6 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             OneBossCog = None
 
         base.boss = None
-
-        self.scoreboard.cleanup()
         return
 
     def delete(self):
@@ -1039,19 +1008,9 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             localAvatar.chatMgr.chatInputSpeedChat.removeCJMenu()
             localAvatar.chatMgr.chatInputSpeedChat.addCJMenu(self.bonusWeight)
 
-            # Display Boss Timer
-        self.bossSpeedrunTimer.reset()
-        self.bossSpeedrunTimer.start_updating()
-        self.bossSpeedrunTimer.show()
-
-        # Setup the scoreboard
-        self.scoreboard.clearToons()
-        for avId in self.involvedToons:
-            if avId in base.cr.doId2do:
-                self.scoreboard.addToon(avId)
-
-        # Make laff meters blink in uber mode
-        messenger.send('uberThreshold', [self.ruleset.LOW_LAFF_BONUS_THRESHOLD])
+        # Display Boss Timer
+        self.startTimer()
+        self.resetAndShowScoreboard()
 
     def __doneBattleThree(self):
         self.notify.debug('----- __doneBattleThree')

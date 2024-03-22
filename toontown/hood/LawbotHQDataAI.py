@@ -11,6 +11,8 @@ from toontown.suit import DistributedLawbotBossAI
 from toontown.building import DistributedCJElevatorAI
 from toontown.building import FADoorCodes
 from toontown.building import DistributedBoardingPartyAI
+from toontown.safezone import ArchipelagoTreasurePlannerAI
+from toontown.safezone import DistributedArchiTreasureAI
 
 class LawbotHQDataAI(HoodDataAI.HoodDataAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('LawbotHQDataAI')
@@ -46,6 +48,11 @@ class LawbotHQDataAI(HoodDataAI.HoodDataAI):
         self.lobbyElevator = DistributedCJElevatorAI.DistributedCJElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.LawbotLobby, antiShuffle=1)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.LawbotLobby)
         self.addDistObj(self.lobbyElevator)
+        self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
+                                ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 1)
+                                ]
+        for planner in self.treasurePlanner:
+            planner.start()
         if simbase.config.GetBool('want-boarding-groups', 1):
             self.boardingParty = DistributedBoardingPartyAI.DistributedBoardingPartyAI(self.air, [self.lobbyElevator.doId], 8)
             self.boardingParty.generateWithRequired(ToontownGlobals.LawbotLobby)

@@ -36,6 +36,7 @@ class DistributedTreasure(DistributedObject.DistributedObject):
             self.treasureFlyTrack.finish()
             self.treasureFlyTrack = None
         DistributedObject.DistributedObject.delete(self)
+        self.dropShadow.reparentTo(self.nodePath)
         self.nodePath.removeNode()
         return
 
@@ -65,9 +66,21 @@ class DistributedTreasure(DistributedObject.DistributedObject):
             self.makeNodePath()
         else:
             self.treasure.getChildren().detach()
-        model = loader.loadModel(modelPath)
-        if modelFindString != None:
-            model = model.find('**/' + modelFindString)
+        if isinstance(modelPath, CardMaker):
+            model = self.nodePath.attachNewNode(modelPath.generate())
+            model.setScale(3)
+            model.setPos(-1.5, 0, 0.5)
+            model.setColor(0.9, 0.9, 0.9, 1)
+            model.setTransparency(TransparencyAttrib.MAlpha)
+            tex = loader.loadTexture('phase_14/maps/ap_icon.png')
+            model.setTexture(tex)
+            model.reparentTo(self.nodePath)
+            self.nodePath.setBillboardPointEye()
+            self.dropShadow.wrtReparentTo(self.getParentNodePath())
+        else:
+            model = loader.loadModel(modelPath)
+            if modelFindString != None:
+                model = self.model.find('**/' + modelFindString)
         model.instanceTo(self.treasure)
         return
 
@@ -132,6 +145,7 @@ class DistributedTreasure(DistributedObject.DistributedObject):
         if not self.fly:
             self.nodePath.detachNode()
             return
+        self.dropShadow.wrtReparentTo(self.nodePath)
         self.nodePath.wrtReparentTo(av)
         if self.treasureFlyTrack:
             self.treasureFlyTrack.finish()

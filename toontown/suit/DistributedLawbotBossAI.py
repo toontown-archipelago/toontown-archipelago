@@ -2,17 +2,12 @@ from otp.ai.AIBaseGlobal import *
 from direct.distributed.ClockDelta import *
 from . import DistributedBossCogAI
 from direct.directnotify import DirectNotifyGlobal
-from otp.avatar import DistributedAvatarAI
-from . import DistributedSuitAI
 from toontown.battle import BattleExperienceAI
 from direct.fsm import FSM
-from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
 from toontown.toonbase import ToontownGlobals
-from toontown.toon import InventoryBase
 from toontown.toonbase import TTLocalizer
-from toontown.battle import BattleBase
 from toontown.toon import NPCToons
-from toontown.building import SuitBuildingGlobals
+from toontown.chat import ResistanceChat
 from . import SuitDNA
 import random
 from toontown.coghq import DistributedLawbotBossGavelAI, ScaleLeagueGlobals
@@ -63,7 +58,6 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.cannonIndexPerToon = {}
         self.battleDifficulty = 0
 
-        self.comboTrackers = {}
         self.ruleset = ScaleLeagueGlobals.CJRuleset()
         return
 
@@ -75,17 +69,9 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         DistributedBossCogAI.DistributedBossCogAI.announceGenerate(self)
         self.setupRuleset()
 
-    def d_updateTimer(self, time):
-        self.sendUpdate('updateTimer', [time])
-
     def d_lawyerDisable(self, avId):
+        self.incrementCombo(avId, int(round(self.getComboLength(avId) / 5.0) + 2.0))
         self.sendUpdate('lawyerDisabled', [avId])
-
-    def d_updateCombo(self, avId, comboLength):
-        self.sendUpdate('updateCombo', [avId, comboLength])
-
-    def d_awardCombo(self, avId, comboLength, amount):
-        self.sendUpdate('awardCombo', [avId, comboLength, amount])
 
     def setupRuleset(self):
         self.ruleset = ScaleLeagueGlobals.CJRuleset()
@@ -147,11 +133,8 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         else:
             self.__recordHit()
 
-        ct = self.comboTrackers.get(avId)
-        if ct:
-            ct.incrementCombo(int(round(ct.combo) / 5 + 1))
-
-        self.sendUpdate('damageDealt', [avId, dmgDealt])
+        self.incrementCombo(avId, int(round(self.getComboLength(avId)) / 5 + 1))
+        self.d_damageDealt(avId, dmgDealt)
 
     def healBoss(self, bossHeal):
         bossDamage = -bossHeal
@@ -185,7 +168,9 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
             return
         toon = self.air.doId2do.get(toonId)
         if toon and toon.hp > 0:
-            self.healToon(toon, self.toonupValue)
+            hp = min(self.toonupValue, toon.maxHp - toon.hp)
+            self.healToon(toon, hp)
+            self.d_avHealed(avId, hp)
             self.sendUpdate('toonGotHealed', [toonId])
 
     def touchCage(self):
@@ -568,20 +553,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         if self.chairs != None:
              self.__deleteChairs()
 
-        for comboTracker in self.comboTrackers.values():
-            comboTracker.cleanup()
-
-        # heal all toons and setup a combo tracker for them
-        for avId in self.involvedToons:
-            if avId in self.air.doId2do:
-                self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
-                av = self.air.doId2do[avId]
-
-                # if self.ruleset.FORCE_MAX_LAFF:
-                #     av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
-
-                if self.ruleset.HEAL_TOONS_ON_START:
-                    av.b_setHp(av.getMaxHp())
+        self.initializeComboTrackers()
 
     def getToonDifficulty(self):
         totalCogSuitLevels = 0.0
@@ -695,11 +667,14 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
     def exitNearVictory(self):
         pass
 
-    def enterVictory(self):
-        #Whisper out the time from the start of CJ until end of CJ
+    def syncSpeedrunTimer(self):
         self.scaleTime = globalClock.getFrameTime()
         timeToSend = self.scaleTime - self.battleThreeTimeStarted
-        self.sendUpdate('updateTimer', [timeToSend])
+        self.d_updateTimer(timeToSend)
+
+    def enterVictory(self):
+        #Whisper out the time from the start of CJ until end of CJ
+        self.syncSpeedrunTimer()
         self.resetBattles()
         self.suitsKilled.append({'type': None,
          'level': 0,
@@ -718,18 +693,29 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.d_setBattleExperience()
         self.b_setState('Reward')
         BattleExperienceAI.assignRewards(self.involvedToons, self.toonSkillPtsGained, self.suitsKilled, ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
-        preferredDept = random.randrange(len(SuitDNA.suitDepts))
-        typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3
-        preferredSummonType = random.choice(typeWeights)
+        numRewards = 6
+        numOtherRewards = 2
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
                 toon.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.LAWBOT_PROOF.value))
-                self.giveCogSummonReward(toon, preferredDept, preferredSummonType)
+                for reward in range(numRewards):
+                    preferredDept = random.randrange(len(SuitDNA.suitDepts))
+                    typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3
+                    preferredSummonType = random.choice(typeWeights)
+                    self.giveCogSummonReward(toon, preferredDept, preferredSummonType)
+                for reward in range(numOtherRewards):
+                    randomSOS = random.choice(NPCToons.npcFriendsMinMaxStars(4, 5))
+                    toon.attemptAddNPCFriend(randomSOS)
+                    uniteType = random.choice([ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK])
+                    if uniteType == ResistanceChat.RESISTANCE_RESTOCK:
+                        restockItems = ResistanceChat.getItems(uniteType)
+                        uniteChoice = restockItems[random.randint(3, 6)]
+                    else:
+                        uniteChoice = random.choice(ResistanceChat.getItems(uniteType))
+                    toon.addResistanceMessage(ResistanceChat.encodeId(uniteType, uniteChoice))
+                toon.addPinkSlips(numOtherRewards)
                 toon.b_promote(self.deptIndex)
-
-        for comboTracker in self.comboTrackers.values():
-            comboTracker.cleanup()
 
     def giveCogSummonReward(self, toon, prefDeptIndex, prefSummonType):
         cogLevel = int(self.toonLevels / self.maxToonLevels * SuitDNA.suitsPerDept)
@@ -905,10 +891,13 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.notify.debug('startBonusState')
         self.bonusState = True
         self.numBonusStates += 1
+        healingDone = 0
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon and toon.hp > 0:
-                self.healToon(toon, ToontownGlobals.LawbotBossBonusToonup)
+                hp = min(ToontownGlobals.LawbotBossBonusToonup, toon.maxHp - toon.hp)
+                healingDone += hp
+                self.healToon(toon, hp)
 
         # Calculate point handouts for people who helped stunned
         freq = {avId: 0 for avId in self.involvedToons}
@@ -922,7 +911,9 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         for avId in freq:
             percentageStunned = float(freq[avId]) / float(len(self.lawyers))
             pointBonus = int(math.ceil(percentageStunned * 25))
-            self.sendUpdate('stunBonus', [avId, pointBonus])
+            healBonus = int(math.ceil(percentageStunned * healingDone))
+            self.d_stunBonus(avId, pointBonus)
+            self.d_avHealed(avId, healBonus)
 
         taskMgr.doMethodLater(ToontownGlobals.LawbotBossBonusDuration, self.clearBonus, self.uniqueName('clearBonus'))
         self.sendUpdate('enteredBonusState', [])

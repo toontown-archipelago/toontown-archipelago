@@ -40,8 +40,8 @@ class CogPageManagerAI:
 
                 suitIndex = SuitDNA.suitHeadTypes.index(suit['type'])
                 suitDept = SuitDNA.suitDepts.index(suit['track'])
-                cogQuota = COG_QUOTAS[0][SuitDNA.getSuitType(suit['type']) - 1]
-                buildingQuota = COG_QUOTAS[1][SuitDNA.getSuitType(suit['type']) - 1]
+                cogQuota = get_min_cog_quota(toon)
+                buildingQuota = get_max_cog_quota(toon)
 
                 cogCount[suitIndex] += 1
                 cogStatus[suitIndex] = COG_DEFEATED
