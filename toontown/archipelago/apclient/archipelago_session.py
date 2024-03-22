@@ -4,10 +4,14 @@ from typing import List
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
 from toontown.archipelago.definitions import util
+from toontown.archipelago.definitions.death_reason import DeathReason
+from toontown.archipelago.packets.serverbound.bounce_packet import BouncePacket
 from toontown.archipelago.packets.serverbound.location_checks_packet import LocationChecksPacket
 from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.archipelago.packets.serverbound.say_packet import SayPacket
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
+from toontown.archipelago.util import global_text_properties
+from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.archipelago.util.net_utils import ClientStatus
 
 # Typing hack, delete later #todo
@@ -124,3 +128,29 @@ class ArchipelagoSession:
             scout_packet.hint_item = 1
 
         self.client.send_packet(scout_packet)
+
+    # Called when the toon that owns this ap session dies. Mainly used for deathlink purposes
+    def toon_died(self):
+
+        # If deathlink is off don't do anything
+        if not self.avatar.slotData.get('death_link', False):
+            return
+
+        # If our cause of death is a deathlink event from another player, don't continue
+        if self.avatar.getDeathReason() == DeathReason.DEATHLINK:
+            return
+
+        # Create a deathlink packet
+        deathlink_packet = BouncePacket()
+        deathlink_packet.add_deathlink_data(self.avatar)
+        self.client.send_packet(deathlink_packet)
+
+
+        # Tell the person that they caused a death to happen
+        death_component = self.avatar.getDeathReason().format(self.avatar)
+        msg = global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("[DeathLink] ", color='red'),
+            MinimalJsonMessagePart("Everyone died because "),
+            MinimalJsonMessagePart(f"{death_component}", color='salmon')
+        ])
+        self.avatar.d_sendArchipelagoMessage(msg)

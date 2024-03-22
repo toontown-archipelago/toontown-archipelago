@@ -34,7 +34,7 @@ import json
 
 from apworld.toontown import locations, items
 from toontown.archipelago.definitions import rewards
-
+from ..archipelago.definitions.death_reason import DeathReason
 
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
@@ -179,6 +179,9 @@ class SetHP(MagicWord):
         if not -1 <= hp <= toon.getMaxHp():
             return "Can't set {0}'s laff to {1}! Specify a value between -1 and {0}'s max laff ({2}).".format(
                 toon.getName(), hp, toon.getMaxHp())
+
+        if toon.getHp() > 0 >= hp:
+            toon.setDeathReason(DeathReason.SPELLBOOK)
 
         toon.b_setHp(hp)
         return "{}'s laff has been set to {}.".format(toon.getName(), hp)

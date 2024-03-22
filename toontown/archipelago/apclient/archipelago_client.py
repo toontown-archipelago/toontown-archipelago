@@ -265,7 +265,7 @@ class ArchipelagoClient(DirectObject):
         connect_packet.uuid = self.uuid
         connect_packet.version = net_utils.ARCHIPELAGO_CLIENT_VERSION
         connect_packet.items_handling = ConnectPacket.ITEMS_HANDLING_ALL_FLAGS
-        connect_packet.tags = []  # todo add support for deathlink
+        connect_packet.tags = [ConnectPacket.TAG_DEATHLINK]
         connect_packet.slot_data = True
         self.send_packet(connect_packet)
 

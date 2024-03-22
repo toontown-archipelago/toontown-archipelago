@@ -92,6 +92,13 @@ Toontown:
   # Percentage of junk items to be replaced with traps
   trap_percent: 20
 
+  ### General Gameplay Settings ###
+
+  # Enable/disable the DeathLink mechanic.
+  # When you go sad in game, other players with this setting enabled for their game will also die.
+  # If another player in your game with this setting enabled dies for whatever reason, you will also go sad.
+  death_link: 'false'
+
   ###
   ### YAML Presets
   ###

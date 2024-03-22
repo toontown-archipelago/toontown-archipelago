@@ -1171,6 +1171,8 @@ dclass DistributedToon : DistributedPlayer {
   requestHintPoints() ownsend airecv;
   hintPointResp(uint16) ownrecv;
   setSlotData(string[], uint32[]) required ownrecv broadcast;
+  setDeathReason(string) airecv clsend;
+  clientDied() airecv clsend;
 };
 
 dclass DistributedCCharBase : DistributedObject {
