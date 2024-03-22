@@ -28,6 +28,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
 
     def __init__(self, air, zoneId, finishCallback = None, maxSuits = 4, bossBattle = 0, tutorialFlag = 0, interactivePropTrackBonus = -1):
         DistributedObjectAI.DistributedObjectAI.__init__(self, air)
+        self.battleDeathReason: DeathReason = DeathReason.BATTLING
         self.serialNum = 0
         self.zoneId = zoneId
         self.maxSuits = maxSuits
@@ -104,7 +105,6 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.fsm.enterInitialState()
         self.startTime = globalClock.getRealTime()
         self.adjustingTimer = Timer()
-        self.battleDeathReason: DeathReason = DeathReason.BATTLING
         return
 
     def getBattleDeathReason(self) -> DeathReason:
