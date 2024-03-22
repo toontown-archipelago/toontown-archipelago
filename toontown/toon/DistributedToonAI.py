@@ -4447,6 +4447,18 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 slotVals[index] = 0
         self.sendUpdate('setSlotData', [slotKeys, slotVals])
 
+    def setArchipelagoAuto(self, slotName: str, serverAddr: str):
+        if not self.archipelago_session:
+            return
+        # confirm that we were provided a real slot name,
+        # and ensure it's not the same as the cached value
+        # (since we'll use the cached one already to reconnect)
+        lastSlot, lastAddress = self.air.getCachedArchipelagoConnectionInformation(self.doId)
+        if slotName and slotName != lastSlot:
+            self.archipelago_session.handle_slot(slotName)
+        if serverAddr and serverAddr != lastAddress:
+            self.archipelago_session.handle_connect(serverAddr)
+
     # Sets this toons stats as if they were a freshly created toon
     # This should only be called when we detect an AP player connected for the very first time.
     def newToon(self):

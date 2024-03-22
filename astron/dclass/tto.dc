@@ -1171,6 +1171,7 @@ dclass DistributedToon : DistributedPlayer {
   requestHintPoints() ownsend airecv;
   hintPointResp(uint16) ownrecv;
   setSlotData(string[], uint32[]) required ownrecv broadcast;
+  setArchipelagoAuto(string, string) ownsend airecv;
 };
 
 dclass DistributedCCharBase : DistributedObject {

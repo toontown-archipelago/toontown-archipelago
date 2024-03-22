@@ -252,6 +252,10 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.nametag.manage(base.marginManager)
         DistributedToon.DistributedToon.announceGenerate(self)
 
+        # TODO: this doMethodLater is hacky...
+        # can someone move this to a call where it's guaranteed to work?
+        taskMgr.doMethodLater(1.0, self.setArchipelagoAuto, 'setArchipelagoAuto')
+
     def disable(self):
         self.laffMeter.destroy()
         del self.laffMeter
@@ -286,7 +290,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         del self.archipelagoRewardDisplay
         self.ignoreAll()
         DistributedToon.DistributedToon.disable(self)
-
 
     def disableBodyCollisions(self):
         pass
@@ -2025,6 +2028,11 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
     def hasCachedLocationReward(self, locationId: int) -> bool:
         return self.locationScoutsCache.get(locationId) is not None
+
+    def setArchipelagoAuto(self, _=None):
+        slotName = os.environ.get('ARCHIPELAGO_SLOT', '')
+        serverAddr = os.environ.get('ARCHIPELAGO_ADDRESS', '')
+        self.sendUpdate('setArchipelagoAuto', [slotName, serverAddr])
 
     def enableCraneControls(self) -> None:
         self.controlManager.enableCraneControls()
