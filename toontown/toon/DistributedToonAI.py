@@ -4465,9 +4465,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setFishingTrophies([])
 
         # TP access
-        self.b_setHoodsVisited([ToontownGlobals.ToontownCentral, ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens, ToontownGlobals.MinniesMelodyland,
-                                ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland, ToontownGlobals.GoofySpeedway, ToontownGlobals.OutdoorZone,
-                                ToontownGlobals.SellbotHQ, ToontownGlobals.CashbotHQ, ToontownGlobals.LawbotHQ, ToontownGlobals.BossbotHQ])
+        self.b_setHoodsVisited([])
         self.b_setTeleportAccess([])
 
         # Disguise stuff, revoke their disguises
