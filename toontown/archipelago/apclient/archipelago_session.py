@@ -145,7 +145,6 @@ class ArchipelagoSession:
         deathlink_packet.add_deathlink_data(self.avatar)
         self.client.send_packet(deathlink_packet)
 
-
         # Tell the person that they caused a death to happen
         death_component = self.avatar.getDeathReason().format(self.avatar)
         msg = global_text_properties.get_raw_formatted_string([

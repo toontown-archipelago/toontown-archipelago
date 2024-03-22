@@ -4,6 +4,9 @@ from otp.level import DistributedEntityAI
 from . import StomperGlobals
 from direct.distributed import ClockDelta
 
+from ..archipelago.definitions.death_reason import DeathReason
+
+
 class DistributedStomperPairAI(DistributedEntityAI.DistributedEntityAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedStomperAI')
 
@@ -29,4 +32,5 @@ class DistributedStomperPairAI(DistributedEntityAI.DistributedEntityAI):
         avId = self.air.getAvatarIdFromSender()
         av = simbase.air.doId2do.get(avId)
         if av:
+            av.setDeathReason(DeathReason.STOMPER)
             av.takeDamage(self.hitPtsTaken)

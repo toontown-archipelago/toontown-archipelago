@@ -9,6 +9,8 @@ from . import MovingPlatform
 from direct.directnotify import DirectNotifyGlobal
 from direct.task import Task
 from toontown.toonbase import ToontownGlobals
+from ..archipelago.definitions.death_reason import DeathReason
+
 
 class DistributedStomper(DistributedCrusherEntity.DistributedCrusherEntity):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedStomper')

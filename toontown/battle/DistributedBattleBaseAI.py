@@ -19,6 +19,7 @@ import random
 from toontown.toon import NPCToons
 from toontown.pets import DistributedPetProxyAI
 from toontown.battle import BattleEffectHandlersAI
+from ..archipelago.definitions.death_reason import DeathReason
 from ..hood import ZoneUtil
 
 
@@ -103,7 +104,14 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.fsm.enterInitialState()
         self.startTime = globalClock.getRealTime()
         self.adjustingTimer = Timer()
+        self.battleDeathReason: DeathReason = DeathReason.BATTLING
         return
+
+    def getBattleDeathReason(self) -> DeathReason:
+        return self.battleDeathReason
+
+    def setBattleDeathReason(self, reason: DeathReason):
+        self.battleDeathReason = reason
 
     def clearAttacks(self):
         self.toonAttacks = {}
@@ -1462,6 +1470,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         for toon in self.activeToons:
             toonHpDict[toon] = [0, 0, 0]
             actualToon = self.getToon(toon)
+            actualToon.setDeathReason(self.getBattleDeathReason())  # Pre-emptively set their death reason to battling jic
             self.notify.debug('BEFORE ROUND: toon: %d hp: %d' % (toon, actualToon.hp))
 
         deadSuits = []

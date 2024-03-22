@@ -2,6 +2,8 @@ from direct.distributed.ClockDelta import *
 from panda3d.core import *
 from direct.showbase.PythonUtil import Functor, sameElements, list2dict, uniqueElements
 from direct.interval.IntervalGlobal import *
+
+from toontown.archipelago.definitions.death_reason import DeathReason
 from toontown.distributed.ToontownMsgTypes import *
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
@@ -196,6 +198,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
                     self.toonEnterZone(zoneNum)
                     floorNode = collisionEntry.getIntoNode()
                     if floorNode.hasTag('ouch'):
+                        base.localAvatar.d_setDeathReason(DeathReason.LAVA)
                         ouchLevel = int(self.getFloorOuchLevel())
                         self.startOuch(ouchLevel)
 

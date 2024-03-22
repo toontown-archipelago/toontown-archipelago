@@ -19,6 +19,7 @@ import random
 import math
 
 from apworld.toontown import locations
+from ..archipelago.definitions.death_reason import DeathReason
 
 from ..archipelago.definitions.util import ap_location_name_to_id
 
@@ -476,6 +477,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
         self.debug(doId=avId, content='Damaged for %s' % damage)
 
+        toon.setDeathReason(self.getDeathReasonFromAttackCode(attackCode))
         self.damageToon(toon, damage)
         currState = self.getCurrentOrNextState()
 
@@ -1001,6 +1003,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.cancelReviveTasks()
 
         self.initializeComboTrackers()
+        self.listenForToonDeaths()
 
         self.toonsWon = False
         taskMgr.remove(self.uniqueName('times-up-task'))
@@ -1065,6 +1068,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         actualTime = craneTime - self.battleThreeTimeStarted
         self.d_updateTimer(actualTime)
 
+        self.ignoreToonDeaths()
         # add a suit-defeat entry for the CFO
         self.suitsKilled.append({
             'type': None, 'level': 0, 'track': self.dna.dept, 'isSkelecog': 0, 'isForeman': 0, 'isVP': 0, 'isCFO': 1,'isSupervisor': 0, 'isVirtual': 0, 'activeToons': self.involvedToons[:]
@@ -1185,7 +1189,23 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # todo if all toons are dead get rid of them
         print("CASHBOTBOSSAI: todo boot all toons out back to the playground, they lost")
 
+    # Given an attack code, return a death reason that corresponds with it.
+    def getDeathReasonFromAttackCode(self, attackCode) -> DeathReason:
 
+        return {
+            ToontownGlobals.BossCogAreaAttack: DeathReason.CFO_JUMP,
+            ToontownGlobals.BossCogSlowDirectedAttack: DeathReason.CFO_GEAR,
+            ToontownGlobals.BossCogDirectedAttack: DeathReason.CFO_GEAR,
+            ToontownGlobals.BossCogGearDirectedAttack: DeathReason.CFO_GEAR,
+            ToontownGlobals.BossCogSwatLeft: DeathReason.CFO_SWAT,
+            ToontownGlobals.BossCogSwatRight: DeathReason.CFO_SWAT,
+            ToontownGlobals.BossCogElectricFence: DeathReason.CFO_RUNOVER,
+
+            ToontownGlobals.BossCogGoonZap: DeathReason.CFO_GOON,
+        }.get(attackCode, DeathReason.CFO)
+
+    def getDeathReasonFromBattle(self) -> DeathReason:
+        return DeathReason.BATTLING_CFO
 
     def d_updateGoonKilledBySafe(self, avId):
         self.sendUpdate('goonKilledBySafe', [avId])

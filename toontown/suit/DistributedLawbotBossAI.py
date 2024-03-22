@@ -17,6 +17,7 @@ from toontown.coghq import DistributedLawbotChairAI
 from toontown.toonbase import ToontownBattleGlobals
 
 from apworld.toontown import locations
+from ..archipelago.definitions.death_reason import DeathReason
 
 from ..archipelago.definitions.util import ap_location_name_to_id
 
@@ -342,6 +343,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         DistributedBossCogAI.DistributedBossCogAI.exitIntroduction(self)
 
     def enterRollToBattleTwo(self):
+        self.listenForToonDeaths()
         self.divideToons()
         self.__makeCannons()
         self.barrier = self.beginBarrier('RollToBattleTwo', self.involvedToons, 50, self.__doneRollToBattleTwo)
@@ -675,6 +677,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
     def enterVictory(self):
         #Whisper out the time from the start of CJ until end of CJ
         self.syncSpeedrunTimer()
+        self.ignoreToonDeaths()
         self.resetBattles()
         self.suitsKilled.append({'type': None,
          'level': 0,
@@ -984,3 +987,20 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         if battleDifficulty >= numDifficultyLevels:
             battleDifficulty = numDifficultyLevels - 1
         self.b_setBattleDifficulty(battleDifficulty)
+
+    # Given an attack code, return a death reason that corresponds with it.
+    def getDeathReasonFromAttackCode(self, attackCode) -> DeathReason:
+
+        return {
+            ToontownGlobals.BossCogAreaAttack: DeathReason.CJ_JUMP,
+            ToontownGlobals.BossCogSwatLeft: DeathReason.CJ_SWAT,
+            ToontownGlobals.BossCogSwatRight: DeathReason.CJ_SWAT,
+            ToontownGlobals.BossCogElectricFence: DeathReason.CJ_RUNOVER,
+
+            ToontownGlobals.BossCogLawyerAttack: DeathReason.CJ_LAWYER,
+            ToontownGlobals.BossCogGavelHandle: DeathReason.CJ_GAVEL_SMALL,
+            ToontownGlobals.BossCogGavelStomp: DeathReason.CJ_GAVEL_BIG
+        }.get(attackCode, DeathReason.CJ)
+
+    def getDeathReasonFromBattle(self) -> DeathReason:
+        return DeathReason.BATTLING_CJ

@@ -2,9 +2,11 @@ from typing import Dict
 
 from direct.directnotify import DirectNotifyGlobal
 from otp.avatar import DistributedAvatarAI
+from toontown.archipelago.definitions.death_reason import DeathReason
 from toontown.battle import BattleExperienceAI
 from toontown.coghq.BossComboTrackerAI import BossComboTrackerAI
 from toontown.suit import SuitDNA
+from toontown.toon.DistributedToonAI import DistributedToonAI
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.toon import InventoryBase
@@ -105,6 +107,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def removeToon(self, avId, died=False):
         event = self.air.getAvatarExitEvent(avId)
+        self.__ignoreToonDeath(avId)
         self.ignore(event)
         if avId in self.involvedToons:
             self.involvedToons.remove(avId)
@@ -116,6 +119,8 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             self.considerDefeat()
 
     def considerDefeat(self):
+        if self.getState() == 'Defeat':
+            return
         if not self.hasToonsAlive():
             self.setState("Defeat")
 
@@ -211,9 +216,32 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             return
 
         toon.takeDamage(deduction)
-        if toon.getHp() <= 0:
-            self.toonDied(toon)
 
+    # Call to listen for toon death events. Useful for catching deaths caused by DeathLink.
+    def listenForToonDeaths(self):
+        self.ignoreToonDeaths()
+        for avId in self.involvedToons:
+            toon = self.air.doId2do.get(avId)
+            if toon is None:
+                continue
+            self.__listenForToonDeath(toon)
+
+    # Ignore toon death events. We don't need to worry about toons dying in specific scenarios
+    # Such as turn based battles as BattleBase handles that for us.
+    def ignoreToonDeaths(self):
+        for toon in self.involvedToons:
+            self.__ignoreToonDeath(toon)
+
+    def __listenForToonDeath(self, toon):
+        self.accept(toon.getGoneSadMessage(), self.toonDied, [toon])
+
+    def __ignoreToonDeath(self, avId):
+        self.ignore(DistributedToonAI.getGoneSadMessageForAvId(avId))
+
+    # Called when a toon in this boss has died for whatever reason.
+    # Due to the nature of DeathLink, this method NEEDS to support being called multiple times for one death.
+    # This is because this method will be called when the boss directly damages a toon, and when a toon dies
+    # in general.
     def toonDied(self, toon):
         self.resetCombo(toon.doId)
         self.sendUpdate('toonDied', [toon.doId])
@@ -285,6 +313,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             return []
 
     def enterOff(self):
+        self.ignoreToonDeaths()
         self.resetBattles()
         self.resetToons()
         self.resetBattleCounters()
@@ -543,6 +572,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def makeBattle(self, bossCogPosHpr, battlePosHpr, roundCallback, finishCallback, battleNumber, battleSide):
         battle = DistributedBattleFinalAI.DistributedBattleFinalAI(self.air, self, roundCallback, finishCallback, battleSide)
+        battle.setBattleDeathReason(self.getDeathReasonFromBattle())
         self.setBattlePos(battle, bossCogPosHpr, battlePosHpr)
         battle.suitsKilled = self.suitsKilled
         battle.battleCalc.toonSkillPtsGained = self.toonSkillPtsGained
@@ -709,6 +739,15 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         else:
             return 1.0
 
+    # Given an attack code, return a death reason that corresponds with it.
+    # This should be overridden per boss for unique death messages, but we provide a fallback here.
+    def getDeathReasonFromAttackCode(self, attackCode) -> DeathReason:
+        return DeathReason.BOSS
+
+    # Meant to be overridden. The reason of death to give DeathLink when we die in a cog battle in this boss.
+    def getDeathReasonFromBattle(self) -> DeathReason:
+        return DeathReason.BOSS
+
     def zapToon(self, x, y, z, h, p, r, bpx, bpy, attackCode, timestamp):
         avId = self.air.getAvatarIdFromSender()
         if not self.validate(avId, avId in self.involvedToons, 'zapToon from unknown avatar'):
@@ -725,6 +764,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
                 damage = 5
             damage *= self.getDamageMultiplier()
             damage = max(int(damage), 1)
+            toon.setDeathReason(self.getDeathReasonFromAttackCode(attackCode))
             self.damageToon(toon, damage)
             currState = self.getCurrentOrNextState()
             if attackCode == ToontownGlobals.BossCogElectricFence and (currState == 'RollToBattleTwo' or currState == 'BattleThree'):

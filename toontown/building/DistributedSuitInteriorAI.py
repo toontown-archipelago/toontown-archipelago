@@ -12,6 +12,7 @@ from direct.task import Timer
 from . import DistributedElevatorIntAI
 import copy
 
+from ..archipelago.definitions.death_reason import DeathReason
 from ..toon.ToonDNA import ToonDNA
 
 
@@ -270,6 +271,7 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
         else:
             bossBattle = 0
         self.battle = DistributedBattleBldgAI.DistributedBattleBldgAI(self.air, self.zoneId, self.__handleRoundDone, self.__handleBattleDone, bossBattle=bossBattle)
+        self.battle.setBattleDeathReason(DeathReason.BUILDING)
         self.battle.suitsKilled = self.suitsKilled
         self.battle.suitsKilledPerFloor = self.suitsKilledPerFloor
         self.battle.battleCalc.toonSkillPtsGained = self.toonSkillPtsGained

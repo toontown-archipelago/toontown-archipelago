@@ -8,6 +8,9 @@ from . import CogDisguiseGlobals
 from toontown.toonbase.ToontownBattleGlobals import getCountryClubCreditMultiplier
 from direct.showbase.PythonUtil import addListsByValue
 
+from ..archipelago.definitions.death_reason import DeathReason
+
+
 class DistributedCountryClubBattleAI(DistributedLevelBattleAI.DistributedLevelBattleAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCountryClubBattleAI')
 
@@ -19,6 +22,7 @@ class DistributedCountryClubBattleAI(DistributedLevelBattleAI.DistributedLevelBa
         self.fsm.addState(State.State('CountryClubReward', self.enterCountryClubReward, self.exitCountryClubReward, ['Resume']))
         playMovieState = self.fsm.getStateNamed('PlayMovie')
         playMovieState.addTransition('CountryClubReward')
+        self.setBattleDeathReason(DeathReason.BATTLE_CGC)
 
     def getTaskZoneId(self):
         return self.level.countryClubId

@@ -6,6 +6,7 @@ from direct.fsm import FSM
 from direct.interval.IntervalGlobal import LerpPosInterval
 
 from apworld.toontown import locations
+from toontown.archipelago.definitions.death_reason import DeathReason
 
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.coghq import DistributedFoodBeltAI
@@ -262,6 +263,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.tables = []
 
     def enterBattleTwo(self):
+        self.listenForToonDeaths()
         self.resetBattles()
         self.createFoodBelts()
         self.createBanquetTables()
@@ -276,6 +278,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.barrier = self.beginBarrier('BattleTwo', self.involvedToons, timer + 1, self.__doneBattleTwo)
 
     def exitBattleTwo(self):
+        self.ignoreToonDeaths()
         self.ignoreBarrier(self.barrier)
         for table in self.tables:
             table.goInactive()
@@ -421,6 +424,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # 500 + 100x where x is numtoons-1
         ceoMaxHp = ToontownGlobals.BossbotBossMinMaxDamage + 100 * (len(self.involvedToons)-1)
         self.bossMaxDamage = min(ToontownGlobals.BossbotBossMaxDamage, ceoMaxHp)
+        self.listenForToonDeaths()
         self.resetBattles()
         self.setupBattleFourObjects()
         self.battleFourStart = globalClock.getFrameTime()
@@ -601,6 +605,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         actualTime = seltzerTime - self.battleFourTimeStarted
         self.d_updateTimer(actualTime)
         self.resetBattles()
+        self.ignoreToonDeaths()
         for table in self.tables:
             table.turnOff()
 
@@ -972,3 +977,24 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def toggleMove(self):
         self.moveAttackAllowed = not self.moveAttackAllowed
         return self.moveAttackAllowed
+
+    # Given an attack code, return a death reason that corresponds with it.
+    def getDeathReasonFromAttackCode(self, attackCode) -> DeathReason:
+
+        return {
+            ToontownGlobals.BossCogAreaAttack: DeathReason.CEO_JUMP,
+            ToontownGlobals.BossCogSlowDirectedAttack: DeathReason.CEO_GEAR,
+            ToontownGlobals.BossCogDirectedAttack: DeathReason.CEO_GEAR,
+            ToontownGlobals.BossCogGearDirectedAttack: DeathReason.CEO_GEAR,
+            ToontownGlobals.BossCogElectricFence: DeathReason.CEO_RANOVER,
+            ToontownGlobals.BossCogRecoverDizzyAttack: DeathReason.CEO_SHOWER,
+            ToontownGlobals.BossCogFrontAttack: DeathReason.CEO_SHOWER,
+
+            ToontownGlobals.BossCogMoveAttack: DeathReason.CEO_SQUISHED,
+            ToontownGlobals.BossCogGolfAttack: DeathReason.CEO_GOLFBALL,
+            ToontownGlobals.BossCogGolfAreaAttack: DeathReason.CEO_GOLFBALL,
+            ToontownGlobals.BossCogOvertimeAttack: DeathReason.CEO_OVERTIME
+        }.get(attackCode, DeathReason.CEO)
+
+    def getDeathReasonFromBattle(self) -> DeathReason:
+        return DeathReason.BATTLING_CEO
