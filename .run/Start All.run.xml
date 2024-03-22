@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Start All" type="CompoundRunConfigurationType">
+    <toRun name="AI" type="PythonConfigurationType" />
+    <toRun name="Client" type="PythonConfigurationType" />
+    <toRun name="UD" type="PythonConfigurationType" />
+    <toRun name="Astron" type="ShConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>
