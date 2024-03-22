@@ -5,7 +5,8 @@ from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem
 from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION
 from .items import ToontownItemName
 from .options import ToontownOptions
-from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID, FISH_LOCATIONS
+from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID, FISH_LOCATIONS, \
+    get_location_def_from_name
 from .regions import ToontownEntranceDefinition, ToontownRegionName
 from .rules import Rule, ItemRule
 
@@ -151,7 +152,8 @@ def FishGenus(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, pl
     checkGenus = LOCATION_TO_GENUS[locentr.name]
     for locationName, fishData in LOCATION_TO_GENUS_SPECIES.items():
         if fishData[0] == checkGenus:
-            if state.can_reach(locationName.value, "Location", player):
+            fishLocationDef = get_location_def_from_name(locationName)
+            if passes_rule(Rule.FishCatch, state, fishLocationDef, world, player, options):
                 # We can catch a fish of this genus.
                 return True
 
@@ -174,8 +176,8 @@ def FishGallery(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 
     # Count our fish!
     fishCount = sum(
-        int(state.can_reach(locationDef.value, "Location", player))
-        for locationDef in FISH_LOCATIONS
+        int(passes_rule(Rule.FishCatch, state, get_location_def_from_name(locationName), world, player, options))
+        for locationName in FISH_LOCATIONS
     )
 
     # Check if we have enough.

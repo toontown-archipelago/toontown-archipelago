@@ -7,7 +7,8 @@ from worlds.generic.Rules import set_rule
 from . import regions, consts
 from .consts import ToontownItem, ToontownLocation
 from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, ITEM_NAME_TO_ID, FISHING_LICENSES
-from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID
+from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
+    ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition
 from .options import ToontownOptions
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
@@ -47,19 +48,18 @@ class ToontownWorld(World):
     location_descriptions = LOCATION_DESCRIPTIONS
     item_descriptions = ITEM_DESCRIPTIONS
 
+    def __init__(self, world, player):
+        super(ToontownWorld, self).__init__(world, player)
+        self.created_locations: list[ToontownLocationDefinition] = []
+
     def set_rules(self):
         # Add location rules.
-        for i, location_data in enumerate(LOCATION_DEFINITIONS):
+        for i, location_data in enumerate(self.created_locations):
             location: Location = self.multiworld.get_location(location_data.name.value, self.player)
             location.access_rule = lambda state, i=i: test_location(
                 LOCATION_DEFINITIONS[i], state, self.multiworld, self.player, self.options)
             location.item_rule = lambda item, i=i: test_item_location(
                 LOCATION_DEFINITIONS[i], item, self.multiworld, self.player, self.options)
-
-        for i, location_data in enumerate(EVENT_DEFINITIONS):
-            location: Location = self.multiworld.get_location(location_data.name.value, self.player)
-            location.access_rule = lambda state, i=i: test_location(
-                EVENT_DEFINITIONS[i], state, self.multiworld, self.player, self.options)
 
         # Add entrance rules.
         for i, region_data in enumerate(REGION_DEFINITIONS):
@@ -103,13 +103,21 @@ class ToontownWorld(World):
                 child_region = regions[entrance_data.connects_to]
                 parent_region.connect(child_region, entrance_name)
 
-        # Create all locations.
-        # TODO - set logical stuff here
+        # Determine forbidden location types.
+        forbidden_location_types: set[ToontownLocationType] = self.get_disabled_location_types()
+
+        # Noe create locations.
         for i, location_data in enumerate(LOCATION_DEFINITIONS):
+            # Do we skip this location generation?
+            if location_data.type in forbidden_location_types:
+                continue
+
+            # Now create the location.
             region = regions[location_data.region]
             location = ToontownLocation(player, location_data.name.value, self.location_name_to_id[location_data.name.value], region)
             location.progress_type = location_data.progress_type
             region.locations.append(location)
+            self.created_locations.append(location_data)
 
             # Do some progress type overrides as necessary.
             logical_tasks_per_pg = self.options.logical_tasks_per_playground.value
@@ -121,27 +129,11 @@ class ToontownWorld(World):
                 if location_data.type == ToontownLocationType.GALLERY_MAX:
                     location.progress_type = LocationProgressType.EXCLUDED
 
-            # A flag to put a fish in this location.
-            fish_upon_ye = False
-            fish_checks = FishChecks(self.options.fish_checks.value)
-
-            if fish_checks != FishChecks.AllSpecies:
-                if location_data.type == ToontownLocationType.FISHING:
-                    fish_upon_ye = True
-            if fish_checks != FishChecks.AllGalleryAndGenus:
-                if location_data.type == ToontownLocationType.FISHING_GENUS:
-                    fish_upon_ye = True
-            if fish_checks not in (FishChecks.AllGalleryAndGenus, FishChecks.AllGallery):
-                if location_data.type == ToontownLocationType.FISHING_GALLERY:
-                    fish_upon_ye = True
-
-            if fish_upon_ye:
-                location.place_locked_item(self.create_item(ToontownItemName.FISH.value))
-
         for i, location_data in enumerate(EVENT_DEFINITIONS):
             region = regions[location_data.region]
             location = ToontownLocation(player, location_data.name.value, None, region)
             region.locations.append(location)
+            self.created_locations.append(location_data)
 
             if location_data.name == ToontownLocationName.SAVED_TOONTOWN:
                 location.place_locked_item(self.create_event("Saved Toontown"))
@@ -309,6 +301,27 @@ class ToontownWorld(World):
         second_track = rng.choice(choices)
 
         return first_track, second_track
+
+    def get_disabled_location_types(self) -> set[ToontownLocationType]:
+        """
+        Returns a set of disabled location types.
+        These location types are removed from logic generation.
+        """
+        forbidden_location_types: set[ToontownLocationType] = set()
+        fish_checks = FishChecks(self.options.fish_checks.value)
+        if fish_checks == FishChecks.AllSpecies:
+            forbidden_location_types.add(ToontownLocationType.FISHING_GENUS)
+            forbidden_location_types.add(ToontownLocationType.GALLERY)
+        elif fish_checks == FishChecks.AllGalleryAndGenus:
+            forbidden_location_types.add(ToontownLocationType.FISHING)
+        elif fish_checks == FishChecks.AllGallery:
+            forbidden_location_types.add(ToontownLocationType.FISHING)
+            forbidden_location_types.add(ToontownLocationType.FISHING_GENUS)
+        elif fish_checks == FishChecks.Nonne:
+            forbidden_location_types.add(ToontownLocationType.FISHING)
+            forbidden_location_types.add(ToontownLocationType.FISHING_GENUS)
+            forbidden_location_types.add(ToontownLocationType.GALLERY)
+        return forbidden_location_types
 
     def _get_excluded_items(self) -> List[ToontownItemName]:
         items_to_exclude: List[ToontownItemName] = []
