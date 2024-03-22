@@ -5,6 +5,7 @@ import traceback
 import urllib.parse
 
 from _socket import gaierror
+from direct.showbase.DirectObject import DirectObject
 from direct.stdpy import threading
 from typing import List, Dict, Union
 
@@ -36,7 +37,7 @@ def get_ssl_context():
 
 
 # Class to handle sending and receiving packets through a socket estabilished via the archipelago server
-class ArchipelagoClient:
+class ArchipelagoClient(DirectObject):
 
     def __init__(self, av, slot_name: str = '', password: str = ''):
 
@@ -83,6 +84,9 @@ class ArchipelagoClient:
     def get_location_name(self, location_id: Union[str, int]) -> str:
         return self.global_data_package.get_location_from_id(location_id)
 
+    def __get_packet_handle_event_name(self):
+        return self.av.uniqueName(f'incoming-ap-packet')
+
     # Starts up the socket thread
     def start(self):
 
@@ -91,6 +95,7 @@ class ArchipelagoClient:
             raise Exception("You are already connected!")
 
         # Run the socket thread and let it do whatever
+        self.accept(self.__get_packet_handle_event_name(), self.handle_message_from_server)
         thread = threading.Thread(target=self.__socket_thread, daemon=True)
         thread.start()
 
@@ -119,6 +124,7 @@ class ArchipelagoClient:
             self.socket.close()
             self.socket = None
             self.state = APClientEnums.DISCONNECTED
+        self.ignore(self.__get_packet_handle_event_name())
 
     # Parses a url given (basically the archipelago server address)
     # Updates username, password, and port
@@ -193,7 +199,7 @@ class ArchipelagoClient:
                         msg = socket.recv()
                         # Decode will flatten the msg into a list of raw json packets
                         for raw_packet in decode(msg):
-                            self.handle_message_from_server(raw_packet)
+                            messenger.send(self.__get_packet_handle_event_name(), sentArgs=[raw_packet], taskChain='default')
 
                     # We timeout when we have a timeout=x parameter set in recv(), usually we ignore
                     except TimeoutError:
@@ -236,6 +242,7 @@ class ArchipelagoClient:
         # Ran out of data to send
         self.av.d_sendArchipelagoMessage("[AP Client Thread] Ran out of data to retrieve from server! Please use !connect to reconnect")
         self.av.d_sendArchipelagoMessage("[AP Client Thread] Terminating thread...")
+        self.ignore(self.__get_packet_handle_event_name())
 
     def update_identification(self, slot_name: str = '', password: str = ''):
 

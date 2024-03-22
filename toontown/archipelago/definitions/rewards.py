@@ -685,3 +685,22 @@ def get_ap_reward_from_id(_id: int) -> APReward:
         ap_reward = UndefinedReward(definition.name.value)
 
     return ap_reward
+
+
+# Wrapper class for APReward that holds not only the APReward, but also additional attributes such as:
+# - index reward was received
+# - item ID of the Archipelago item
+# - Name of the player who got this reward for us
+class EarnedAPReward:
+
+    def __init__(self, av, reward: APReward, rewardIndex: int, itemId: int, fromName: str, isLocal: bool):
+        self.av = av
+        self.reward = reward
+        self.rewardIndex = rewardIndex
+        self.itemId = itemId
+        self.fromName = fromName
+        self.isLocal = isLocal
+
+    def apply(self):
+        self.reward.apply(self.av)  # Actually give the effects
+        self.av.d_showReward(self.itemId, self.fromName, self.isLocal)  # Display the popup to the client

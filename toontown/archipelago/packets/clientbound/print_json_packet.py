@@ -37,4 +37,4 @@ class PrintJSONPacket(ClientBoundPacketBase):
             p3dcolor = global_text_properties.get_property_code_from_json_code(color)
             ret += f"\1{p3dcolor}\1{text}\2"
 
-        client.av.d_sendArchipelagoMessage(ret)
+        client.av.queueArchipelagoMessage(ret)

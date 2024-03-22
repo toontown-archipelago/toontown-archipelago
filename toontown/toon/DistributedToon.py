@@ -2813,7 +2813,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         return self.checkedLocations
 
     # To be overridden in LocalToon, just here for safety
-    def sendArchipelagoMessage(self, message: str) -> None:
+    def sendArchipelagoMessages(self, messages: List[str]) -> None:
         pass
 
     # To be overridden in LocalToon, just here for safety

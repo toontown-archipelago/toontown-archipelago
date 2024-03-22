@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Tuple
 
-from toontown.archipelago.definitions.rewards import APReward, get_ap_reward_from_id
+from toontown.archipelago.definitions.rewards import APReward, get_ap_reward_from_id, EarnedAPReward
 from toontown.archipelago.util.net_utils import NetworkItem
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 
@@ -20,9 +20,12 @@ class ReceivedItemsPacket(ClientBoundPacketBase):
     def handle(self, client):
 
         av_indeces_already_received = []
-        for item in client.av.getReceivedItems():
+        items_received: List[Tuple[int, int]] = client.av.getReceivedItems().copy()
+        for item in items_received:
             index_received, item_id = item
             av_indeces_already_received.append(index_received)
+
+        new_items: List[Tuple[int, int]] = []
 
         reward_index = self.index
         for item in self.items:
@@ -34,11 +37,16 @@ class ReceivedItemsPacket(ClientBoundPacketBase):
             if not_applied_yet:
                 itemName = client.get_item_info(item.item)
                 fromName = client.get_slot_info(item.player).name
-                ap_reward: APReward = get_ap_reward_from_id(item.item)
-                ap_reward.apply(client.av)
-                client.av.addReceivedItem(reward_index, item.item)
-                client.av.d_showReward(item.item, fromName, item.player == client.slot)
-                self.debug(f"Received item {itemName} from {fromName}")
+                ap_reward_definition: APReward = get_ap_reward_from_id(item.item)
+                reward: EarnedAPReward = EarnedAPReward(client.av, ap_reward_definition, reward_index, item.item, fromName, item.player == client.slot)
+                client.av.queueAPReward(reward)
+                new_items.append((reward_index, item.item))
+                self.debug(f"Queued {itemName} from {fromName}")
 
             # Incrememnt the reward index and go to the next one
             reward_index += 1
+
+        # Now perform an update on the items that this av has received
+        items_received.extend(new_items)
+        client.av.b_setReceivedItems(items_received)
+

@@ -42,6 +42,9 @@ from toontown.catalog import CatalogAccessoryItem
 from . import ModuleListAI
 
 from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
+from ..archipelago.apclient.distributed_toon_apmessage_queue import DistributedToonAPMessageQueue
+from ..archipelago.apclient.distributed_toon_reward_queue import DistributedToonRewardQueue
+from ..archipelago.definitions.rewards import EarnedAPReward
 from ..archipelago.definitions.util import get_zone_discovery_id
 from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..shtiker import CogPageGlobals
@@ -223,6 +226,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.hintPoints = 0  # How many hint points the player has
 
         self.archipelago_session: ArchipelagoSession = None
+        self.apRewardQueue: DistributedToonRewardQueue = DistributedToonRewardQueue(self)
+        self.apMessageQueue: DistributedToonAPMessageQueue = DistributedToonAPMessageQueue(self)
         self.slotData = {}  # set in connected_packet.py
 
     def generate(self):
@@ -239,6 +244,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             messenger.send('avatarEntered', [self])
 
             self.archipelago_session = ArchipelagoSession(self)
+            self.apRewardQueue.start()
+            self.apMessageQueue.start()
 
             # Do they have information cached?
             lastSlot, lastAddress = self.air.getCachedArchipelagoConnectionInformation(self.doId)
@@ -306,6 +313,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def delete(self):
         self.notify.debug('----Deleting DistributedToonAI %d ' % self.doId)
         if self.isPlayerControlled():
+            self.apRewardQueue.stop()
+            self.apMessageQueue.stop()
             messenger.send('avatarExited', [self])
         if simbase.wantPets:
             if self.isInEstate():
@@ -4378,9 +4387,18 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         self.sendUpdate('updateLocationScoutsCache', [cache.struct()])
 
+    def queueArchipelagoMessage(self, message: str):
+        self.apMessageQueue.queue(message)
+
     # Send this toon an archipelago message to display on their log
     def d_sendArchipelagoMessage(self, message: str) -> None:
-        self.sendUpdate('sendArchipelagoMessage', [message])
+        self.d_sendArchipelagoMessages([message])
+
+    # Send multiple messages to a player to display on their log
+    def d_sendArchipelagoMessages(self, messages: List[str]) -> None:
+        if not self.isPlayerControlled() or len(messages) <= 0:
+            return
+        self.sendUpdate('sendArchipelagoMessages', [messages])
 
     # Tell this toon to display a certain AP reward, and the string to go along with it
     # The reason we provide the string here is because the client has no clue what maps things such as player
@@ -4507,6 +4525,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Gets this toon's current AP seed, used for task generation mainly
     def getSeed(self):
         return self.seed
+
+    def queueAPReward(self, reward: EarnedAPReward):
+        self.apRewardQueue.queue(reward)
 
     # Magic word stuff
     def setMagicDNA(self, dnaString):

@@ -5,7 +5,7 @@ from typing import Any
 
 class ArchipelagoPacketBase:
 
-    DEBUG = True  # Enable to have the AI spit out a bunch of information about packets
+    DEBUG = False  # Enable to have the AI spit out a bunch of information about packets
 
     class PacketType(IntEnum):
         UNDEFINED = -1  # This packet was not defined correctly, an error will be thrown

@@ -2004,8 +2004,9 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         super().startSleepWatch(callback)
 
     # Prints a message to the AP log
-    def sendArchipelagoMessage(self, message: str) -> None:
-        self.archipelagoLog.addToLog(message)
+    def sendArchipelagoMessages(self, messages: List[str]) -> None:
+        for msg in messages:
+            self.archipelagoLog.addToLog(msg)
 
     # Shows a reward that we were given, called from the AI
     def showReward(self, rewardId: int, playerName: str, isLocal: bool) -> None:
