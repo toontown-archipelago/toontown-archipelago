@@ -4,6 +4,7 @@ from toontown.archipelago.definitions.rewards import EarnedAPReward
 
 # How many times a second should we process the queue of rewards for the toon?
 DEFAULT_QUEUE_PROCESS_FREQUENCY = 15
+TASK_DELAY_TIME = 1 / DEFAULT_QUEUE_PROCESS_FREQUENCY
 # How many rewards per run should we process if we have a lot of rewards to handle?
 DEFAULT_REWARD_BATCH = 1
 
@@ -29,6 +30,7 @@ class DistributedToonRewardQueue:
         self._queue.clear()
 
     def start(self):
+        self.stop()
         taskMgr.add(self.__process, name=self.__getTaskName())
 
     def stop(self):
@@ -37,10 +39,14 @@ class DistributedToonRewardQueue:
 
     # Called via a task. Process rewards in the queue if we have any.
     def __process(self, task):
+        task.delayTime = TASK_DELAY_TIME
+
         operations = min(len(self._queue), DEFAULT_REWARD_BATCH)
+        if operations <= 0:
+            return task.again
+
         for index in range(operations):
             reward = self._queue.pop(0)
             reward.apply()
 
-        task.delayTime = 1 / DEFAULT_QUEUE_PROCESS_FREQUENCY
         return task.again
