@@ -1,6 +1,6 @@
 Toontown:
   progression_balancing: 50
-  accessibility: items
+  accessibility: locations
 
   ### Starting Settings ###
 
@@ -44,7 +44,7 @@ Toontown:
 
   # Enable to have Cog Gallery Maxed checks include progression items.
   # Otherwise, they will just contain filler items (EXP bundles, rewards, etc).
-  logical_maxed_cog_gallery: 'false'
+  logical_maxed_cog_gallery: 'true'
 
   # The amount of Cogs required to reach its maxed Cog Gallery.
   # Range: 0 to 10
@@ -63,7 +63,7 @@ Toontown:
   # - all_gallery_and_genus: Every 10 species and unique genus will have an item.
   # - all_gallery: Every 10 species will have an item.
   # - none: There are no items in fishing.
-  fish_checks: 'all_gallery_and_genus'
+  fish_checks: 'all_species'
 
   # Determines the progression for fishing.
   # - licenses_and_rods: Both 'licenses' and 'rods' progression are active.
@@ -78,7 +78,7 @@ Toontown:
   force_playground_treasure_teleport_access_unlocks: 'true'
 
   # Enable to force your Cog HQ teleport access to be on its corresponding "Visit Location" check
-  force_coghq_treasure_teleport_access_unlocks: 'false'
+  force_coghq_treasure_teleport_access_unlocks: 'true'
 
   ### Seed Generation Settings ###
 
