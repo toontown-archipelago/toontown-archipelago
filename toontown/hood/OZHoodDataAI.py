@@ -12,6 +12,8 @@ import string
 from toontown.safezone import DistributedPicnicTableAI
 from toontown.safezone import DistributedChineseCheckersAI
 from toontown.safezone import DistributedCheckersAI
+from toontown.safezone import ArchipelagoTreasurePlannerAI
+from toontown.safezone import DistributedArchiTreasureAI
 if __debug__:
     import pdb
 
@@ -27,8 +29,12 @@ class OZHoodDataAI(HoodDataAI.HoodDataAI):
 
     def startup(self):
         HoodDataAI.HoodDataAI.startup(self)
-        self.treasurePlanner = OZTreasurePlannerAI.OZTreasurePlannerAI(self.zoneId)
-        self.treasurePlanner.start()
+        self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
+                                ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 1),
+                                OZTreasurePlannerAI.OZTreasurePlannerAI(self.zoneId)
+                                ]
+        for planner in self.treasurePlanner:
+            planner.start()
         self.timer = DistributedTimerAI.DistributedTimerAI(self.air)
         self.timer.generateWithRequired(self.zoneId)
         self.createPicnicTables()

@@ -292,18 +292,30 @@ class ToontownLocationName(Enum):
     DONALDS_DREAMLAND_TASK_10 =                 "Donald's Dreamland Task #10"
     DONALDS_DREAMLAND_TASK_11 =                 "Donald's Dreamland Task #11"
     DONALDS_DREAMLAND_TASK_12 =                 "Donald's Dreamland Task #12"
-    DISCOVER_TTC =                              "Discover Toontown Central"
-    DISCOVER_DD =                               "Discover Donald's Dock"
-    DISCOVER_DG =                               "Discover Daisy Gardens"
-    DISCOVER_MML =                              "Discover Minnie's Melodyland"
-    DISCOVER_TB =                               "Discover The Brrrgh"
-    DISCOVER_DDL =                              "Discover Donald's Dreamland"
-    DISCOVER_GS =                               "Discover Goofy Speedway"
-    DISCOVER_AA =                               "Discover Acorn Acres"
-    DISCOVER_SBHQ =                             "Discover Sellbot HQ"
-    DISCOVER_CBHQ =                             "Discover Cashbot HQ"
-    DISCOVER_LBHQ =                             "Discover Lawbot HQ"
-    DISCOVER_BBHQ =                             "Discover Bossbot HQ"
+    TTC_TREASURE_1 =                            "Toontown Central AP Treasure 1"
+    TTC_TREASURE_2 =                            "Toontown Central AP Treasure 2"
+    DD_TREASURE_1 =                             "Donald's Dock AP Treasure 1"
+    DD_TREASURE_2 =                             "Donald's Dock AP Treasure 2"
+    DG_TREASURE_1 =                             "Daisy Gardens AP Treasure 1"
+    DG_TREASURE_2 =                             "Daisy Gardens AP Treasure 2"
+    MML_TREASURE_1 =                            "Minnie's Melodyland AP Treasure 1"
+    MML_TREASURE_2 =                            "Minnie's Melodyland AP Treasure 2"
+    TB_TREASURE_1 =                             "The Brrrgh AP Treasure 1"
+    TB_TREASURE_2 =                             "The Brrrgh AP Treasure 2"
+    DDL_TREASURE_1 =                            "Donald's Dreamland AP Treasure 1"
+    DDL_TREASURE_2 =                            "Donald's Dreamland AP Treasure 2"
+    GS_TREASURE_1 =                             "Goofy Speedway AP Treasure 1"
+    GS_TREASURE_2 =                             "Goofy Speedway AP Treasure 2"
+    AA_TREASURE_1 =                             "Acorn Acres AP Treasure 1"
+    AA_TREASURE_2 =                             "Acorn Acres AP Treasure 2"
+    SBHQ_TREASURE_1 =                           "Sellbot HQ AP Treasure 1"
+    SBHQ_TREASURE_2 =                           "Sellbot HQ AP Treasure 2"
+    CBHQ_TREASURE_1 =                           "Cashbot HQ AP Treasure 1"
+    CBHQ_TREASURE_2 =                           "Cashbot HQ AP Treasure 2"
+    LBHQ_TREASURE_1 =                           "Lawbot HQ AP Treasure 1"
+    LBHQ_TREASURE_2 =                           "Lawbot HQ AP Treasure 2"
+    BBHQ_TREASURE_1 =                           "Bossbot HQ AP Treasure 1"
+    BBHQ_TREASURE_2 =                           "Bossbot HQ AP Treasure 2"
     FRONT_FACTORY_BARREL_1 =                    "Front Factory West Silo Barrel"
     FRONT_FACTORY_BARREL_2 =                    "Front Factory East Silo Barrel"
     FRONT_FACTORY_BARREL_3 =                    "Front Factory Warehouse Barrel"
@@ -375,9 +387,8 @@ class ToontownLocationType(IntEnum):
     FISHING         = auto()  # Locations for fishing trophies
     FISHING_GENUS   = auto()  # Locations for catching unique genus
     FISHING_GALLERY = auto()  # Locations for fishing gallery
-    PLAYGROUND      = auto()  # Locations for discovering playgrounds
+    PLAYGROUND      = auto()  # Locations for discovering playground treasures
     GAG_TRAINING    = auto()  # Locations for training gags
-
     TTC_TASKS    = auto()  # Locations for TTC tasks
     DD_TASKS     = auto()  # Locations for DD tasks
     DG_TASKS     = auto()  # Locations for DG tasks
@@ -645,19 +656,31 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_11,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_12,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     # endregion
-    # region Area Discovery
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_TTC,  ToontownLocationType.PLAYGROUND, ToontownRegionName.TTC),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_DD,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DD),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_DG,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DG),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_MML,  ToontownLocationType.PLAYGROUND, ToontownRegionName.MML),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_TB,   ToontownLocationType.PLAYGROUND, ToontownRegionName.TB),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_DDL,  ToontownLocationType.PLAYGROUND, ToontownRegionName.DDL),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_GS,   ToontownLocationType.PLAYGROUND, ToontownRegionName.GS),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_AA,   ToontownLocationType.PLAYGROUND, ToontownRegionName.AA),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_SBHQ, ToontownLocationType.PLAYGROUND, ToontownRegionName.SBHQ),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_CBHQ, ToontownLocationType.PLAYGROUND, ToontownRegionName.CBHQ),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_LBHQ, ToontownLocationType.PLAYGROUND, ToontownRegionName.LBHQ),
-    ToontownLocationDefinition(ToontownLocationName.DISCOVER_BBHQ, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
+    # region Area AP Treasures
+    ToontownLocationDefinition(ToontownLocationName.TTC_TREASURE_1,  ToontownLocationType.PLAYGROUND, ToontownRegionName.TTC),
+    ToontownLocationDefinition(ToontownLocationName.TTC_TREASURE_2,  ToontownLocationType.PLAYGROUND, ToontownRegionName.TTC),
+    ToontownLocationDefinition(ToontownLocationName.DD_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DD),
+    ToontownLocationDefinition(ToontownLocationName.DD_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DD),
+    ToontownLocationDefinition(ToontownLocationName.DG_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DG),
+    ToontownLocationDefinition(ToontownLocationName.DG_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DG),
+    ToontownLocationDefinition(ToontownLocationName.MML_TREASURE_1,  ToontownLocationType.PLAYGROUND, ToontownRegionName.MML),
+    ToontownLocationDefinition(ToontownLocationName.MML_TREASURE_2,  ToontownLocationType.PLAYGROUND, ToontownRegionName.MML),
+    ToontownLocationDefinition(ToontownLocationName.TB_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.TB),
+    ToontownLocationDefinition(ToontownLocationName.TB_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.TB),
+    ToontownLocationDefinition(ToontownLocationName.DDL_TREASURE_1,  ToontownLocationType.PLAYGROUND, ToontownRegionName.DDL),
+    ToontownLocationDefinition(ToontownLocationName.DDL_TREASURE_2,  ToontownLocationType.PLAYGROUND, ToontownRegionName.DDL),
+    ToontownLocationDefinition(ToontownLocationName.GS_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.GS),
+    ToontownLocationDefinition(ToontownLocationName.GS_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.GS),
+    ToontownLocationDefinition(ToontownLocationName.AA_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.AA),
+    ToontownLocationDefinition(ToontownLocationName.AA_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.AA),
+    ToontownLocationDefinition(ToontownLocationName.SBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.SBHQ),
+    ToontownLocationDefinition(ToontownLocationName.SBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.SBHQ),
+    ToontownLocationDefinition(ToontownLocationName.CBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.CBHQ),
+    ToontownLocationDefinition(ToontownLocationName.CBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.CBHQ),
+    ToontownLocationDefinition(ToontownLocationName.LBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.LBHQ),
+    ToontownLocationDefinition(ToontownLocationName.LBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.LBHQ),
+    ToontownLocationDefinition(ToontownLocationName.BBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
+    ToontownLocationDefinition(ToontownLocationName.BBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
     # endregion
     # region Facilities
     ToontownLocationDefinition(ToontownLocationName.FRONT_FACTORY_BARREL_1, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFiveOffenseGag]),

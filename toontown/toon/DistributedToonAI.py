@@ -1882,9 +1882,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def addHoodVisited(self, hoodId):
 
-        zone_reward = get_zone_discovery_id(hoodId)
-        if zone_reward >= 0:
-            self.addCheckedLocation(zone_reward)
+        # zone_reward = get_zone_discovery_id(hoodId)
+        # if zone_reward >= 0:
+        #     self.addCheckedLocation(zone_reward)
 
         hoods = self.getHoodsVisited()
         if hoodId in hoods:
@@ -4465,8 +4465,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setFishingTrophies([])
 
         # TP access
-        self.b_setHoodsVisited([])
-        self.addHoodVisited(ZoneUtil.getHoodId(self.zoneId))
+        self.b_setHoodsVisited([ToontownGlobals.ToontownCentral, ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens, ToontownGlobals.MinniesMelodyland,
+                                ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland, ToontownGlobals.GoofySpeedway, ToontownGlobals.OutdoorZone,
+                                ToontownGlobals.SellbotHQ, ToontownGlobals.CashbotHQ, ToontownGlobals.LawbotHQ, ToontownGlobals.BossbotHQ])
         self.b_setTeleportAccess([])
 
         # Disguise stuff, revoke their disguises

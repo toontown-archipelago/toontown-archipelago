@@ -100,6 +100,7 @@ from toontown.safezone import DistributedMMTreasure/AI
 from toontown.safezone import DistributedOZTreasure/AI
 from toontown.safezone import DistributedETreasure/AI
 from toontown.safezone import DistributedEFlyingTreasure/AI
+from toontown.safezone import DistributedArchiTreasure/AI
 from toontown.minigame import DistributedTagTreasure/AI
 from toontown.coghq import DistributedCashbotBossTreasure/AI
 from toontown.building import DistributedTrophyMgr/AI
@@ -2180,6 +2181,9 @@ dclass DistributedEFlyingTreasure : DistributedTreasure {
 };
 
 dclass DistributedTagTreasure : DistributedTreasure {
+};
+
+dclass DistributedArchiTreasure : DistributedTreasure {
 };
 
 dclass DistributedCashbotBossTreasure : DistributedTreasure {

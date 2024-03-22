@@ -12,6 +12,8 @@ from toontown.building import DistributedBBElevatorAI
 from toontown.building import DistributedBoardingPartyAI
 from toontown.building import FADoorCodes
 from toontown.coghq import DistributedCogKartAI
+from toontown.safezone import ArchipelagoTreasurePlannerAI
+from toontown.safezone import DistributedArchiTreasureAI
 
 class BossbotHQDataAI(HoodDataAI.HoodDataAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('BossbotHQDataAI')
@@ -34,6 +36,11 @@ class BossbotHQDataAI(HoodDataAI.HoodDataAI):
         self.lobbyElevator = DistributedBBElevatorAI.DistributedBBElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.BossbotLobby, antiShuffle=1)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.BossbotLobby)
         self.addDistObj(self.lobbyElevator)
+        self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
+                                ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 1)
+                                ]
+        for planner in self.treasurePlanner:
+            planner.start()
         if simbase.config.GetBool('want-boarding-groups', 1):
             self.boardingParty = DistributedBoardingPartyAI.DistributedBoardingPartyAI(self.air, [self.lobbyElevator.doId], 8)
             self.boardingParty.generateWithRequired(ToontownGlobals.BossbotLobby)
