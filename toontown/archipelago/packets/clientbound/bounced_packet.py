@@ -66,5 +66,10 @@ class BouncedPacket(ClientBoundPacketBase):
 
         # Is this a deathlink packet?
         if ConnectPacket.TAG_DEATHLINK in self.tags:
+            # Is deathlink off?
+            if not client.av.slotData.get("death_link", False):
+                self.debug("Client is not participating in DeathLink. Skip this packet")
+                return
+
             self.handle_deathlink(client)
             return
