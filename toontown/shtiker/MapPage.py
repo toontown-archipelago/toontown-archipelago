@@ -191,10 +191,6 @@ class MapPage(ShtikerPage.ShtikerPage):
             fishPoster.hide()
             hoodId = questPoster.getHoodId()
 
-            # Have we visited this hood?
-            if hoodId not in base.localAvatar.hoodsVisited:
-                continue
-
             # Can we fish here?
             if not fishPoster.isVisible(base.localAvatar):
                 fishPoster.hide()
