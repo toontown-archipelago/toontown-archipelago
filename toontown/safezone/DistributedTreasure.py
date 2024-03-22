@@ -1,3 +1,5 @@
+from typing import Union
+
 from panda3d.core import *
 from panda3d.direct import *
 from direct.interval.IntervalGlobal import *
@@ -66,30 +68,22 @@ class DistributedTreasure(DistributedObject.DistributedObject):
             self.makeNodePath()
         else:
             self.treasure.getChildren().detach()
-        if isinstance(modelPath, CardMaker):
-            model = self.nodePath.attachNewNode(modelPath.generate())
-            model.setScale(3)
-            model.setPos(-1.5, 0, 0.5)
-            model.setColor(0.9, 0.9, 0.9, 1)
-            model.setTransparency(TransparencyAttrib.MAlpha)
-            tex = loader.loadTexture('phase_14/maps/ap_icon.png')
-            model.setTexture(tex)
-            model.reparentTo(self.nodePath)
-            self.nodePath.setBillboardPointEye()
-            self.dropShadow.wrtReparentTo(self.getParentNodePath())
-        else:
-            model = loader.loadModel(modelPath)
-            if modelFindString != None:
-                model = self.model.find('**/' + modelFindString)
+        model = self.prepareModel(modelPath, modelFindString)
         model.instanceTo(self.treasure)
         return
 
+    def prepareModel(self, modelPath: str, modelFindString: Union[str, None]) -> NodePath:
+        model = loader.loadModel(modelPath)
+        if modelFindString is not None:
+            model = model.find('**/' + modelFindString)
+        return model
+
     def makeNodePath(self):
         self.nodePath = NodePath(self.uniqueName('treasure'))
-        if self.billboard:
-            self.nodePath.setBillboardPointEye()
         self.nodePath.setScale(0.9 * self.scale)
         self.treasure = self.nodePath.attachNewNode('treasure')
+        if self.billboard:
+            self.treasure.setBillboardAxis()
         if self.shadow:
             if not self.dropShadow:
                 self.dropShadow = loader.loadModel('phase_3/models/props/drop_shadow')
