@@ -798,6 +798,9 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     # endregion
 ]
 
+LOCATION_NAME_TO_DEFINITION: dict[ToontownLocationName, ToontownLocationDefinition] = {
+    locdef.name: locdef for locdef in LOCATION_DEFINITIONS
+}
 
 EVENT_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.SAVED_TOONTOWN, ToontownLocationType.MISC,   ToontownRegionName.TTC, [Rule.AllBossesDefeated]),
@@ -831,3 +834,7 @@ ALL_TASK_LOCATIONS = (
 SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy()
 
 LOCATION_NAME_TO_ID = {location.name.value: i + consts.BASE_ID for i, location in enumerate(LOCATION_DEFINITIONS)}
+
+
+def get_location_def_from_name(name: ToontownLocationName) -> ToontownLocationDefinition:
+    return LOCATION_NAME_TO_DEFINITION[name]

@@ -337,6 +337,8 @@ typedef uint32 DoId;
 
 typedef DoId DoIdList[];
 
+struct AstronDict {blob data;};
+
 struct AvatarPendingDel {
   uint32 Avatar;
   uint32 date;
@@ -1170,7 +1172,9 @@ dclass DistributedToon : DistributedPlayer {
   updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
   requestHintPoints() ownsend airecv;
   hintPointResp(uint16) ownrecv;
-  setSlotData(string[], uint32[]) required ownrecv broadcast;
+
+  setSlotData(AstronDict) required ownrecv broadcast;
+  setArchipelagoAuto(string, string) ownsend airecv;
   setDeathReason(string) airecv clsend;
   clientDied() airecv clsend;
 };

@@ -62,6 +62,8 @@ import random
 import copy
 
 from ..archipelago.definitions.death_reason import DeathReason
+from ..util.astron.AstronDict import AstronDict
+
 
 if base.wantKarts:
     from toontown.racing.KartDNA import *
@@ -2840,5 +2842,5 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def getSlotData(self) -> dict[str, int]:
         return self.slotData
 
-    def setSlotData(self, slotKeys: list[str], slotVals: list[int]) -> None:
-        self.slotData = {k: v for k, v in zip(slotKeys, slotVals)}
+    def setSlotData(self, slotData) -> None:
+        self.slotData = AstronDict.fromStruct(slotData)

@@ -16,5 +16,11 @@ set TTOFF_LOGIN_TOKEN=dev
 set /P TTOFF_GAME_SERVER="Game Server (default: 127.0.0.1): " || ^
 set TTOFF_GAME_SERVER=127.0.0.1
 
+set /P ARCHIPELAGO_SLOT="(Archipelago) Slot Name: " || ^
+set ARCHIPELAGO_SLOT=Colorful Toon
+
+set /P ARCHIPELAGO_ADDRESS="(Archipelago) Server Address: " || ^
+set ARCHIPELAGO_ADDRESS=localhost:38281
+
 %PPYTHON_PATH% -m toontown.launcher.TTOffQuickStartLauncher
 pause
