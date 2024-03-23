@@ -531,6 +531,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         toon = self.getToon(avId)
         if toon == None:
             return 0
+        toon.setDeathReason(self.getBattleDeathReason())
         toon.stopToonUp()
         event = simbase.air.getAvatarExitEvent(avId)
         self.avatarExitEvents.append(event)
@@ -1470,7 +1471,6 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         for toon in self.activeToons:
             toonHpDict[toon] = [0, 0, 0]
             actualToon = self.getToon(toon)
-            actualToon.setDeathReason(self.getBattleDeathReason())  # Pre-emptively set their death reason to battling jic
             self.notify.debug('BEFORE ROUND: toon: %d hp: %d' % (toon, actualToon.hp))
 
         deadSuits = []
