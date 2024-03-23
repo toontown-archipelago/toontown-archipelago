@@ -255,7 +255,17 @@ class ToontownWorld(World):
         self.multiworld.itempool += pool
 
     def fill_slot_data(self) -> Dict[str, Any]:
-        # Return any information that the district is going to need from generation
+        """
+        Returns any information that the client/AI is going to need from generation.
+        """
+        # Determine some special slot data args.
+        local_itempool = [
+            location.item.code
+            for location in self.multiworld.get_locations()
+            if location.address and location.item and location.item.code and location.item.player == self.player
+        ]
+
+        # Return the result.
         return {
             "seed": self.multiworld.seed,
             "seed_generation_type": self.options.seed_generation_type.value,
@@ -269,6 +279,7 @@ class ToontownWorld(World):
             "fish_checks": self.options.fish_checks.value,
             "fish_progression": self.options.fish_progression.value,
             "maxed_cog_gallery_quota": self.options.maxed_cog_gallery_quota.value,
+            "local_itempool": local_itempool,
         }
 
     def calculate_starting_tracks(self):

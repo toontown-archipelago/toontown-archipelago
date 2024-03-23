@@ -1,13 +1,10 @@
-from typing import Dict, List
-
-from . import ShtikerBook, ShtikerPage
-
-from apworld.toontown import items, ToontownItemDefinition
-
+from typing import Dict
+from . import ShtikerPage
+from apworld.toontown import ToontownItemDefinition, get_item_def_from_id
 from toontown.toonbase import TTLocalizer
-from direct.fsm import StateData
 from direct.gui.DirectGui import *
 from panda3d.core import *
+
 
 class CheckPage(ShtikerPage.ShtikerPage):
 
@@ -51,13 +48,10 @@ class CheckPage(ShtikerPage.ShtikerPage):
         selectedIndex = 0
         if self.scrollList:
             selectedIndex = self.scrollList.getSelectedIndex()
-            for button in self.checkButtons:
-                button.detachNode()
-                del button
             self.updateCheckButtons()
-
             self.scrollList.destroy()
             self.scrollList = None
+
         hostUi = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         checkmarkGeom = hostUi.find('**/checkmark')
         self.scrollList = DirectScrolledList(parent=self, relief=None, pos=(-0.625, 0, 0), incButton_image=(self.gui.find('**/FndsLst_ScrollUp'),
@@ -77,23 +71,33 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.hintPointsTitle['text'] = TTLocalizer.HintPointsTitle % base.localAvatar.hintPoints
 
     def updateCheckButtons(self):
-        recItems = base.localAvatar.getReceivedItems()
+        # Cleanup buttons
+        for button in self.checkButtons:
+            button.detachNode()
+            del button
+        self.checkButtons = []
 
         # Maps item ids to the quantity that we have
         itemsAndCount: Dict[int, int] = {}
-        for item in recItems:
+        for item in base.localAvatar.getReceivedItems():
             index_received, item_id = item
             itemsAndCount[item_id] = itemsAndCount.get(item_id, 0) + 1
 
-        self.checkButtons = []
+        # Count total items in item pool
+        allItems: dict[ToontownItemDefinition, int] = {}
+        for item_id in sorted(base.localAvatar.slotData.get("local_itempool", [])):
+            allItems.setdefault(item_id, 0)
+            allItems[item_id] += 1
 
-        allItems: List[ToontownItemDefinition] = items.ITEM_DEFINITIONS[:]
-        for i, check in enumerate(allItems):
-            if check.quantity == 0:
-                pass
-            else:
-                button = self.makeCheckButton(check.name, itemsAndCount.get(check.unique_id, 0), check.quantity)  # TODO use actual pool from AP for quantity max
-                self.checkButtons.append(button[0])
+        # Generate new buttons
+        for item_id, quantity in allItems.items():
+            itemDef = get_item_def_from_id(item_id)
+            if itemDef is None:
+                print("ALERT I DON'T KNOW WHAT %s IS -- ENRAGE AT MICA" % item_id)
+                continue
+
+            button = self.makeCheckButton(itemDef.name, itemsAndCount.get(itemDef.unique_id, 0), quantity)
+            self.checkButtons.append(button[0])
 
     def makeCheckButton(self, checkName, checkCount, checkMax):
         checkButtonParent = DirectFrame()
