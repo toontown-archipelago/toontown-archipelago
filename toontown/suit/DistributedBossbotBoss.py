@@ -1204,7 +1204,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def zapLocalToon(self, attackCode, origin = None):
 
         # Don't hurt us if the boss is dizzy and we got hit by a golf ball flying at mach 10 (sequence finishing)
-        if self.attackCode in ToontownGlobals.BossCogDizzyStates and attackCode in (ToontownGlobals.BossCogGolfAttack, ToontownGlobals.BossCogGolfAreaAttack):
+        if hasattr(self, 'attackCode') and self.attackCode in ToontownGlobals.BossCogDizzyStates and attackCode in (ToontownGlobals.BossCogGolfAttack, ToontownGlobals.BossCogGolfAreaAttack):
             return
 
         if self.localToonIsSafe or localAvatar.ghostMode or localAvatar.isStunned:
