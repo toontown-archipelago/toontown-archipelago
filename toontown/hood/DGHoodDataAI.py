@@ -1,3 +1,5 @@
+from typing import List
+
 from direct.directnotify import DirectNotifyGlobal
 from . import HoodDataAI
 from toontown.toonbase import ToontownGlobals
@@ -35,3 +37,6 @@ class DGHoodDataAI(HoodDataAI.HoodDataAI):
         flower.start()
         self.addDistObj(flower)
         self.createButterflies(ButterflyGlobals.DG)
+
+    def getStreetClerkZoneIds(self) -> List[int]:
+        return [5123, 5243, 5320]  # Elm, Maple, Oak

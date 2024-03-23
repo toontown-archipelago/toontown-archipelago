@@ -1,3 +1,5 @@
+from typing import List
+
 from direct.directnotify import DirectNotifyGlobal
 from . import HoodDataAI
 from toontown.toonbase import ToontownGlobals
@@ -29,3 +31,6 @@ class BRHoodDataAI(HoodDataAI.HoodDataAI):
                                 ]
         for planner in self.treasurePlanner:
             planner.start()
+
+    def getStreetClerkZoneIds(self) -> List[int]:
+        return [3115, 3235, 3309]  # Walrus, Sleet, Polar
