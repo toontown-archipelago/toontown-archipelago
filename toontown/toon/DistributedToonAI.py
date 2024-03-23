@@ -4440,8 +4440,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         return AstronDict.fromDict(self.slotData).toStruct()
 
     def d_setSlotData(self, slotData: AstronDict):
-        for i in range(10):
-            print(slotData)
         self.sendUpdate('setSlotData', [slotData.toStruct()])
 
     def setArchipelagoAuto(self, slotName: str, serverAddr: str):
