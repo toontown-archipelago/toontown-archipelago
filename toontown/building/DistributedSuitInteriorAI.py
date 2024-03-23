@@ -271,7 +271,7 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
         else:
             bossBattle = 0
         self.battle = DistributedBattleBldgAI.DistributedBattleBldgAI(self.air, self.zoneId, self.__handleRoundDone, self.__handleBattleDone, bossBattle=bossBattle)
-        self.battle.setBattleDeathReason(DeathReason.BUILDING)
+        self.battle.setBattleDeathReason(DeathReason.BATTLE_BUILDING)
         self.battle.suitsKilled = self.suitsKilled
         self.battle.suitsKilledPerFloor = self.suitsKilledPerFloor
         self.battle.battleCalc.toonSkillPtsGained = self.toonSkillPtsGained

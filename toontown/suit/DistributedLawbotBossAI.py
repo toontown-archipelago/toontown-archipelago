@@ -556,6 +556,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
              self.__deleteChairs()
 
         self.initializeComboTrackers()
+        self.listenForToonDeaths()
 
     def getToonDifficulty(self):
         totalCogSuitLevels = 0.0
