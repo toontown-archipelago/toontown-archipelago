@@ -48,6 +48,7 @@ from ..archipelago.definitions.rewards import EarnedAPReward
 from ..archipelago.definitions.util import get_zone_discovery_id
 from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..shtiker import CogPageGlobals
+from ..util.astron.AstronDict import AstronDict
 
 if simbase.wantPets:
     from toontown.pets import PetLookerAI, PetObserve
@@ -4427,25 +4428,21 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         # Win condition is satisfied!
         return True
 
-    def b_setSlotData(self, slotData: dict[str, int]):
-        slotKeys = list(slotData.keys())
-        slotVals = [slotData[k] for k in slotKeys]
-        self.setSlotData(slotKeys, slotVals)
-        self.d_setSlotData(slotKeys, slotVals)
+    def b_setSlotData(self, slotData: dict):
+        slotData = AstronDict.fromDict(slotData)
+        self.setSlotData(slotData)
+        self.d_setSlotData(slotData)
 
-    def setSlotData(self, slotKeys: list[str], slotVals: list[int]):
-        self.slotData = {k: v for k, v in zip(slotKeys, slotVals)}
+    def setSlotData(self, slotData: dict):
+        self.slotData = slotData
 
-    def getSlotData(self) -> Tuple[list[str], list[int]]:
-        slotKeys = list(self.slotData.keys())
-        slotVals = [self.slotData[k] for k in slotKeys]
-        return slotKeys, slotVals
+    def getSlotData(self) -> list:
+        return AstronDict.fromDict(self.slotData).toStruct()
 
-    def d_setSlotData(self, slotKeys: list[str], slotVals: list[int]):
-        for index in range(len(slotVals)):
-            if type(slotVals[index]) != int or not (0 <= slotVals[index] <= 2147483647):
-                slotVals[index] = 0
-        self.sendUpdate('setSlotData', [slotKeys, slotVals])
+    def d_setSlotData(self, slotData: AstronDict):
+        for i in range(10):
+            print(slotData)
+        self.sendUpdate('setSlotData', [slotData.toStruct()])
 
     def setArchipelagoAuto(self, slotName: str, serverAddr: str):
         if not self.archipelago_session:
