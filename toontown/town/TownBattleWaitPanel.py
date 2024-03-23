@@ -34,6 +34,8 @@ class TownBattleWaitPanel(StateData.StateData):
         # If we are dead, the back button will work as a run button
         if localAvatar.hp <= 0:
             self.backButton['text'] = "RUN"
+        else:
+            self.backButton['text'] = "BACK"
 
         self.frame.show()
 

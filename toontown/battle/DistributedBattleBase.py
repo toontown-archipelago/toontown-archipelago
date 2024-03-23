@@ -653,6 +653,22 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
 
     def __handleDied(self, toon):
         self.notify.warning('handleDied() - toon: %d' % toon.doId)
+
+        # From here on out only do anything if we are in the gag picking phase
+        if self.fsm.getCurrentState().getName() != 'WaitForInput':
+            return
+
+        # This toon is now sad
+        toon.loop('sad-neutral')
+
+        # Now only handle things related to us
+        if toon != base.localAvatar:
+            return
+
+        # Pull back our attack and force us to pass
+        self.townBattle.fsm.request('Attack')
+        messenger.send('inventory-pass')
+
         # if toon == base.localAvatar:
         #     self.d_toonDied(toon.doId)
         #     self.cleanupBattle()
