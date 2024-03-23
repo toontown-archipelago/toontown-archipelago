@@ -13,9 +13,10 @@ server-version tt-ap-edition
 # Developer settings
 want-dev false
 schellgames-dev false
-exec-chat true
+exec-chat false
 log-private-info true
 want-qa-regression true
+want-injector false
 
 # Chat settings
 want-whitelist false
