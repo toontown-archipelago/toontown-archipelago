@@ -83,6 +83,31 @@ class Experience:
 
         return gags
 
+    # Given a track, return the gag levels that this toon has maxed. For a toon's gag level to be considered "maxed",
+    # They must be either 1 xp under their next gag threshold or above it.
+    def getMaxedGagLevels(self, track) -> List[int]:
+
+        # Loop through the gag levels and the thresholds they unlock
+        maxedGagLevels = []
+        for gagLevelIndex, nextTrackUnlockExp in enumerate(ToontownBattleGlobals.Levels[track]):
+            # Skip the first gag, not important
+            if gagLevelIndex == 0:
+                continue
+
+            # Figure out the previous gag and subtract one from the unlock threshold for the current gag
+            previousGag = gagLevelIndex - 1
+            maxExpForPreviousGag = nextTrackUnlockExp - 1
+
+            # Have we maxed this gag?
+            if self.experience[track] >= maxExpForPreviousGag:
+                maxedGagLevels.append(previousGag)
+
+        # Now check if we "maxed" this track (i.e. our lvl 7 does max damage
+        if self.experience[track] >= ToontownBattleGlobals.regMaxSkill - 1:
+            maxedGagLevels.append(ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL)
+
+        return maxedGagLevels
+
     def addExp(self, track, amount=1):
 
         self.notify.debug('adding %d exp to track %d' % (amount, track))
@@ -94,9 +119,18 @@ class Experience:
         self.experience[track] = min(trackExperienceCap, newXp)
 
         # Now determine the checks that we are eligible for
-        allowedGagLevelsForTrack = self.getAllowedGagLevels(track)
+
+        # This is the line of code to have the legacy system where we unlock checks based on the actual gags we have
+        # unlocked. Leaving this here in case we would rather keep this logic
+        # gagLevels = self.getAllowedGagLevels(track)
+
+        # This line of code is the new system where we do gag location checks based on maxing a gag's exp.
+        # (Maxed as in highest exp amount before unlocking the next gag or higher)
+        gagLevels = self.getMaxedGagLevels(track)
+
+        # Now convert our gags to the corresponding AP checks.
         apChecks = []
-        for gagLevel in allowedGagLevelsForTrack:
+        for gagLevel in gagLevels:
             apCheckID = ap_location_name_to_id(track_and_level_to_location(track, gagLevel))
             apChecks.append(apCheckID)
 
