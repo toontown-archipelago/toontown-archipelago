@@ -51,19 +51,19 @@ class ToontownItemName(enum.Enum):
     GAG_MULTIPLIER_2 = "+2 Base Gag XP Multiplier"
 
     ### Teleport Access ###
-    TTC_TELEPORT  = "TTC Teleport Access"
-    DD_TELEPORT   = "DD Teleport Access"
-    DG_TELEPORT   = "DG Teleport Access"
-    MML_TELEPORT  = "MML Teleport Access"
-    TB_TELEPORT   = "TB Teleport Access"
-    DDL_TELEPORT  = "DDL Teleport Access"
-    SBHQ_TELEPORT = "SBHQ Teleport Access"
-    CBHQ_TELEPORT = "CBHQ Teleport Access"
-    LBHQ_TELEPORT = "LBHQ Teleport Access"
-    BBHQ_TELEPORT = "BBHQ Teleport Access"
+    TTC_TELEPORT  = "TTC TP Access"
+    DD_TELEPORT   = "DD TP Access"
+    DG_TELEPORT   = "DG TP Access"
+    MML_TELEPORT  = "MML TP Access"
+    TB_TELEPORT   = "TB TP Access"
+    DDL_TELEPORT  = "DDL TP Access"
+    SBHQ_TELEPORT = "SBHQ TP Access"
+    CBHQ_TELEPORT = "CBHQ TP Access"
+    LBHQ_TELEPORT = "LBHQ TP Access"
+    BBHQ_TELEPORT = "BBHQ TP Access"
 
-    AA_TELEPORT = "AA Teleport Access"
-    GS_TELEPORT = 'GS Teleport Access'
+    AA_TELEPORT = "AA TP Access"
+    GS_TELEPORT = 'GS TP Access'
 
     ### HQ Access ###
     TTC_HQ_ACCESS = "TTC HQ Access"
