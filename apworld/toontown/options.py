@@ -82,6 +82,15 @@ class TPSanity(Choice):
     option_none = 3
     default = 3
 
+class TreasuresPerLocation(Range):
+    """
+    # The amount of archipelago treasures that'll have items in each location
+    """
+    display_name = "AP Treasures Per Location"
+    range_start = 1
+    range_end = 5
+    default = 2
+
 
 class LogicalTasksPerPlayground(Range):
     """
@@ -203,6 +212,7 @@ class ToontownOptions(PerGameCommonOptions):
     starting_money: StartMoneyOption
     cog_bosses_required: CogBossesRequired
     tpsanity: TPSanity
+    treasures_per_location: TreasuresPerLocation
     logical_tasks_per_playground: LogicalTasksPerPlayground
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     maxed_cog_gallery_quota: MaxedCogGalleryQuota

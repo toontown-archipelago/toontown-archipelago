@@ -47,6 +47,12 @@ Toontown:
   # - none: All areas are accessible. You start with global teleport access.
   tpsanity: 'keys'
 
+  ### Treasure Settings ###
+
+  # The amount of archipelago treasures that'll have items in each location
+  # Range: 1 to 5
+  treasures_per_location: 2
+
   ### Task Settings ###
 
   # Determines the amount of tasks per playground that are in logic.

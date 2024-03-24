@@ -37,7 +37,6 @@ class BossbotHQDataAI(HoodDataAI.HoodDataAI):
         self.lobbyElevator.generateWithRequired(ToontownGlobals.BossbotLobby)
         self.addDistObj(self.lobbyElevator)
         self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
-                                ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 1)
                                 ]
         for planner in self.treasurePlanner:
             planner.start()

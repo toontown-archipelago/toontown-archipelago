@@ -289,6 +289,7 @@ class ToontownWorld(World):
             "death_link": self.options.death_link.value,
             "local_itempool": local_itempool,
             "tpsanity": self.options.tpsanity.value,
+            "treasures_per_location": self.options.treasures_per_location.value,
         }
 
     def calculate_starting_tracks(self):
