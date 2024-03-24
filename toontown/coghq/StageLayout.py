@@ -8,7 +8,7 @@ import random
 
 def printAllCashbotInfo():
     print('roomId: roomName')
-    for roomId, roomName in list(StageRoomSpecs.CashbotStageRoomId2RoomName.items()):
+    for roomId, roomName in list(StageRoomSpecs.LawbotStageRoomId2RoomName.items()):
         print('%s: %s' % (roomId, roomName))
 
     print('\nroomId: numBattles')
@@ -258,7 +258,7 @@ class StageLayout:
     def getRoomNames(self):
         names = []
         for roomId in self.roomIds:
-            names.append(StageRoomSpecs.CashbotStageRoomId2RoomName[roomId])
+            names.append(StageRoomSpecs.LawbotStageRoomId2RoomName[roomId])
 
         return names
 

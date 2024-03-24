@@ -3,17 +3,22 @@ from direct.showbase.PythonUtil import invertDictLossless
 from toontown.coghq import MintRoomSpecs
 from toontown.toonbase import ToontownGlobals
 from direct.showbase.PythonUtil import normalDistrib, lerp
+
+from toontown.coghq import LawOffice_Spec_Tier0_a
+from toontown.coghq import LawOffice_Spec_Tier0_b
+
 import random
 OfficeBuildingFloorSequences = {
     13300: [
         (0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0)]}
 Index2Spec = {
-    0: 'LawOffice_Spec_Tier0_a',
-    1: 'LawOffice_Spec_Tier0_b'}
+    0: LawOffice_Spec_Tier0_a,
+    1: LawOffice_Spec_Tier0_b,
+}
+
 LawbotFloorSpecs = {}
-for (floorIndex, floorSpec) in list(Index2Spec.items()):
-    exec('from toontown.coghq import %s' % floorSpec)
-    LawbotFloorSpecs[floorIndex] = eval(floorSpec)
+for floorIndex, floorSpec in Index2Spec.items():
+    LawbotFloorSpecs[floorIndex] = floorSpec
 
 
 class LawOfficeLayout:

@@ -246,6 +246,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 self._checkOldGMName()
             messenger.send('avatarEntered', [self])
 
+            # Set a default for slot data to override astron's empty byte tuple thing?
+            # If we don't do this, self.slotData will be: (b'',)
+            self.b_setSlotData({})
+
             self.archipelago_session = ArchipelagoSession(self)
             self.apRewardQueue.start()
             self.apMessageQueue.start()

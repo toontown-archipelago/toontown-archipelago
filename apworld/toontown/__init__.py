@@ -331,7 +331,7 @@ class ToontownWorld(World):
         fish_checks = FishChecks(self.options.fish_checks.value)
         if fish_checks == FishChecks.AllSpecies:
             forbidden_location_types.add(ToontownLocationType.FISHING_GENUS)
-            forbidden_location_types.add(ToontownLocationType.GALLERY)
+            forbidden_location_types.add(ToontownLocationType.FISHING_GALLERY)
         elif fish_checks == FishChecks.AllGalleryAndGenus:
             forbidden_location_types.add(ToontownLocationType.FISHING)
         elif fish_checks == FishChecks.AllGallery:
@@ -340,7 +340,7 @@ class ToontownWorld(World):
         elif fish_checks == FishChecks.Nonne:
             forbidden_location_types.add(ToontownLocationType.FISHING)
             forbidden_location_types.add(ToontownLocationType.FISHING_GENUS)
-            forbidden_location_types.add(ToontownLocationType.GALLERY)
+            forbidden_location_types.add(ToontownLocationType.FISHING_GALLERY)
         return forbidden_location_types
 
     def _force_item_placement(self, location: ToontownLocationName, item: ToontownItemName) -> None:
