@@ -1923,8 +1923,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def addTeleportAccess(self, zoneId):
 
-        # Discover this zone immediately if we are given teleport access
-        self.addHoodVisited(zoneId)
+        # Do not discover this zone immediately if we are given teleport access
+        # self.addHoodVisited(zoneId)
 
         if zoneId not in self.teleportZoneArray:
             self.teleportZoneArray.append(zoneId)

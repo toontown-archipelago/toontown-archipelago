@@ -69,6 +69,7 @@ class MapPage(ShtikerPage.ShtikerPage):
          (0.45, 0.0, -0.45))
         self.labels = []
         self.clouds = []
+        self.cloudAlphas = []
 
         self.questsAvailableIcons: List[QuestsAvailablePoster] = []
         self.fishAvailableIcons: List[FishAvailablePoster] = []
@@ -156,6 +157,7 @@ class MapPage(ShtikerPage.ShtikerPage):
                 hoodClouds.append(cloud)
 
             self.clouds.append(hoodClouds)
+            self.cloudAlphas.append(1)
 
         cloudModel.removeNode()
         self.resetFrameSize()
@@ -278,29 +280,39 @@ class MapPage(ShtikerPage.ShtikerPage):
         else:
             self.hoodLabel.hide()
         safeZonesVisited = base.localAvatar.hoodsVisited
-        hoodsAvailable = base.cr.hoodMgr.getAvailableZones()
-        hoodVisibleList = PythonUtil.intersection(safeZonesVisited, hoodsAvailable)
         hoodTeleportList = base.localAvatar.getTeleportAccess()
         for hood in self.allZones:
-            label = self.labels[self.allZones.index(hood)]
-            clouds = self.clouds[self.allZones.index(hood)]
-            if not self.book.safeMode and hood in hoodVisibleList:
+            idx = self.allZones.index(hood)
+            label = self.labels[idx]
+            clouds = self.clouds[idx]
+
+            # Set cloud visibility.
+            if hood in safeZonesVisited:
                 label['text_fg'] = (0, 0, 0, 1)
-                label.show()
                 for cloud in clouds:
                     cloud.hide()
-
-                fullname = base.cr.hoodMgr.getFullnameFromId(hood)
-                if hood in hoodTeleportList:
-                    text = TTLocalizer.MapPageGoTo % fullname
-                    label['text'] = ('', text, text)
-                else:
-                    label['text'] = ('', fullname, fullname)
             else:
                 label['text_fg'] = (0, 0, 0, 0.65)
-                label.show()
                 for cloud in clouds:
                     cloud.show()
+
+            # Set label text.
+            label.show()
+            fullname = base.cr.hoodMgr.getFullnameFromId(hood)
+            if hood in hoodTeleportList:
+                text = TTLocalizer.MapPageGoTo % fullname
+                label['text'] = ('', text, text)
+            else:
+                label['text'] = ('', fullname, fullname)
+
+            # Set cloud opacity.
+            if hood in hoodTeleportList:
+                self.cloudAlphas[idx] = 0.5
+            else:
+                self.cloudAlphas[idx] = 1.0
+            cloudAlpha = self.cloudAlphas[idx]
+            for cloud in clouds:
+                cloud.setColor(1, 1, 1, cloudAlpha)
 
     def exit(self):
         ShtikerPage.ShtikerPage.exit(self)
@@ -326,10 +338,11 @@ class MapPage(ShtikerPage.ShtikerPage):
             messenger.send(self.doneEvent)
 
     def __hoverCallback(self, inside, hoodIndex, pos):
-        alpha = PythonUtil.choice(inside, 0.25, 1.0)
         try:
+            alpha = PythonUtil.choice(inside, 0.25, self.cloudAlphas[hoodIndex])
             clouds = self.clouds[hoodIndex]
         except ValueError:
+            alpha = 1.0
             clouds = []
 
         for cloud in clouds:
