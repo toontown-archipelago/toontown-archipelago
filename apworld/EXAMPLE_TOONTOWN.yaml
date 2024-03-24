@@ -38,6 +38,14 @@ Toontown:
   # Range: 0 to 4
   cog_bosses_required: 4
 
+  ### Gag Training Settings ###
+
+  # Behavior of how gag experience check locations are handled.
+
+  # unlock: When unlocking a new gag, you get its respective check.
+  # trained: When earning all available experience for a specific gag level, you get its respective check.
+  gag_training_check_behavior: 'trained'
+
   ### Task Settings ###
 
   # Determines the amount of tasks per playground that are in logic.
@@ -91,7 +99,7 @@ Toontown:
   # slot_name: RNG elements are determined by AP seed and Slot Name
   # unique: RNG elements are determined by AP seed and internal toon ID
   # wild: RNG elements are completely random and will shuffle upon relogging
-  seed_generation_type: global
+  seed_generation_type: 'global'
 
   # Percentage of junk items to be replaced with traps
   trap_percent: 20
