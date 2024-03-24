@@ -131,7 +131,6 @@ class Experience:
         # Now convert our gags to the corresponding AP checks.
         apChecks = []
         for gagLevel in gagLevels:
-            print(track_and_level_to_location(track, gagLevel))
             apCheckID = ap_location_name_to_id(track_and_level_to_location(track, gagLevel))
             apChecks.append(apCheckID)
 
