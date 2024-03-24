@@ -36,7 +36,7 @@ class HQBuildingAI:
     def setup(self, blockNumber):
 
         pgZone = ZoneUtil.getHoodId(self.exteriorZone)
-        lockCode = FADoorCodes.ZONE_TO_ACCESS_CODE[pgZone]
+        lockCode = FADoorCodes.ZONE_TO_ACCESS_CODE.get(pgZone, 0)
 
         self.interior = DistributedHQInteriorAI.DistributedHQInteriorAI(blockNumber, self.air, self.interiorZone)
         self.npcs = NPCToons.createNpcsInZone(self.air, self.interiorZone)

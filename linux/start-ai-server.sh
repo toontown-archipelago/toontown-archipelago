@@ -13,7 +13,7 @@ python3 -m pip install -r requirements.txt
 
 while true
 do
-    python3 -m toontown.uberdog.UDStart --base-channel ${BASE_CHANNEL} \
+    python3 -m toontown.ai.AIStart --base-channel ${BASE_CHANNEL} \
                --max-channels ${MAX_CHANNELS} --stateserver ${STATE_SERVER} \
                --astron-ip ${ASTRON_IP} \
                --eventlogger-ip ${EVENT_LOGGER_IP} --district-name "${DISTRICT_NAME}"

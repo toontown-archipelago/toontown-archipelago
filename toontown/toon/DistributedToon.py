@@ -201,9 +201,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.immortalMode = False
         self.unlimitedGags = False
         self.instaKill = False
-        self.accept('f10', self.openTeleportGUI)  # TODO only enable if cheats are enabled
         self.overheadLaffMeter = None
-
         self.baseGagSkillMultiplier = 1
         self.accessKeys: List[int] = []
         self.receivedItems: List[Tuple[int, int]] = []
