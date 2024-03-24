@@ -57,9 +57,9 @@ class ToontownWorld(World):
         for i, location_data in enumerate(self.created_locations):
             location: Location = self.multiworld.get_location(location_data.name.value, self.player)
             location.access_rule = lambda state, i=i: test_location(
-                LOCATION_DEFINITIONS[i], state, self.multiworld, self.player, self.options)
+                self.created_locations[i], state, self.multiworld, self.player, self.options)
             location.item_rule = lambda item, i=i: test_item_location(
-                LOCATION_DEFINITIONS[i], item, self.multiworld, self.player, self.options)
+                self.created_locations[i], item, self.multiworld, self.player, self.options)
 
         # Add entrance rules.
         for i, region_data in enumerate(REGION_DEFINITIONS):
