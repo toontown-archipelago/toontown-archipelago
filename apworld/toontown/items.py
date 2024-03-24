@@ -24,12 +24,12 @@ class ToontownItemName(enum.Enum):
 
     ### Fishing ###
     FISHING_ROD_UPGRADE = "Progressive Fishing Rod"
-    TTC_FISHING = "Toontown Central Fishing License"
-    DD_FISHING  = "Donald's Dock Fishing License"
-    DG_FISHING  = "Daisy Gardens Fishing License"
-    MML_FISHING = "Minnie's Melodyland Fishing License"
-    TB_FISHING  = "The Brrrgh Fishing License"
-    DDL_FISHING = "Donald's Dreamland Fishing License"
+    TTC_FISHING = "TTC Fishing License"
+    DD_FISHING  = "DD Fishing License"
+    DG_FISHING  = "DG Fishing License"
+    MML_FISHING = "MML Fishing License"
+    TB_FISHING  = "TB Fishing License"
+    DDL_FISHING = "DDL Fishing License"
     FISH = "Fish"
 
     ### Gag Training Frames ###
@@ -63,12 +63,12 @@ class ToontownItemName(enum.Enum):
     BBHQ_TELEPORT = "BBHQ Teleport Access"
 
     ### HQ Access ###
-    TTC_HQ_ACCESS = "Toontown Central HQ Access"
-    DD_HQ_ACCESS  = "Donald's Dock HQ Access"
-    DG_HQ_ACCESS  = "Daisy Gardens HQ Access"
-    MML_HQ_ACCESS = "Minnie's Melodyland HQ Access"
-    TB_HQ_ACCESS  = "The Brrrgh HQ Access"
-    DDL_HQ_ACCESS = "Donald's Dreamland HQ Access"
+    TTC_HQ_ACCESS = "TTC HQ Access"
+    DD_HQ_ACCESS  = "DD HQ Access"
+    DG_HQ_ACCESS  = "DG HQ Access"
+    MML_HQ_ACCESS = "MML HQ Access"
+    TB_HQ_ACCESS  = "TB HQ Access"
+    DDL_HQ_ACCESS = "DDL HQ Access"
 
     ### Facility Keys ###
     FRONT_FACTORY_ACCESS = "Front Factory Key"
