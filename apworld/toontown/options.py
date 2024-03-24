@@ -184,6 +184,15 @@ class TrapPercentOption(Range):
     default = 20
 
 
+class DeathLinkOption(Toggle):
+    """
+    Enable to turn on the "DeathLink" mechanic in Archipelago.
+    """
+
+    display_name = "Death Link"
+    default = False
+
+
 @dataclass
 class ToontownOptions(PerGameCommonOptions):
     max_laff: MaxLaffOption
@@ -202,3 +211,4 @@ class ToontownOptions(PerGameCommonOptions):
     force_coghq_treasure_teleport_access_unlocks: ForceCogHQTreasureTeleportAccessUnlocksOption
     seed_generation_type: SeedGenerationTypeOption
     trap_percent: TrapPercentOption
+    death_link: DeathLinkOption

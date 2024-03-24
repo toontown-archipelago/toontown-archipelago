@@ -12,6 +12,9 @@ from .GolfGreenGameGlobals import *
 import random
 import time
 
+from ..archipelago.definitions.death_reason import DeathReason
+
+
 class DistributedGolfGreenGameAI(BattleBlockerAI.BattleBlockerAI, NodePath, BasicEntities.NodePathAttribs):
 
     def __init__(self, level, entId):
@@ -254,6 +257,7 @@ class DistributedGolfGreenGameAI(BattleBlockerAI.BattleBlockerAI, NodePath, Basi
                 for avId in playerIds:
                     av = simbase.air.doId2do.get(avId)
                     if av:
+                        av.setDeathReason(DeathReason.GOLFGAME)
                         av.takeDamage(self.DamageOnFailure, quietly=0)
                         room.sendUpdate('forceOuch', [self.DamageOnFailure])
 

@@ -1,3 +1,5 @@
+from typing import List
+
 from direct.directnotify import DirectNotifyGlobal
 from . import HoodDataAI
 from toontown.toonbase import ToontownGlobals
@@ -52,3 +54,6 @@ class TTHoodDataAI(HoodDataAI.HoodDataAI):
         self.trolley = trolley
         taskMgr.doMethodLater(0.5, self._deleteTrolley, 'deleteTrolley')
         return Task.done
+
+    def getStreetClerkZoneIds(self) -> List[int]:
+        return [2114, 2218, 2326]  # Silly, Loopy, Punchline

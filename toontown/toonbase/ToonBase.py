@@ -175,6 +175,10 @@ class ToonBase(OTPBase.OTPBase):
         self.setAnisotropicFilter()
         self.setVerticalSync()
 
+        if base.config.GetBool('want-injector', False):
+            from ..util.dev.Injector import DeveloperInjector
+            DeveloperInjector().start()
+
     def openMainWindow(self, *args, **kw):
         result = OTPBase.OTPBase.openMainWindow(self, *args, **kw)
         self.setCursorAndIcon()

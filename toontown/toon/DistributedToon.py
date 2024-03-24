@@ -61,7 +61,9 @@ from direct.showbase.InputStateGlobal import inputState
 import random
 import copy
 
+from ..archipelago.definitions.death_reason import DeathReason
 from ..util.astron.AstronDict import AstronDict
+
 
 if base.wantKarts:
     from toontown.racing.KartDNA import *
@@ -739,6 +741,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def died(self):
         messenger.send(self.uniqueName('died'))
         if self.isLocal():
+            self.sendUpdate('clientDied')  # Tell the server we saw our toon die for deathlink purposes
             target_sz = ZoneUtil.getSafeZoneId(self.defaultZone)
             place = self.cr.playGame.getPlace()
             # if place and place.fsm:
@@ -2825,6 +2828,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     # To be overridden in LocalToon, just here for safety
     def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
+        pass
+
+    # To be overriden in LocalToon, just here for safety
+    def d_setDeathReason(self, reason: DeathReason):
         pass
 
     def hintPointResp(self, pts):

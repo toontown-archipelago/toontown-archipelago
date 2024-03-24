@@ -279,6 +279,7 @@ class ToontownWorld(World):
             "fish_checks": self.options.fish_checks.value,
             "fish_progression": self.options.fish_progression.value,
             "maxed_cog_gallery_quota": self.options.maxed_cog_gallery_quota.value,
+            "death_link": self.options.death_link.value,
             "local_itempool": local_itempool,
         }
 

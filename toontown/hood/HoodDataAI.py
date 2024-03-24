@@ -1,3 +1,5 @@
+from typing import List
+
 from direct.directnotify import DirectNotifyGlobal
 from . import ZoneUtil
 from toontown.building import DistributedBuildingMgrAI
@@ -26,12 +28,20 @@ class HoodDataAI:
         self.pgPopulation = 0
         return
 
+    # Returns a list of Zone IDs where clerk NPCs reside for this hood.
+    # Should be overridden in a child class.
+    # TODO maybe a better way of doing this? This implementation we are basically hardcoding street clerk zone IDs...
+    # TODO if we wanna change positions of street NPCs the subzone ID is important >_<
+    def getStreetClerkZoneIds(self) -> List[int]:
+        return []
+
     def startup(self):
         for zone in self.air.zoneTable[self.canonicalHoodId]:
             zoneId = ZoneUtil.getTrueZoneId(zone[0], self.zoneId)
             self.notify.info('Creating zone... %s' % self.getLocationName(zoneId))
 
         self.createFishingPonds()
+        self.createStreetClerks()
         self.createPartyPeople()
         self.createBuildingManagers()
         self.createSuitPlanners()
@@ -107,6 +117,13 @@ class HoodDataAI:
             self.addDistObj(distObj)
 
         return
+
+    def createStreetClerks(self):
+
+        for zoneId in self.getStreetClerkZoneIds():
+            npcs = NPCToons.createNpcsInZone(self.air, zoneId)
+            for npc in npcs:
+                self.addDistObj(npc)
 
     def createBuildingManagers(self):
         for zone in self.air.zoneTable[self.canonicalHoodId]:

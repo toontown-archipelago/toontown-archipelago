@@ -2072,6 +2072,7 @@ class Toon(Avatar.Avatar, ToonHead):
                 (0, ActorInterval(self, 'lose', endFrame=90)),
                 (1.1, SoundInterval(sound, node=self)),
             ),
+            Func(self.loop, 'sad-neutral'),
             Func(Emote.globalEmote.releaseBody, self),
             Func(self.finishDied),
             name=trackName

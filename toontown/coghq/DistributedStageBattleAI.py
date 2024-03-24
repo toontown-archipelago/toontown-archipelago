@@ -8,6 +8,8 @@ from . import CogDisguiseGlobals
 from toontown.toonbase.ToontownBattleGlobals import getStageCreditMultiplier
 from direct.showbase.PythonUtil import addListsByValue
 from otp.otpbase.PythonUtil import enumerate
+from ..archipelago.definitions.death_reason import DeathReason
+
 
 class DistributedStageBattleAI(DistributedLevelBattleAI.DistributedLevelBattleAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedStageBattleAI')
@@ -20,6 +22,7 @@ class DistributedStageBattleAI(DistributedLevelBattleAI.DistributedLevelBattleAI
         self.fsm.addState(State.State('StageReward', self.enterStageReward, self.exitStageReward, ['Resume']))
         playMovieState = self.fsm.getStateNamed('PlayMovie')
         playMovieState.addTransition('StageReward')
+        self.setBattleDeathReason(DeathReason.BATTLE_OFFICE)
 
     def getTaskZoneId(self):
         return self.level.stageId

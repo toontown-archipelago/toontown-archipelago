@@ -6,6 +6,9 @@ from toontown.battle.BattleBase import *
 from . import CogDisguiseGlobals
 from direct.showbase.PythonUtil import addListsByValue
 
+from ..archipelago.definitions.death_reason import DeathReason
+
+
 class DistributedBattleFactoryAI(DistributedLevelBattleAI.DistributedLevelBattleAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBattleFactoryAI')
 
@@ -17,6 +20,7 @@ class DistributedBattleFactoryAI(DistributedLevelBattleAI.DistributedLevelBattle
         self.fsm.addState(State.State('FactoryReward', self.enterFactoryReward, self.exitFactoryReward, ['Resume']))
         playMovieState = self.fsm.getStateNamed('PlayMovie')
         playMovieState.addTransition('FactoryReward')
+        self.setBattleDeathReason(DeathReason.BATTLE_FACTORY)
 
     def getTaskZoneId(self):
         return self.level.factoryId

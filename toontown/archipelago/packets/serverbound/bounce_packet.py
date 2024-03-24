@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 
+from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacket
 from toontown.archipelago.packets.serverbound.serverbound_packet_base import ServerBoundPacketBase
 
 
@@ -23,10 +24,24 @@ class BouncePacket(ServerBoundPacketBase):
         # Any data you want to send
         self.data: Dict[Any, Any] = {}
 
+    # Call do add the deathlink data to send within this packet
+    def add_deathlink_data(self, toon, cause=None):
+        self.tags.append(ConnectPacket.TAG_DEATHLINK)
+        self.data['time'] = globalClock.getFrameTime()
+        if toon.getDeathReason() is not None:
+            self.data['cause'] = toon.getDeathReason().format(toon)
+
+        # Documentation specifices this to either be slot name or name from a mp game.
+        # I am assuming this is only to check if this was "us" that caused this so in order for this to work
+        # the best i think we can just use toon ID (those sharing a slot will still both die)
+        # If this ends up not being the case, this should be changed to either AP slot ID or toon name
+        self.data['source'] = str(toon.getDoId())
+
     def build(self) -> Dict[str, Any]:
         # Return all attributes
         return {
             'cmd': self.cmd,
+            'games': self.games,
             'slots': self.slots,
             'tags': self.tags,
             'data': self.data,

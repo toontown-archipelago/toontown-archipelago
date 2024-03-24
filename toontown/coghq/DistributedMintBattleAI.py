@@ -8,6 +8,9 @@ from . import CogDisguiseGlobals
 from toontown.toonbase.ToontownBattleGlobals import getMintCreditMultiplier
 from direct.showbase.PythonUtil import addListsByValue
 
+from ..archipelago.definitions.death_reason import DeathReason
+
+
 class DistributedMintBattleAI(DistributedLevelBattleAI.DistributedLevelBattleAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedMintBattleAI')
 
@@ -19,6 +22,7 @@ class DistributedMintBattleAI(DistributedLevelBattleAI.DistributedLevelBattleAI)
         self.fsm.addState(State.State('MintReward', self.enterMintReward, self.exitMintReward, ['Resume']))
         playMovieState = self.fsm.getStateNamed('PlayMovie')
         playMovieState.addTransition('MintReward')
+        self.setBattleDeathReason(DeathReason.BATTLE_MINT)
 
     def getTaskZoneId(self):
         return self.level.mintId

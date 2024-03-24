@@ -15,6 +15,7 @@ from toontown.suit import SellbotBossGlobals
 import random
 
 from apworld.toontown import locations
+from ..archipelago.definitions.death_reason import DeathReason
 
 from ..archipelago.definitions.util import ap_location_name_to_id
 
@@ -251,6 +252,25 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             toon.b_setNumPies(0)
         DistributedBossCogAI.DistributedBossCogAI.removeToon(self, avId, died=died)
 
+    # Given an attack code, return a death reason that corresponds with it.
+    def getDeathReasonFromAttackCode(self, attackCode) -> DeathReason:
+
+        return {
+            ToontownGlobals.BossCogAreaAttack: DeathReason.VP_JUMP,
+            ToontownGlobals.BossCogSlowDirectedAttack: DeathReason.VP_GEAR,
+            ToontownGlobals.BossCogDirectedAttack: DeathReason.VP_GEAR,
+            ToontownGlobals.BossCogGearDirectedAttack: DeathReason.VP_GEAR,
+            ToontownGlobals.BossCogSwatLeft: DeathReason.VP_SWAT,
+            ToontownGlobals.BossCogSwatRight: DeathReason.VP_SWAT,
+            ToontownGlobals.BossCogElectricFence: DeathReason.VP_RUNOVER,
+            ToontownGlobals.BossCogStrafeAttack: DeathReason.VP_STRAFE,
+            ToontownGlobals.BossCogRecoverDizzyAttack: DeathReason.VP_SHOWER,
+            ToontownGlobals.BossCogFrontAttack: DeathReason.VP_SHOWER,
+        }.get(attackCode, DeathReason.VP)
+
+    def getDeathReasonFromBattle(self) -> DeathReason:
+        return DeathReason.BATTLING_VP
+
     def enterOff(self):
         DistributedBossCogAI.DistributedBossCogAI.enterOff(self)
         self.__resetDoobers()
@@ -271,6 +291,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.__resetDoobers()
 
     def enterRollToBattleTwo(self):
+        self.listenForToonDeaths()
         self.divideToons()
         self.barrier = self.beginBarrier('RollToBattleTwo', self.involvedToons, 45, self.__doneRollToBattleTwo)
 
@@ -278,6 +299,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setState('PrepareBattleTwo')
 
     def exitRollToBattleTwo(self):
+        self.ignoreToonDeaths()
         self.ignoreBarrier(self.barrier)
 
     def enterPrepareBattleTwo(self):
@@ -328,12 +350,14 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             toon = simbase.air.doId2do.get(toonId)
             if toon:
                 toon.__touchedCage = 0
+                toon.setDeathReason(DeathReason.VP)
 
         self.waitForNextAttack(5)
         self.waitForNextStrafe(9)
         self.cagedToonDialogIndex = 100
         self.__saySomethingLater()
         self.initializeComboTrackers()
+        self.listenForToonDeaths()
 
     def __saySomething(self, task=None):
         index = None
@@ -388,6 +412,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         actualTime = pieTime - self.battleThreeTimeStarted
         self.d_updateTimer(actualTime)
         self.resetBattles()
+        self.ignoreToonDeaths()
         self.suitsKilled.append({'type': None, 'level': 0, 'track': self.dna.dept, 'isSkelecog': 0, 'isForeman': 0, 'isVP': 1, 'isCFO': 0, 'isSupervisor': 0, 'isVirtual': 0, 'activeToons': self.involvedToons[:]})
         self.barrier = self.beginBarrier('Victory', self.involvedToons, 10, self.__doneVictory)
         return

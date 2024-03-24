@@ -1,5 +1,5 @@
 import math
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from otp.ai.AIBaseGlobal import *
 from otp.otpbase import OTPGlobals
@@ -44,6 +44,7 @@ from . import ModuleListAI
 from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
 from ..archipelago.apclient.distributed_toon_apmessage_queue import DistributedToonAPMessageQueue
 from ..archipelago.apclient.distributed_toon_reward_queue import DistributedToonRewardQueue
+from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.definitions.rewards import EarnedAPReward
 from ..archipelago.definitions.util import get_zone_discovery_id
 from ..archipelago.util.location_scouts_cache import LocationScoutsCache
@@ -229,6 +230,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.archipelago_session: ArchipelagoSession = None
         self.apRewardQueue: DistributedToonRewardQueue = DistributedToonRewardQueue(self)
         self.apMessageQueue: DistributedToonAPMessageQueue = DistributedToonAPMessageQueue(self)
+        self.deathReason: DeathReason = DeathReason.UNKNOWN
         self.slotData = {}  # set in connected_packet.py
 
     def generate(self):
@@ -4540,6 +4542,33 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def queueAPReward(self, reward: EarnedAPReward):
         self.apRewardQueue.queue(reward)
 
+    # Can be called either from the AI directly or via an astron update from the client.
+    # When we are given a string, we know that it is from the client so we need to make sure
+    # they didn't send us garbage.
+    #
+    # When setting death reasons, always make sure to set it BEFORE the damage is taken.
+    def setDeathReason(self, reason: Union[DeathReason, str]):
+
+        if isinstance(reason, str):
+            reasonEnum = DeathReason.from_astron(reason)
+            # Was this update garbage?
+            if reasonEnum is None:
+                return
+
+            # Valid reason from client
+            reason = reasonEnum
+
+        self.deathReason = reason
+
+    def getDeathReason(self) -> DeathReason:
+        return self.deathReason
+
+    # Called via astron and is ran when the client that owns this toon registered a death from their perspective.
+    # We do it this way so that when we trigger deathlink events it happens the moment the client sees it and not
+    # When the server processes it. (Think movies in turn based battles, we want to do deathlink when they die in that)
+    def clientDied(self):
+        self.archipelago_session.toon_died()
+
     # Magic word stuff
     def setMagicDNA(self, dnaString):
         self.b_setDNAString(dnaString)
@@ -4554,5 +4583,3 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setHat(hat, hatTex, 0)
         self.b_setGlasses(glasses, glassesTex, 0)
         self.d_setSystemMessage(0, "Updated your Accessories!")
-
-

@@ -1172,8 +1172,11 @@ dclass DistributedToon : DistributedPlayer {
   updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
   requestHintPoints() ownsend airecv;
   hintPointResp(uint16) ownrecv;
+
   setSlotData(AstronDict) required ownrecv broadcast;
   setArchipelagoAuto(string, string) ownsend airecv;
+  setDeathReason(string) airecv clsend;
+  clientDied() airecv clsend;
 };
 
 dclass DistributedCCharBase : DistributedObject {

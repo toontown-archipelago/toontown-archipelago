@@ -1,3 +1,5 @@
+from typing import List
+
 from direct.directnotify import DirectNotifyGlobal
 from . import HoodDataAI
 from toontown.toonbase import ToontownGlobals
@@ -29,3 +31,6 @@ class MMHoodDataAI(HoodDataAI.HoodDataAI):
                                 ]
         for planner in self.treasurePlanner:
             planner.start()
+
+    def getStreetClerkZoneIds(self) -> List[int]:
+        return [4115, 4214, 4343]  # Alto, Baritone, Tenor

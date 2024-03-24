@@ -19,6 +19,7 @@ import random
 from toontown.toon import NPCToons
 from toontown.pets import DistributedPetProxyAI
 from toontown.battle import BattleEffectHandlersAI
+from ..archipelago.definitions.death_reason import DeathReason
 from ..hood import ZoneUtil
 
 
@@ -27,6 +28,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
 
     def __init__(self, air, zoneId, finishCallback = None, maxSuits = 4, bossBattle = 0, tutorialFlag = 0, interactivePropTrackBonus = -1):
         DistributedObjectAI.DistributedObjectAI.__init__(self, air)
+        self.battleDeathReason: DeathReason = DeathReason.BATTLING
         self.serialNum = 0
         self.zoneId = zoneId
         self.maxSuits = maxSuits
@@ -104,6 +106,12 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.startTime = globalClock.getRealTime()
         self.adjustingTimer = Timer()
         return
+
+    def getBattleDeathReason(self) -> DeathReason:
+        return self.battleDeathReason
+
+    def setBattleDeathReason(self, reason: DeathReason):
+        self.battleDeathReason = reason
 
     def clearAttacks(self):
         self.toonAttacks = {}
@@ -523,6 +531,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         toon = self.getToon(avId)
         if toon == None:
             return 0
+        toon.setDeathReason(self.getBattleDeathReason())
         toon.stopToonUp()
         event = simbase.air.getAvatarExitEvent(avId)
         self.avatarExitEvents.append(event)
@@ -530,6 +539,8 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         event = 'inSafezone-%s' % avId
         self.avatarExitEvents.append(event)
         self.accept(event, self.__handleSuddenExit, extraArgs=[avId, 0])
+        # Listen for death events for this toon (we only handle these in the picking gags phase)
+        self.accept(toon.getGoneSadMessage(), self.__toonDied, extraArgs=[toon])
         self.newToons.append(avId)
         self.toons.append(avId)
         toon = simbase.air.doId2do.get(avId)
@@ -567,6 +578,22 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         if avId not in self.toonItems:
             self.toonItems[avId] = ([], [])
         return 1
+
+    def __toonDied(self, toon):
+        if toon.doId not in self.toons:
+            return
+
+        # A toon in our battle died and it was most likely from an AP update. Only process events if we are waiting
+        # to pick gags
+        if self.getState()[0] != "WaitForInput":
+            return
+
+        # Make sure their hp is 0 if its negative
+        if toon.getHp() < 0:
+            toon.b_setHp(0)
+
+        # Since a toon died while we are picking gags, we should see if this battle is lost
+        self.considerDefeat()
 
     def __joinToon(self, avId, pos):
         self.joiningToons.append(avId)
@@ -719,6 +746,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         event = 'inSafezone-%s' % toonId
         self.avatarExitEvents.remove(event)
         self.ignore(event)
+        self.ignore(DistributedToonAI.DistributedToonAI.getGoneSadMessageForAvId(toonId))
         toon = simbase.air.doId2do.get(toonId)
         if toon:
             toon.b_setBattleId(0)
@@ -1317,6 +1345,32 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
     def exitWaitForJoin(self):
         return None
 
+    # Call to force every toon in this battle to runaway back to the playground.
+    # Results in the battle to cleanup due to no members being active
+    def makeAllToonsRun(self):
+        for toonId in self.toons:
+            self.__makeToonRun(toonId, 0)
+        self.d_setMembers()
+
+    # Analyze the state of the battle. If the battle is lost, make all toons run from the battle.
+    # Returns True if the battle was aborted, False if the battle should continue.
+    def considerDefeat(self) -> bool:
+
+        # Loop through all toons and see if anybody is alive
+        toonsAlive = False
+        for toonId in self.toons:
+            toon = self.air.doId2do.get(toonId)
+            if toon.getHp() > 0:
+                toonsAlive = True
+
+        # If a toon is alive, we may continue
+        if toonsAlive:
+            return False
+
+        # This battle is lost. Make everyone run and return True
+        self.makeAllToonsRun()
+        return False
+
     def enterWaitForInput(self):
         self.notify.debug('enterWaitForInput()')
         self.joinableFsm.request('Joinable')
@@ -1328,7 +1382,6 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.npcAttacks = {}
 
         deadToons = []
-        toonIsAlive = False
         for toonId in self.toons:
             toon = self.air.doId2do.get(toonId)
             if toon.immortalMode:
@@ -1343,15 +1396,10 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                 toon.b_setHp(0)
                 deadToons.append(toon)
             else:
-                toonIsAlive = True
                 toon.b_setHp(toon.hp)
 
-        # If there are no toons alive this battle is over
-        if not toonIsAlive:
-            for toonId in self.toons:
-                self.__makeToonRun(toonId, 0)
-
-            self.d_setMembers()
+        # See if we should abort this battle due to a defeat
+        if self.considerDefeat():
             return
 
         # If there are any dead toons force them to pass immediately
@@ -1431,6 +1479,11 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.numNPCAttacks = 0
         self.notify.debug('estimated upper bound of movie time: %f' % movieTime)
         self.timer.startCallback(movieTime, self.__serverMovieDone)
+
+        for avId in self.toons:
+            toon = simbase.air.doId2do.get(avId)
+            if toon:
+                toon.setDeathReason(self.getBattleDeathReason())
 
     def __serverMovieDone(self):
         self.notify.debug('movie timed out on server')

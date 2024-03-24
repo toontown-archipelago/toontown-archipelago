@@ -1,3 +1,5 @@
+from typing import List
+
 from direct.directnotify import DirectNotifyGlobal
 from . import HoodDataAI
 from toontown.toonbase import ToontownGlobals
@@ -33,3 +35,6 @@ class DDHoodDataAI(HoodDataAI.HoodDataAI):
         boat.generateWithRequired(self.zoneId)
         boat.start()
         self.addDistObj(boat)
+
+    def getStreetClerkZoneIds(self) -> List[int]:
+        return [1128, 1218, 1309]  # Barnacle, Seaweed, Lighthouse

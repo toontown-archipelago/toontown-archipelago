@@ -50,6 +50,7 @@ from toontown.archipelago.gui.ArchipelagoOnscreenLog import ArchipelagoOnscreenL
 from toontown.archipelago.definitions.rewards import get_ap_reward_from_id
 from toontown.archipelago.gui.ArchipelagoRewardDisplay import ArchipelagoRewardDisplay, APRewardGift
 from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
+from ..archipelago.definitions.death_reason import DeathReason
 
 WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
 from toontown.toontowngui import NewsPageButtonManager
@@ -2010,6 +2011,12 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def sendArchipelagoMessages(self, messages: List[str]) -> None:
         for msg in messages:
             self.archipelagoLog.addToLog(msg)
+
+    # Tells the server what our death reason should be.
+    # We need this because in some circumstances the server is unaware why we are taking damage.
+    # When setting death reasons, always make sure to set it BEFORE the damage is taken.
+    def d_setDeathReason(self, reason: DeathReason):
+        self.sendUpdate('setDeathReason', [reason.to_astron()])
 
     # Shows a reward that we were given, called from the AI
     def showReward(self, rewardId: int, playerName: str, isLocal: bool) -> None:
