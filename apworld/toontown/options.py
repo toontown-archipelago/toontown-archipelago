@@ -93,6 +93,19 @@ class TreasuresPerLocation(Range):
     default = 2
 
 
+class GagTrainingCheckBehavior(Choice):
+    """
+    Behavior of how gag experience check locations are handled.
+
+    unlock: When unlocking a new gag, you get its respective check.
+    trained: When earning all available experience for a specific gag level, you get its respective check.
+    """
+    option_unlock = 0
+    option_trained = 1
+
+    display_name = "Gag Training Check Behavior"
+
+
 class LogicalTasksPerPlayground(Range):
     """
     Determines the amount of tasks per playground that are in logic.
@@ -214,6 +227,7 @@ class ToontownOptions(PerGameCommonOptions):
     cog_bosses_required: CogBossesRequired
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
+    gag_training_check_behavior: GagTrainingCheckBehavior
     logical_tasks_per_playground: LogicalTasksPerPlayground
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     maxed_cog_gallery_quota: MaxedCogGalleryQuota

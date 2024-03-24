@@ -118,15 +118,20 @@ class Experience:
         newXp = self.experience[track] + amount
         self.experience[track] = min(trackExperienceCap, newXp)
 
+        # Here temporarily until i make options not bad.
+        # 0 = unlock, 1 = trained
+        checkBehavior = self.owner.slotData.get('gag_training_check_behavior', 1)
+        if checkBehavior not in (0, 1): checkBehavior = 1
         # Now determine the checks that we are eligible for
 
-        # This is the line of code to have the legacy system where we unlock checks based on the actual gags we have
-        # unlocked. Leaving this here in case we would rather keep this logic
-        # gagLevels = self.getAllowedGagLevels(track)
-
-        # This line of code is the new system where we do gag location checks based on maxing a gag's exp.
-        # (Maxed as in highest exp amount before unlocking the next gag or higher)
-        gagLevels = self.getMaxedGagLevels(track)
+        if checkBehavior == 0:
+            # This is the line of code to have the legacy system where we unlock checks based on the actual gags we have
+            # unlocked. Leaving this here in case we would rather keep this logic
+            gagLevels = self.getAllowedGagLevels(track)
+        else:
+            # This line of code is the new system where we do gag location checks based on maxing a gag's exp.
+            # (Maxed as in highest exp amount before unlocking the next gag or higher)
+            gagLevels = self.getMaxedGagLevels(track)
 
         # Now convert our gags to the corresponding AP checks.
         apChecks = []

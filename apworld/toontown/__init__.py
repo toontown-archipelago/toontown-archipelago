@@ -283,6 +283,7 @@ class ToontownWorld(World):
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
             "cog_bosses_required": self.options.cog_bosses_required.value,
+            "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,
             "fish_progression": self.options.fish_progression.value,
