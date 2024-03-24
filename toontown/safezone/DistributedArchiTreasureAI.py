@@ -91,6 +91,8 @@ class DistributedArchiTreasureAI(DistributedSZTreasureAI.DistributedSZTreasureAI
     def validAvatar(self, av, archiCode):
         if av:
             treasureCount = av.slotData.get('treasures_per_location', 2)
+            if not treasureCount:
+                return False
             for treasure in range(treasureCount):
                 if self.getLocationFromCode(archiCode, treasure) in av.getCheckedLocations():
                     continue

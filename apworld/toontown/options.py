@@ -87,7 +87,7 @@ class TreasuresPerLocation(Range):
     # The amount of archipelago treasures that'll have items in each location
     """
     display_name = "AP Treasures Per Location"
-    range_start = 1
+    range_start = 0
     range_end = 5
     default = 2
 
