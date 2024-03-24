@@ -82,9 +82,10 @@ class TPSanity(Choice):
     option_none = 3
     default = 3
 
+
 class TreasuresPerLocation(Range):
     """
-    # The amount of archipelago treasures that'll have items in each location
+    The amount of archipelago treasures that'll have items in each location
     """
     display_name = "AP Treasures Per Location"
     range_start = 1

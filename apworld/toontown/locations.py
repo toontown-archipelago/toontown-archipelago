@@ -423,7 +423,11 @@ class ToontownLocationType(IntEnum):
     FISHING         = auto()  # Locations for fishing trophies
     FISHING_GENUS   = auto()  # Locations for catching unique genus
     FISHING_GALLERY = auto()  # Locations for fishing gallery
-    PLAYGROUND      = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_1    = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_2    = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_3    = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_4    = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_5    = auto()  # Locations for discovering playground treasures
     GAG_TRAINING    = auto()  # Locations for training gags
     TTC_TASKS    = auto()  # Locations for TTC tasks
     DD_TASKS     = auto()  # Locations for DD tasks
@@ -445,6 +449,114 @@ class ToontownLocationDefinition:
     progress_type: LocationProgressType = LocationProgressType.DEFAULT
     rule_logic_or: bool = False  # By default, rule logic ANDs values in the list
     unique_id: int = 0  # Set in post
+
+
+# region Treasure Location Definitions
+REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName]] = {
+    ToontownRegionName.TTC:  [
+        ToontownLocationName.TTC_TREASURE_1,
+        ToontownLocationName.TTC_TREASURE_2,
+        ToontownLocationName.TTC_TREASURE_3,
+        ToontownLocationName.TTC_TREASURE_4,
+        ToontownLocationName.TTC_TREASURE_5,
+    ],
+    ToontownRegionName.DD:   [
+        ToontownLocationName.DD_TREASURE_1,
+        ToontownLocationName.DD_TREASURE_2,
+        ToontownLocationName.DD_TREASURE_3,
+        ToontownLocationName.DD_TREASURE_4,
+        ToontownLocationName.DD_TREASURE_5,
+    ],
+    ToontownRegionName.DG:   [
+        ToontownLocationName.DG_TREASURE_1,
+        ToontownLocationName.DG_TREASURE_2,
+        ToontownLocationName.DG_TREASURE_3,
+        ToontownLocationName.DG_TREASURE_4,
+        ToontownLocationName.DG_TREASURE_5,
+    ],
+    ToontownRegionName.MML:  [
+        ToontownLocationName.MML_TREASURE_1,
+        ToontownLocationName.MML_TREASURE_2,
+        ToontownLocationName.MML_TREASURE_3,
+        ToontownLocationName.MML_TREASURE_4,
+        ToontownLocationName.MML_TREASURE_5,
+    ],
+    ToontownRegionName.TB:   [
+        ToontownLocationName.TB_TREASURE_1,
+        ToontownLocationName.TB_TREASURE_2,
+        ToontownLocationName.TB_TREASURE_3,
+        ToontownLocationName.TB_TREASURE_4,
+        ToontownLocationName.TB_TREASURE_5,
+    ],
+    ToontownRegionName.DDL:  [
+        ToontownLocationName.DDL_TREASURE_1,
+        ToontownLocationName.DDL_TREASURE_2,
+        ToontownLocationName.DDL_TREASURE_3,
+        ToontownLocationName.DDL_TREASURE_4,
+        ToontownLocationName.DDL_TREASURE_5,
+    ],
+    ToontownRegionName.GS:   [
+        ToontownLocationName.GS_TREASURE_1,
+        ToontownLocationName.GS_TREASURE_2,
+        ToontownLocationName.GS_TREASURE_3,
+        ToontownLocationName.GS_TREASURE_4,
+        ToontownLocationName.GS_TREASURE_5,
+    ],
+    ToontownRegionName.AA:   [
+        ToontownLocationName.AA_TREASURE_1,
+        ToontownLocationName.AA_TREASURE_2,
+        ToontownLocationName.AA_TREASURE_3,
+        ToontownLocationName.AA_TREASURE_4,
+        ToontownLocationName.AA_TREASURE_5,
+    ],
+    ToontownRegionName.SBHQ: [
+        ToontownLocationName.SBHQ_TREASURE_1,
+        ToontownLocationName.SBHQ_TREASURE_2,
+        ToontownLocationName.SBHQ_TREASURE_3,
+        ToontownLocationName.SBHQ_TREASURE_4,
+        ToontownLocationName.SBHQ_TREASURE_5,
+    ],
+    ToontownRegionName.CBHQ: [
+        ToontownLocationName.CBHQ_TREASURE_1,
+        ToontownLocationName.CBHQ_TREASURE_2,
+        ToontownLocationName.CBHQ_TREASURE_3,
+        ToontownLocationName.CBHQ_TREASURE_4,
+        ToontownLocationName.CBHQ_TREASURE_5,
+    ],
+    ToontownRegionName.LBHQ: [
+        ToontownLocationName.LBHQ_TREASURE_1,
+        ToontownLocationName.LBHQ_TREASURE_2,
+        ToontownLocationName.LBHQ_TREASURE_3,
+        ToontownLocationName.LBHQ_TREASURE_4,
+        ToontownLocationName.LBHQ_TREASURE_5,
+    ],
+    ToontownRegionName.BBHQ: [
+        ToontownLocationName.BBHQ_TREASURE_1,
+        ToontownLocationName.BBHQ_TREASURE_2,
+        ToontownLocationName.BBHQ_TREASURE_3,
+        ToontownLocationName.BBHQ_TREASURE_4,
+        ToontownLocationName.BBHQ_TREASURE_5,
+    ],
+}
+
+
+TREASURE_LOCATION_TYPES: list[ToontownLocationType] = [
+    ToontownLocationType.PLAYGROUND_1,
+    ToontownLocationType.PLAYGROUND_2,
+    ToontownLocationType.PLAYGROUND_3,
+    ToontownLocationType.PLAYGROUND_4,
+    ToontownLocationType.PLAYGROUND_5,
+]
+
+
+TREASURE_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
+    ToontownLocationDefinition(location_name,  location_type, region_name)
+    for region_name in REGION_TO_TREASURE_LOCATIONS.keys()
+    for location_name, location_type in zip(
+        REGION_TO_TREASURE_LOCATIONS.get(region_name), TREASURE_LOCATION_TYPES
+    )
+]
+# endregion
 
 
 LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
@@ -692,68 +804,7 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_11,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_12,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     # endregion
-    # region Area AP Treasures
-    ToontownLocationDefinition(ToontownLocationName.TTC_TREASURE_1,  ToontownLocationType.PLAYGROUND, ToontownRegionName.TTC),
-    ToontownLocationDefinition(ToontownLocationName.TTC_TREASURE_2,  ToontownLocationType.PLAYGROUND, ToontownRegionName.TTC),
-    ToontownLocationDefinition(ToontownLocationName.TTC_TREASURE_3,  ToontownLocationType.PLAYGROUND, ToontownRegionName.TTC),
-    ToontownLocationDefinition(ToontownLocationName.TTC_TREASURE_4,  ToontownLocationType.PLAYGROUND, ToontownRegionName.TTC),
-    ToontownLocationDefinition(ToontownLocationName.TTC_TREASURE_5,  ToontownLocationType.PLAYGROUND, ToontownRegionName.TTC),
-    ToontownLocationDefinition(ToontownLocationName.DD_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DD),
-    ToontownLocationDefinition(ToontownLocationName.DD_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DD),
-    ToontownLocationDefinition(ToontownLocationName.DD_TREASURE_3,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DD),
-    ToontownLocationDefinition(ToontownLocationName.DD_TREASURE_4,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DD),
-    ToontownLocationDefinition(ToontownLocationName.DD_TREASURE_5,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DD),
-    ToontownLocationDefinition(ToontownLocationName.DG_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DG),
-    ToontownLocationDefinition(ToontownLocationName.DG_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DG),
-    ToontownLocationDefinition(ToontownLocationName.DG_TREASURE_3,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DG),
-    ToontownLocationDefinition(ToontownLocationName.DG_TREASURE_4,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DG),
-    ToontownLocationDefinition(ToontownLocationName.DG_TREASURE_5,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DG),
-    ToontownLocationDefinition(ToontownLocationName.MML_TREASURE_1,  ToontownLocationType.PLAYGROUND, ToontownRegionName.MML),
-    ToontownLocationDefinition(ToontownLocationName.MML_TREASURE_2,  ToontownLocationType.PLAYGROUND, ToontownRegionName.MML),
-    ToontownLocationDefinition(ToontownLocationName.MML_TREASURE_3,  ToontownLocationType.PLAYGROUND, ToontownRegionName.MML),
-    ToontownLocationDefinition(ToontownLocationName.MML_TREASURE_4,  ToontownLocationType.PLAYGROUND, ToontownRegionName.MML),
-    ToontownLocationDefinition(ToontownLocationName.MML_TREASURE_5,  ToontownLocationType.PLAYGROUND, ToontownRegionName.MML),
-    ToontownLocationDefinition(ToontownLocationName.TB_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.TB),
-    ToontownLocationDefinition(ToontownLocationName.TB_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.TB),
-    ToontownLocationDefinition(ToontownLocationName.TB_TREASURE_3,   ToontownLocationType.PLAYGROUND, ToontownRegionName.TB),
-    ToontownLocationDefinition(ToontownLocationName.TB_TREASURE_4,   ToontownLocationType.PLAYGROUND, ToontownRegionName.TB),
-    ToontownLocationDefinition(ToontownLocationName.TB_TREASURE_5,   ToontownLocationType.PLAYGROUND, ToontownRegionName.TB),
-    ToontownLocationDefinition(ToontownLocationName.DDL_TREASURE_1,  ToontownLocationType.PLAYGROUND, ToontownRegionName.DDL),
-    ToontownLocationDefinition(ToontownLocationName.DDL_TREASURE_2,  ToontownLocationType.PLAYGROUND, ToontownRegionName.DDL),
-    ToontownLocationDefinition(ToontownLocationName.DDL_TREASURE_3,  ToontownLocationType.PLAYGROUND, ToontownRegionName.DDL),
-    ToontownLocationDefinition(ToontownLocationName.DDL_TREASURE_4,  ToontownLocationType.PLAYGROUND, ToontownRegionName.DDL),
-    ToontownLocationDefinition(ToontownLocationName.DDL_TREASURE_5,  ToontownLocationType.PLAYGROUND, ToontownRegionName.DDL),
-    ToontownLocationDefinition(ToontownLocationName.GS_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.GS),
-    ToontownLocationDefinition(ToontownLocationName.GS_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.GS),
-    ToontownLocationDefinition(ToontownLocationName.GS_TREASURE_3,   ToontownLocationType.PLAYGROUND, ToontownRegionName.GS),
-    ToontownLocationDefinition(ToontownLocationName.GS_TREASURE_4,   ToontownLocationType.PLAYGROUND, ToontownRegionName.GS),
-    ToontownLocationDefinition(ToontownLocationName.GS_TREASURE_5,   ToontownLocationType.PLAYGROUND, ToontownRegionName.GS),
-    ToontownLocationDefinition(ToontownLocationName.AA_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.AA),
-    ToontownLocationDefinition(ToontownLocationName.AA_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.AA),
-    ToontownLocationDefinition(ToontownLocationName.AA_TREASURE_3,   ToontownLocationType.PLAYGROUND, ToontownRegionName.AA),
-    ToontownLocationDefinition(ToontownLocationName.AA_TREASURE_4,   ToontownLocationType.PLAYGROUND, ToontownRegionName.AA),
-    ToontownLocationDefinition(ToontownLocationName.AA_TREASURE_5,   ToontownLocationType.PLAYGROUND, ToontownRegionName.AA),
-    ToontownLocationDefinition(ToontownLocationName.SBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.SBHQ),
-    ToontownLocationDefinition(ToontownLocationName.SBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.SBHQ),
-    ToontownLocationDefinition(ToontownLocationName.SBHQ_TREASURE_3, ToontownLocationType.PLAYGROUND, ToontownRegionName.SBHQ),
-    ToontownLocationDefinition(ToontownLocationName.SBHQ_TREASURE_4, ToontownLocationType.PLAYGROUND, ToontownRegionName.SBHQ),
-    ToontownLocationDefinition(ToontownLocationName.SBHQ_TREASURE_5, ToontownLocationType.PLAYGROUND, ToontownRegionName.SBHQ),
-    ToontownLocationDefinition(ToontownLocationName.CBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.CBHQ),
-    ToontownLocationDefinition(ToontownLocationName.CBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.CBHQ),
-    ToontownLocationDefinition(ToontownLocationName.CBHQ_TREASURE_3, ToontownLocationType.PLAYGROUND, ToontownRegionName.CBHQ),
-    ToontownLocationDefinition(ToontownLocationName.CBHQ_TREASURE_4, ToontownLocationType.PLAYGROUND, ToontownRegionName.CBHQ),
-    ToontownLocationDefinition(ToontownLocationName.CBHQ_TREASURE_5, ToontownLocationType.PLAYGROUND, ToontownRegionName.CBHQ),
-    ToontownLocationDefinition(ToontownLocationName.LBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.LBHQ),
-    ToontownLocationDefinition(ToontownLocationName.LBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.LBHQ),
-    ToontownLocationDefinition(ToontownLocationName.LBHQ_TREASURE_3, ToontownLocationType.PLAYGROUND, ToontownRegionName.LBHQ),
-    ToontownLocationDefinition(ToontownLocationName.LBHQ_TREASURE_4, ToontownLocationType.PLAYGROUND, ToontownRegionName.LBHQ),
-    ToontownLocationDefinition(ToontownLocationName.LBHQ_TREASURE_5, ToontownLocationType.PLAYGROUND, ToontownRegionName.LBHQ),
-    ToontownLocationDefinition(ToontownLocationName.BBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
-    ToontownLocationDefinition(ToontownLocationName.BBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
-    ToontownLocationDefinition(ToontownLocationName.BBHQ_TREASURE_3, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
-    ToontownLocationDefinition(ToontownLocationName.BBHQ_TREASURE_4, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
-    ToontownLocationDefinition(ToontownLocationName.BBHQ_TREASURE_5, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
-    # endregion
+] + TREASURE_LOCATION_DEFINITIONS + [
     # region Facilities
     ToontownLocationDefinition(ToontownLocationName.FRONT_FACTORY_BARREL_1, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.FRONT_FACTORY_BARREL_2, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFiveOffenseGag]),
