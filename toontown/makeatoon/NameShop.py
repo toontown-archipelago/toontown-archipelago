@@ -567,7 +567,7 @@ class NameShop(StateData.StateData):
     def __handleChastised(self):
         self.chastiseDialog.cleanup()
 
-    def __createAvatar(self, skipTutorial = False, *args):
+    def __createAvatar(self, skipTutorial = True, *args):
         self.notify.debug('__createAvatar')
         if self.fsm.getCurrentState().getName() == 'TypeAName':
             self.__typedAName()
@@ -725,7 +725,7 @@ class NameShop(StateData.StateData):
             messenger.send(self.doneEvent)
         else:
             self.nameAction = 0
-            self.__createAvatar()
+            self.__createAvatar(skipTutorial=True)
 
     def enterPickANameState(self):
         self.notify.debug('enterPickANameState')
@@ -945,7 +945,7 @@ class NameShop(StateData.StateData):
                 self.notify.debug("name typed accepted but didn't fill any return fields")
                 self.rejectName(TTLocalizer.NameError)
 
-    def serverCreateAvatar(self, skipTutorial = False):
+    def serverCreateAvatar(self, skipTutorial = True):
         self.notify.debug('serverCreateAvatar')
         style = self.toon.getStyle()
         self.newDNA = style.makeNetString()
@@ -1007,26 +1007,17 @@ class NameShop(StateData.StateData):
         base.cr.skipTutorialRequest = self.requestingSkipTutorial
 
     def __isFirstTime(self):
-        if self.makeAToon.warp:
-            self.__createAvatar()
-        else:
-            self.promptTutorial()
+        self.__createAvatar(skipTutorial=True)
 
     def promptTutorial(self):
         self.promptTutorialDialog = TTDialog.TTDialog(parent=aspect2dp, text=TTLocalizer.PromptTutorial, text_scale=0.06, text_align=TextNode.ACenter, text_wordwrap=22, command=self.__openTutorialDialog, fadeScreen=0.5, style=TTDialog.TwoChoice, buttonTextList=[TTLocalizer.MakeAToonEnterTutorial, TTLocalizer.MakeAToonSkipTutorial], button_text_scale=0.06, buttonPadSF=5.5, sortOrder=DGG.NO_FADE_SORT_INDEX)
         self.promptTutorialDialog.show()
 
     def __openTutorialDialog(self, choice = 0):
-        if choice == 1:
-            self.notify.debug('enterTutorial')
-            if base.config.GetBool('want-qa-regression', 0):
-                self.notify.info('QA-REGRESSION: ENTERTUTORIAL: Enter Tutorial')
-            self.__createAvatar()
-        else:
-            self.notify.debug('skipTutorial')
-            if base.config.GetBool('want-qa-regression', 0):
-                self.notify.info('QA-REGRESSION: SKIPTUTORIAL: Skip Tutorial')
-            self.__handleSkipTutorial()
+        self.notify.debug('skipTutorial')
+        if base.config.GetBool('want-qa-regression', 0):
+            self.notify.info('QA-REGRESSION: SKIPTUTORIAL: Skip Tutorial')
+        self.__handleSkipTutorial()
         self.promptTutorialDialog.destroy()
 
     def logAvatarCreation(self):
