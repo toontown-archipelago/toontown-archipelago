@@ -62,6 +62,9 @@ class ToontownItemName(enum.Enum):
     LBHQ_TELEPORT = "LBHQ Teleport Access"
     BBHQ_TELEPORT = "BBHQ Teleport Access"
 
+    AA_TELEPORT = "AA Teleport Access"
+    GS_TELEPORT = 'GS Teleport Access'
+
     ### HQ Access ###
     TTC_HQ_ACCESS = "TTC HQ Access"
     DD_HQ_ACCESS  = "DD HQ Access"
@@ -181,6 +184,8 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.CBHQ_TELEPORT, ItemClassification.useful, quantity=1),
     ToontownItemDefinition(ToontownItemName.LBHQ_TELEPORT, ItemClassification.useful, quantity=1),
     ToontownItemDefinition(ToontownItemName.BBHQ_TELEPORT, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ToontownItemName.AA_TELEPORT, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ToontownItemName.GS_TELEPORT, ItemClassification.useful, quantity=1),
     # endregion
     # region Tasking Access (Playground HQ entry access)
     ToontownItemDefinition(ToontownItemName.TTC_HQ_ACCESS, ItemClassification.progression),  # Given as a starting item ATM

@@ -229,6 +229,9 @@ class TeleportAccessUpgradeReward(APReward):
     LAWBOT_HQ = ToontownGlobals.LawbotHQ
     BOSSBOT_HQ = ToontownGlobals.BossbotHQ
 
+    ACORN_ACRES = ToontownGlobals.OutdoorZone
+    GOOFY_SPEEDWAY = ToontownGlobals.GoofySpeedway
+
     ZONE_TO_DISPLAY_NAME = {
         TOONTOWN_CENTRAL: "Toontown Central",
         DONALDS_DOCK: "Donald's Dock",
@@ -240,6 +243,8 @@ class TeleportAccessUpgradeReward(APReward):
         CASHBOT_HQ: "Cashbot HQ",
         LAWBOT_HQ: "Lawbot HQ",
         BOSSBOT_HQ: "Bossbot HQ",
+        ACORN_ACRES: "Acorn Acres",
+        GOOFY_SPEEDWAY: "Goofy Speedway",
     }
 
     def __init__(self, playground: int):
@@ -621,6 +626,8 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.CBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.CASHBOT_HQ),
     ToontownItemName.LBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.LAWBOT_HQ),
     ToontownItemName.BBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.BOSSBOT_HQ),
+    ToontownItemName.AA_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.ACORN_ACRES),
+    ToontownItemName.GS_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.GOOFY_SPEEDWAY),
     ToontownItemName.TTC_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.TOONTOWN_CENTRAL),
     ToontownItemName.DD_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DONALDS_DOCK),
     ToontownItemName.DG_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DAISYS_GARDENS),
