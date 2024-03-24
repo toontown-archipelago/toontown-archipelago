@@ -67,6 +67,22 @@ class CogBossesRequired(Range):
     default = 4
 
 
+class TPSanity(Choice):
+    """
+    Determines how Teleport Access is shuffled in the Item Pool for all Playgrounds/HQs.
+    - keys: Playgrounds and HQs are locked until their respective Teleport Access is found.
+    - treasure: All areas are accessible. Teleport Access items are guaranteed to spawn in their area treasure.
+    - shuffle: All areas are accessible. Teleport Access items are shuffled in the pool.
+    - none: All areas are accessible. You start with global teleport access.
+    """
+    display_name = "tpsanity"
+    option_keys = 0
+    option_treasure = 1
+    option_shuffle = 2
+    option_none = 3
+    default = 3
+
+
 class LogicalTasksPerPlayground(Range):
     """
     Determines the amount of tasks per playground that are in logic.
@@ -141,21 +157,6 @@ class FishProgression(Choice):
     default = 0
 
 
-class ForcePlaygroundTreasureTeleportAccessUnlocksOption(Toggle):
-    """
-    Enable to force your playground teleport access to be on its corresponding "AP Treasure 1" check
-    """
-    display_name = "Force AP Treasure Playground Teleport Access Unlocks"
-    default = True
-
-
-class ForceCogHQTreasureTeleportAccessUnlocksOption(Toggle):
-    """
-    Enable to force your Cog HQ teleport access to be on its corresponding "AP Treasure 1" check
-    """
-    display_name = "Force AP Treasure Cog HQ Teleport Access Unlocks"
-
-
 class SeedGenerationTypeOption(Choice):
     """
     Type of seeding to use when RNG checks happen in game.
@@ -201,14 +202,13 @@ class ToontownOptions(PerGameCommonOptions):
     max_global_gag_xp: MaxGlobalGagXPRange
     starting_money: StartMoneyOption
     cog_bosses_required: CogBossesRequired
+    tpsanity: TPSanity
     logical_tasks_per_playground: LogicalTasksPerPlayground
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     maxed_cog_gallery_quota: MaxedCogGalleryQuota
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression
-    force_playground_treasure_teleport_access_unlocks: ForcePlaygroundTreasureTeleportAccessUnlocksOption
-    force_coghq_treasure_teleport_access_unlocks: ForceCogHQTreasureTeleportAccessUnlocksOption
     seed_generation_type: SeedGenerationTypeOption
     trap_percent: TrapPercentOption
     death_link: DeathLinkOption

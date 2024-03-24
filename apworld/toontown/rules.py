@@ -23,6 +23,9 @@ class Rule(Enum):
     LullabyLane = auto()  # DDL => MML
     PajamaPlace = auto()  # DDL => CBHQ
 
+    TunnelCanBeUsed = auto()
+    HasTeleportAccess = auto()
+
     ### Playground Accessibility ###
 
     # NOTE - avoid using these rules for region defs

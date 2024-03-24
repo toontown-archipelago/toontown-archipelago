@@ -174,18 +174,18 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.FISH, ItemClassification.filler),
     # endregion
     # region Teleport Access
-    ToontownItemDefinition(ToontownItemName.TTC_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DD_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DG_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.MML_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.TB_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DDL_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.SBHQ_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.CBHQ_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.LBHQ_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.BBHQ_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.AA_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.GS_TELEPORT, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ToontownItemName.TTC_TELEPORT,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DD_TELEPORT,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DG_TELEPORT,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.MML_TELEPORT,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.TB_TELEPORT,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DDL_TELEPORT,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.SBHQ_TELEPORT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.CBHQ_TELEPORT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LBHQ_TELEPORT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.BBHQ_TELEPORT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.AA_TELEPORT,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GS_TELEPORT,   ItemClassification.progression),
     # endregion
     # region Tasking Access (Playground HQ entry access)
     ToontownItemDefinition(ToontownItemName.TTC_HQ_ACCESS, ItemClassification.progression),  # Given as a starting item ATM
@@ -265,6 +265,20 @@ FISHING_LICENSES = (
     ToontownItemName.MML_FISHING,
     ToontownItemName.TB_FISHING,
     ToontownItemName.DDL_FISHING,
+)
+TELEPORT_ACCESS_ITEMS = (
+    ToontownItemName.TTC_TELEPORT,
+    ToontownItemName.DD_TELEPORT,
+    ToontownItemName.DG_TELEPORT,
+    ToontownItemName.MML_TELEPORT,
+    ToontownItemName.TB_TELEPORT,
+    ToontownItemName.DDL_TELEPORT,
+    ToontownItemName.SBHQ_TELEPORT,
+    ToontownItemName.CBHQ_TELEPORT,
+    ToontownItemName.LBHQ_TELEPORT,
+    ToontownItemName.BBHQ_TELEPORT,
+    ToontownItemName.AA_TELEPORT,
+    ToontownItemName.GS_TELEPORT,
 )
 
 

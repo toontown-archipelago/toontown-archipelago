@@ -4,7 +4,7 @@ from BaseClasses import CollectionState, MultiWorld
 from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem
 from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION
 from .items import ToontownItemName
-from .options import ToontownOptions
+from .options import ToontownOptions, TPSanity
 from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID, FISH_LOCATIONS, \
     get_location_def_from_name
 from .regions import ToontownEntranceDefinition, ToontownRegionName
@@ -84,6 +84,32 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
     if len(argument) == 2:
         return state.has(argument[0].value, player, argument[1])
     return state.has(argument[0].value, player)
+
+
+@rule(Rule.TunnelCanBeUsed)
+def TunnelCanBeUsed(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    if options.tpsanity.value == TPSanity.option_keys:
+        return passes_rule(Rule.HasTeleportAccess, state, locentr, world, player, options)
+    return True
+
+
+@rule(Rule.HasTeleportAccess)
+def HasTeleportAccess(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    region_to_tp_item = {
+        ToontownRegionName.TTC: ToontownItemName.TTC_TELEPORT,
+        ToontownRegionName.DD: ToontownItemName.DD_TELEPORT,
+        ToontownRegionName.DG: ToontownItemName.DG_TELEPORT,
+        ToontownRegionName.MML: ToontownItemName.MML_TELEPORT,
+        ToontownRegionName.TB: ToontownItemName.TB_TELEPORT,
+        ToontownRegionName.DDL: ToontownItemName.DDL_TELEPORT,
+        ToontownRegionName.GS: ToontownItemName.GS_TELEPORT,
+        ToontownRegionName.AA: ToontownItemName.AA_TELEPORT,
+        ToontownRegionName.SBHQ: ToontownItemName.SBHQ_TELEPORT,
+        ToontownRegionName.CBHQ: ToontownItemName.CBHQ_TELEPORT,
+        ToontownRegionName.LBHQ: ToontownItemName.LBHQ_TELEPORT,
+        ToontownRegionName.BBHQ: ToontownItemName.BBHQ_TELEPORT,
+    }
+    return state.has(region_to_tp_item[locentr.connects_to].value, player)
 
 
 @rule(Rule.FishCatch)
