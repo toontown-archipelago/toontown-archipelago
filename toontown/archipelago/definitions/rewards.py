@@ -232,6 +232,8 @@ class TeleportAccessUpgradeReward(APReward):
     ACORN_ACRES = ToontownGlobals.OutdoorZone
     GOOFY_SPEEDWAY = ToontownGlobals.GoofySpeedway
 
+    LINKED_PGS = {ACORN_ACRES: [ToontownGlobals.GolfZone]}
+
     ZONE_TO_DISPLAY_NAME = {
         TOONTOWN_CENTRAL: "Toontown Central",
         DONALDS_DOCK: "Donald's Dock",
@@ -259,6 +261,8 @@ class TeleportAccessUpgradeReward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         av.addTeleportAccess(self.playground)
+        for pg in self.LINKED_PGS.get(self.playground, []):
+            av.addTeleportAccess(pg)
 
 
 class TaskAccessReward(APReward):
