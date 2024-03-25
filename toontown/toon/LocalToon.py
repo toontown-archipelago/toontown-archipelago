@@ -1,6 +1,8 @@
 import random
 from typing import List, Tuple
 
+from apworld.toontown import TPSanity
+from apworld.toontown.items import hood_to_tp_item_name, ITEM_NAME_TO_ID
 from libotp import *
 from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
@@ -2036,10 +2038,43 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def hasCachedLocationReward(self, locationId: int) -> bool:
         return self.locationScoutsCache.get(locationId) is not None
 
+    def setSlotData(self, slotData) -> None:
+        super().setSlotData(slotData)
+        self.doAreaSanityCheck()
+
     def setArchipelagoAuto(self, _=None):
         slotName = os.environ.get('ARCHIPELAGO_SLOT', '')
         serverAddr = os.environ.get('ARCHIPELAGO_ADDRESS', '')
         self.sendUpdate('setArchipelagoAuto', [slotName, serverAddr])
+
+    def startAreaSanityCheck(self):
+        taskMgr.doMethodLater(0.01, self.doAreaSanityCheck, self.uniqueName('areaSanityCheck'))
+
+    def doAreaSanityCheck(self, _=None):
+        tpsanity = localAvatar.slotData.get('tpsanity')
+        if tpsanity == TPSanity.option_keys:
+            self.areaSanityForceMove()
+
+    def areaSanityForceMove(self):
+        # Huge TPSanity barrier!
+        tpsanity = self.slotData.get('tpsanity')
+        if tpsanity != TPSanity.option_keys:
+            return
+        else:
+            tp_itemname = hood_to_tp_item_name(self.getZoneId())
+            if not tp_itemname:
+                return
+            else:
+                item_id = ITEM_NAME_TO_ID[tp_itemname.value]
+                if item_id in self.receivedItemIDs:
+                    return
+
+        # OK, try to move them now
+        place = self.cr.playGame.getPlace()
+        print(place.fsm.hasStateNamed('DFA'), place.fsm.getCurrentState().getName())
+        if place and place.fsm.hasStateNamed('DFA') and place.fsm.getCurrentState().getName() == 'walk':
+            self.doTeleport('TTC')
+            self.startAreaSanityCheck()
 
     def enableCraneControls(self) -> None:
         self.controlManager.enableCraneControls()

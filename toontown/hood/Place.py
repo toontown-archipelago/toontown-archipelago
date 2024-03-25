@@ -227,6 +227,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.questMap.acceptOnscreenHooks()
         self.walkStateData.fsm.request('walking')
         self.enablePeriodTimer()
+        base.localAvatar.startAreaSanityCheck()
 
     def exitWalk(self):
         self.exitFLM()

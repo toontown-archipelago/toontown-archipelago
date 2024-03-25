@@ -282,6 +282,24 @@ TELEPORT_ACCESS_ITEMS = (
 )
 
 
+def hood_to_tp_item_name(hoodId: int) -> ToontownItemName:
+    return {
+        2000: ToontownItemName.TTC_TELEPORT,
+        1000: ToontownItemName.DD_TELEPORT,
+        5000: ToontownItemName.DG_TELEPORT,
+        4000: ToontownItemName.MML_TELEPORT,
+        3000: ToontownItemName.TB_TELEPORT,
+        9000: ToontownItemName.DDL_TELEPORT,
+        11000: ToontownItemName.SBHQ_TELEPORT,
+        12000: ToontownItemName.CBHQ_TELEPORT,
+        13000: ToontownItemName.LBHQ_TELEPORT,
+        10000: ToontownItemName.BBHQ_TELEPORT,
+        6000: ToontownItemName.AA_TELEPORT,
+        17000: ToontownItemName.AA_TELEPORT,
+        8000: ToontownItemName.GS_TELEPORT,
+    }.get(hoodId)
+
+
 JUNK_WEIGHTS = {
     ToontownItemName.MONEY_250:        0.5,
     ToontownItemName.MONEY_500:        0.5,
