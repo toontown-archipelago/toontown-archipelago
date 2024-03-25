@@ -304,8 +304,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setDefaultZone(hood)
         self.addHoodVisited(hood)
 
-        if zoneId == ToontownGlobals.GoofySpeedway:
-            self.addTeleportAccess(ToontownGlobals.GoofySpeedway)
+        # if zoneId == ToontownGlobals.GoofySpeedway:
+        #     self.addTeleportAccess(ToontownGlobals.GoofySpeedway)
 
     def sendDeleteEvent(self):
         if simbase.wantPets:
