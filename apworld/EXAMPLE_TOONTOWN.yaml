@@ -20,13 +20,13 @@ Toontown:
   # The base global gag experience multiplier when starting a new game.
   # This multiplier is globally multiplicative on top of in-game boosts.
   # Range: 1 to 10
-  base_global_gag_xp: 3
+  base_global_gag_xp: 5
 
   # Additional global gag experience that can be obtained from items.
   # Stacks additively onto the base value above.
   # Must be above or equal to the base_global_gag_xp.
   # Range: 0 to 30
-  max_global_gag_xp: 15
+  max_global_gag_xp: 30
 
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 9999
