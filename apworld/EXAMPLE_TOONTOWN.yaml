@@ -118,38 +118,6 @@ Toontown:
   # If another player in your game with this setting enabled dies for whatever reason, you will also go sad.
   death_link: 'false'
 
-  ###
-  ### YAML Presets
-  ###
-
-  # The following describe item links for facilities and disguises.
-  # If you do not wish for your facilities/disguises to be linked to other players, you must remove the corresponding link described below.
-  # By default, we link ALL Toontown players facility keys so that there is only ONE global facility key in the pool for all Toontown Players.
-  # If you are playing solo on a district with no other toons, I would recommend you remove item links completely.
-  item_links:
-    - name: Facility Keys
-      item_pool:
-        - Front Factory Key
-        - Side Factory Key
-        - Coin Mint Key
-        - Dollar Mint Key
-        - Bullion Mint Key
-        - Office A Key
-        - Office B Key
-        - Office C Key
-        - Office D Key
-        - Front One Key
-        - Middle Two Key
-        - Back Three Key
-      replacement_item: 250 Jellybeans
-    #- name: Cog Disguises
-    #  item_pool:
-    #    - Sellbot Disguise
-    #    - Cashbot Disguise
-    #    - Lawbot Disguise
-    #    - Bossbot Disguise
-    #  replacement_item: 250 Jellybeans
-
   # Starting hints for Cog Disguises
   start_hints:
     - Sellbot Disguise
