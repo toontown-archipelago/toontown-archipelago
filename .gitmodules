@@ -1,0 +1,3 @@
+[submodule "apworld/archipelago"]
+	path = apworld/archipelago
+	url = git@github.com:toontown-archipelago/archipelago.git
