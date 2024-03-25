@@ -324,7 +324,6 @@ def TierFiveCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
 
 
 @rule(Rule.TierSixCogs)
-@rule(Rule.TierSevenCogs)
 def ReachPastDD(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     pgs = [
         ToontownRegionName.DG,
@@ -342,9 +341,9 @@ def ReachPastDD(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.TierEightBossbot, ToontownRegionName.BBHQ)
 def TierEightCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     pgs = [
-        ToontownRegionName.MML,
-        ToontownRegionName.TB,
-        ToontownRegionName.DDL,
+        # ToontownRegionName.MML,
+        # ToontownRegionName.TB,
+        # ToontownRegionName.DDL,
     ]
     if argument:
         pgs.append(argument[0])

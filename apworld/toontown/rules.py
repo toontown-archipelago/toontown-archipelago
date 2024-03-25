@@ -64,7 +64,7 @@ class Rule(Enum):
     TierFourCogs  = auto()
     TierFiveCogs  = auto()
     TierSixCogs   = auto()
-    TierSevenCogs = auto()
+    # TierSevenCogs = auto()
 
     TierEightSellbot = auto()
     TierEightCashbot = auto()
