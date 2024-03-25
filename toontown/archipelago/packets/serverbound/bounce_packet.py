@@ -27,7 +27,7 @@ class BouncePacket(ServerBoundPacketBase):
     # Call do add the deathlink data to send within this packet
     def add_deathlink_data(self, toon, cause=None):
         self.tags.append(ConnectPacket.TAG_DEATHLINK)
-        self.data['time'] = globalClock.getFrameTime()
+        self.data['time'] = globalClock.getRealTime()
         if toon.getDeathReason() is not None:
             self.data['cause'] = toon.getDeathReason().format(toon)
 

@@ -66,6 +66,9 @@ class BouncedPacket(ClientBoundPacketBase):
     def handle(self, client):
         self.debug("Handling packet")
 
+        if self.tags is None:
+            return
+
         # Is this a deathlink packet?
         if ConnectPacket.TAG_DEATHLINK in self.tags:
             # Is deathlink off?
