@@ -9,6 +9,10 @@ from direct.distributed.PyDatagram import *
 
 from otp.otpbase import OTPGlobals
 
+# Do not delete this import even though it says it is unused!!!
+# It defines some globals that we need to work.
+from direct.distributed.MsgTypes import *
+
 
 class FriendManagerAI(DistributedObjectAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('FriendManagerAI')
