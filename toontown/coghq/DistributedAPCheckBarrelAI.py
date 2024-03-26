@@ -1,7 +1,5 @@
-from apworld.toontown import locations
+from apworld.archipelago.worlds.toontown import locations
 from . import DistributedBarrelBaseAI
-from direct.directnotify import DirectNotifyGlobal
-from direct.task import Task
 
 from ..archipelago.definitions import util
 from ..toonbase import ToontownGlobals

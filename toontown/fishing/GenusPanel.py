@@ -1,5 +1,5 @@
-from apworld.toontown import fish
-from apworld.toontown.fish import FishZone, FishLocation, FishZoneToName, can_av_fish_at_zone
+from apworld.archipelago.worlds.toontown import fish
+from apworld.archipelago.worlds.toontown.fish import FishLocation, FishZoneToName, can_av_fish_at_zone
 from toontown.toonbase import ToontownGlobals
 from direct.directnotify import DirectNotifyGlobal
 from direct.gui.DirectGui import *

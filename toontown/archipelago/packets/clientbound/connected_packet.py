@@ -1,8 +1,8 @@
 import random
 from typing import List, Any, Dict
 
-from apworld.toontown import locations
-from apworld.toontown.fish import FishProgression
+from apworld.archipelago.worlds.toontown import locations
+from apworld.archipelago.worlds.toontown import FishProgression
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.definitions.util import ap_location_name_to_id

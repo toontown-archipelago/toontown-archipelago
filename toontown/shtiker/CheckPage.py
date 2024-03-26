@@ -1,6 +1,6 @@
 from typing import Dict
 from . import ShtikerPage
-from apworld.toontown import ToontownItemDefinition, get_item_def_from_id
+from apworld.archipelago.worlds.toontown import ToontownItemDefinition, get_item_def_from_id
 from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
 from panda3d.core import *

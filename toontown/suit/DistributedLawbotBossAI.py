@@ -16,7 +16,7 @@ from toontown.coghq import DistributedLawbotCannonAI
 from toontown.coghq import DistributedLawbotChairAI
 from toontown.toonbase import ToontownBattleGlobals
 
-from apworld.toontown import locations
+from apworld.archipelago.worlds.toontown import locations
 from ..archipelago.definitions.death_reason import DeathReason
 
 from ..archipelago.definitions.util import ap_location_name_to_id

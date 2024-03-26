@@ -2,19 +2,16 @@ from otp.ai.AIBaseGlobal import *
 from direct.distributed.ClockDelta import *
 from . import DistributedBossCogAI, SuitDNA, BossCogGlobals
 from direct.directnotify import DirectNotifyGlobal
-from otp.avatar import DistributedAvatarAI
 from . import DistributedSuitAI
 from toontown.battle import BattleExperienceAI
 from direct.fsm import FSM
 from toontown.toonbase import ToontownGlobals
-from toontown.toon import InventoryBase
 from toontown.toonbase import TTLocalizer
-from toontown.battle import BattleBase
 from toontown.toon import NPCToons
 from toontown.suit import SellbotBossGlobals
 import random
 
-from apworld.toontown import locations
+from apworld.archipelago.worlds.toontown import locations
 from ..archipelago.definitions.death_reason import DeathReason
 
 from ..archipelago.definitions.util import ap_location_name_to_id

@@ -4,12 +4,11 @@ from enum import IntEnum
 import random
 from typing import List, Tuple
 
-from apworld.toontown import ToontownItemName, get_item_def_from_id
-from apworld.toontown.fish import LICENSE_TO_ACCESS_CODE
+from apworld.archipelago.worlds.toontown import ToontownItemName, get_item_def_from_id
+from apworld.archipelago.worlds.toontown.fish import LICENSE_TO_ACCESS_CODE
 from otp.otpbase.OTPLocalizerEnglish import EmoteFuncDict
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
-from toontown.battle import BattleBase
 
 from toontown.building import FADoorCodes
 from toontown.coghq.CogDisguiseGlobals import PartsPerSuitBitmasks
@@ -22,7 +21,7 @@ from toontown.chat import ResistanceChat
 # Typing hack, can remove later
 TYPING = False
 if TYPING:
-    from toontown.toon.DistributedToonAI import DistributedToonAI
+    pass
 
 
 class APReward:

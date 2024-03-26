@@ -1,11 +1,10 @@
 from panda3d.core import *
 from direct.interval.IntervalGlobal import *
 from direct.gui.DirectGui import *
-from direct.directtools.DirectGeometry import LineNodePath
 from direct.distributed import DistributedObject
 from direct.directnotify import DirectNotifyGlobal
 
-from apworld.toontown.fish import MAX_SPECIES_PER_ROD_TIER, FishLocation, get_catchable_fish_no_rarity
+from apworld.archipelago.worlds.toontown.fish import FishLocation, get_catchable_fish_no_rarity
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.building import FADoorCodes
@@ -13,7 +12,6 @@ from toontown.distributed import DelayDelete
 from toontown.distributed.DelayDeletable import DelayDeletable
 from toontown.toonbase import ToontownGlobals
 from toontown.fishing import FishGlobals
-from toontown.shtiker import FishPage
 from toontown.toonbase import TTLocalizer
 from toontown.quest import Quests
 from direct.actor import Actor
@@ -21,16 +19,14 @@ from direct.showutil import Rope
 import math
 from direct.task.Task import Task
 import random
-import random
 from toontown.fishing import FishingTargetGlobals
 from toontown.fishing import FishBase
 from toontown.fishing import FishPanel
 from toontown.effects import Ripples
 from toontown.toontowngui import TTDialog
 from toontown.toonbase import ToontownTimer
-from direct.fsm import ClassicFSM, State
+from direct.fsm import ClassicFSM
 from direct.fsm import State
-from toontown.hood import ZoneUtil
 from toontown.toontowngui import TeaserPanel
 
 class DistributedFishingSpot(DistributedObject.DistributedObject, DelayDeletable):

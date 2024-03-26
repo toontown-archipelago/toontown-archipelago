@@ -1,7 +1,7 @@
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
-from apworld.toontown.fish import FishProgression, can_av_fish_here, LICENSE_TO_ACCESS_CODE
+from apworld.archipelago.worlds.toontown.fish import can_av_fish_here
 from toontown.fishing import FishGlobals
 from toontown.hood import ZoneUtil
 

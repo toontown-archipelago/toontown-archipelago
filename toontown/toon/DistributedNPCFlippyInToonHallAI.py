@@ -1,6 +1,6 @@
 from .DistributedNPCToonAI import *
 
-from apworld.toontown import locations
+from apworld.archipelago.worlds.toontown import locations
 
 from ..archipelago.definitions import util
 

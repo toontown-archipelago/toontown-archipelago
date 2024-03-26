@@ -1,4 +1,4 @@
-from apworld.toontown import fish
+from apworld.archipelago.worlds.toontown import fish
 from toontown.toonbase import TTLocalizer, ToontownGlobals
 
 UNLOCKED = 0

@@ -1,20 +1,17 @@
 from typing import Dict, NamedTuple, List
 
-from otp.otpbase import OTPGlobals
-from apworld.toontown import locations
+from apworld.archipelago.worlds.toontown import locations
 from toontown.archipelago.definitions import util
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.toonbase import ToontownGlobals
 from toontown.battle import SuitBattleGlobals
 from toontown.coghq import CogDisguiseGlobals
-import random
 from toontown.toon import NPCToons
-import copy, string
+import copy
 from toontown.hood import ZoneUtil
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import TTLocalizer
-from direct.showbase import PythonUtil
-import time, types, random
+import time, random
 notify = DirectNotifyGlobal.directNotify.newCategory('Quests')
 ItemDict = TTLocalizer.QuestsItemDict
 CompleteString = TTLocalizer.QuestsCompleteString

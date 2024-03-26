@@ -1,7 +1,6 @@
 from direct.gui.DirectGui import *
-from panda3d.core import *
 
-from apworld.toontown.fish import FishLocation, get_catchable_fish_no_rarity, FishProgression
+from apworld.archipelago.worlds.toontown.fish import FishLocation, get_catchable_fish_no_rarity, FishProgression
 from toontown.toonbase import ToontownGlobals
 
 

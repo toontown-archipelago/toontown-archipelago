@@ -3,8 +3,8 @@ from typing import Dict
 
 from direct.directnotify import DirectNotifyGlobal
 
-from apworld.toontown import locations
-from apworld.toontown.fish import can_catch_new_species, FishLocation, GENUS_SPECIES_TO_LOCATION, GENUS_TO_LOCATION, FishChecks
+from apworld.archipelago.worlds.toontown import locations
+from apworld.archipelago.worlds.toontown.fish import FishLocation, GENUS_SPECIES_TO_LOCATION, GENUS_TO_LOCATION, FishChecks
 
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.fishing import FishGlobals

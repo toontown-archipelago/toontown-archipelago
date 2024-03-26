@@ -1,22 +1,25 @@
 from . import DistributedSZTreasureAI
 from ..archipelago.definitions import util
 
-from apworld.toontown import locations
+from apworld.archipelago.worlds.toontown import locations
 from toontown.toonbase import ToontownGlobals
 
 ARCHI_CODE_TO_LOCATION = {
     ToontownGlobals.ToontownCentral: util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_1.value),
-    ToontownGlobals.ToontownCentral + 1: util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_2.value),
+    ToontownGlobals.ToontownCentral + 1: util.ap_location_name_to_id(
+        locations.ToontownLocationName.TTC_TREASURE_2.value),
     ToontownGlobals.DonaldsDock: util.ap_location_name_to_id(locations.ToontownLocationName.DD_TREASURE_1.value),
     ToontownGlobals.DonaldsDock + 1: util.ap_location_name_to_id(locations.ToontownLocationName.DD_TREASURE_2.value),
     ToontownGlobals.DaisyGardens: util.ap_location_name_to_id(locations.ToontownLocationName.DG_TREASURE_1.value),
     ToontownGlobals.DaisyGardens + 1: util.ap_location_name_to_id(locations.ToontownLocationName.DG_TREASURE_2.value),
     ToontownGlobals.MinniesMelodyland: util.ap_location_name_to_id(locations.ToontownLocationName.MML_TREASURE_1.value),
-    ToontownGlobals.MinniesMelodyland + 1: util.ap_location_name_to_id(locations.ToontownLocationName.MML_TREASURE_2.value),
+    ToontownGlobals.MinniesMelodyland + 1: util.ap_location_name_to_id(
+        locations.ToontownLocationName.MML_TREASURE_2.value),
     ToontownGlobals.TheBrrrgh: util.ap_location_name_to_id(locations.ToontownLocationName.TB_TREASURE_1.value),
     ToontownGlobals.TheBrrrgh + 1: util.ap_location_name_to_id(locations.ToontownLocationName.TB_TREASURE_2.value),
     ToontownGlobals.DonaldsDreamland: util.ap_location_name_to_id(locations.ToontownLocationName.DDL_TREASURE_1.value),
-    ToontownGlobals.DonaldsDreamland + 1: util.ap_location_name_to_id(locations.ToontownLocationName.DDL_TREASURE_2.value),
+    ToontownGlobals.DonaldsDreamland + 1: util.ap_location_name_to_id(
+        locations.ToontownLocationName.DDL_TREASURE_2.value),
     ToontownGlobals.OutdoorZone: util.ap_location_name_to_id(locations.ToontownLocationName.AA_TREASURE_1.value),
     ToontownGlobals.OutdoorZone + 1: util.ap_location_name_to_id(locations.ToontownLocationName.AA_TREASURE_2.value),
     ToontownGlobals.GoofySpeedway: util.ap_location_name_to_id(locations.ToontownLocationName.GS_TREASURE_1.value),

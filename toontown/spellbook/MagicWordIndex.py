@@ -1,8 +1,8 @@
-import collections, types
+import collections
 
 from direct.interval.IntervalGlobal import *
 
-from apworld.toontown.locations import ToontownLocationDefinition
+from apworld.archipelago.worlds.toontown import ToontownLocationDefinition
 from libotp import NametagGroup
 
 from otp.otpbase import OTPLocalizer
@@ -32,7 +32,7 @@ import time
 import random
 import json
 
-from apworld.toontown import locations, items
+from apworld.archipelago.worlds.toontown import items, locations
 from toontown.archipelago.definitions import rewards
 from ..archipelago.definitions.death_reason import DeathReason
 

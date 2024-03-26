@@ -18,7 +18,7 @@ from . import DistributedBossCogAI
 import random
 import math
 
-from apworld.toontown import locations
+from apworld.archipelago.worlds.toontown import locations
 from ..archipelago.definitions.death_reason import DeathReason
 
 from ..archipelago.definitions.util import ap_location_name_to_id

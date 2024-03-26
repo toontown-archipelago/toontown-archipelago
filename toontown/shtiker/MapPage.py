@@ -1,6 +1,6 @@
 from typing import List
 
-from apworld.toontown.fish import can_av_fish_at_zone
+from apworld.archipelago.worlds.toontown.fish import can_av_fish_at_zone
 from . import ShtikerPage
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import PythonUtil

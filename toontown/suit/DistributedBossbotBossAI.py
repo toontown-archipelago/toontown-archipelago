@@ -1,11 +1,9 @@
 import random
 import math
-from panda3d.core import Point3
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import FSM
-from direct.interval.IntervalGlobal import LerpPosInterval
 
-from apworld.toontown import locations
+from apworld.archipelago.worlds.toontown import locations
 from toontown.archipelago.definitions.death_reason import DeathReason
 
 from toontown.archipelago.definitions.util import ap_location_name_to_id

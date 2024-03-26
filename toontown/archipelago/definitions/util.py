@@ -1,5 +1,5 @@
-from apworld.toontown import consts, ToontownLocationName, LOCATION_DEFINITIONS
-from apworld.toontown.locations import TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS, MML_TASK_LOCATIONS, \
+from apworld.archipelago.worlds.toontown import ToontownLocationName, LOCATION_DEFINITIONS
+from apworld.archipelago.worlds.toontown.locations import TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS, MML_TASK_LOCATIONS, \
     TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS, EVENT_DEFINITIONS
 
 from typing import Union
