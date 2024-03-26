@@ -125,6 +125,13 @@ Toontown:
     - Lawbot Disguise
     - Bossbot Disguise
 
+  # Exclude boss clears from having important progression items
+  exclude_locations:
+    - Sellbot Proof
+    - Cashbot Proof
+    - Lawbot Proof
+    - Bossbot Proof
+
 game: Toontown
 requires:
   version: 0.4.4
