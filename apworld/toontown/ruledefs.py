@@ -2,7 +2,8 @@ from typing import Dict, Callable, Any, Tuple, Union
 
 from BaseClasses import CollectionState, MultiWorld
 from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVEL
-from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION
+from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, \
+    LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION, PlaygroundFishZoneGroups
 from .items import ToontownItemName
 from .options import ToontownOptions, TPSanity
 from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID, FISH_LOCATIONS, \
@@ -148,12 +149,14 @@ def FishCatch(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, pl
             ]
         )
 
-    # Attempt catching the fish in feasible areas.
-    for zone in fishDef.zone_list:
-        # If we're fishing anywhere, ensure we can fish somewhere.
-        if zone == FishZone.Anywhere and not hasAnyLicense:
-            continue
+    # Figure out the zones we must scan.
+    feasible_areas = set(fz for fz in fishDef.zone_list if fz != FishZone.Anywhere)
+    if FishZone.Anywhere in fishDef.zone_list:
+        for fz in PlaygroundFishZoneGroups.keys():
+            feasible_areas.add(fz)
 
+    # Attempt catching the fish in feasible areas.
+    for zone in feasible_areas:
         # Estate fishing is disabled.
         if zone == FishZone.MyEstate:
             continue
