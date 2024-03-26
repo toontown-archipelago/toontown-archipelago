@@ -966,6 +966,17 @@ class BattleCalculatorAI:
                             attack[TOON_HP_COL][tgtPos] = 0
                             attack[TOON_KBBONUS_COL][tgtPos] = -1
 
+                        # Edge case, if there is a previous attack with same track that was a group attack but did 0 damage to the current target that is dead, then we should also do 0.
+                        if len(lastAttacks) > 0:
+                            tgtPos = self.battle.activeSuits.index(currTgt)
+                            prevAtk = lastAttacks[-1]
+                            prevAtkTrack = prevAtk[TOON_TRACK_COL]
+                            prevAtkIsGroup = attackAffectsGroup(prevAtkTrack, prevAtk[TOON_LVL_COL])
+                            prevAtkSkippedTarget = prevAtk[TOON_HP_COL][tgtPos] <= 0
+                            if prevAtkTrack == atkTrack and prevAtkIsGroup and prevAtkSkippedTarget and targetDead:
+                                attack[TOON_HP_COL][tgtPos] = 0
+                                attack[TOON_KBBONUS_COL][tgtPos] = 0
+
                     if allTargetsDead and atkTrack != lastTrack:
                         self.notify.debug('all targets of toon attack ' + str(currToonAttack) + ' are dead')
                         self.__clearAttack(currToonAttack, toon=1)
