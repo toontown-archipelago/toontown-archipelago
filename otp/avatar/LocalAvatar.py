@@ -36,7 +36,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
     sleepTimeout = base.config.GetInt('sleep-timeout', 120)
     swimTimeout = base.config.GetInt('afk-timeout', 600)
     __enableMarkerPlacement = base.config.GetBool('place-markers', 0)
-    acceptingNewFriends = base.config.GetBool('accepting-new-friends', 1)
     acceptingNonFriendWhispers = base.config.GetBool('accepting-non-friend-whispers', 0)
 
     def __init__(self, cr, chatMgr, talkAssistant = None, passMessagesThrough = False):

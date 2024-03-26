@@ -9952,7 +9952,6 @@ OptionNames = {
     "speedchat-style": "Speedchat Color",
 
     # Privacy
-    "accepting-friends": "Accepting New Friends",
     "competitive-boss-scoring": "Want Competitive Boss Scoring",
 
     # Controls

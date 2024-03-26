@@ -34,7 +34,6 @@ OptionToType = {
     'speedchat-style': OptionTypes.BUTTON_SPEEDCHAT,
 
     # Privacy
-    "accepting-friends": OptionTypes.BUTTON,
     "competitive-boss-scoring": OptionTypes.BUTTON,
 
     # Video
@@ -131,7 +130,6 @@ class OptionsTabPage(DirectFrame, FSM):
             'speedchat-style'
         ],
         "Privacy": [
-            "accepting-friends",
             "competitive-boss-scoring",
         ],
         "Controls": [*list(base.settings.getControls())],
@@ -594,8 +592,6 @@ class OptionElement(DirectFrame):
             base.enableSoundEffects(newSetting)
         elif self.optionName == "toon-chat-sounds":
             base.toonChatSounds = newSetting
-        elif self.optionName == "accepting-friends":
-            base.localAvatar.acceptingNewFriends = newSetting
         elif self.optionName == 'competitive-boss-scoring':
             base.localAvatar.wantCompetitiveBossScoring = newSetting
         elif self.optionName in ("borderless", "resolution", "vertical-sync",
