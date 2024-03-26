@@ -343,9 +343,12 @@ class ToonBase(OTPBase.OTPBase):
          mm.addGridCell(3.5, 0, -1.33333333333, 1.33333333333, -1.0, 1.0, base.a2dBottomCenter, (0.444444, 0, 0.166667)),
          mm.addGridCell(4.5, 0, -1.33333333333, 1.33333333333, -1.0, 1.0, base.a2dBottomCenter, (0.888889, 0, 0.166667))]
         self.rightCells = [mm.addGridCell(5, 2, -1.33333333333, 1.33333333333, -1.0, 1.0, base.a2dTopRight, (-0.222222, 0, -1.16667)), mm.addGridCell(5, 1, -1.33333333333, 1.33333333333, -1.0, 1.0, base.a2dTopRight, (-0.222222, 0, -1.5))]
+        self.marginManager.setCellAvailable(self.leftCells[0], 0)
 
     def setCellsAvailable(self, cell_list, available):
         for cell in cell_list:
+            if cell is self.leftCells[0]:
+                continue
             self.marginManager.setCellAvailable(cell, available)
 
     def cleanupDownloadWatcher(self):
