@@ -138,9 +138,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.useful),
     # endregion
     # region Gag Capacity
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.useful, quantity=12),
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.useful, quantity=2),
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.useful, quantity=0),
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.progression, quantity=12),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.progression, quantity=2),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.progression, quantity=0),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
     # endregion
     # region Jellybean Capacity
     ToontownItemDefinition(ToontownItemName.MONEY_CAP_750,  ItemClassification.useful, quantity=1),

@@ -1,7 +1,7 @@
 from typing import Dict, Callable, Any, Tuple, Union
 
 from BaseClasses import CollectionState, MultiWorld
-from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem
+from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVEL
 from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION
 from .items import ToontownItemName
 from .options import ToontownOptions, TPSanity
@@ -24,14 +24,22 @@ def rule(rule: Union[Rule, ItemRule], *argument: Any):
     return decorator
 
 
-def has_collected_xp_for_gag_level(state: CollectionState, player: int, options: ToontownOptions, level: int) -> bool:
+def has_collected_items_for_gag_level(state: CollectionState, player: int, options: ToontownOptions, level: int) -> bool:
     # Determines if a given player has collected a sufficient amount of the XP items in the run.
     # always returns True if the player has 2 or less XP multis in the pool (aka, assumes they don't care)
     xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
     max_xp = options.max_global_gag_xp.value
-    if max_xp <= 2:
-        return True
-    return XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp)
+    sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if max_xp > 2 else True
+
+    # Check collected gag capacity items too.
+    cap = state.count(ToontownItemName.GAG_CAPACITY_5.value, player) + (
+                2 * state.count(ToontownItemName.GAG_CAPACITY_10.value, player)) + (
+                      2 * state.count(ToontownItemName.GAG_CAPACITY_15.value, player))
+    max_cap = 12 + (2 * 2)  # TODO - have this be dynamic to gag capacity items in pool
+    sufficient_cap = CAP_RATIO_FOR_GAG_LEVEL.get(level) <= (cap / max_cap)
+
+    # Return TRUE if we have enough xp and cap.
+    return sufficient_xp and sufficient_cap
 
 
 @rule(Rule.LoopyLane)          # NOTE - Streets are always enabled for now.
@@ -261,7 +269,7 @@ def FishGallery(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.DropSeven,       ToontownItemName.DROP_FRAME, 7)
 def GagTraining(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return state.has(argument[0].value, player, argument[1]) \
-            and has_collected_xp_for_gag_level(state, player, options, argument[1])
+            and has_collected_items_for_gag_level(state, player, options, argument[1])
 
 
 @rule(Rule.CanReachTTC,  ToontownRegionName.TTC)
@@ -385,7 +393,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
                     and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
     powerful_sound = state.has(ToontownItemName.SOUND_FRAME.value, player, OVERLEVEL)
     sufficient_healing = state.has(ToontownItemName.TOONUP_FRAME.value, player, UNDERLEVEL)
-    can_obtain_exp_required = has_collected_xp_for_gag_level(state, player, options, LEVEL)
+    can_obtain_exp_required = has_collected_items_for_gag_level(state, player, options, LEVEL)
 
     return (powerful_lure_knockback or powerful_sound or powerful_trap or powerful_drop) \
             and sufficient_healing and can_obtain_exp_required
