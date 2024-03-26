@@ -5226,7 +5226,17 @@ FishingHowToFailed = 'Click and drag down from the Cast button. The farther down
 FishingBootItem = 'An old boot'
 FishingJellybeanItem = '%s jellybeans'
 FishingNewEntry = 'New Species!'
-FishingNewRecord = 'New Record!'
+FishingNewRecord = ''.join(
+ f'\1{col}\1{l}\2' if l != ' ' else ' '
+  for l, col in zip(
+  'New Record!',
+  [
+   'json_red', 'yellow', 'json_green', '',
+   'json_cyan', 'json_blue', 'json_magenta', 'json_red', 'yellow', 'json_green',
+   'json_cyan',
+  ]
+ )
+)
 FishPokerCashIn = 'Cash In\n%s\n%s'
 FishPokerLock = 'Lock'
 FishPokerUnlock = 'Unlock'
