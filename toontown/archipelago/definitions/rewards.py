@@ -503,7 +503,7 @@ class GagExpBundleAward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         for index, _ in enumerate(ToontownBattleGlobals.Tracks):
-            currentCap = min(av.experience.getExperienceCapForTrack(index), ToontownGlobals.regMaxSkill)
+            currentCap = min(av.experience.getExperienceCapForTrack(index), ToontownBattleGlobals.regMaxSkill)
             exptoAdd = math.ceil(currentCap * (self.amount/100))
             av.experience.addExp(index, exptoAdd)
         av.b_setExperience(av.experience.getCurrentExperience())
