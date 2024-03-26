@@ -1,4 +1,6 @@
-import collections, types
+import types
+import collections
+from typing import List
 
 from direct.interval.IntervalGlobal import *
 
@@ -2139,6 +2141,11 @@ class SkipVP(MagicWord):
 
         battle = battle.lower()
 
+        if battle == 'one':
+            boss.b_setState("Introduction")
+            boss.b_setState('BattleOne')
+            return "Starting battle one!"
+
         if battle == 'three':
             if boss.state in ('PrepareBattleThree', 'BattleThree'):
                 return "You can not return to previous rounds!"
@@ -2156,6 +2163,11 @@ class SkipVP(MagicWord):
                 boss.exitIntroduction()
                 boss.b_setState('Victory')
                 return "Skipping final round..."
+            elif boss.state in ("Introduction", "Elevator"):
+                if boss.state in ("Elevator"):
+                    boss.b_setState("Introduction")
+                boss.b_setState('BattleOne')
+                return "Skipping introduction!"
 
 
 class rpr(MagicWord):
@@ -3023,16 +3035,38 @@ class StartBoss(MagicWord):
     accessLevel = 'DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
+
+        from ..toon.DistributedToonAI import DistributedToonAI
+
         hood_zones = [ToontownGlobals.BossbotHQ, ToontownGlobals.LawbotHQ,
                       ToontownGlobals.CashbotHQ, ToontownGlobals.SellbotHQ]
         if toon.zoneId not in hood_zones:
             return 'Toon is not in the correct zone! Expected a Cog HQ courtyard, got {}.'.format(toon.zoneId)
 
+        # Get all players online
+        online_toons: List[DistributedToonAI] = simbase.air.getAllOfType(DistributedToonAI)
+        for online_toon in list(online_toons):
+            if not online_toon.isPlayerControlled():
+                online_toons.remove(online_toon)
+
         for hood in simbase.air.hoods:
             if hood.zoneId == toon.zoneId:
-                zone = hood.lobbyMgr.createBossOffice([avId])
-                toon.sendUpdate('forceEnterBoss', [toon.zoneId, zone])
-                return 'Successfully created a boss!'
+
+                toons_in_zone = [online_toon for online_toon in online_toons if online_toon.zoneId == toon.zoneId]
+
+                # If there are more than 8 players, just grab the first 7 we find and assure that invoker is in it
+                if len(toons_in_zone) > 8:
+                    if toon.getDoId() in toons_in_zone:
+                        toons_in_zone.remove(toon)
+
+                    toons_in_zone = toons_in_zone[0:7]
+                    toons_in_zone.append(toon)
+
+                zone = hood.lobbyMgr.createBossOffice([t.getDoId() for t in toons_in_zone])
+                for t in toons_in_zone:
+                    t.sendUpdate('forceEnterBoss', [t.zoneId, zone])
+                return f'Successfully created a boss for {len(toons_in_zone)} toons!!'
+
         return 'Cog HQ hood data not found!'
 
 

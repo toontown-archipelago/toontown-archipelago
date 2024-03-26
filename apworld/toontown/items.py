@@ -103,11 +103,10 @@ class ToontownItemName(enum.Enum):
     MONEY_2000 = "2000 Jellybeans"
 
     ### Gag XP Bundles ###
-    XP_500  = "500 Gag XP Bundle"
-    XP_1000 = "1000 Gag XP Bundle"
-    XP_1500 = "1500 Gag XP Bundle"
-    XP_2000 = "2000 Gag XP Bundle"
-    # XP_2500 = "2500 Gag XP Bundle"
+    XP_10 = "10% Gag XP Bundle"
+    XP_15 = "15% Gag XP Bundle"
+    XP_20 = "20% Gag XP Bundle"
+
 
     ### Reward Bundles ###
     SOS_REWARD       = "Random SOS Card"
@@ -221,11 +220,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.MONEY_500,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_2000,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_500,           ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_1000,          ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_1500,          ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_2000,          ItemClassification.filler),
-    # ToontownItemDefinition(ToontownItemName.XP_2500,          ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_10,           ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_15,          ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_20,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.SOS_REWARD,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.UNITE_REWARD,     ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD, ItemClassification.filler),
@@ -306,10 +303,9 @@ JUNK_WEIGHTS = {
     ToontownItemName.MONEY_1000:       0.5,
     ToontownItemName.MONEY_2000:       0.5,
 
-    ToontownItemName.XP_500:           0.7,
-    ToontownItemName.XP_1000:          0.5,
-    ToontownItemName.XP_1500:          0.4,
-    ToontownItemName.XP_2000:          0.3,
+    ToontownItemName.XP_10:            0.7,
+    ToontownItemName.XP_15:            0.5,
+    ToontownItemName.XP_20:            0.3,
 
     ToontownItemName.SOS_REWARD:       0.65,
     ToontownItemName.UNITE_REWARD:     0.65,
