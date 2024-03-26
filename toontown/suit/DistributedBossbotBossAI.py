@@ -247,13 +247,15 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         diffInfo = ToontownGlobals.BossbotBossDifficultySettings[self.battleDifficulty]
         self.diffInfo = diffInfo
         self.numTables = diffInfo[0]
-        if len(self.involvedToons) == 1:
-            self.numDinersPerTable = math.ceil(diffInfo[1] * 0.75)
-        else:
-            self.numDinersPerTable = diffInfo[1]
+        self.numDinersPerTable = diffInfo[1]
         dinerLevel = diffInfo[2]
         for i in range(self.numTables):
-            newTable = DistributedBanquetTableAI.DistributedBanquetTableAI(self.air, self, i, self.numDinersPerTable, dinerLevel)
+            if len(self.involvedToons) == 1:
+                tableVariation = random.choice([0.5, 0.75])
+                diners = math.ceil(self.numDinersPerTable * tableVariation)
+                newTable = DistributedBanquetTableAI.DistributedBanquetTableAI(self.air, self, i, diners, dinerLevel)
+            else:
+                newTable = DistributedBanquetTableAI.DistributedBanquetTableAI(self.air, self, i, self.numDinersPerTable, dinerLevel)
             self.tables.append(newTable)
             newTable.generateWithRequired(self.zoneId)
 

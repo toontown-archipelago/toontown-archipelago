@@ -406,7 +406,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
 def CanFightVP(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachSBHQ, *args) and passes_rule(Rule.SellbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSixOffenseGag, *args)
+            and passes_rule(Rule.HasLevelFiveOffenseGag, *args)
 
 
 @rule(Rule.CanFightCFO)
@@ -427,7 +427,7 @@ def CanFightCJ(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, p
 def CanFightCEO(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachBBHQ, *args) and passes_rule(Rule.BossbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSevenOffenseGag, *args)
+            and passes_rule(Rule.HasLevelEightOffenseGag, *args)
 
 
 @rule(Rule.AllBossesDefeated)
