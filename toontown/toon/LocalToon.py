@@ -2056,6 +2056,10 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.areaSanityForceMove()
 
     def areaSanityForceMove(self):
+        # Ignore if we're in TTC
+        if self.getZoneId() == ToontownGlobals.ToontownCentral:
+            return
+
         # Huge TPSanity barrier!
         tpsanity = self.slotData.get('tpsanity')
         if tpsanity != TPSanity.option_keys:
