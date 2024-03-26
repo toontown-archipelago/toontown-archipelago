@@ -1,4 +1,5 @@
 # Represents logic for what to do when we are given an item from AP
+import math
 from enum import IntEnum
 
 import random
@@ -495,14 +496,16 @@ class GagExpBundleAward(APReward):
 
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("You were given a\nbundle of "),
-            MinimalJsonMessagePart(f"{self.amount} gag experience", color='cyan'),
-            MinimalJsonMessagePart("!"),
+            MinimalJsonMessagePart("You were given a fill of\n"),
+            MinimalJsonMessagePart(f"{self.amount}% experience", color='cyan'),
+            MinimalJsonMessagePart(" in each Gag Track!"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
         for index, _ in enumerate(ToontownBattleGlobals.Tracks):
-            av.experience.addExp(index, self.amount)
+            currentCap = min(av.experience.getExperienceCapForTrack(index), ToontownGlobals.regMaxSkill)
+            exptoAdd = math.ceil(currentCap * (self.amount/100))
+            av.experience.addExp(index, exptoAdd)
         av.b_setExperience(av.experience.getCurrentExperience())
 
 
@@ -665,11 +668,9 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MONEY_500.value: JellybeanReward(500),
     ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
     ToontownItemName.MONEY_2000.value: JellybeanReward(2000),
-    ToontownItemName.XP_500.value: GagExpBundleAward(500),
-    ToontownItemName.XP_1000.value: GagExpBundleAward(1000),
-    ToontownItemName.XP_1500.value: GagExpBundleAward(1500),
-    ToontownItemName.XP_2000.value: GagExpBundleAward(2000),
-    # ToontownItemName.XP_2500.value: GagExpBundleAward(2500),
+    ToontownItemName.XP_10.value: GagExpBundleAward(10),
+    ToontownItemName.XP_15.value: GagExpBundleAward(15),
+    ToontownItemName.XP_20.value: GagExpBundleAward(20),
     ToontownItemName.SOS_REWARD.value: BossRewardAward(BossRewardAward.SOS),
     ToontownItemName.UNITE_REWARD.value: BossRewardAward(BossRewardAward.UNITE),
     ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP),
