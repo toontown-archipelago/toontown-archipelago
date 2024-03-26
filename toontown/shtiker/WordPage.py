@@ -1,3 +1,4 @@
+from direct.gui import DirectGuiGlobals
 from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.interval.IntervalGlobal import *
@@ -10,6 +11,8 @@ from toontown.toon import Toon
 from toontown.toon import ToonDNA
 from toontown.spellbook.MagicWordIndex import *
 from . import ShtikerPage
+from ..util.ui import make_dsl_scrollable
+
 PageMode = IntEnum('PageMode', ('Words', 'IDs', 'Acc1', 'Acc2'))
 
 class WordPage(ShtikerPage.ShtikerPage):
@@ -215,6 +218,7 @@ class WordsTabPage(DirectFrame):
                                              itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                              itemFrame_borderWidth=(0.01, 0.01),
                                              numItemsVisible=14, items=self.shownMagicWords)
+        make_dsl_scrollable(self.scrollList)
         self.slider = DirectSlider(parent=self, range=(len(self.shownMagicWords), 0),
                                    scale=(0.7, 0.7, 0.515), pos=(-0.1, 0, -0.045),
                                    pageSize=1, orientation=DGG.VERTICAL, command=self.scrollListTo,
@@ -563,8 +567,6 @@ class ClothingTabPage(DirectFrame):
         self.freakSeq = Sequence(Func(self.nakedLabel.show), SoundInterval(loader.loadSfx('phase_9/audio/sfx/CHQ_GOON_tractor_beam_alarmed.ogg')), Func(self.nakedLabel.hide), Func(self.enableClothButton, 1))
         self.nakedLabel.hide()
 
-
-
     def unload(self):
         for x in range(len(ToonDNA.Shirts)):
             del self.l['self.shirts' + str(x)]
@@ -886,7 +888,10 @@ class ClothingTabPage(DirectFrame):
                 self.model.find('**/sleeves').setColor(ToonDNA.ClothesColors[wordNum], 1)
             else:
                 self.sleeve = wordNum
-                self.model.find('**/sleeves').setTexture(loader.loadTexture(ToonDNA.Sleeves[wordNum]), 1)
+                try:
+                    self.model.find('**/sleeves').setTexture(loader.loadTexture(ToonDNA.Sleeves[wordNum]), 1)
+                except IOError:
+                    pass
         elif clothType == 'pants':
             if isColorChange:
                 self.pantColor = wordNum
@@ -902,10 +907,13 @@ class ClothingTabPage(DirectFrame):
                 if isColorChange:
                     self.model.find('**/torso-bot').setColor(ToonDNA.ClothesColors[wordNum], 1)
                 else:
-                    if self.gender == 1:
-                        self.model.find('**/torso-bot').setTexture(loader.loadTexture(ToonDNA.GirlBottoms[wordNum][0]), 1)
-                    else:
-                        self.model.find('**/torso-bot').setTexture(loader.loadTexture(ToonDNA.BoyShorts[wordNum]), 1)
+                    try:
+                        if self.gender == 1:
+                            self.model.find('**/torso-bot').setTexture(loader.loadTexture(ToonDNA.GirlBottoms[wordNum][0]), 1)
+                        else:
+                            self.model.find('**/torso-bot').setTexture(loader.loadTexture(ToonDNA.BoyShorts[wordNum]), 1)
+                    except IOError:
+                        pass
         elif clothType == 'color':
             self.color = wordNum
         else:
@@ -914,7 +922,10 @@ class ClothingTabPage(DirectFrame):
                 self.model.find('**/torso-top').setColor(ToonDNA.ClothesColors[wordNum], 1)
             else:
                 self.shirt = wordNum
-                self.model.find('**/torso-top').setTexture(loader.loadTexture(ToonDNA.Shirts[wordNum]), 1)
+                try:
+                    self.model.find('**/torso-top').setTexture(loader.loadTexture(ToonDNA.Shirts[wordNum]), 1)
+                except IOError:
+                    pass
 
         if clothType == 'shirt':
             self.shirtLabel['text'] = "Shirt ID: " + str(self.shirt) + ' / ' + str(self.shirtColor)
@@ -941,6 +952,7 @@ class ClothingTabPage(DirectFrame):
                                                   itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                   itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=6,
                                                   items=list(self.shirtList))
+        make_dsl_scrollable(self.shirtScrollList)
         self.shirtScrollList.incButton.reparentTo(hidden)
         self.shirtScrollList.decButton.reparentTo(hidden)
         self.shirtslider = DirectSlider(parent=self, range=(len(self.shirtIDs), 0),
@@ -960,6 +972,7 @@ class ClothingTabPage(DirectFrame):
                                                   itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                   itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=6,
                                                   items=list(self.sleeveList))
+        make_dsl_scrollable(self.sleeveScrollList)
         self.sleeveScrollList.incButton.reparentTo(hidden)
         self.sleeveScrollList.decButton.reparentTo(hidden)
         self.sleeveslider = DirectSlider(parent=self, range=(len(self.sleeveIDs), 0),
@@ -979,6 +992,7 @@ class ClothingTabPage(DirectFrame):
                                                  itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                  itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=6,
                                                  items=list(self.boyPantList))
+        make_dsl_scrollable(self.pantScrollList1)
         self.pantScrollList1.incButton.reparentTo(hidden)
         self.pantScrollList1.decButton.reparentTo(hidden)
         self.pantslider1 = DirectSlider(parent=self, range=(len(self.boyPantIDs), 0),
@@ -1002,6 +1016,7 @@ class ClothingTabPage(DirectFrame):
                                                   itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                   itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=6,
                                                   items=list(self.girlPantList))
+        make_dsl_scrollable(self.pantScrollList2)
         self.pantScrollList2.incButton.reparentTo(hidden)
         self.pantScrollList2.decButton.reparentTo(hidden)
         self.pantslider2 = DirectSlider(parent=self, range=(len(self.girlPantIDs), 0),
@@ -1025,6 +1040,7 @@ class ClothingTabPage(DirectFrame):
                                                   itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                   itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=6,
                                                   items=list(self.colorList))
+        make_dsl_scrollable(self.colorScrollList)
         self.colorScrollList.incButton.reparentTo(hidden)
         self.colorScrollList.decButton.reparentTo(hidden)
         self.colorslider = DirectSlider(parent=self, range=(len(self.colorIDs), 0),
@@ -1038,6 +1054,7 @@ class ClothingTabPage(DirectFrame):
                                         thumb_relief=None, thumb_geom_hpr=(0, 0, -90), thumb_geom_scale=(0.75, 1, 0.5))
         gui.removeNode()
         coolbutton.removeNode()
+
 
 class AccTabPage1(DirectFrame):
     notify = DirectNotifyGlobal.directNotify.newCategory('AccTabPage1')
@@ -1330,6 +1347,7 @@ class AccTabPage1(DirectFrame):
                                                   itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                   itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=6,
                                                   items=list(self.hatList))
+        make_dsl_scrollable(self.hatScrollList)
         self.hatScrollList.incButton.reparentTo(hidden)
         self.hatScrollList.decButton.reparentTo(hidden)
         self.hatslider = DirectSlider(parent=self, range=(len(self.hatIDs), 0),
@@ -1349,6 +1367,7 @@ class AccTabPage1(DirectFrame):
                                                   itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                   itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=4,
                                                   items=list(self.hatTexList))
+        make_dsl_scrollable(self.hatTexScrollList)
         self.hatTexScrollList.incButton.reparentTo(hidden)
         self.hatTexScrollList.decButton.reparentTo(hidden)
         self.hattexslider = DirectSlider(parent=self, range=(len(self.hatTexIDs), 0),
@@ -1368,6 +1387,7 @@ class AccTabPage1(DirectFrame):
                                                  itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                  itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=6,
                                                  items=list(self.glassesList))
+        make_dsl_scrollable(self.glassesScrollList)
         self.glassesScrollList.incButton.reparentTo(hidden)
         self.glassesScrollList.decButton.reparentTo(hidden)
         self.glassesslider = DirectSlider(parent=self, range=(len(self.glassesIDs), 0),
@@ -1388,6 +1408,7 @@ class AccTabPage1(DirectFrame):
                                                   itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                   itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=4,
                                                   items=list(self.glassesTexList))
+        make_dsl_scrollable(self.glassesTexScrollList)
         self.glassesTexScrollList.incButton.reparentTo(hidden)
         self.glassesTexScrollList.decButton.reparentTo(hidden)
         self.glassestexslider = DirectSlider(parent=self, range=(len(self.glassesTexIDs), 0),
@@ -1401,6 +1422,7 @@ class AccTabPage1(DirectFrame):
                                         thumb_relief=None, thumb_geom_hpr=(0, 0, -90), thumb_geom_scale=(0.5, 1, 0.5))
         gui.removeNode()
         coolbutton.removeNode()
+
 
 class AccTabPage2(DirectFrame):
     notify = DirectNotifyGlobal.directNotify.newCategory('AccTabPage2')
@@ -1722,6 +1744,7 @@ class AccTabPage2(DirectFrame):
                                                   itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                   itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=6,
                                                   items=list(self.backpackList))
+        make_dsl_scrollable(self.backpackScrollList)
         self.backpackScrollList.incButton.reparentTo(hidden)
         self.backpackScrollList.decButton.reparentTo(hidden)
         self.backpackslider = DirectSlider(parent=self, range=(len(self.backpackIDs), 0),
@@ -1741,6 +1764,7 @@ class AccTabPage2(DirectFrame):
                                                   itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                   itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=4,
                                                   items=list(self.backpackTexList))
+        make_dsl_scrollable(self.backpackTexScrollList)
         self.backpackTexScrollList.incButton.reparentTo(hidden)
         self.backpackTexScrollList.decButton.reparentTo(hidden)
         self.backpacktexslider = DirectSlider(parent=self, range=(len(self.backpackTexIDs), 0),
@@ -1760,6 +1784,7 @@ class AccTabPage2(DirectFrame):
                                                  itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                  itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=6,
                                                  items=list(self.shoesList))
+        make_dsl_scrollable(self.shoesScrollList)
         self.shoesScrollList.incButton.reparentTo(hidden)
         self.shoesScrollList.decButton.reparentTo(hidden)
         self.shoesslider = DirectSlider(parent=self, range=(len(self.shoesIDs), 0),
@@ -1780,6 +1805,7 @@ class AccTabPage2(DirectFrame):
                                                   itemFrame_frameColor=(0.85, 0.95, 1, 1),
                                                   itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=4,
                                                   items=list(self.shoesTexList))
+        make_dsl_scrollable(self.shoesTexScrollList)
         self.shoesTexScrollList.incButton.reparentTo(hidden)
         self.shoesTexScrollList.decButton.reparentTo(hidden)
         self.shoestexslider = DirectSlider(parent=self, range=(len(self.shoesTexIDs), 0),
