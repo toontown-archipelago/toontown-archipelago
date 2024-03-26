@@ -253,10 +253,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.nametag.manage(base.marginManager)
         DistributedToon.DistributedToon.announceGenerate(self)
 
-        # TODO: this doMethodLater is hacky...
-        # can someone move this to a call where it's guaranteed to work?
-        taskMgr.doMethodLater(1.0, self.setArchipelagoAuto, 'setArchipelagoAuto')
-
     def disable(self):
         self.laffMeter.destroy()
         del self.laffMeter
@@ -2040,6 +2036,12 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         super().setSlotData(slotData)
         self.doAreaSanityCheck()
 
+    def enterPlaceWalk(self):
+        if self.hasConnected():
+            self.startAreaSanityCheck()
+        else:
+            self.setArchipelagoAuto()
+
     def setArchipelagoAuto(self, _=None):
         slotName = os.environ.get('ARCHIPELAGO_SLOT', '')
         serverAddr = os.environ.get('ARCHIPELAGO_ADDRESS', '')
@@ -2054,6 +2056,10 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.areaSanityForceMove()
 
     def areaSanityForceMove(self):
+        # Ignore if we're in TTC
+        if self.getZoneId() == ToontownGlobals.ToontownCentral:
+            return
+
         # Huge TPSanity barrier!
         tpsanity = self.slotData.get('tpsanity')
         if tpsanity != TPSanity.option_keys:

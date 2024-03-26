@@ -914,10 +914,10 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DROP_BOAT_UNLOCKED,           ToontownLocationType.GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSeven]),
     # endregion
     # region Bosses
-    ToontownLocationDefinition(ToontownLocationName.SELLBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.SBHQ, [Rule.CanFightVP],  [ItemRule.RestrictDisguises]),
-    ToontownLocationDefinition(ToontownLocationName.CASHBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.CBHQ, [Rule.CanFightCFO], [ItemRule.RestrictDisguises]),
-    ToontownLocationDefinition(ToontownLocationName.LAWBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.LBHQ, [Rule.CanFightCJ],  [ItemRule.RestrictDisguises]),
-    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.BBHQ, [Rule.CanFightCEO], [ItemRule.RestrictDisguises]),
+    ToontownLocationDefinition(ToontownLocationName.SELLBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.SBHQ, [Rule.CanFightVP]),
+    ToontownLocationDefinition(ToontownLocationName.CASHBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.CBHQ, [Rule.CanFightCFO]),
+    ToontownLocationDefinition(ToontownLocationName.LAWBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.LBHQ, [Rule.CanFightCJ]),
+    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.BBHQ, [Rule.CanFightCEO]),
     # endregion
 ]
 

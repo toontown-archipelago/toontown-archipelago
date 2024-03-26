@@ -2844,3 +2844,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def setSlotData(self, slotData) -> None:
         self.slotData = AstronDict.fromStruct(slotData)
+
+    def hasConnected(self) -> bool:
+        # kinda hacky
+        return bool(self.slotData)
