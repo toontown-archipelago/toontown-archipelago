@@ -297,61 +297,73 @@ class ToontownLocationName(Enum):
     TTC_TREASURE_3 =                            "Toontown Central AP Treasure 3"
     TTC_TREASURE_4 =                            "Toontown Central AP Treasure 4"
     TTC_TREASURE_5 =                            "Toontown Central AP Treasure 5"
+    TTC_TREASURE_6 =                            "Toontown Central AP Treasure 6"
     DD_TREASURE_1 =                             "Donald's Dock AP Treasure 1"
     DD_TREASURE_2 =                             "Donald's Dock AP Treasure 2"
     DD_TREASURE_3 =                             "Donald's Dock AP Treasure 3"
     DD_TREASURE_4 =                             "Donald's Dock AP Treasure 4"
     DD_TREASURE_5 =                             "Donald's Dock AP Treasure 5"
+    DD_TREASURE_6 =                             "Donald's Dock AP Treasure 6"
     DG_TREASURE_1 =                             "Daisy Gardens AP Treasure 1"
     DG_TREASURE_2 =                             "Daisy Gardens AP Treasure 2"
     DG_TREASURE_3 =                             "Daisy Gardens AP Treasure 3"
     DG_TREASURE_4 =                             "Daisy Gardens AP Treasure 4"
     DG_TREASURE_5 =                             "Daisy Gardens AP Treasure 5"
+    DG_TREASURE_6 =                             "Daisy Gardens AP Treasure 6"
     MML_TREASURE_1 =                            "Minnie's Melodyland AP Treasure 1"
     MML_TREASURE_2 =                            "Minnie's Melodyland AP Treasure 2"
     MML_TREASURE_3 =                            "Minnie's Melodyland AP Treasure 3"
     MML_TREASURE_4 =                            "Minnie's Melodyland AP Treasure 4"
     MML_TREASURE_5 =                            "Minnie's Melodyland AP Treasure 5"
+    MML_TREASURE_6 =                            "Minnie's Melodyland AP Treasure 6"
     TB_TREASURE_1 =                             "The Brrrgh AP Treasure 1"
     TB_TREASURE_2 =                             "The Brrrgh AP Treasure 2"
     TB_TREASURE_3 =                             "The Brrrgh AP Treasure 3"
     TB_TREASURE_4 =                             "The Brrrgh AP Treasure 4"
     TB_TREASURE_5 =                             "The Brrrgh AP Treasure 5"
+    TB_TREASURE_6 =                             "The Brrrgh AP Treasure 6"
     DDL_TREASURE_1 =                            "Donald's Dreamland AP Treasure 1"
     DDL_TREASURE_2 =                            "Donald's Dreamland AP Treasure 2"
     DDL_TREASURE_3 =                            "Donald's Dreamland AP Treasure 3"
     DDL_TREASURE_4 =                            "Donald's Dreamland AP Treasure 4"
     DDL_TREASURE_5 =                            "Donald's Dreamland AP Treasure 5"
+    DDL_TREASURE_6 =                            "Donald's Dreamland AP Treasure 6"
     GS_TREASURE_1 =                             "Goofy Speedway AP Treasure 1"
     GS_TREASURE_2 =                             "Goofy Speedway AP Treasure 2"
     GS_TREASURE_3 =                             "Goofy Speedway AP Treasure 3"
     GS_TREASURE_4 =                             "Goofy Speedway AP Treasure 4"
     GS_TREASURE_5 =                             "Goofy Speedway AP Treasure 5"
+    GS_TREASURE_6 =                             "Goofy Speedway AP Treasure 6"
     AA_TREASURE_1 =                             "Acorn Acres AP Treasure 1"
     AA_TREASURE_2 =                             "Acorn Acres AP Treasure 2"
     AA_TREASURE_3 =                             "Acorn Acres AP Treasure 3"
     AA_TREASURE_4 =                             "Acorn Acres AP Treasure 4"
     AA_TREASURE_5 =                             "Acorn Acres AP Treasure 5"
+    AA_TREASURE_6 =                             "Acorn Acres AP Treasure 6"
     SBHQ_TREASURE_1 =                           "Sellbot HQ AP Treasure 1"
     SBHQ_TREASURE_2 =                           "Sellbot HQ AP Treasure 2"
     SBHQ_TREASURE_3 =                           "Sellbot HQ AP Treasure 3"
     SBHQ_TREASURE_4 =                           "Sellbot HQ AP Treasure 4"
     SBHQ_TREASURE_5 =                           "Sellbot HQ AP Treasure 5"
+    SBHQ_TREASURE_6 =                           "Sellbot HQ AP Treasure 6"
     CBHQ_TREASURE_1 =                           "Cashbot HQ AP Treasure 1"
     CBHQ_TREASURE_2 =                           "Cashbot HQ AP Treasure 2"
     CBHQ_TREASURE_3 =                           "Cashbot HQ AP Treasure 3"
     CBHQ_TREASURE_4 =                           "Cashbot HQ AP Treasure 4"
     CBHQ_TREASURE_5 =                           "Cashbot HQ AP Treasure 5"
+    CBHQ_TREASURE_6 =                           "Cashbot HQ AP Treasure 6"
     LBHQ_TREASURE_1 =                           "Lawbot HQ AP Treasure 1"
     LBHQ_TREASURE_2 =                           "Lawbot HQ AP Treasure 2"
     LBHQ_TREASURE_3 =                           "Lawbot HQ AP Treasure 3"
     LBHQ_TREASURE_4 =                           "Lawbot HQ AP Treasure 4"
     LBHQ_TREASURE_5 =                           "Lawbot HQ AP Treasure 5"
+    LBHQ_TREASURE_6 =                           "Lawbot HQ AP Treasure 6"
     BBHQ_TREASURE_1 =                           "Bossbot HQ AP Treasure 1"
     BBHQ_TREASURE_2 =                           "Bossbot HQ AP Treasure 2"
     BBHQ_TREASURE_3 =                           "Bossbot HQ AP Treasure 3"
     BBHQ_TREASURE_4 =                           "Bossbot HQ AP Treasure 4"
     BBHQ_TREASURE_5 =                           "Bossbot HQ AP Treasure 5"
+    BBHQ_TREASURE_6 =                           "Bossbot HQ AP Treasure 6"
     FRONT_FACTORY_BARREL_1 =                    "Front Factory West Silo Barrel"
     FRONT_FACTORY_BARREL_2 =                    "Front Factory East Silo Barrel"
     FRONT_FACTORY_BARREL_3 =                    "Front Factory Warehouse Barrel"
@@ -428,6 +440,7 @@ class ToontownLocationType(IntEnum):
     PLAYGROUND_3    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_4    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_5    = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_6    = auto()  # Locations for discovering playground treasures
     GAG_TRAINING    = auto()  # Locations for training gags
     TTC_TASKS    = auto()  # Locations for TTC tasks
     DD_TASKS     = auto()  # Locations for DD tasks
@@ -459,6 +472,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.TTC_TREASURE_3,
         ToontownLocationName.TTC_TREASURE_4,
         ToontownLocationName.TTC_TREASURE_5,
+        ToontownLocationName.TTC_TREASURE_6,
     ],
     ToontownRegionName.DD:   [
         ToontownLocationName.DD_TREASURE_1,
@@ -466,6 +480,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.DD_TREASURE_3,
         ToontownLocationName.DD_TREASURE_4,
         ToontownLocationName.DD_TREASURE_5,
+        ToontownLocationName.DD_TREASURE_6,
     ],
     ToontownRegionName.DG:   [
         ToontownLocationName.DG_TREASURE_1,
@@ -473,6 +488,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.DG_TREASURE_3,
         ToontownLocationName.DG_TREASURE_4,
         ToontownLocationName.DG_TREASURE_5,
+        ToontownLocationName.DG_TREASURE_6,
     ],
     ToontownRegionName.MML:  [
         ToontownLocationName.MML_TREASURE_1,
@@ -480,6 +496,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.MML_TREASURE_3,
         ToontownLocationName.MML_TREASURE_4,
         ToontownLocationName.MML_TREASURE_5,
+        ToontownLocationName.MML_TREASURE_6,
     ],
     ToontownRegionName.TB:   [
         ToontownLocationName.TB_TREASURE_1,
@@ -487,6 +504,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.TB_TREASURE_3,
         ToontownLocationName.TB_TREASURE_4,
         ToontownLocationName.TB_TREASURE_5,
+        ToontownLocationName.TB_TREASURE_6,
     ],
     ToontownRegionName.DDL:  [
         ToontownLocationName.DDL_TREASURE_1,
@@ -494,6 +512,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.DDL_TREASURE_3,
         ToontownLocationName.DDL_TREASURE_4,
         ToontownLocationName.DDL_TREASURE_5,
+        ToontownLocationName.DDL_TREASURE_6,
     ],
     ToontownRegionName.GS:   [
         ToontownLocationName.GS_TREASURE_1,
@@ -501,6 +520,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.GS_TREASURE_3,
         ToontownLocationName.GS_TREASURE_4,
         ToontownLocationName.GS_TREASURE_5,
+        ToontownLocationName.GS_TREASURE_6,
     ],
     ToontownRegionName.AA:   [
         ToontownLocationName.AA_TREASURE_1,
@@ -508,6 +528,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.AA_TREASURE_3,
         ToontownLocationName.AA_TREASURE_4,
         ToontownLocationName.AA_TREASURE_5,
+        ToontownLocationName.AA_TREASURE_6,
     ],
     ToontownRegionName.SBHQ: [
         ToontownLocationName.SBHQ_TREASURE_1,
@@ -515,6 +536,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.SBHQ_TREASURE_3,
         ToontownLocationName.SBHQ_TREASURE_4,
         ToontownLocationName.SBHQ_TREASURE_5,
+        ToontownLocationName.SBHQ_TREASURE_6,
     ],
     ToontownRegionName.CBHQ: [
         ToontownLocationName.CBHQ_TREASURE_1,
@@ -522,6 +544,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.CBHQ_TREASURE_3,
         ToontownLocationName.CBHQ_TREASURE_4,
         ToontownLocationName.CBHQ_TREASURE_5,
+        ToontownLocationName.CBHQ_TREASURE_6,
     ],
     ToontownRegionName.LBHQ: [
         ToontownLocationName.LBHQ_TREASURE_1,
@@ -529,6 +552,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.LBHQ_TREASURE_3,
         ToontownLocationName.LBHQ_TREASURE_4,
         ToontownLocationName.LBHQ_TREASURE_5,
+        ToontownLocationName.LBHQ_TREASURE_6,
     ],
     ToontownRegionName.BBHQ: [
         ToontownLocationName.BBHQ_TREASURE_1,
@@ -536,6 +560,7 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
         ToontownLocationName.BBHQ_TREASURE_3,
         ToontownLocationName.BBHQ_TREASURE_4,
         ToontownLocationName.BBHQ_TREASURE_5,
+        ToontownLocationName.BBHQ_TREASURE_6,
     ],
 }
 
@@ -546,6 +571,7 @@ TREASURE_LOCATION_TYPES: list[ToontownLocationType] = [
     ToontownLocationType.PLAYGROUND_3,
     ToontownLocationType.PLAYGROUND_4,
     ToontownLocationType.PLAYGROUND_5,
+    ToontownLocationType.PLAYGROUND_6,
 ]
 
 
