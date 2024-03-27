@@ -76,6 +76,7 @@ class ClerkPurchase(PurchaseBase):
         return sum(newGags.values())
 
     def __handleFastRestock(self):
+        # First, get the old gags we had for cost calculation purposes and reset the inventory
         oldGags = self.__getPropCounts()
         self.toon.inventory.clearInventory()
         self.toon.inventory.updateGUI()  # We update the GUI here to reflect that we have 0 gags for our animation.
@@ -87,15 +88,31 @@ class ClerkPurchase(PurchaseBase):
 
         # If we didn't do anything
         if cost <= 0:
+            self.toon.inventory.updateGUI()
             return
 
-        # If we can't afford this
+        # If we can't afford this revert back to the old inventory and cancel
         if self.toon.getMoney() < cost:
+            self.toon.inventory.clearInventory()
+            for gag, count in oldGags.items():
+                track, level = gag
+                self.toon.inventory.setItem(track, level, count)
+            self.toon.inventory.updateGUI()
             return
 
+        # It is now safe to animate the gags being fast restocked!
+
+        # We put the sfx in a method here so it sounds cleaner to be played properly, not sure if better way to do this
         def doTickSfx():
             tickSfx = base.loader.loadSfx('phase_3.5/audio/sfx/tick_counter.ogg')
             base.playSfx(tickSfx)
+
+        # Callback method for when the animation is finished. Set our money, update the GUI and send this purchase out
+        def callback():
+            self.toon.setMoney(self.toon.getMoney() - cost)
+            self.toon.inventory.updateGUI()
+            messenger.send('boughtGag')
+
 
         popoutIval = Parallel()
         delay = 0
@@ -119,7 +136,7 @@ class ClerkPurchase(PurchaseBase):
                 popoutIval.append(Sequence(Wait(delay), thisLevelSeq))
                 delay += .05
 
-        popoutIval.append(Sequence(Wait(delay), Func(self.toon.setMoney, self.toon.getMoney() - cost), Func(messenger.send, 'boughtGag')))
+        popoutIval.append(Sequence(Wait(delay), Func(callback)))
         popoutIval.start()
 
     def enterPurchase(self):
