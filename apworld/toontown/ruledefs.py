@@ -369,7 +369,7 @@ def TierEightCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
 @rule(Rule.HasLevelFiveOffenseGag,  5)
 @rule(Rule.HasLevelSixOffenseGag,   6)
 @rule(Rule.HasLevelSevenOffenseGag, 7)
-@rule(Rule.HasLevelEightOffenseGag, 8)
+@rule(Rule.HasLevelEightOffenseGag, 7)
 def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     LEVEL = argument[0]
     OVERLEVEL = min(argument[0] + 1, 7)
