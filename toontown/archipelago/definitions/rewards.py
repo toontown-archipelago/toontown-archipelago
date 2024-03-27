@@ -46,6 +46,14 @@ class APReward:
     def get_image_path(self) -> str:
         return 'phase_14/maps/ap_icon.png'
 
+    # Override to set the scale of an image you want to show up on the display
+    def get_image_scale(self) -> float:
+        return .08
+
+    # Override to set the position of an image you want to show up on the display
+    def get_image_pos(self):
+        return (.12, 0, .1)
+
     # Returns a string to show on the display when received, should follow the basic format like so:
     # Your x is now y!\n\nFrom: {fromPlayer}
     def get_reward_string(self, fromPlayer: str, isSelf=False) -> str:
@@ -132,6 +140,16 @@ class GagTrainingFrameReward(APReward):
         DROP: 'cyan'
     }
 
+    TRACK_TO_ICON = {
+        TOONUP: "toonup_%s",
+        TRAP: "trap_%s",
+        LURE: "lure_%s",
+        SOUND: "sound_%s",
+        THROW: "throw_%s",
+        SQUIRT: "squirt_%s",
+        DROP: "drop_%s",
+    }
+
     def __init__(self, track):
         self.track = track
 
@@ -139,11 +157,32 @@ class GagTrainingFrameReward(APReward):
     # todo: new system was two steps forward one step back in this regard
     def formatted_header(self) -> str:
         track_name_color = self.TRACK_TO_COLOR.get(self.track)
-        return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Received a training frame!\nYour "),
-            MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
-            MinimalJsonMessagePart(" gags have more potential!"),
-        ])
+        level = base.localAvatar.getTrackAccessLevel(self.track)
+        # Check for organic text popup first
+        if base.localAvatar.getTrackBonusLevel()[self.track] == 7:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("Received a training frame!\nYour "),
+                MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
+                MinimalJsonMessagePart(" Gags are now organic!"),
+            ])
+        # Check for new levels
+        if level <= 7:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("Received a training frame!\nYour "),
+                MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
+                MinimalJsonMessagePart(" Gags have more potential!"),
+                ])
+        else:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("Received a training frame!\nYou can now over-level your "),
+                MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
+                MinimalJsonMessagePart(" Gags!"),
+            ])
+
+    def get_image_path(self) -> str:
+        level = base.localAvatar.getTrackAccessLevel(self.track)
+        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(level, 7))
+        return f'phase_14/maps/gags/{ap_icon}.png'
 
     def apply(self, av: "DistributedToonAI"):
 

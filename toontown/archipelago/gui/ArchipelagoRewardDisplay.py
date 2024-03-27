@@ -27,8 +27,17 @@ class APRewardGift:
     def get_display_string(self) -> str:
         return self.reward.get_reward_string(self.gifter, self.isLocal)
 
+    def get_image_path(self) -> str:
+        return self.reward.get_image_path()
+
     def shouldDisplay(self) -> bool:
         return type(self.reward) is not IgnoreReward
+
+    def get_image_scale(self) -> float:
+        return self.reward.get_image_scale()
+
+    def get_image_pos(self):
+        return self.reward.get_image_pos()
 
 
 class ArchipelagoRewardDisplay(DirectLabel):
@@ -82,9 +91,7 @@ class ArchipelagoRewardDisplay(DirectLabel):
         self['pos'] = self.OFFSCREEN_POS  # todo change to offscreen
 
         # Setup the image
-        self.display_image()
-        self['image_scale'] = self.IMAGE_SCALE
-        self['image_pos'] = self.IMAGE_POS
+        self.display_image(scale=self.IMAGE_SCALE, pos=self.IMAGE_POS)
 
         # Setup the text
         self['text_scale'] = self.TEXT_SCALE
@@ -94,13 +101,13 @@ class ArchipelagoRewardDisplay(DirectLabel):
         self.setText('Your SOMETHING now\ndoes SOMETHING COOL!\n\nFrom: SOME PLAYER')
 
     # Updates the image shown on the left side
-    def display_image(self, path=None):
+    def display_image(self, scale, pos, path=None):
         if path is None:
             path = self.DEFAULT_IMAGE_PATH
         self.setImage(path)
         self.setTransparency(TransparencyAttrib.MAlpha)
-        self['image_scale'] = .08
-        self['image_pos'] = (.12, 0, .1)
+        self['image_scale'] = scale
+        self['image_pos'] = pos
 
     # Updates the text shown on the right-ish
     def update_text(self, text: str):
@@ -110,6 +117,7 @@ class ArchipelagoRewardDisplay(DirectLabel):
     def display_reward(self, reward: APRewardGift):
         self._update_extra_items_remaining()
         self.setText(reward.get_display_string())
+        self.display_image(reward.get_image_scale(), reward.get_image_pos(), reward.get_image_path())
         self._do_slide_sequence()
 
     # Update the progress bar that signals how long this reward is going to be present on screen
