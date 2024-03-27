@@ -174,9 +174,9 @@ class GagTrainingFrameReward(APReward):
                 ])
         else:
             return global_text_properties.get_raw_formatted_string([
-                MinimalJsonMessagePart("Received a training frame!\nYou can now over-level your "),
+                MinimalJsonMessagePart("Received a training frame!\nYour "),
                 MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
-                MinimalJsonMessagePart(" Gags!"),
+                MinimalJsonMessagePart(" experience can now overflow!"),
             ])
 
     def get_image_path(self) -> str:
