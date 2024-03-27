@@ -33,5 +33,3 @@ class ToontownUberRepository(ToontownInternalRepository):
         self.deliveryManager = self.generateGlobalObject(OTP_DO_ID_TOONTOWN_DELIVERY_MANAGER,
                                                          'DistributedDeliveryManager')
 
-        # Generate our AP Manager...
-        self.archipelagoManager = self.generateGlobalObject(OTP_DO_ID_TOONTOWN_ARCHIPELAGO_MANAGER, 'DistributedArchipelagoManager')

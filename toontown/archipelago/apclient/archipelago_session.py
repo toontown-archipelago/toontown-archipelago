@@ -153,3 +153,13 @@ class ArchipelagoSession:
             MinimalJsonMessagePart(f"{death_component}", color='salmon')
         ])
         self.avatar.d_sendArchipelagoMessage(msg)
+
+    """
+    Methods to retrieve information about an Archipelago Session
+    """
+
+    def getSlotId(self) -> int:
+        return self.client.slot
+
+    def getTeamId(self) -> int:
+        return self.client.team

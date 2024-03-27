@@ -77,6 +77,7 @@ from toontown.minigame import DistributedTugOfWarGame/AI
 from toontown.minigame import DistributedCatchGame/AI
 from toontown.minigame import DistributedDivingGame/AI
 from toontown.minigame import DistributedTargetGame/AI
+from toontown.archipelago.distributed.DistributedArchipelagoManager/AI import DistributedArchipelagoManager/AI
 from toontown.estate import EstateManager/AI
 from toontown.estate import DistributedEstate/AI
 from toontown.estate import DistributedHouse/AI
@@ -303,7 +304,6 @@ from toontown.rpc.AwardManager/UD import AwardManager/UD
 from toontown.uberdog.DistributedCpuInfoMgr/AI/UD import DistributedCpuInfoMgr/AI/UD
 from toontown.uberdog.DistributedSecurityMgr/AI/UD import DistributedSecurityMgr/AI/UD
 from toontown.rpc.RATManager/UD import RATManager/UD
-from toontown.archipelago.distributed.DistributedArchipelagoManager/AI/UD import DistributedArchipelagoManager/AI/UD
 from toontown.uberdog.DistributedInGameNewsMgr/AI/UD import DistributedInGameNewsMgr/AI/UD
 from toontown.uberdog.DistributedWhitelistMgr/AI/UD import DistributedWhitelistMgr/AI/UD
 from toontown.uberdog import TTGameServicesManager/UD
@@ -3923,8 +3923,14 @@ dclass NonRepeatableRandomSource : DistributedObject, NonRepeatableRandomSourceC
   randomSampleAck() airecv;
 };
 
-dclass DistributedArchipelagoManager : DistributedObjectGlobal {
+struct ArchipelagoInformation {
+  uint32 avId;
+  int16 slotId;
+  int16 teamId;
+};
 
+dclass DistributedArchipelagoManager : DistributedObject {
+  sync(ArchipelagoInformation[]) required broadcast ram;
 };
 
 dclass DistributedInGameNewsMgr : DistributedObjectGlobal {

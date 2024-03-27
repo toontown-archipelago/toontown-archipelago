@@ -48,10 +48,6 @@ uberdogs:
       id: 4681
       anonymous: false
 
-    - class: DistributedArchipelagoManager
-      id: 4715
-      anonymous: false
-
 roles:
     - type: clientagent
       bind: 0.0.0.0:7198

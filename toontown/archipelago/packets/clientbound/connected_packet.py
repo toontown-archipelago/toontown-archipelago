@@ -53,6 +53,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Clear the cache, and populate it
         client.slot = self.slot
+        client.team = self.team
         client.slot_id_to_slot_name.clear()
         for id_string, network_slot in self.slot_info.items():
             client.slot_id_to_slot_name[int(id_string)] = network_slot
@@ -173,3 +174,6 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.av.addCheckedLocation(track_one_check)
         client.av.addCheckedLocation(track_two_check)
         client.av.hintPoints = self.hint_points
+
+        # Finally at the very send, tell the AP DOG that there is some info to sync
+        simbase.air.archipelagoManager.updateToonInfo(client.av.doId, self.slot, self.team)
