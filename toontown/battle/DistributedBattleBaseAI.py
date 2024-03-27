@@ -823,7 +823,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             toon = self.getToon(toonId)
             if toon:
                 toon.hp = -1
-                toon.inventory.zeroInv()
+                toon.inventory.clearInventory()
                 self.__handleSuddenExit(toonId, 0)
 
     def signupToon(self, toonId, x, y, z):
@@ -1587,7 +1587,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                         for at in self.activeToons:
                             toon = self.getToon(at)
                             if toon != None:
-                                toon.inventory.NPCMaxOutInv(npc_level)
+                                toon.inventory.maxInventory(maxGagLevel=npc_level)
                                 toon.d_setInventory(toon.inventory.makeNetString())
 
                     elif track == HEAL:

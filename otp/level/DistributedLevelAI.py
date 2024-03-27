@@ -103,7 +103,7 @@ class DistributedLevelAI(DistributedObjectAI.DistributedObjectAI, Level.Level):
         if av and penalty > 0:
             av.takeDamage(penalty)
             if av.getHp() <= 0:
-                av.inventory.zeroInv()
+                av.inventory.clearInventory()
                 av.d_setInventory(av.inventory.makeNetString())
 
     def requestCurrentLevelSpec(self, specHash, entTypeRegHash):

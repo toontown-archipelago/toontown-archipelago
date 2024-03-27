@@ -184,7 +184,7 @@ class TutorialManagerAI(DistributedObjectAI):
         av.b_setHp(15)
         av.b_setMaxHp(15)
 
-        av.inventory.maxOutInv()
+        av.inventory.maxInventory()
 
         av.d_setInventory(av.inventory.makeNetString())
         av.experience.zeroOutExp()

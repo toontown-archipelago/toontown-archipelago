@@ -77,8 +77,11 @@ class ClerkPurchase(PurchaseBase):
 
     def __handleFastRestock(self):
         oldGags = self.__getPropCounts()
-        self.toon.inventory.zeroInv()
-        self.toon.inventory.NPCMaxOutInv()
+        self.toon.inventory.clearInventory()
+        self.toon.inventory.updateGUI()  # We update the GUI here to reflect that we have 0 gags for our animation.
+
+        # Now max out our inventory with default settings (Balanced fill, no clearing etc)
+        self.toon.inventory.maxInventory()
         newGags = self.__getPropCounts()
         cost = self.__calculateRestockCost(oldGags, newGags)
 

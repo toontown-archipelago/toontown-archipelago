@@ -1,3 +1,4 @@
+from enum import auto
 from typing import List, Dict
 
 from panda3d.core import *
@@ -8,7 +9,15 @@ from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 
+
+
 class InventoryBase(DirectObject.DirectObject):
+
+    class FillMode(IntEnum):
+        POWER    = auto()  # Prioritize level
+        BALANCED = auto()  # Prioritize track distribution
+        ALL      = auto()  # Ensure one of each, then do a balanced fill
+
     notify = DirectNotifyGlobal.directNotify.newCategory('InventoryBase')
 
     def __init__(self, toon, invStr = None):
@@ -291,65 +300,101 @@ class InventoryBase(DirectObject.DirectObject):
         self.updateInventory(newInventory)
         return 1
 
-    def maxOutInv(self):
-        for track in range(len(Tracks)):
-            if self.toon.hasTrackAccess(track):
-                for level in range(len(Levels[track])):
-                    if level <= LAST_REGULAR_GAG_LEVEL:
-                        self.addItem(track, level)
+    """
+    Mass Inventory Management Helpers
+    """
 
-        addedAnything = 1
-        while addedAnything:
-            addedAnything = 0
-            result = 0
-            for track in range(len(Tracks)):
-                if self.toon.hasTrackAccess(track):
-                    level = len(Levels[track]) - 1
-                    if level > LAST_REGULAR_GAG_LEVEL:
-                        level = LAST_REGULAR_GAG_LEVEL
+    # Given a track, attempt to add one gag to it.
+    # Returns True is added, False if not.
+    def addOneToTrack(self, track, maxGagLevel=LAST_REGULAR_GAG_LEVEL) -> bool:
 
-                    result = self.addItem(track, level)
-                    level -= 1
-                    while result <= 0 <= level:
-                        result = self.addItem(track, level)
-                        level -= 1
+        # Loop through every level (starting from max) and keep attempting to add an item
+        for level in range(maxGagLevel, -1, -1):
+            gagsAdded = self.addItem(track, level)
+            # Did we succeed?
+            if gagsAdded > 0:
+                return True
 
-                    if result > 0:
-                        addedAnything = 1
+        # We failed to add a gag to this whole track.
+        return False
 
-        self.calcTotalProps()
-        return None
+    # Used to add one of every possible gag to this inventory.
+    # Prioritizes higher levels of gags if our pouch size is less than our number of learned gags.
+    def addOneOfAllGag(self, maxLevel=LAST_REGULAR_GAG_LEVEL):
 
-    def NPCMaxOutInv(self, maxLevel = 6):
-        result = 0
+        # Loop through the level of gags in the game but from level 7 gags to level 1 (prioritize higher levels)
         for level in range(maxLevel, -1, -1):
-            anySpotsAvailable = 1
-            while anySpotsAvailable == 1:
-                anySpotsAvailable = 0
-                trackResults = []
+
+            # Loop through every track in the game
+            for track in range(len(Tracks)):
+
+                # Attempt to add a gag, all error checking is in addItem() so we don't have to worry about anything :)
+                self.addItem(track, level)
+
+    # Fills the inventory by prioritizing higher level gags.
+    # When calling this method, we attempt to fill an inventory until the pouch is full but
+    # Explicitly add higher level gags first. This means that if a track is lagging behind in experience
+    # We can end up with no gags for that track.
+    def fillPrioritizingLevel(self, maxLevel=LAST_REGULAR_GAG_LEVEL):
+
+        # Loop through all the levels of gags in the game from level 7 gags to level 1
+        for level in range(maxLevel, -1, -1):
+            # Now at this level, keep iterating through all the tracks and attempt to add one gag over and over.
+            # Repeat this until we fail to add a gag for every single track.
+            gagsAddedForThisLevel = True
+            while gagsAddedForThisLevel is True:
+                gagsAddedForThisLevel = False
                 for track in range(len(Tracks)):
-                    result = self.addItem(track, level)
-                    trackResults.append(result)
-                    if result == -2:
-                        break
+                    if self.addItem(track, level) > 0:
+                        gagsAddedForThisLevel = True
 
-                for res in trackResults:
-                    if res > 0:
-                        anySpotsAvailable = 1
+    # Fills the inventory by prioritizing a balanced count of gags per track.
+    # When calling this method, we attempt to fill an inventory until the pouch is full but
+    # We attempt to keep a balanced distribution of gags per track.
+    # This means that even if a toon has wildly uneven gag levels, they still are left with a balanced inventory.
+    def fillPrioritizingTrack(self, maxLevel=LAST_REGULAR_GAG_LEVEL):
 
-            if result == -2:
-                break
+        # Keep iterating through every track adding one item until we do a run and fail.
+        gagAddedThisRun = True
+        while gagAddedThisRun is True:
+            gagAddedThisRun = False
+            for track in range(len(Tracks)):
+                if self.addOneToTrack(track) is True:
+                    gagAddedThisRun = True
 
-        self.calcTotalProps()
-        return None
+    # Used to max an inventory. A fill mode can also be specified to determine how we should fill it.
+    # Balanced: Ensure equal track distribution. Nice for wildly uneven gag track experience levels.
+    # Power:    Prioritize higher level gags.
+    # All:      Have at least one of every gag, then perform a balanced fill.
+    # Additionally, you can specify a max level of gags to consider for filling. Default is the highest level gag.
+    # You can also specify if we should clear the inventory first before filling with clearFirst=True.
+    def maxInventory(self, mode=FillMode.BALANCED, maxGagLevel=LAST_REGULAR_GAG_LEVEL, clearFirst=False):
 
-    def zeroInv(self):
+        # Should we clear the inventory first?
+        if clearFirst is True:
+            self.clearInventory()
+
+        # Now figure out how we are filling this inventory
+        if mode == self.FillMode.POWER:
+            self.fillPrioritizingLevel(maxLevel=maxGagLevel)
+            return
+
+        if mode == self.FillMode.ALL:
+            self.addOneOfAllGag(maxLevel=maxGagLevel)
+            self.fillPrioritizingTrack(maxLevel=maxGagLevel)
+            return
+
+        # Were we given something that wasn't balanced?
+        if mode != self.FillMode.BALANCED:
+            self.notify.warning(f"Invalid fill mode: {mode}. Defaulting to FillMode.Balanced...")
+
+        # Perform default fill mode (Balanced)
+        self.fillPrioritizingTrack(maxLevel=maxGagLevel)
+
+    # Wipes this inventory.
+    def clearInventory(self):
         for track in range(len(Tracks)):
             for level in range(LAST_REGULAR_GAG_LEVEL+1):
                 self.inventory[track][level] = 0
 
         self.calcTotalProps()
-        return None
-
-    def _garbageInfo(self):
-        return self._createStack

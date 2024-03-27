@@ -466,7 +466,7 @@ class UberTrapAward(APReward):
         damage = av.getHp() - newHp
         if av.getHp() > 0:
             av.takeDamage(damage)
-        av.inventory.NPCMaxOutInv(maxLevel=6)
+        av.inventory.maxInventory()
         av.b_setInventory(av.inventory.makeNetString())
 
         av.d_broadcastHpString("UBERFIED!", (.35, .7, .35))
@@ -505,7 +505,7 @@ class GagShuffleAward(APReward):
         # Clear inventory, randomly choose gags and add them until we fill up
         av.inventory.calcTotalProps()  # Might not be necessary, but just to be safe
         target = av.inventory.totalProps
-        av.inventory.zeroInv()  # Wipe inventory
+        av.inventory.clearInventory()  # Wipe inventory
         # Get allowed track level pairs
         allowedGags: List[Tuple[int, int]] = av.experience.getAllowedGagsAndLevels()
         # Only do enough attempts to fill us back up to what we were
