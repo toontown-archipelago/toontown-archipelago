@@ -303,6 +303,7 @@ from toontown.rpc.AwardManager/UD import AwardManager/UD
 from toontown.uberdog.DistributedCpuInfoMgr/AI/UD import DistributedCpuInfoMgr/AI/UD
 from toontown.uberdog.DistributedSecurityMgr/AI/UD import DistributedSecurityMgr/AI/UD
 from toontown.rpc.RATManager/UD import RATManager/UD
+from toontown.archipelago.distributed.DistributedArchipelagoManager/AI/UD import DistributedArchipelagoManager/AI/UD
 from toontown.uberdog.DistributedInGameNewsMgr/AI/UD import DistributedInGameNewsMgr/AI/UD
 from toontown.uberdog.DistributedWhitelistMgr/AI/UD import DistributedWhitelistMgr/AI/UD
 from toontown.uberdog import TTGameServicesManager/UD
@@ -3920,6 +3921,10 @@ dclass NonRepeatableRandomSource : DistributedObject, NonRepeatableRandomSourceC
   getRandomSamples(DoId, string, uint32, uint32);
   randomSample(DoId, uint32);
   randomSampleAck() airecv;
+};
+
+dclass DistributedArchipelagoManager : DistributedObjectGlobal {
+
 };
 
 dclass DistributedInGameNewsMgr : DistributedObjectGlobal {

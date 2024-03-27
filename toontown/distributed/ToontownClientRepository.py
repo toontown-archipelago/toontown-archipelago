@@ -102,6 +102,9 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         if config.GetBool('want-code-redemption', 1):
             self.codeRedemptionManager = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_TOONTOWN_CODE_REDEMPTION_MANAGER, 'TTCodeRedemptionMgr')
 
+        # Generate our AP Manager...
+        self.archipelagoManager = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_TOONTOWN_ARCHIPELAGO_MANAGER, 'DistributedArchipelagoManager')
+
         self.streetSign = None
         self.furnitureManager = None
         self.objectManager = None

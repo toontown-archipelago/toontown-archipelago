@@ -286,6 +286,9 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.deliveryManager = self.generateGlobalObject(OTP_DO_ID_TOONTOWN_DELIVERY_MANAGER,
                                                          'DistributedDeliveryManager')
 
+        # Generate our AP Manager...
+        self.archipelagoManager = self.generateGlobalObject(OTP_DO_ID_TOONTOWN_ARCHIPELAGO_MANAGER, 'DistributedArchipelagoManager')
+
     def createHood(self, hoodCtr, zoneId):
         # Bossbot HQ doesn't use DNA, so we skip over that.
         self.dnaStoreMap[zoneId] = DNAStorage()
