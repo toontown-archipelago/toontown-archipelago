@@ -1472,7 +1472,7 @@ class ToonHead(Actor.Actor):
         startHpr = head.getHpr()
         startLpupil = self.__lpupil.getPos()
         startRpupil = self.__rpupil.getPos()
-        self.__lookHeadAt(None, point, lod=lodName, freaky=True)
+        self.__lookHeadAt(None, point, lod=lodName, freaky = freaky)
         self.__lookPupilsAt(None, point)
         endHpr = head.getHpr()
         endLpupil = self.__lpupil.getPos() * 0.5
