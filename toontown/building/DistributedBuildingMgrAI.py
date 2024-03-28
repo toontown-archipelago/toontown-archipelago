@@ -123,7 +123,10 @@ class DistributedBuildingMgrAI:
          blocks, hqBlocks, gagshopBlocks, petshopBlocks, kartshopBlocks, animBldgBlocks)
 
     def findAllLandmarkBuildings(self):
-        buildings = self.load()
+        # Disabling Cog Building load on district start for now
+        # We probably would want to keep this somehow & figure out how to building nuke
+        # on a fresh AI "game", but we don't have any system for that ATM
+        buildings = {}  # self.load()
         blocks, hqBlocks, gagshopBlocks, petshopBlocks, kartshopBlocks, animBldgBlocks = self.getDNABlockLists()
         for block in blocks:
             self.newBuilding(block, buildings.get(str(block), None))

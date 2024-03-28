@@ -140,11 +140,11 @@ class DistributedNPCToonBase(DistributedToon.DistributedToon):
 
     def setupAvatars(self, av):
         av.headsUp(self, 0, 0, 0)
-        self.headsUp(av, 0, 0, 0)
+        # self.headsUp(av, 0, 0, 0)
         av.stopLookAround()
         av.lerpLookAt(Point3(-0.5, 4, 0), time=0.5)
         self.stopLookAround()
-        self.lerpLookAt(Point3(av.getPos(self)), time=0.5)
+        self.lerpLookAt(Point3(av.getPos(self)), time=0.5, freaky=True)
 
     def b_setPageNumber(self, paragraph, pageNumber):
         self.setPageNumber(paragraph, pageNumber)
