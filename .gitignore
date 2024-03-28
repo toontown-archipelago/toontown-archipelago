@@ -25,4 +25,4 @@ toontown/archipelago/output/
 venv/
 
 output/
-
+.run/
