@@ -359,7 +359,7 @@ class InventoryBase(DirectObject.DirectObject):
         while gagAddedThisRun is True:
             gagAddedThisRun = False
             for track in range(len(Tracks)):
-                if self.addOneToTrack(track) is True:
+                if self.addOneToTrack(track, maxGagLevel=maxLevel) is True:
                     gagAddedThisRun = True
 
     # Used to max an inventory. A fill mode can also be specified to determine how we should fill it.
