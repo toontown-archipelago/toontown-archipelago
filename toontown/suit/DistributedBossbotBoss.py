@@ -300,6 +300,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         seq = Sequence(self.makePrepareBattleTwoMovie(delayDeletes), Func(self.__onToBattleTwo), name=intervalName)
         seq.delayDeletes = delayDeletes
         seq.start()
+        seq.setPlayRate(5.0)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.betweenPhaseMusic, looping=1, volume=0.9)
 
@@ -537,6 +538,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'PrepareBattleThreeMovie'
         seq = Sequence(self.makePrepareBattleThreeMovie(), Func(self.__onToBattleThree), name=intervalName)
         seq.start()
+        seq.setPlayRate(5.0)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.betweenPhaseMusic, looping=1, volume=0.9)
 
@@ -619,6 +621,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'PrepareBattleFourMovie'
         seq = Sequence(self.makePrepareBattleFourMovie(), Func(self.__onToBattleFour), name=intervalName)
         seq.start()
+        seq.setPlayRate(5.0)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
 
@@ -726,6 +729,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'VictoryMovie'
         seq = Sequence(self.makeVictoryMovie(), Func(self.__continueVictory), name=intervalName)
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.bossHealthBar.deinitialize()
         self.storeInterval(seq, intervalName)
         base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
