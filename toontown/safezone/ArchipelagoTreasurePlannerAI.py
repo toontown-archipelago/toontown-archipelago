@@ -8,11 +8,11 @@ from . import TreasurePlannerAI, TreasureGlobals
 class ArchipelagoTreasurePlannerAI(TreasurePlannerAI.TreasurePlannerAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('ArchipelagoTreasurePlannerAI')
 
-    def __init__(self, zoneId, treasureConstructor, archiIndex, treasureCount=1, callback=None):
+    def __init__(self, zoneId, treasureConstructor, archiIndex, treasureCount=4, callback=None):
         self.archiCode = zoneId + archiIndex
         TreasurePlannerAI.TreasurePlannerAI.__init__(self, zoneId, treasureConstructor, callback)
         self.taskName = '%s%s' % (zoneId, archiIndex)
-        self.spawnInterval = 4
+        self.spawnInterval = 3
         self.maxTreasures = treasureCount
 
     def start(self):
