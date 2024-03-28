@@ -18,7 +18,7 @@ import random
 
 
 class DistributedNPCToonBase(DistributedToon.DistributedToon):
-    ENTER_COOLDOWN = 2
+    ENTER_COOLDOWN = 0.5
 
     def __init__(self, cr):
         self.lastInteractionEndedTimestamp = 0
