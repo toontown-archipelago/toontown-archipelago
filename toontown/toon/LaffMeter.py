@@ -118,46 +118,8 @@ class LaffMeter(DirectFrame):
         gui = loader.loadModel('phase_3/models/gui/laff_o_meter')
 
         hType = self.style.getType()
-        if hType == 'dog':
-            headModel = gui.find('**/laffMeter_dog')
-        elif hType == 'cat':
-            headModel = gui.find('**/laffMeter_cat')
-        elif hType == 'mouse':
-            headModel = gui.find('**/laffMeter_mouse')
-        elif hType == 'horse':
-            headModel = gui.find('**/laffMeter_horse')
-        elif hType == 'rabbit':
-            headModel = gui.find('**/laffMeter_rabbit')
-        elif hType == 'duck':
-            headModel = gui.find('**/laffMeter_duck')
-        elif hType == 'monkey':
-            headModel = gui.find('**/laffMeter_monkey')
-        elif hType == 'bear':
-            headModel = gui.find('**/laffMeter_bear')
-        elif hType == 'pig':
-            headModel = gui.find('**/laffMeter_pig')
-        elif hType == 'deer':
-            headModel = gui.find('**/laffMeter_deer')
-        elif hType == 'beaver':
-            headModel = gui.find('**/laffMeter_beaver')
-        elif hType == 'alligator':
-            headModel = gui.find('**/laffMeter_alligator')
-        elif hType == 'fox':
-            headModel = gui.find('**/laffMeter_fox')
-        elif hType == 'bat':
-            headModel = gui.find('**/laffMeter_bat')
-        elif hType == 'raccoon':
-            headModel = gui.find('**/laffMeter_raccoon')
-        elif hType == 'turkey':
-            headModel = gui.find('**/laffMeter_turkey')
-        elif hType == 'koala':
-            headModel = gui.find('**/laffMeter_koala')
-        elif hType == 'kangaroo':
-            headModel = gui.find('**/laffMeter_kangaroo')
-        elif hType == 'kiwi':
-            headModel = gui.find('**/laffMeter_kiwi')
-        elif hType == 'armadillo':
-            headModel = gui.find('**/laffMeter_armadillo')
+        if hType:
+            headModel = gui.find('**/laffMeter_' + str(hType))
         else:
             raise Exception('unknown toon species: ', hType)
 
@@ -169,22 +131,14 @@ class LaffMeter(DirectFrame):
         self.frown = DirectFrame(parent=self.container, relief=None, image=gui.find('**/frown'))
         self.smile = DirectFrame(parent=self.container, relief=None, image=gui.find('**/smile'))
         self.eyes = DirectFrame(parent=self.container, relief=None, image=gui.find('**/eyes'))
-        toothScale = (.92, .92, 0.87)
-        toothPos = (-0.03, 0.0, -0.33)
-        self.openSmile = DirectFrame(parent=self.container, relief=None, image=gui.find('**/open_smile'),
-                                     image_pos=(0.0, 0.0, -0.65), image_scale=toothScale)
-        tooth1 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_1'),
-                                  image_pos=toothPos, image_scale=toothScale)
-        tooth2 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_2'),
-                                  image_pos=toothPos, image_scale=toothScale)
-        tooth3 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_3'),
-                                  image_pos=toothPos, image_scale=toothScale)
-        tooth4 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_4'),
-                                  image_pos=toothPos, image_scale=toothScale)
-        tooth5 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_5'),
-                                  image_pos=toothPos, image_scale=toothScale)
-        tooth6 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_6'),
-                                  image_pos=toothPos, image_scale=toothScale)
+        self.openSmile = DirectFrame(parent=self.container, relief=None, image=gui.find('**/open_smile'))
+        tooth1 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_1'))
+        tooth2 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_2'))
+        tooth3 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_3'))
+        tooth4 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_4'))
+        tooth5 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_5'))
+        tooth6 = DirectFrame(parent=self.openSmile, relief=None, image=gui.find('**/tooth_6'))
+                                  
         self.maxLabel = DirectLabel(parent=self.eyes, relief=None, pos=(0.442, 0, 0.051), text='120',
                                     text_scale=0.4, text_font=ToontownGlobals.getInterfaceFont())
         self.hpLabel = DirectLabel(parent=self.eyes, relief=None, pos=(-0.398, 0, 0.051), text='120',
