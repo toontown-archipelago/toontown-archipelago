@@ -8,7 +8,7 @@ from toontown.hood import ZoneUtil
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.toonbase import TTLocalizer
-from .QuestsAvailablePoster import QuestsAvailablePoster, FishAvailablePoster
+from .QuestsAvailablePoster import QuestsAvailablePoster, FishAvailablePoster, TreasureAvailablePoster
 from ..building import FADoorCodes
 from ..quest.Quests import getRewardIdsFromHood
 
@@ -73,6 +73,7 @@ class MapPage(ShtikerPage.ShtikerPage):
 
         self.questsAvailableIcons: List[QuestsAvailablePoster] = []
         self.fishAvailableIcons: List[FishAvailablePoster] = []
+        self.treasureAvailableIcons: List[TreasureAvailablePoster] = []
 
         guiButton = loader.loadModel('phase_3/models/gui/quit_button')
         buttonLoc = (0.45, 0, - 0.74)
@@ -141,6 +142,7 @@ class MapPage(ShtikerPage.ShtikerPage):
             label.resetFrameSize()
             self.questsAvailableIcons.append(QuestsAvailablePoster(hood, parent=label, pos=(0, 0, 0.08), scale=.1, sortOrder=1))
             self.fishAvailableIcons.append(FishAvailablePoster(hood, parent=label, pos=(0.13, 0, 0.08), scale=.1, sortOrder=1))
+            self.treasureAvailableIcons.append(TreasureAvailablePoster(hood, parent=label, pos=(-0.12, 0, 0.09), scale=.1, sortOrder=1))
             label.bind(DGG.WITHIN, self.showTasksAvailableFrame, extraArgs=[hood, hoodIndex])
             label.bind(DGG.WITHOUT, self.hideTasksAvailableFrame, extraArgs=[hood,hoodIndex])
             self.labels.append(label)
@@ -165,8 +167,9 @@ class MapPage(ShtikerPage.ShtikerPage):
 
     def showTasksAvailableFrame(self, hood, hoodIndex, pos):
         self.__hoverCallback(1, hoodIndex, pos)
-        for questPoster, fishPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons):
+        for questPoster, fishPoster, treasurePoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons):
             if hood == questPoster.getHoodId():
+                treasurePoster.show()
                 # Only show if we need to.
                 if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
                     questPoster.show()
@@ -176,9 +179,10 @@ class MapPage(ShtikerPage.ShtikerPage):
 
     def hideTasksAvailableFrame(self, hood, hoodIndex, pos):
         self.__hoverCallback(0, hoodIndex, pos)
-        for questPoster, fishPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons):
+        for questPoster, fishPoster, treasurePoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons):
             if hood == questPoster.getHoodId():
-                # Only show if we need to.
+                treasurePoster.hide()
+                # Only hide if we need to.
                 if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
                     questPoster.hide()
                     fishPoster.hide()
@@ -188,10 +192,13 @@ class MapPage(ShtikerPage.ShtikerPage):
     def updateTasksAvailableFrames(self):
 
         # Loop through all the posters
-        for questPoster, fishPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons):
+        for questPoster, fishPoster, treasurePoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons):
+            treasurePoster.hide()
             questPoster.hide()
             fishPoster.hide()
             hoodId = questPoster.getHoodId()
+
+            treasurePoster.update(base.localAvatar)
 
             # Can we fish here?
             if not fishPoster.isVisible(base.localAvatar):
@@ -228,9 +235,13 @@ class MapPage(ShtikerPage.ShtikerPage):
         for labelButton in self.labels:
             labelButton.destroy()
 
-        for questPoster in self.questsAvailableIcons:
+        for questPoster, fishPoster, treasurePoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons):
             questPoster.destroy()
+            fishPoster.destroy()
+            treasurePoster.destroy()
         self.questsAvailableIcons.clear()
+        self.fishAvailableIcons.clear()
+        self.treasureAvailableIcons.clear()
 
         del self.labels
         del self.clouds
