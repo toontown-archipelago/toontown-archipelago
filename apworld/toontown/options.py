@@ -89,8 +89,8 @@ class TreasuresPerLocation(Range):
     """
     display_name = "AP Treasures Per Location"
     range_start = 0
-    range_end = 5
-    default = 2
+    range_end = 6
+    default = 4
 
 
 class GagTrainingCheckBehavior(Choice):
