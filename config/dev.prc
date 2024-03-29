@@ -16,7 +16,7 @@ schellgames-dev false
 exec-chat false
 log-private-info true
 want-qa-regression true
-want-injector false
+want-injector true
 
 # Chat settings
 want-whitelist false
