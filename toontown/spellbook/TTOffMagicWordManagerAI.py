@@ -112,7 +112,12 @@ class TTOffMagicWordManagerAI(DistributedObjectAI.DistributedObjectAI):
 
         magicWord, args = (magicWord.split(' ', 1) + [''])[:2]
         magicWord = magicWord.lower()
-        magicWordInfo = MagicWordIndex[magicWord]
+        magicWordInfo = MagicWordIndex.get(magicWord)
+        
+        # Is the client out of sync with the server?
+        if magicWordInfo is None:
+            self.generateResponse(avId=avId, responseType="BadWord")
+            return
 
         if affectRange not in magicWordInfo['affectRange']:
             self.generateResponse(avId=avId, responseType = "RestrictionOther")
