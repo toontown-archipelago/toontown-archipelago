@@ -133,6 +133,20 @@ class DistributedArchipelagoManager(DistributedObject):
         # If the teams are equal, they are on the same team
         return team1 == team2
 
+    # Given two toon IDs, return whether or not they are on enemy teams.
+    # We define enemy teams as two opposing teams that does not include spectators.
+    # This means that if either toon is not on a team, they will not be considered enemies.
+    def onEnemyTeams(self, avId1, avId2) -> bool:
+        toon1Team = self.getToonTeam(avId1)
+        toon2Team = self.getToonTeam(avId2)
+
+        # If either toon1 or toon2 is not on a team, they cannot be enemies.
+        if None in (toon1Team, toon2Team):
+            return False
+
+        # If the teams are not equal, they are enemies.
+        return toon1Team != toon2Team
+
     # Given a team ID, (from self.getToonTeam()) return a ColorProfile.
     def getTeamColorProfile(self, teamId: int) -> ColorProfile:
 
