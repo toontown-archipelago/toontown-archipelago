@@ -147,6 +147,17 @@ class DistributedArchipelagoManager(DistributedObject):
         # If the teams are not equal, they are enemies.
         return toon1Team != toon2Team
 
+    # Returns a list of all toon IDs we are enemies with.
+    def getAllEnemies(self) -> List[int]:
+        enemies: List[int] = []
+
+        # Loop through all of our information, if the two avIds are enemies then add it
+        for info in self._ap_info_cache.values():
+            if self.onEnemyTeams(info.avId, base.localAvatar.getDoId()):
+                enemies.append(info.avId)
+
+        return enemies
+
     # Given a team ID, (from self.getToonTeam()) return a ColorProfile.
     def getTeamColorProfile(self, teamId: int) -> ColorProfile:
 
