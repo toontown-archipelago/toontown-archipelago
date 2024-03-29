@@ -59,7 +59,13 @@ class DistributedNPCToon(DistributedNPCToonBase):
         self.setBusyWithLocalToon(True)
 
     def finishMovie(self, av, isLocalToon, elapsedTime):
-        self.cleanupMovie()
+
+        # Only cleanup the movie under the following conditions.
+        # - We are not interacting with this toon currently.
+        # - We are interacting with this NPC and we are the one that "finished" the movie.
+        if not self.isBusyWithLocalToon() or isLocalToon and self.isBusyWithLocalToon():
+            self.cleanupMovie()
+
         av.startLookAround()
         self.startLookAround()
         self.detectAvatars()
