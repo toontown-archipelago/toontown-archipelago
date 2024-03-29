@@ -315,7 +315,8 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
         # Online Competitors page
         if self.panelType == FLPOnline:
             for friendId, _ in base.localAvatar.friendsList:
-                toonIdsToRender.append((friendId, self.__getToonName(friendId)))
+                if base.cr.isFriendOnline(friendId):
+                    toonIdsToRender.append((friendId, self.__getToonName(friendId)))
 
         # Remove all the current buttons
         for toonId in list(self.friends.keys()):
