@@ -126,16 +126,9 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
             text3_fg=self.text3Color,
             text_pos=(0.06, -0.02),
             text_align=TextNode.ALeft,
-            command=self.__handleFriend)
-
-
-
-        if base.cr.playerFriendsManager.askTransientFriend(self.avId) and self.avId not in base.cr.doId2do:
-            self.friendButton['state'] = DGG.DISABLED
-
-
-        if base.cr.avatarFriendsManager.checkIgnored(self.avId):
-            self.friendButton['state'] = DGG.DISABLED
+            command=self.__handleFriend,
+            state=DGG.DISABLED
+        )
 
         self.goToButton = DirectButton(
             parent=self.frame,
@@ -208,12 +201,8 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
             text_scale=TTLocalizer.TAPsecretsButton,
             text_pos=(0.055, -0.01),
             text_align=TextNode.ALeft,
-            command=self.__handleSecrets)
-
-
-
-        if base.cr.avatarFriendsManager.checkIgnored(self.avId):
-            self.secretsButton['state'] = DGG.DISABLED
+            command=self.__handleSecrets,
+            state=DGG.DISABLED)
 
 
         from toontown.coghq import CogHQBossBattle
@@ -242,7 +231,9 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
             text_scale=ignoreScale,
             text_pos=(0.06, -0.015),
             text_align=TextNode.ALeft,
-            command=ignoreCmd)
+            command=ignoreCmd,
+            state=DGG.DISABLED
+        )
 
         if self.avId == base.localAvatar.doId:
             self.ignoreButton['state'] = DGG.DISABLED
@@ -268,7 +259,8 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
                 text_scale=0.06,
                 text_pos=(0.06, -0.015),
                 text_align=TextNode.ALeft,
-                command=self.handleReport)
+                command=self.handleReport
+            )
 
             if self.avId == base.localAvatar.doId:
                 self.reportButton['state'] = DGG.DISABLED
