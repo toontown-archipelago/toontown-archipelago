@@ -6,6 +6,12 @@ Toontown:
   progression_balancing: 50
   accessibility: locations
 
+  ### Team Settings ###
+
+  # Experimental option that is a workaround for Archipelago Teams.
+  # If you are not admin'ing a race, you should not change this setting.
+  team: 0
+
   ### Starting Settings ###
 
   # The starting amount of max Laff Points to have when starting a new game.

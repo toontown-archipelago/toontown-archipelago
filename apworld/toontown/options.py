@@ -3,6 +3,16 @@ from dataclasses import dataclass
 from Options import PerGameCommonOptions, StartInventoryPool, Range, Choice, Toggle
 
 
+class TeamOption(Range):
+    """
+    Experimental option to set what team you are on. Do not use unless you are admin'ing a race.
+    """
+    display_name = "Team"
+    range_start = 0
+    range_end = 20
+    default = 0
+
+
 class StartLaffOption(Range):
     """
     The starting amount of max Laff Points to have when starting a new game.
@@ -219,6 +229,7 @@ class DeathLinkOption(Toggle):
 
 @dataclass
 class ToontownOptions(PerGameCommonOptions):
+    team: TeamOption
     max_laff: MaxLaffOption
     starting_laff: StartLaffOption
     base_global_gag_xp: BaseGlobalGagXPRange
