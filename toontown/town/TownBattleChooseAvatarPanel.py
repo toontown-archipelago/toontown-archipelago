@@ -62,6 +62,8 @@ class TownBattleChooseAvatarPanel(StateData.StateData):
                     invalidTargets += trappedIndices
             if len(immuneIndices) > 0:
                 invalidTargets += immuneIndices
+        else:
+            invalidTargets = immuneIndices if immuneIndices is not None else []
         self.__placeButtons(numAvatars, invalidTargets, localNum)
 
     def exit(self):
@@ -90,8 +92,8 @@ class TownBattleChooseAvatarPanel(StateData.StateData):
         self.__placeButtons(numAvatars, invalidTargets, None)
         return
 
-    def adjustToons(self, numToons, localNum):
-        self.__placeButtons(numToons, [], localNum)
+    def adjustToons(self, numToons, localNum, invalidTargets=None):
+        self.__placeButtons(numToons, [] if invalidTargets is None else invalidTargets, localNum)
 
     def __placeButtons(self, numAvatars, invalidTargets, localNum):
         for i in range(4):
