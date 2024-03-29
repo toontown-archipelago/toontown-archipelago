@@ -1,6 +1,6 @@
 import types
 import collections
-from typing import List
+from typing import List, Dict
 
 from direct.interval.IntervalGlobal import *
 
@@ -2321,6 +2321,33 @@ class AbortGame(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         messenger.send('minigameAbort')
+
+
+class ToggleSuitPaths(MagicWord):
+    aliases = ['suitpaths']
+    desc = "Toggles visualization of suit paths if they exist in your current zone."
+    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        # Attempt to find a SuitPlanner in the zone.
+        from toontown.suit.DistributedSuitPlanner import DistributedSuitPlanner
+        suitPlanners: Dict[int, DistributedSuitPlanner] = base.cr.getObjectsOfClass(DistributedSuitPlanner)
+
+        # Are there none?
+        if len(suitPlanners) <= 0:
+            return "No suit planners found in your zone!"
+
+        # Are we turning it off?
+        if list(suitPlanners.values())[0].pathViz is not None:
+            for suitPlanner in suitPlanners.values():
+                suitPlanner.hidePaths()
+            return f"Now un-visualizing {len(suitPlanners)} suit planners!"
+
+        # Visualize them!
+        for suitPlanner in suitPlanners.values():
+            suitPlanner.showPaths()
+        return f"Now visualizing {len(suitPlanners)} suit planners!"
 
 
 class SpawnCog(MagicWord):
