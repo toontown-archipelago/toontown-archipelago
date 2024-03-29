@@ -43,6 +43,7 @@ class Nametag(ClickablePopup):
     # flag=False means we revert to default behavior from libotp.
     def setUseColorProfile(self, flag: bool):
         self.use_color_profile = flag
+        self.updateContents()
 
     # Gets the current ColorProfile assigned to this nametag.
     # Note: This information is meaningless unless self.usingColorProfile() is True.
@@ -53,6 +54,7 @@ class Nametag(ClickablePopup):
     # Note: This function call is meaningless unless self.setUseColorProfile(True) is called.
     def setColorProfile(self, color_profile: ColorProfile):
         self.color_profile = color_profile
+        self.updateContents()
 
     def clearAvatar(self):
         self.m_avatar = None

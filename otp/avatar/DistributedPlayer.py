@@ -48,6 +48,9 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
 
         return
 
+    def isPlayerControlled(self):
+        return True
+
     @staticmethod
     def GetPlayerGenerateEvent():
         return 'DistributedPlayerGenerateEvent'

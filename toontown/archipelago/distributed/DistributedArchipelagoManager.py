@@ -6,6 +6,7 @@ from direct.distributed.DistributedObject import DistributedObject
 from toontown.archipelago.definitions import color_profile
 from toontown.archipelago.definitions.color_profile import ColorProfile
 from toontown.archipelago.util.archipelago_information import ArchipelagoInformation
+from toontown.toon.DistributedToon import DistributedToon
 
 # An array of default defined team colors to use.
 # Feel free to dynamically adjust this array however you please
@@ -68,8 +69,27 @@ class DistributedArchipelagoManager(DistributedObject):
         for info in tempInfo:
             self._ap_info_cache[info.avId] = info
 
+        # Now update everyone's colors
+        self.syncToonColorProfiles()
+
         # Debug
         self.notify.debug(f"DistributedArchipelagoManager sync(): {self._ap_info_cache}")
+
+    # Loops through every DistributedToon in the base.cr repository and sets a color profile for them
+    # (If we have one)
+    def syncToonColorProfiles(self):
+
+        toons: Dict[int, DistributedToon] = base.cr.getObjectsOfExactClass(DistributedToon)
+        self.notify.debug(f"Syncing {len(toons)+1} toons color profiles")
+
+        # Loop through every toon in our DO repository and update their color profile.
+        # (If they exist)
+        for toonId, toon in toons.items():
+            newColorProfile = self.getToonColorProfile(toonId)
+            toon.setColorProfile(newColorProfile)
+
+        # Now update ours.
+        base.localAvatar.setColorProfile(self.getToonColorProfile(base.localAvatar.getDoId()))
 
     # Given an avId, attempt to find information related to this toon.
     # Returns ArchipelagoInformation dataclass if exists, None otherwise.

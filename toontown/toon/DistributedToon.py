@@ -276,7 +276,16 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.startBlink()
         self.startSmooth()
         self.accept('clientCleanup', self._handleClientCleanup)
-        return
+
+        # NPCs can stop here. Below this we only handle player specific things.
+        if not self.isPlayerControlled():
+            return
+
+        # Check if we have a color profile for this toon we need to use.
+        # Hacky but we need to make sure the DO was generated obviously before we can access it
+        if base.cr.archipelagoManager is not None:
+            colorProfile = base.cr.archipelagoManager.getToonColorProfile(self.getDoId())
+            self.setColorProfile(colorProfile)
 
     def setHp(self, hitPoints):
         if not self.overheadLaffMeter:
