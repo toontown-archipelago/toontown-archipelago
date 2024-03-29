@@ -22,6 +22,7 @@ from toontown.launcher import ToontownDownloadWatcher
 import tempfile
 import atexit
 import shutil
+import time
 
 import toontown.archipelago.util.global_text_properties as global_text_properties
 from ..settings.Settings import Settings, ControlSettings
@@ -266,8 +267,7 @@ class ToonBase(OTPBase.OTPBase):
         if not os.path.exists('screenshots/'):
             os.mkdir('screenshots/')
 
-        namePrefix = 'screenshot'
-        namePrefix = 'screenshots/' + launcher.logPrefix + namePrefix
+        namePrefix = 'screenshots/' + launcher.logPrefix + 'screenshot-%i.png' % time.time()
         timedif = globalClock.getRealTime() - self.lastScreenShotTime
         if self.glitchCount > 10 and self.walking:
             return
@@ -275,7 +275,7 @@ class ToonBase(OTPBase.OTPBase):
             self.glitchCount += 1
             return
         if not hasattr(self, 'localAvatar'):
-            self.screenshot(namePrefix=namePrefix)
+            self.screenshot(namePrefix=namePrefix, defaultFilename=0)
             self.lastScreenShotTime = globalClock.getRealTime()
             return
         coordOnScreen = self.config.GetBool('screenshot-coords', 0)
@@ -291,7 +291,7 @@ class ToonBase(OTPBase.OTPBase):
                 strTextLabel = DirectLabel(pos=(0.0, 0.001, 0.9), text=self.screenshotStr, text_scale=0.05, text_fg=VBase4(1.0, 1.0, 1.0, 1.0), text_bg=(0, 0, 0, 0), text_shadow=(0, 0, 0, 1), relief=None)
                 strTextLabel.setBin('gui-popup', 0)
         self.graphicsEngine.renderFrame()
-        self.screenshot(namePrefix=namePrefix, imageComment=ctext + ' ' + self.screenshotStr)
+        self.screenshot(namePrefix=namePrefix, defaultFilename=0, imageComment=ctext + ' ' + self.screenshotStr)
         self.lastScreenShotTime = globalClock.getRealTime()
         if coordOnScreen:
             if strTextLabel is not None:
