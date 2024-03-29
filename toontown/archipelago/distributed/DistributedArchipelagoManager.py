@@ -3,7 +3,30 @@ from typing import List, Dict, Union
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObject import DistributedObject
 
+from toontown.archipelago.definitions import color_profile
+from toontown.archipelago.definitions.color_profile import ColorProfile
 from toontown.archipelago.util.archipelago_information import ArchipelagoInformation
+
+# An array of default defined team colors to use.
+# Feel free to dynamically adjust this array however you please
+TEAM_COLORS = (
+    color_profile.BLUE,
+    color_profile.RED,
+    color_profile.GREEN,
+    color_profile.YELLOW,
+    color_profile.CYAN,
+    color_profile.MAGENTA,
+    color_profile.ORANGE,
+    color_profile.PURPLE,
+    color_profile.PINK,
+    color_profile.MINT_GREEN,
+    color_profile.MIDNIGHT_BLUE,
+    color_profile.BURGUNDY,
+    color_profile.MAUVE,
+)
+
+# The color to use when a toon is not on a team. (Not connected to AP)
+NO_TEAM_COLOR = color_profile.GRAY
 
 
 class DistributedArchipelagoManager(DistributedObject):
@@ -89,3 +112,31 @@ class DistributedArchipelagoManager(DistributedObject):
 
         # If the teams are equal, they are on the same team
         return team1 == team2
+
+    # Given a team ID, (from self.getToonTeam()) return a ColorProfile.
+    def getTeamColorProfile(self, teamId: int) -> ColorProfile:
+
+        # If not on a valid team then return gray.
+        # This toon is either "spectating" or is not connected to Archipelago currently.
+        if teamId < 0 or teamId is None:
+            return NO_TEAM_COLOR
+
+        # If on a team that is within bounds return that color
+        if teamId < len(TEAM_COLORS):
+            return TEAM_COLORS[teamId]
+
+        # Out of bounds color, make a randomly seeded one (lol)
+        return color_profile.getRandomColorProfile(teamId)
+
+    # Given a Toon ID, return a color profile we should use for this toon.
+    def getToonColorProfile(self, toonId: int) -> ColorProfile:
+
+        info = self.getInformation(toonId)
+
+        # If we don't have information for this toon, we can safely assume they are not on a team.
+        if info is None:
+            return NO_TEAM_COLOR
+
+        # Extract the toon's team information and find the team's corresponding color.
+        teamID = info.teamId
+        return self.getTeamColorProfile(teamID)
