@@ -455,7 +455,6 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
         self.oldFriendsList = self.friendsList
         self.friendsList = friendsList
         self.timeFriendsListChanged = globalClock.getFrameTime()
-        messenger.send('friendsListChanged')
         Avatar.reconsiderAllUnderstandable()
 
     def setDISLname(self, name):

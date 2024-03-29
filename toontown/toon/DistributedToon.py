@@ -2725,9 +2725,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             if (friendId, trueFriend) in self.oldFriendsList:
                 continue
 
-            friend = self.cr.doId2do.get(friendId)
-            if friend:
-                base.cr.ttoffFriendsManager.friendOnline(friendId, 0, 0, False)
+            base.cr.ttoffFriendsManager.friendOnline(friendId, 0, 0, False)
 
         for friendPair in self.oldFriendsList:
             if friendPair in self.friendsList:
@@ -2744,6 +2742,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
             if hasattr(base.localAvatar, 'inEstate') and base.localAvatar.inEstate:
                 base.cr.estateMgr.removeFriend(self.getDoId(), friendId)
+
+        messenger.send('friendsListChanged')
 
     def doTeleport(self, hood):
         if hood == 'GUI':
