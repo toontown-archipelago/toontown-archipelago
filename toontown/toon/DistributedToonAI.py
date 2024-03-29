@@ -371,7 +371,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if self.archipelago_session:
             self.archipelago_session.cleanup()
             self.archipelago_session = None
-            simbase.air.archipelagoManager.updateToonInfo(self.doId, -1, -1)
+            simbase.air.archipelagoManager.updateToonInfo(self.doId, -1, 999)
 
     def deleteDummy(self):
         self.notify.debug('----deleteDummy DistributedToonAI %d ' % self.doId)

@@ -37,6 +37,7 @@ class ArchipelagoSession:
             self.avatar.d_setSystemMessage(0, f"{e}")
 
     def handle_disconnect(self):
+        self.client.team = 999
         self.client.stop()
 
     def handle_slot(self, new_slot):
