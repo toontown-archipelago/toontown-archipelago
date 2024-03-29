@@ -6,16 +6,16 @@ from ..items import *
 class ToontownTestTreasures(ToontownTestBase):
     options = {
         'tpsanity': 'keys',
-        'treasures_per_location': 5,
+        'treasures_per_location': 6,
     }
 
     TREASURE_DATA = {
-        ToontownItemName.TTC_TELEPORT.value:  [ToontownLocationName.TTC_TREASURE_1, ToontownLocationName.TTC_TREASURE_2, ToontownLocationName.TTC_TREASURE_3, ToontownLocationName.TTC_TREASURE_4, ToontownLocationName.TTC_TREASURE_5],
-        ToontownItemName.DD_TELEPORT.value:   [ToontownLocationName.DD_TREASURE_1,  ToontownLocationName.DD_TREASURE_2,  ToontownLocationName.DD_TREASURE_3,  ToontownLocationName.DD_TREASURE_4,  ToontownLocationName.DD_TREASURE_5],
-        ToontownItemName.DG_TELEPORT.value:   [ToontownLocationName.DG_TREASURE_1,  ToontownLocationName.DG_TREASURE_2,  ToontownLocationName.DG_TREASURE_3,  ToontownLocationName.DG_TREASURE_4,  ToontownLocationName.DG_TREASURE_5],
-        ToontownItemName.MML_TELEPORT.value:  [ToontownLocationName.MML_TREASURE_1, ToontownLocationName.MML_TREASURE_2, ToontownLocationName.MML_TREASURE_3, ToontownLocationName.MML_TREASURE_4, ToontownLocationName.MML_TREASURE_5],
-        ToontownItemName.TB_TELEPORT.value:   [ToontownLocationName.TB_TREASURE_1,  ToontownLocationName.TB_TREASURE_2,  ToontownLocationName.TB_TREASURE_3,  ToontownLocationName.TB_TREASURE_4,  ToontownLocationName.TB_TREASURE_5],
-        ToontownItemName.DDL_TELEPORT.value:  [ToontownLocationName.DDL_TREASURE_1, ToontownLocationName.DDL_TREASURE_2, ToontownLocationName.DDL_TREASURE_3, ToontownLocationName.DDL_TREASURE_4, ToontownLocationName.DDL_TREASURE_5],
+        ToontownItemName.TTC_TELEPORT.value:  [ToontownLocationName.TTC_TREASURE_1, ToontownLocationName.TTC_TREASURE_2, ToontownLocationName.TTC_TREASURE_3, ToontownLocationName.TTC_TREASURE_4, ToontownLocationName.TTC_TREASURE_5, ToontownLocationName.TTC_TREASURE_6],
+        ToontownItemName.DD_TELEPORT.value:   [ToontownLocationName.DD_TREASURE_1,  ToontownLocationName.DD_TREASURE_2,  ToontownLocationName.DD_TREASURE_3,  ToontownLocationName.DD_TREASURE_4,  ToontownLocationName.DD_TREASURE_5,  ToontownLocationName.DD_TREASURE_6],
+        ToontownItemName.DG_TELEPORT.value:   [ToontownLocationName.DG_TREASURE_1,  ToontownLocationName.DG_TREASURE_2,  ToontownLocationName.DG_TREASURE_3,  ToontownLocationName.DG_TREASURE_4,  ToontownLocationName.DG_TREASURE_5,  ToontownLocationName.DG_TREASURE_6],
+        ToontownItemName.MML_TELEPORT.value:  [ToontownLocationName.MML_TREASURE_1, ToontownLocationName.MML_TREASURE_2, ToontownLocationName.MML_TREASURE_3, ToontownLocationName.MML_TREASURE_4, ToontownLocationName.MML_TREASURE_5, ToontownLocationName.MML_TREASURE_6],
+        ToontownItemName.TB_TELEPORT.value:   [ToontownLocationName.TB_TREASURE_1,  ToontownLocationName.TB_TREASURE_2,  ToontownLocationName.TB_TREASURE_3,  ToontownLocationName.TB_TREASURE_4,  ToontownLocationName.TB_TREASURE_5,  ToontownLocationName.TB_TREASURE_6],
+        ToontownItemName.DDL_TELEPORT.value:  [ToontownLocationName.DDL_TREASURE_1, ToontownLocationName.DDL_TREASURE_2, ToontownLocationName.DDL_TREASURE_3, ToontownLocationName.DDL_TREASURE_4, ToontownLocationName.DDL_TREASURE_5, ToontownLocationName.DDL_TREASURE_6],
     }
 
     def test_all_species(self):

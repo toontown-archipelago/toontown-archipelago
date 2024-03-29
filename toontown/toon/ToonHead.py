@@ -1110,7 +1110,7 @@ class ToonHead(Actor.Actor):
         self.__setPupilDirection(x, y)
         return
 
-    def __lookHeadAt(self, node, point, frac = 1.0, lod = None):
+    def __lookHeadAt(self, node, point, frac = 1.0, lod = None, freaky = False):
         reachedTarget = 1
         if lod == None:
             head = self.getPart('head', self.getLODNames()[0])
@@ -1125,7 +1125,9 @@ class ToonHead(Actor.Actor):
         scale = VBase3(0, 0, 0)
         hpr = VBase3(0, 0, 0)
         if decomposeMatrix(rot, scale, hpr, CSDefault):
-            hpr = VBase3(min(max(hpr[0], -60), 60), min(max(hpr[1], -20), 30), 0)
+            heading_range = 60 if not freaky else 180
+            pitch_range = (-20, 30) if not freaky else (-180, 180)
+            hpr = VBase3(min(max(hpr[0], -heading_range), heading_range), min(max(hpr[1], pitch_range[0]), pitch_range[1]), 0)
             if frac != 1:
                 currentHpr = head.getHpr()
                 reachedTarget = abs(hpr[0] - currentHpr[0]) < 1.0 and abs(hpr[1] - currentHpr[1]) < 1.0
@@ -1456,7 +1458,7 @@ class ToonHead(Actor.Actor):
                     glassesNode = headNode.attachNewNode('glassesNode')
                     glassesGeom.instanceTo(glassesNode)
 
-    def lerpLookAt(self, point, time = 1.0, blink = 0):
+    def lerpLookAt(self, point, time = 1.0, blink = 0, freaky = False):
         taskMgr.remove(self.__stareAtName)
         if self.lookAtTrack:
             self.lookAtTrack.finish()
@@ -1470,7 +1472,7 @@ class ToonHead(Actor.Actor):
         startHpr = head.getHpr()
         startLpupil = self.__lpupil.getPos()
         startRpupil = self.__rpupil.getPos()
-        self.__lookHeadAt(None, point, lod=lodName)
+        self.__lookHeadAt(None, point, lod=lodName, freaky = freaky)
         self.__lookPupilsAt(None, point)
         endHpr = head.getHpr()
         endLpupil = self.__lpupil.getPos() * 0.5

@@ -537,7 +537,6 @@ class DistributedGolfGreenGame(BattleBlocker.BattleBlocker):
         self.stopCountDown()
         taskMgr.remove(self.timerTaskName)
         self.ignore('mouse1')
-        camera.reparentTo(base.localAvatar)
         base.localAvatar.startUpdateSmartCamera()
         base.cr.playGame.getPlace().fsm.request('walk')
         for sprite in self.sprites:

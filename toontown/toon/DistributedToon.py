@@ -385,6 +385,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.battleId = battleId
         messenger.send('ToonBattleIdUpdate', [self.doId])
 
+    def isBattling(self):
+        return self.battleId > 0
+
     def b_setSCToontask(self, taskId, toNpcId, toonProgress, msgIndex):
         self.setSCToontask(taskId, toNpcId, toonProgress, msgIndex)
         self.d_setSCToontask(taskId, toNpcId, toonProgress, msgIndex)
@@ -421,20 +424,34 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def d_reqSCResistance(self, msgIndex):
         messenger.send('wakeup')
-        nearbyPlayers = self.getNearbyPlayers(ResistanceChat.EFFECT_RADIUS)
+        nearbyPlayers = self.getNearbyPlayers(ResistanceChat.EFFECT_RADIUS, includeSelf=True, includeBattlers=False)
         self.sendUpdate('reqSCResistance', [msgIndex, nearbyPlayers])
 
-    def getNearbyPlayers(self, radius, includeSelf = True):
-        nearbyToons = []
-        toonIds = self.cr.getObjectsOfExactClass(DistributedToon)
-        for toonId, toon in toonIds.items():
-            if toon is not self:
-                dist = toon.getDistance(self)
-                if dist < radius:
-                    nearbyToons.append(toonId)
+    def getNearbyPlayers(self, radius, includeSelf=True, includeBattlers=True):
 
+        nearbyToons = []
+
+        # Grab the toons that are not us and add ourselves
+        toonIds = self.cr.getObjectsOfExactClass(DistributedToon)
+
+        # Are we including ourselves in this check?
         if includeSelf:
-            nearbyToons.append(self.doId)
+            toonIds[base.localAvatar.getDoId()] = base.localAvatar
+        
+        for toonId, toon in toonIds.items():
+
+            # Is this guy battling when we are not including them?
+            if toon.isBattling() and not includeBattlers:
+                continue
+
+            # Is this guy too far away from us?
+            if toon.getDistance(self) > radius:
+                continue
+
+            # They are eligible for the unite.
+            nearbyToons.append(toonId)
+
+
         return nearbyToons
 
     def setSCResistance(self, msgIndex, nearbyToons = []):

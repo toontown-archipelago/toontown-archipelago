@@ -716,6 +716,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         else:
             return 0
 
+    def isBattling(self) -> bool:
+        return self.getBattleId() > 0
+
     def b_setBattleId(self, battleId):
         self.setBattleId(battleId)
         self.d_setBattleId(battleId)
@@ -2596,6 +2599,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.d_setSCResistance(msgIndex, nearbyPlayers)
 
     def d_setSCResistance(self, msgIndex, nearbyPlayers):
+
+        # If this toon tried to request a unite but is battling, don't do anything.
+        if self.isBattling():
+            return
+
         if not ResistanceChat.validateId(msgIndex):
             self.air.writeServerEvent('suspicious', self.doId, 'said resistance %s, which is invalid.' % msgIndex)
             return
@@ -2635,6 +2643,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                                                                                   affectedPlayers))
 
     def doResistanceEffect(self, msgIndex):
+
+        # If we are in a battle, a unite can never affect us.
+        if self.isBattling():
+            return
+
         msgType, itemIndex = ResistanceChat.decodeId(msgIndex)
         msgValue = ResistanceChat.getItemValue(msgIndex)
         if msgType == ResistanceChat.RESISTANCE_TOONUP:

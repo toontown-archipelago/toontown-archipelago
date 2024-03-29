@@ -105,6 +105,7 @@ class DistributedBattleAI(DistributedBattleBaseAI.DistributedBattleBaseAI):
             self.setState('WaitForJoin')
 
     def enterReward(self):
+        super().enterReward()
         self.notify.debug('enterReward()')
         self.joinableFsm.request('Unjoinable')
         self.runableFsm.request('Unrunable')

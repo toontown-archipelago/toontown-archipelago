@@ -33,6 +33,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBossCog')
     allowClickedNameTag = True
 
+    CUTSCENE_SPEED = 10.0
+
     def __init__(self, cr):
         DistributedAvatar.DistributedAvatar.__init__(self, cr)
         BossCog.BossCog.__init__(self)
@@ -1110,6 +1112,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         seq = Sequence(self.makeIntroductionMovie(delayDeletes), Func(self.__beginBattleOne), name=intervalName)
         seq.delayDeletes = delayDeletes
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.storeInterval(seq, intervalName)
 
     def __beginBattleOne(self):

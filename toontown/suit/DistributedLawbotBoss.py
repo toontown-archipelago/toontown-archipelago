@@ -799,6 +799,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'RollToBattleTwo'
         seq = Sequence(self.__makeRollToBattleTwoMovie(), Func(self.__onToPrepareBattleTwo), name=intervalName)
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.betweenBattleMusic, looping=1, volume=0.9)
         taskMgr.doMethodLater(0.01, self.unstashBoss, 'unstashBoss')
@@ -828,6 +829,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'prepareBattleTwo'
         seq = Sequence(prepareBattleTwoMovie, name=intervalName)
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.storeInterval(seq, intervalName)
         self.acceptOnce('doneChatPage', self.__showCannonsAppearing)
         base.playMusic(self.stingMusic, looping=0, volume=1.0)
@@ -852,6 +854,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'prepareBattleTwoCannonsAppear'
         seq = Sequence(allCannonsAppear, Func(self.__onToBattleTwo), name=intervalName)
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.storeInterval(seq, intervalName)
 
     def __onToBattleTwo(self, elapsedTime = 0):
@@ -887,6 +890,8 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             cannon = self.cannons[index]
             cannon.cannon.show()
 
+        base.localAvatar.obscureFriendsListButton(1)
+
     def getChairParent(self):
         return self.juryBox
 
@@ -920,7 +925,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         for chair in self.chairs.values():
             chair.stopCogsFlying()
 
-        return
+        base.localAvatar.obscureFriendsListButton(-1)
 
     def enterRollToBattleThree(self):
         self.notify.debug('----- enterRollToBattleThree')
@@ -929,6 +934,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'RollToBattleThree'
         seq = Sequence(self.__makeRollToBattleThreeMovie(), Func(self.__onToPrepareBattleThree), name=intervalName)
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.betweenBattleMusic, looping=1, volume=0.9)
 
@@ -959,6 +965,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'prepareBattleThree'
         seq = Sequence(prepareBattleThreeMovie, name=intervalName)
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.storeInterval(seq, intervalName)
 
     def __onToBattleThree(self, elapsed):
@@ -1093,6 +1100,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'VictoryMovie'
         seq = Sequence(self.makeVictoryMovie(), Func(self.__continueVictory), name=intervalName)
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.storeInterval(seq, intervalName)
         self.bossHealthBar.deinitialize()
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
@@ -1123,6 +1131,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'DefeatMovie'
         seq = Sequence(self.makeDefeatMovie(), Func(self.__continueDefeat), name=intervalName)
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
 

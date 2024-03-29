@@ -1,3 +1,5 @@
+import time
+
 from panda3d.core import *
 from libotp import *
 from direct.directnotify import DirectNotifyGlobal
@@ -14,9 +16,13 @@ from toontown.quest import QuestChoiceGui
 from direct.interval.IntervalGlobal import *
 import random
 
+
 class DistributedNPCToonBase(DistributedToon.DistributedToon):
+    ENTER_COOLDOWN = 0.5
 
     def __init__(self, cr):
+        self.lastInteractionEndedTimestamp = 0
+
         try:
             self.DistributedNPCToon_initialized
         except:
@@ -93,7 +99,20 @@ class DistributedNPCToonBase(DistributedToon.DistributedToon):
         return 0
 
     def detectAvatars(self):
-        self.accept('enter' + self.cSphereNode.getName(), self.handleCollisionSphereEnter)
+        self.lastInteractionEndedTimestamp = time.time()
+        self.accept('enter' + self.cSphereNode.getName(), self.__handleCollisionSphereEnterInternal)
+
+    def __handleCollisionSphereEnterInternal(self, collEntry):
+        """
+        Proxy method to help mitigate NPC talk loops.
+        This proxy disables the NPC collision sphere for x amount of seconds
+        """
+        currentTime = time.time()
+        if currentTime <= self.lastInteractionEndedTimestamp + self.ENTER_COOLDOWN:
+            return
+
+        self.lastInteractionEndedTimestamp = time.time()
+        self.handleCollisionSphereEnter(collEntry)
 
     def ignoreAvatars(self):
         self.ignore('enter' + self.cSphereNode.getName())
@@ -121,11 +140,11 @@ class DistributedNPCToonBase(DistributedToon.DistributedToon):
 
     def setupAvatars(self, av):
         av.headsUp(self, 0, 0, 0)
-        self.headsUp(av, 0, 0, 0)
+        # self.headsUp(av, 0, 0, 0)
         av.stopLookAround()
         av.lerpLookAt(Point3(-0.5, 4, 0), time=0.5)
         self.stopLookAround()
-        self.lerpLookAt(Point3(av.getPos(self)), time=0.5)
+        self.lerpLookAt(Point3(av.getPos(self)), time=0.5, freaky=True)
 
     def b_setPageNumber(self, paragraph, pageNumber):
         self.setPageNumber(paragraph, pageNumber)

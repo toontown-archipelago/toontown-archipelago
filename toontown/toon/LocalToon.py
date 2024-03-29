@@ -36,7 +36,7 @@ from toontown.toonbase.ToontownGlobals import *
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from toontown.catalog import CatalogNotifyDialog
-from toontown.chat import ToontownChatManager
+from toontown.chat import ToontownChatManager, ResistanceChat
 from toontown.chat import TTTalkAssistant
 from toontown.estate import GardenGlobals
 from toontown.battle.BattleSounds import *
@@ -922,6 +922,12 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
                 self.__pieButton['text'] = str(self.numPies)
             self.__pieButtonCount = self.numPies
         return
+
+    def setBattleId(self, battleId):
+        super().setBattleId(battleId)
+        # When we have our battle ID set, we should determine if we should have unites enabled
+        disableUnitesFlag: bool = self.isBattling()
+        messenger.send(ResistanceChat.RESISTANCE_TOGGLE_EVENT, [disableUnitesFlag])
 
     def displayWhisper(self, fromId, chatString, whisperType):
         sender = None

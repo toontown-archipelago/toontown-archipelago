@@ -50,8 +50,8 @@ Toontown:
   ### Treasure Settings ###
 
   # The amount of archipelago treasures that'll have items in each location
-  # Range: 0 to 5
-  treasures_per_location: 2
+  # Range: 0 to 6
+  treasures_per_location: 4
 
   ### Gag Training Settings ###
 

@@ -88,3 +88,42 @@ class FishAvailablePoster(QuestsAvailablePoster):
 
         # Show num available.
         self.showNumAvailable(fishRemaining)
+
+
+class TreasureAvailablePoster(QuestsAvailablePoster):
+    def __init__(self, hoodId, **kw):
+        QuestsAvailablePoster.__init__(self, hoodId=hoodId, **kw)
+
+        optiondefs = (
+            ('parent', kw['parent'], None),
+            ('relief', None, None),
+            ('image', None, None),
+            ('image_scale', None, None),
+            ('state', DGG.NORMAL, None)
+        )
+        self.defineoptions(kw, optiondefs)
+
+        self.initialiseoptions(TreasureAvailablePoster)
+        self.numQuestsAvailableLabel['text_scale'] = 0.55
+        self.setImage(self.getImageNode())
+        self.setTransparency(TransparencyAttrib.MAlpha)
+        self['image_scale'] = (0.3, 0.3, 0.3)
+        self.setScale(self.getScale() * 1.3)
+
+    def getImageNode(self):
+        return 'phase_14/maps/ap_icon_outline.png'
+
+    def getLocationFromCode(self, hood, index):
+        return ToontownGlobals.ARCHI_CODE_TO_LOCATION[hood][index]
+
+    def update(self, av):
+        # How many treasures are present?
+        treasureCount = av.slotData.get('treasures_per_location', 4)
+
+        treasuresRemaining = 0
+        for treasure in range(treasureCount):
+            if self.getLocationFromCode(self.hoodId, treasure) not in av.getCheckedLocations():
+                treasuresRemaining += 1
+
+        # Show num available.
+        self.showNumAvailable(treasuresRemaining)

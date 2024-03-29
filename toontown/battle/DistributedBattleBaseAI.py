@@ -759,11 +759,27 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                 toon.d_setHp(toon.hp)
                 toon.d_setInventory(toon.inventory.makeNetString())
                 self.air.cogPageManager.toonEncounteredCogs(toon, self.suitsEncountered, self.getTaskZoneId())
+
+                # We need to consider starting to regenerate their hp since this toon could potentially already be in
+                # A zone where they can regenerate. (This is basically only cog HQs for now)
+                self.considerStartToonup(toonId)
+
         elif len(self.suits) > 0 and not self.streetBattle:
             self.notify.info('toon %d aborted non-street battle.' % toonId)
             # Normally, we would manually edit the database entry for this toon to set their hp and gags to 0 but
             # we don't need to do that here in AP (old tto implementation caused a district reset anyway)
         return
+
+    # Call to start passively regenerating a toon immediately based on their zone ID.
+    # This is so we can support passive regen in areas such as a cog HQ.
+    def considerStartToonup(self, toonId):
+
+        toon = self.getToon(toonId)
+        if toon is None:
+            return
+
+        if ZoneUtil.getBranchZone(self.getZoneId()) in ToontownGlobals.NonSafePassiveHealingZones:
+            toon.startToonUp(ToontownGlobals.PassiveHealFrequency)
 
     def getToon(self, toonId):
         if toonId in self.air.doId2do:
@@ -1846,6 +1862,15 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.d_setChosenToonAttacks()
         self.localMovieDone(needUpdate, deadToons, deadSuits, lastActiveSuitDied)
         return
+
+    def enterReward(self):
+
+        # Used to start passive regen in zones that allow for it
+        for toonId in self.toons:
+            self.considerStartToonup(toonId)
+
+    def exitReward(self):
+        pass
 
     def enterResume(self):
         for suit in self.suits:
