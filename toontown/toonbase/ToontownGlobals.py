@@ -99,7 +99,7 @@ SPMinniesPiano = 4
 CEVirtual = 14
 MaxHpLimit = 999
 
-PassiveHealFrequency = 20  # How often in seconds should toons passively regen?
+PassiveHealFrequency = 10  # How often in seconds should toons passively regen?
 PassiveHealPercentage = .10  # How much percentage of laff should toons regen passively?
 MaxCarryLimit = 80
 MaxQuestCarryLimit = 4
