@@ -98,6 +98,7 @@ SPDonaldsBoat = 3
 SPMinniesPiano = 4
 CEVirtual = 14
 MaxHpLimit = 999
+
 PassiveHealFrequency = 20  # How often in seconds should toons passively regen?
 PassiveHealPercentage = .10  # How much percentage of laff should toons regen passively?
 MaxCarryLimit = 80
@@ -1547,6 +1548,14 @@ AV_TOUCH_CHECK_DIST_Z = 5.0
 AV_TOUCH_CHECK_TIMELIMIT_CL = 0.002
 AV_TOUCH_COUNT_LIMIT = 5
 AV_TOUCH_COUNT_TIME = 300
+
+# A list of Zone IDs where we can passively heal that is not considered a safezone.
+NonSafePassiveHealingZones = (
+    SellbotHQ,
+    CashbotHQ,
+    LawbotHQ,
+    BossbotHQ
+)
 
 SuitLevels = []
 for level in range(1,51):

@@ -174,6 +174,7 @@ class DistributedBattle(DistributedBattleBase.DistributedBattleBase):
         self._removeMembersKeep()
 
     def enterReward(self, ts):
+        super().enterReward()
         self.notify.debug('enterReward()')
         self.disableCollision()
         self.delayDeleteMembers()
