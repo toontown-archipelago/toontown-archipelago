@@ -11,6 +11,7 @@ EFFECT_RADIUS = 30
 RESISTANCE_TOONUP = 0
 RESISTANCE_RESTOCK = 1
 RESISTANCE_MONEY = 2
+RESISTANCE_TOGGLE_EVENT = 'set-unites-allowed'
 resistanceMenu = [RESISTANCE_TOONUP, RESISTANCE_RESTOCK, RESISTANCE_MONEY]
 resistanceDict = {RESISTANCE_TOONUP: {'menuName': TTL.ResistanceToonupMenu,
                      'itemText': TTL.ResistanceToonupItem,
