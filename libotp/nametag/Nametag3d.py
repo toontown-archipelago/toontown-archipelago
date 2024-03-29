@@ -142,6 +142,11 @@ class Nametag3d(Nametag, PandaNode):
     def generateName(self):
         v4 = self.getState()
         v56 = Vec4(NametagGlobals.getNameFg(self.m_group.getColorCode(), v4))
+
+        # AP Teams Nametag hook. If we have an override for a color profile use it.
+        if self.usingColorProfile():
+            v56 = self.getColorProfile().getColorFromState(self.getState())
+
         v54 = Vec4(NametagGlobals.getNameBg(self.m_group.getColorCode(), v4))
 
         self.m_name_frame = Vec4(*self.m_group.getNameFrame())
