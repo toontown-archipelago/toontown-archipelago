@@ -61,6 +61,8 @@ from direct.showbase.InputStateGlobal import inputState
 import random
 import copy
 
+from ..archipelago.definitions import color_profile
+from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
 from ..util.astron.AstronDict import AstronDict
 
@@ -2865,3 +2867,29 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def hasConnected(self) -> bool:
         # kinda hacky
         return bool(self.slotData)
+
+    """
+    Methods for managing Color Profiles and Nametags.
+    """
+
+    # Removes the custom color functionality for this toon's nametags.
+    # Reverts the behavior of deciding colors back to vanilla libotp.
+    def clearColorProfile(self):
+        self.nametag.setUseColorProfile(False)
+        self.nametag.setColorProfile(color_profile.GRAY)
+
+    # Set a color profile to use for toon nametags.
+    # Assumes that we are going to want to show these colors so we enable the behavior by default.
+    def setColorProfile(self, profile: ColorProfile):
+        self.nametag.setUseColorProfile(True)
+        self.nametag.setColorProfile(profile)
+
+    # Returns whether this toon is using custom nametag colors via the ColorProfile system we use for
+    # Archipelago teams. True if they are, False if they are using classic libotp colors.
+    def usingColorProfile(self) -> bool:
+        return self.nametag.usingColorProfile()
+
+    # Gets the current ColorProfile this toon is using for their nametag.
+    # Note: This information is meaningless if self.usingColorProfile() is False.
+    def getCurrentColorProfile(self) -> ColorProfile:
+        return self.nametag.getColorProfile()
