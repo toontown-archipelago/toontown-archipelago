@@ -90,7 +90,7 @@ class AutoColorProfile(ColorProfile):
 # Define some ColorProfile constants to use throughout the codebase :3
 # Local Toon blue:
 BLUE = ColorProfile(
-    Vec4(0, 0, 1, 1),
+    Vec4(0.3, 0.3, 0.7, 1),
     Vec4(0.5, 0.5, 1, 1),
     Vec4(0.5, 0.5, 1, 1),
     Vec4(0.3, 0.3, 0.7, 1),
