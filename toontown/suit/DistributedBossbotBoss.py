@@ -424,6 +424,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.servingTimer.posInTopRightCorner()
         self.servingTimer.countdown(ToontownGlobals.BossbotBossServingDuration)
         base.playMusic(self.phaseTwoMusic, looping=1, volume=0.9)
+        base.localAvatar.obscureFriendsListButton(1)
 
     def exitBattleTwo(self):
         if self.servingTimer:
@@ -434,7 +435,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.removeFoodFromToon(toonId)
 
         self.phaseTwoMusic.stop()
-        return
+        base.localAvatar.obscureFriendsListButton(-1)
 
     def setBelt(self, belt, beltIndex):
         if beltIndex < len(self.belts):

@@ -890,6 +890,8 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             cannon = self.cannons[index]
             cannon.cannon.show()
 
+        base.localAvatar.obscureFriendsListButton(1)
+
     def getChairParent(self):
         return self.juryBox
 
@@ -923,7 +925,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         for chair in self.chairs.values():
             chair.stopCogsFlying()
 
-        return
+        base.localAvatar.obscureFriendsListButton(-1)
 
     def enterRollToBattleThree(self):
         self.notify.debug('----- enterRollToBattleThree')

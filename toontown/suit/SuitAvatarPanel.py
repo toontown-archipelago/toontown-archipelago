@@ -59,7 +59,7 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel, DirectObject.DirectObject):
         self.deptLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.31), relief=None, text=dept, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
         self.closeButton = DirectButton(parent=self.frame, relief=None, pos=(0.0, 0, -0.36), text=TTLocalizer.AvatarPanelCogDetailClose, text_font=avatar.getFont(), text0_fg=Vec4(0, 0, 0, 1), text1_fg=Vec4(0.5, 0, 0, 1), text2_fg=Vec4(1, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, command=self.__handleClose)
         gui.removeNode()
-        base.localAvatar.setFriendsListButtonActive(False)
+        base.localAvatar.obscureFriendsListButton(1)
 
         #create a LerpScaleInterval that scales the frame from 0 to 1
         self.currentInterval = self.__getOpenSequence()
@@ -115,12 +115,12 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel, DirectObject.DirectObject):
         if self.frame:
             self.frame.destroy()
             self.frame = None
+            base.localAvatar.obscureFriendsListButton(-1)
 
         if self.head:
             self.head.removeNode()
             self.head = None
 
-        base.localAvatar.setFriendsListButtonActive(True)
         AvatarPanel.AvatarPanel.cleanup(self)
         self.panelNoneFunc()
         return
