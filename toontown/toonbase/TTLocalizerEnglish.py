@@ -2052,6 +2052,7 @@ TeleportPanelNoHqAccess = '%s is in the %s Toon HQ right now, and you do not hav
 TeleportPanelIgnored = '%s is ignoring you.'
 TeleportPanelNotOnline = "%s isn't online right now."
 TeleportPanelWentAway = '%s went away.'
+TeleportPanelEnemyTeam = '%s is on an enemy team! You cannot teleport to them.'
 TeleportPanelUnknownHood = "You don't know how to get to %s!"
 TeleportPanelUnavailableHood = '%s is not available right now; try again later.'
 TeleportPanelDenySelf = "You can't go to yourself!"
