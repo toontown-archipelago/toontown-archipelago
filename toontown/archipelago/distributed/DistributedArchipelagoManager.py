@@ -30,6 +30,9 @@ TEAM_COLORS = (
 NO_TEAM_COLOR = color_profile.GRAY
 
 
+# Basically the "None" to check for when team checking
+NO_TEAM = 999
+
 class DistributedArchipelagoManager(DistributedObject):
     notify = DirectNotifyGlobal.directNotify.newCategory("DistributedArchipelagoManager")
     neverDisable = 1
@@ -105,17 +108,17 @@ class DistributedArchipelagoManager(DistributedObject):
 
     # Given an toon ID, return the ID of the team they are on.
     # Returns None if they are either not on a team, or not connected to Archipelago.
-    def getToonTeam(self, avId) -> Union[int, None]:
+    def getToonTeam(self, avId) -> int:
 
         # See if we have information about this toon
         info = self.getInformation(avId)
         if info is None:
-            return None
+            return NO_TEAM
 
         # See if we are on a valid team
         teamId = info.teamId
-        if teamId < 0:
-            return None
+        if teamId == NO_TEAM:
+            return NO_TEAM
 
         # We have a team!
         return teamId
@@ -127,7 +130,7 @@ class DistributedArchipelagoManager(DistributedObject):
         team2 = self.getToonTeam(avId2)
 
         # If either team1 or team2 is not on a team, they cannot be on the same team.
-        if None in (team1, team2):
+        if NO_TEAM in (team1, team2):
             return False
 
         # If the teams are equal, they are on the same team
@@ -141,7 +144,7 @@ class DistributedArchipelagoManager(DistributedObject):
         toon2Team = self.getToonTeam(avId2)
 
         # If either toon1 or toon2 is not on a team, they cannot be enemies.
-        if None in (toon1Team, toon2Team):
+        if NO_TEAM in (toon1Team, toon2Team):
             return False
 
         # If the teams are not equal, they are enemies.
