@@ -78,7 +78,7 @@ class TTOffFriendsManager(DistributedObjectGlobal):
             return False
 
         # New data!
-        self.__cacheOnlineToon(OnlineToon(toon.getDoId(), toon.getName()))
+        self.__cacheOnlineToon(OnlineToon(toon.getDoId(), toon.getName(), toon.style))
         return True
 
     """

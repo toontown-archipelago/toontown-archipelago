@@ -375,13 +375,13 @@ class TTOffFriendsManagerUD(DistributedObjectGlobalUD):
                                                                                  self.air.ourChannel, [avId, 1])
                 self.air.send(dg)
 
-    def comingOnline(self, avId, friends, name):
+    def comingOnline(self, avId, friends, name, dnaString):
         for friendId in friends:
             self.air.getActivated(friendId, functools.partial(self.__comingOnlineFriendOnline, otherId=avId))
 
         # START AP CODE
         # Cache online toon then send an update to the client DOG
-        onlineToon = OnlineToon(avId, name)
+        onlineToon = OnlineToon(avId, name, dnaString)
         self.__cacheOnlineToon(onlineToon)
         self.sendUpdate('toonCameOnline', [onlineToon.struct()])
 

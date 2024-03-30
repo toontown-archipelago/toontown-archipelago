@@ -557,7 +557,8 @@ class LoadAvatarOperation(AvatarOperation):
         # Tell the friends manager that an avatar is coming online.
         friendsList = [x for x, y in self.avatar['setFriendsList'][0]]
         name = self.avatar['setName'][0]
-        self.gameServicesManager.air.ttoffFriendsManager.comingOnline(self.avId, friendsList, name)
+        dna = self.avatar['setDNAString'][0].decode('utf-8')
+        self.gameServicesManager.air.ttoffFriendsManager.comingOnline(self.avId, friendsList, name, dna)
 
         # Now we'll assign a POST_REMOVE that will tell the friends manager
         # that an avatar has gone offline, in the event that they disconnect

@@ -1,5 +1,7 @@
 import types
 import time
+from typing import List
+
 from panda3d.core import *
 from direct.distributed.ClockDelta import *
 from direct.gui.DirectGui import *
@@ -52,6 +54,8 @@ from . import HoodMgr
 from . import PlayGame
 from toontown.toontowngui import ToontownLoadingBlocker
 from toontown.hood import StreetSign
+from ..friends.OnlineToon import OnlineToon
+
 
 class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
     SupportTutorial = 1
@@ -1052,3 +1056,10 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
             zoneId = di.getUint32()
             dclassId = di.getUint16()
             self.handleAvatarResponseMsg(doId, di)
+
+    """
+    Friend Manager util
+    """
+
+    def getOnlineToons(self) -> List[OnlineToon]:
+        return self.ttoffFriendsManager.getOnlineToons()
