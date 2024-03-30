@@ -1,6 +1,8 @@
 import random
 from typing import List, Tuple
 
+from apworld.toontown import TPSanity
+from apworld.toontown.items import hood_to_tp_item_name, ITEM_NAME_TO_ID
 from libotp import *
 from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
@@ -34,7 +36,7 @@ from toontown.toonbase.ToontownGlobals import *
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from toontown.catalog import CatalogNotifyDialog
-from toontown.chat import ToontownChatManager
+from toontown.chat import ToontownChatManager, ResistanceChat
 from toontown.chat import TTTalkAssistant
 from toontown.estate import GardenGlobals
 from toontown.battle.BattleSounds import *
@@ -162,8 +164,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             if not hasattr(base.cr, 'lastLoggedIn'):
                 base.cr.lastLoggedIn = self.cr.toontownTimeManager.convertStrToToontownTime('')
             self.setLastTimeReadNews(base.cr.lastLoggedIn)
-            self.acceptingNewFriends = (base.settings.get('accepting-new-friends') and
-                                        base.config.GetBool('accepting-new-friends-default', True))
             self.acceptingNonFriendWhispers = (base.settings.get('accepting-non-friend-whispers') and
                                                base.config.GetBool('accepting-non-friend-whispers-default', True))
             self.physControls.event.addAgainPattern('again%in')
@@ -252,10 +252,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         if base.wantNametags:
             self.nametag.manage(base.marginManager)
         DistributedToon.DistributedToon.announceGenerate(self)
-
-        # TODO: this doMethodLater is hacky...
-        # can someone move this to a call where it's guaranteed to work?
-        taskMgr.doMethodLater(1.0, self.setArchipelagoAuto, 'setArchipelagoAuto')
 
     def disable(self):
         self.laffMeter.destroy()
@@ -926,6 +922,12 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
                 self.__pieButton['text'] = str(self.numPies)
             self.__pieButtonCount = self.numPies
         return
+
+    def setBattleId(self, battleId):
+        super().setBattleId(battleId)
+        # When we have our battle ID set, we should determine if we should have unites enabled
+        disableUnitesFlag: bool = self.isBattling()
+        messenger.send(ResistanceChat.RESISTANCE_TOGGLE_EVENT, [disableUnitesFlag])
 
     def displayWhisper(self, fromId, chatString, whisperType):
         sender = None
@@ -2036,10 +2038,53 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def hasCachedLocationReward(self, locationId: int) -> bool:
         return self.locationScoutsCache.get(locationId) is not None
 
+    def setSlotData(self, slotData) -> None:
+        super().setSlotData(slotData)
+        self.doAreaSanityCheck()
+
+    def enterPlaceWalk(self):
+        if self.hasConnected():
+            self.startAreaSanityCheck()
+        else:
+            self.setArchipelagoAuto()
+
     def setArchipelagoAuto(self, _=None):
         slotName = os.environ.get('ARCHIPELAGO_SLOT', '')
         serverAddr = os.environ.get('ARCHIPELAGO_ADDRESS', '')
         self.sendUpdate('setArchipelagoAuto', [slotName, serverAddr])
+
+    def startAreaSanityCheck(self):
+        taskMgr.doMethodLater(0.01, self.doAreaSanityCheck, self.uniqueName('areaSanityCheck'))
+
+    def doAreaSanityCheck(self, _=None):
+        tpsanity = localAvatar.slotData.get('tpsanity')
+        if tpsanity == TPSanity.option_keys:
+            self.areaSanityForceMove()
+
+    def areaSanityForceMove(self):
+        # Ignore if we're in TTC
+        if self.getZoneId() == ToontownGlobals.ToontownCentral:
+            return
+
+        # Huge TPSanity barrier!
+        tpsanity = self.slotData.get('tpsanity')
+        if tpsanity != TPSanity.option_keys:
+            return
+        else:
+            tp_itemname = hood_to_tp_item_name(self.getZoneId())
+            if not tp_itemname:
+                return
+            else:
+                item_id = ITEM_NAME_TO_ID[tp_itemname.value]
+                if item_id in self.receivedItemIDs:
+                    return
+
+        # OK, try to move them now
+        place = self.cr.playGame.getPlace()
+        print(place.fsm.hasStateNamed('DFA'), place.fsm.getCurrentState().getName())
+        if place and place.fsm.hasStateNamed('DFA') and place.fsm.getCurrentState().getName() == 'walk':
+            self.doTeleport('TTC')
+            self.startAreaSanityCheck()
 
     def enableCraneControls(self) -> None:
         self.controlManager.enableCraneControls()

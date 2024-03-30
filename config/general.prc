@@ -1,7 +1,7 @@
 # This is the PRC configuration file for settings that are
 # used by both developer & production instances of Toontown Online.
 
-version v0.5.2 Alpha
+version v0.6.0 Alpha
 
 # Window settings
 win-origin -2 -2

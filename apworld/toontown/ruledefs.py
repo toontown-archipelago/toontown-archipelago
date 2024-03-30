@@ -1,10 +1,11 @@
 from typing import Dict, Callable, Any, Tuple, Union
 
 from BaseClasses import CollectionState, MultiWorld
-from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem
-from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION
+from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVEL
+from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, \
+    LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION, PlaygroundFishZoneGroups
 from .items import ToontownItemName
-from .options import ToontownOptions
+from .options import ToontownOptions, TPSanity
 from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID, FISH_LOCATIONS, \
     get_location_def_from_name
 from .regions import ToontownEntranceDefinition, ToontownRegionName
@@ -24,14 +25,22 @@ def rule(rule: Union[Rule, ItemRule], *argument: Any):
     return decorator
 
 
-def has_collected_xp_for_gag_level(state: CollectionState, player: int, options: ToontownOptions, level: int) -> bool:
+def has_collected_items_for_gag_level(state: CollectionState, player: int, options: ToontownOptions, level: int) -> bool:
     # Determines if a given player has collected a sufficient amount of the XP items in the run.
     # always returns True if the player has 2 or less XP multis in the pool (aka, assumes they don't care)
     xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
     max_xp = options.max_global_gag_xp.value
-    if max_xp <= 2:
-        return True
-    return XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp)
+    sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if max_xp > 2 else True
+
+    # Check collected gag capacity items too.
+    cap = state.count(ToontownItemName.GAG_CAPACITY_5.value, player) + (
+                2 * state.count(ToontownItemName.GAG_CAPACITY_10.value, player)) + (
+                      2 * state.count(ToontownItemName.GAG_CAPACITY_15.value, player))
+    max_cap = 12 + (2 * 2)  # TODO - have this be dynamic to gag capacity items in pool
+    sufficient_cap = CAP_RATIO_FOR_GAG_LEVEL.get(level) <= (cap / max_cap)
+
+    # Return TRUE if we have enough xp and cap.
+    return sufficient_xp and sufficient_cap
 
 
 @rule(Rule.LoopyLane)          # NOTE - Streets are always enabled for now.
@@ -86,6 +95,32 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
     return state.has(argument[0].value, player)
 
 
+@rule(Rule.TunnelCanBeUsed)
+def TunnelCanBeUsed(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    if options.tpsanity.value == TPSanity.option_keys:
+        return passes_rule(Rule.HasTeleportAccess, state, locentr, world, player, options)
+    return True
+
+
+@rule(Rule.HasTeleportAccess)
+def HasTeleportAccess(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    region_to_tp_item = {
+        ToontownRegionName.TTC: ToontownItemName.TTC_TELEPORT,
+        ToontownRegionName.DD: ToontownItemName.DD_TELEPORT,
+        ToontownRegionName.DG: ToontownItemName.DG_TELEPORT,
+        ToontownRegionName.MML: ToontownItemName.MML_TELEPORT,
+        ToontownRegionName.TB: ToontownItemName.TB_TELEPORT,
+        ToontownRegionName.DDL: ToontownItemName.DDL_TELEPORT,
+        ToontownRegionName.GS: ToontownItemName.GS_TELEPORT,
+        ToontownRegionName.AA: ToontownItemName.AA_TELEPORT,
+        ToontownRegionName.SBHQ: ToontownItemName.SBHQ_TELEPORT,
+        ToontownRegionName.CBHQ: ToontownItemName.CBHQ_TELEPORT,
+        ToontownRegionName.LBHQ: ToontownItemName.LBHQ_TELEPORT,
+        ToontownRegionName.BBHQ: ToontownItemName.BBHQ_TELEPORT,
+    }
+    return state.has(region_to_tp_item[locentr.connects_to].value, player)
+
+
 @rule(Rule.FishCatch)
 def FishCatch(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     # Determine if we can catch the fish of this location/entrance definition.
@@ -114,12 +149,14 @@ def FishCatch(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, pl
             ]
         )
 
-    # Attempt catching the fish in feasible areas.
-    for zone in fishDef.zone_list:
-        # If we're fishing anywhere, ensure we can fish somewhere.
-        if zone == FishZone.Anywhere and not hasAnyLicense:
-            continue
+    # Figure out the zones we must scan.
+    feasible_areas = set(fz for fz in fishDef.zone_list if fz != FishZone.Anywhere)
+    if FishZone.Anywhere in fishDef.zone_list:
+        for fz in PlaygroundFishZoneGroups.keys():
+            feasible_areas.add(fz)
 
+    # Attempt catching the fish in feasible areas.
+    for zone in feasible_areas:
         # Estate fishing is disabled.
         if zone == FishZone.MyEstate:
             continue
@@ -235,7 +272,7 @@ def FishGallery(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.DropSeven,       ToontownItemName.DROP_FRAME, 7)
 def GagTraining(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return state.has(argument[0].value, player, argument[1]) \
-            and has_collected_xp_for_gag_level(state, player, options, argument[1])
+            and has_collected_items_for_gag_level(state, player, options, argument[1])
 
 
 @rule(Rule.CanReachTTC,  ToontownRegionName.TTC)
@@ -298,7 +335,6 @@ def TierFiveCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
 
 
 @rule(Rule.TierSixCogs)
-@rule(Rule.TierSevenCogs)
 def ReachPastDD(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     pgs = [
         ToontownRegionName.DG,
@@ -316,9 +352,9 @@ def ReachPastDD(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.TierEightBossbot, ToontownRegionName.BBHQ)
 def TierEightCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     pgs = [
-        ToontownRegionName.MML,
-        ToontownRegionName.TB,
-        ToontownRegionName.DDL,
+        # ToontownRegionName.MML,
+        # ToontownRegionName.TB,
+        # ToontownRegionName.DDL,
     ]
     if argument:
         pgs.append(argument[0])
@@ -333,7 +369,7 @@ def TierEightCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
 @rule(Rule.HasLevelFiveOffenseGag,  5)
 @rule(Rule.HasLevelSixOffenseGag,   6)
 @rule(Rule.HasLevelSevenOffenseGag, 7)
-@rule(Rule.HasLevelEightOffenseGag, 8)
+@rule(Rule.HasLevelEightOffenseGag, 7)
 def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     LEVEL = argument[0]
     OVERLEVEL = min(argument[0] + 1, 7)
@@ -360,7 +396,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
                     and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
     powerful_sound = state.has(ToontownItemName.SOUND_FRAME.value, player, OVERLEVEL)
     sufficient_healing = state.has(ToontownItemName.TOONUP_FRAME.value, player, UNDERLEVEL)
-    can_obtain_exp_required = has_collected_xp_for_gag_level(state, player, options, LEVEL)
+    can_obtain_exp_required = has_collected_items_for_gag_level(state, player, options, LEVEL)
 
     return (powerful_lure_knockback or powerful_sound or powerful_trap or powerful_drop) \
             and sufficient_healing and can_obtain_exp_required
@@ -370,7 +406,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
 def CanFightVP(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachSBHQ, *args) and passes_rule(Rule.SellbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSixOffenseGag, *args)
+            and passes_rule(Rule.HasLevelFiveOffenseGag, *args)
 
 
 @rule(Rule.CanFightCFO)
@@ -391,7 +427,7 @@ def CanFightCJ(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, p
 def CanFightCEO(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachBBHQ, *args) and passes_rule(Rule.BossbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSevenOffenseGag, *args)
+            and passes_rule(Rule.HasLevelEightOffenseGag, *args)
 
 
 @rule(Rule.AllBossesDefeated)

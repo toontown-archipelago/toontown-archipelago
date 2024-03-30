@@ -69,6 +69,7 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         self.purchase = None
         self.purchaseDoneEvent = 'purchaseDone'
         self.cameraLerp = None
+        self.collisionDebounce = False
         return
 
     def disable(self):
@@ -129,6 +130,8 @@ class DistributedNPCClerk(DistributedNPCToonBase):
             place.fsm.request('walk')
 
     def handleCollisionSphereEnter(self, collEntry):
+        if self.collisionDebounce:
+            return
         base.cr.playGame.getPlace().fsm.request('purchase')
         self.sendUpdate('avatarEnter', [])
         self.setBusyWithLocalToon(True)
@@ -152,6 +155,11 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         self.detectAvatars()
         if self.isBusyWithLocalToon():
             self.freeAvatar()
+
+        self.collisionDebounce = True
+        def resetDebounce(*_):
+            self.collisionDebounce = False
+        taskMgr.doMethodLater(0.5, resetDebounce, self.uniqueName('collisionDebounce'))
 
         self.initToonState()
         return Task.done

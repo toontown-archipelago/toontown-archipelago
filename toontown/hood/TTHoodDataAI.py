@@ -28,7 +28,6 @@ class TTHoodDataAI(HoodDataAI.HoodDataAI):
         self.addDistObj(trolley)
         self.trolley = trolley
         self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
-                                ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 1),
                                 TTTreasurePlannerAI.TTTreasurePlannerAI(self.zoneId)
                                 ]
         for planner in self.treasurePlanner:

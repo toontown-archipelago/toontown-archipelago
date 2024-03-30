@@ -49,6 +49,17 @@ REGION_DEFINITIONS = (
         ToontownRegionName.LOGIN,
         [
             ToontownEntranceDefinition(ToontownRegionName.TTC),
+            ToontownEntranceDefinition(ToontownRegionName.DD,   [Rule.HasTeleportAccess]),
+            ToontownEntranceDefinition(ToontownRegionName.DG,   [Rule.HasTeleportAccess]),
+            ToontownEntranceDefinition(ToontownRegionName.MML,  [Rule.HasTeleportAccess]),
+            ToontownEntranceDefinition(ToontownRegionName.TB,   [Rule.HasTeleportAccess]),
+            ToontownEntranceDefinition(ToontownRegionName.DDL,  [Rule.HasTeleportAccess]),
+            ToontownEntranceDefinition(ToontownRegionName.GS,   [Rule.HasTeleportAccess]),
+            ToontownEntranceDefinition(ToontownRegionName.AA,   [Rule.HasTeleportAccess]),
+            ToontownEntranceDefinition(ToontownRegionName.SBHQ, [Rule.HasTeleportAccess]),
+            ToontownEntranceDefinition(ToontownRegionName.CBHQ, [Rule.HasTeleportAccess]),
+            ToontownEntranceDefinition(ToontownRegionName.LBHQ, [Rule.HasTeleportAccess]),
+            ToontownEntranceDefinition(ToontownRegionName.BBHQ, [Rule.HasTeleportAccess]),
             ToontownEntranceDefinition(ToontownRegionName.GALLERY),
             ToontownEntranceDefinition(ToontownRegionName.FISHING),
             ToontownEntranceDefinition(ToontownRegionName.TRAINING),
@@ -60,57 +71,57 @@ REGION_DEFINITIONS = (
     ToontownRegionDefinition(
         ToontownRegionName.TTC,
         [
-            ToontownEntranceDefinition(ToontownRegionName.MML, [Rule.LoopyLane]),
-            ToontownEntranceDefinition(ToontownRegionName.DD, [Rule.PunchlinePlace]),
-            ToontownEntranceDefinition(ToontownRegionName.DG, [Rule.SillyStreet]),
-            ToontownEntranceDefinition(ToontownRegionName.GS),
+            ToontownEntranceDefinition(ToontownRegionName.MML, [Rule.LoopyLane, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.DD, [Rule.PunchlinePlace, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.DG, [Rule.SillyStreet, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.GS, [Rule.TunnelCanBeUsed]),
         ]
     ),
     ToontownRegionDefinition(
         ToontownRegionName.DD,
         [
-            ToontownEntranceDefinition(ToontownRegionName.TTC, [Rule.BarnacleBoulevard]),
-            ToontownEntranceDefinition(ToontownRegionName.DG, [Rule.SeaweedStreet]),
-            ToontownEntranceDefinition(ToontownRegionName.TB, [Rule.LighthouseLane]),
-            ToontownEntranceDefinition(ToontownRegionName.AA, [Rule.AATunnel]),
+            ToontownEntranceDefinition(ToontownRegionName.TTC, [Rule.BarnacleBoulevard, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.DG, [Rule.SeaweedStreet, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.TB, [Rule.LighthouseLane, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.AA, [Rule.AATunnel, Rule.TunnelCanBeUsed]),
         ]
     ),
     ToontownRegionDefinition(
         ToontownRegionName.DG,
         [
-            ToontownEntranceDefinition(ToontownRegionName.TTC, [Rule.ElmStreet]),
-            ToontownEntranceDefinition(ToontownRegionName.DD, [Rule.MapleStreet]),
-            ToontownEntranceDefinition(ToontownRegionName.SBHQ, [Rule.OakStreet]),
+            ToontownEntranceDefinition(ToontownRegionName.TTC,  [Rule.ElmStreet, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.DD,   [Rule.MapleStreet, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.SBHQ, [Rule.OakStreet, Rule.TunnelCanBeUsed]),
         ]
     ),
     ToontownRegionDefinition(
         ToontownRegionName.MML,
         [
-            ToontownEntranceDefinition(ToontownRegionName.TTC, [Rule.AltoAvenue]),
-            ToontownEntranceDefinition(ToontownRegionName.TB, [Rule.BaritoneBoulevard]),
-            ToontownEntranceDefinition(ToontownRegionName.DDL, [Rule.TenorTerrace]),
+            ToontownEntranceDefinition(ToontownRegionName.TTC, [Rule.AltoAvenue, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.TB,  [Rule.BaritoneBoulevard, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.DDL, [Rule.TenorTerrace, Rule.TunnelCanBeUsed]),
         ]
     ),
     ToontownRegionDefinition(
         ToontownRegionName.TB,
         [
-            ToontownEntranceDefinition(ToontownRegionName.MML, [Rule.SleetStreet]),
-            ToontownEntranceDefinition(ToontownRegionName.DD, [Rule.WalrusWay]),
-            ToontownEntranceDefinition(ToontownRegionName.LBHQ, [Rule.PolarPlace]),
+            ToontownEntranceDefinition(ToontownRegionName.MML,  [Rule.SleetStreet, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.DD,   [Rule.WalrusWay, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.LBHQ, [Rule.PolarPlace, Rule.TunnelCanBeUsed]),
         ]
     ),
     ToontownRegionDefinition(
         ToontownRegionName.DDL,
         [
-            ToontownEntranceDefinition(ToontownRegionName.MML, [Rule.LullabyLane]),
-            ToontownEntranceDefinition(ToontownRegionName.CBHQ, [Rule.PajamaPlace]),
+            ToontownEntranceDefinition(ToontownRegionName.MML, [Rule.LullabyLane, Rule.TunnelCanBeUsed]),
+            ToontownEntranceDefinition(ToontownRegionName.CBHQ, [Rule.PajamaPlace, Rule.TunnelCanBeUsed]),
         ]
     ),
     ToontownRegionDefinition(ToontownRegionName.GS),
     ToontownRegionDefinition(
         ToontownRegionName.AA,
         [
-            ToontownEntranceDefinition(ToontownRegionName.BBHQ),
+            ToontownEntranceDefinition(ToontownRegionName.BBHQ, [Rule.TunnelCanBeUsed]),
         ]
     ),
     ToontownRegionDefinition(ToontownRegionName.SBHQ),

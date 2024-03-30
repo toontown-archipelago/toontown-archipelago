@@ -20,13 +20,13 @@ Toontown:
   # The base global gag experience multiplier when starting a new game.
   # This multiplier is globally multiplicative on top of in-game boosts.
   # Range: 1 to 10
-  base_global_gag_xp: 3
+  base_global_gag_xp: 5
 
   # Additional global gag experience that can be obtained from items.
   # Stacks additively onto the base value above.
   # Must be above or equal to the base_global_gag_xp.
   # Range: 0 to 30
-  max_global_gag_xp: 15
+  max_global_gag_xp: 30
 
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 9999
@@ -37,6 +37,29 @@ Toontown:
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
   # Range: 0 to 4
   cog_bosses_required: 4
+
+  ### Sanity Settings ###
+
+  # Determines how Teleport Access is shuffled in the Item Pool for all Playgrounds/HQs.
+  # - keys: Playgrounds and HQs are locked until their respective Teleport Access is found.
+  # - treasure: All areas are accessible. Teleport Access items are guaranteed to spawn in their area treasure.
+  # - shuffle: All areas are accessible. Teleport Access items are shuffled in the pool.
+  # - none: All areas are accessible. You start with global teleport access.
+  tpsanity: 'keys'
+
+  ### Treasure Settings ###
+
+  # The amount of archipelago treasures that'll have items in each location
+  # Range: 0 to 6
+  treasures_per_location: 4
+
+  ### Gag Training Settings ###
+
+  # Behavior of how gag experience check locations are handled.
+
+  # unlock: When unlocking a new gag, you get its respective check.
+  # trained: When earning all available experience for a specific gag level, you get its respective check.
+  gag_training_check_behavior: 'trained'
 
   ### Task Settings ###
 
@@ -76,14 +99,6 @@ Toontown:
   # - none: All fishing areas are available. The player starts with a Gold Rod.
   fish_progression: 'licenses_and_rods'
 
-  ### Force Item Settings ###
-
-  # Enable to force your playground teleport access to be on its corresponding "Visit Location" check
-  force_playground_treasure_teleport_access_unlocks: 'true'
-
-  # Enable to force your Cog HQ teleport access to be on its corresponding "Visit Location" check
-  force_coghq_treasure_teleport_access_unlocks: 'true'
-
   ### Seed Generation Settings ###
 
   # Type of seeding to use when RNG checks happen in game.
@@ -91,7 +106,7 @@ Toontown:
   # slot_name: RNG elements are determined by AP seed and Slot Name
   # unique: RNG elements are determined by AP seed and internal toon ID
   # wild: RNG elements are completely random and will shuffle upon relogging
-  seed_generation_type: global
+  seed_generation_type: 'global'
 
   # Percentage of junk items to be replaced with traps
   trap_percent: 20
@@ -103,44 +118,19 @@ Toontown:
   # If another player in your game with this setting enabled dies for whatever reason, you will also go sad.
   death_link: 'false'
 
-  ###
-  ### YAML Presets
-  ###
-
-  # The following describe item links for facilities and disguises.
-  # If you do not wish for your facilities/disguises to be linked to other players, you must remove the corresponding link described below.
-  # By default, we link ALL Toontown players facility keys so that there is only ONE global facility key in the pool for all Toontown Players.
-  # If you are playing solo on a district with no other toons, I would recommend you remove item links completely.
-  item_links:
-    - name: Facility Keys
-      item_pool:
-        - Front Factory Key
-        - Side Factory Key
-        - Coin Mint Key
-        - Dollar Mint Key
-        - Bullion Mint Key
-        - Office A Key
-        - Office B Key
-        - Office C Key
-        - Office D Key
-        - Front One Key
-        - Middle Two Key
-        - Back Three Key
-      replacement_item: 250 Jellybeans
-    #- name: Cog Disguises
-    #  item_pool:
-    #    - Sellbot Disguise
-    #    - Cashbot Disguise
-    #    - Lawbot Disguise
-    #    - Bossbot Disguise
-    #  replacement_item: 250 Jellybeans
-
   # Starting hints for Cog Disguises
   start_hints:
     - Sellbot Disguise
     - Cashbot Disguise
     - Lawbot Disguise
     - Bossbot Disguise
+
+  # Exclude boss clears from having important progression items
+  exclude_locations:
+    - Sellbot Proof
+    - Cashbot Proof
+    - Lawbot Proof
+    - Bossbot Proof
 
 game: Toontown
 requires:

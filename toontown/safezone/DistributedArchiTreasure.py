@@ -16,7 +16,7 @@ class DistributedArchiTreasure(DistributedSZTreasure.DistributedSZTreasure):
         model.setPos(-1.5, 0, 0.5)
         model.setColor(0.9, 0.9, 0.9, 1)
         model.setTransparency(TransparencyAttrib.MAlpha)
-        tex = loader.loadTexture('phase_14/maps/ap_icon.png')
+        tex = loader.loadTexture('phase_14/maps/ap_icon_outline.png')
         tex.setMinfilter(Texture.FTLinear)
         tex.setMagfilter(Texture.FTLinear)
         model.setTexture(tex)

@@ -172,6 +172,4 @@ class CogHQExterior(BattlePlace.BattlePlace):
             for zone in connectingZones:
                 visibleZoneIds.add(zone)
 
-        print('setting interest for zones: ', visibleZoneIds)
-
         base.cr.sendSetZoneMsg(self.zoneId, list(visibleZoneIds))

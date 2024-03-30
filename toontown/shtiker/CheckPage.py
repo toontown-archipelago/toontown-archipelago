@@ -5,6 +5,8 @@ from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
 from panda3d.core import *
 
+from ..util.ui import make_dsl_scrollable
+
 
 class CheckPage(ShtikerPage.ShtikerPage):
 
@@ -64,6 +66,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
          self.listXorigin + self.listFrameSizeX,
          self.listZorigin,
          self.listZorigin + self.listFrameSizeZ), itemFrame_frameColor=(0.85, 0.95, 1, 1), itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=15, forceHeight=0.065, items=self.checkButtons)
+        make_dsl_scrollable(self.scrollList)
         self.scrollList.scrollTo(selectedIndex)
         return
 

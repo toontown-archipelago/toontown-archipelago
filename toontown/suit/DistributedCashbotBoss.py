@@ -1105,6 +1105,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         seq = Sequence(self.makePrepareBattleThreeMovie(delayDeletes, self.movieCrane), Func(self.__beginBattleThree), name=intervalName)
         seq.delayDeletes = delayDeletes
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.storeInterval(seq, intervalName)
         
         self.endVault.unstash()
@@ -1267,6 +1268,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'VictoryMovie'
         seq = Sequence(self.makeBossFleeMovie(), Func(self.__continueVictory), name=intervalName)
         seq.start()
+        seq.setPlayRate(self.CUTSCENE_SPEED)
         self.storeInterval(seq, intervalName)
         self.bossHealthBar.deinitialize()
         if self.oldState != 'BattleThree':

@@ -1,87 +1,31 @@
-from test.bases import WorldTestBase
-from .. import locations
-
-from ..locations import *
+from test.bases import WorldTestBase, TestBase
 
 
-class ToontownTestBase(WorldTestBase):
+class ToontownTestBase(WorldTestBase, TestBase):
     game = "Toontown"
 
+    def _create_items(self, items, player):
+        singleton = False
+        if isinstance(items, str):
+            items = [items]
+            singleton = True
+        ret = [self.multiworld.worlds[player].create_item(item) for item in items]
+        if singleton:
+            return ret[0]
+        return ret
 
-class ToontownTestDefault(ToontownTestBase):
-    pass
+    def _get_items(self, item_pool, all_except):
+        if all_except and len(all_except) > 0:
+            items = self.multiworld.itempool[:]
+            items = [item for item in items if item.name not in all_except]
+            items.extend(self._create_items(item_pool[0], 1))
+        else:
+            items = self._create_items(item_pool[0], 1)
+        return self.get_state(items)
 
-
-class ToontownTestPlaygroundAccess(ToontownTestBase):
-
-    def test_playground_access(self):
-
-        # TTC always available
-        for i in range(12):
-            self.assertTrue(self.can_reach_location(f"Toontown Central Task #{i + 1}"))
-
-        # Test task + clearance working correctly
-        for pg_name in ("Donald's Dock", "Daisy Gardens", "Minnie's Melodyland", "The Brrrgh", "Donald's Dreamland"):
-
-            for i in range(12):
-                self.assertFalse(self.can_reach_location(f"{pg_name} Task #{i + 1}"))
-
-            self.collect_by_name([f"{pg_name} HQ Clearance"])
-
-            for i in range(12):
-                self.assertTrue(self.can_reach_location(f"{pg_name} Task #{i + 1}"))
-
-
-class TestFacilityAccess(ToontownTestBase):
-    def test_facility_access(self):
-        self.assertAccessDependency([CLEAR_FRONT_FACTORY], [["Front Factory Key"]])
-        self.assertAccessDependency([CLEAR_SIDE_FACTORY], [["Side Factory Key"]])
-
-        self.assertAccessDependency([CLEAR_COIN_MINT], [["Coin Mint Key"]])
-        self.assertAccessDependency([CLEAR_DOLLAR_MINT], [["Dollar Mint Key"]])
-        self.assertAccessDependency([CLEAR_BULLION_MINT], [["Bullion Mint Key"]])
-
-        self.assertAccessDependency([CLEAR_A_OFFICE], [["A Office Key"]])
-        self.assertAccessDependency([CLEAR_B_OFFICE], [["B Office Key"]])
-        self.assertAccessDependency([CLEAR_C_OFFICE], [["C Office Key"]])
-        self.assertAccessDependency([CLEAR_D_OFFICE], [["D Office Key"]])
-
-        self.assertAccessDependency([CLEAR_FRONT_THREE], [["Front One Key"]])
-        self.assertAccessDependency([CLEAR_MIDDLE_THREE], [["Middle Two Key"]])
-        self.assertAccessDependency([CLEAR_BACK_THREE], [["Back Three Key"]])
-
-class TestBossAccess(ToontownTestBase):
-
-    def test_boss_access(self):
-        self.assertFalse(self.can_reach_location(locations.CLEAR_VP))
-        self.collect_by_name(["Sellbot Disguise"])
-        self.assertTrue(self.can_reach_location(locations.CLEAR_VP))
-
-        self.assertFalse(self.can_reach_location(locations.CLEAR_CFO))
-        self.collect_by_name(["Cashbot Disguise"])
-        self.assertTrue(self.can_reach_location(locations.CLEAR_CFO))
-
-        self.assertFalse(self.can_reach_location(locations.CLEAR_CJ))
-        self.collect_by_name(["Lawbot Disguise"])
-        self.assertTrue(self.can_reach_location(locations.CLEAR_CJ))
-
-        self.assertFalse(self.can_reach_location(locations.CLEAR_CEO))
-        self.collect_by_name(["Bossbot Disguise"])
-        self.assertTrue(self.can_reach_location(locations.CLEAR_CEO))
-
-    def test_victory_condition(self):
-
-        self.assertFalse(self.can_reach_location(SAVED_TOONTOWN))
-        self.collect_by_name(["Sellbot Disguise"])
-        self.collect_by_name(["Sellbot Proof"])
-        self.assertFalse(self.can_reach_location(SAVED_TOONTOWN))
-        self.collect_by_name(["Cashbot Proof"])
-        self.collect_by_name(["Cashbot Disguise"])
-        self.assertFalse(self.can_reach_location(SAVED_TOONTOWN))
-        self.collect_by_name(["Lawbot Proof"])
-        self.collect_by_name(["Lawbot Disguise"])
-        self.assertFalse(self.can_reach_location(SAVED_TOONTOWN))
-        self.collect_by_name(["Bossbot Proof"])
-        self.collect_by_name(["Bossbot Disguise"])
-
-        self.assertTrue(self.can_reach_location(SAVED_TOONTOWN))
+    # you wouldn't believe why we need this even if i told you
+    def _get_items_partial(self, item_pool, missing_item):
+        new_items = item_pool[0].copy()
+        new_items.remove(missing_item)
+        items = self._create_items(new_items, 1)
+        return self.get_state(items)

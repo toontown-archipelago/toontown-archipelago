@@ -12,13 +12,14 @@ from toontown.suit import DistributedSuitAI
 class SuitPlannerInteriorAI:
     notify = DirectNotifyGlobal.directNotify.newCategory('SuitPlannerInteriorAI')
 
-    def __init__(self, numFloors, bldgLevel, bldgTrack, zone, respectInvasions=1, solo=False):
+    def __init__(self, numFloors, bldgLevel, bldgTrack, zone, respectInvasions=1, numToons=None):
         self.dbg_nSuits1stRound = config.GetBool('n-suits-1st-round', 0)
         self.dbg_4SuitsPerFloor = config.GetBool('4-suits-per-floor', 0)
         self.dbg_1SuitPerFloor = config.GetBool('1-suit-per-floor', 0)
         self.zoneId = zone
         self.numFloors = numFloors
         self.respectInvasions = respectInvasions
+        self.numToons = numToons
         dbg_defaultSuitName = simbase.config.GetString('suit-type', 'random')
         if dbg_defaultSuitName == 'random':
             self.dbg_defaultSuitType = None
@@ -27,7 +28,7 @@ class SuitPlannerInteriorAI:
         if isinstance(bldgLevel, bytes):
             self.notify.warning('bldgLevel is a string!')
             bldgLevel = int(bldgLevel)
-        self._genSuitInfos(numFloors, bldgLevel, bldgTrack, solo)
+        self._genSuitInfos(numFloors, bldgLevel, bldgTrack, numToons)
         return
 
     def __genJoinChances(self, num):
@@ -38,12 +39,12 @@ class SuitPlannerInteriorAI:
         joinChances.sort(key=functools.cmp_to_key(cmp))
         return joinChances
 
-    def _genSuitInfos(self, numFloors, bldgLevel, bldgTrack, solo):
+    def _genSuitInfos(self, numFloors, bldgLevel, bldgTrack, numToons):
         self.suitInfos = []
         self.notify.debug('\n\ngenerating suitsInfos with numFloors (' + str(numFloors) + ') bldgLevel (' + str(bldgLevel) + '+1) and bldgTrack (' + str(bldgTrack) + ')')
         for currFloor in range(numFloors):
             infoDict = {}
-            lvls = self.__genLevelList(bldgLevel, currFloor, numFloors, solo)
+            lvls = self.__genLevelList(bldgLevel, currFloor, numFloors, numToons)
             activeDicts = []
             maxActive = min(4, len(lvls))
             if self.dbg_nSuits1stRound:
@@ -102,17 +103,18 @@ class SuitPlannerInteriorAI:
             return self.dbg_defaultSuitType
         return SuitDNA.getRandomSuitType(lvl)
 
-    def __genLevelList(self, bldgLevel, currFloor, numFloors, solo):
+    def __genLevelList(self, bldgLevel, currFloor, numFloors, numToons):
         bldgInfo = SuitBuildingGlobals.SuitBuildingInfo[bldgLevel]
         if self.dbg_1SuitPerFloor:
             return [1]
         else:
             if self.dbg_4SuitsPerFloor:
                 return [5, 6, 7, 10]
-        if solo:
+        if numToons:
             lvlPoolRangeList = []
             for range in list(bldgInfo[SuitBuildingGlobals.SUIT_BLDG_INFO_LVL_POOL]):
-                lvlPoolRangeList.append(math.ceil(range/2))
+                newRange = math.ceil(range * SuitBuildingGlobals.NUM_TOONS_TO_COGS_RATIO[numToons])
+                lvlPoolRangeList.append(newRange)
             lvlPoolRange = (lvlPoolRangeList[0], lvlPoolRangeList[1])
         else:
             lvlPoolRange = bldgInfo[SuitBuildingGlobals.SUIT_BLDG_INFO_LVL_POOL]

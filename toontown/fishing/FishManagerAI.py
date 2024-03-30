@@ -193,10 +193,6 @@ class FishManagerAI:
         return False
 
     def checkForFishingLocationCompletions(self, av):
-        fishChecks = FishChecks(av.slotData.get('fish_checks', 1))
-        if fishChecks not in (FishChecks.AllGalleryAndGenus, FishChecks.AllGallery):
-            return
-
         thresholdToLocation = {
             10: locations.ToontownLocationName.FISHING_10_SPECIES.value,
             20: locations.ToontownLocationName.FISHING_20_SPECIES.value,

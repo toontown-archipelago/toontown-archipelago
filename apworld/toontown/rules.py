@@ -4,9 +4,9 @@ from enum import Enum, auto
 class Rule(Enum):
     ### Street Access ###
 
+    SillyStreet    = auto()  # TTC => DG
     LoopyLane      = auto()  # TTC => MML
     PunchlinePlace = auto()  # TTC => DD
-    SillyStreet    = auto()  # TTC => DG
     BarnacleBoulevard = auto()  # DD => TTC
     SeaweedStreet     = auto()  # DD => DG
     LighthouseLane    = auto()  # DD => TB
@@ -17,11 +17,14 @@ class Rule(Enum):
     AltoAvenue        = auto()  # MML => TTC
     BaritoneBoulevard = auto()  # MML => TB
     TenorTerrace      = auto()  # MML => DDL
-    SleetStreet = auto()  # TB => MML
     WalrusWay   = auto()  # TB => DD
+    SleetStreet = auto()  # TB => MML
     PolarPlace  = auto()  # TB => LBHQ
     LullabyLane = auto()  # DDL => MML
     PajamaPlace = auto()  # DDL => CBHQ
+
+    TunnelCanBeUsed = auto()
+    HasTeleportAccess = auto()
 
     ### Playground Accessibility ###
 
@@ -61,7 +64,7 @@ class Rule(Enum):
     TierFourCogs  = auto()
     TierFiveCogs  = auto()
     TierSixCogs   = auto()
-    TierSevenCogs = auto()
+    # TierSevenCogs = auto()
 
     TierEightSellbot = auto()
     TierEightCashbot = auto()

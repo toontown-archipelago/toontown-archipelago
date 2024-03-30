@@ -42,7 +42,6 @@ class Settings:
         "resolution": [1280, 720],
         "music-volume": 0.4,
         "sfx-volume": 0.4,
-        "accepting-friends": True,
         "competitive-boss-scoring": True,
         "anti-aliasing": False,
         "anisotropic-filter": 8,

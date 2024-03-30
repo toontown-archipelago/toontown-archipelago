@@ -6,10 +6,12 @@ from worlds.generic.Rules import set_rule
 
 from . import regions, consts
 from .consts import ToontownItem, ToontownLocation
-from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, ITEM_NAME_TO_ID, FISHING_LICENSES
+from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, \
+    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
-    ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition
-from .options import ToontownOptions
+    ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
+    TREASURE_LOCATION_TYPES
+from .options import ToontownOptions, TPSanity
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
 from .fish import FishProgression, FishChecks
@@ -147,20 +149,19 @@ class ToontownWorld(World):
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.second_track)
 
         # Do we have force teleport access? if so place our tps
-        if self.options.force_playground_treasure_teleport_access_unlocks.value:
-            self._force_item_placement(ToontownLocationName.TTC_TREASURE_1, ToontownItemName.TTC_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DD_TREASURE_1,  ToontownItemName.DD_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DG_TREASURE_1,  ToontownItemName.DG_TELEPORT)
-            self._force_item_placement(ToontownLocationName.MML_TREASURE_1, ToontownItemName.MML_TELEPORT)
-            self._force_item_placement(ToontownLocationName.TB_TREASURE_1,  ToontownItemName.TB_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DDL_TREASURE_1, ToontownItemName.DDL_TELEPORT)
-
-        # Same for cog hqs
-        if self.options.force_coghq_treasure_teleport_access_unlocks.value:
+        if self.options.tpsanity.value == TPSanity.option_treasure:
+            self._force_item_placement(ToontownLocationName.TTC_TREASURE_1,  ToontownItemName.TTC_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DD_TREASURE_1,   ToontownItemName.DD_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DG_TREASURE_1,   ToontownItemName.DG_TELEPORT)
+            self._force_item_placement(ToontownLocationName.MML_TREASURE_1,  ToontownItemName.MML_TELEPORT)
+            self._force_item_placement(ToontownLocationName.TB_TREASURE_1,   ToontownItemName.TB_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DDL_TREASURE_1,  ToontownItemName.DDL_TELEPORT)
             self._force_item_placement(ToontownLocationName.SBHQ_TREASURE_1, ToontownItemName.SBHQ_TELEPORT)
             self._force_item_placement(ToontownLocationName.CBHQ_TREASURE_1, ToontownItemName.CBHQ_TELEPORT)
             self._force_item_placement(ToontownLocationName.LBHQ_TREASURE_1, ToontownItemName.LBHQ_TELEPORT)
             self._force_item_placement(ToontownLocationName.BBHQ_TREASURE_1, ToontownItemName.BBHQ_TELEPORT)
+            self._force_item_placement(ToontownLocationName.AA_TREASURE_1,   ToontownItemName.AA_TELEPORT)
+            self._force_item_placement(ToontownLocationName.GS_TREASURE_1,   ToontownItemName.GS_TELEPORT)
 
         # Debug, use this to print a pretty picture to make sure our regions are set up correctly
         if DEBUG_MODE:
@@ -169,14 +170,21 @@ class ToontownWorld(World):
 
     def create_items(self) -> None:
         pool = []
-        exclude_items: List[ToontownItemName] = self._get_excluded_items()
 
         # Spawn each defined item.
         for item in ITEM_DEFINITIONS:
             for _ in range(item.quantity):
-                if item.name in exclude_items:
-                    continue
                 pool.append(self.create_item(item.name.value))
+
+        # Handle teleport access item generation.
+        if self.options.tpsanity.value in (TPSanity.option_keys, TPSanity.option_shuffle):
+            for itemName in TELEPORT_ACCESS_ITEMS:
+                item = self.create_item(itemName.value)
+                if itemName == ToontownItemName.TTC_TELEPORT and \
+                        self.options.tpsanity.value == TPSanity.option_keys:
+                    self.multiworld.push_precollected(item)
+                else:
+                    pool.append(item)
 
         # Dynamically generate laff boosts.
         LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
@@ -275,12 +283,15 @@ class ToontownWorld(World):
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
             "cog_bosses_required": self.options.cog_bosses_required.value,
+            "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,
             "fish_progression": self.options.fish_progression.value,
             "maxed_cog_gallery_quota": self.options.maxed_cog_gallery_quota.value,
             "death_link": self.options.death_link.value,
             "local_itempool": local_itempool,
+            "tpsanity": self.options.tpsanity.value,
+            "treasures_per_location": self.options.treasures_per_location.value,
         }
 
     def calculate_starting_tracks(self):
@@ -333,29 +344,13 @@ class ToontownWorld(World):
             forbidden_location_types.add(ToontownLocationType.FISHING)
             forbidden_location_types.add(ToontownLocationType.FISHING_GENUS)
             forbidden_location_types.add(ToontownLocationType.FISHING_GALLERY)
+
+        tpl = self.options.treasures_per_location.value
+        rev_locs = TREASURE_LOCATION_TYPES[::-1]
+        for i in range(len(rev_locs) - tpl):
+            forbidden_location_types.add(rev_locs[i])
+
         return forbidden_location_types
-
-    def _get_excluded_items(self) -> List[ToontownItemName]:
-        items_to_exclude: List[ToontownItemName] = []
-
-        # If we have the force tp access setting...
-        if self.options.force_playground_treasure_teleport_access_unlocks.value:
-            # Add all teleport access
-            items_to_exclude.append(ToontownItemName.TTC_TELEPORT)
-            items_to_exclude.append(ToontownItemName.DD_TELEPORT)
-            items_to_exclude.append(ToontownItemName.DG_TELEPORT)
-            items_to_exclude.append(ToontownItemName.MML_TELEPORT)
-            items_to_exclude.append(ToontownItemName.TB_TELEPORT)
-            items_to_exclude.append(ToontownItemName.DDL_TELEPORT)
-
-        if self.options.force_coghq_treasure_teleport_access_unlocks.value:
-            items_to_exclude.append(ToontownItemName.SBHQ_TELEPORT)
-            items_to_exclude.append(ToontownItemName.CBHQ_TELEPORT)
-            items_to_exclude.append(ToontownItemName.LBHQ_TELEPORT)
-            items_to_exclude.append(ToontownItemName.BBHQ_TELEPORT)
-
-        # Done return our items
-        return items_to_exclude
 
     def _force_item_placement(self, location: ToontownLocationName, item: ToontownItemName) -> None:
         self.multiworld.get_location(location.value, self.player).place_locked_item(self.create_item(item.value))

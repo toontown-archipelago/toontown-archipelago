@@ -76,55 +76,55 @@ class ToontownLocationName(Enum):
     ROBBER_BARRON_MAXED =                       "Cog Gallery Maxed (Robber Baron)"
     BIG_WIG_MAXED =                             "Cog Gallery Maxed (Big Wig)"
     BIG_CHEESE_MAXED =                          "Cog Gallery Maxed (Big Cheese)"
-    TOONUP_FEATHER_UNLOCKED =                   "Feather Unlocked (Toon-up Training)"
-    TOONUP_MEGAPHONE_UNLOCKED =                 "Megaphone Unlocked (Toon-up Training)"
-    TOONUP_LIPSTICK_UNLOCKED =                  "Lipstick Unlocked (Toon-up Training)"
-    TOONUP_CANE_UNLOCKED =                      "Bamboo Cane Unlocked (Toon-up Training)"
-    TOONUP_PIXIE_UNLOCKED =                     "Pixie Dust Unlocked (Toon-up Training)"
-    TOONUP_JUGGLING_UNLOCKED =                  "Juggling Cubes Unlocked (Toon-up Training)"
-    TOONUP_HIGHDIVE_UNLOCKED =                  "High Dive Unlocked (MAXED Toon-up)"
-    TRAP_BANANA_UNLOCKED =                      "Banana Peel Unlocked (Trap Training)"
-    TRAP_RAKE_UNLOCKED =                        "Rake Unlocked (Trap Training)"
-    TRAP_MARBLES_UNLOCKED =                     "Marbles Unlocked (Trap Training)"
-    TRAP_QUICKSAND_UNLOCKED =                   "Quicksand Unlocked (Trap Training)"
-    TRAP_TRAPDOOR_UNLOCKED =                    "Trapdoor Unlocked (Trap Training)"
-    TRAP_TNT_UNLOCKED =                         "TNT Unlocked (Trap Training)"
-    TRAP_TRAIN_UNLOCKED =                       "Railroad Unlocked (MAXED Trap)"
-    LURE_ONEBILL_UNLOCKED =                     "$1 Bill Unlocked (Lure Training)"
-    LURE_SMALLMAGNET_UNLOCKED =                 "Small Magnet Unlocked (Lure Training)"
-    LURE_FIVEBILL_UNLOCKED =                    "$5 Bill Unlocked (Lure Training)"
-    LURE_BIGMAGNET_UNLOCKED =                   "Big Magnet Unlocked (Lure Training)"
-    LURE_TENBILL_UNLOCKED =                     "$10 Bill Unlocked (Lure Training)"
-    LURE_HYPNO_UNLOCKED =                       "Hypno-Goggles Unlocked (Lure Training)"
-    LURE_PRESENTATION_UNLOCKED =                "Presentation Unlocked (MAXED Lure)"
-    SOUND_BIKEHORN_UNLOCKED =                   "Bike Horn Unlocked (Sound Training)"
-    SOUND_WHISTLE_UNLOCKED =                    "Whistle Unlocked (Sound Training)"
-    SOUND_BUGLE_UNLOCKED =                      "Bugle Unlocked (Sound Training)"
-    SOUND_AOOGAH_UNLOCKED =                     "Aoogah Unlocked (Sound Training)"
-    SOUND_TRUNK_UNLOCKED =                      "Elephant Trunk Unlocked (Sound Training)"
-    SOUND_FOG_UNLOCKED =                        "Foghorn Unlocked (Sound Training)"
-    SOUND_OPERA_UNLOCKED =                      "Opera Singer Unlocked (MAXED Sound)"
-    THROW_CUPCAKE_UNLOCKED =                    "Cupcake Unlocked (Throw Training)"
-    THROW_FRUITPIESLICE_UNLOCKED =              "Fruit Pie Slice Unlocked (Throw Training)"
-    THROW_CREAMPIESLICE_UNLOCKED =              "Cream Pie Slice Unlocked (Throw Training)"
-    THROW_WHOLEFRUIT_UNLOCKED =                 "Whole Fruit Pie Unlocked (Throw Training)"
-    THROW_WHOLECREAM_UNLOCKED =                 "Whole Cream Pie Unlocked (Throw Training)"
-    THROW_CAKE_UNLOCKED =                       "Birthday Cake Unlocked (Throw Training)"
-    THROW_WEDDING_UNLOCKED =                    "Wedding Cake Unlocked (MAXED Throw)"
-    SQUIRT_SQUIRTFLOWER_UNLOCKED =              "Squirting Flower Unlocked (Squirt Training)"
-    SQUIRT_GLASS_UNLOCKED =                     "Glass of Water Unlocked (Squirt Training)"
-    SQUIRT_SQUIRTGUN_UNLOCKED =                 "Squirt Gun Unlocked (Squirt Training)"
-    SQUIRT_SELTZER_UNLOCKED =                   "Seltzer Bottle Unlocked (Squirt Training)"
-    SQUIRT_HOSE_UNLOCKED =                      "Firehose Unlocked (Squirt Training)"
-    SQUIRT_CLOUD_UNLOCKED =                     "Stormcloud Unlocked (Squirt Training)"
-    SQUIRT_GEYSER_UNLOCKED =                    "Geyser Unlocked (MAXED Squirt)"
-    DROP_FLOWERPOT_UNLOCKED =                   "Flowerpot Unlocked (Drop Training)"
-    DROP_SANDBAG_UNLOCKED =                     "Sandbag Unlocked (Drop Training)"
-    DROP_ANVIL_UNLOCKED =                       "Anvil Unlocked (Drop Training)"
-    DROP_BIGWEIGHT_UNLOCKED =                   "Big Weight Unlocked (Drop Training)"
-    DROP_SAFE_UNLOCKED =                        "Safe Unlocked (Drop Training)"
-    DROP_PIANO_UNLOCKED =                       "Piano Unlocked (Drop Training)"
-    DROP_BOAT_UNLOCKED =                        "Toontanic Unlocked (MAXED Drop)"
+    TOONUP_FEATHER_UNLOCKED =                   "Feather Trained (Toon-up Training)"
+    TOONUP_MEGAPHONE_UNLOCKED =                 "Megaphone Trained (Toon-up Training)"
+    TOONUP_LIPSTICK_UNLOCKED =                  "Lipstick Trained (Toon-up Training)"
+    TOONUP_CANE_UNLOCKED =                      "Bamboo Cane Trained (Toon-up Training)"
+    TOONUP_PIXIE_UNLOCKED =                     "Pixie Dust Trained (Toon-up Training)"
+    TOONUP_JUGGLING_UNLOCKED =                  "Juggling Cubes Trained (Toon-up Training)"
+    TOONUP_HIGHDIVE_UNLOCKED =                  "High Dive Trained (MAXED Toon-up)"
+    TRAP_BANANA_UNLOCKED =                      "Banana Peel Trained (Trap Training)"
+    TRAP_RAKE_UNLOCKED =                        "Rake Trained (Trap Training)"
+    TRAP_MARBLES_UNLOCKED =                     "Marbles Trained (Trap Training)"
+    TRAP_QUICKSAND_UNLOCKED =                   "Quicksand Trained (Trap Training)"
+    TRAP_TRAPDOOR_UNLOCKED =                    "Trapdoor Trained (Trap Training)"
+    TRAP_TNT_UNLOCKED =                         "TNT Trained (Trap Training)"
+    TRAP_TRAIN_UNLOCKED =                       "Railroad Trained (MAXED Trap)"
+    LURE_ONEBILL_UNLOCKED =                     "$1 Bill Trained (Lure Training)"
+    LURE_SMALLMAGNET_UNLOCKED =                 "Small Magnet Trained (Lure Training)"
+    LURE_FIVEBILL_UNLOCKED =                    "$5 Bill Trained (Lure Training)"
+    LURE_BIGMAGNET_UNLOCKED =                   "Big Magnet Trained (Lure Training)"
+    LURE_TENBILL_UNLOCKED =                     "$10 Bill Trained (Lure Training)"
+    LURE_HYPNO_UNLOCKED =                       "Hypno-Goggles Trained (Lure Training)"
+    LURE_PRESENTATION_UNLOCKED =                "Presentation Trained (MAXED Lure)"
+    SOUND_BIKEHORN_UNLOCKED =                   "Bike Horn Trained (Sound Training)"
+    SOUND_WHISTLE_UNLOCKED =                    "Whistle Trained (Sound Training)"
+    SOUND_BUGLE_UNLOCKED =                      "Bugle Trained (Sound Training)"
+    SOUND_AOOGAH_UNLOCKED =                     "Aoogah Trained (Sound Training)"
+    SOUND_TRUNK_UNLOCKED =                      "Elephant Trunk Trained (Sound Training)"
+    SOUND_FOG_UNLOCKED =                        "Foghorn Trained (Sound Training)"
+    SOUND_OPERA_UNLOCKED =                      "Opera Singer Trained (MAXED Sound)"
+    THROW_CUPCAKE_UNLOCKED =                    "Cupcake Trained (Throw Training)"
+    THROW_FRUITPIESLICE_UNLOCKED =              "Fruit Pie Slice Trained (Throw Training)"
+    THROW_CREAMPIESLICE_UNLOCKED =              "Cream Pie Slice Trained (Throw Training)"
+    THROW_WHOLEFRUIT_UNLOCKED =                 "Whole Fruit Pie Trained (Throw Training)"
+    THROW_WHOLECREAM_UNLOCKED =                 "Whole Cream Pie Trained (Throw Training)"
+    THROW_CAKE_UNLOCKED =                       "Birthday Cake Trained (Throw Training)"
+    THROW_WEDDING_UNLOCKED =                    "Wedding Cake Trained (MAXED Throw)"
+    SQUIRT_SQUIRTFLOWER_UNLOCKED =              "Squirting Flower Trained (Squirt Training)"
+    SQUIRT_GLASS_UNLOCKED =                     "Glass of Water Trained (Squirt Training)"
+    SQUIRT_SQUIRTGUN_UNLOCKED =                 "Squirt Gun Trained (Squirt Training)"
+    SQUIRT_SELTZER_UNLOCKED =                   "Seltzer Bottle Trained (Squirt Training)"
+    SQUIRT_HOSE_UNLOCKED =                      "Firehose Trained (Squirt Training)"
+    SQUIRT_CLOUD_UNLOCKED =                     "Stormcloud Trained (Squirt Training)"
+    SQUIRT_GEYSER_UNLOCKED =                    "Geyser Trained (MAXED Squirt)"
+    DROP_FLOWERPOT_UNLOCKED =                   "Flowerpot Trained (Drop Training)"
+    DROP_SANDBAG_UNLOCKED =                     "Sandbag Trained (Drop Training)"
+    DROP_ANVIL_UNLOCKED =                       "Anvil Trained (Drop Training)"
+    DROP_BIGWEIGHT_UNLOCKED =                   "Big Weight Trained (Drop Training)"
+    DROP_SAFE_UNLOCKED =                        "Safe Trained (Drop Training)"
+    DROP_PIANO_UNLOCKED =                       "Piano Trained (Drop Training)"
+    DROP_BOAT_UNLOCKED =                        "Toontanic Trained (MAXED Drop)"
     BALLOON_FISH_0 =                            "Balloon Fish"
     BALLOON_FISH_1 =                            "Hot Air Balloon Fish"
     BALLOON_FISH_2 =                            "Weather Balloon Fish"
@@ -294,28 +294,76 @@ class ToontownLocationName(Enum):
     DONALDS_DREAMLAND_TASK_12 =                 "Donald's Dreamland Task #12"
     TTC_TREASURE_1 =                            "Toontown Central AP Treasure 1"
     TTC_TREASURE_2 =                            "Toontown Central AP Treasure 2"
+    TTC_TREASURE_3 =                            "Toontown Central AP Treasure 3"
+    TTC_TREASURE_4 =                            "Toontown Central AP Treasure 4"
+    TTC_TREASURE_5 =                            "Toontown Central AP Treasure 5"
+    TTC_TREASURE_6 =                            "Toontown Central AP Treasure 6"
     DD_TREASURE_1 =                             "Donald's Dock AP Treasure 1"
     DD_TREASURE_2 =                             "Donald's Dock AP Treasure 2"
+    DD_TREASURE_3 =                             "Donald's Dock AP Treasure 3"
+    DD_TREASURE_4 =                             "Donald's Dock AP Treasure 4"
+    DD_TREASURE_5 =                             "Donald's Dock AP Treasure 5"
+    DD_TREASURE_6 =                             "Donald's Dock AP Treasure 6"
     DG_TREASURE_1 =                             "Daisy Gardens AP Treasure 1"
     DG_TREASURE_2 =                             "Daisy Gardens AP Treasure 2"
+    DG_TREASURE_3 =                             "Daisy Gardens AP Treasure 3"
+    DG_TREASURE_4 =                             "Daisy Gardens AP Treasure 4"
+    DG_TREASURE_5 =                             "Daisy Gardens AP Treasure 5"
+    DG_TREASURE_6 =                             "Daisy Gardens AP Treasure 6"
     MML_TREASURE_1 =                            "Minnie's Melodyland AP Treasure 1"
     MML_TREASURE_2 =                            "Minnie's Melodyland AP Treasure 2"
+    MML_TREASURE_3 =                            "Minnie's Melodyland AP Treasure 3"
+    MML_TREASURE_4 =                            "Minnie's Melodyland AP Treasure 4"
+    MML_TREASURE_5 =                            "Minnie's Melodyland AP Treasure 5"
+    MML_TREASURE_6 =                            "Minnie's Melodyland AP Treasure 6"
     TB_TREASURE_1 =                             "The Brrrgh AP Treasure 1"
     TB_TREASURE_2 =                             "The Brrrgh AP Treasure 2"
+    TB_TREASURE_3 =                             "The Brrrgh AP Treasure 3"
+    TB_TREASURE_4 =                             "The Brrrgh AP Treasure 4"
+    TB_TREASURE_5 =                             "The Brrrgh AP Treasure 5"
+    TB_TREASURE_6 =                             "The Brrrgh AP Treasure 6"
     DDL_TREASURE_1 =                            "Donald's Dreamland AP Treasure 1"
     DDL_TREASURE_2 =                            "Donald's Dreamland AP Treasure 2"
+    DDL_TREASURE_3 =                            "Donald's Dreamland AP Treasure 3"
+    DDL_TREASURE_4 =                            "Donald's Dreamland AP Treasure 4"
+    DDL_TREASURE_5 =                            "Donald's Dreamland AP Treasure 5"
+    DDL_TREASURE_6 =                            "Donald's Dreamland AP Treasure 6"
     GS_TREASURE_1 =                             "Goofy Speedway AP Treasure 1"
     GS_TREASURE_2 =                             "Goofy Speedway AP Treasure 2"
+    GS_TREASURE_3 =                             "Goofy Speedway AP Treasure 3"
+    GS_TREASURE_4 =                             "Goofy Speedway AP Treasure 4"
+    GS_TREASURE_5 =                             "Goofy Speedway AP Treasure 5"
+    GS_TREASURE_6 =                             "Goofy Speedway AP Treasure 6"
     AA_TREASURE_1 =                             "Acorn Acres AP Treasure 1"
     AA_TREASURE_2 =                             "Acorn Acres AP Treasure 2"
+    AA_TREASURE_3 =                             "Acorn Acres AP Treasure 3"
+    AA_TREASURE_4 =                             "Acorn Acres AP Treasure 4"
+    AA_TREASURE_5 =                             "Acorn Acres AP Treasure 5"
+    AA_TREASURE_6 =                             "Acorn Acres AP Treasure 6"
     SBHQ_TREASURE_1 =                           "Sellbot HQ AP Treasure 1"
     SBHQ_TREASURE_2 =                           "Sellbot HQ AP Treasure 2"
+    SBHQ_TREASURE_3 =                           "Sellbot HQ AP Treasure 3"
+    SBHQ_TREASURE_4 =                           "Sellbot HQ AP Treasure 4"
+    SBHQ_TREASURE_5 =                           "Sellbot HQ AP Treasure 5"
+    SBHQ_TREASURE_6 =                           "Sellbot HQ AP Treasure 6"
     CBHQ_TREASURE_1 =                           "Cashbot HQ AP Treasure 1"
     CBHQ_TREASURE_2 =                           "Cashbot HQ AP Treasure 2"
+    CBHQ_TREASURE_3 =                           "Cashbot HQ AP Treasure 3"
+    CBHQ_TREASURE_4 =                           "Cashbot HQ AP Treasure 4"
+    CBHQ_TREASURE_5 =                           "Cashbot HQ AP Treasure 5"
+    CBHQ_TREASURE_6 =                           "Cashbot HQ AP Treasure 6"
     LBHQ_TREASURE_1 =                           "Lawbot HQ AP Treasure 1"
     LBHQ_TREASURE_2 =                           "Lawbot HQ AP Treasure 2"
+    LBHQ_TREASURE_3 =                           "Lawbot HQ AP Treasure 3"
+    LBHQ_TREASURE_4 =                           "Lawbot HQ AP Treasure 4"
+    LBHQ_TREASURE_5 =                           "Lawbot HQ AP Treasure 5"
+    LBHQ_TREASURE_6 =                           "Lawbot HQ AP Treasure 6"
     BBHQ_TREASURE_1 =                           "Bossbot HQ AP Treasure 1"
     BBHQ_TREASURE_2 =                           "Bossbot HQ AP Treasure 2"
+    BBHQ_TREASURE_3 =                           "Bossbot HQ AP Treasure 3"
+    BBHQ_TREASURE_4 =                           "Bossbot HQ AP Treasure 4"
+    BBHQ_TREASURE_5 =                           "Bossbot HQ AP Treasure 5"
+    BBHQ_TREASURE_6 =                           "Bossbot HQ AP Treasure 6"
     FRONT_FACTORY_BARREL_1 =                    "Front Factory West Silo Barrel"
     FRONT_FACTORY_BARREL_2 =                    "Front Factory East Silo Barrel"
     FRONT_FACTORY_BARREL_3 =                    "Front Factory Warehouse Barrel"
@@ -387,7 +435,12 @@ class ToontownLocationType(IntEnum):
     FISHING         = auto()  # Locations for fishing trophies
     FISHING_GENUS   = auto()  # Locations for catching unique genus
     FISHING_GALLERY = auto()  # Locations for fishing gallery
-    PLAYGROUND      = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_1    = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_2    = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_3    = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_4    = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_5    = auto()  # Locations for discovering playground treasures
+    PLAYGROUND_6    = auto()  # Locations for discovering playground treasures
     GAG_TRAINING    = auto()  # Locations for training gags
     TTC_TASKS    = auto()  # Locations for TTC tasks
     DD_TASKS     = auto()  # Locations for DD tasks
@@ -409,6 +462,127 @@ class ToontownLocationDefinition:
     progress_type: LocationProgressType = LocationProgressType.DEFAULT
     rule_logic_or: bool = False  # By default, rule logic ANDs values in the list
     unique_id: int = 0  # Set in post
+
+
+# region Treasure Location Definitions
+REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName]] = {
+    ToontownRegionName.TTC:  [
+        ToontownLocationName.TTC_TREASURE_1,
+        ToontownLocationName.TTC_TREASURE_2,
+        ToontownLocationName.TTC_TREASURE_3,
+        ToontownLocationName.TTC_TREASURE_4,
+        ToontownLocationName.TTC_TREASURE_5,
+        ToontownLocationName.TTC_TREASURE_6,
+    ],
+    ToontownRegionName.DD:   [
+        ToontownLocationName.DD_TREASURE_1,
+        ToontownLocationName.DD_TREASURE_2,
+        ToontownLocationName.DD_TREASURE_3,
+        ToontownLocationName.DD_TREASURE_4,
+        ToontownLocationName.DD_TREASURE_5,
+        ToontownLocationName.DD_TREASURE_6,
+    ],
+    ToontownRegionName.DG:   [
+        ToontownLocationName.DG_TREASURE_1,
+        ToontownLocationName.DG_TREASURE_2,
+        ToontownLocationName.DG_TREASURE_3,
+        ToontownLocationName.DG_TREASURE_4,
+        ToontownLocationName.DG_TREASURE_5,
+        ToontownLocationName.DG_TREASURE_6,
+    ],
+    ToontownRegionName.MML:  [
+        ToontownLocationName.MML_TREASURE_1,
+        ToontownLocationName.MML_TREASURE_2,
+        ToontownLocationName.MML_TREASURE_3,
+        ToontownLocationName.MML_TREASURE_4,
+        ToontownLocationName.MML_TREASURE_5,
+        ToontownLocationName.MML_TREASURE_6,
+    ],
+    ToontownRegionName.TB:   [
+        ToontownLocationName.TB_TREASURE_1,
+        ToontownLocationName.TB_TREASURE_2,
+        ToontownLocationName.TB_TREASURE_3,
+        ToontownLocationName.TB_TREASURE_4,
+        ToontownLocationName.TB_TREASURE_5,
+        ToontownLocationName.TB_TREASURE_6,
+    ],
+    ToontownRegionName.DDL:  [
+        ToontownLocationName.DDL_TREASURE_1,
+        ToontownLocationName.DDL_TREASURE_2,
+        ToontownLocationName.DDL_TREASURE_3,
+        ToontownLocationName.DDL_TREASURE_4,
+        ToontownLocationName.DDL_TREASURE_5,
+        ToontownLocationName.DDL_TREASURE_6,
+    ],
+    ToontownRegionName.GS:   [
+        ToontownLocationName.GS_TREASURE_1,
+        ToontownLocationName.GS_TREASURE_2,
+        ToontownLocationName.GS_TREASURE_3,
+        ToontownLocationName.GS_TREASURE_4,
+        ToontownLocationName.GS_TREASURE_5,
+        ToontownLocationName.GS_TREASURE_6,
+    ],
+    ToontownRegionName.AA:   [
+        ToontownLocationName.AA_TREASURE_1,
+        ToontownLocationName.AA_TREASURE_2,
+        ToontownLocationName.AA_TREASURE_3,
+        ToontownLocationName.AA_TREASURE_4,
+        ToontownLocationName.AA_TREASURE_5,
+        ToontownLocationName.AA_TREASURE_6,
+    ],
+    ToontownRegionName.SBHQ: [
+        ToontownLocationName.SBHQ_TREASURE_1,
+        ToontownLocationName.SBHQ_TREASURE_2,
+        ToontownLocationName.SBHQ_TREASURE_3,
+        ToontownLocationName.SBHQ_TREASURE_4,
+        ToontownLocationName.SBHQ_TREASURE_5,
+        ToontownLocationName.SBHQ_TREASURE_6,
+    ],
+    ToontownRegionName.CBHQ: [
+        ToontownLocationName.CBHQ_TREASURE_1,
+        ToontownLocationName.CBHQ_TREASURE_2,
+        ToontownLocationName.CBHQ_TREASURE_3,
+        ToontownLocationName.CBHQ_TREASURE_4,
+        ToontownLocationName.CBHQ_TREASURE_5,
+        ToontownLocationName.CBHQ_TREASURE_6,
+    ],
+    ToontownRegionName.LBHQ: [
+        ToontownLocationName.LBHQ_TREASURE_1,
+        ToontownLocationName.LBHQ_TREASURE_2,
+        ToontownLocationName.LBHQ_TREASURE_3,
+        ToontownLocationName.LBHQ_TREASURE_4,
+        ToontownLocationName.LBHQ_TREASURE_5,
+        ToontownLocationName.LBHQ_TREASURE_6,
+    ],
+    ToontownRegionName.BBHQ: [
+        ToontownLocationName.BBHQ_TREASURE_1,
+        ToontownLocationName.BBHQ_TREASURE_2,
+        ToontownLocationName.BBHQ_TREASURE_3,
+        ToontownLocationName.BBHQ_TREASURE_4,
+        ToontownLocationName.BBHQ_TREASURE_5,
+        ToontownLocationName.BBHQ_TREASURE_6,
+    ],
+}
+
+
+TREASURE_LOCATION_TYPES: list[ToontownLocationType] = [
+    ToontownLocationType.PLAYGROUND_1,
+    ToontownLocationType.PLAYGROUND_2,
+    ToontownLocationType.PLAYGROUND_3,
+    ToontownLocationType.PLAYGROUND_4,
+    ToontownLocationType.PLAYGROUND_5,
+    ToontownLocationType.PLAYGROUND_6,
+]
+
+
+TREASURE_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
+    ToontownLocationDefinition(location_name,  location_type, region_name)
+    for region_name in REGION_TO_TREASURE_LOCATIONS.keys()
+    for location_name, location_type in zip(
+        REGION_TO_TREASURE_LOCATIONS.get(region_name), TREASURE_LOCATION_TYPES
+    )
+]
+# endregion
 
 
 LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
@@ -442,10 +616,10 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.MONEY_BAGS_DEFEATED,        ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierSixCogs]),
     ToontownLocationDefinition(ToontownLocationName.SPIN_DOCTOR_DEFEATED,       ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierSixCogs]),
     ToontownLocationDefinition(ToontownLocationName.HEAD_HUNTER_DEFEATED,       ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierSixCogs]),
-    ToontownLocationDefinition(ToontownLocationName.MINGLER_DEFEATED,           ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierSevenCogs]),
-    ToontownLocationDefinition(ToontownLocationName.LOAN_SHARK_DEFEATED,        ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierSevenCogs]),
-    ToontownLocationDefinition(ToontownLocationName.LEGAL_EAGLE_DEFEATED,       ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierSevenCogs]),
-    ToontownLocationDefinition(ToontownLocationName.CORPORATE_RAIDER_DEFEATED,  ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierSevenCogs]),
+    ToontownLocationDefinition(ToontownLocationName.MINGLER_DEFEATED,           ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierEightSellbot]),
+    ToontownLocationDefinition(ToontownLocationName.LOAN_SHARK_DEFEATED,        ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierEightCashbot]),
+    ToontownLocationDefinition(ToontownLocationName.LEGAL_EAGLE_DEFEATED,       ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierEightLawbot]),
+    ToontownLocationDefinition(ToontownLocationName.CORPORATE_RAIDER_DEFEATED,  ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierEightBossbot]),
     ToontownLocationDefinition(ToontownLocationName.MR_HOLLYWOOD_DEFEATED,      ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierEightSellbot]),
     ToontownLocationDefinition(ToontownLocationName.ROBBER_BARRON_DEFEATED,     ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierEightCashbot]),
     ToontownLocationDefinition(ToontownLocationName.BIG_WIG_DEFEATED,           ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierEightLawbot]),
@@ -476,10 +650,10 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.MONEY_BAGS_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSixCogs]),
     ToontownLocationDefinition(ToontownLocationName.SPIN_DOCTOR_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSixCogs]),
     ToontownLocationDefinition(ToontownLocationName.HEAD_HUNTER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSixCogs]),
-    ToontownLocationDefinition(ToontownLocationName.MINGLER_MAXED,              ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSevenCogs]),
-    ToontownLocationDefinition(ToontownLocationName.LOAN_SHARK_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSevenCogs]),
-    ToontownLocationDefinition(ToontownLocationName.LEGAL_EAGLE_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSevenCogs]),
-    ToontownLocationDefinition(ToontownLocationName.CORPORATE_RAIDER_MAXED,     ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSevenCogs]),
+    ToontownLocationDefinition(ToontownLocationName.MINGLER_MAXED,              ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightSellbot]),
+    ToontownLocationDefinition(ToontownLocationName.LOAN_SHARK_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightCashbot]),
+    ToontownLocationDefinition(ToontownLocationName.LEGAL_EAGLE_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightLawbot]),
+    ToontownLocationDefinition(ToontownLocationName.CORPORATE_RAIDER_MAXED,     ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightBossbot]),
     ToontownLocationDefinition(ToontownLocationName.MR_HOLLYWOOD_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightSellbot]),
     ToontownLocationDefinition(ToontownLocationName.ROBBER_BARRON_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightCashbot]),
     ToontownLocationDefinition(ToontownLocationName.BIG_WIG_MAXED,              ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightLawbot]),
@@ -597,16 +771,16 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.TOONTOWN_CENTRAL_TASK_12,   ToontownLocationType.TTC_TASKS, ToontownRegionName.TTC, [Rule.HasTTCHQAccess]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_1,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_2,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_3,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_3,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelFourOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_4,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_5,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_6,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_6,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelFourOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_7,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_8,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_9,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_9,        ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_10,       ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_11,       ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelTwoOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_12,       ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelThreeOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_TASK_12,       ToontownLocationType.DD_TASKS, ToontownRegionName.DD, [Rule.HasDDHQAccess, Rule.HasLevelFourOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_1,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_2,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_3,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag]),
@@ -615,13 +789,13 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_6,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_7,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_8,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_9,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_9,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag, Rule.CanReachSBHQ, Rule.CanReachLBHQ]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_10,     ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_11,     ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_12,     ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.MINNIES_MELODYLAND_TASK_1,  ToontownLocationType.MML_TASKS, ToontownRegionName.MML, [Rule.HasMMLHQAccess, Rule.HasLevelFourOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.MINNIES_MELODYLAND_TASK_2,  ToontownLocationType.MML_TASKS, ToontownRegionName.MML, [Rule.HasMMLHQAccess, Rule.HasLevelFourOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.MINNIES_MELODYLAND_TASK_3,  ToontownLocationType.MML_TASKS, ToontownRegionName.MML, [Rule.HasMMLHQAccess, Rule.HasLevelFourOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.MINNIES_MELODYLAND_TASK_3,  ToontownLocationType.MML_TASKS, ToontownRegionName.MML, [Rule.HasMMLHQAccess, Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.MINNIES_MELODYLAND_TASK_4,  ToontownLocationType.MML_TASKS, ToontownRegionName.MML, [Rule.HasMMLHQAccess, Rule.HasLevelFourOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.MINNIES_MELODYLAND_TASK_5,  ToontownLocationType.MML_TASKS, ToontownRegionName.MML, [Rule.HasMMLHQAccess, Rule.HasLevelFourOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.MINNIES_MELODYLAND_TASK_6,  ToontownLocationType.MML_TASKS, ToontownRegionName.MML, [Rule.HasMMLHQAccess, Rule.HasLevelFourOffenseGag]),
@@ -636,52 +810,27 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_3,          ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_4,          ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_5,          ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_6,          ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_6,          ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag, Rule.TierEightSellbot, Rule.TierEightCashbot, Rule.TierEightLawbot, Rule.TierEightBossbot]),
     ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_7,          ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_8,          ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_9,          ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_10,         ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_11,         ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_12,         ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_TASK_12,         ToontownLocationType.TB_TASKS, ToontownRegionName.TB, [Rule.HasTBHQAccess, Rule.HasLevelSevenOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_1,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_2,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_3,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_4,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_5,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_6,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_6,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag, Rule.TierEightSellbot, Rule.TierEightCashbot, Rule.TierEightLawbot, Rule.TierEightBossbot]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_7,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_8,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
-    ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_9,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_9,   ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag, Rule.CanReachBBHQ]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_10,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_11,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_12,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     # endregion
-    # region Area AP Treasures
-    ToontownLocationDefinition(ToontownLocationName.TTC_TREASURE_1,  ToontownLocationType.PLAYGROUND, ToontownRegionName.TTC),
-    ToontownLocationDefinition(ToontownLocationName.TTC_TREASURE_2,  ToontownLocationType.PLAYGROUND, ToontownRegionName.TTC),
-    ToontownLocationDefinition(ToontownLocationName.DD_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DD),
-    ToontownLocationDefinition(ToontownLocationName.DD_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DD),
-    ToontownLocationDefinition(ToontownLocationName.DG_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DG),
-    ToontownLocationDefinition(ToontownLocationName.DG_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.DG),
-    ToontownLocationDefinition(ToontownLocationName.MML_TREASURE_1,  ToontownLocationType.PLAYGROUND, ToontownRegionName.MML),
-    ToontownLocationDefinition(ToontownLocationName.MML_TREASURE_2,  ToontownLocationType.PLAYGROUND, ToontownRegionName.MML),
-    ToontownLocationDefinition(ToontownLocationName.TB_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.TB),
-    ToontownLocationDefinition(ToontownLocationName.TB_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.TB),
-    ToontownLocationDefinition(ToontownLocationName.DDL_TREASURE_1,  ToontownLocationType.PLAYGROUND, ToontownRegionName.DDL),
-    ToontownLocationDefinition(ToontownLocationName.DDL_TREASURE_2,  ToontownLocationType.PLAYGROUND, ToontownRegionName.DDL),
-    ToontownLocationDefinition(ToontownLocationName.GS_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.GS),
-    ToontownLocationDefinition(ToontownLocationName.GS_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.GS),
-    ToontownLocationDefinition(ToontownLocationName.AA_TREASURE_1,   ToontownLocationType.PLAYGROUND, ToontownRegionName.AA),
-    ToontownLocationDefinition(ToontownLocationName.AA_TREASURE_2,   ToontownLocationType.PLAYGROUND, ToontownRegionName.AA),
-    ToontownLocationDefinition(ToontownLocationName.SBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.SBHQ),
-    ToontownLocationDefinition(ToontownLocationName.SBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.SBHQ),
-    ToontownLocationDefinition(ToontownLocationName.CBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.CBHQ),
-    ToontownLocationDefinition(ToontownLocationName.CBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.CBHQ),
-    ToontownLocationDefinition(ToontownLocationName.LBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.LBHQ),
-    ToontownLocationDefinition(ToontownLocationName.LBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.LBHQ),
-    ToontownLocationDefinition(ToontownLocationName.BBHQ_TREASURE_1, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
-    ToontownLocationDefinition(ToontownLocationName.BBHQ_TREASURE_2, ToontownLocationType.PLAYGROUND, ToontownRegionName.BBHQ),
-    # endregion
+] + TREASURE_LOCATION_DEFINITIONS + [
     # region Facilities
     ToontownLocationDefinition(ToontownLocationName.FRONT_FACTORY_BARREL_1, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFiveOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.FRONT_FACTORY_BARREL_2, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFiveOffenseGag]),
@@ -791,10 +940,10 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DROP_BOAT_UNLOCKED,           ToontownLocationType.GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSeven]),
     # endregion
     # region Bosses
-    ToontownLocationDefinition(ToontownLocationName.SELLBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.SBHQ, [Rule.CanFightVP],  [ItemRule.RestrictDisguises]),
-    ToontownLocationDefinition(ToontownLocationName.CASHBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.CBHQ, [Rule.CanFightCFO], [ItemRule.RestrictDisguises]),
-    ToontownLocationDefinition(ToontownLocationName.LAWBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.LBHQ, [Rule.CanFightCJ],  [ItemRule.RestrictDisguises]),
-    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.BBHQ, [Rule.CanFightCEO], [ItemRule.RestrictDisguises]),
+    ToontownLocationDefinition(ToontownLocationName.SELLBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.SBHQ, [Rule.CanFightVP]),
+    ToontownLocationDefinition(ToontownLocationName.CASHBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.CBHQ, [Rule.CanFightCFO]),
+    ToontownLocationDefinition(ToontownLocationName.LAWBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.LBHQ, [Rule.CanFightCJ]),
+    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.BBHQ, [Rule.CanFightCEO]),
     # endregion
 ]
 

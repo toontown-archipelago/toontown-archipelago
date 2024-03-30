@@ -304,8 +304,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setDefaultZone(hood)
         self.addHoodVisited(hood)
 
-        if zoneId == ToontownGlobals.GoofySpeedway:
-            self.addTeleportAccess(ToontownGlobals.GoofySpeedway)
+        # if zoneId == ToontownGlobals.GoofySpeedway:
+        #     self.addTeleportAccess(ToontownGlobals.GoofySpeedway)
 
     def sendDeleteEvent(self):
         if simbase.wantPets:
@@ -612,8 +612,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 oldLevels = 0
             if oldTracks == 0 and oldLevels == 0:
                 self.notify.warning('reseting invalid inventory to MAX on toon: %s' % self.doId)
-                self.inventory.zeroInv()
-                self.inventory.maxOutInv()
+                self.inventory.maxInventory(clearFirst=True)
             else:
                 newInventory = InventoryBase.InventoryBase(self)
                 oldList = emptyInv.makeFromNetStringForceSize(inventoryNetString, oldTracks, oldLevels)
@@ -628,9 +627,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def getInventory(self):
         return self.inventory.makeNetString()
 
+    # Called for doing "cheaty" restocks (mainly for ~unlimitedgags command)
+    # Refills inventory using the "ALL" fill mode.
     def doRestock(self):
-        self.inventory.zeroInv()
-        self.inventory.maxOutInv()
+        self.inventory.maxInventory(mode=InventoryBase.InventoryBase.FillMode.ALL, clearFirst=True)
         self.d_setInventory(self.inventory.makeNetString())
 
     def setDefaultShard(self, shard):
@@ -714,6 +714,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             return self.battleId
         else:
             return 0
+
+    def isBattling(self) -> bool:
+        return self.getBattleId() > 0
 
     def b_setBattleId(self, battleId):
         self.setBattleId(battleId)
@@ -1927,8 +1930,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def addTeleportAccess(self, zoneId):
 
-        # Discover this zone immediately if we are given teleport access
-        self.addHoodVisited(zoneId)
+        # Do not discover this zone immediately if we are given teleport access
+        # self.addHoodVisited(zoneId)
 
         if zoneId not in self.teleportZoneArray:
             self.teleportZoneArray.append(zoneId)
@@ -2595,6 +2598,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.d_setSCResistance(msgIndex, nearbyPlayers)
 
     def d_setSCResistance(self, msgIndex, nearbyPlayers):
+
+        # If this toon tried to request a unite but is battling, don't do anything.
+        if self.isBattling():
+            return
+
         if not ResistanceChat.validateId(msgIndex):
             self.air.writeServerEvent('suspicious', self.doId, 'said resistance %s, which is invalid.' % msgIndex)
             return
@@ -2634,6 +2642,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                                                                                   affectedPlayers))
 
     def doResistanceEffect(self, msgIndex):
+
+        # If we are in a battle, a unite can never affect us.
+        if self.isBattling():
+            return
+
         msgType, itemIndex = ResistanceChat.decodeId(msgIndex)
         msgValue = ResistanceChat.getItemValue(msgIndex)
         if msgType == ResistanceChat.RESISTANCE_TOONUP:
@@ -2643,7 +2656,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 self.toonUp(msgValue)
             self.notify.debug('Toon-up for ' + self.name)
         elif msgType == ResistanceChat.RESISTANCE_RESTOCK:
-            self.inventory.NPCMaxOutInv(msgValue)
+            self.inventory.maxInventory(maxGagLevel=msgValue)
             self.d_setInventory(self.inventory.makeNetString())
             self.notify.debug('Restock for ' + self.name)
         elif msgType == ResistanceChat.RESISTANCE_MONEY:
@@ -4479,7 +4492,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         # Wipe gag track access and orgs
         self.b_setTrackAccess([0, 0, 0, 0, 0, 0, 0])
         self.b_setTrackBonusLevel([-1, -1, -1, -1, -1, -1, -1])
-        self.inventory.zeroInv()
+        self.inventory.clearInventory()
         self.experience.zeroOutExp()
         self.b_setInventory(self.inventory.makeNetString())
         self.b_setExperience(self.experience.getCurrentExperience())

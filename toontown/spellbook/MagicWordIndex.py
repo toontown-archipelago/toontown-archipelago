@@ -1,4 +1,6 @@
-import collections, types
+import types
+import collections
+from typing import List, Dict
 
 from direct.interval.IntervalGlobal import *
 
@@ -308,8 +310,7 @@ class MaxToon(MagicWord):
                 experience.experience[i] = ToontownBattleGlobals.MaxSkill
         toon.b_setExperience(experience.getCurrentExperience())
 
-        toon.inventory.zeroInv()
-        toon.inventory.maxOutInv()
+        toon.inventory.maxInventory(clearFirst=True)
         toon.b_setInventory(toon.inventory.makeNetString())
 
         toon.b_setBaseGagSkillMultiplier(10)
@@ -453,10 +454,15 @@ class ToggleUnlimitedGags(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
 
     def handleWord(self, invoker, avId, toon, *args):
-        inventory = toon.inventory
-        inventory.NPCMaxOutInv(maxLevel=6)
+
+        from toontown.toon.InventoryBase import InventoryBase
+
+        inventory: InventoryBase = toon.inventory
+        inventory.maxInventory(mode=InventoryBase.FillMode.ALL, clearFirst=True)
+
         invoker.b_setInventory(inventory.makeNetString())
         toon.b_setUnlimitedGags(not toon.getUnlimitedGags())
+
         return "{} {} has unlimited gags!".format(toon.getName(), "now" if toon.getUnlimitedGags() else "no longer")
 
 
@@ -1382,7 +1388,7 @@ class SetInventory(MagicWord):
                 return "Invalid target track index: {0}".format(targetTrack)
             if (targetTrack != -1) and (not toon.hasTrackAccess(targetTrack)):
                 return "The target Toon doesn't have target track index: {0}".format(targetTrack)
-            inventory.NPCMaxOutInv(maxLevel=level)
+            inventory.maxInventory(maxLevel=level, clearFirst=True)
             toon.b_setInventory(inventory.makeNetString())
             if targetTrack == -1:
                 return "Inventory restocked."
@@ -2139,6 +2145,11 @@ class SkipVP(MagicWord):
 
         battle = battle.lower()
 
+        if battle == 'one':
+            boss.b_setState("Introduction")
+            boss.b_setState('BattleOne')
+            return "Starting battle one!"
+
         if battle == 'three':
             if boss.state in ('PrepareBattleThree', 'BattleThree'):
                 return "You can not return to previous rounds!"
@@ -2156,6 +2167,11 @@ class SkipVP(MagicWord):
                 boss.exitIntroduction()
                 boss.b_setState('Victory')
                 return "Skipping final round..."
+            elif boss.state in ("Introduction", "Elevator"):
+                if boss.state in ("Elevator"):
+                    boss.b_setState("Introduction")
+                boss.b_setState('BattleOne')
+                return "Skipping introduction!"
 
 
 class rpr(MagicWord):
@@ -2305,6 +2321,33 @@ class AbortGame(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         messenger.send('minigameAbort')
+
+
+class ToggleSuitPaths(MagicWord):
+    aliases = ['suitpaths']
+    desc = "Toggles visualization of suit paths if they exist in your current zone."
+    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        # Attempt to find a SuitPlanner in the zone.
+        from toontown.suit.DistributedSuitPlanner import DistributedSuitPlanner
+        suitPlanners: Dict[int, DistributedSuitPlanner] = base.cr.getObjectsOfClass(DistributedSuitPlanner)
+
+        # Are there none?
+        if len(suitPlanners) <= 0:
+            return "No suit planners found in your zone!"
+
+        # Are we turning it off?
+        if list(suitPlanners.values())[0].pathViz is not None:
+            for suitPlanner in suitPlanners.values():
+                suitPlanner.hidePaths()
+            return f"Now un-visualizing {len(suitPlanners)} suit planners!"
+
+        # Visualize them!
+        for suitPlanner in suitPlanners.values():
+            suitPlanner.showPaths()
+        return f"Now visualizing {len(suitPlanners)} suit planners!"
 
 
 class SpawnCog(MagicWord):
@@ -3023,16 +3066,38 @@ class StartBoss(MagicWord):
     accessLevel = 'DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
+
+        from ..toon.DistributedToonAI import DistributedToonAI
+
         hood_zones = [ToontownGlobals.BossbotHQ, ToontownGlobals.LawbotHQ,
                       ToontownGlobals.CashbotHQ, ToontownGlobals.SellbotHQ]
         if toon.zoneId not in hood_zones:
             return 'Toon is not in the correct zone! Expected a Cog HQ courtyard, got {}.'.format(toon.zoneId)
 
+        # Get all players online
+        online_toons: List[DistributedToonAI] = simbase.air.getAllOfType(DistributedToonAI)
+        for online_toon in list(online_toons):
+            if not online_toon.isPlayerControlled():
+                online_toons.remove(online_toon)
+
         for hood in simbase.air.hoods:
             if hood.zoneId == toon.zoneId:
-                zone = hood.lobbyMgr.createBossOffice([avId])
-                toon.sendUpdate('forceEnterBoss', [toon.zoneId, zone])
-                return 'Successfully created a boss!'
+
+                toons_in_zone = [online_toon for online_toon in online_toons if online_toon.zoneId == toon.zoneId]
+
+                # If there are more than 8 players, just grab the first 7 we find and assure that invoker is in it
+                if len(toons_in_zone) > 8:
+                    if toon.getDoId() in toons_in_zone:
+                        toons_in_zone.remove(toon)
+
+                    toons_in_zone = toons_in_zone[0:7]
+                    toons_in_zone.append(toon)
+
+                zone = hood.lobbyMgr.createBossOffice([t.getDoId() for t in toons_in_zone])
+                for t in toons_in_zone:
+                    t.sendUpdate('forceEnterBoss', [t.zoneId, zone])
+                return f'Successfully created a boss for {len(toons_in_zone)} toons!!'
+
         return 'Cog HQ hood data not found!'
 
 

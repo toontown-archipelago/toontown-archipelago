@@ -24,12 +24,12 @@ class ToontownItemName(enum.Enum):
 
     ### Fishing ###
     FISHING_ROD_UPGRADE = "Progressive Fishing Rod"
-    TTC_FISHING = "Toontown Central Fishing License"
-    DD_FISHING  = "Donald's Dock Fishing License"
-    DG_FISHING  = "Daisy Gardens Fishing License"
-    MML_FISHING = "Minnie's Melodyland Fishing License"
-    TB_FISHING  = "The Brrrgh Fishing License"
-    DDL_FISHING = "Donald's Dreamland Fishing License"
+    TTC_FISHING = "TTC Fishing License"
+    DD_FISHING  = "DD Fishing License"
+    DG_FISHING  = "DG Fishing License"
+    MML_FISHING = "MML Fishing License"
+    TB_FISHING  = "TB Fishing License"
+    DDL_FISHING = "DDL Fishing License"
     FISH = "Fish"
 
     ### Gag Training Frames ###
@@ -51,24 +51,27 @@ class ToontownItemName(enum.Enum):
     GAG_MULTIPLIER_2 = "+2 Base Gag XP Multiplier"
 
     ### Teleport Access ###
-    TTC_TELEPORT  = "TTC Teleport Access"
-    DD_TELEPORT   = "DD Teleport Access"
-    DG_TELEPORT   = "DG Teleport Access"
-    MML_TELEPORT  = "MML Teleport Access"
-    TB_TELEPORT   = "TB Teleport Access"
-    DDL_TELEPORT  = "DDL Teleport Access"
-    SBHQ_TELEPORT = "SBHQ Teleport Access"
-    CBHQ_TELEPORT = "CBHQ Teleport Access"
-    LBHQ_TELEPORT = "LBHQ Teleport Access"
-    BBHQ_TELEPORT = "BBHQ Teleport Access"
+    TTC_TELEPORT  = "TTC TP Access"
+    DD_TELEPORT   = "DD TP Access"
+    DG_TELEPORT   = "DG TP Access"
+    MML_TELEPORT  = "MML TP Access"
+    TB_TELEPORT   = "TB TP Access"
+    DDL_TELEPORT  = "DDL TP Access"
+    SBHQ_TELEPORT = "SBHQ TP Access"
+    CBHQ_TELEPORT = "CBHQ TP Access"
+    LBHQ_TELEPORT = "LBHQ TP Access"
+    BBHQ_TELEPORT = "BBHQ TP Access"
+
+    AA_TELEPORT = "AA TP Access"
+    GS_TELEPORT = 'GS TP Access'
 
     ### HQ Access ###
-    TTC_HQ_ACCESS = "Toontown Central HQ Access"
-    DD_HQ_ACCESS  = "Donald's Dock HQ Access"
-    DG_HQ_ACCESS  = "Daisy Gardens HQ Access"
-    MML_HQ_ACCESS = "Minnie's Melodyland HQ Access"
-    TB_HQ_ACCESS  = "The Brrrgh HQ Access"
-    DDL_HQ_ACCESS = "Donald's Dreamland HQ Access"
+    TTC_HQ_ACCESS = "TTC HQ Access"
+    DD_HQ_ACCESS  = "DD HQ Access"
+    DG_HQ_ACCESS  = "DG HQ Access"
+    MML_HQ_ACCESS = "MML HQ Access"
+    TB_HQ_ACCESS  = "TB HQ Access"
+    DDL_HQ_ACCESS = "DDL HQ Access"
 
     ### Facility Keys ###
     FRONT_FACTORY_ACCESS = "Front Factory Key"
@@ -100,11 +103,10 @@ class ToontownItemName(enum.Enum):
     MONEY_2000 = "2000 Jellybeans"
 
     ### Gag XP Bundles ###
-    XP_500  = "500 Gag XP Bundle"
-    XP_1000 = "1000 Gag XP Bundle"
-    XP_1500 = "1500 Gag XP Bundle"
-    XP_2000 = "2000 Gag XP Bundle"
-    # XP_2500 = "2500 Gag XP Bundle"
+    XP_10 = "10% Gag XP Bundle"
+    XP_15 = "15% Gag XP Bundle"
+    XP_20 = "20% Gag XP Bundle"
+
 
     ### Reward Bundles ###
     SOS_REWARD       = "Random SOS Card"
@@ -135,9 +137,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.useful),
     # endregion
     # region Gag Capacity
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.useful, quantity=12),
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.useful, quantity=2),
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.useful, quantity=0),
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.progression, quantity=12),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.progression, quantity=2),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.progression, quantity=0),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
     # endregion
     # region Jellybean Capacity
     ToontownItemDefinition(ToontownItemName.MONEY_CAP_750,  ItemClassification.useful, quantity=1),
@@ -171,16 +173,18 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.FISH, ItemClassification.filler),
     # endregion
     # region Teleport Access
-    ToontownItemDefinition(ToontownItemName.TTC_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DD_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DG_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.MML_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.TB_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DDL_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.SBHQ_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.CBHQ_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.LBHQ_TELEPORT, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.BBHQ_TELEPORT, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ToontownItemName.TTC_TELEPORT,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DD_TELEPORT,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DG_TELEPORT,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.MML_TELEPORT,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.TB_TELEPORT,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DDL_TELEPORT,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.SBHQ_TELEPORT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.CBHQ_TELEPORT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LBHQ_TELEPORT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.BBHQ_TELEPORT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.AA_TELEPORT,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GS_TELEPORT,   ItemClassification.progression),
     # endregion
     # region Tasking Access (Playground HQ entry access)
     ToontownItemDefinition(ToontownItemName.TTC_HQ_ACCESS, ItemClassification.progression),  # Given as a starting item ATM
@@ -216,11 +220,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.MONEY_500,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_2000,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_500,           ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_1000,          ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_1500,          ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_2000,          ItemClassification.filler),
-    # ToontownItemDefinition(ToontownItemName.XP_2500,          ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_10,           ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_15,          ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_20,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.SOS_REWARD,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.UNITE_REWARD,     ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD, ItemClassification.filler),
@@ -261,6 +263,38 @@ FISHING_LICENSES = (
     ToontownItemName.TB_FISHING,
     ToontownItemName.DDL_FISHING,
 )
+TELEPORT_ACCESS_ITEMS = (
+    ToontownItemName.TTC_TELEPORT,
+    ToontownItemName.DD_TELEPORT,
+    ToontownItemName.DG_TELEPORT,
+    ToontownItemName.MML_TELEPORT,
+    ToontownItemName.TB_TELEPORT,
+    ToontownItemName.DDL_TELEPORT,
+    ToontownItemName.SBHQ_TELEPORT,
+    ToontownItemName.CBHQ_TELEPORT,
+    ToontownItemName.LBHQ_TELEPORT,
+    ToontownItemName.BBHQ_TELEPORT,
+    ToontownItemName.AA_TELEPORT,
+    ToontownItemName.GS_TELEPORT,
+)
+
+
+def hood_to_tp_item_name(hoodId: int) -> ToontownItemName:
+    return {
+        2000: ToontownItemName.TTC_TELEPORT,
+        1000: ToontownItemName.DD_TELEPORT,
+        5000: ToontownItemName.DG_TELEPORT,
+        4000: ToontownItemName.MML_TELEPORT,
+        3000: ToontownItemName.TB_TELEPORT,
+        9000: ToontownItemName.DDL_TELEPORT,
+        11000: ToontownItemName.SBHQ_TELEPORT,
+        12000: ToontownItemName.CBHQ_TELEPORT,
+        13000: ToontownItemName.LBHQ_TELEPORT,
+        10000: ToontownItemName.BBHQ_TELEPORT,
+        6000: ToontownItemName.AA_TELEPORT,
+        17000: ToontownItemName.AA_TELEPORT,
+        8000: ToontownItemName.GS_TELEPORT,
+    }.get(hoodId)
 
 
 JUNK_WEIGHTS = {
@@ -269,10 +303,9 @@ JUNK_WEIGHTS = {
     ToontownItemName.MONEY_1000:       0.5,
     ToontownItemName.MONEY_2000:       0.5,
 
-    ToontownItemName.XP_500:           0.7,
-    ToontownItemName.XP_1000:          0.5,
-    ToontownItemName.XP_1500:          0.4,
-    ToontownItemName.XP_2000:          0.3,
+    ToontownItemName.XP_10:            0.7,
+    ToontownItemName.XP_15:            0.5,
+    ToontownItemName.XP_20:            0.3,
 
     ToontownItemName.SOS_REWARD:       0.65,
     ToontownItemName.UNITE_REWARD:     0.65,

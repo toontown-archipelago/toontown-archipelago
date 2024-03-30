@@ -27,7 +27,6 @@ class GSHoodDataAI(HoodDataAI.HoodDataAI):
         self.createLeaderBoards()
         self.__cycleLeaderBoards()
         self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
-                                ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 1)
                                 ]
         for planner in self.treasurePlanner:
             planner.start()

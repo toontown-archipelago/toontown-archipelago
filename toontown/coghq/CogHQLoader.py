@@ -123,8 +123,10 @@ class CogHQLoader(StateData.StateData):
         self.placeClass = self.getExteriorPlaceClass()
         self.enterPlace(requestStatus)
         self.hood.spawnTitleText(requestStatus['zoneId'])
+        messenger.send('enterSafeZone')
 
     def exitCogHQExterior(self):
+        messenger.send('exitSafeZone')
         taskMgr.remove('titleText')
         self.hood.hideTitleText()
         self.exitPlace()

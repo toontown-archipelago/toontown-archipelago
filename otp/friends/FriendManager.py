@@ -82,9 +82,6 @@ class FriendManager(DistributedObject.DistributedObject):
         if inviterId in base.localAvatar.ignoreList:
             self.up_inviteeFriendConsidering(4, context)
             return
-        if not base.localAvatar.acceptingNewFriends:
-            self.up_inviteeFriendConsidering(6, context)
-            return
         self.up_inviteeFriendConsidering(self.__available, context)
         if self.__available:
             messenger.send('friendInvitation', [inviterId,

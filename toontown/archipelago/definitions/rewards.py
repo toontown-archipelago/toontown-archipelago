@@ -1,4 +1,5 @@
 # Represents logic for what to do when we are given an item from AP
+import math
 from enum import IntEnum
 
 import random
@@ -44,6 +45,14 @@ class APReward:
     # If not overridden, will show the AP logo
     def get_image_path(self) -> str:
         return 'phase_14/maps/ap_icon.png'
+
+    # Override to set the scale of an image you want to show up on the display
+    def get_image_scale(self) -> float:
+        return .08
+
+    # Override to set the position of an image you want to show up on the display
+    def get_image_pos(self):
+        return (.12, 0, .1)
 
     # Returns a string to show on the display when received, should follow the basic format like so:
     # Your x is now y!\n\nFrom: {fromPlayer}
@@ -131,6 +140,16 @@ class GagTrainingFrameReward(APReward):
         DROP: 'cyan'
     }
 
+    TRACK_TO_ICON = {
+        TOONUP: "toonup_%s",
+        TRAP: "trap_%s",
+        LURE: "lure_%s",
+        SOUND: "sound_%s",
+        THROW: "throw_%s",
+        SQUIRT: "squirt_%s",
+        DROP: "drop_%s",
+    }
+
     def __init__(self, track):
         self.track = track
 
@@ -138,11 +157,32 @@ class GagTrainingFrameReward(APReward):
     # todo: new system was two steps forward one step back in this regard
     def formatted_header(self) -> str:
         track_name_color = self.TRACK_TO_COLOR.get(self.track)
-        return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Received a training frame!\nYour "),
-            MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
-            MinimalJsonMessagePart(" gags have more potential!"),
-        ])
+        level = base.localAvatar.getTrackAccessLevel(self.track)
+        # Check for organic text popup first
+        if base.localAvatar.getTrackBonusLevel()[self.track] == 7:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("Received a training frame!\nYour "),
+                MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
+                MinimalJsonMessagePart(" Gags are now organic!"),
+            ])
+        # Check for new levels
+        if level <= 7:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("Received a training frame!\nYour "),
+                MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
+                MinimalJsonMessagePart(" Gags have more potential!"),
+                ])
+        else:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("Received a training frame!\nYour "),
+                MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
+                MinimalJsonMessagePart(" experience can now overflow!"),
+            ])
+
+    def get_image_path(self) -> str:
+        level = base.localAvatar.getTrackAccessLevel(self.track)
+        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(level, 7))
+        return f'phase_14/maps/gags/{ap_icon}.png'
 
     def apply(self, av: "DistributedToonAI"):
 
@@ -229,6 +269,11 @@ class TeleportAccessUpgradeReward(APReward):
     LAWBOT_HQ = ToontownGlobals.LawbotHQ
     BOSSBOT_HQ = ToontownGlobals.BossbotHQ
 
+    ACORN_ACRES = ToontownGlobals.OutdoorZone
+    GOOFY_SPEEDWAY = ToontownGlobals.GoofySpeedway
+
+    LINKED_PGS = {ACORN_ACRES: [ToontownGlobals.GolfZone]}
+
     ZONE_TO_DISPLAY_NAME = {
         TOONTOWN_CENTRAL: "Toontown Central",
         DONALDS_DOCK: "Donald's Dock",
@@ -240,6 +285,8 @@ class TeleportAccessUpgradeReward(APReward):
         CASHBOT_HQ: "Cashbot HQ",
         LAWBOT_HQ: "Lawbot HQ",
         BOSSBOT_HQ: "Bossbot HQ",
+        ACORN_ACRES: "Acorn Acres",
+        GOOFY_SPEEDWAY: "Goofy Speedway",
     }
 
     def __init__(self, playground: int):
@@ -254,6 +301,8 @@ class TeleportAccessUpgradeReward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         av.addTeleportAccess(self.playground)
+        for pg in self.LINKED_PGS.get(self.playground, []):
+            av.addTeleportAccess(pg)
 
 
 class TaskAccessReward(APReward):
@@ -417,7 +466,7 @@ class UberTrapAward(APReward):
         damage = av.getHp() - newHp
         if av.getHp() > 0:
             av.takeDamage(damage)
-        av.inventory.NPCMaxOutInv(maxLevel=6)
+        av.inventory.maxInventory()
         av.b_setInventory(av.inventory.makeNetString())
 
         av.d_broadcastHpString("UBERFIED!", (.35, .7, .35))
@@ -456,7 +505,7 @@ class GagShuffleAward(APReward):
         # Clear inventory, randomly choose gags and add them until we fill up
         av.inventory.calcTotalProps()  # Might not be necessary, but just to be safe
         target = av.inventory.totalProps
-        av.inventory.zeroInv()  # Wipe inventory
+        av.inventory.clearInventory()  # Wipe inventory
         # Get allowed track level pairs
         allowedGags: List[Tuple[int, int]] = av.experience.getAllowedGagsAndLevels()
         # Only do enough attempts to fill us back up to what we were
@@ -486,14 +535,16 @@ class GagExpBundleAward(APReward):
 
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("You were given a\nbundle of "),
-            MinimalJsonMessagePart(f"{self.amount} gag experience", color='cyan'),
-            MinimalJsonMessagePart("!"),
+            MinimalJsonMessagePart("You were given a fill of\n"),
+            MinimalJsonMessagePart(f"{self.amount}% experience", color='cyan'),
+            MinimalJsonMessagePart(" in each Gag Track!"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
         for index, _ in enumerate(ToontownBattleGlobals.Tracks):
-            av.experience.addExp(index, self.amount)
+            currentCap = min(av.experience.getExperienceCapForTrack(index), ToontownBattleGlobals.regMaxSkill)
+            exptoAdd = math.ceil(currentCap * (self.amount/100))
+            av.experience.addExp(index, exptoAdd)
         av.b_setExperience(av.experience.getCurrentExperience())
 
 
@@ -621,6 +672,8 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.CBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.CASHBOT_HQ),
     ToontownItemName.LBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.LAWBOT_HQ),
     ToontownItemName.BBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.BOSSBOT_HQ),
+    ToontownItemName.AA_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.ACORN_ACRES),
+    ToontownItemName.GS_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.GOOFY_SPEEDWAY),
     ToontownItemName.TTC_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.TOONTOWN_CENTRAL),
     ToontownItemName.DD_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DONALDS_DOCK),
     ToontownItemName.DG_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DAISYS_GARDENS),
@@ -654,11 +707,9 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MONEY_500.value: JellybeanReward(500),
     ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
     ToontownItemName.MONEY_2000.value: JellybeanReward(2000),
-    ToontownItemName.XP_500.value: GagExpBundleAward(500),
-    ToontownItemName.XP_1000.value: GagExpBundleAward(1000),
-    ToontownItemName.XP_1500.value: GagExpBundleAward(1500),
-    ToontownItemName.XP_2000.value: GagExpBundleAward(2000),
-    # ToontownItemName.XP_2500.value: GagExpBundleAward(2500),
+    ToontownItemName.XP_10.value: GagExpBundleAward(10),
+    ToontownItemName.XP_15.value: GagExpBundleAward(15),
+    ToontownItemName.XP_20.value: GagExpBundleAward(20),
     ToontownItemName.SOS_REWARD.value: BossRewardAward(BossRewardAward.SOS),
     ToontownItemName.UNITE_REWARD.value: BossRewardAward(BossRewardAward.UNITE),
     ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP),

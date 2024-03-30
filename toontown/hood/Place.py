@@ -1,4 +1,6 @@
 from panda3d.core import *
+
+from apworld.toontown import TPSanity
 from toontown.toonbase.ToonBaseGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import StateData
@@ -225,6 +227,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.questMap.acceptOnscreenHooks()
         self.walkStateData.fsm.request('walking')
         self.enablePeriodTimer()
+        base.localAvatar.enterPlaceWalk()
 
     def exitWalk(self):
         self.exitFLM()
@@ -482,8 +485,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         self.ignore(self.dfaDoneEvent)
 
     def handleEnterTunnel(self, requestStatus, collEntry):
-        if localAvatar.hasActiveBoardingGroup():
-            rejectText = TTLocalizer.BoardingCannotLeaveZone
+        def rejectEntry(rejectText):
             localAvatar.elevatorNotifier.showMe(rejectText)
             dummyNP = NodePath('dummyNP')
             dummyNP.reparentTo(render)
@@ -494,7 +496,17 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
             localAvatar.setPos(dummyNP.getPos())
             dummyNP.removeNode()
             del dummyNP
-            return
+
+        if localAvatar.hasActiveBoardingGroup():
+            return rejectEntry(TTLocalizer.BoardingCannotLeaveZone)
+
+        tpsanity = localAvatar.slotData.get('tpsanity')
+        if tpsanity == TPSanity.option_keys:
+            targetHood = requestStatus.get('hoodId')
+            if targetHood is not None:
+                if not localAvatar.hasTeleportAccess(targetHood):
+                    return rejectEntry("You'll need Teleport Access to go through there!")
+
         self.requestLeave(requestStatus)
 
     def enterDFACallback(self, requestStatus, doneStatus):
