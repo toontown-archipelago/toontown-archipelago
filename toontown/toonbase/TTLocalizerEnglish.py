@@ -9948,6 +9948,7 @@ OptionNames = {
     "camSensitivityX": "Camera X Sensitivity",
     "camSensitivityY": "Camera Y Sensitivity",
     "movement_mode": "Movement Mode",
+    "sprint_mode": "Sprint Mode",
     "fovEffects": "Sprinting FOV Effects",
     "cam-toggle-lock": "Camera Toggle Lock",
     "speedchat-style": "Speedchat Color",
