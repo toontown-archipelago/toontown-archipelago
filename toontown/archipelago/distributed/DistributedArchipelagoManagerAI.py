@@ -57,7 +57,7 @@ class DistributedArchipelagoManagerAI(DistributedObjectAI):
                 continue
 
             # If the toon has an AP session and it is connected add it
-            if toon.archipelago_session is not None and toon.archipelago_session.state == APClientEnums.CONNECTED:
+            if toon.archipelago_session is not None and toon.archipelago_session.client.state == APClientEnums.CONNECTED:
                 sessions.append(toon.archipelago_session)
 
         return sessions
