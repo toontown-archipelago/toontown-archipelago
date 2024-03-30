@@ -3527,20 +3527,20 @@ struct OnlineToon {
 }
 
 dclass TTOffFriendsManager : DistributedObject {
-  getFriendsListRequest() clsend;
-  friendsListRequestResp(FriendEntry[]);
-  friendOnline(uint32, uint8, uint8);
-  getAvatarDetails(uint32) clsend;
-  avatarDetailsResp(uint32, blob);
-  removeFriend(uint32) clsend;
-  friendOffline(uint32);
+  //getFriendsListRequest() clsend;
+  //friendsListRequestResp(FriendEntry[]);
+  //friendOnline(uint32, uint8, uint8);
+
+  //removeFriend(uint32) clsend;
+  //friendOffline(uint32);
   goingOffline(uint32);
   clearList(uint32);
-
+  getAvatarDetails(uint32) clsend;
+  avatarDetailsResp(uint32, blob);
   // Start AP Online Manager Rewrite
   setOnlineToons(OnlineToon[]);
   toonCameOnline(OnlineToon);
-  toonWentOffline(doId);
+  toonWentOffline(uint32 doId);
 };
 
 dclass TTSpeedchatRelay : SpeedchatRelay {

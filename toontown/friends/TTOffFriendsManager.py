@@ -10,6 +10,12 @@ from toontown.friends.OnlineToon import OnlineToon
 class TTOffFriendsManager(DistributedObjectGlobal):
     notify = DirectNotifyGlobal.directNotify.newCategory('TTOffFriendsManager')
 
+    # Fields that are represented by py2 byte strings and need extra conversion.
+    TOON_DETAIL_BYTE_FIELDS = (
+        'setDNAString', 'setMailboxContents', 'setAwardMailboxContents', 'setGiftSchedule',
+        'setDeliverySchedule', 'setAwardSchedule', 'setInventory'
+    )
+
     def __init__(self, cr):
         super().__init__(cr)
 
@@ -17,6 +23,10 @@ class TTOffFriendsManager(DistributedObjectGlobal):
         # Keep a cache of currently online toons so clients can request/receive this.
         # Maps Toon IDs to OnlineToon struct.
         self._onlineToonCache: Dict[int, OnlineToon] = {}
+
+    """
+    Internal util used within this class.
+    """
 
     # Call to cache a toon that just came online.
     def __cacheOnlineToon(self, toonInfo: OnlineToon):
@@ -27,36 +37,8 @@ class TTOffFriendsManager(DistributedObjectGlobal):
         if toonId in self._onlineToonCache:
             del self._onlineToonCache[toonId]
 
-    def d_getAvatarDetails(self, avId):
-        self.sendUpdate('getAvatarDetails', [avId])
-
-    def avatarDetailsResp(self, avId, details):
-        fields = json.loads(details)
-        for currentField in fields:
-            if currentField[0] in (
-                    'setDNAString', 'setMailboxContents', 'setAwardMailboxContents', 'setGiftSchedule',
-                    'setDeliverySchedule', 'setAwardSchedule', 'setInventory'):
-                currentField[1] = bytes(currentField[1], 'utf-8')
-
-        base.cr.handleGetAvatarDetailsResp(avId, fields=fields)
-
-    def d_getFriendsListRequest(self):
-        self.sendUpdate('getFriendsListRequest')
-
-    def friendsListRequestResp(self, resp):
-        base.cr.handleGetFriendsList(resp)
-
-    def friendOnline(self, id, commonChatFlags, whitelistChatFlags, alert=True):
-        base.cr.handleFriendOnline(id, commonChatFlags, whitelistChatFlags, alert)
-
-    def d_removeFriend(self, friendId):
-        self.sendUpdate('removeFriend', [friendId])
-
-    def friendOffline(self, id):
-        base.cr.handleFriendOffline(id)
-
     """
-    Helper methods to be used in game code to interact with this class
+    Util to be used throughout the codebase.
     """
 
     # Gets a list of OnlineToon instances representing the toons that are currently online.
@@ -82,7 +64,7 @@ class TTOffFriendsManager(DistributedObjectGlobal):
         return True
 
     """
-    Astron updates received via UD view of this object
+    Astron updates received via the UD view of this object.
     """
 
     # Called when a toon just came online.
@@ -100,3 +82,18 @@ class TTOffFriendsManager(DistributedObjectGlobal):
         for toonData in listOfToonData:
             toon: OnlineToon = OnlineToon.from_struct(toonData)
             self.__cacheOnlineToon(toon)
+
+    def avatarDetailsResp(self, avId, details):
+        fields = json.loads(details)
+        for currentField in fields:
+            if currentField[0] in self.TOON_DETAIL_BYTE_FIELDS:
+                currentField[1] = bytes(currentField[1], 'utf-8')
+
+        base.cr.handleGetAvatarDetailsResp(avId, fields=fields)
+
+    """
+    Astron updates to be send to the UD view of this object.
+    """
+
+    def d_getAvatarDetails(self, avId):
+        self.sendUpdate('getAvatarDetails', [avId])

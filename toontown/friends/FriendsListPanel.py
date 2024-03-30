@@ -308,13 +308,13 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
         messenger.send('clickedNametag', [handle])
 
     def __updateScrollList(self):
-        toonIdsToRender = [
-            (base.localAvatar.doId, base.localAvatar.getName())  # Always include local toon
-        ]
+
+        toonIdsToRender = []
 
         # Nearby toons page
         if self.currentPanelPage == FLPNearby:
             toons = list(base.cr.getObjectsOfExactClass(DistributedToon).values())
+            toons.append(base.localAvatar)  # Render us too
             for toon in toons:
                 toonIdsToRender.append((toon.getDoId(), toon.getName()))
 
@@ -324,11 +324,8 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
                 toonIdsToRender.append((onlineToon.avId, onlineToon.name))
 
         # Remove all the current buttons
-        for toonId in list(self.playerButtons.keys()):
-            friendButton = self.playerButtons[toonId]
-            self.scrollList.removeItem(friendButton, refresh=0)
-            friendButton.destroy()
-            del self.playerButtons[toonId]
+        self.scrollList.removeAndDestroyAllItems()
+        self.playerButtons.clear()
 
         # Sort the ID's based on teams
         toonIdsToRender = sorted(toonIdsToRender, key=lambda x: (base.cr.archipelagoManager.getToonTeam(x[0]), x[1]))

@@ -737,7 +737,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         return 1
 
     def removeFriend(self, avatarId):
-        self.ttoffFriendsManager.d_removeFriend(avatarId)
+        pass
 
     def clearFriendState(self):
         self.friendsMap = {}
@@ -748,7 +748,6 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
     def sendGetFriendsListRequest(self):
         self.friendsMapPending = 1
         self.friendsListError = 0
-        self.ttoffFriendsManager.d_getFriendsListRequest()
 
     def cleanPetsFromFriendsMap(self):
         for objId, obj in self.friendsMap.items():
