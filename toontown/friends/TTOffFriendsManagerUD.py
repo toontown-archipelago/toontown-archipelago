@@ -1,6 +1,9 @@
+import dataclasses
 import functools
 import json
 import time
+from dataclasses import dataclass
+from typing import Dict, List
 
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectGlobalUD import DistributedObjectGlobalUD
@@ -10,6 +13,8 @@ from direct.fsm.FSM import FSM
 # Do not delete this import even though it says it is unused!!!
 # It defines some globals that we need to work.
 from direct.distributed.MsgTypes import *
+
+from toontown.friends.OnlineToon import OnlineToon
 
 
 class GetAvatarInfoOperation(FSM):
@@ -209,6 +214,20 @@ class TTOffFriendsManagerUD(DistributedObjectGlobalUD):
         self.operations = {}
         self.avBasicInfoCache = {}
 
+        # Start AP Code
+        # Keep a cache of currently online toons so clients can request/receive this.
+        # Maps Toon IDs to OnlineToon struct.
+        self._onlineToonCache: Dict[int, OnlineToon] = {}
+
+    # Call to cache a toon that just came online.
+    def __cacheOnlineToon(self, toonInfo: OnlineToon):
+        self._onlineToonCache[toonInfo.avId] = toonInfo
+
+    # Call to un-cache a toon that just went offline.
+    def __decacheOfflineToon(self, toonId: int):
+        if toonId in self._onlineToonCache:
+            del self._onlineToonCache[toonId]
+
     def deleteOperation(self, avId):
         operation = self.operations.get(avId)
         if not operation:
@@ -356,9 +375,19 @@ class TTOffFriendsManagerUD(DistributedObjectGlobalUD):
                                                                                  self.air.ourChannel, [avId, 1])
                 self.air.send(dg)
 
-    def comingOnline(self, avId, friends):
+    def comingOnline(self, avId, friends, name):
         for friendId in friends:
             self.air.getActivated(friendId, functools.partial(self.__comingOnlineFriendOnline, otherId=avId))
+
+        # START AP CODE
+        # Cache online toon then send an update to the client DOG
+        onlineToon = OnlineToon(avId, name)
+        self.__cacheOnlineToon(onlineToon)
+        self.sendUpdate('toonCameOnline', [onlineToon.struct()])
+
+        # We also need to send the person who came online a current list of everyone else online.
+        onlineToonsList: List[OnlineToon] = [toon for toon in self._onlineToonCache.values()]
+        self.sendUpdateToAvatarId(avId, 'setOnlineToons', [onlineToonsList])
 
     def __comingOnlineFriendOnline(self, avId, activated, otherId=None):
         if not (otherId and activated):
@@ -384,6 +413,11 @@ class TTOffFriendsManagerUD(DistributedObjectGlobalUD):
     def goingOffline(self, avId):
         newOperation = GetAvatarInfoOperation(self, avId, avId, self.__handleGoingOffline)
         newOperation.start()
+
+        # START AP CODE
+        # Uncache the avatar and tell the DOG this toon went offline.
+        self.__decacheOfflineToon(avId)
+        self.sendUpdate('toonWentOffline', [avId])
 
     def __handleGoingOffline(self, success, avId, fields, isPet):
         if not success:
