@@ -127,9 +127,11 @@ class TTOffFriendsManagerUD(DistributedObjectGlobalUD):
         # START AP CODE
         # Cache online toon then send an update to the client DOG
         onlineToon = OnlineToon(avId, name, dnaString)
-        self.__cacheOnlineToon(onlineToon)
-        self.d_toonCameOnline(onlineToon)
 
+        for otherAvId in self._onlineToonCache.keys():
+            self.d_toonCameOnline(otherAvId, onlineToon)
+
+        self.__cacheOnlineToon(onlineToon)
         # We also need to send the person who came online a current list of everyone else online.
         self.d_setOnlineToons(avId)
 
@@ -137,9 +139,11 @@ class TTOffFriendsManagerUD(DistributedObjectGlobalUD):
     def goingOffline(self, avId):
 
         # START AP CODE
-        # Uncache the avatar and tell the DOG this toon went offline.
+        # Uncache the avatar and tell all other toons this toon went offline.
         self.__decacheOfflineToon(avId)
-        self.sendUpdate('toonWentOffline', [avId])
+
+        for otherAvId in self._onlineToonCache.keys():
+            self.d_toonWentOffline(otherAvId, avId)
 
     # Call to cancel and stop tracking of a specific operation in progress.
     def cancelOperation(self, avId):
@@ -180,12 +184,12 @@ class TTOffFriendsManagerUD(DistributedObjectGlobalUD):
     """
 
     # Call to tell the clients that a toon came online and provide the info of said toon.
-    def d_toonCameOnline(self, toon: OnlineToon):
-        self.sendUpdate('toonCameOnline', [toon.struct()])
+    def d_toonCameOnline(self, targetAvId: int, toon: OnlineToon):
+        self.sendUpdateToAvatarId(targetAvId, 'toonCameOnline', [toon.struct()])
 
     # Call to tell the clients that some toon went offline and provide the avId of said toon.
-    def d_toonWentOffline(self, avId: int):
-        self.sendUpdate('toonWentOffline', [avId])
+    def d_toonWentOffline(self, targetAvId: int, offlineAvId: int):
+        self.sendUpdateToAvatarId(targetAvId, 'toonWentOffline', [offlineAvId])
 
     # Call to tell a specific client all the toons we have stored on our cache of online toons.
     # Used for initial login to sync data for them.
