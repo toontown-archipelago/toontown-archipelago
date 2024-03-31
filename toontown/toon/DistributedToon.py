@@ -323,7 +323,16 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if self.animFSM.getCurrentState().getName() == 'off':
             self.setAnimState('neutral')
         self._startZombieCheck()
-        self.makeOverheadLaffMeter()
+
+        # Perform any post processing we should do specifically for player toons.
+        if self.isPlayerControlled():
+            self.makeOverheadLaffMeter()
+
+            # Post processing for player toons that aren't us.
+            if base.localAvatar != self:
+                # Update our online player manager to cache what we seen here. This allows us to catch name changes.
+                base.cr.onlinePlayerManager.cacheOnlineToon(self, overwrite=True)
+
 
     def _handleClientCleanup(self):
         if self.track != None:
@@ -334,16 +343,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         Toon.Toon.setDNAString(self, dnaString)
 
     def setDNA(self, dna):
-        if base.cr.newsManager:
-            if base.cr.newsManager.isHolidayRunning(ToontownGlobals.SPOOKY_BLACK_CAT):
-                black = 26
-                heads = ['cls',
-                 'css',
-                 'csl',
-                 'cll']
-                dna.setTemporary(random.choice(heads), black, black, black)
-            else:
-                dna.restoreTemporary(self.style)
         oldHat = self.getHat()
         oldGlasses = self.getGlasses()
         oldBackpack = self.getBackpack()
@@ -357,6 +356,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.setGlasses(*oldGlasses)
         self.setBackpack(*oldBackpack)
         self.setShoes(*oldShoes)
+        
+        # This toon's DNA has changed. Update our cache to reflect that.
+        if self.isPlayerControlled():
+            base.cr.onlinePlayerManager.cacheOnlineToon(self, overwrite=True)
 
     def setHat(self, idx, textureIdx, colorIdx):
         Toon.Toon.setHat(self, idx, textureIdx, colorIdx)
@@ -2633,6 +2636,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setName(self, name = 'unknownDistributedAvatar'):
         DistributedPlayer.DistributedPlayer.setName(self, name)
         self._handleGMName()
+
+        # This toon's name has changed. Update our online player cache to reflect that.
+        if self.isPlayerControlled():
+            base.cr.onlinePlayerManager.cacheOnlineToon(self, overwrite=True)
 
     def _handleGMName(self):
         name = self.name
