@@ -1,3 +1,5 @@
+import typing
+
 from panda3d.core import *
 from panda3d.direct import *
 from direct.directnotify.DirectNotifyGlobal import *
@@ -9,13 +11,13 @@ from direct.showbase.EventManagerGlobal import *
 from otp.otpbase import PythonUtil
 from direct.interval.IntervalManager import ivalMgr
 from direct.task import Task
-from direct.showbase import EventManager
 from direct.showbase import ExceptionVarDump
 from direct.showbase import DConfig
-import math
-import sys
 import time
-import gc
+
+if typing.TYPE_CHECKING:
+    from otp.ai.AIBaseGlobals import *
+
 
 class AIBase:
     notify = directNotify.newCategory('AIBase')

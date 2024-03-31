@@ -47,11 +47,13 @@ from otp.ai.AIBaseGlobal import *
 
 from toontown.ai.ToontownAIRepository import ToontownAIRepository
 
-simbase.air = ToontownAIRepository(config.GetInt('air-base-channel', 401000000),
-                                   config.GetInt('air-stateserver', 10000),
-                                   config.GetString('district-name', 'Toon Valley'))
+simbase.air = ToontownAIRepository(
+    config.ConfigVariableInt('air-base-channel', 401000000).getValue(),
+    config.ConfigVariableInt('air-stateserver', 10000).getValue(),
+    config.ConfigVariableString('district-name', 'Toon Valley').getValue()
+)
 
-host = config.GetString('air-connect', '127.0.0.1')
+host = config.ConfigVariableString('air-connect', '127.0.0.1').getValue()
 port = 7199
 if ':' in host:
     host, port = host.split(':', 1)

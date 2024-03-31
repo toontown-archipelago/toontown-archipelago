@@ -1,3 +1,5 @@
+import typing
+
 from direct.showbase.MessengerGlobal import messenger
 
 from otp.otpbase import OTPBase
@@ -26,6 +28,9 @@ import time
 
 import toontown.archipelago.util.global_text_properties as global_text_properties
 from ..settings.Settings import Settings, ControlSettings
+
+if typing.TYPE_CHECKING:
+    from toontown.toonbase.ToonBaseGlobals import *
 
 
 class ToonBase(OTPBase.OTPBase):
