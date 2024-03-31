@@ -310,7 +310,7 @@ class OptionsTabPage(DirectFrame, FSM):
         self.confirm.show()
         self._parent.doneStatus = {
             "mode": "exit",
-            "exitTo": "CloseShard"}
+            "exitTo": "closeShard"}
         self.accept("confirmDone", self.__handleConfirm)
 
     def __handleConfirm(self):
