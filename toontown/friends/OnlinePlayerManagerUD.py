@@ -122,6 +122,18 @@ class OnlinePlayerManagerUD(DistributedObjectGlobalUD):
 
         self.d_avatarDetailsResp(avId, fields['avId'], json.dumps(details))
 
+        # Since we queried avatar data, we might as well update the cache if we have some data present.
+        # This is for the event that someone changed their name or DNA we can have something more up to date.
+        # We should also only do this if the toon is online.
+        queriedAvId = fields['avId']
+
+        if queriedAvId not in self._onlineToonCache:
+            return
+
+        queriedName = fields['setName'][0]
+        queriedDNA = fields['setDNAString'][0].decode('utf-8')
+        self.__cacheOnlineToon(OnlineToon(queriedAvId, queriedName, queriedDNA))
+
     # Given two avIds, make them both aware of each other's existence.
     # This is used so that on initial login, they can immediately start communicating with each other
     # via astron updates.

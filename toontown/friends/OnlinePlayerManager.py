@@ -55,12 +55,17 @@ class OnlinePlayerManager(DistributedObjectGlobal):
     # Returns False if toon was already cached and we didn't do anything. True if we updated the cache.
     def cacheOnlineToon(self, toon, overwrite=False) -> bool:
 
+        # Sometimes we may call this method when we do not have all our required attributes.
+        # This can be from pre toon generation since we need to intercept name/dna change events.
+        if None in (toon.doId, toon.name, toon.style):
+            return False
+
         # If we don't want to overwrite data in our cache and the toon is already cached don't do anything
         if not overwrite and toon.getDoId() in self._onlineToonCache:
             return False
 
         # New data!
-        self.__cacheOnlineToon(OnlineToon(toon.getDoId(), toon.getName(), toon.style))
+        self.__cacheOnlineToon(OnlineToon(toon.getDoId(), toon.getName(), toon.style.makeNetString()))
         return True
 
     """
@@ -93,10 +98,28 @@ class OnlinePlayerManager(DistributedObjectGlobal):
 
     def avatarDetailsResp(self, avId, details):
         fields = json.loads(details)
+        newName = None
+        newDna = None
         for currentField in fields:
-            if currentField[0] in self.TOON_DETAIL_BYTE_FIELDS:
-                currentField[1] = bytes(currentField[1], 'utf-8')
+            fieldName: str = currentField[0]
+            value = currentField[1]
 
+            # Certain fields need to be converted back to bytes (Mostly DNA strings).
+            if fieldName in self.TOON_DETAIL_BYTE_FIELDS:
+                currentField[1] = bytes(value, 'utf-8')
+
+            # See if we found our name or DNA to update
+            if fieldName == 'setName':
+                newName = value
+            if fieldName == 'setDNAString':
+                newDna = value
+
+        # We also received an up to date dump of this avatar's information that we are caching. Overwrite it.
+        if newName is not None and newDna is not None:
+            onlineToon = OnlineToon(avId, newName, newDna)
+            self.__cacheOnlineToon(onlineToon)
+
+        # Tell the client repository we received this information
         base.cr.handleGetAvatarDetailsResp(avId, fields=fields)
 
     """
