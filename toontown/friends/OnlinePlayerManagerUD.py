@@ -63,8 +63,8 @@ class GetAvatarInfoOperation(FriendManagerOperation):
         self.callback(success=False, avId=None, fields=None)
 
 
-class TTOffFriendsManagerUD(DistributedObjectGlobalUD):
-    notify = DirectNotifyGlobal.directNotify.newCategory('TTOffFriendsManagerUD')
+class OnlinePlayerManagerUD(DistributedObjectGlobalUD):
+    notify = DirectNotifyGlobal.directNotify.newCategory('OnlinePlayerManagerUD')
 
     def __init__(self, air):
         DistributedObjectGlobalUD.__init__(self, air)

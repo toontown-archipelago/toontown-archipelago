@@ -40,7 +40,7 @@ uberdogs:
       id: 4501
       anonymous: false
 
-    - class: TTOffFriendsManager
+    - class: OnlinePlayerManager
       id: 4707
       anonymous: false
 

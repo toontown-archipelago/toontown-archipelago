@@ -7,8 +7,8 @@ from direct.distributed.DistributedObjectGlobal import DistributedObjectGlobal
 from toontown.friends.OnlineToon import OnlineToon
 
 
-class TTOffFriendsManager(DistributedObjectGlobal):
-    notify = DirectNotifyGlobal.directNotify.newCategory('TTOffFriendsManager')
+class OnlinePlayerManager(DistributedObjectGlobal):
+    notify = DirectNotifyGlobal.directNotify.newCategory('OnlinePlayerManager')
 
     # Fields that are represented by py2 byte strings and need extra conversion.
     TOON_DETAIL_BYTE_FIELDS = (

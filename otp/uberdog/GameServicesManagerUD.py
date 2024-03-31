@@ -434,11 +434,11 @@ class RemoveAvatarOperation(GetAvatarsOperation):
                                                                   {'setSlot%sToonId' % index: [0],
                                                                    'setSlot%sItems' % index: [[]]})
 
-        if self.gameServicesManager.air.ttoffFriendsManager:
-            self.gameServicesManager.air.ttoffFriendsManager.clearList(self.avId)
+        if self.gameServicesManager.air.onlinePlayerManager:
+            self.gameServicesManager.air.onlinePlayerManager.clearList(self.avId)
         else:
-            friendsManagerDoId = OtpDoGlobals.OTP_DO_ID_TTOFF_FRIENDS_MANAGER
-            friendsManagerDclass = self.gameServicesManager.air.dclassesByName['TTOffFriendsManagerUD']
+            friendsManagerDoId = OtpDoGlobals.OTP_DO_ID_ONLINE_PLAYER_MANAGER
+            friendsManagerDclass = self.gameServicesManager.air.dclassesByName['OnlinePlayerManagerUD']
             datagram = friendsManagerDclass.aiFormatUpdate('clearList', friendsManagerDoId, friendsManagerDoId,
                                                            self.gameServicesManager.air.ourChannel, [self.avId])
             self.gameServicesManager.air.send(datagram)
@@ -557,20 +557,20 @@ class LoadAvatarOperation(AvatarOperation):
         # Tell the friends manager that an avatar is coming online.
         name = self.avatar['setName'][0]
         dna = self.avatar['setDNAString'][0].decode('utf-8')
-        self.gameServicesManager.air.ttoffFriendsManager.comingOnline(self.avId, name, dna)
+        self.gameServicesManager.air.onlinePlayerManager.comingOnline(self.avId, name, dna)
 
         # Now we'll assign a POST_REMOVE that will tell the friends manager
         # that an avatar has gone offline, in the event that they disconnect
         # unexpectedly.
-        if self.gameServicesManager.air.ttoffFriendsManager:
-            friendsManagerDclass = self.gameServicesManager.air.ttoffFriendsManager.dclass
+        if self.gameServicesManager.air.onlinePlayerManager:
+            friendsManagerDclass = self.gameServicesManager.air.onlinePlayerManager.dclass
             cleanupDatagram = friendsManagerDclass.aiFormatUpdate('goingOffline',
-                                                                  self.gameServicesManager.air.ttoffFriendsManager.doId,
-                                                                  self.gameServicesManager.air.ttoffFriendsManager.doId,
+                                                                  self.gameServicesManager.air.onlinePlayerManager.doId,
+                                                                  self.gameServicesManager.air.onlinePlayerManager.doId,
                                                                   self.gameServicesManager.air.ourChannel, [self.avId, self.target])
         else:
-            friendsManagerDoId = OtpDoGlobals.OTP_DO_ID_TTOFF_FRIENDS_MANAGER
-            friendsManagerDclass = self.gameServicesManager.air.dclassesByName['TTOffFriendsManagerUD']
+            friendsManagerDoId = OtpDoGlobals.OTP_DO_ID_ONLINE_PLAYER_MANAGER
+            friendsManagerDclass = self.gameServicesManager.air.dclassesByName['OnlinePlayerManagerUD']
             cleanupDatagram = friendsManagerDclass.aiFormatUpdate('goingOffline', friendsManagerDoId,
                                                                   friendsManagerDoId,
                                                                   self.gameServicesManager.air.ourChannel, [self.avId, self.target])
@@ -617,7 +617,7 @@ class UnloadAvatarOperation(GameOperation):
         channel = self.gameServicesManager.GetAccountConnectionChannel(self.target)
 
         # Tell the friends manager that we're logging off.
-        self.gameServicesManager.air.ttoffFriendsManager.goingOffline(self.avId, self.target)
+        self.gameServicesManager.air.onlinePlayerManager.goingOffline(self.avId, self.target)
 
         # First, remove our POST_REMOVES.
         datagram = PyDatagram()

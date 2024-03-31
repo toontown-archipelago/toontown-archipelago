@@ -103,7 +103,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         self.chatManager = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_CHAT_MANAGER, 'TTOffChatManager')
         self.avatarFriendsManager = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_AVATAR_FRIENDS_MANAGER, 'AvatarFriendsManager')
         self.playerFriendsManager = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_PLAYER_FRIENDS_MANAGER, 'TTPlayerFriendsManager')
-        self.ttoffFriendsManager = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_TTOFF_FRIENDS_MANAGER, 'TTOffFriendsManager')
+        self.onlinePlayerManager = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_ONLINE_PLAYER_MANAGER, 'OnlinePlayerManager')
         self.speedchatRelay = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_TOONTOWN_SPEEDCHAT_RELAY, 'TTSpeedchatRelay')
         self.deliveryManager = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_TOONTOWN_DELIVERY_MANAGER, 'DistributedDeliveryManager')
         if config.GetBool('want-code-redemption', 1):
@@ -383,7 +383,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
             pad.delayDelete.destroy()
 
     def __sendGetAvatarDetails(self, avId):
-        self.ttoffFriendsManager.d_getAvatarDetails(avId)
+        self.onlinePlayerManager.d_getAvatarDetails(avId)
 
     def handleGetAvatarDetailsResp(self, avId, fields):
         self.notify.info('Got query response for avatar %d.' % avId)
@@ -665,7 +665,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         return 1  # Everyone is true friends by default.
 
     def isFriendOnline(self, doId) -> bool:
-        return self.ttoffFriendsManager.getOnlineToon(doId) is not None
+        return self.onlinePlayerManager.getOnlineToon(doId) is not None
 
     # Attempts to identify an avatar and return a handle.
     # A handle is meant to be used for displaying a panel or just checking if an object exists.
@@ -681,9 +681,9 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         elif self.cache.contains(doId):
             teleportNotify.debug('found friend %s in cache' % doId)
             avatar = self.cache.dict[doId]
-        elif self.ttoffFriendsManager.getOnlineToon(doId) is not None:
+        elif self.onlinePlayerManager.getOnlineToon(doId) is not None:
             teleportNotify.debug('found friend %s in online player manager. Generating a handle for them.' % doId)
-            handle = self.ttoffFriendsManager.getOnlineToon(doId).handle()
+            handle = self.onlinePlayerManager.getOnlineToon(doId).handle()
             teleportNotify.debug('adding %s to friendsMap' % doId)
             self.friendsMap[doId] = handle
             return handle
@@ -950,7 +950,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
     def requestAvatarInfo(self, avId):
         if avId == 0:
             return
-        self.ttoffFriendsManager.d_requestAvatarInfo([avId])
+        self.onlinePlayerManager.d_requestAvatarInfo([avId])
 
     def queueRequestAvatarInfo(self, avId):
         removeTask = 0
@@ -968,7 +968,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
             return
         if len(self.avatarInfoRequests) == 0:
             return
-        self.ttoffFriendsManager.d_requestAvatarInfo(self.avatarInfoRequests)
+        self.onlinePlayerManager.d_requestAvatarInfo(self.avatarInfoRequests)
 
     def handleGenerateWithRequiredOtherOwner(self, di):
         # OwnerViews are only used for LocalToon in Toontown.
@@ -984,7 +984,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
     """
 
     def getOnlineToons(self) -> List[OnlineToon]:
-        return self.ttoffFriendsManager.getOnlineToons()
+        return self.onlinePlayerManager.getOnlineToons()
 
     """
     Methods called from the Online Player Manager.

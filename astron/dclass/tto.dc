@@ -273,7 +273,7 @@ from toontown.parties import DistributedPartyJukebox40Activity/AI
 from toontown.parties import DistributedPartyValentineJukeboxActivity/AI
 from toontown.parties import DistributedPartyValentineJukebox40Activity/AI
 from toontown.friends import TTPlayerFriendsManager/UD
-from toontown.friends import TTOffFriendsManager/UD
+from toontown.friends import OnlinePlayerManager/UD
 from toontown.uberdog import TTSpeedchatRelay/UD
 from toontown.safezone import DistributedGolfKart/AI
 from toontown.safezone import DistributedPicnicBasket/AI
@@ -3526,7 +3526,7 @@ struct OnlineToon {
   string dna;
 }
 
-dclass TTOffFriendsManager : DistributedObject {
+dclass OnlinePlayerManager : DistributedObject {
   //getFriendsListRequest() clsend;
   //friendsListRequestResp(FriendEntry[]);
   //friendOnline(uint32, uint8, uint8);

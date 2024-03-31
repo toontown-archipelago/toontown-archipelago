@@ -285,7 +285,7 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
             handle = base.cr.doId2do.get(avId)
 
         # Attempt to extract the handle from our online player manager.
-        onlineToon = base.cr.ttoffFriendsManager.getOnlineToon(avId)
+        onlineToon = base.cr.onlinePlayerManager.getOnlineToon(avId)
         if not handle and onlineToon is not None:
             handle = onlineToon.handle()
 

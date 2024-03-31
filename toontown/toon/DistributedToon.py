@@ -2728,7 +2728,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
             friend = self.cr.doId2do.get(friendId)
             if friend:
-                base.cr.ttoffFriendsManager.friendOnline(friendId, 0, 0, False)
+                base.cr.onlinePlayerManager.friendOnline(friendId, 0, 0, False)
 
         for friendPair in self.oldFriendsList:
             if friendPair in self.friendsList:
