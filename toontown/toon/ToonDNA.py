@@ -2566,6 +2566,12 @@ class ToonDNA(AvatarDNA.AvatarDNA):
         return True
 
     def makeFromNetString(self, string):
+
+        # Py 2->3 fix, toon DNA must use bytes.
+        if isinstance(string, str):
+            string = bytes(string, 'utf-8')
+
+        print(type(string))
         dg = PyDatagram(string)
         dgi = PyDatagramIterator(dg)
         self.type = dgi.getFixedString(1)
