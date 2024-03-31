@@ -1,10 +1,10 @@
 from typing import List
 
 # How many times a second should we process the queue of messages for the toon?
-DEFAULT_QUEUE_PROCESS_FREQUENCY = 5
+DEFAULT_QUEUE_PROCESS_FREQUENCY = 3
 TASK_DELAY_TIME = 1 / DEFAULT_QUEUE_PROCESS_FREQUENCY
 # How many messages per run should we process if we have a lot of messages to handle?
-DEFAULT_QUEUE_MESSAGE_BATCH = 10
+DEFAULT_QUEUE_MESSAGE_BATCH = 5
 
 
 # A container for messages stored on DistributedToonAI that runs at a certain defined interval and handles a defined
