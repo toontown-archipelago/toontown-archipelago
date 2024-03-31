@@ -97,7 +97,7 @@ Toontown:
   # - licenses: Playground fishing is restricted until their respective Fishing License is obtained. The player starts with a Gold Rod.
   # - rods: Progressive fishing rod items are added to the pool.
   # - none: All fishing areas are available. The player starts with a Gold Rod.
-  fish_progression: 'licenses_and_rods'
+  fish_progression: 'rods'
 
   ### Seed Generation Settings ###
 
