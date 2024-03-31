@@ -309,6 +309,9 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.stopUpdateSmartCamera()
         self.shutdownSmartCamera()
         self.deleteCollisions()
+        self.orbitalCamera.stop()
+        self.orbitalCamera.destroy()
+        del self.orbitalCamera
         self.controlManager.delete()
         self.physControls = None
         del self.controlManager

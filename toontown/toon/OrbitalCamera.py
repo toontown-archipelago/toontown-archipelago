@@ -56,13 +56,13 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
 
     def destroy(self):
         self.destroyCollisions()
-
         self._rmbToken.release()
         del self._rmbToken
-
         del self.subject
-        NodePath.remove_node(self)
+        FSM.cleanup(self)
+        NodePath.removeNode(self)
         ParamObj.destroy(self)
+        self.ignoreAll()
     
     def initializeCollisions(self):
         self.cTravOnFloor = CollisionTraverser("CamMode.cTravOnFloor")
