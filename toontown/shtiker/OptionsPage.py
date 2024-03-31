@@ -29,6 +29,7 @@ OptionToType = {
     'camSensitivityX': OptionTypes.SLIDER,
     'camSensitivityY': OptionTypes.SLIDER,
     'movement_mode': OptionTypes.BUTTON,
+    'sprint_mode': OptionTypes.BUTTON,
     'fovEffects': OptionTypes.BUTTON,
     'cam-toggle-lock': OptionTypes.BUTTON,
     'speedchat-style': OptionTypes.BUTTON_SPEEDCHAT,
@@ -125,6 +126,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'camSensitivityX',
             'camSensitivityY',
             'movement_mode',
+            'sprint_mode',
             'fovEffects',
             'cam-toggle-lock',
             'speedchat-style'
@@ -380,6 +382,8 @@ class OptionElement(DirectFrame):
             optionOptions[option] = [True, False]
         elif option == "movement_mode":
             optionOptions[option] = ["TTCC", "TTR"]
+        elif option == "sprint_mode":
+            optionOptions[option] = ["Hold", "Toggle"]
 
     optionOptions.update({
         "resolution": base.possibleScreenSizes,

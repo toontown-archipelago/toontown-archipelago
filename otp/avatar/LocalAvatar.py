@@ -200,11 +200,22 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         # If this isn't the ttcc mode don't do anything
         if self.currentMovementMode is not self.TTCC_MOVEMENT_VALUES:
             return
+        
+        sprint_setting = base.settings.get('sprint_mode')
+        if sprint_setting == "Hold":
+            return self.setSprinting()
 
-        self.setSprinting()
-
+        if self.isSprinting:
+            self.exitSprinting()
+        else:
+            self.setSprinting()
+    
     def __handleSprintRelease(self):
 
+        sprint_setting = base.settings.get('sprint_mode')
+        if sprint_setting == "Toggle":
+            return
+        
         # If this isn't the ttcc mode don't do anything
         if self.currentMovementMode is not self.TTCC_MOVEMENT_VALUES:
             return
