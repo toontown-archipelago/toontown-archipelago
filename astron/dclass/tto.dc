@@ -3533,7 +3533,7 @@ dclass TTOffFriendsManager : DistributedObject {
 
   //removeFriend(uint32) clsend;
   //friendOffline(uint32);
-  goingOffline(uint32);
+  goingOffline(uint32, uint32);
   clearList(uint32);
   getAvatarDetails(uint32) clsend;
   avatarDetailsResp(uint32, blob);

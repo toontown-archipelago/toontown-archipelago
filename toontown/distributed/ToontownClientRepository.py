@@ -1,6 +1,6 @@
 import types
 import time
-from typing import List
+from typing import List, Union
 
 from panda3d.core import *
 from direct.distributed.ClockDelta import *
@@ -15,6 +15,8 @@ from direct.fsm import ClassicFSM
 from direct.fsm import State
 from direct.showbase.PythonUtil import Functor, ScratchPad
 from direct.showbase.InputStateGlobal import inputState
+
+from libotp.nametag.WhisperGlobals import WhisperType
 from otp.avatar import Avatar
 from otp.avatar import DistributedAvatar
 from otp.friends import FriendManager
@@ -54,6 +56,7 @@ from . import HoodMgr
 from . import PlayGame
 from toontown.toontowngui import ToontownLoadingBlocker
 from toontown.hood import StreetSign
+from ..archipelago.distributed.DistributedArchipelagoManager import DistributedArchipelagoManager
 from ..friends.OnlineToon import OnlineToon
 
 
@@ -107,7 +110,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
             self.codeRedemptionManager = self.generateGlobalObject(OtpDoGlobals.OTP_DO_ID_TOONTOWN_CODE_REDEMPTION_MANAGER, 'TTCodeRedemptionMgr')
 
         # Generated as a DO from the AI
-        self.archipelagoManager = None
+        self.archipelagoManager: Union[DistributedArchipelagoManager, None] = None
 
         self.streetSign = None
         self.furnitureManager = None
@@ -653,35 +656,21 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         return 0
 
     def isFriend(self, doId):
-        for friendId, flags in base.localAvatar.friendsList:
-            if friendId == doId:
-                self.identifyFriend(doId)
-                return 1
-
-        return 0
+        return self.identifyFriend(doId) is not None
 
     def isAvatarFriend(self, doId):
-        for friendId, flags in base.localAvatar.friendsList:
-            if friendId == doId:
-                self.identifyFriend(doId)
-                return 1
-
-        return 0
+        return self.isFriend(doId)
 
     def getFriendFlags(self, doId):
-        for friendId, flags in base.localAvatar.friendsList:
-            if friendId == doId:
-                return flags
+        return 1  # Everyone is true friends by default.
 
-        return 0
+    def isFriendOnline(self, doId) -> bool:
+        return self.ttoffFriendsManager.getOnlineToon(doId) is not None
 
-    def isFriendOnline(self, doId):
-        return doId in self.friendsOnline
-
-    def addAvatarToFriendsList(self, avatar):
-        self.friendsMap[avatar.doId] = avatar
-
-    def identifyFriend(self, doId, source = None):
+    # Attempts to identify an avatar and return a handle.
+    # A handle is meant to be used for displaying a panel or just checking if an object exists.
+    # Returns None if we couldn't find them.
+    def identifyFriend(self, doId, source=None) -> Union[DistributedToon.DistributedToon, DistributedPet.DistributedPet, FriendHandle.FriendHandle, PetHandle.PetHandle, None]:
         if doId in self.friendsMap:
             teleportNotify.debug('friend %s in friendsMap' % doId)
             return self.friendsMap[doId]
@@ -692,15 +681,22 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         elif self.cache.contains(doId):
             teleportNotify.debug('found friend %s in cache' % doId)
             avatar = self.cache.dict[doId]
+        elif self.ttoffFriendsManager.getOnlineToon(doId) is not None:
+            teleportNotify.debug('found friend %s in online player manager. Generating a handle for them.' % doId)
+            handle = self.ttoffFriendsManager.getOnlineToon(doId).handle()
+            teleportNotify.debug('adding %s to friendsMap' % doId)
+            self.friendsMap[doId] = handle
+            return handle
         elif self.playerFriendsManager.getAvHandleFromId(doId):
             teleportNotify.debug('found friend %s in playerFriendsManager' % doId)
             avatar = base.cr.playerFriendsManager.getAvHandleFromId(doId)
         else:
             self.notify.warning("Don't know who friend %s is." % doId)
-            return
+            return None
+
         if not ((isinstance(avatar, DistributedToon.DistributedToon) and avatar.__class__ is DistributedToon.DistributedToon) or isinstance(avatar, DistributedPet.DistributedPet)):
-            self.notify.warning('friendsNotify%s: invalid friend object %s' % (choice(source, '(%s)' % source, ''), doId))
-            return
+            self.notify.warning(f'friendsNotify%s: Invalid avatar of type<{type(avatar)}>idenfified. Cancelling...')
+            return None
         if base.wantPets:
             if avatar.isPet():
                 if avatar.bFake:
@@ -719,10 +715,13 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         return base.cr.playerFriendsManager.getFriendInfo(pId)
 
     def identifyAvatar(self, doId):
+
+        # Find the DisToon in our local DO repository.
         if doId in self.doId2do:
             return self.doId2do[doId]
-        else:
-            return self.identifyFriend(doId)
+
+        # We don't see them currently, attempt to identify them using our friend manager.
+        return self.identifyFriend(doId)
 
     def isFriendsMapComplete(self):
         for friendId, flags in base.localAvatar.friendsList:
@@ -781,82 +780,6 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
                 petAvatar.detectLeaks()
 
         PetDetail.PetDetail(doId, petDetailsCallback)
-
-    def handleGetFriendsList(self, resp):
-        for toon in resp:
-            doId = toon[0]
-            name = toon[1]
-            dnaString = toon[2]
-            dna = ToonDNA.ToonDNA()
-            dna.makeFromNetString(dnaString)
-            petId = toon[3]
-            handle = FriendHandle.FriendHandle(doId, name, dna, petId)
-            self.friendsMap[doId] = handle
-            if doId in self.friendsOnline:
-                self.friendsOnline[doId] = handle
-            if doId in self.friendPendingChatSettings:
-                self.notify.debug('calling setCommonAndWL %s' % str(self.friendPendingChatSettings[doId]))
-                handle.setCommonAndWhitelistChatFlags(*self.friendPendingChatSettings[doId])
-
-        if base.wantPets and base.localAvatar.hasPet():
-
-            def handleAddedPet():
-                self.friendsMapPending = 0
-                messenger.send('friendsMapComplete')
-
-            self.addPetToFriendsMap(handleAddedPet)
-            return
-        self.friendsMapPending = 0
-        messenger.send('friendsMapComplete')
-
-    def handleGetFriendsListExtended(self, di):
-        avatarHandleList = []
-        error = di.getUint8()
-        if error:
-            self.notify.warning('Got error return from friends list extended.')
-        else:
-            count = di.getUint16()
-            for i in range(0, count):
-                abort = 0
-                doId = di.getUint32()
-                name = di.getString()
-                if name == '':
-                    abort = 1
-                dnaString = di.getString()
-                if dnaString == '':
-                    abort = 1
-                else:
-                    dna = ToonDNA.ToonDNA()
-                    dna.makeFromNetString(dnaString)
-                petId = di.getUint32()
-                if not abort:
-                    handle = FriendHandle.FriendHandle(doId, name, dna, petId)
-                    avatarHandleList.append(handle)
-
-        if avatarHandleList:
-            messenger.send('gotExtraFriendHandles', [avatarHandleList])
-
-    def handleFriendOnline(self, doId, commonChatFlags, whitelistChatFlags, alert=True):
-        self.notify.debug('Friend %d now online. common=%d whitelist=%d' % (doId, commonChatFlags, whitelistChatFlags))
-        if doId not in self.friendsOnline:
-            self.friendsOnline[doId] = self.identifyFriend(doId)
-            messenger.send('friendOnline', [doId, commonChatFlags, whitelistChatFlags, alert])
-            if not self.friendsOnline[doId]:
-                self.friendPendingChatSettings[doId] = (commonChatFlags, whitelistChatFlags)
-
-    def handleFriendOffline(self, doId):
-        self.notify.debug('Friend %d now offline.' % doId)
-        try:
-            del self.friendsOnline[doId]
-            messenger.send('friendOffline', [doId])
-        except:
-            pass
-
-    def getFirstBattle(self):
-        from toontown.battle import DistributedBattleBase
-        for dobj in list(self.doId2do.values()):
-            if isinstance(dobj, DistributedBattleBase.DistributedBattleBase):
-                return dobj
 
     def forbidCheesyEffects(self, forbid):
         wasAllowed = self.__forbidCheesyEffects != 0
@@ -1057,8 +980,33 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
             self.handleAvatarResponseMsg(doId, di)
 
     """
-    Friend Manager util
+    Online Player Manager util.
     """
 
     def getOnlineToons(self) -> List[OnlineToon]:
         return self.ttoffFriendsManager.getOnlineToons()
+
+    """
+    Methods called from the Online Player Manager.
+    """
+
+    def onToonCameOnline(self, onlineToon: OnlineToon):
+        # Send our local toon a message.
+        color = None
+
+        # If our AP manager is running, try and find a color for them :3
+        if self.archipelagoManager is not None:
+            color = self.archipelagoManager.getToonColorProfile(onlineToon.avId)
+
+        base.localAvatar.displayWhisper(onlineToon.avId, OTPLocalizer.WhisperFriendComingOnline % onlineToon.name, WhisperType.WTSystem, colorProfileOverride=color)
+
+    def onToonWentOffline(self, offlineToon: OnlineToon):
+        # Send our local toon a message.
+        color = None
+
+        # If our AP manager is running, try and find a color for them :3
+        if self.archipelagoManager is not None:
+            color = self.archipelagoManager.getToonColorProfile(offlineToon.avId)
+
+        color = self.archipelagoManager.getToonColorProfile(offlineToon.avId)
+        base.localAvatar.displayWhisper(0, OTPLocalizer.WhisperFriendLoggedOut % offlineToon.name, WhisperType.WTSystem, colorProfileOverride=color)

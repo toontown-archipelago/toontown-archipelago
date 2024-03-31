@@ -567,13 +567,13 @@ class LoadAvatarOperation(AvatarOperation):
             cleanupDatagram = friendsManagerDclass.aiFormatUpdate('goingOffline',
                                                                   self.gameServicesManager.air.ttoffFriendsManager.doId,
                                                                   self.gameServicesManager.air.ttoffFriendsManager.doId,
-                                                                  self.gameServicesManager.air.ourChannel, [self.avId])
+                                                                  self.gameServicesManager.air.ourChannel, [self.avId, self.target])
         else:
             friendsManagerDoId = OtpDoGlobals.OTP_DO_ID_TTOFF_FRIENDS_MANAGER
             friendsManagerDclass = self.gameServicesManager.air.dclassesByName['TTOffFriendsManagerUD']
             cleanupDatagram = friendsManagerDclass.aiFormatUpdate('goingOffline', friendsManagerDoId,
                                                                   friendsManagerDoId,
-                                                                  self.gameServicesManager.air.ourChannel, [self.avId])
+                                                                  self.gameServicesManager.air.ourChannel, [self.avId, self.target])
 
         datagram = PyDatagram()
         datagram.addServerHeader(channel, self.gameServicesManager.air.ourChannel, CLIENTAGENT_ADD_POST_REMOVE)
@@ -617,7 +617,7 @@ class UnloadAvatarOperation(GameOperation):
         channel = self.gameServicesManager.GetAccountConnectionChannel(self.target)
 
         # Tell the friends manager that we're logging off.
-        self.gameServicesManager.air.ttoffFriendsManager.goingOffline(self.avId)
+        self.gameServicesManager.air.ttoffFriendsManager.goingOffline(self.avId, self.target)
 
         # First, remove our POST_REMOVES.
         datagram = PyDatagram()

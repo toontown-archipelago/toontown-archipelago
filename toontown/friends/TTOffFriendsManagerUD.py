@@ -4,10 +4,15 @@ from typing import Dict, List
 
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectGlobalUD import DistributedObjectGlobalUD
+from direct.distributed.PyDatagram import PyDatagram
 from direct.fsm.FSM import FSM
 
 
 from toontown.friends.OnlineToon import OnlineToon
+
+# Do not delete this import even though it says it is unused!!!
+# It defines some globals that we need to work.
+from direct.distributed.MsgTypes import *
 
 
 # Base class used for starting and managing operations that need to query the database.
@@ -117,6 +122,41 @@ class TTOffFriendsManagerUD(DistributedObjectGlobalUD):
 
         self.d_avatarDetailsResp(avId, fields['avId'], json.dumps(details))
 
+    # Given two avIds, make them both aware of each other's existence.
+    # This is used so that on initial login, they can immediately start communicating with each other
+    # via astron updates.
+    # If we don't do this, the CLIENTAGENT will boot someone for attempting to call an update on an object they
+    # haven't "seen" yet.
+    def __declareAvatarExistence(self, avId, otherAvId):
+
+        # Declare our avatar to their friend.
+        dg = PyDatagram()
+        dg.addServerHeader(self.GetPuppetConnectionChannel(avId), self.air.ourChannel, CLIENTAGENT_DECLARE_OBJECT)
+        dg.addUint32(otherAvId)
+        dg.addUint16(self.air.dclassesByName['DistributedToonUD'].getNumber())
+        self.air.send(dg)
+
+        # Declare their friend to our avatar.
+        dg = PyDatagram()
+        dg.addServerHeader(self.GetPuppetConnectionChannel(otherAvId), self.air.ourChannel, CLIENTAGENT_DECLARE_OBJECT)
+        dg.addUint32(avId)
+        dg.addUint16(self.air.dclassesByName['DistributedToonUD'].getNumber())
+        self.air.send(dg)
+
+    # Similarly to declaring existence above, we also need to do the opposite when a toon logs out.
+    def __undeclareAvatarExistence(self, avId, otherAvId, accountId):
+        # Undeclare to the friend.
+        dg = PyDatagram()
+        dg.addServerHeader(self.GetPuppetConnectionChannel(avId), self.air.ourChannel, CLIENTAGENT_UNDECLARE_OBJECT)
+        dg.addUint32(otherAvId)
+        self.air.send(dg)
+
+        # Undeclare to the now-offline avId.
+        dg = PyDatagram()
+        dg.addServerHeader(self.GetAccountConnectionChannel(accountId), self.air.ourChannel, CLIENTAGENT_UNDECLARE_OBJECT)
+        dg.addUint32(avId)
+        self.air.send(dg)
+
     """
     Util to be used throughout the codebase (mainly GameServicesManagerUD).
     """
@@ -128,22 +168,27 @@ class TTOffFriendsManagerUD(DistributedObjectGlobalUD):
         # Cache online toon then send an update to the client DOG
         onlineToon = OnlineToon(avId, name, dnaString)
 
+        # For every toon that is currently online, they need to be aware of the new toon.
+        # Our toon also needs to be aware of them.
         for otherAvId in self._onlineToonCache.keys():
             self.d_toonCameOnline(otherAvId, onlineToon)
+            self.__declareAvatarExistence(avId, otherAvId)
 
         self.__cacheOnlineToon(onlineToon)
         # We also need to send the person who came online a current list of everyone else online.
         self.d_setOnlineToons(avId)
 
     # Called from GameServicesManagerUD to inform us that a toon has just went offline.
-    def goingOffline(self, avId):
+    def goingOffline(self, avId, accountId):
 
         # START AP CODE
         # Uncache the avatar and tell all other toons this toon went offline.
         self.__decacheOfflineToon(avId)
 
+        # Tell the other toons this toon went offline, also undeclare the existence for everyone.
         for otherAvId in self._onlineToonCache.keys():
             self.d_toonWentOffline(otherAvId, avId)
+            self.__undeclareAvatarExistence(avId, otherAvId, accountId)
 
     # Call to cancel and stop tracking of a specific operation in progress.
     def cancelOperation(self, avId):

@@ -72,9 +72,17 @@ class TTOffFriendsManager(DistributedObjectGlobal):
         onlineToon: OnlineToon = OnlineToon.from_struct(onlineToonData)
         self.__cacheOnlineToon(onlineToon)
 
+        # The client repository may want to do some extra functionality. Tell it a toon went online.
+        self.cr.onToonCameOnline(onlineToon)
+
     # Called when a toon just went offline
     def toonWentOffline(self, avId):
+        oldToon: OnlineToon = self.getOnlineToon(avId)
         self.__decacheOfflineToon(avId)
+
+        # The client repository may want to do some extra functionality. Tell it a toon went offline.
+        if oldToon is not None:
+            self.cr.onToonWentOffline(oldToon)
 
     # Called when we need to completely re-sync all online toons from the UD.
     def setOnlineToons(self, listOfToonData):
