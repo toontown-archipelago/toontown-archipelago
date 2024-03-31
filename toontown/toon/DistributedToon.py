@@ -332,6 +332,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             if base.localAvatar != self:
                 # Update our online player manager to cache what we seen here. This allows us to catch name changes.
                 base.cr.onlinePlayerManager.cacheOnlineToon(self, overwrite=True)
+                messenger.send(f"{self.getDoId()}-postGenerate", [self.getDoId()])
 
 
     def _handleClientCleanup(self):
