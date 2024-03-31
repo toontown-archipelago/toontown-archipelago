@@ -340,13 +340,36 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
         self.scrollList.index = self.listScrollIndex[self.currentPanelPage]
         self.scrollList.refresh()
 
+    # Trys to determine if we are in "competition" mode.
+    # This is True when there exists someone that is considered your enemy currently online.
+    def __competitionMode(self) -> bool:
+
+        # We need both these managers to even consider this.
+        if None in (base.cr.archipelagoManager, base.cr.onlinePlayerManager):
+            return False
+
+        # Check if any of the currently online toons are our enemy.
+        us = base.localAvatar.getDoId()
+        for toon in base.cr.onlinePlayerManager.getOnlineToons():
+            if base.cr.archipelagoManager.onEnemyTeams(us, toon.avId):
+                return True
+
+        # Everyone is our friend. Yay :)
+        return False
+
     def __updateTitle(self):
-        if self.currentPanelPage == FLPOnline:
+
+        # If we are on the online toons tab and we are in "competition mode"
+        if self.currentPanelPage == FLPOnline and self.__competitionMode():
+            self.title['text'] = TTLocalizer.FriendsListPanelOnlineCompetitors
+        # If we are on the online toons tab and we are NOT in competition mode
+        elif self.currentPanelPage == FLPOnline:
             self.title['text'] = TTLocalizer.FriendsListPanelOnlineFriends
         elif self.currentPanelPage == FLPNearby:
             self.title['text'] = TTLocalizer.FriendsListPanelNearbyToons
         else:
             self.title['text'] = TTLocalizer.FriendsListPanelUndefined
+
         self.title.resetFrameSize()
 
     def __updateArrows(self):

@@ -4089,7 +4089,8 @@ toontownDialogues = {BoringTopic: {(1, 2018): ['Hello Albert', 'It looks like th
                                         'And enjoy the silliest place ever, Toontown!']}}
 FriendsListPanelNewFriend = 'New Friend'
 FriendsListPanelSecrets = 'True Friend'
-FriendsListPanelOnlineFriends = 'ONLINE\nCOMPETITORS'
+FriendsListPanelOnlineFriends = 'ONLINE\nTOONS'
+FriendsListPanelOnlineCompetitors = 'ONLINE\nCOMPETITORS'
 FriendsListPanelAllFriends = 'ALL TOON\nFRIENDS'
 FriendsListPanelIgnoredFriends = 'IGNORED\nTOONS'
 FriendsListPanelNearbyToons = 'NEARBY\nTOONS'

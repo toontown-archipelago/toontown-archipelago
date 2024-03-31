@@ -2571,7 +2571,6 @@ class ToonDNA(AvatarDNA.AvatarDNA):
         if isinstance(string, str):
             string = bytes(string, 'utf-8')
 
-        print(type(string))
         dg = PyDatagram(string)
         dgi = PyDatagramIterator(dg)
         self.type = dgi.getFixedString(1)
