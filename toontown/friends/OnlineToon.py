@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import List
 
 from toontown.friends.FriendHandle import FriendHandle
+from toontown.toon.ToonDNA import ToonDNA
 
 NO_PET = 0
 
@@ -19,9 +20,12 @@ class OnlineToon:
         fields = dataclasses.asdict(self).values()
         return list(fields)
 
+    def make_dna(self) -> ToonDNA:
+        return ToonDNA(str=self.dna)
+
     # Constructs a FriendHandle instance from this instance to be used for the friends list.
     def handle(self) -> FriendHandle:
-        return FriendHandle(self.avId, self.name, self.dna, NO_PET)
+        return FriendHandle(self.avId, self.name, self.make_dna(), NO_PET)
 
     @classmethod
     def from_struct(cls, info_array: List[int]):
