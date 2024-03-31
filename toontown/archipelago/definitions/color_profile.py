@@ -56,6 +56,10 @@ class ColorProfile:
         b = min(max(b, 0), 1)
         return Vec4(r, g, b, a)
 
+    # Returns a copy of this instance so you can modify it without messing with the original definition.
+    def copy(self):
+        return ColorProfile(Vec4(*self.clickable), Vec4(*self.pressed), Vec4(*self.hover), Vec4(*self.disabled))
+
 
 # Uses one color to dynamically generate a pressed/hover/disabled state color.
 class AutoColorProfile(ColorProfile):

@@ -6,6 +6,9 @@ from direct.gui.DirectGui import *
 from direct.showbase.PythonUtil import *
 from direct.interval.IntervalGlobal import *
 from direct.showbase.InputStateGlobal import inputState
+
+from libotp.nametag.WhisperGlobals import WhisperType
+from toontown.archipelago.definitions.color_profile import ColorProfile
 from . import Avatar
 from direct.controls import ControlManager
 from . import DistributedAvatar
@@ -1084,20 +1087,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.customMessages = customMessages
         messenger.send('customMessagesChanged')
 
-    def displayWhisper(self, fromId, chatString, whisperType):
-        sender = None
-        sfx = self.soundWhisper
-        if whisperType == WhisperPopup.WTNormal or whisperType == WhisperPopup.WTQuickTalker:
-            if sender == None:
-                return
-            chatString = sender.getName() + ': ' + chatString
-        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), whisperType)
-        if sender != None:
-            whisper.setClickable(sender.getName(), fromId)
-        whisper.manage(base.marginManager)
-        base.playSfx(sfx)
-        return
-
     def displayWhisperPlayer(self, fromId, chatString, whisperType):
         sender = None
         playerInfo = None
@@ -1106,7 +1095,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         if playerInfo == None:
             return
         senderName = playerInfo.playerName
-        if whisperType == WhisperPopup.WTNormal or whisperType == WhisperPopup.WTQuickTalker:
+        if whisperType == WhisperType.WTNormal or whisperType == WhisperType.WTQuickTalker:
             chatString = senderName + ': ' + chatString
         whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), whisperType)
         if sender != None:
@@ -1401,7 +1390,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
 
     def handlePlayerFriendWhisper(self, playerId, charMessage):
         print('handlePlayerFriendWhisper')
-        self.displayWhisperPlayer(playerId, charMessage, WhisperPopup.WTNormal)
+        self.displayWhisperPlayer(playerId, charMessage, WhisperType.WTNormal)
 
     def canChat(self):
         return 0

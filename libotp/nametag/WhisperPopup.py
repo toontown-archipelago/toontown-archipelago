@@ -1,17 +1,14 @@
+from typing import Union
+
+from toontown.archipelago.definitions.color_profile import ColorProfile
+from . import WhisperGlobals
 from .ClickablePopup import *
 from .MarginPopup import *
 
 
 class WhisperPopup(ClickablePopup, MarginPopup):
-    WTNormal = 0
-    WTQuickTalker = 1
-    WTSystem = 2
-    WTBattleSOS = 3
-    WTEmote = 4
-    WTToontownBoardingGroup = 5
-    WTMagicWord = 6
 
-    def __init__(self, text, font, type):
+    def __init__(self, text, font, type, bg_override: ColorProfile = None):
         ClickablePopup.__init__(self)
         MarginPopup.__init__(self)
 
@@ -38,6 +35,8 @@ class WhisperPopup(ClickablePopup, MarginPopup):
         self.m_is_player_id = None
         self.m_state = 3
         self.m_objcode = 0
+
+        self.bg_override: Union[ColorProfile, None] = bg_override
 
     def setClickable(self, avatar_name, avatar_id, is_player_id=False):
         self.m_clickable = True
@@ -103,9 +102,22 @@ class WhisperPopup(ClickablePopup, MarginPopup):
         if self.m_visible:
             self.generateText(NametagGlobals._speech_balloon_2d, self.m_text, self.m_font)
 
+    # Based on the whisper type, return a text color profile associated with it
+    def getTextColorProfile(self) -> ColorProfile:
+        return WhisperGlobals.getWhisperTextColorProfile(self.m_type).copy()
+
+    # Based on the whisper type, return a background color profile associated with it
+    def getBackgroundColorProfile(self) -> ColorProfile:
+
+        # Do we have an override?
+        if self.bg_override is not None:
+            return self.bg_override.copy()
+
+        return WhisperGlobals.getWhisperBackgroundColorProfile(self.m_type).copy()
+
     def generateText(self, balloon, text, font):
-        text_color = Vec4(NametagGlobals.getWhisperFg(self.m_type, self.m_state))
-        balloon_color = Vec4(NametagGlobals.getWhisperBg(self.m_type, self.m_state))
+        text_color = self.getTextColorProfile().getColorFromState(self.m_state)
+        balloon_color = self.getBackgroundColorProfile().getColorFromState(self.m_state)
         balloon_color[3] = max(balloon_color[3], NametagGlobals._min_2d_alpha)
         balloon_color[3] = min(balloon_color[3], NametagGlobals._max_2d_alpha)
 

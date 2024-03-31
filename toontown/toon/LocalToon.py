@@ -9,6 +9,8 @@ from direct.distributed.ClockDelta import *
 from direct.showbase.PythonUtil import *
 from direct.gui.DirectGui import *
 from direct.task import Task
+
+from libotp.nametag.WhisperGlobals import WhisperType
 from otp.avatar import LocalAvatar
 from otp.login import LeaveToPayDialog
 from otp.avatar import PositionExaminer
@@ -52,6 +54,7 @@ from toontown.archipelago.gui.ArchipelagoOnscreenLog import ArchipelagoOnscreenL
 from toontown.archipelago.definitions.rewards import get_ap_reward_from_id
 from toontown.archipelago.gui.ArchipelagoRewardDisplay import ArchipelagoRewardDisplay, APRewardGift
 from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
+from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
 
 WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
@@ -520,7 +523,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         sender = self
         sfx = self.soundWhisper
         chatString = avatarName + ': ' + chatString
-        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), WhisperPopup.WTNormal)
+        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), WhisperType.WTNormal)
         whisper.setClickable(avatarName, fromId)
         whisper.manage(base.marginManager)
         base.playSfx(sfx)
@@ -541,7 +544,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         else:
             chatString, scrubbed = self.scrubTalk(rawString, mods)
         chatString = senderName + ': ' + chatString
-        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), WhisperPopup.WTNormal)
+        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), WhisperType.WTNormal)
         if playerInfo != None:
             whisper.setClickable(senderName, fromId, 1)
         whisper.manage(base.marginManager)
@@ -929,7 +932,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         disableUnitesFlag: bool = self.isBattling()
         messenger.send(ResistanceChat.RESISTANCE_TOGGLE_EVENT, [disableUnitesFlag])
 
-    def displayWhisper(self, fromId, chatString, whisperType):
+    def displayWhisper(self, fromId, chatString, whisperType, colorProfileOverride: ColorProfile = None):
         sender = None
         sfx = self.soundWhisper
         if fromId == TTLocalizer.Clarabelle:
@@ -937,15 +940,19 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             sfx = self.soundPhoneRing
         elif fromId != 0:
             sender = base.cr.identifyAvatar(fromId)
-        if whisperType == WhisperPopup.WTNormal or whisperType == WhisperPopup.WTQuickTalker:
-            if sender == None:
+        if whisperType == WhisperType.WTNormal or whisperType == WhisperType.WTQuickTalker:
+            if sender is None:
                 return
+
             chatString = sender.getName() + ': ' + chatString
-        elif whisperType == WhisperPopup.WTSystem:
+        elif whisperType == WhisperType.WTSystem:
             sfx = self.soundSystemMessage
-        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), whisperType)
-        if sender != None:
+
+        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), whisperType, bg_override=colorProfileOverride)
+
+        if sender is not None:
             whisper.setClickable(sender.getName(), fromId)
+
         whisper.manage(base.marginManager)
         base.playSfx(sfx)
         return
@@ -958,11 +965,11 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             sfx = self.soundPhoneRing
         elif fromId != 0:
             sender = base.cr.identifyAvatar(fromId)
-        if whisperType == WhisperPopup.WTNormal or whisperType == WhisperPopup.WTQuickTalker:
+        if whisperType == WhisperType.WTNormal or whisperType == WhisperType.WTQuickTalker:
             if sender == None:
                 return
             chatString = sender.getName() + ': ' + chatString
-        elif whisperType == WhisperPopup.WTSystem:
+        elif whisperType == WhisperType.WTSystem:
             sfx = self.soundSystemMessage
         whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), whisperType)
         whisper.setClickable('', fromId)
@@ -1915,7 +1922,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def setSleepAutoReply(self, fromId):
         av = base.cr.identifyAvatar(fromId)
         if isinstance(av, DistributedToon.DistributedToon):
-            base.localAvatar.setSystemMessage(0, TTLocalizer.sleep_auto_reply % av.getName(), WhisperPopup.WTToontownBoardingGroup)
+            base.localAvatar.setSystemMessage(0, TTLocalizer.sleep_auto_reply % av.getName(), WhisperType.WTToontownBoardingGroup)
         elif av is not None:
             self.notify.warning('setSleepAutoReply from non-toon %s' % fromId)
         return

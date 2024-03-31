@@ -9,6 +9,8 @@ from enum import IntEnum
 
 from panda3d.core import *
 from direct.gui.DirectGui import *
+
+from libotp.nametag.WhisperGlobals import WhisperType
 from otp.distributed.OtpDoGlobals import *
 from direct.interval.IntervalGlobal import ivalMgr
 from direct.directnotify.DirectNotifyGlobal import directNotify
@@ -467,7 +469,7 @@ class OTPClientRepository(ClientRepositoryBase):
 
     def handleSystemMessage(self, di):
         message = ClientRepositoryBase.handleSystemMessage(self, di)
-        whisper = WhisperPopup(message, OTPGlobals.getInterfaceFont(), WhisperPopup.WTSystem)
+        whisper = WhisperPopup(message, OTPGlobals.getInterfaceFont(), WhisperType.WTSystem)
         whisper.manage(base.marginManager)
         if not self.systemMessageSfx:
             self.systemMessageSfx = base.loader.loadSfx('phase_3/audio/sfx/clock03.ogg')
