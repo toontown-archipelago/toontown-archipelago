@@ -5,7 +5,7 @@ from panda3d.core import *
 from direct.gui.DirectGui import *
 from direct.fsm import StateData
 from toontown.toon import ToonAvatarPanel
-from toontown.friends import ToontownFriendSecret
+from toontown.friends import ToontownFriendSecret, FriendsGlobals
 from toontown.toon.DistributedToon import DistributedToon
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
@@ -224,15 +224,8 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
         self.show()
 
         # Accept all events that fire when our friends list changes.
-        self.accept('friendOnline', self.__friendOnline)
-        self.accept('friendPlayers', self.__friendPlayers)
-        self.accept('friendOffline', self.__friendOffline)
-        self.accept('friendsListChanged', self.__friendsListChanged)
-        self.accept('ignoreListChanged', self.__ignoreListChanged)
-        self.accept('friendsMapComplete', self.__friendsListChanged)
-        self.accept(OTPGlobals.PlayerFriendAddEvent, self.__friendsListChanged)
-        self.accept(OTPGlobals.PlayerFriendUpdateEvent, self.__friendsListChanged)
-        return
+        self.accept(FriendsGlobals.FRIENDS_ONLINE_EVENT, self.__friendOnline)
+        self.accept(FriendsGlobals.FRIENDS_OFFLINE_EVENT, self.__friendOffline)
 
     def exit(self):
 
@@ -243,13 +236,8 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
         self.listScrollIndex[self.currentPanelPage] = self.scrollList.index
         self.hide()
         base.cr.cleanPetsFromFriendsMap()
-        self.ignore('friendOnline')
-        self.ignore('friendOffline')
-        self.ignore('friendsListChanged')
-        self.ignore('ignoreListChanged')
-        self.ignore('friendsMapComplete')
-        self.ignore(OTPGlobals.PlayerFriendAddEvent)
-        self.ignore(OTPGlobals.PlayerFriendUpdateEvent)
+        self.ignore(FriendsGlobals.FRIENDS_ONLINE_EVENT)
+        self.ignore(FriendsGlobals.FRIENDS_OFFLINE_EVENT)
         base.localAvatar.obscureFriendsListButton(-1)
         messenger.send(self.doneEvent)
 
@@ -382,22 +370,8 @@ class FriendsListPanel(DirectFrame, StateData.StateData):
         else:
             self.rightButton['state'] = 'normal'
 
-    def __friendOnline(self, doId, commonChatFlags, whitelistChatFlags, alert=True):
-        if self.currentPanelPage == FLPOnline:
-            self.__updateScrollList()
+    def __friendOnline(self, doId):
+        self.__updateScrollList()
 
     def __friendOffline(self, doId):
-        if self.currentPanelPage == FLPOnline:
-            self.__updateScrollList()
-
-    def __friendPlayers(self, doId):
-        if self.currentPanelPage == FLPPlayers:
-            self.__updateScrollList()
-
-    def __friendsListChanged(self, arg1 = None, arg2 = None):
-        if self.currentPanelPage != FLPEnemies:
-            self.__updateScrollList()
-
-    def __ignoreListChanged(self):
-        if self.currentPanelPage == FLPEnemies:
-            self.__updateScrollList()
+        self.__updateScrollList()

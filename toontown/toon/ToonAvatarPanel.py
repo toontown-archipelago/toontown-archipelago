@@ -2,7 +2,7 @@ from panda3d.core import *
 from direct.gui.DirectGui import *
 from direct.showbase import DirectObject
 from . import ToonHead
-from toontown.friends import FriendHandle
+from toontown.friends import FriendHandle, FriendsGlobals
 from . import LaffMeter
 from otp.avatar import Avatar
 from direct.distributed import DistributedObject
@@ -313,6 +313,8 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
 
         self.accept('updateGroupStatus', self.__checkGroupStatus)
 
+        self.accept(FriendsGlobals.FRIENDS_OFFLINE_EVENT, self.__handleToonWentOffline)
+
         self.frame.show()
         self.frame.setBin("gui-popup", 0)
         messenger.send('avPanelDone')
@@ -368,7 +370,6 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
         del self.headModel
         base.localAvatar.obscureFriendsListButton(-1)
         self.laffMeter = None
-        self.ignore('updateLaffMeter')
         self.ignoreAll()
         if hasattr(self.avatar, 'bFake') and self.avatar.bFake:
             self.avatar.delete()
@@ -580,3 +581,10 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
         groupAvatarBgGui.removeNode()
         helpGui.removeNode()
         return
+
+    # Called via an event when any toon in the game logs out.
+    # If the avId that logged out is the avId we are currently viewing, cleanup.
+    def __handleToonWentOffline(self, avId):
+        if self.avId == avId:
+            self.notify.debug(f"Avatar {avId} has logged out while we were viewing their TAP... cleanup()")
+            self.cleanup()

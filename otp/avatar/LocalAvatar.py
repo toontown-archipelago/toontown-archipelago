@@ -78,11 +78,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.movingFlag = 0
         self.swimmingFlag = 0
         self.lastNeedH = None
-        self.accept('friendOnline', self.__friendOnline)
-        self.accept('friendOffline', self.__friendOffline)
         self.accept('clickedWhisper', self.clickedWhisper)
-        self.accept('playerOnline', self.__playerOnline)
-        self.accept('playerOffline', self.__playerOffline)
         self.sleepCallback = None
         self.accept('wakeup', self.wakeUp)
         self.jumpLandAnimFixTask = None
@@ -1352,36 +1348,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
             n = self.__geom
         self.ccPusherTrav.traverse(n)
         return
-
-    def __friendOnline(self, doId, commonChatFlags = 0, whitelistChatFlags = 0, alert = True):
-        friend = base.cr.identifyFriend(doId)
-        if friend != None and hasattr(friend, 'setCommonAndWhitelistChatFlags'):
-            friend.setCommonAndWhitelistChatFlags(commonChatFlags, whitelistChatFlags)
-        if self.oldFriendsList != None:
-            now = globalClock.getFrameTime()
-            elapsed = now - self.timeFriendsListChanged
-            if elapsed < 10.0 and self.oldFriendsList.count(doId) == 0:
-                self.oldFriendsList.append(doId)
-                return
-        if friend != None and alert:
-            self.setSystemMessage(doId, OTPLocalizer.WhisperFriendComingOnline % friend.getName())
-        return
-
-    def __friendOffline(self, doId):
-        friend = base.cr.identifyFriend(doId)
-        if friend != None:
-            self.setSystemMessage(0, OTPLocalizer.WhisperFriendLoggedOut % friend.getName())
-        return
-
-    def __playerOnline(self, playerId):
-        playerInfo = base.cr.playerFriendsManager.playerId2Info[playerId]
-        if playerInfo:
-            self.setSystemMessage(playerId, OTPLocalizer.WhisperPlayerOnline % (playerInfo.playerName, playerInfo.location))
-
-    def __playerOffline(self, playerId):
-        playerInfo = base.cr.playerFriendsManager.playerId2Info[playerId]
-        if playerInfo:
-            self.setSystemMessage(playerId, OTPLocalizer.WhisperPlayerOffline % playerInfo.playerName)
 
     def clickedWhisper(self, doId, isPlayer = None):
         if not isPlayer:

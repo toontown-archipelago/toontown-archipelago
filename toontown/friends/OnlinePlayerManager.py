@@ -4,6 +4,7 @@ from typing import Dict, List, Union
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectGlobal import DistributedObjectGlobal
 
+from toontown.friends import FriendsGlobals
 from toontown.friends.OnlineToon import OnlineToon
 
 
@@ -80,6 +81,9 @@ class OnlinePlayerManager(DistributedObjectGlobal):
         # The client repository may want to do some extra functionality. Tell it a toon went online.
         self.cr.onToonCameOnline(onlineToon)
 
+        # Now fire an event if anywhere else in the code would like to implement some functionality.
+        messenger.send(FriendsGlobals.FRIENDS_ONLINE_EVENT, [onlineToon.avId])
+
     # Called when a toon just went offline
     def toonWentOffline(self, avId):
         oldToon: OnlineToon = self.getOnlineToon(avId)
@@ -88,6 +92,8 @@ class OnlinePlayerManager(DistributedObjectGlobal):
         # The client repository may want to do some extra functionality. Tell it a toon went offline.
         if oldToon is not None:
             self.cr.onToonWentOffline(oldToon)
+            # Now fire an event if anywhere else in the code would like to implement some functionality.
+            messenger.send(FriendsGlobals.FRIENDS_OFFLINE_EVENT, [oldToon.avId])
 
     # Called when we need to completely re-sync all online toons from the UD.
     def setOnlineToons(self, listOfToonData):
