@@ -1,3 +1,4 @@
+from direct.directnotify.DirectNotifyGlobal import directNotify
 from panda3d.core import *
 from libotp import Nametag, NametagGroup
 from libotp import CFSpeech, CFThought, CFTimeout, CFPageButton, CFNoQuitButton, CFQuitButton

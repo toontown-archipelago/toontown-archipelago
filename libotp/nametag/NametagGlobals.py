@@ -1,5 +1,7 @@
 from panda3d.core import *
 
+from toontown.archipelago.definitions.color_profile import ColorProfile
+
 _speech_balloon_3d = None
 
 
@@ -408,67 +410,6 @@ _card_pad = Vec4(0.1, 0.1, 0.1, 0)
 
 def getCardPad():
     return _card_pad
-
-
-_whisper_colors = [
-    [
-        #WTNormal
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.3, 0.6, 0.8, 0.6)),
-        (Vec4(1.0, 0.5, 0.5, 1.0), Vec4(1.0, 1.0, 1.0, 1.0)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.4, 0.8, 1.0, 1.0)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.3, 0.6, 0.8, 0.6))
-    ],
-    [
-        #WTQuickTalker
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.3, 0.6, 0.8, 0.6)),
-        (Vec4(1.0, 0.5, 0.5, 1.0), Vec4(1.0, 1.0, 1.0, 1.0)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.4, 0.8, 1.0, 1.0)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.3, 0.6, 0.8, 0.6))
-    ],
-    [
-        #WTSystem
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.8, 0.3, 0.6, 0.6)),
-        (Vec4(1.0, 0.5, 0.5, 1.0), Vec4(1.0, 1.0, 1.0, 1.0)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.8, 0.4, 1.0, 1.0)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.8, 0.3, 0.6, 0.6))
-    ],
-    [
-        #WTBattleSOS
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.8, 0.3, 0.6, 0.6)),
-        (Vec4(1.0, 0.5, 0.5, 1.0), Vec4(1.0, 1.0, 1.0, 1.0)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.8, 0.4, 1.0, 1.0)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.8, 0.3, 0.6, 0.6))
-    ],
-    [
-        #WTEmote
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.3, 0.6, 0.8, 0.6)),
-        (Vec4(1.0, 0.5, 0.5, 1.0), Vec4(1.0, 1.0, 1.0, 1.0)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.4, 1.0, 1.0, 0.4)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.3, 0.8, 0.3, 0.6))
-    ],
-    [
-        #WTToontownBoardingGroup
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.97, 0.43, 0.1, 0.6)),
-        (Vec4(1.0, 0.5, 0.5, 1.0), Vec4(1.0, 1.0, 1.0, 1.0)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.98, 0.6, 0.38, 0.6)),
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.97, 0.43, 0.1, 0.6))
-    ],
-    [
-        #WTMagicWord
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.7, 0.7, 0.1, 0.6)),  # Normal
-        (Vec4(1.0, 0.5, 0.5, 1.0), Vec4(1.0, 1.0, 0.4, 0.8)),  # Click
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.8, 0.8, 0.2, 0.6)),  # Rollover
-        (Vec4(0.0, 0.0, 0.0, 1.0), Vec4(0.8, 0.8, 0.1, 0.6))  # Disabled
-    ]
-]
-
-
-def getWhisperFg(color_code, state):
-    return Vec4(_whisper_colors[color_code][state][0])
-
-
-def getWhisperBg(color_code, state):
-    return Vec4(_whisper_colors[color_code][state][1])
 
 
 _balloon_modulation_color = Vec4(1.0, 1.0, 1.0, 1.0)

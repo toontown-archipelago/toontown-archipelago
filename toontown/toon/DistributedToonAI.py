@@ -290,6 +290,22 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if self.hp <= 0:
             self.b_setHp(1)
 
+        # We need all toons to be friends with other toons.
+        # So upon login, we make sure we're friends with other online toons!
+        for toon in self.air.doFindAllInstances(DistributedToonAI):
+            if not toon.isPlayerControlled() or toon is self:
+                continue
+
+            # Add the remote toon to our friends list.
+            self.extendFriendsList(toon.getDoId(), 0)
+
+            # Add ourselves to the remote toons friends list and update them.
+            toon.extendFriendsList(self.getDoId(), 0)
+            toon.d_setFriendsList(toon.getFriendsList())
+
+        # Finally update the client with our new friends list.
+        self.d_setFriendsList(self.getFriendsList())
+
     def setLocation(self, parentId, zoneId):
         DistributedPlayerAI.DistributedPlayerAI.setLocation(self, parentId, zoneId)
         from toontown.toon.DistributedNPCToonBaseAI import DistributedNPCToonBaseAI
@@ -355,6 +371,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if self.archipelago_session:
             self.archipelago_session.cleanup()
             self.archipelago_session = None
+            simbase.air.archipelagoManager.updateToonInfo(self.doId, -1, 999)
 
     def deleteDummy(self):
         self.notify.debug('----deleteDummy DistributedToonAI %d ' % self.doId)

@@ -2052,6 +2052,7 @@ TeleportPanelNoHqAccess = '%s is in the %s Toon HQ right now, and you do not hav
 TeleportPanelIgnored = '%s is ignoring you.'
 TeleportPanelNotOnline = "%s isn't online right now."
 TeleportPanelWentAway = '%s went away.'
+TeleportPanelEnemyTeam = '%s is on an enemy team! You cannot teleport to them.'
 TeleportPanelUnknownHood = "You don't know how to get to %s!"
 TeleportPanelUnavailableHood = '%s is not available right now; try again later.'
 TeleportPanelDenySelf = "You can't go to yourself!"
@@ -4088,12 +4089,14 @@ toontownDialogues = {BoringTopic: {(1, 2018): ['Hello Albert', 'It looks like th
                                         'And enjoy the silliest place ever, Toontown!']}}
 FriendsListPanelNewFriend = 'New Friend'
 FriendsListPanelSecrets = 'True Friend'
-FriendsListPanelOnlineFriends = 'ONLINE TOON\nFRIENDS'
+FriendsListPanelOnlineFriends = 'ONLINE\nTOONS'
+FriendsListPanelOnlineCompetitors = 'ONLINE\nCOMPETITORS'
 FriendsListPanelAllFriends = 'ALL TOON\nFRIENDS'
 FriendsListPanelIgnoredFriends = 'IGNORED\nTOONS'
 FriendsListPanelNearbyToons = 'NEARBY\nTOONS'
 FriendsListPanelPlayers = 'ALL PLAYER\nFRIENDS'
 FriendsListPanelOnlinePlayers = 'ONLINE PLAYER\nFRIENDS'
+FriendsListPanelUndefined = 'UNKNOWN\nPANEL'
 FriendInviterClickToon = 'Click on the toon you would like to make friends with.\n\n(You have %s friends)'
 FriendInviterToon = 'Toon'
 FriendInviterThatToon = 'That toon'
@@ -9947,6 +9950,7 @@ OptionNames = {
     "camSensitivityX": "Camera X Sensitivity",
     "camSensitivityY": "Camera Y Sensitivity",
     "movement_mode": "Movement Mode",
+    "sprint_mode": "Sprint Mode",
     "fovEffects": "Sprinting FOV Effects",
     "cam-toggle-lock": "Camera Toggle Lock",
     "speedchat-style": "Speedchat Color",

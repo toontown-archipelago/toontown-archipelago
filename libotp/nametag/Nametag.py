@@ -1,5 +1,7 @@
 from direct.interval.IntervalGlobal import *
 
+from toontown.archipelago.definitions import color_profile
+from toontown.archipelago.definitions.color_profile import ColorProfile
 from .ClickablePopup import *
 from ._constants import *
 
@@ -27,6 +29,32 @@ class Nametag(ClickablePopup):
         self.m_wordwrap = wordwrap
         self.m_has_region = False
         self.m_ival_name = 'flash-%d' % id(self)
+
+        # Flag that tells this nametag to use the defined ColorProfile instead of vanilla libotp defined ones.
+        # Kinda hacky but I don't feel like getting knees deep in this shit
+        self.use_color_profile: bool = False
+        self.color_profile: ColorProfile = color_profile.GRAY
+
+    def usingColorProfile(self) -> bool:
+        return self.use_color_profile
+
+    # Set a flag on whether we should use an Archipelago ColorProfile or use standard libotp ones.
+    # flag=True means we use self.getColorProfile() to determine our nametag colors.
+    # flag=False means we revert to default behavior from libotp.
+    def setUseColorProfile(self, flag: bool):
+        self.use_color_profile = flag
+        self.updateContents()
+
+    # Gets the current ColorProfile assigned to this nametag.
+    # Note: This information is meaningless unless self.usingColorProfile() is True.
+    def getColorProfile(self) -> ColorProfile:
+        return self.color_profile
+
+    # Sets the current ColorProfile assigned to this nametag.
+    # Note: This function call is meaningless unless self.setUseColorProfile(True) is called.
+    def setColorProfile(self, color_profile: ColorProfile):
+        self.color_profile = color_profile
+        self.updateContents()
 
     def clearAvatar(self):
         self.m_avatar = None

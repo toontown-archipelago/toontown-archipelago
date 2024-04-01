@@ -52,6 +52,7 @@ class Settings:
         "fovEffects": True,
         "cam-toggle-lock": False,
         "movement_mode": "TTCC",
+        "sprint_mode": "Hold",
         "magic-word-activator": 0,
         "camSensitivityX": 0.25,
         "camSensitivityY": 0.1,

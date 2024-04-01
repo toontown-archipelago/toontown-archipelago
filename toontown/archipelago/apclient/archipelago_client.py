@@ -57,6 +57,7 @@ class ArchipelagoClient(DirectObject):
         # Store some identification
         self.av = av  # DistributedToonAI that owns this client
         self.slot: int = -1  # Our slot ID given when we connect
+        self.team: int = 999
         self.uuid: str = ''  # not sure how important this is atm but just generating something in udpate_id method
 
         # Actually defines correct values for variables above

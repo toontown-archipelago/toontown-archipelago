@@ -2,6 +2,7 @@ from direct.directnotify import DirectNotifyGlobal
 from direct.distributed import DistributedObject
 
 from libotp import WhisperPopup
+from libotp.nametag.WhisperGlobals import WhisperType
 from otp.otpbase.OTPGlobals import *
 
 from toontown.spellbook.MagicWordConfig import *
@@ -57,7 +58,7 @@ class TTOffMagicWordManager(DistributedObject.DistributedObject):
                          affectType=None, affectExtra=None, lastClickedAvId=None, extraMessageData = None):
         response = self.generateMagicWordResponse(responseType, magicWord, args, returnValue, affectRange, affectType,
                                                   affectExtra, lastClickedAvId, extraMessageData)
-        base.localAvatar.setSystemMessage(0, response, WhisperPopup.WTMagicWord)
+        base.localAvatar.setSystemMessage(0, response, WhisperType.WTMagicWord)
         self.notify.info(response)
 
     def generateMagicWordResponse(self, responseType, magicWord, args, returnValue, affectRange, affectType,

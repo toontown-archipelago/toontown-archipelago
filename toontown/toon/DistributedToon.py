@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 from panda3d.core import *
 from libotp import *
+from libotp.nametag.WhisperGlobals import WhisperType
 from toontown.toon.LaffMeter import LaffMeter
 from toontown.toonbase.ToontownGlobals import *
 from direct.distributed.ClockDelta import *
@@ -61,6 +62,8 @@ from direct.showbase.InputStateGlobal import inputState
 import random
 import copy
 
+from ..archipelago.definitions import color_profile
+from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
 from ..util.astron.AstronDict import AstronDict
 
@@ -274,7 +277,16 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.startBlink()
         self.startSmooth()
         self.accept('clientCleanup', self._handleClientCleanup)
-        return
+
+        # NPCs can stop here. Below this we only handle player specific things.
+        if not self.isPlayerControlled():
+            return
+
+        # Check if we have a color profile for this toon we need to use.
+        # Hacky but we need to make sure the DO was generated obviously before we can access it
+        if base.cr.archipelagoManager is not None:
+            colorProfile = base.cr.archipelagoManager.getToonColorProfile(self.getDoId())
+            self.setColorProfile(colorProfile)
 
     def setHp(self, hitPoints):
         if not self.overheadLaffMeter:
@@ -311,7 +323,17 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if self.animFSM.getCurrentState().getName() == 'off':
             self.setAnimState('neutral')
         self._startZombieCheck()
-        self.makeOverheadLaffMeter()
+
+        # Perform any post processing we should do specifically for player toons.
+        if self.isPlayerControlled():
+            self.makeOverheadLaffMeter()
+
+            # Post processing for player toons that aren't us.
+            if base.localAvatar != self:
+                # Update our online player manager to cache what we seen here. This allows us to catch name changes.
+                base.cr.onlinePlayerManager.cacheOnlineToon(self, overwrite=True)
+                messenger.send(f"{self.getDoId()}-postGenerate", [self.getDoId()])
+
 
     def _handleClientCleanup(self):
         if self.track != None:
@@ -322,16 +344,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         Toon.Toon.setDNAString(self, dnaString)
 
     def setDNA(self, dna):
-        if base.cr.newsManager:
-            if base.cr.newsManager.isHolidayRunning(ToontownGlobals.SPOOKY_BLACK_CAT):
-                black = 26
-                heads = ['cls',
-                 'css',
-                 'csl',
-                 'cll']
-                dna.setTemporary(random.choice(heads), black, black, black)
-            else:
-                dna.restoreTemporary(self.style)
         oldHat = self.getHat()
         oldGlasses = self.getGlasses()
         oldBackpack = self.getBackpack()
@@ -345,6 +357,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.setGlasses(*oldGlasses)
         self.setBackpack(*oldBackpack)
         self.setShoes(*oldShoes)
+        
+        # This toon's DNA has changed. Update our cache to reflect that.
+        if self.isPlayerControlled():
+            base.cr.onlinePlayerManager.cacheOnlineToon(self, overwrite=True)
 
     def setHat(self, idx, textureIdx, colorIdx):
         Toon.Toon.setHat(self, idx, textureIdx, colorIdx)
@@ -466,7 +482,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def battleSOS(self, requesterId):
         avatar = base.cr.identifyAvatar(requesterId)
         if isinstance(avatar, DistributedToon) or isinstance(avatar, FriendHandle.FriendHandle):
-            self.setSystemMessage(requesterId, TTLocalizer.MovieSOSWhisperHelp % avatar.getName(), whisperType=WhisperPopup.WTBattleSOS)
+            self.setSystemMessage(requesterId, TTLocalizer.MovieSOSWhisperHelp % avatar.getName(), whisperType=WhisperType.WTBattleSOS)
         elif avatar is not None:
             self.notify.warning('got battleSOS from non-toon %s' % requesterId)
         return
@@ -602,7 +618,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 self.sendUpdate('setSleepAutoReply', [base.localAvatar.doId], fromId)
         chatString = SCDecoders.decodeSCEmoteWhisperMsg(emoteId, handle.getName())
         if chatString:
-            self.displayWhisper(fromId, chatString, WhisperPopup.WTEmote)
+            self.displayWhisper(fromId, chatString, WhisperType.WTEmote)
             base.talkAssistant.receiveAvatarWhisperSpeedChat(TalkAssistant.SPEEDCHAT_EMOTE, emoteId, fromId)
         return
 
@@ -627,7 +643,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 self.sendUpdate('setSleepAutoReply', [base.localAvatar.doId], fromId)
         chatString = SCDecoders.decodeSCStaticTextMsg(msgIndex)
         if chatString:
-            self.displayWhisper(fromId, chatString, WhisperPopup.WTQuickTalker)
+            self.displayWhisper(fromId, chatString, WhisperType.WTQuickTalker)
             base.talkAssistant.receiveAvatarWhisperSpeedChat(TalkAssistant.SPEEDCHAT_NORMAL, msgIndex, fromId)
         return
 
@@ -659,7 +675,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             self.d_setWhisperIgnored(fromId)
         chatString = TTSCDecoders.decodeTTSCToontaskMsg(taskId, toNpcId, toonProgress, msgIndex)
         if chatString:
-            self.displayWhisper(fromId, chatString, WhisperPopup.WTQuickTalker)
+            self.displayWhisper(fromId, chatString, WhisperType.WTQuickTalker)
         return
 
     def setMaxNPCFriends(self, max):
@@ -2440,7 +2456,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 if hasattr(self, 'eventsPage') and base.localAvatar.book.entered and base.localAvatar.book.isOnPage(self.eventsPage) and self.eventsPage.getMode() == EventsPage.EventsPage_Host:
                     base.localAvatar.eventsPage.loadHostedPartyInfo()
                 if hasattr(self, 'displaySystemClickableWhisper'):
-                    self.displaySystemClickableWhisper(0, TTLocalizer.PartyCanStart, whisperType=WhisperPopup.WTSystem)
+                    self.displaySystemClickableWhisper(0, TTLocalizer.PartyCanStart, whisperType=WhisperType.WTSystem)
                 else:
                     self.setSystemMessage(0, TTLocalizer.PartyCanStart)
 
@@ -2469,10 +2485,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                             name = host.getName()
                         if invite.status == InviteStatus.Accepted:
                             displayStr = TTLocalizer.PartyHasStartedAcceptedInvite % TTLocalizer.GetPossesive(name)
-                            self.displaySystemClickableWhisper(-1, displayStr, whisperType=WhisperPopup.WTSystem)
+                            self.displaySystemClickableWhisper(-1, displayStr, whisperType=WhisperType.WTSystem)
                         else:
                             displayStr = TTLocalizer.PartyHasStartedNotAcceptedInvite % TTLocalizer.GetPossesive(name)
-                            self.setSystemMessage(partyInfo.hostId, displayStr, whisperType=WhisperPopup.WTSystem)
+                            self.setSystemMessage(partyInfo.hostId, displayStr, whisperType=WhisperType.WTSystem)
                 break
 
         if not found:
@@ -2622,6 +2638,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         DistributedPlayer.DistributedPlayer.setName(self, name)
         self._handleGMName()
 
+        # This toon's name has changed. Update our online player cache to reflect that.
+        if self.isPlayerControlled():
+            base.cr.onlinePlayerManager.cacheOnlineToon(self, overwrite=True)
+
     def _handleGMName(self):
         name = self.name
         self.setDisplayName(name)
@@ -2716,7 +2736,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
             friend = self.cr.doId2do.get(friendId)
             if friend:
-                base.cr.ttoffFriendsManager.friendOnline(friendId, 0, 0, False)
+                base.cr.onlinePlayerManager.friendOnline(friendId, 0, 0, False)
 
         for friendPair in self.oldFriendsList:
             if friendPair in self.friendsList:
@@ -2865,3 +2885,29 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def hasConnected(self) -> bool:
         # kinda hacky
         return bool(self.slotData)
+
+    """
+    Methods for managing Color Profiles and Nametags.
+    """
+
+    # Removes the custom color functionality for this toon's nametags.
+    # Reverts the behavior of deciding colors back to vanilla libotp.
+    def clearColorProfile(self):
+        self.nametag.setUseColorProfile(False)
+        self.nametag.setColorProfile(color_profile.GRAY)
+
+    # Set a color profile to use for toon nametags.
+    # Assumes that we are going to want to show these colors so we enable the behavior by default.
+    def setColorProfile(self, profile: ColorProfile):
+        self.nametag.setUseColorProfile(True)
+        self.nametag.setColorProfile(profile)
+
+    # Returns whether this toon is using custom nametag colors via the ColorProfile system we use for
+    # Archipelago teams. True if they are, False if they are using classic libotp colors.
+    def usingColorProfile(self) -> bool:
+        return self.nametag.usingColorProfile()
+
+    # Gets the current ColorProfile this toon is using for their nametag.
+    # Note: This information is meaningless if self.usingColorProfile() is False.
+    def getCurrentColorProfile(self) -> ColorProfile:
+        return self.nametag.getColorProfile()

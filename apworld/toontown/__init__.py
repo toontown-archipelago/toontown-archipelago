@@ -276,6 +276,7 @@ class ToontownWorld(World):
         # Return the result.
         return {
             "seed": self.multiworld.seed,
+            "team": self.options.team.value,
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "starting_money": self.options.starting_money.value,

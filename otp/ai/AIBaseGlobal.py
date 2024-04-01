@@ -1,3 +1,8 @@
+import typing
+
+if typing.TYPE_CHECKING:
+    from otp.ai.AIBaseGlobals import *
+
 from .AIBase import *
 __builtins__['simbase'] = AIBase()
 __builtins__['ostream'] = Notify.out()
@@ -32,3 +37,4 @@ mounts = ConfigVariableList('vfs-mount')
 for mount in mounts:
     mountFile, mountPoint = (mount.split(' ', 2) + [None, None, None])[:2]
     vfs.mount(Filename(mountFile), Filename(mountPoint), 0)
+

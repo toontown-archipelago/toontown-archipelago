@@ -1,4 +1,6 @@
 from panda3d.core import *
+
+from toontown.friends import FriendsGlobals
 from toontown.toonbase.ToontownGlobals import *
 from direct.gui.DirectGui import *
 from direct.showbase import DirectObject
@@ -10,6 +12,7 @@ import types
 from toontown.toon import NPCToons
 from toontown.toon import NPCFriendPanel
 from toontown.toonbase import ToontownBattleGlobals
+
 
 class TownBattleSOSPanel(DirectFrame, StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('TownBattleSOSPanel')
@@ -111,23 +114,17 @@ class TownBattleSOSPanel(DirectFrame, StateData.StateData):
         self.__updateNPCFriendsPanel()
         self.__updateTitleText()
         self.show()
-        self.accept('friendOnline', self.__friendOnline)
-        self.accept('friendOffline', self.__friendOffline)
-        self.accept('friendsListChanged', self.__friendsListChanged)
-        self.accept('friendsMapComplete', self.__friendsListChanged)
-        return
+        self.accept(FriendsGlobals.FRIENDS_ONLINE_EVENT, self.__friendOnline)
+        self.accept(FriendsGlobals.FRIENDS_ONLINE_EVENT, self.__friendOffline)
 
     def exit(self):
         if self.isEntered == 0:
             return None
         self.isEntered = 0
         self.hide()
-        self.ignore('friendOnline')
-        self.ignore('friendOffline')
-        self.ignore('friendsListChanged')
-        self.ignore('friendsMapComplete')
+        self.ignore(FriendsGlobals.FRIENDS_ONLINE_EVENT)
+        self.ignore(FriendsGlobals.FRIENDS_OFFLINE_EVENT)
         messenger.send(self.doneEvent)
-        return None
 
     def __close(self):
         doneStatus = {}
@@ -208,14 +205,10 @@ class TownBattleSOSPanel(DirectFrame, StateData.StateData):
         else:
             self.title['text'] = TTLocalizer.TownBattleSOSWhichFriend
 
-    def __friendOnline(self, doId, commonChatFlags, whitelistChatFlags, alert=True):
+    def __friendOnline(self, doId):
         self.__updateScrollList()
         self.__updateTitleText()
 
     def __friendOffline(self, doId):
-        self.__updateScrollList()
-        self.__updateTitleText()
-
-    def __friendsListChanged(self):
         self.__updateScrollList()
         self.__updateTitleText()

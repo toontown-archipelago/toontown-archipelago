@@ -1,3 +1,5 @@
+import typing
+
 from panda3d.core import *
 from libotp import *
 from direct.gui.DirectGui import *
@@ -11,6 +13,9 @@ globalFriendSecret = None
 AccountSecret = 0
 AvatarSecret = 1
 BothSecrets = 2
+
+if typing.TYPE_CHECKING:
+    from toontown.toonbase.ToonBaseGlobals import *
 
 def showFriendSecret(secretType = AvatarSecret):
     global globalFriendSecret

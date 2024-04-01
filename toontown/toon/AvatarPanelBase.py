@@ -93,10 +93,8 @@ class AvatarPanelBase(AvatarPanel.AvatarPanel):
         self.freeLocalAvatar()
 
     def handleReport(self):
-        if base.cr.centralLogger.hasReportedPlayer(self.playerId, self.avId):
-            self.alreadyReported()
-        else:
-            self.confirmReport()
+        base.localAvatar.broadcastHpString("womp womp", 1, 0, 0)
+        base.localAvatar.playSound('phase_5/audio/sfx/ENC_Lose.ogg')
 
     def confirmReport(self):
         if base.cr.isFriend(self.avId) or base.cr.playerFriendsManager.isPlayerFriend(self.avId):

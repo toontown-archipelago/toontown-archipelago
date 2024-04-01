@@ -1,5 +1,7 @@
 from panda3d.core import *
 
+from toontown.archipelago.definitions import color_profile
+from toontown.archipelago.definitions.color_profile import ColorProfile
 from . import NametagGlobals
 from .Nametag2d import Nametag2d
 from .Nametag3d import Nametag3d
@@ -75,6 +77,40 @@ class NametagGroup:
         self.m_tag3d = Nametag3d()
         self.addNametag(self.m_tag2d)
         self.addNametag(self.m_tag3d)
+
+        # Flag that tells this nametag group to use the defined ColorProfile instead of vanilla libotp defined ones.
+        # Kinda hacky but I don't feel like getting knees deep in this shit
+        self.use_color_profile: bool = False
+        self.color_profile: ColorProfile = color_profile.GRAY
+
+    # Set a flag on whether we should use an Archipelago ColorProfile or use standard libotp ones.
+    # flag=True means we use self.getColorProfile() to determine our nametag colors.
+    # flag=False means we revert to default behavior from libotp.
+    def usingColorProfile(self) -> bool:
+        return self.use_color_profile
+
+    # Set a flag on whether we should use an Archipelago ColorProfile or use standard libotp ones.
+    # flag=True means we use self.getColorProfile() to determine our nametag group colors.
+    # flag=False means we revert to default behavior from libotp.
+    def setUseColorProfile(self, flag: bool):
+        self.use_color_profile = flag
+        # Do the same for nametags defined in this group
+        for nametag in self.m_nametags:
+            nametag.setUseColorProfile(flag)
+
+    # Gets the current ColorProfile assigned to this nametag group.
+    # Note: This information is meaningless unless self.usingColorProfile() is True.
+    def getColorProfile(self) -> ColorProfile:
+        return self.color_profile
+
+    # Sets the current ColorProfile assigned to this nametag group.
+    # Note: This function call is meaningless unless self.setUseColorProfile(True) is called.
+    def setColorProfile(self, color_profile: ColorProfile):
+        self.color_profile = color_profile
+
+        # Do the same for the contained nametags in this group
+        for nametag in self.m_nametags:
+            nametag.setColorProfile(color_profile)
 
     def setFont(self, font):
         self.setNameFont(font)

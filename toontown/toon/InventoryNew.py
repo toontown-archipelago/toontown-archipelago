@@ -43,7 +43,6 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         self.initialiseoptions(InventoryNew)
         self.battleCreditLevel = None
         self.__battleCreditMultiplier = 1
-        self.__invasionCreditMultiplier = 0
         self.__respectInvasions = 1
         self._interactivePropTrackBonus = -1
         self.tutorialFlag = 0
@@ -60,9 +59,6 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
     def __calculateBaseBattleCreditMultiplier(self):
         hood = ZoneUtil.getHoodId(base.localAvatar.zoneId)
         hoodMult = ToontownBattleGlobals.getHoodSkillCreditMultiplier(hood)
-        if self.getRespectInvasions():
-            hoodMult += self.getInvasionCreditMultiplier()
-
         return hoodMult * base.localAvatar.getBaseGagSkillMultiplier()
 
     def setDefaultBattleCreditMultiplier(self):
@@ -79,12 +75,6 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
 
     def getInteractivePropTrackBonus(self):
         return self._interactivePropTrackBonus
-
-    def setInvasionCreditMultiplier(self, mult):
-        self.__invasionCreditMultiplier = mult
-
-    def getInvasionCreditMultiplier(self):
-        return self.__invasionCreditMultiplier
 
     def setRespectInvasions(self, flag):
         self.__respectInvasions = flag

@@ -1,4 +1,9 @@
+import typing
+
 from panda3d.core import *
+
+if typing.TYPE_CHECKING:
+    from toontown.toonbase.ToonBaseGlobals import *
 
 QuietZone = 1
 UberZone = 2
