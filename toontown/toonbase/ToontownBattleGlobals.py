@@ -425,10 +425,6 @@ def getBossBattleCreditMultiplier(battleNumber):
     return 4 + battleNumber  # First round is usually battleNumber=1 btw
 
 
-def getInvasionMultiplier():
-    return 1.0
-
-
 def getMoreXpHolidayMultiplier():
     return 1.0
 
