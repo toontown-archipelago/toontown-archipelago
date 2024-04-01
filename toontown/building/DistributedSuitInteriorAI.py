@@ -13,6 +13,7 @@ from . import DistributedElevatorIntAI
 import copy
 
 from ..archipelago.definitions.death_reason import DeathReason
+from ..hood import ZoneUtil
 from ..toon.ToonDNA import ToonDNA
 
 
@@ -284,7 +285,14 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
         self.battle.helpfulToons = self.helpfulToons
         self.battle.setInitialMembers(self.toons, self.suits)
         self.battle.generateWithRequired(self.zoneId)
+
         mult = getInteriorCreditMultiplier(self.numFloors)
+
+        battleHoodId = ZoneUtil.getHoodId(self.zoneId)
+        mult += getHoodSkillCreditMultiplier(battleHoodId)
+        if self.air.holidayManager.isMoreXpHolidayRunning():
+            mult += getMoreXpHolidayMultiplier()
+
         self.battle.battleCalc.setSkillCreditMultiplier(mult)
 
     def __cleanupFloorBattle(self):
