@@ -3462,6 +3462,25 @@ class Archipelago(MagicWord):
         return f"Invalid argument, valid arguments are: check"
 
 
+# Command that forces your state to the 'Walk' state.
+# Used in rare circumstances where your toon gets softlocked to prevent having to restart the game.
+# Note: This is still a cheat so it should only be used when needed, as there are many scenarios where you
+# can break the game by running this command when you shouldn't.
+class FreeLocalToon(MagicWord):
+    aliases = ['free', 'unstuck', 'freeme', 'unstick', 'imstuck', 'stuck']
+    desc = "Forces your toon to be set in the 'walk' state where you can regain control of your toon and walk around freely. Use at your own risk."
+    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        # Check for common errors when trying to do this
+        if not hasattr(self.cr, 'playGame') or not hasattr(self.cr.playGame, 'place') or self.cr.playGame.getPlace() is None:
+            return "Your toon is in an invalid state to run this command!"
+
+        self.cr.playGame.getPlace().setState('walk')
+        return "Freed your toon!"
+
+
 # Use this command template for spawning objects client side to tweak attributes quickly
 # class SpawnObject(MagicWord):
 #     aliases = ["sb"]
