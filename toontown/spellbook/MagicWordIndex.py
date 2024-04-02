@@ -520,8 +520,8 @@ class ToggleCollisionsOff(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
 
     def handleWord(self, invoker, avId, toon, *args):
-        toon.collisionsOff()
-
+        return "This command is not supported. If you need to noclip, please use ~ghost."
+    
 
 class GetPos(MagicWord):
     desc = "Get the current position of your toon."
@@ -666,14 +666,15 @@ class camera(MagicWord):
             return points
 
 
-class pc(MagicWord):
-    aliases = ['cacascasc']
-    desc = "Set a movie sequence"
+class PrintCamera(MagicWord):
+    aliases = ['pc']
+    desc = "Prints the coordinates of the current camera position."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
 
     def handleWord(self, invoker, avId, toon, *args):
-        print((base.camera))
-        print((base.localAvatar.camera))
+        print(f"current camera pos:          {base.camera}")
+        print(f"current local av camera pos: {base.localAvatar.camera}")
+        return "Printed your current camera positions in your logs."
 
 
 class ToggleCollisionsOn(MagicWord):
@@ -682,7 +683,7 @@ class ToggleCollisionsOn(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
 
     def handleWord(self, invoker, avId, toon, *args):
-        toon.collisionsOn()
+        return "This command is not supported. If you need to noclip, please use ~ghost."
 
 
 class GlobalTP(MagicWord):
