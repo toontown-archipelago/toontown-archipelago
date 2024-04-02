@@ -231,54 +231,78 @@ __GENERAL_SUIT_ANIMATIONS: Set[SuitAnimation] = {
 }
 
 __SUIT_BATTLE_ANIMATIONS: Set[SuitAnimation] = {
-    SuitAnimation(key='throw-paper', suit='C', path='throw-paper', phase='3.5'),
-    SuitAnimation(key='phone', suit='C', path='phone', phase='3.5'),
-    SuitAnimation(key='shredder', suit='C', path='shredder', phase='3.5'),
-    SuitAnimation(key='pencil-sharpener', suit='B', path='pencil-sharpener', phase='5'),
-    SuitAnimation(key='pen-squirt', suit='B', path='pen-squirt', phase='5'),
-    SuitAnimation(key='hold-eraser', suit='B', path='hold-eraser', phase='5'),
-    SuitAnimation(key='finger-wag', suit='B', path='finger-wag', phase='5'),
-    SuitAnimation(key='hold-pencil', suit='B', path='hold-pencil', phase='5'),
-    SuitAnimation(key='throw-paper', suit='A', path='throw-paper', phase='5'),
-    SuitAnimation(key='golf-club-swing', suit='A', path='golf-club-swing', phase='5'),
-    SuitAnimation(key='magic3', suit='A', path='magic3', phase='5'),
-    SuitAnimation(key='rubber-stamp', suit='A', path='rubber-stamp', phase='5'),
-    SuitAnimation(key='smile', suit='A', path='smile', phase='5'),
-    SuitAnimation(key='speak', suit='C', path='speak', phase='5'),
-    SuitAnimation(key='effort', suit='C', path='effort', phase='5'),
-    SuitAnimation(key='magic1', suit='C', path='magic1', phase='5'),
-    SuitAnimation(key='pen-squirt', suit='C', path='fountain-pen', phase='5'),
-    SuitAnimation(key='finger-wag', suit='C', path='finger-wag', phase='5'),
-    SuitAnimation(key='magic1', suit='B', path='magic1', phase='5'),
-    SuitAnimation(key='magic2', suit='B', path='magic2', phase='5'),
-    SuitAnimation(key='throw-paper', suit='B', path='throw-paper', phase='5'),
-    SuitAnimation(key='magic3', suit='B', path='magic3', phase='5'),
-    SuitAnimation(key='pen-squirt', suit='A', path='fountain-pen', phase='7'),
-    SuitAnimation(key='glower', suit='A', path='glower', phase='5'),
-    SuitAnimation(key='magic1', suit='A', path='magic1', phase='5'),
-    SuitAnimation(key='roll-o-dex', suit='A', path='roll-o-dex', phase='5'),
+
+    # Animations shared between all body types.
+    SuitAnimation(key='pickpocket', suit='A', path='pickpocket', phase='5'),
+    SuitAnimation(key='pickpocket', suit='B', path='pickpocket', phase='5'),
     SuitAnimation(key='pickpocket', suit='C', path='pickpocket', phase='5'),
+
+    SuitAnimation(key='magic1', suit='A', path='magic1', phase='5'),
+    SuitAnimation(key='magic1', suit='B', path='magic1', phase='5'),
+    SuitAnimation(key='magic1', suit='C', path='magic1', phase='5'),
+
+    SuitAnimation(key='magic2', suit='A', path='magic2', phase='5'),
+    SuitAnimation(key='magic2', suit='B', path='magic2', phase='5'),
+    SuitAnimation(key='magic2', suit='C', path='magic2', phase='5'),
+
+    SuitAnimation(key='pen-squirt', suit='A', path='fountain-pen', phase='7'),
+    SuitAnimation(key='pen-squirt', suit='B', path='pen-squirt', phase='5'),
+    SuitAnimation(key='pen-squirt', suit='C', path='fountain-pen', phase='5'),
+
+    SuitAnimation(key='throw-paper', suit='A', path='throw-paper', phase='5'),
+    SuitAnimation(key='throw-paper', suit='B', path='throw-paper', phase='5'),
+    SuitAnimation(key='throw-paper', suit='C', path='throw-paper', phase='3.5'),
+
+    SuitAnimation(key='finger-wag', suit='A', path='fingerwag', phase='5'),
+    SuitAnimation(key='finger-wag', suit='B', path='finger-wag', phase='5'),
+    SuitAnimation(key='finger-wag', suit='C', path='finger-wag', phase='5'),
+
+    SuitAnimation(key='phone', suit='A', path='phone', phase='5'),
+    SuitAnimation(key='phone', suit='B', path='phone', phase='5'),
+    SuitAnimation(key='phone', suit='C', path='phone', phase='3.5'),
+
+    SuitAnimation(key='speak', suit='A', path='speak', phase='5'),
+    SuitAnimation(key='speak', suit='B', path='speak', phase='5'),
+    SuitAnimation(key='speak', suit='C', path='speak', phase='5'),
+
+    # AB Animations (C cannot use).
+    SuitAnimation(key='roll-o-dex', suit='A', path='roll-o-dex', phase='5'),
+    SuitAnimation(key='roll-o-dex', suit='B', path='roll-o-dex', phase='5'),
+
+    SuitAnimation(key='throw-object', suit='A', path='throw-object', phase='5'),
+    SuitAnimation(key='throw-object', suit='B', path='throw-object', phase='5'),
+
+    SuitAnimation(key='magic3', suit='A', path='magic3', phase='5'),
+    SuitAnimation(key='magic3', suit='B', path='magic3', phase='5'),
+
+    # AC Animations (B cannot use).
+    SuitAnimation(key='rubber-stamp', suit='A', path='rubber-stamp', phase='5'),
+    SuitAnimation(key='rubber-stamp', suit='C', path='rubber-stamp', phase='5'),
+
+    SuitAnimation(key='glower', suit='A', path='glower', phase='5'),
     SuitAnimation(key='glower', suit='C', path='glower', phase='5'),
+
+    # CB Animations (A Cannot use).
+    SuitAnimation(key='effort', suit='C', path='effort', phase='5'),
+    SuitAnimation(key='effort', suit='B', path='effort', phase='5'),
+
+    # Animations exclusive to Suit A (Muscular).
+    SuitAnimation(key='smile', suit='A', path='smile', phase='5'),
     SuitAnimation(key='cigar-smoke', suit='A', path='cigar-smoke', phase='8'),
     SuitAnimation(key='song-and-dance', suit='A', path='song-and-dance', phase='8'),
-    SuitAnimation(key='rubber-stamp', suit='C', path='rubber-stamp', phase='5'),
-    SuitAnimation(key='watercooler', suit='C', path='watercooler', phase='5'),
-    SuitAnimation(key='effort', suit='B', path='effort', phase='5'),
-    SuitAnimation(key='throw-object', suit='B', path='throw-object', phase='5'),
-    SuitAnimation(key='speak', suit='A', path='speak', phase='5'),
-    SuitAnimation(key='finger-wag', suit='A', path='fingerwag', phase='5'),
-    SuitAnimation(key='roll-o-dex', suit='B', path='roll-o-dex', phase='5'),
-    SuitAnimation(key='stomp', suit='B', path='stomp', phase='5'),
-    SuitAnimation(key='phone', suit='B', path='phone', phase='5'),
-    SuitAnimation(key='quick-jump', suit='B', path='jump', phase='6'),
-    SuitAnimation(key='throw-object', suit='A', path='throw-object', phase='5'),
+    SuitAnimation(key='golf-club-swing', suit='A', path='golf-club-swing', phase='5'),
     SuitAnimation(key='gavel', suit='A', path='gavel', phase='8'),
-    SuitAnimation(key='magic2', suit='C', path='magic2', phase='5'),
-    SuitAnimation(key='phone', suit='A', path='phone', phase='5'),
-    SuitAnimation(key='speak', suit='B', path='speak', phase='5'),
-    SuitAnimation(key='pickpocket', suit='B', path='pickpocket', phase='5'),
-    SuitAnimation(key='pickpocket', suit='A', path='pickpocket', phase='5'),
-    SuitAnimation(key='magic2', suit='A', path='magic2', phase='5')
+
+    # Animations exlcusive to Suit B (Skinny).
+    SuitAnimation(key='hold-pencil', suit='B', path='hold-pencil', phase='5'),
+    SuitAnimation(key='pencil-sharpener', suit='B', path='pencil-sharpener', phase='5'),
+    SuitAnimation(key='hold-eraser', suit='B', path='hold-eraser', phase='5'),
+    SuitAnimation(key='quick-jump', suit='B', path='jump', phase='6'),
+    SuitAnimation(key='stomp', suit='B', path='stomp', phase='5'),
+
+    # Animations exclusive to Suit C (Fat).
+    SuitAnimation(key='shredder', suit='C', path='shredder', phase='3.5'),
+    SuitAnimation(key='watercooler', suit='C', path='watercooler', phase='5'),
 }
 
 
