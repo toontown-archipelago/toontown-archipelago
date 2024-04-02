@@ -214,6 +214,8 @@ def doSuitAttack(attack):
         suitTrack = doPowerTie(attack)
     elif name == POWER_TRIP:
         suitTrack = doPowerTrip(attack)
+    elif name == SONG_AND_DANCE:
+        suitTrack = doSongAndDance(attack)
     elif name == QUAKE:
         suitTrack = doQuake(attack)
     elif name == RAZZLE_DAZZLE:
@@ -240,8 +242,6 @@ def doSuitAttack(attack):
         suitTrack = doShake(attack)
     elif name == SHRED:
         suitTrack = doShred(attack)
-    elif name == SONG_AND_DANCE:
-        suitTrack = doDefault(attack)
     elif name == SPIN:
         suitTrack = doSpin(attack)
     elif name == SYNERGY:
@@ -2601,6 +2601,14 @@ def doPowerTrip(attack):
     waterfallTrack = getPartTrack(waterfallEffect, 0.6, 1.3, [waterfallEffect, suit, 0])
     toonTracks = getToonTracks(attack, 1.8, ['slip-forward'], 1.29, ['jump'])
     return Parallel(suitTrack, partTrack1, partTrack2, waterfallTrack, toonTracks)
+
+
+def doSongAndDance(attack):
+    suitTrack = getSuitAnimTrack(attack)
+    toonTracks = getToonTracks(attack, 4.0, ['cringe'], 4.0, ['applause'])
+    audioTrack = SoundInterval(globalBattleSoundCache.getSound('AA_heal_happydance.ogg'))
+
+    return Parallel(suitTrack, toonTracks, audioTrack)
 
 
 def getThrowEndPoint(suit, toon, battle, whichBounce):
