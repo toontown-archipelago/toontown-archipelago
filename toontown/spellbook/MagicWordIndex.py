@@ -37,6 +37,7 @@ import json
 from apworld.toontown import locations, items
 from toontown.archipelago.definitions import rewards
 from ..archipelago.definitions.death_reason import DeathReason
+from ..archipelago.packets.clientbound.bounced_packet import BouncedPacket
 
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
@@ -3439,6 +3440,24 @@ class Archipelago(MagicWord):
                 reward.apply(toon)
                 toon.d_showReward(item_def.unique_id, "The Spellbook", False)
             return f"Gave {toon.getName()} a few random AP rewards"
+
+        if operation in ('deathlink'):
+            # Simulate a deathlink packet.
+
+            # Hack in a fake "AP client"
+            class FakeAPClient:
+                pass
+            client = FakeAPClient()
+            client.av = toon
+            # Create a deathlink packet
+            deathlink_packet = BouncedPacket({'cmd': "Bounced"})
+            deathlink_packet.data = {
+                'time': globalClock.getRealTime(),
+                'source': 'The Spellbook',
+                'cause': 'the spellbook decided it was your time to go.',
+            }
+            deathlink_packet.handle_deathlink(client)
+            return f"Simulating deathlink packet for {toon.getName()}"
 
         return f"Invalid argument, valid arguments are: check"
 
