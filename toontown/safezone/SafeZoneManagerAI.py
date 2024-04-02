@@ -1,6 +1,7 @@
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
+from toontown.toon.DistributedToonAI import DistributedToonAI
 from toontown.toonbase import ToontownGlobals
 
 
@@ -12,11 +13,9 @@ class SafeZoneManagerAI(DistributedObjectAI):
         if not avId:
             return
 
-        av = self.air.doId2do.get(avId)
-        if not av:
-            return
-
-        if not av.isToonedUp():
+        # When a toon enters this zone, start a toon up task for them no matter what
+        av = self.air.getDo(avId)
+        if isinstance(av, DistributedToonAI):
             av.startToonUp(ToontownGlobals.PassiveHealFrequency)
 
     def exitSafeZone(self):
@@ -24,8 +23,7 @@ class SafeZoneManagerAI(DistributedObjectAI):
         if not avId:
             return
 
-        av = self.air.doId2do.get(avId)
-        if not av:
-            return
-
-        av.stopToonUp()
+        # When a toon leaves this zone, stop their toon up task
+        av = self.air.getDo(avId)
+        if isinstance(av, DistributedToonAI):
+            av.stopToonUp()
