@@ -2541,20 +2541,36 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.__waitForNextToonUp()
         return Task.done
 
-    def toonUp(self, hpGained, quietly=0, sendTotal=1):
-        if hpGained > self.maxHp:
-            hpGained = self.maxHp
+    def toonUp(self, hpGained: int, quietly=False, sendTotal=True):
+
+        # We should always work with ints when modifying avatar HP, if we were given a float fix it
+        if isinstance(hpGained, float):
+            self.notify.debug(f"Tried to heal {self.getName()} with invalid type float ({hpGained}), rounding up to an integer")
+            hpGained = int(math.ceil(hpGained))
+
+        # We cannot toon up for negative healing, if this happens skip
+        if hpGained <= 0:
+            self.notify.debug(f"Tried to heal {self.getName()} for non-positive integer: {hpGained}, cancelling...")
+            return
+
+        # Since we are healing, make sure our hp is not negative to apply proper healing
+        if self.getHp() < 0:
+            self.hp = 0  # Raw dog the hp attribute set here to skip sending an event
+
+        # Apply the healing but make sure we do not overheal
+        oldHp = self.getHp()
+        newHp = oldHp + hpGained
+        newHp = min(self.getMaxHp(), newHp)
+        self.setHp(newHp)
+        actualHpGained = newHp - oldHp
+
+        # If we want to broadcast this toonup...
         if not quietly:
-            self.sendUpdate('toonUp', [hpGained])
-        if self.hp + hpGained <= 0:
-            self.hp += hpGained
-        else:
-            self.hp = max(self.hp, 0) + hpGained
-        clampedHp = min(self.hp, self.maxHp)
-        if not self.hpOwnedByBattle:
-            self.hp = clampedHp
+            self.sendUpdate('toonUp', [actualHpGained])
+
+        # Only sync the toons HP if they are not currently watching a battle movie.
         if sendTotal and not self.hpOwnedByBattle:
-            self.d_setHp(clampedHp)
+            self.d_setHp(self.getHp())
 
     def isToonedUp(self):
         return self.hp >= self.maxHp
