@@ -1,3 +1,4 @@
+import traceback
 import types
 import collections
 from typing import List, Dict
@@ -143,7 +144,14 @@ class MagicWord:
             if self.execLocation == MagicWordConfig.EXEC_LOC_CLIENT:
                 self.args = json.loads(self.args)
 
-            executedWord = self.handleWord(invoker, avId, toon, *self.args)
+            # Attempt to run the command, if we fail then tell the user why.
+            try:
+                executedWord = self.handleWord(invoker, avId, toon, *self.args)
+            except Exception as e:
+                traceback.print_exc()
+                toCheck = 'AI logs' if self.execLocation == MagicWordConfig.EXEC_LOC_SERVER else 'logs'
+                return f"An exception was caught when trying to invoke {self.__class__.__name__}: {e}\n\nCheck {toCheck} for a traceback."
+
         if executedWord:
             return executedWord
 
