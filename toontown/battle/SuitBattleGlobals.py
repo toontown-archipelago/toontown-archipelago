@@ -1,9 +1,12 @@
+from typing import List, Set
+
 from .BattleBase import *
 import random
 import math
 from direct.directnotify import DirectNotifyGlobal
 from otp.otpbase import OTPLocalizer
 from toontown.toonbase import TTLocalizer
+
 notify = DirectNotifyGlobal.directNotify.newCategory('SuitBattleGlobals')
 debugAttackSequence = {}
 
@@ -1108,6 +1111,25 @@ def getAttackTaunt(attackName, index = None):
     else:
         return random.choice(taunts)
     return
+
+
+# Returns a list of names of attacks a suit can perform.
+def getAttacksForSuit(suitName: str) -> Set[str]:
+
+    attackNames: Set[str] = set()
+    possibleSuitAttacks = SuitAttributes[suitName]['attacks']
+    for attack in possibleSuitAttacks:
+        attackNames.add(attack[0])
+
+    return attackNames
+
+
+# Similarly to getAttacksForSuit(), just returns the key representation of an attack instead.
+def getAttackKeysForSuit(suitName: str) -> Set[str]:
+    attackKeys: Set[str] = set()
+    for attackName in getAttacksForSuit(suitName):
+        attackKeys.add(SuitAttacks[attackName][0])
+    return attackKeys
 
 
 SuitAttackTaunts = TTLocalizer.SuitAttackTaunts
