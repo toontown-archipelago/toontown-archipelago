@@ -413,6 +413,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         for s in suitsLured:
             suit = self.suits[int(s)]
             if suit != None:
+                suit.loop('lured')
                 self.luredSuits.append(suit)
                 if oldLuredSuits.count(suit) == 0:
                     self.needAdjustTownBattle = 1
@@ -926,10 +927,11 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
                 suitPos, suitHpr = self.getActorPosHpr(suit)
                 if self.isSuitLured(suit) == 0:
                     suit.setPosHpr(self, suitPos, suitHpr)
+                    suit.loop('neutral')
                 else:
                     spos = Point3(suitPos[0], suitPos[1] - MovieUtil.SUIT_LURE_DISTANCE, suitPos[2])
                     suit.setPosHpr(self, spos, suitHpr)
-                suit.loop('neutral')
+                    suit.loop('lured')
 
         for toon in toons:
             if self.joiningToons.count(toon):
@@ -1428,6 +1430,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
                 if suit not in self.activeSuits:
                     self.notify.error('lured suit not in self.activeSuits')
                 luredSuits.append(self.activeSuits.index(suit))
+                suit.loop('lured')
 
             trappedSuits = []
             for suit in self.activeSuits:
