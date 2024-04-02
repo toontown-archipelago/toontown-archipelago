@@ -129,7 +129,7 @@ def __createFishingPoleMultiTrack(lure, dollar, dollarName, dollarType):
             if trapProp:
                 suitTrack.append(Func(__doubleTrapHackFix, trapProp, suit))
                 suit.battleTrapProp = trapProp
-            suitTrack.append(Func(suit.loop, 'neutral'))
+            suitTrack.append(Func(suit.loop, 'lured'))
             suitTrack.append(Func(battle.lureSuit, suit))
             if hp > 0:
                 suitTrack.append(__createSuitDamageTrack(battle, suit, hp, lure, trapProp))
@@ -198,7 +198,7 @@ def __createMagnetMultiTrack(lure, magnet, pos, hpr, scale, isSmallMagnet = 1, n
 
                 suitTrack.append(ActorInterval(suit, 'landing', startTime=1.16, endTime=0.7))
                 suitTrack.append(ActorInterval(suit, 'landing', startTime=0.7, duration=1.3))
-                suitTrack.append(Func(suit.loop, 'neutral'))
+                suitTrack.append(Func(suit.loop, 'lured'))
                 suitTrack.append(Func(battle.lureSuit, suit))
                 if hp > 0:
                     suitTrack.append(__createSuitDamageTrack(battle, suit, hp, lure, trapProp))
@@ -264,7 +264,7 @@ def __createHypnoGogglesMultiTrack(lure, npcs = []):
                 suitTrack.append(LureRoundsTrack)
                 suitTrack.append(ActorInterval(suit, 'hypnotized', duration=3.1))
                 suitTrack.append(Func(suit.setPos, battle, reachPos))
-                suitTrack.append(Func(suit.loop, 'neutral'))
+                suitTrack.append(Func(suit.loop, 'lured'))
                 suitTrack.append(Func(battle.lureSuit, suit))
                 if hp > 0:
                     suitTrack.append(__createSuitDamageTrack(battle, suit, hp, lure, trapProp))
@@ -514,7 +514,7 @@ def createSuitReactionToTrain(battle, suit, hp, lure, trapProp):
     anim = 'flatten'
     suitReact = ActorInterval(suit, anim)
     cogGettingHit = getSoundTrack('TL_train_cog.ogg', node=toon)
-    suitTrack.append(Func(suit.loop, 'neutral'))
+    suitTrack.append(Func(suit.loop, 'lured'))
     suitTrack.append(Wait(timeToGetHit + TRAIN_MATERIALIZE_TIME))
     suitTrack.append(updateHealthBar)
     suitTrack.append(Parallel(suitReact, cogGettingHit))
@@ -651,7 +651,7 @@ def __createSlideshowMultiTrack(lure, npcs = []):
                 suitTrack.append(LureRoundsTrack)
                 suitTrack.append(ActorInterval(suit, 'hypnotized', duration=3.1))
                 suitTrack.append(Func(suit.setPos, battle, reachPos))
-                suitTrack.append(Func(suit.loop, 'neutral'))
+                suitTrack.append(Func(suit.loop, 'lured'))
                 suitTrack.append(Func(battle.lureSuit, suit))
                 if hp > 0:
                     suitTrack.append(__createSuitDamageTrack(battle, suit, hp, lure, trapProp))
