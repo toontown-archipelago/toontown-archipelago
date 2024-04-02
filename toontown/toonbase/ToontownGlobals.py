@@ -102,7 +102,7 @@ MaxHpLimit = 999
 
 PassiveHealFrequency = 10  # How often in seconds should toons passively regen?
 PassiveHealPercentage = .10  # How much percentage of laff should toons regen passively?
-MaxCarryLimit = 80
+MaxCarryLimit = 100
 MaxQuestCarryLimit = 4
 CogMoneyDropChance = 0.80  # What percent chance to drop jellybeans as a reward per cog?
 CogMoneyDropRange = (3, 7)  # How many jellybeans do we reward per cog? (Assuming we rolled the chance for it)

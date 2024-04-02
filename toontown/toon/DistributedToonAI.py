@@ -2582,7 +2582,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         actualHpGained = newHp - oldHp
 
         # If we want to broadcast this toonup...
-        if not quietly:
+        if not quietly and actualHpGained > 0:
             self.sendUpdate('toonUp', [actualHpGained])
 
         # Only sync the toons HP if they are not currently watching a battle movie.
