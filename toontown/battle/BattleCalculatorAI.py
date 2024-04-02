@@ -254,18 +254,28 @@ class BattleCalculatorAI:
         defense = suit.getLevel() * -5
         return max(defense, -SuitBattleGlobals.MAX_SUIT_DEFENSE)
 
+    # Returns a list of toons that are not enemies with an avId.
+    def __getAllToonsNotEnemiesWithAvId(self, avId):
+        ret = []
+        for toon in self.battle.activeToons:
+            if simbase.air.archipelagoManager.onEnemyTeams(avId, toon):
+                continue
+            ret.append(toon)
+        return ret
+
     def __createToonTargetList(self, attackIndex):
         attack = self.battle.toonAttacks[attackIndex]
         atkTrack, atkLevel = self.__getActualTrackLevel(attack)
+        atkOwner = attack[TOON_ID_COL]
 
         if atkTrack == NPCSOS:
             return []
 
         # If this attack is a group attack figure out if we are affecting all suits or all toons
         if attackAffectsGroup(atkTrack, atkLevel, attack[TOON_TRACK_COL]):
-            # Heal gags target all the toons
+            # Heal gags target all the toons as long as they are not enemies
             if atkTrack in (HEAL, PETSOS):
-                return self.battle.activeToons
+                return self.__getAllToonsNotEnemiesWithAvId(atkOwner)
 
             # Everything else targets all the suits
             return self.battle.activeSuits

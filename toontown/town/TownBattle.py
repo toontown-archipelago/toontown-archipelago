@@ -497,7 +497,11 @@ class TownBattle(StateData.StateData):
             if currStateName == 'ChooseCog':
                 self.chooseCogPanel.adjustCogs(self.numCogs, self.luredIndices, self.trappedIndices, self.track, self.immuneIndices)
             elif currStateName == 'ChooseToon':
-                self.chooseToonPanel.adjustToons(self.numToons, self.localNum)
+                self.immuneIndices = []
+                for toonIndex, toon in enumerate(self.toons):
+                    if base.cr.archipelagoManager and base.cr.archipelagoManager.onEnemyTeams(toon, base.localAvatar.doId):
+                        self.immuneIndices.append(toon)
+                self.chooseToonPanel.adjustToons(self.numToons, self.localNum, invalidTargets=self.immuneIndices)
             canHeal, canTrap, canLure = self.checkHealTrapLure()
             base.localAvatar.inventory.setBattleCreditMultiplier(self.creditMultiplier)
             base.localAvatar.inventory.setActivateMode('battle', heal=canHeal, trap=canTrap, lure=canLure, bldg=self.bldg, creditLevel=self.creditLevel, tutorialFlag=self.tutorialFlag)
@@ -562,8 +566,14 @@ class TownBattle(StateData.StateData):
             self.notify.error('unknown mode: %s' % mode)
 
     def enterChooseToon(self):
+
+        immuneIndices = []
+        for toonIndex, toon in enumerate(self.toons):
+            if base.cr.archipelagoManager and base.cr.archipelagoManager.onEnemyTeams(toon, base.localAvatar.doId):
+                immuneIndices.append(toonIndex)
+
         self.toon = 0
-        self.chooseToonPanel.enter(self.numToons, localNum=self.localNum)
+        self.chooseToonPanel.enter(self.numToons, localNum=self.localNum, immuneIndices=immuneIndices)
         self.accept(self.chooseToonPanelDoneEvent, self.__handleChooseToonPanelDone)
         return None
 

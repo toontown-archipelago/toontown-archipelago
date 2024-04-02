@@ -2,6 +2,9 @@ from panda3d.core import *
 from direct.distributed.ClockDelta import *
 from direct.task.Task import Task
 from direct.interval.IntervalGlobal import *
+
+from libotp import WhisperPopup
+from libotp.nametag.WhisperGlobals import WhisperType
 from .TrolleyConstants import *
 from direct.gui.DirectGui import *
 from toontown.toonbase import TTLocalizer
@@ -564,7 +567,7 @@ class DistributedFindFour(DistributedNode.DistributedNode):
         for x in range(41):
             self.tieSequence.append(Parallel(LerpColorInterval(self.locatorList[x], 0.15, Vec4(0.5, 0.5, 0.5, 0.5), Vec4(1, 1, 1, 1)), LerpColorInterval(self.locatorList[x], 0.15, Vec4(1, 1, 1, 1), Vec4(0.5, 0.5, 0.5, 0.5))))
 
-        whisper = WhisperPopup('This Find Four game has resulted in a Tie!', OTPGlobals.getInterfaceFont(), WhisperPopup.WTNormal)
+        whisper = WhisperPopup('This Find Four game has resulted in a Tie!', OTPGlobals.getInterfaceFont(), WhisperType.WTNormal)
         whisper.manage(base.marginManager)
         self.tieSequence.start()
 

@@ -752,19 +752,13 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.reconsiderCheesyEffect()
         base.localAvatar.obscureMoveFurnitureButton(1)
         avId = requestStatus.get('avId', -1)
+
+        # Handle the case where we are teleporting to a friend
         if avId != -1:
-            if avId in base.cr.doId2do:
-                teleportDebug(requestStatus, 'teleport to avatar')
-                avatar = base.cr.doId2do[avId]
-                avatar.forceToTruePosition()
-                base.localAvatar.gotoNode(avatar)
-                base.localAvatar.b_teleportGreeting(avId)
-            else:
-                friend = base.cr.identifyAvatar(avId)
-                if friend != None:
-                    teleportDebug(requestStatus, 'friend not here, giving up')
-                    base.localAvatar.setSystemMessage(avId, OTPLocalizer.WhisperTargetLeftVisit % (friend.getName(),))
-                    friend.d_teleportGiveup(base.localAvatar.doId)
+            teleportDebug(requestStatus, 'teleport to avatar')
+            # Attempt to teleport to them and greet them! Allow one retry if we fail a second later.
+            self.attemptTeleportGreetFriend(avId, retry=True)
+
         base.transitions.irisIn()
         self.nextState = requestStatus.get('nextState', 'walk')
         base.localAvatar.attachCamera()
@@ -778,6 +772,42 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.d_broadcastPositionNow()
         base.localAvatar.b_setParent(ToontownGlobals.SPRender)
         return
+
+    def attemptTeleportGreetFriend(self, avId, retry=False):
+
+        self.ignore(f"{avId}-postGenerate")
+        taskMgr.remove('avTeleportGreetRetry')
+
+        # If the friend exists in our doId2do, simply just teleport to them.
+        if avId in base.cr.doId2do:
+            self.__teleportGreetFriend(avId)
+            return
+
+        # Do we not want to retry and give up?
+        if not retry:
+            self.__teleportGreetFriendFailed(avId)
+            return
+
+        # They don't seem to exist. Maybe they haven't generated yet because we are loading a street?
+        # Try again when we realized they generated, or if 5 seconds have passed.
+        # When either of these fail, we will alert the player that the teleport failed and give up.
+        self.acceptOnce(f"{avId}-postGenerate", self.__greetFriendLater)
+        self.__greetFriendLater(avId, delay=5)
+
+    def __greetFriendLater(self, avId, delay=1.5):
+        taskMgr.doMethodLater(delay, self.attemptTeleportGreetFriend, 'avTeleportGreetRetry', extraArgs=[avId, False])
+
+    def __teleportGreetFriend(self, avId):
+        avatar = base.cr.doId2do[avId]
+        avatar.forceToTruePosition()
+        base.localAvatar.gotoNode(avatar)
+        base.localAvatar.b_teleportGreeting(avId)
+
+    def __teleportGreetFriendFailed(self, avId):
+        friend = base.cr.identifyAvatar(avId)
+        if friend is not None:
+            base.localAvatar.setSystemMessage(avId, OTPLocalizer.WhisperTargetLeftVisit % (friend.getName(),))
+            friend.d_teleportGiveup(base.localAvatar.doId)
 
     def teleportInDone(self):
         if hasattr(self, 'fsm'):

@@ -6,6 +6,9 @@ from direct.gui.DirectGui import *
 from direct.showbase.PythonUtil import *
 from direct.interval.IntervalGlobal import *
 from direct.showbase.InputStateGlobal import inputState
+
+from libotp.nametag.WhisperGlobals import WhisperType
+from toontown.archipelago.definitions.color_profile import ColorProfile
 from . import Avatar
 from direct.controls import ControlManager
 from . import DistributedAvatar
@@ -75,11 +78,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.movingFlag = 0
         self.swimmingFlag = 0
         self.lastNeedH = None
-        self.accept('friendOnline', self.__friendOnline)
-        self.accept('friendOffline', self.__friendOffline)
         self.accept('clickedWhisper', self.clickedWhisper)
-        self.accept('playerOnline', self.__playerOnline)
-        self.accept('playerOffline', self.__playerOffline)
         self.sleepCallback = None
         self.accept('wakeup', self.wakeUp)
         self.jumpLandAnimFixTask = None
@@ -197,11 +196,22 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         # If this isn't the ttcc mode don't do anything
         if self.currentMovementMode is not self.TTCC_MOVEMENT_VALUES:
             return
+        
+        sprint_setting = base.settings.get('sprint_mode')
+        if sprint_setting == "Hold":
+            return self.setSprinting()
 
-        self.setSprinting()
-
+        if self.isSprinting:
+            self.exitSprinting()
+        else:
+            self.setSprinting()
+    
     def __handleSprintRelease(self):
 
+        sprint_setting = base.settings.get('sprint_mode')
+        if sprint_setting == "Toggle":
+            return
+        
         # If this isn't the ttcc mode don't do anything
         if self.currentMovementMode is not self.TTCC_MOVEMENT_VALUES:
             return
@@ -299,6 +309,9 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.stopUpdateSmartCamera()
         self.shutdownSmartCamera()
         self.deleteCollisions()
+        self.orbitalCamera.stop()
+        self.orbitalCamera.destroy()
+        del self.orbitalCamera
         self.controlManager.delete()
         self.physControls = None
         del self.controlManager
@@ -1084,20 +1097,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.customMessages = customMessages
         messenger.send('customMessagesChanged')
 
-    def displayWhisper(self, fromId, chatString, whisperType):
-        sender = None
-        sfx = self.soundWhisper
-        if whisperType == WhisperPopup.WTNormal or whisperType == WhisperPopup.WTQuickTalker:
-            if sender == None:
-                return
-            chatString = sender.getName() + ': ' + chatString
-        whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), whisperType)
-        if sender != None:
-            whisper.setClickable(sender.getName(), fromId)
-        whisper.manage(base.marginManager)
-        base.playSfx(sfx)
-        return
-
     def displayWhisperPlayer(self, fromId, chatString, whisperType):
         sender = None
         playerInfo = None
@@ -1106,7 +1105,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         if playerInfo == None:
             return
         senderName = playerInfo.playerName
-        if whisperType == WhisperPopup.WTNormal or whisperType == WhisperPopup.WTQuickTalker:
+        if whisperType == WhisperType.WTNormal or whisperType == WhisperType.WTQuickTalker:
             chatString = senderName + ': ' + chatString
         whisper = WhisperPopup(chatString, OTPGlobals.getInterfaceFont(), whisperType)
         if sender != None:
@@ -1353,36 +1352,6 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
         self.ccPusherTrav.traverse(n)
         return
 
-    def __friendOnline(self, doId, commonChatFlags = 0, whitelistChatFlags = 0, alert = True):
-        friend = base.cr.identifyFriend(doId)
-        if friend != None and hasattr(friend, 'setCommonAndWhitelistChatFlags'):
-            friend.setCommonAndWhitelistChatFlags(commonChatFlags, whitelistChatFlags)
-        if self.oldFriendsList != None:
-            now = globalClock.getFrameTime()
-            elapsed = now - self.timeFriendsListChanged
-            if elapsed < 10.0 and self.oldFriendsList.count(doId) == 0:
-                self.oldFriendsList.append(doId)
-                return
-        if friend != None and alert:
-            self.setSystemMessage(doId, OTPLocalizer.WhisperFriendComingOnline % friend.getName())
-        return
-
-    def __friendOffline(self, doId):
-        friend = base.cr.identifyFriend(doId)
-        if friend != None:
-            self.setSystemMessage(0, OTPLocalizer.WhisperFriendLoggedOut % friend.getName())
-        return
-
-    def __playerOnline(self, playerId):
-        playerInfo = base.cr.playerFriendsManager.playerId2Info[playerId]
-        if playerInfo:
-            self.setSystemMessage(playerId, OTPLocalizer.WhisperPlayerOnline % (playerInfo.playerName, playerInfo.location))
-
-    def __playerOffline(self, playerId):
-        playerInfo = base.cr.playerFriendsManager.playerId2Info[playerId]
-        if playerInfo:
-            self.setSystemMessage(playerId, OTPLocalizer.WhisperPlayerOffline % playerInfo.playerName)
-
     def clickedWhisper(self, doId, isPlayer = None):
         if not isPlayer:
             friend = base.cr.identifyFriend(doId)
@@ -1401,7 +1370,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
 
     def handlePlayerFriendWhisper(self, playerId, charMessage):
         print('handlePlayerFriendWhisper')
-        self.displayWhisperPlayer(playerId, charMessage, WhisperPopup.WTNormal)
+        self.displayWhisperPlayer(playerId, charMessage, WhisperType.WTNormal)
 
     def canChat(self):
         return 0

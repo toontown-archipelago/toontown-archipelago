@@ -34,6 +34,9 @@ class DistributedNPCToonBase(DistributedToon.DistributedToon):
 
             self.busyWithLocalToon = False  # When True, we ignore events from other toons so we don't have to worry about other players
 
+    def isPlayerControlled(self):
+        return False
+
     def isBusyWithLocalToon(self):
         return self.busyWithLocalToon
 

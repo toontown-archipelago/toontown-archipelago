@@ -24,6 +24,7 @@ class ArchipelagoOnscreenLog(DirectFrame):
         self.accept("f2", self.showAllEntries)  # todo remove this for better version
 
     def destroy(self):
+        self.__cleanupAllSequences()
         self.log.removeAndDestroyAllItems()
         self.log.destroy()
         super().destroy()
@@ -66,6 +67,10 @@ class ArchipelagoOnscreenLog(DirectFrame):
             return
 
         seq.finish()
+
+    def __cleanupAllSequences(self):
+        for seqID in list(self.sequenceCache.keys()):
+            self.__cleanupSequence(seqID)
 
     def showAllEntries(self):
 

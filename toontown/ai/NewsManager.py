@@ -37,7 +37,6 @@ class NewsManager(DistributedObject.DistributedObject):
         self.holidayDecorator = None
         self.holidayIdList = []
         base.cr.newsManager = self
-        base.localAvatar.inventory.setInvasionCreditMultiplier(0)
         self.weeklyCalendarHolidays = []
         return
 
@@ -87,11 +86,6 @@ class NewsManager(DistributedObject.DistributedObject):
         else:
             self.notify.warning('setInvasionStatus: invalid msgType: %s' % msgType)
             return
-        if self.invading:
-            mult = ToontownBattleGlobals.getInvasionMultiplier()
-        else:
-            mult = 0
-        base.localAvatar.inventory.setInvasionCreditMultiplier(mult)
         Sequence(Wait(1.0), Func(base.localAvatar.setSystemMessage, 0, msg1), Wait(5.0), Func(base.localAvatar.setSystemMessage, 0, msg2), name='newsManagerWait', autoPause=1).start()
 
     def getInvading(self):

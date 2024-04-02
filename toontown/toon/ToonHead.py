@@ -794,7 +794,7 @@ class ToonHead(Actor.Actor):
             if not hasattr(self, 'pumpkins'):
                 self.pumpkins = NodePathCollection()
             ppath = 'phase_4/models/estate/pumpkin_'
-            if headStyle is 'l':
+            if headStyle == 'l':
                 if copy:
                     pmodel = loader.loadModel(ppath + 'tall')
                 else:
@@ -829,7 +829,7 @@ class ToonHead(Actor.Actor):
             if not hasattr(self, 'snowMen'):
                 self.snowMen = NodePathCollection()
             snowManPath = 'phase_4/models/props/tt_m_efx_snowmanHead_'
-            if headStyle is 'l':
+            if headStyle == 'l':
                 snowManPath = snowManPath + 'tall'
             else:
                 snowManPath = snowManPath + 'short'

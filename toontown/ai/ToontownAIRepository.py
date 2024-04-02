@@ -16,6 +16,7 @@ from toontown.ai.DistributedResistanceEmoteMgrAI import DistributedResistanceEmo
 from toontown.ai.HolidayManagerAI import HolidayManagerAI
 from toontown.ai.NewsManagerAI import NewsManagerAI
 from toontown.ai.WelcomeValleyManagerAI import WelcomeValleyManagerAI
+from toontown.archipelago.distributed.DistributedArchipelagoManagerAI import DistributedArchipelagoManagerAI
 from toontown.building.DistributedTrophyMgrAI import DistributedTrophyMgrAI
 from toontown.catalog.CatalogManagerAI import CatalogManagerAI
 from toontown.coghq.CogSuitManagerAI import CogSuitManagerAI
@@ -114,6 +115,7 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.estateMgr = None
         self.magicWordManager = None
         self.deliveryManager = None
+        self.archipelagoManager = None
         self.defaultAccessLevel = OTPGlobals.accessLevelValues.get('TTOFF_DEVELOPER')
 
         # AP stuff
@@ -282,9 +284,14 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.magicWordManager = TTOffMagicWordManagerAI(self)
         self.magicWordManager.generateWithRequired(OTP_ZONE_ID_MANAGEMENT)
 
+        # Generate our AP Manager...
+        self.archipelagoManager = DistributedArchipelagoManagerAI(self)
+        self.archipelagoManager.generateWithRequired(OTP_ZONE_ID_MANAGEMENT)
+
         # Generate our delivery manager...
         self.deliveryManager = self.generateGlobalObject(OTP_DO_ID_TOONTOWN_DELIVERY_MANAGER,
                                                          'DistributedDeliveryManager')
+
 
     def createHood(self, hoodCtr, zoneId):
         # Bossbot HQ doesn't use DNA, so we skip over that.

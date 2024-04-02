@@ -11,7 +11,7 @@ class ToontownUberRepository(ToontownInternalRepository):
     def __init__(self, baseChannel, serverId):
         ToontownInternalRepository.__init__(self, baseChannel, serverId, dcSuffix='UD')
         self.gameServicesManager = None
-        self.ttoffFriendsManager = None
+        self.onlinePlayerManager = None
         self.chatManager = None
         self.deliveryManager = None
 
@@ -28,7 +28,8 @@ class ToontownUberRepository(ToontownInternalRepository):
     def createGlobals(self):
         self.gameServicesManager = self.generateGlobalObject(OTP_DO_ID_TOONTOWN_GAME_SERVICES_MANAGER,
                                                              'TTGameServicesManager')
-        self.ttoffFriendsManager = self.generateGlobalObject(OTP_DO_ID_TTOFF_FRIENDS_MANAGER, 'TTOffFriendsManager')
+        self.onlinePlayerManager = self.generateGlobalObject(OTP_DO_ID_ONLINE_PLAYER_MANAGER, 'OnlinePlayerManager')
         self.chatManager = self.generateGlobalObject(OTP_DO_ID_CHAT_MANAGER, 'TTOffChatManager')
         self.deliveryManager = self.generateGlobalObject(OTP_DO_ID_TOONTOWN_DELIVERY_MANAGER,
                                                          'DistributedDeliveryManager')
+

@@ -37,6 +37,7 @@ class ArchipelagoSession:
             self.avatar.d_setSystemMessage(0, f"{e}")
 
     def handle_disconnect(self):
+        self.client.team = 999
         self.client.stop()
 
     def handle_slot(self, new_slot):
@@ -153,3 +154,13 @@ class ArchipelagoSession:
             MinimalJsonMessagePart(f"{death_component}", color='salmon')
         ])
         self.avatar.d_sendArchipelagoMessage(msg)
+
+    """
+    Methods to retrieve information about an Archipelago Session
+    """
+
+    def getSlotId(self) -> int:
+        return self.client.slot
+
+    def getTeamId(self) -> int:
+        return self.client.team

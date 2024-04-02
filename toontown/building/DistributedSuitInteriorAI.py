@@ -14,6 +14,7 @@ import copy
 
 from ..archipelago.definitions.death_reason import DeathReason
 from ..toon.DistributedToonAI import DistributedToonAI
+from ..hood import ZoneUtil
 from ..toon.ToonDNA import ToonDNA
 
 
@@ -285,9 +286,14 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
         self.battle.helpfulToons = self.helpfulToons
         self.battle.setInitialMembers(self.toons, self.suits)
         self.battle.generateWithRequired(self.zoneId)
+
         mult = getInteriorCreditMultiplier(self.numFloors)
-        if self.air.suitInvasionManager.getInvading():
-            mult *= getInvasionMultiplier()
+
+        battleHoodId = ZoneUtil.getHoodId(self.zoneId)
+        mult += getHoodSkillCreditMultiplier(battleHoodId)
+        if self.air.holidayManager.isMoreXpHolidayRunning():
+            mult += getMoreXpHolidayMultiplier()
+
         self.battle.battleCalc.setSkillCreditMultiplier(mult)
         
         # Because we tried to set battle ID before we generated, we need to set a proper battle ID now

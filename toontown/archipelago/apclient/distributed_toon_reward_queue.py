@@ -3,7 +3,7 @@ from typing import List
 from toontown.archipelago.definitions.rewards import EarnedAPReward
 
 # How many times a second should we process the queue of rewards for the toon?
-DEFAULT_QUEUE_PROCESS_FREQUENCY = 15
+DEFAULT_QUEUE_PROCESS_FREQUENCY = 5
 TASK_DELAY_TIME = 1 / DEFAULT_QUEUE_PROCESS_FREQUENCY
 # How many rewards per run should we process if we have a lot of rewards to handle?
 DEFAULT_REWARD_BATCH = 1

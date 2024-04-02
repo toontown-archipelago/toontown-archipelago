@@ -58,9 +58,6 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         battleHoodId = ZoneUtil.getHoodId(self.zoneId)
         skillCreditMult = getHoodSkillCreditMultiplier(battleHoodId)
 
-        if self.air.suitInvasionManager.getInvading():
-            skillCreditMult += getInvasionMultiplier()
-
         if self.air.holidayManager.isMoreXpHolidayRunning():
             skillCreditMult += getMoreXpHolidayMultiplier()
 

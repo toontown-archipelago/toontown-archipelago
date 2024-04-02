@@ -77,6 +77,7 @@ from toontown.minigame import DistributedTugOfWarGame/AI
 from toontown.minigame import DistributedCatchGame/AI
 from toontown.minigame import DistributedDivingGame/AI
 from toontown.minigame import DistributedTargetGame/AI
+from toontown.archipelago.distributed.DistributedArchipelagoManager/AI import DistributedArchipelagoManager/AI
 from toontown.estate import EstateManager/AI
 from toontown.estate import DistributedEstate/AI
 from toontown.estate import DistributedHouse/AI
@@ -272,7 +273,7 @@ from toontown.parties import DistributedPartyJukebox40Activity/AI
 from toontown.parties import DistributedPartyValentineJukeboxActivity/AI
 from toontown.parties import DistributedPartyValentineJukebox40Activity/AI
 from toontown.friends import TTPlayerFriendsManager/UD
-from toontown.friends import TTOffFriendsManager/UD
+from toontown.friends import OnlinePlayerManager/UD
 from toontown.uberdog import TTSpeedchatRelay/UD
 from toontown.safezone import DistributedGolfKart/AI
 from toontown.safezone import DistributedPicnicBasket/AI
@@ -3519,16 +3520,27 @@ struct FriendEntry {
   uint32 petId;
 }
 
-dclass TTOffFriendsManager : DistributedObject {
-  getFriendsListRequest() clsend;
-  friendsListRequestResp(FriendEntry[]);
-  friendOnline(uint32, uint8, uint8);
+struct OnlineToon {
+  uint32 doId;
+  string name;
+  string dna;
+}
+
+dclass OnlinePlayerManager : DistributedObject {
+  //getFriendsListRequest() clsend;
+  //friendsListRequestResp(FriendEntry[]);
+  //friendOnline(uint32, uint8, uint8);
+
+  //removeFriend(uint32) clsend;
+  //friendOffline(uint32);
+  goingOffline(uint32, uint32);
+  clearList(uint32);
   getAvatarDetails(uint32) clsend;
   avatarDetailsResp(uint32, blob);
-  removeFriend(uint32) clsend;
-  friendOffline(uint32);
-  goingOffline(uint32);
-  clearList(uint32);
+  // Start AP Online Manager Rewrite
+  setOnlineToons(OnlineToon[]);
+  toonCameOnline(OnlineToon);
+  toonWentOffline(uint32 doId);
 };
 
 dclass TTSpeedchatRelay : SpeedchatRelay {
@@ -3920,6 +3932,16 @@ dclass NonRepeatableRandomSource : DistributedObject, NonRepeatableRandomSourceC
   getRandomSamples(DoId, string, uint32, uint32);
   randomSample(DoId, uint32);
   randomSampleAck() airecv;
+};
+
+struct ArchipelagoInformation {
+  uint32 avId;
+  int16 slotId;
+  int16 teamId;
+};
+
+dclass DistributedArchipelagoManager : DistributedObject {
+  sync(ArchipelagoInformation[]) required broadcast ram;
 };
 
 dclass DistributedInGameNewsMgr : DistributedObjectGlobal {
