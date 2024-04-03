@@ -255,8 +255,8 @@ class Suit(Avatar.Avatar):
         
         self.scale = visual.scale
         self.handColor = visual.hand_color
-        self.headColor = visual.head_color
-        self.headTexture = visual.head_texture
+        self.headColor = visual.head_color_override
+        self.headTexture = visual.head_texture_override
         self.generateBody()
         visual.addHeadModel(self)
         self.generateVisual()
@@ -406,12 +406,7 @@ class Suit(Avatar.Avatar):
     def generateCorporateMedallion(self):
         icons = loader.loadModel('phase_3/models/gui/cog_icons')
         dept = self.style.dept
-        if base.config.GetBool('want-new-cogs', 0):
-            chestNull = self.find('**/def_joint_attachMeter')
-            if chestNull.isEmpty():
-                chestNull = self.find('**/joint_attachMeter')
-        else:
-            chestNull = self.find('**/joint_attachMeter')
+        chestNull = self.find('**/joint_attachMeter')
         if dept == 'c':
             self.corpMedallion = icons.find('**/CorpIcon').copyTo(chestNull)
         elif dept == 's':
@@ -431,12 +426,7 @@ class Suit(Avatar.Avatar):
         button.setScale(3.0)
         button.setH(180.0)
         button.setColor(self.healthColors[0])
-        if base.config.GetBool('want-new-cogs', 0):
-            chestNull = self.find('**/def_joint_attachMeter')
-            if chestNull.isEmpty():
-                chestNull = self.find('**/joint_attachMeter')
-        else:
-            chestNull = self.find('**/joint_attachMeter')
+        chestNull = self.find('**/joint_attachMeter')
         button.reparentTo(chestNull)
         self.healthBar = button
         glow = BattleProps.globalPropPool.getProp('glow')
@@ -500,7 +490,6 @@ class Suit(Avatar.Avatar):
             # Simply setting color
             self.healthBar.setColor(self.healthColors[newCondition], 1)
             self.healthBarGlow.setColor(self.healthGlowColors[newCondition], 1)
-
 
     def __blinkRed(self, task):
         self.healthBar.setColor(self.healthColors[3], 1)
