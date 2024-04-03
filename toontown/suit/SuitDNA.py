@@ -101,6 +101,20 @@ suitsPerLevel = [1,
 suitsPerDept = 8
 goonTypes = ['pg', 'sg']
 
+ModelDict = {'a': ('/models/char/suitA-', 4),
+ 'b': ('/models/char/suitB-', 4),
+ 'c': ('/models/char/suitC-', 3.5)}
+
+suit2headTexturePaths = {'a': 'phase_4/maps/',
+    'b': 'phase_4/maps/',
+    'c': 'phase_3.5/maps/'}
+
+suitBody2HeadPath = {
+    'a': 'phase_4/models/char/suitA-heads',
+    'b': 'phase_4/models/char/suitB-heads',
+    'c': 'phase_3.5/models/char/suitC-heads'
+}
+
 
 @dataclass
 class SuitAnimation:
@@ -120,7 +134,6 @@ class SuitAnimation:
 
     def __hash__(self):
         return self.unique_key().__hash__()
-
 
 # Define a list of suit animations that every suit has.
 __GENERAL_SUIT_ANIMATIONS: Set[SuitAnimation] = {
@@ -353,6 +366,131 @@ def getBattleAnimationsForSuit(suitName: str, attackKeys: Set[str]) -> List[Suit
 
     return animations
 
+@dataclass
+class SuitVisual:
+    key:   str  # The key that the codebase references this suit's name by.
+    scale:  float  # The scale that the suit's body will be.
+    hand_color: VBase4  # The color of the suit's hands.
+    head_color: VBase4  # The color of the suit's head.
+    head_texture:  str  # The path/filename of the suit's head texture in resources.
+    head_type: str  # The type of head this suit has. (flunky, glasses, etc)
+    height: float  # The height of the suit.
+
+    def unique_key(self) -> str:
+        return f"{self.key}-{self.head_type}"
+    
+    def headModelPath(self, body, customModelPath=None) -> str:
+        if customModelPath:
+            return customModelPath
+        else:
+            return suitBody2HeadPath[body]
+    
+    def addHeadModel(self, suit):
+        # find if the head_type is a list or not
+        if isinstance(self.head_type, list):
+            for head in self.head_type:
+                headModel = loader.loadModel(self.headModelPath(suit.style.body))
+                head = headModel.find('**/' + head)
+                head.reparentTo(suit.find('**/joint_head'))
+                suit.headParts.append(head)
+                headModel.removeNode()
+        else:
+            headModel = loader.loadModel(self.headModelPath(suit.style.body))
+            head = headModel.find('**/' + self.head_type)
+            head.reparentTo(suit.find('**/joint_head'))
+            suit.headParts.append(head)
+            headModel.removeNode()
+    
+    def __hash__(self):
+        return self.unique_key().__hash__()
+
+# List of dialogues for the suits.
+SuitDialogArray = []
+SkelSuitDialogArray = []
+
+# Suit sizes that we use to scale the suits with division.
+aSize = 6.06
+bSize = 5.29
+cSize = 4.14
+
+# suitName, scale, handColor, headColor, headTexture, headType, height
+GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
+    SuitVisual('f', 4.0 / cSize, corpPolyColor, None, None, ['flunky', 'glasses'], 4.88),
+    SuitVisual('p', 3.35 / bSize, corpPolyColor, None, None, 'pencilpusher', 5.0),
+    SuitVisual('ym', 4.125 / aSize, corpPolyColor, None, None, 'yesman', 5.28),
+    SuitVisual('mm', 2.5 / cSize, corpPolyColor, None, None, 'micromanager', 3.25),
+    SuitVisual('ds', 4.5 / bSize, corpPolyColor, None, None, 'beancounter', 6.08),
+    SuitVisual('hh', 6.5 / aSize, corpPolyColor, None, None, 'headhunter', 7.45),
+    SuitVisual('cr', 6.75 / cSize, VBase4(0.85, 0.55, 0.55, 1.0), None, 'corporate-raider.jpg', 'flunky', 8.23),
+    SuitVisual('tbc', 7.0 / aSize, VBase4(0.75, 0.95, 0.75, 1.0), None, None, 'bigcheese', 9.34),
+    SuitVisual('bf', 4.0 / cSize, legalPolyColor, None, 'bottom-feeder.jpg', 'tightwad', 4.81),
+    SuitVisual('b', 4.375 / bSize, VBase4(0.95, 0.95, 1.0, 1.0), None, 'blood-sucker.jpg', 'movershaker', 6.17),
+    SuitVisual('dt', 4.25 / aSize, legalPolyColor, None, 'double-talker.jpg', 'twoface', 5.63),
+    SuitVisual('ac', 4.35 / bSize, legalPolyColor, None, None, 'ambulancechaser', 6.39),
+    SuitVisual('bs', 4.5 / aSize, legalPolyColor, None, None, 'backstabber', 6.71),
+    SuitVisual('sd', 5.65 / bSize, VBase4(0.5, 0.8, 0.75, 1.0), None, 'spin-doctor.jpg', 'telemarketer', 7.9),
+    SuitVisual('le', 7.125 / aSize, VBase4(0.25, 0.25, 0.5, 1.0), None, None, 'legaleagle', 8.27),
+    SuitVisual('bw', 7.0 / aSize, legalPolyColor, None, None, 'bigwig', 8.69),
+    SuitVisual('sc', 3.6 / cSize, moneyPolyColor, None, None, 'coldcaller', 4.77),
+    SuitVisual('pp', 3.55 / aSize, VBase4(1.0, 0.5, 0.6, 1.0), None, None, 'pennypincher', 5.26),
+    SuitVisual('tw', 4.5 / cSize, moneyPolyColor, None, None, 'tightwad', 5.41),
+    SuitVisual('bc', 4.4 / bSize, moneyPolyColor, None, None, 'beancounter', 5.95),
+    SuitVisual('nc', 5.25 / aSize, moneyPolyColor, None, None, 'numbercruncher', 7.22),
+    SuitVisual('mb', 5.3 / cSize, moneyPolyColor, None, None, 'moneybags', 6.97),
+    SuitVisual('ls', 6.5 / bSize, VBase4(0.5, 0.85, 0.75, 1.0), None, None, 'loanshark', 8.58),
+    SuitVisual('rb', 7.0 / aSize, moneyPolyColor, None, 'robber-baron.jpg', 'yesman', 8.95),
+    SuitVisual('cc', 3.5 / cSize, VBase4(0.55, 0.65, 1.0, 1.0), VBase4(0.25, 0.35, 1.0, 1.0), None, 'coldcaller', 4.63),
+    SuitVisual('tm', 3.75 / bSize, salesPolyColor, None, None, 'telemarketer', 5.24),
+    SuitVisual('nd', 4.35 / aSize, salesPolyColor, None, 'name-dropper.jpg', 'numbercruncher', 5.98),
+    SuitVisual('gh', 4.75 / cSize, salesPolyColor, None, None, 'gladhander', 6.4),
+    SuitVisual('ms', 4.75 / bSize, salesPolyColor, None, None, 'movershaker', 6.7),
+    SuitVisual('tf', 5.25 / aSize, salesPolyColor, None, None, 'twoface', 6.95),
+    SuitVisual('m', 5.75 / aSize, salesPolyColor, None, 'mingler.jpg', 'twoface', 7.61),
+    SuitVisual('mh', 7.0 / aSize, salesPolyColor, None, None, 'yesman', 8.95)
+}
+
+SuitClotheParts = ['blazer', 'leg', 'sleeve']
+
+@dataclass
+class CustomSuitClothes:
+    key:   str  # The key that the codebase references this suit's name by.
+    clotheAlis:  str  # The alias of the clothing model in the phase file.
+    
+    def unique_key(self) -> str:
+        return f"{self.key}-{self.head_type}"
+    
+    def getClotheTexture(self, suit):
+        SuitClothes = {}
+
+        for partName in SuitClotheParts:
+            texName = "phase_3.5/maps/%s_%s.jpg" % (self.clotheAlis, partName)
+            SuitClothes[partName] = loader.loadTexture(texName)
+            
+        return (SuitClothes['blazer'], SuitClothes['leg'], SuitClothes['sleeve'])
+
+    def __hash__(self):
+        return self.unique_key().__hash__()
+
+def getNormalClotheTexture(dept):
+    SuitClothes = {}
+
+    for partName in SuitClotheParts:
+        texName = "phase_3.5/maps/%s_%s.jpg" % (dept, partName)
+        SuitClothes[partName] = loader.loadTexture(texName)
+        
+    return (SuitClothes['blazer'], SuitClothes['leg'], SuitClothes['sleeve'])
+
+def getWaiterClotheTexture():
+    SuitClothes = {}
+
+    for partName in SuitClotheParts:
+        texName = "phase_3.5/maps/waiter_m_%s.jpg" % (partName)
+        SuitClothes[partName] = loader.loadTexture(texName)
+        
+    return (SuitClothes['blazer'], SuitClothes['leg'], SuitClothes['sleeve'])
+
+CUSTOM_SUIT_CLOTHES: Set[CustomSuitClothes] = {
+}
 
 def getSuitDept(name):
     index = suitHeadTypes.index(name)
