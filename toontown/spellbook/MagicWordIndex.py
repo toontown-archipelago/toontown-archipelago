@@ -3471,6 +3471,38 @@ class FreeLocalToon(MagicWord):
         return "Freed your toon!"
 
 
+# Command to start a "sandbox" battle.
+# Used for toying with battle mechanics.
+class SandboxBattle(MagicWord):
+    aliases = ['sandbox', 'custombattle']
+    desc = 'Starts a sandbox turn based battle. Used for testing battle mechanics and gives control of a dynamic suit planner.'
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from ..battle.DistributedBattleSandboxAI import DistributedBattleSandboxAI
+        from ..toon.DistributedToonAI import DistributedToonAI
+
+        if toon.isBattling():
+            return f"{toon.getName()} is battling! Cannot start a new one."
+
+        teammates: List[int] = []
+        for otherToonId, otherToon in self.air.getObjectsOfClassInZone(self.air.districtId, toon.zoneId, DistributedToonAI).items():
+            if otherToon.isPlayerControlled() and toon != otherToon:
+                teammates.append(otherToonId)
+
+        if len(teammates) > 3:
+            teammates = teammates[:3]
+
+        zoneId = toon.zoneId
+
+        # Start a new battle for them.
+        battle: DistributedBattleSandboxAI = DistributedBattleSandboxAI(self.air, zoneId)
+        battle.generateWithRequired(zoneId)
+        battle.start(toon.doId, otherToons=teammates)
+        suff = f" and {len(teammates)} others!" if len(teammates) > 0 else '!'
+        return f"Started a sandbox battle for {toon.getName()}{suff}"
+
+
 # Use this command template for spawning objects client side to tweak attributes quickly
 # class SpawnObject(MagicWord):
 #     aliases = ["sb"]

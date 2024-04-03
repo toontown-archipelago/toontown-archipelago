@@ -1,5 +1,7 @@
 from direct.interval.IntervalGlobal import *
 from panda3d.core import *
+
+from toontown.battle.BattlePlace import BattlePlace
 from toontown.toonbase.ToonBaseGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from toontown.hood import Place
@@ -20,11 +22,11 @@ from toontown.toonbase import TTLocalizer
 from direct.gui import DirectLabel
 from otp.distributed.TelemetryLimiter import RotationLimitToH, TLGatherAllAvs
 
-class Playground(Place.Place):
+class Playground(BattlePlace):
     notify = DirectNotifyGlobal.directNotify.newCategory('Playground')
 
     def __init__(self, loader, parentFSM, doneEvent):
-        Place.Place.__init__(self, loader, doneEvent)
+        super().__init__(loader, doneEvent)
         self.tfaDoneEvent = 'tfaDoneEvent'
         self.fsm = ClassicFSM.ClassicFSM('Playground', [
             State.State('start',
@@ -50,7 +52,9 @@ class Playground(Place.Place):
                             'quest',
                             'purchase',
                             'stopped',
-                            'fishing']),
+                            'fishing',
+                            'battle',
+                            'teleportOut']),
             State.State('stickerBook',
                         self.enterStickerBook,
                         self.exitStickerBook, [
@@ -182,6 +186,8 @@ class Playground(Place.Place):
                         self.enterFishing,
                         self.exitFishing, [
                             'walk']),
+            State.State('battle', self.enterBattle, self.exitBattle, ['walk', 'teleportOut', 'died']),
+            State.State('WaitForBattle', self.enterWaitForBattle, self.exitWaitForBattle, ['battle', 'walk']),
             State.State('final',
                         self.enterFinal,
                         self.exitFinal, [

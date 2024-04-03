@@ -1001,3 +1001,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
     def handleQuietZoneDone(self):
         how = base.cr.handlerArgs['how']
         self.fsm.request(how, [base.cr.handlerArgs])
+
+    def enterZone(self, zoneId: int):
+        pass

@@ -290,6 +290,7 @@ from toontown.battle import DistributedBattleWaiters/AI
 from toontown.coghq import DistributedFoodBelt/AI
 from toontown.coghq import DistributedBanquetTable/AI
 from toontown.battle import DistributedBattleDiners/AI
+from toontown.battle import DistributedBattleSandbox/AI
 from toontown.coghq import DistributedGolfSpot/AI
 from toontown.minigame import DistributedIceGame/AI
 from toontown.minigame import DistributedCogThiefGame/AI
@@ -3696,6 +3697,9 @@ dclass DistributedBanquetTable : DistributedObject {
 };
 
 dclass DistributedBattleDiners : DistributedBattleFinal {
+};
+
+dclass DistributedBattleSandbox : DistributedBattleBase {
 };
 
 dclass DistributedGolfSpot : DistributedObject {
