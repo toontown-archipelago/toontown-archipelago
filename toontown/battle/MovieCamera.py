@@ -345,7 +345,7 @@ def chooseSuitShot(attack, attackDuration):
     if groupStatus == ATK_TGT_SINGLE:
         toon = target['toon']
     suit = attack['suit']
-    name = attack['id']
+    attackType: SuitAttackType = SuitAttackType.fromId(attack['id'])
     battle = attack['battle']
     camTrack = Sequence()
 
@@ -355,135 +355,138 @@ def chooseSuitShot(attack, attackDuration):
         else:
             return randomAttackCam(attack['suit'], target['toon'], attack['battle'], attackDuration, openShotDuration, 'suit')
 
-    if name == AUDIT:
+    if attackType == SuitAttackType.AUDIT:
         camTrack.append(defaultCamera())
-    elif name == BITE:
+    elif attackType == SuitAttackType.BITE:
         camTrack.append(defaultCamera(openShotDuration=2.8))
-    elif name == BOUNCE_CHECK:
+    elif attackType == SuitAttackType.BOUNCE_CHECK:
         camTrack.append(defaultCamera())
-    elif name == BRAIN_STORM:
+    elif attackType == SuitAttackType.BRAIN_STORM:
         camTrack.append(defaultCamera(openShotDuration=2.4))
-    elif name == BUZZ_WORD:
+    elif attackType == SuitAttackType.BUZZ_WORD:
         camTrack.append(defaultCamera(openShotDuration=4.7))
-    elif name == CALCULATE:
+    elif attackType == SuitAttackType.CALCULATE:
         camTrack.append(defaultCamera())
-    elif name == CANNED:
+    elif attackType == SuitAttackType.CANNED:
         camTrack.append(defaultCamera(openShotDuration=2.9))
-    elif name == CHOMP:
+    elif attackType == SuitAttackType.CHOMP:
         camTrack.append(defaultCamera(openShotDuration=2.8))
-    elif name == CLIPON_TIE:
+    elif attackType == SuitAttackType.CLIPON_TIE:
         camTrack.append(defaultCamera(openShotDuration=3.3))
-    elif name == CRUNCH:
+    elif attackType == SuitAttackType.CRUNCH:
         camTrack.append(defaultCamera(openShotDuration=3.4))
-    elif name == DEMOTION:
+    elif attackType == SuitAttackType.DEMOTION:
         camTrack.append(defaultCamera(openShotDuration=1.7))
-    elif name == DOUBLE_TALK:
+    elif attackType == SuitAttackType.DOUBLE_TALK:
         camTrack.append(defaultCamera(openShotDuration=3.9))
-    elif name == EVICTION_NOTICE:
+    elif attackType == SuitAttackType.EVICTION_NOTICE:
         camTrack.append(defaultCamera(openShotDuration=3.2))
-    elif name == EVIL_EYE:
+    elif attackType == SuitAttackType.EVIL_EYE:
         camTrack.append(defaultCamera(openShotDuration=2.7))
-    elif name == FILIBUSTER:
+    elif attackType == SuitAttackType.FILIBUSTER:
         camTrack.append(defaultCamera(openShotDuration=2.7))
-    elif name == FILL_WITH_LEAD:
+    elif attackType == SuitAttackType.FILL_WITH_LEAD:
         camTrack.append(defaultCamera(openShotDuration=3.2))
-    elif name == FINGER_WAG:
+    elif attackType == SuitAttackType.FINGER_WAG:
         camTrack.append(defaultCamera(openShotDuration=2.3))
-    elif name == FIRED:
+    elif attackType == SuitAttackType.FIRED:
         camTrack.append(defaultCamera(openShotDuration=1.7))
-    elif name == FOUNTAIN_PEN:
+    elif attackType == SuitAttackType.FOUNTAIN_PEN:
         camTrack.append(defaultCamera(openShotDuration=2.6))
-    elif name == FREEZE_ASSETS:
+    elif attackType == SuitAttackType.FREEZE_ASSETS:
         camTrack.append(defaultCamera(openShotDuration=2.5))
-    elif name == HALF_WINDSOR:
+    elif attackType == SuitAttackType.HALF_WINDSOR:
         camTrack.append(defaultCamera(openShotDuration=2.8))
-    elif name == HEAD_SHRINK:
+    elif attackType == SuitAttackType.HEAD_SHRINK:
         camTrack.append(defaultCamera(openShotDuration=1.3))
-    elif name == GLOWER_POWER:
+    elif attackType == SuitAttackType.GLOWER_POWER:
         camTrack.append(defaultCamera(openShotDuration=1.4))
-    elif name == GUILT_TRIP:
+    elif attackType == SuitAttackType.GUILT_TRIP:
         camTrack.append(defaultCamera(openShotDuration=0.9))
-    elif name == HANG_UP:
+    elif attackType == SuitAttackType.HANG_UP:
         camTrack.append(defaultCamera(openShotDuration=5.1))
-    elif name == HOT_AIR:
+    elif attackType == SuitAttackType.HOT_AIR:
         camTrack.append(defaultCamera(openShotDuration=2.5))
-    elif name == JARGON:
+    elif attackType == SuitAttackType.JARGON:
         camTrack.append(defaultCamera())
-    elif name == LEGALESE:
+    elif attackType == SuitAttackType.LEGALESE:
         camTrack.append(defaultCamera(openShotDuration=1.5))
-    elif name == LIQUIDATE:
+    elif attackType == SuitAttackType.LIQUIDATE:
         camTrack.append(defaultCamera(openShotDuration=2.5))
-    elif name == MARKET_CRASH:
+    elif attackType == SuitAttackType.MARKET_CRASH:
         camTrack.append(defaultCamera(openShotDuration=2.9))
-    elif name == MUMBO_JUMBO:
+    elif attackType == SuitAttackType.MUMBO_JUMBO:
         camTrack.append(defaultCamera(openShotDuration=2.8))
-    elif name == PARADIGM_SHIFT:
+    elif attackType == SuitAttackType.PARADIGM_SHIFT:
         camTrack.append(defaultCamera(openShotDuration=1.6))
-    elif name == PECKING_ORDER:
+    elif attackType == SuitAttackType.PECKING_ORDER:
         camTrack.append(defaultCamera(openShotDuration=2.8))
-    elif name == PLAY_HARDBALL:
+    elif attackType == SuitAttackType.PLAY_HARDBALL:
         camTrack.append(defaultCamera(openShotDuration=2.3))
-    elif name == PICK_POCKET:
+    elif attackType == SuitAttackType.PICK_POCKET:
         camTrack.append(allGroupLowShot(suit, 2.7))
-    elif name == PINK_SLIP:
+    elif attackType == SuitAttackType.PINK_SLIP:
         camTrack.append(defaultCamera(openShotDuration=2.8))
-    elif name == POUND_KEY:
+    elif attackType == SuitAttackType.POUND_KEY:
         camTrack.append(defaultCamera(openShotDuration=2.8))
-    elif name == POWER_TIE:
+    elif attackType == SuitAttackType.POWER_TIE:
         camTrack.append(defaultCamera(openShotDuration=2.4))
-    elif name == POWER_TRIP:
+    elif attackType == SuitAttackType.POWER_TRIP:
         camTrack.append(defaultCamera(openShotDuration=1.1))
-    elif name == QUAKE:
+    elif attackType == SuitAttackType.QUAKE:
         shakeIntensity = 5.15
         quake = 1
         camTrack.append(suitCameraShakeShot(suit, attackDuration, shakeIntensity, quake))
-    elif name == RAZZLE_DAZZLE:
+    elif attackType == SuitAttackType.RAZZLE_DAZZLE:
         camTrack.append(defaultCamera(openShotDuration=2.2))
-    elif name == RED_TAPE:
+    elif attackType == SuitAttackType.RED_TAPE:
         camTrack.append(defaultCamera(openShotDuration=3.5))
-    elif name == RE_ORG:
+    elif attackType == SuitAttackType.RE_ORG:
         camTrack.append(defaultCamera(openShotDuration=1.1))
-    elif name == RESTRAINING_ORDER:
+    elif attackType == SuitAttackType.RESTRAINING_ORDER:
         camTrack.append(defaultCamera(openShotDuration=2.8))
-    elif name == ROLODEX:
+    elif attackType == SuitAttackType.ROLODEX:
         camTrack.append(defaultCamera())
-    elif name == RUBBER_STAMP:
+    elif attackType == SuitAttackType.RUBBER_STAMP:
         camTrack.append(defaultCamera(openShotDuration=3.2))
-    elif name == RUB_OUT:
+    elif attackType == SuitAttackType.RUB_OUT:
         camTrack.append(defaultCamera(openShotDuration=2.2))
-    elif name == SACKED:
+    elif attackType == SuitAttackType.SACKED:
         camTrack.append(defaultCamera(openShotDuration=2.9))
-    elif name == SCHMOOZE:
+    elif attackType == SuitAttackType.SCHMOOZE:
         camTrack.append(defaultCamera(openShotDuration=2.8))
-    elif name == SHAKE:
+    elif attackType == SuitAttackType.SHAKE:
         shakeIntensity = 1.75
         camTrack.append(suitCameraShakeShot(suit, attackDuration, shakeIntensity))
-    elif name == SHRED:
+    elif attackType == SuitAttackType.SHRED:
         camTrack.append(defaultCamera(openShotDuration=4.1))
-    elif name == SPIN:
+    elif attackType == SuitAttackType.SPIN:
         camTrack.append(defaultCamera(openShotDuration=1.7))
-    elif name == SYNERGY:
+    elif attackType == SuitAttackType.SYNERGY:
         camTrack.append(defaultCamera(openShotDuration=1.7))
-    elif name == TABULATE:
+    elif attackType == SuitAttackType.TABULATE:
         camTrack.append(defaultCamera())
-    elif name == TEE_OFF:
+    elif attackType == SuitAttackType.TEE_OFF:
         camTrack.append(defaultCamera(openShotDuration=4.5))
-    elif name == TREMOR:
+    elif attackType == SuitAttackType.TREMOR:
         shakeIntensity = 0.25
         camTrack.append(suitCameraShakeShot(suit, attackDuration, shakeIntensity))
-    elif name == WATERCOOLER:
+    elif attackType == SuitAttackType.WATERCOOLER:
         camTrack.append(defaultCamera())
-    elif name == WITHDRAWAL:
+    elif attackType == SuitAttackType.WITHDRAWAL:
         camTrack.append(defaultCamera(openShotDuration=1.2))
-    elif name == WRITE_OFF:
+    elif attackType == SuitAttackType.WRITE_OFF:
         camTrack.append(defaultCamera())
-    elif name == SONG_AND_DANCE:
+    elif attackType == SuitAttackType.SONG_AND_DANCE:
         camTrack.append(defaultCamera(openShotDuration=3.6))
     else:
-        notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % name)
+        notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % attackType.name)
         camTrack.append(defaultCamera())
     pbpText = attack['playByPlayText']
-    displayName = TTLocalizer.SuitAttackNames[attack['name']]
+    displayName = TTLocalizer.SuitAttackNames.get(attack['name'])
+    if displayName is None:
+        displayName = attack['name'].replace('_', ' ') + '!'
+        notify.warning(f"Unknown PBP text for attack: {attackType}. Dynamically generating to '{displayName}'")
     pbpTrack = pbpText.getShowInterval(displayName, 3.5)
     return Parallel(camTrack, pbpTrack)
 

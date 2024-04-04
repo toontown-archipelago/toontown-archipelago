@@ -1,6 +1,8 @@
 import functools
 
 from panda3d.core import *
+
+from toontown.battle.SuitBattleGlobals import SuitAttackType
 from toontown.toonbase.ToontownBattleGlobals import *
 from direct.task.Timer import *
 import math
@@ -92,46 +94,12 @@ def getToonAttack(id, track = NO_ATTACK, level = -1, target = -1):
      0]
 
 
-def getDefaultSuitAttacks():
-    suitAttacks = [[NO_ID,
-      NO_ATTACK,
-      -1,
-      [],
-      0,
-      0,
-      0],
-     [NO_ID,
-      NO_ATTACK,
-      -1,
-      [],
-      0,
-      0,
-      0],
-     [NO_ID,
-      NO_ATTACK,
-      -1,
-      [],
-      0,
-      0,
-      0],
-     [NO_ID,
-      NO_ATTACK,
-      -1,
-      [],
-      0,
-      0,
-      0]]
-    return suitAttacks
-
-
 def getDefaultSuitAttack():
-    return [NO_ID,
-     NO_ATTACK,
-     -1,
-     [],
-     0,
-     0,
-     0]
+    return [NO_ID, SuitAttackType.NO_ATTACK.getId(), -1, [], 0, 0, 0]
+
+
+def getDefaultSuitAttacks():
+    return [getDefaultSuitAttack() for _ in range(4)]
 
 
 def findToonAttack(toons, attacks, track):

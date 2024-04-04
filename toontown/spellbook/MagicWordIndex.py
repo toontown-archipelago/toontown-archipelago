@@ -2649,7 +2649,7 @@ class SetCogSuit(MagicWord):
             levelRange = list(range((typeIndex + 1), (typeIndex + 6)))
         if level not in levelRange:
             return "Invalid level specified for %s disguise %s." % (
-                corp.capitalize(), SuitBattleGlobals.SuitAttributes[type]['name'])
+                corp.capitalize(), SuitBattleGlobals.getSuitAttributes(type).name)
 
         # Reset their merits to 0.
         merits = toon.getCogMerits()
@@ -2686,7 +2686,7 @@ class SetCogSuit(MagicWord):
         toon.b_setCogLevels(levels)
 
         return "Set %s disguise to %s Level %d." % (
-            corp.capitalize(), SuitBattleGlobals.SuitAttributes[type]['name'], level)
+            corp.capitalize(), SuitBattleGlobals.getSuitAttributes(type).name, level)
 
 
 class Merits(MagicWord):

@@ -1,14 +1,26 @@
-from typing import List, Set
+from dataclasses import dataclass
+from enum import auto, IntEnum
+from typing import Set, Dict, Tuple, Union, Any, List
 
-from .BattleBase import *
 import random
-import math
 from direct.directnotify import DirectNotifyGlobal
 from otp.otpbase import OTPLocalizer
 from toontown.toonbase import TTLocalizer
 
 notify = DirectNotifyGlobal.directNotify.newCategory('SuitBattleGlobals')
-debugAttackSequence = {}
+
+
+"""
+Legacy code that still needs to be refactored and is currently deprecated.
+
+Various enums and a few helper functions.
+"""
+MAX_SUIT_DEFENSE = 55
+
+ATK_TGT_UNKNOWN = 1
+ATK_TGT_SINGLE = 2
+ATK_TGT_GROUP = 3
+
 
 def pickFromFreqList(freqList):
     randNum = random.randint(0, 99)
@@ -25,1055 +37,1305 @@ def pickFromFreqList(freqList):
     return level
 
 
-def getActualFromRelativeLevel(name, relLevel):
-    data = SuitAttributes[name]
-    actualLevel = data['level'] + relLevel
-    return actualLevel
+"""
+Enum and dataclass definitions to store information relating to basic suit vitals and attack definitions.
+
+SuitAttackType:      Enum for all the different types of suit attacks.
+SuitAttackAttribute: Dataclass that stores information about a specific suit's attacks. (damage, accuracy, etc.)
+SuitAttributes:      Dataclass that stores information regarding a suit's vitals. (HP, evasion, list of attacks, etc.) 
+"""
 
 
-def getSuitVitals(name, level = -1):
-    data = SuitAttributes[name]
-    if level == -1:
-        level = pickFromFreqList(data['freq'])
-    dict = {}
-    dict['level'] = getActualFromRelativeLevel(name, level)
-    if dict['level'] == 11:
-        level = 0
-    dict['hp'] = data['hp'][level]
-    dict['def'] = data['def'][level]
-    attacks = data['attacks']
-    alist = []
-    for a in attacks:
-        adict = {}
-        name = a[0]
-        adict['name'] = name
-        adict['animName'] = SuitAttacks[name][0]
-        adict['hp'] = a[1][level]
-        adict['acc'] = a[2][level]
-        adict['freq'] = a[3][level]
-        adict['group'] = SuitAttacks[name][1]
-        alist.append(adict)
+# Define enums for every suit attack.
+class SuitAttackType(IntEnum):
+    NO_ATTACK = auto()
+    AUDIT = auto()
+    BITE = auto()
+    BOUNCE_CHECK = auto()
+    BRAIN_STORM = auto()
+    BUZZ_WORD = auto()
+    CALCULATE = auto()
+    CANNED = auto()
+    CHOMP = auto()
+    CIGAR_SMOKE = auto()
+    CLIPON_TIE = auto()
+    CRUNCH = auto()
+    DEMOTION = auto()
+    DOWNSIZE = auto()
+    DOUBLE_TALK = auto()
+    EVICTION_NOTICE = auto()
+    EVIL_EYE = auto()
+    FILIBUSTER = auto()
+    FILL_WITH_LEAD = auto()
+    FINGER_WAG = auto()
+    FIRED = auto()
+    FIVE_O_CLOCK_SHADOW = auto()
+    FLOOD_THE_MARKET = auto()
+    FOUNTAIN_PEN = auto()
+    FREEZE_ASSETS = auto()
+    GAVEL = auto()
+    GLOWER_POWER = auto()
+    GUILT_TRIP = auto()
+    HALF_WINDSOR = auto()
+    HANG_UP = auto()
+    HEAD_SHRINK = auto()
+    HOT_AIR = auto()
+    JARGON = auto()
+    LEGALESE = auto()
+    LIQUIDATE = auto()
+    MARKET_CRASH = auto()
+    MUMBO_JUMBO = auto()
+    PARADIGM_SHIFT = auto()
+    PECKING_ORDER = auto()
+    PICK_POCKET = auto()
+    PINK_SLIP = auto()
+    PLAY_HARDBALL = auto()
+    POUND_KEY = auto()
+    POWER_TIE = auto()
+    POWER_TRIP = auto()
+    QUAKE = auto()
+    RAZZLE_DAZZLE = auto()
+    RED_TAPE = auto()
+    RE_ORG = auto()
+    RESTRAINING_ORDER = auto()
+    ROLODEX = auto()
+    RUBBER_STAMP = auto()
+    RUB_OUT = auto()
+    SACKED = auto()
+    SANDTRAP = auto()
+    SCHMOOZE = auto()
+    SHAKE = auto()
+    SHRED = auto()
+    SONG_AND_DANCE = auto()
+    SPIN = auto()
+    SYNERGY = auto()
+    TABULATE = auto()
+    TEE_OFF = auto()
+    THROW_BOOK = auto()
+    TREMOR = auto()
+    WATERCOOLER = auto()
+    WITHDRAWAL = auto()
+    WRITE_OFF = auto()
 
-    dict['attacks'] = alist
-    return dict
+    def getId(self) -> int:
+        return self.__index__()
+
+    @classmethod
+    def fromId(cls, _id: int):
+        for attackType in cls.__members__.values():
+            if attackType.getId() == _id:
+                return attackType
+
+        raise KeyError(f"Unknown suit attack type with ID: {_id}")
+
+    # Specifies if a certain attack is a group attack.
+    # If you add a group attack, don't forget to add it to this set.
+    # todo maybe a better way to do this with per enum definitions?
+    def isGroupAttack(self) -> bool:
+        return self in {self.GUILT_TRIP, self.PARADIGM_SHIFT, self.POWER_TRIP, self.QUAKE, self.SHAKE,
+                        self.SONG_AND_DANCE, self.SYNERGY, self.TREMOR}
 
 
-def pickSuitAttack(attacks, suitLevel):
-    attackNum = None
-    randNum = random.randint(0, 99)
-    notify.debug('pickSuitAttack: rolled %d' % randNum)
-    count = 0
-    index = 0
-    total = 0
+# Represents an attack definition for a suit.
+# Holds data such as attack damage, accuracy, and attack type that a suit can have per attack.
+# There is no error checking for not defining at least one level of attack damage for an attribute so we will always
+# assume that any data structure contained within this class is not empty.
+@dataclass
+class SuitAttackAttribute:
+    attack: SuitAttackType  # The type of attack.
+    damage: Dict[int, int]  # Actual suit level -> damage of an attack.
+    accuracy: int  # Base accuracy of this attack.
+    weight: int  # How much weight this attack should have. Higher number = Higher frequency.
 
-    for c in attacks:
-        if suitLevel > (len(c[3]) - 1):
-            total = total + c[3][(len(c[3]) - 1)]
-        else:
-            total = total + c[3][suitLevel]
+    # Return a tuple of the level and its corresponding damage for highest level registered for this attack.
+    def getStrongestAttackLevelAndDamage(self) -> Tuple[int, int]:
 
-    for c in attacks:
-        if suitLevel > (len(c[3]) - 1):
-            count = count + c[3][(len(c[3]) - 1)]
-        else:
-            count = count + c[3][suitLevel]
+        # Extract the highest level definition from the keys of levels.
+        highestLevel = max(self.damage.keys())
+        # Return this level and its damage.
+        return highestLevel, self.damage[highestLevel]
 
-        if randNum < count:
-            attackNum = index
-            notify.debug('picking attack %d' % attackNum)
-            break
-        index = index + 1
+    # Same as above, but do it for the lowest level registered.
+    def getWeakestAttackLevelAndDamage(self) -> Tuple[int, int]:
+        lowestLevel = min(self.damage.keys())
+        return lowestLevel, self.damage[lowestLevel]
 
-    configAttackName = simbase.config.GetString('attack-type', 'random')
-    if configAttackName == 'random':
-        return attackNum
-    elif configAttackName == 'sequence':
-        for i in range(len(attacks)):
-            if attacks[i] not in debugAttackSequence:
-                debugAttackSequence[attacks[i]] = 1
-                return i
+    # Given an amount of levels we are overflowed by, return how much extra damage an attack should do.
+    def __getOverflowDamage(self, overflow):
+        return overflow * 3  # Simply just 3 damage per level of overflow this suit is for a given attack definition.
 
-        return attackNum
-    else:
-        for i in range(len(attacks)):
-            if attacks[i][0] == configAttackName:
-                return i
+    # Given an amount of levels we are underflowed by, return how less damage an attack should do.
+    def __getUnderflowDamage(self, underflow):
+        return -underflow  # Simply just subtract one per level of underflow.
 
-        return attackNum
-    return
+    # Given an actual suit level, return how much damage this attack should do.
+    # If an attack is not defined for a specific level, we just find the strongest registered damage value
+    # for this attack and multiply it by 3 for every level we are above it.
+    def getBaseAttackDamage(self, suitLevel):
+
+        # Attempt to find the damage for this level. If it was defined, simply just return it.
+        damage = self.damage.get(suitLevel)
+        if damage is not None:
+            return damage
+
+        # This suit is either underleveled or overleveled. Dynamically generate how much damage this attack should do.
+        lowestLevel, lowestDamage = self.getWeakestAttackLevelAndDamage()
+        highestLevel, highestDamage = self.getStrongestAttackLevelAndDamage()
+
+        # Are we underleveled? If so return an underflow modified amount of damage that is no less than 1.
+        if suitLevel < lowestLevel:
+            levelDiff = lowestLevel - suitLevel
+            return max(1, lowestDamage + self.__getUnderflowDamage(levelDiff))
+
+        # We are overleveled. Return an overflow modified amount of damage.
+        levelDiff = suitLevel - highestLevel
+        return self.__getOverflowDamage(levelDiff) + self.__getOverflowDamage(levelDiff)
+
+    def isGroupAttack(self) -> bool:
+        return self.attack.isGroupAttack()
+
+    # When stored in dicts and sets, uniqueness of this element is determined solely by the attack key.
+    def __hash__(self):
+        return self.attack.value
 
 
-def getSuitAttack(suitName, suitLevel, attackNum = -1):
-    attackChoices = SuitAttributes[suitName]['attacks']
-    if attackNum == -1:
+@dataclass
+class SuitAttributes:
+    key: str  # The unique identifier of this suit. 'f' = flunky 'bf' = bottom feeder etc.
+    name: str  # The basic name of the suit for localizer purposes.
+    singular: str  # The singular representation of this suit for localizer purposes.
+    plural: str  # The plural representation of this suit.
+    tier: int  # The level this cog starts at minus one. Flunkies are tier 0 and Pencil Pushers are tier 1.
+
+    # The attacks this suit is allowed to perform, this will be used on init to generate a dict for easier access.
+    attacks: Set[SuitAttackAttribute]
+
+    # Generate a dict version of the attacks after initialization for easier access.
+    def __post_init__(self):
+        self.__attackMap: Dict[SuitAttackType, SuitAttackAttribute] = {attack.attack: attack for attack in self.attacks}
+
+    # The max HP this suit will have based on their actual level.
+    # Override in a child class if a certain suit with certain attributes should stray from the original formula.
+    def getBaseMaxHp(self, actualLevel: int) -> int:
+        return (actualLevel + 1) * (actualLevel + 2)
+
+    # The highest possible evasion (defense) stat a suit with these attributes is allowed to have.
+    # Referred to as "Cog Defense" in legacy toontown code.
+    # Override in a child class if a certain suit with certain attributes should be allowed to surpass this.
+    def getMaxEvasion(self) -> int:
+        return 55
+
+    # The evasion stat this suit will have based on their actual level. Referred to as "Cog Defense" in legacy TT code.
+    # Override in a child class if a certain suit with certain attributes should stray from the original formula.
+    def getBaseEvasion(self, actualLevel: int) -> int:
+        return min(actualLevel * 5, self.getMaxEvasion())
+
+    # Returns the minimum level this suit is allowed to be under normal circumstances.
+    # Suits do however have support to be any level you wish though.
+    def getMinLevel(self) -> int:
+        return self.tier + 1
+
+    # When suits are a higher level than their minimum level, they get accuracy boosts for their attacks.
+    # This method returns that boost that is applied on top of an attack's base accuracy.
+    def getAccuracyBoost(self, actualLevel: int) -> int:
+        levelsAboveMin = max(0, actualLevel - self.getMinLevel())
+        return levelsAboveMin * 5
+
+    # Given an attack key, return this suit's statistics for it. None if this suit cannot perform this attack.
+    def getAttack(self, key: SuitAttackType) -> Union[SuitAttackAttribute, None]:
+        return self.__attackMap.get(key)
+
+    # When stored in dicts and sets, uniqueness of this element is determined solely by the suit key.
+    def __hash__(self):
+        return self.key.__hash__()
+
+    # Deprecated, used to convert this attribute class to its old dictionary form to maintain backwards compatibility.
+    # Not guaranteed to be a faithful 1 to 1 recreation of the legacy info.
+    def legacy(self) -> Dict[str, Any]:
+        data = {}
+        data['name'] = self.name
+        data['singularname'] = self.singular
+        data['pluralname'] = self.plural
+        data['level'] = self.tier
+        minLevel = self.getMinLevel()
+        endLevel = minLevel + 5
+        data['hp'] = (self.getBaseMaxHp(level) for level in range(minLevel, endLevel+1))
+        data['def'] = (self.getBaseEvasion(level) for level in range(minLevel, endLevel+1))
+        data['freq'] = (50, 30, 10, 5, 5)
+        data['acc'] = (self.getAccuracyBoost(level) + 35 for level in range(minLevel, endLevel+1))
+
+        attacks = []
+        for attack in self.attacks:
+            split_name = attack.attack.name.split(' ')
+            for i, word in enumerate(split_name):
+                split_name[i] = word[0] + word[1:].lower()
+            name = ''.join(split_name)
+            attacks.append((
+                name,
+                (attack.getBaseAttackDamage(level) for level in range(minLevel, endLevel+1)),
+                (attack.accuracy + self.getAccuracyBoost(level) for level in range(minLevel, endLevel+1)),
+                (attack.weight for level in range(minLevel, endLevel+1)),
+            ))
+        data['attacks'] = attacks
+        return data
+
+
+# Tier 1 (0 in code) suits have a less aggressive defense formula than standard cogs.
+# Adjust the evasion method to reflect that.
+class T1SuitAttributes(SuitAttributes):
+
+    def getBaseEvasion(self, actualLevel: int) -> int:
+        if actualLevel <= 1:
+            return 0
+        if actualLevel <= 2:
+            return 3
+        return super().getBaseEvasion(actualLevel-2)
+
+
+__ALL_SUIT_ATTRIBUTES: Dict[str, SuitAttributes] = {}
+
+
+def __registerSuitAttributes(attributes: SuitAttributes):
+    if attributes.key in __ALL_SUIT_ATTRIBUTES:
+        raise ValueError(f"Already registered suit code: {attributes.key}. Check for duplicates.")
+
+    __ALL_SUIT_ATTRIBUTES[attributes.key] = attributes
+
+
+# Begin defining suit attributes for every cog in the game.
+__FLUNKY_ATTACKS = set()
+__FLUNKY_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.POUND_KEY,
+    damage={1: 2, 2: 2, 3: 3, 4: 4, 5: 6},
+    accuracy=75,
+    weight=50,
+))
+__FLUNKY_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SHRED,
+    damage={1: 3, 2: 4, 3: 5, 4: 6, 5: 7},
+    accuracy=50,
+    weight=30,
+))
+__FLUNKY_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.CLIPON_TIE,
+    damage={1: 1, 2: 1, 3: 2, 4: 2, 5: 3},
+    accuracy=75,
+    weight=20,
+))
+__FLUNKY: SuitAttributes = T1SuitAttributes(key='f', name=TTLocalizer.SuitFlunky, singular=TTLocalizer.SuitFlunkyS, plural=TTLocalizer.SuitFlunkyP, tier=0, attacks=__FLUNKY_ATTACKS)
+__registerSuitAttributes(__FLUNKY)
+
+__PENCIL_PUSHER_ATTACKS = set()
+__PENCIL_PUSHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FOUNTAIN_PEN,
+    damage={2: 2, 3: 3, 4: 4, 5: 6, 6: 9},
+    accuracy=75,
+    weight=20,
+))
+__PENCIL_PUSHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RUB_OUT,
+    damage={2: 4, 3: 5, 4: 6, 5: 8, 6: 12},
+    accuracy=75,
+    weight=20,
+))
+__PENCIL_PUSHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FINGER_WAG,
+    damage={2: 1, 3: 2, 4: 2, 5: 3, 6: 4},
+    accuracy=75,
+    weight=15,
+))
+__PENCIL_PUSHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.WRITE_OFF,
+    damage={2: 4, 3: 6, 4: 8, 5: 10, 6: 12},
+    accuracy=75,
+    weight=25,
+))
+__PENCIL_PUSHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FILL_WITH_LEAD,
+    damage={2: 3, 3: 4, 4: 5, 5: 6, 6: 7},
+    accuracy=75,
+    weight=20,
+))
+__PENCIL_PUSHER: SuitAttributes = SuitAttributes(key='p', name=TTLocalizer.SuitPencilPusher, singular=TTLocalizer.SuitPencilPusherS, plural=TTLocalizer.SuitPencilPusherP, tier=1, attacks=__PENCIL_PUSHER_ATTACKS)
+__registerSuitAttributes(__PENCIL_PUSHER)
+
+__YESMAN_ATTACKS = set()
+__YESMAN_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RUBBER_STAMP,
+    damage={3: 2, 4: 2, 5: 3, 6: 3, 7: 4},
+    accuracy=75,
+    weight=35,
+))
+__YESMAN_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RAZZLE_DAZZLE,
+    damage={3: 1, 4: 1, 5: 1, 6: 1, 7: 1},
+    accuracy=50,
+    weight=5,
+))
+__YESMAN_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SYNERGY,
+    damage={3: 4, 4: 5, 5: 6, 6: 7, 7: 8},
+    accuracy=50,
+    weight=25,
+))
+__YESMAN_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.TEE_OFF,
+    damage={3: 3, 4: 3, 5: 4, 6: 4, 7: 5},
+    accuracy=50,
+    weight=35,
+))
+__YESMAN: SuitAttributes = SuitAttributes(key='ym', name=TTLocalizer.SuitYesman, singular=TTLocalizer.SuitYesmanS, plural=TTLocalizer.SuitYesmanP, tier=2, attacks=__YESMAN_ATTACKS)
+__registerSuitAttributes(__YESMAN)
+
+__MICROMANAGER_ATTACKS = set()
+__MICROMANAGER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.DEMOTION,
+    damage={4: 6, 5: 8, 6: 12, 7: 15, 8: 18},
+    accuracy=50,
+    weight=30,
+))
+__MICROMANAGER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FINGER_WAG,
+    damage={4: 4, 5: 6, 6: 9, 7: 12, 8: 15},
+    accuracy=50,
+    weight=10,
+))
+__MICROMANAGER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FOUNTAIN_PEN,
+    damage={4: 3, 5: 4, 6: 6, 7: 8, 8: 10},
+    accuracy=50,
+    weight=15,
+))
+__MICROMANAGER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.BRAIN_STORM,
+    damage={4: 4, 5: 6, 6: 9, 7: 12, 8: 15},
+    accuracy=5,
+    weight=25,
+))
+__MICROMANAGER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.BUZZ_WORD,
+    damage={4: 4, 5: 6, 6: 9, 7: 12, 8: 15},
+    accuracy=50,
+    weight=20,
+))
+__MICROMANAGER: SuitAttributes = SuitAttributes(key='mm', name=TTLocalizer.SuitMicromanager, singular=TTLocalizer.SuitMicromanagerS, plural=TTLocalizer.SuitMicromanagerP, tier=3, attacks=__MICROMANAGER_ATTACKS)
+__registerSuitAttributes(__MICROMANAGER)
+
+__DOWNSIZER_ATTACKS = set()
+__DOWNSIZER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.CANNED,
+    damage={5: 5, 6: 6, 7: 8, 8: 10, 9: 12},
+    accuracy=60,
+    weight=25,
+))
+__DOWNSIZER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.DOWNSIZE,
+    damage={5: 8, 6: 9, 7: 11, 8: 13, 9: 15},
+    accuracy=50,
+    weight=35,
+))
+__DOWNSIZER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PINK_SLIP,
+    damage={5: 4, 6: 5, 7: 6, 8: 7, 9: 8},
+    accuracy=60,
+    weight=25,
+))
+__DOWNSIZER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SACKED,
+    damage={5: 5, 6: 6, 7: 7, 8: 8, 9: 9},
+    accuracy=50,
+    weight=15,
+))
+__DOWNSIZER: SuitAttributes = SuitAttributes(key='ds', name=TTLocalizer.SuitDownsizer, singular=TTLocalizer.SuitDownsizerS, plural=TTLocalizer.SuitDownsizerP, tier=4, attacks=__DOWNSIZER_ATTACKS)
+__registerSuitAttributes(__DOWNSIZER)
+
+__HEAD_HUNTER_ATTACKS = set()
+__HEAD_HUNTER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FOUNTAIN_PEN,
+    damage={6: 5, 7: 6, 8: 8, 9: 10, 10: 12},
+    accuracy=60,
+    weight=10,
+))
+__HEAD_HUNTER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.POWER_TRIP,
+    damage={6: 10, 7: 11, 8: 12, 9: 14, 10: 16},
+    accuracy=50,
+    weight=20,
+))
+__HEAD_HUNTER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.GLOWER_POWER,
+    damage={6: 8, 7: 9, 8: 10, 9: 11, 10: 12},
+    accuracy=75,
+    weight=15,
+))
+__HEAD_HUNTER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.HALF_WINDSOR,
+    damage={6: 8, 7: 10, 8: 12, 9: 14, 10: 16},
+    accuracy=60,
+    weight=15,
+))
+__HEAD_HUNTER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.HEAD_SHRINK,
+    damage={6: 13, 7: 15, 8: 17, 9: 19, 10: 21},
+    accuracy=65,
+    weight=30,
+))
+__HEAD_HUNTER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.ROLODEX,
+    damage={6: 10, 7: 12, 8: 14, 9: 16, 10: 18},
+    accuracy=60,
+    weight=10,
+))
+__HEAD_HUNTER: SuitAttributes = SuitAttributes(key='hh', name=TTLocalizer.SuitHeadHunter, singular=TTLocalizer.SuitHeadHunterS, plural=TTLocalizer.SuitHeadHunterP, tier=5, attacks=__HEAD_HUNTER_ATTACKS)
+__registerSuitAttributes(__HEAD_HUNTER)
+
+__CORPORATE_RAIDER_ATTACKS = set()
+__CORPORATE_RAIDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.CANNED,
+    damage={7: 10, 8: 11, 9: 12, 10: 14, 11: 16},
+    accuracy=80,
+    weight=20,
+))
+__CORPORATE_RAIDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.EVIL_EYE,
+    damage={7: 12, 8: 14, 9: 16, 10: 18, 11: 20},
+    accuracy=65,
+    weight=35,
+))
+__CORPORATE_RAIDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PLAY_HARDBALL,
+    damage={7: 12, 8: 15, 9: 18, 10: 20, 11: 22},
+    accuracy=55,
+    weight=30,
+))
+__CORPORATE_RAIDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.POWER_TIE,
+    damage={7: 10, 8: 12, 9: 14, 10: 16, 11: 18},
+    accuracy=65,
+    weight=15,
+))
+__CORPORATE_RAIDER: SuitAttributes = SuitAttributes(key='cr', name=TTLocalizer.SuitCorporateRaider, singular=TTLocalizer.SuitCorporateRaiderS, plural=TTLocalizer.SuitCorporateRaiderP, tier=6, attacks=__CORPORATE_RAIDER_ATTACKS)
+__registerSuitAttributes(__CORPORATE_RAIDER)
+
+__THE_BIG_CHEESE_ATTACKS = set()
+__THE_BIG_CHEESE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.CIGAR_SMOKE,
+    damage={8: 12, 9: 14, 10: 16, 11: 18, 12: 20},
+    accuracy=85,
+    weight=20,
+))
+__THE_BIG_CHEESE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FLOOD_THE_MARKET,
+    damage={8: 8, 9: 10, 10: 12, 11: 14, 12: 16},
+    accuracy=95,
+    weight=10,
+))
+__THE_BIG_CHEESE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.POWER_TRIP,
+    damage={8: 12, 9: 15, 10: 18, 11: 21, 12: 24},
+    accuracy=60,
+    weight=50,
+))
+__THE_BIG_CHEESE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.TEE_OFF,
+    damage={8: 16, 9: 18, 10: 20, 11: 22, 12: 24},
+    accuracy=70,
+    weight=20,
+))
+__THE_BIG_CHEESE: SuitAttributes = SuitAttributes(key='tbc', name=TTLocalizer.SuitTheBigCheese, singular=TTLocalizer.SuitTheBigCheeseS, plural=TTLocalizer.SuitTheBigCheeseP, tier=7, attacks=__THE_BIG_CHEESE_ATTACKS)
+__registerSuitAttributes(__THE_BIG_CHEESE)
+
+__COLD_CALLER_ATTACKS = set()
+__COLD_CALLER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FREEZE_ASSETS,
+    damage={1: 1, 2: 1, 3: 1, 4: 1, 5: 1},
+    accuracy=90,
+    weight=25,
+))
+__COLD_CALLER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.POUND_KEY,
+    damage={1: 2, 2: 2, 3: 3, 4: 4, 5: 5},
+    accuracy=75,
+    weight=25,
+))
+__COLD_CALLER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.DOUBLE_TALK,
+    damage={1: 2, 2: 3, 3: 4, 4: 6, 5: 8},
+    accuracy=50,
+    weight=25,
+))
+__COLD_CALLER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.HOT_AIR,
+    damage={1: 3, 2: 4, 3: 6, 4: 8, 5: 10},
+    accuracy=50,
+    weight=25,
+))
+__COLD_CALLER: SuitAttributes = T1SuitAttributes(key='cc', name=TTLocalizer.SuitColdCaller, singular=TTLocalizer.SuitColdCallerS, plural=TTLocalizer.SuitColdCallerP, tier=0, attacks=__COLD_CALLER_ATTACKS)
+__registerSuitAttributes(__COLD_CALLER)
+
+__TELEMARKETER_ATTACKS = set()
+__TELEMARKETER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.CLIPON_TIE,
+    damage={2: 2, 3: 2, 4: 3, 5: 3, 6: 4},
+    accuracy=75,
+    weight=15,
+))
+__TELEMARKETER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PICK_POCKET,
+    damage={2: 1, 3: 1, 4: 1, 5: 1, 6: 1},
+    accuracy=75,
+    weight=15,
+))
+__TELEMARKETER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.ROLODEX,
+    damage={2: 4, 3: 6, 4: 7, 5: 9, 6: 12},
+    accuracy=50,
+    weight=30,
+))
+__TELEMARKETER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.DOUBLE_TALK,
+    damage={2: 4, 3: 6, 4: 7, 5: 9, 6: 12},
+    accuracy=75,
+    weight=40,
+))
+__TELEMARKETER: SuitAttributes = SuitAttributes(key='tm', name=TTLocalizer.SuitTelemarketer, singular=TTLocalizer.SuitTelemarketerS, plural=TTLocalizer.SuitTelemarketerP, tier=1, attacks=__TELEMARKETER_ATTACKS)
+__registerSuitAttributes(__TELEMARKETER)
+
+__NAME_DROPPER_ATTACKS = set()
+__NAME_DROPPER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RAZZLE_DAZZLE,
+    damage={3: 4, 4: 5, 5: 6, 6: 9, 7: 12},
+    accuracy=75,
+    weight=30,
+))
+__NAME_DROPPER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.ROLODEX,
+    damage={3: 5, 4: 6, 5: 7, 6: 10, 7: 14},
+    accuracy=95,
+    weight=40,
+))
+__NAME_DROPPER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SYNERGY,
+    damage={3: 3, 4: 4, 5: 6, 6: 9, 7: 12},
+    accuracy=50,
+    weight=15,
+))
+__NAME_DROPPER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PICK_POCKET,
+    damage={3: 2, 4: 2, 5: 2, 6: 2, 7: 2},
+    accuracy=95,
+    weight=15,
+))
+__NAME_DROPPER: SuitAttributes = SuitAttributes(key='nd', name=TTLocalizer.SuitNameDropper, singular=TTLocalizer.SuitNameDropperS, plural=TTLocalizer.SuitNameDropperP, tier=2, attacks=__NAME_DROPPER_ATTACKS)
+__registerSuitAttributes(__NAME_DROPPER)
+
+__GLAD_HANDER_ATTACKS = set()
+__GLAD_HANDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RUBBER_STAMP,
+    damage={4: 4, 5: 3, 6: 3, 7: 2, 8: 1},
+    accuracy=90,
+    weight=5,
+))
+__GLAD_HANDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FOUNTAIN_PEN,
+    damage={4: 3, 5: 3, 6: 2, 7: 1, 8: 1},
+    accuracy=70,
+    weight=5,
+))
+__GLAD_HANDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FILIBUSTER,
+    damage={4: 4, 5: 6, 6: 9, 7: 12, 8: 15},
+    accuracy=30,
+    weight=45,
+))
+__GLAD_HANDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SCHMOOZE,
+    damage={4: 5, 5: 7, 6: 11, 7: 15, 8: 20},
+    accuracy=55,
+    weight=45,
+))
+__GLAD_HANDER: SuitAttributes = SuitAttributes(key='gh', name=TTLocalizer.SuitGladHander, singular=TTLocalizer.SuitGladHanderS, plural=TTLocalizer.SuitGladHanderP, tier=3, attacks=__GLAD_HANDER_ATTACKS)
+__registerSuitAttributes(__GLAD_HANDER)
+
+__MOVER__SHAKER_ATTACKS = set()
+__MOVER__SHAKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.BRAIN_STORM,
+    damage={5: 5, 6: 6, 7: 8, 8: 10, 9: 12},
+    accuracy=60,
+    weight=15,
+))
+__MOVER__SHAKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.HALF_WINDSOR,
+    damage={5: 6, 6: 9, 7: 11, 8: 13, 9: 16},
+    accuracy=50,
+    weight=20,
+))
+__MOVER__SHAKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.QUAKE,
+    damage={5: 10, 6: 12, 7: 14, 8: 16, 9: 18},
+    accuracy=60,
+    weight=20,
+))
+__MOVER__SHAKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SHAKE,
+    damage={5: 6, 6: 8, 7: 10, 8: 12, 9: 14},
+    accuracy=70,
+    weight=25,
+))
+__MOVER__SHAKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.TREMOR,
+    damage={5: 5, 6: 6, 7: 7, 8: 8, 9: 9},
+    accuracy=50,
+    weight=20,
+))
+__MOVER__SHAKER: SuitAttributes = SuitAttributes(key='ms', name=TTLocalizer.SuitMoverShaker, singular=TTLocalizer.SuitMoverShakerS, plural=TTLocalizer.SuitMoverShakerP, tier=4, attacks=__MOVER__SHAKER_ATTACKS)
+__registerSuitAttributes(__MOVER__SHAKER)
+
+__TWOFACE_ATTACKS = set()
+__TWOFACE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.EVIL_EYE,
+    damage={6: 10, 7: 12, 8: 14, 9: 16, 10: 18},
+    accuracy=60,
+    weight=30,
+))
+__TWOFACE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.HANG_UP,
+    damage={6: 7, 7: 8, 8: 10, 9: 12, 10: 13},
+    accuracy=50,
+    weight=15,
+))
+__TWOFACE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RAZZLE_DAZZLE,
+    damage={6: 8, 7: 10, 8: 12, 9: 14, 10: 16},
+    accuracy=60,
+    weight=30,
+))
+__TWOFACE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RED_TAPE,
+    damage={6: 6, 7: 7, 8: 8, 9: 9, 10: 10},
+    accuracy=60,
+    weight=25,
+))
+__TWOFACE: SuitAttributes = SuitAttributes(key='tf', name=TTLocalizer.SuitTwoFace, singular=TTLocalizer.SuitTwoFaceS, plural=TTLocalizer.SuitTwoFaceP, tier=5, attacks=__TWOFACE_ATTACKS)
+__registerSuitAttributes(__TWOFACE)
+
+__THE_MINGLER_ATTACKS = set()
+__THE_MINGLER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.BUZZ_WORD,
+    damage={7: 10, 8: 11, 9: 13, 10: 15, 11: 16},
+    accuracy=60,
+    weight=25,
+))
+__THE_MINGLER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PARADIGM_SHIFT,
+    damage={7: 10, 8: 12, 9: 15, 10: 18, 11: 21},
+    accuracy=65,
+    weight=25,
+))
+__THE_MINGLER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SCHMOOZE,
+    damage={7: 7, 8: 8, 9: 12, 10: 15, 11: 16},
+    accuracy=55,
+    weight=35,
+))
+__THE_MINGLER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.TEE_OFF,
+    damage={7: 8, 8: 9, 9: 10, 10: 11, 11: 12},
+    accuracy=70,
+    weight=15,
+))
+__THE_MINGLER: SuitAttributes = SuitAttributes(key='m', name=TTLocalizer.SuitTheMingler, singular=TTLocalizer.SuitTheMinglerS, plural=TTLocalizer.SuitTheMinglerP, tier=6, attacks=__THE_MINGLER_ATTACKS)
+__registerSuitAttributes(__THE_MINGLER)
+
+__MR_HOLLYWOOD_ATTACKS = set()
+__MR_HOLLYWOOD_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SONG_AND_DANCE,
+    damage={8: 12, 9: 14, 10: 16, 11: 18, 12: 20},
+    accuracy=50,
+    weight=50,
+))
+__MR_HOLLYWOOD_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RAZZLE_DAZZLE,
+    damage={8: 14, 9: 16, 10: 18, 11: 21, 12: 24},
+    accuracy=75,
+    weight=50,
+))
+__MR_HOLLYWOOD: SuitAttributes = SuitAttributes(key='mh', name=TTLocalizer.SuitMrHollywood, singular=TTLocalizer.SuitMrHollywoodS, plural=TTLocalizer.SuitMrHollywoodP, tier=7, attacks=__MR_HOLLYWOOD_ATTACKS)
+__registerSuitAttributes(__MR_HOLLYWOOD)
+
+__SHORT_CHANGE_ATTACKS = set()
+__SHORT_CHANGE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.WATERCOOLER,
+    damage={1: 2, 2: 2, 3: 3, 4: 4, 5: 6},
+    accuracy=50,
+    weight=20,
+))
+__SHORT_CHANGE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.BOUNCE_CHECK,
+    damage={1: 3, 2: 5, 3: 7, 4: 9, 5: 11},
+    accuracy=75,
+    weight=15,
+))
+__SHORT_CHANGE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.CLIPON_TIE,
+    damage={1: 1, 2: 1, 3: 2, 4: 2, 5: 3},
+    accuracy=50,
+    weight=25,
+))
+__SHORT_CHANGE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PICK_POCKET,
+    damage={1: 2, 2: 2, 3: 3, 4: 4, 5: 6},
+    accuracy=95,
+    weight=40,
+))
+__SHORT_CHANGE: SuitAttributes = T1SuitAttributes(key='sc', name=TTLocalizer.SuitShortChange, singular=TTLocalizer.SuitShortChangeS, plural=TTLocalizer.SuitShortChangeP, tier=0, attacks=__SHORT_CHANGE_ATTACKS)
+__registerSuitAttributes(__SHORT_CHANGE)
+
+__PENNY_PINCHER_ATTACKS = set()
+__PENNY_PINCHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.BOUNCE_CHECK,
+    damage={2: 4, 3: 5, 4: 6, 5: 8, 6: 12},
+    accuracy=75,
+    weight=45,
+))
+__PENNY_PINCHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FREEZE_ASSETS,
+    damage={2: 2, 3: 3, 4: 4, 5: 6, 6: 9},
+    accuracy=75,
+    weight=20,
+))
+__PENNY_PINCHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FINGER_WAG,
+    damage={2: 1, 3: 2, 4: 3, 5: 4, 6: 6},
+    accuracy=50,
+    weight=35,
+))
+__PENNY_PINCHER: SuitAttributes = SuitAttributes(key='pp', name=TTLocalizer.SuitPennyPincher, singular=TTLocalizer.SuitPennyPincherS, plural=TTLocalizer.SuitPennyPincherP, tier=1, attacks=__PENNY_PINCHER_ATTACKS)
+__registerSuitAttributes(__PENNY_PINCHER)
+
+__TIGHTWAD_ATTACKS = set()
+__TIGHTWAD_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FIRED,
+    damage={3: 3, 4: 4, 5: 5, 6: 5, 7: 6},
+    accuracy=75,
+    weight=5,
+))
+__TIGHTWAD_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.GLOWER_POWER,
+    damage={3: 3, 4: 4, 5: 6, 6: 9, 7: 12},
+    accuracy=95,
+    weight=30,
+))
+__TIGHTWAD_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FINGER_WAG,
+    damage={3: 3, 4: 3, 5: 4, 6: 4, 7: 5},
+    accuracy=75,
+    weight=5,
+))
+__TIGHTWAD_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FREEZE_ASSETS,
+    damage={3: 3, 4: 4, 5: 6, 6: 9, 7: 12},
+    accuracy=75,
+    weight=30,
+))
+__TIGHTWAD_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.BOUNCE_CHECK,
+    damage={3: 5, 4: 6, 5: 9, 6: 13, 7: 18},
+    accuracy=75,
+    weight=30,
+))
+__TIGHTWAD: SuitAttributes = SuitAttributes(key='tw', name=TTLocalizer.SuitTightwad, singular=TTLocalizer.SuitTightwadS, plural=TTLocalizer.SuitTightwadP, tier=2, attacks=__TIGHTWAD_ATTACKS)
+__registerSuitAttributes(__TIGHTWAD)
+
+__BEAN_COUNTER_ATTACKS = set()
+__BEAN_COUNTER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.AUDIT,
+    damage={4: 4, 5: 6, 6: 9, 7: 12, 8: 15},
+    accuracy=95,
+    weight=20,
+))
+__BEAN_COUNTER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.CALCULATE,
+    damage={4: 4, 5: 6, 6: 9, 7: 12, 8: 15},
+    accuracy=75,
+    weight=25,
+))
+__BEAN_COUNTER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.TABULATE,
+    damage={4: 4, 5: 6, 6: 9, 7: 12, 8: 15},
+    accuracy=75,
+    weight=25,
+))
+__BEAN_COUNTER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.WRITE_OFF,
+    damage={4: 4, 5: 6, 6: 9, 7: 12, 8: 15},
+    accuracy=95,
+    weight=30,
+))
+__BEAN_COUNTER: SuitAttributes = SuitAttributes(key='bc', name=TTLocalizer.SuitBeanCounter, singular=TTLocalizer.SuitBeanCounterS, plural=TTLocalizer.SuitBeanCounterP, tier=3, attacks=__BEAN_COUNTER_ATTACKS)
+__registerSuitAttributes(__BEAN_COUNTER)
+
+__NUMBER_CRUNCHER_ATTACKS = set()
+__NUMBER_CRUNCHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.AUDIT,
+    damage={5: 5, 6: 6, 7: 8, 8: 10, 9: 12},
+    accuracy=60,
+    weight=10,
+))
+__NUMBER_CRUNCHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.CALCULATE,
+    damage={5: 6, 6: 7, 7: 9, 8: 11, 9: 13},
+    accuracy=50,
+    weight=25,
+))
+__NUMBER_CRUNCHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SYNERGY,
+    damage={5: 6, 6: 7, 7: 8, 8: 9, 9: 10},
+    accuracy=50,
+    weight=20,
+))
+__NUMBER_CRUNCHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.CRUNCH,
+    damage={5: 8, 6: 9, 7: 11, 8: 13, 9: 15},
+    accuracy=60,
+    weight=30,
+))
+__NUMBER_CRUNCHER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.TABULATE,
+    damage={5: 5, 6: 6, 7: 7, 8: 8, 9: 9},
+    accuracy=50,
+    weight=15,
+))
+__NUMBER_CRUNCHER: SuitAttributes = SuitAttributes(key='nc', name=TTLocalizer.SuitNumberCruncher, singular=TTLocalizer.SuitNumberCruncherS, plural=TTLocalizer.SuitNumberCruncherP, tier=4, attacks=__NUMBER_CRUNCHER_ATTACKS)
+__registerSuitAttributes(__NUMBER_CRUNCHER)
+
+__MONEY_BAGS_ATTACKS = set()
+__MONEY_BAGS_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.LIQUIDATE,
+    damage={6: 10, 7: 12, 8: 14, 9: 16, 10: 18},
+    accuracy=60,
+    weight=30,
+))
+__MONEY_BAGS_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.MARKET_CRASH,
+    damage={6: 8, 7: 10, 8: 12, 9: 14, 10: 16},
+    accuracy=60,
+    weight=45,
+))
+__MONEY_BAGS_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.POWER_TIE,
+    damage={6: 6, 7: 7, 8: 8, 9: 9, 10: 10},
+    accuracy=60,
+    weight=25,
+))
+__MONEY_BAGS: SuitAttributes = SuitAttributes(key='mb', name=TTLocalizer.SuitMoneyBags, singular=TTLocalizer.SuitMoneyBagsS, plural=TTLocalizer.SuitMoneyBagsP, tier=5, attacks=__MONEY_BAGS_ATTACKS)
+__registerSuitAttributes(__MONEY_BAGS)
+
+__LOAN_SHARK_ATTACKS = set()
+__LOAN_SHARK_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.BITE,
+    damage={7: 10, 8: 11, 9: 13, 10: 15, 11: 16},
+    accuracy=60,
+    weight=30,
+))
+__LOAN_SHARK_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.CHOMP,
+    damage={7: 13, 8: 15, 9: 17, 10: 19, 11: 21},
+    accuracy=60,
+    weight=35,
+))
+__LOAN_SHARK_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PLAY_HARDBALL,
+    damage={7: 9, 8: 11, 9: 12, 10: 13, 11: 15},
+    accuracy=55,
+    weight=20,
+))
+__LOAN_SHARK_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.WRITE_OFF,
+    damage={7: 6, 8: 8, 9: 10, 10: 12, 11: 14},
+    accuracy=70,
+    weight=15,
+))
+__LOAN_SHARK: SuitAttributes = SuitAttributes(key='ls', name=TTLocalizer.SuitLoanShark, singular=TTLocalizer.SuitLoanSharkS, plural=TTLocalizer.SuitLoanSharkP, tier=6, attacks=__LOAN_SHARK_ATTACKS)
+__registerSuitAttributes(__LOAN_SHARK)
+
+__ROBBER_BARON_ATTACKS = set()
+__ROBBER_BARON_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SYNERGY,
+    damage={8: 12, 9: 15, 10: 18, 11: 21, 12: 24},
+    accuracy=60,
+    weight=50,
+))
+__ROBBER_BARON_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.TEE_OFF,
+    damage={8: 10, 9: 12, 10: 14, 11: 16, 12: 18},
+    accuracy=60,
+    weight=50,
+))
+__ROBBER_BARON: SuitAttributes = SuitAttributes(key='rb', name=TTLocalizer.SuitRobberBaron, singular=TTLocalizer.SuitRobberBaronS, plural=TTLocalizer.SuitRobberBaronP, tier=7, attacks=__ROBBER_BARON_ATTACKS)
+__registerSuitAttributes(__ROBBER_BARON)
+
+__BOTTOM_FEEDER_ATTACKS = set()
+__BOTTOM_FEEDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RUBBER_STAMP,
+    damage={1: 2, 2: 3, 3: 4, 4: 5, 5: 6},
+    accuracy=75,
+    weight=20,
+))
+__BOTTOM_FEEDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SHRED,
+    damage={1: 2, 2: 4, 3: 6, 4: 8, 5: 10},
+    accuracy=50,
+    weight=20,
+))
+__BOTTOM_FEEDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.WATERCOOLER,
+    damage={1: 3, 2: 4, 3: 5, 4: 6, 5: 7},
+    accuracy=95,
+    weight=10,
+))
+__BOTTOM_FEEDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PICK_POCKET,
+    damage={1: 1, 2: 1, 3: 2, 4: 2, 5: 3},
+    accuracy=25,
+    weight=50,
+))
+__BOTTOM_FEEDER: SuitAttributes = T1SuitAttributes(key='bf', name=TTLocalizer.SuitBottomFeeder, singular=TTLocalizer.SuitBottomFeederS, plural=TTLocalizer.SuitBottomFeederP, tier=0, attacks=__BOTTOM_FEEDER_ATTACKS)
+__registerSuitAttributes(__BOTTOM_FEEDER)
+
+__BLOODSUCKER_ATTACKS = set()
+__BLOODSUCKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.EVICTION_NOTICE,
+    damage={2: 1, 3: 2, 4: 3, 5: 3, 6: 4},
+    accuracy=75,
+    weight=20,
+))
+__BLOODSUCKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RED_TAPE,
+    damage={2: 2, 3: 3, 4: 4, 5: 6, 6: 9},
+    accuracy=75,
+    weight=20,
+))
+__BLOODSUCKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.WITHDRAWAL,
+    damage={2: 6, 3: 8, 4: 10, 5: 12, 6: 14},
+    accuracy=95,
+    weight=10,
+))
+__BLOODSUCKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.LIQUIDATE,
+    damage={2: 2, 3: 3, 4: 4, 5: 6, 6: 9},
+    accuracy=50,
+    weight=50,
+))
+__BLOODSUCKER: SuitAttributes = SuitAttributes(key='b', name=TTLocalizer.SuitBloodsucker, singular=TTLocalizer.SuitBloodsuckerS, plural=TTLocalizer.SuitBloodsuckerP, tier=1, attacks=__BLOODSUCKER_ATTACKS)
+__registerSuitAttributes(__BLOODSUCKER)
+
+__DOUBLE_TALKER_ATTACKS = set()
+__DOUBLE_TALKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RUBBER_STAMP,
+    damage={3: 1, 4: 1, 5: 1, 6: 1, 7: 1},
+    accuracy=50,
+    weight=5,
+))
+__DOUBLE_TALKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.BOUNCE_CHECK,
+    damage={3: 1, 4: 1, 5: 1, 6: 1, 7: 1},
+    accuracy=50,
+    weight=5,
+))
+__DOUBLE_TALKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.BUZZ_WORD,
+    damage={3: 1, 4: 2, 5: 3, 6: 5, 7: 6},
+    accuracy=50,
+    weight=20,
+))
+__DOUBLE_TALKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.DOUBLE_TALK,
+    damage={3: 6, 4: 6, 5: 9, 6: 13, 7: 18},
+    accuracy=50,
+    weight=25,
+))
+__DOUBLE_TALKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.JARGON,
+    damage={3: 3, 4: 4, 5: 6, 6: 9, 7: 12},
+    accuracy=50,
+    weight=25,
+))
+__DOUBLE_TALKER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.MUMBO_JUMBO,
+    damage={3: 3, 4: 4, 5: 6, 6: 9, 7: 12},
+    accuracy=50,
+    weight=20,
+))
+__DOUBLE_TALKER: SuitAttributes = SuitAttributes(key='dt', name=TTLocalizer.SuitDoubleTalker, singular=TTLocalizer.SuitDoubleTalkerS, plural=TTLocalizer.SuitDoubleTalkerP, tier=2, attacks=__DOUBLE_TALKER_ATTACKS)
+__registerSuitAttributes(__DOUBLE_TALKER)
+
+__AMBULANCE_CHASER_ATTACKS = set()
+__AMBULANCE_CHASER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SHAKE,
+    damage={4: 4, 5: 6, 6: 9, 7: 12, 8: 15},
+    accuracy=75,
+    weight=15,
+))
+__AMBULANCE_CHASER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RED_TAPE,
+    damage={4: 6, 5: 8, 6: 12, 7: 15, 8: 19},
+    accuracy=75,
+    weight=30,
+))
+__AMBULANCE_CHASER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.ROLODEX,
+    damage={4: 3, 5: 4, 6: 5, 7: 6, 8: 7},
+    accuracy=75,
+    weight=20,
+))
+__AMBULANCE_CHASER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.HANG_UP,
+    damage={4: 2, 5: 3, 6: 4, 7: 5, 8: 6},
+    accuracy=75,
+    weight=35,
+))
+__AMBULANCE_CHASER: SuitAttributes = SuitAttributes(key='ac', name=TTLocalizer.SuitAmbulanceChaser, singular=TTLocalizer.SuitAmbulanceChaserS, plural=TTLocalizer.SuitAmbulanceChaserP, tier=3, attacks=__AMBULANCE_CHASER_ATTACKS)
+__registerSuitAttributes(__AMBULANCE_CHASER)
+
+__BACK_STABBER_ATTACKS = set()
+__BACK_STABBER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.GUILT_TRIP,
+    damage={5: 8, 6: 11, 7: 13, 8: 15, 9: 18},
+    accuracy=60,
+    weight=40,
+))
+__BACK_STABBER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.RESTRAINING_ORDER,
+    damage={5: 6, 6: 7, 7: 9, 8: 11, 9: 13},
+    accuracy=50,
+    weight=25,
+))
+__BACK_STABBER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FINGER_WAG,
+    damage={5: 5, 6: 6, 7: 7, 8: 8, 9: 9},
+    accuracy=50,
+    weight=35,
+))
+__BACK_STABBER: SuitAttributes = SuitAttributes(key='bs', name=TTLocalizer.SuitBackStabber, singular=TTLocalizer.SuitBackStabberS, plural=TTLocalizer.SuitBackStabberP, tier=4, attacks=__BACK_STABBER_ATTACKS)
+__registerSuitAttributes(__BACK_STABBER)
+
+__SPIN_DOCTOR_ATTACKS = set()
+__SPIN_DOCTOR_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PARADIGM_SHIFT,
+    damage={6: 9, 7: 10, 8: 13, 9: 16, 10: 17},
+    accuracy=60,
+    weight=30,
+))
+__SPIN_DOCTOR_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.QUAKE,
+    damage={6: 8, 7: 10, 8: 12, 9: 14, 10: 16},
+    accuracy=60,
+    weight=20,
+))
+__SPIN_DOCTOR_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.SPIN,
+    damage={6: 10, 7: 12, 8: 15, 9: 18, 10: 20},
+    accuracy=70,
+    weight=35,
+))
+__SPIN_DOCTOR_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.WRITE_OFF,
+    damage={6: 6, 7: 7, 8: 8, 9: 9, 10: 10},
+    accuracy=60,
+    weight=15,
+))
+__SPIN_DOCTOR: SuitAttributes = SuitAttributes(key='sd', name=TTLocalizer.SuitSpinDoctor, singular=TTLocalizer.SuitSpinDoctorS, plural=TTLocalizer.SuitSpinDoctorP, tier=5, attacks=__SPIN_DOCTOR_ATTACKS)
+__registerSuitAttributes(__SPIN_DOCTOR)
+
+__LEGAL_EAGLE_ATTACKS = set()
+__LEGAL_EAGLE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.EVIL_EYE,
+    damage={7: 10, 8: 11, 9: 13, 10: 15, 11: 16},
+    accuracy=60,
+    weight=20,
+))
+__LEGAL_EAGLE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.JARGON,
+    damage={7: 7, 8: 9, 9: 11, 10: 13, 11: 15},
+    accuracy=60,
+    weight=15,
+))
+__LEGAL_EAGLE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.LEGALESE,
+    damage={7: 11, 8: 13, 9: 16, 10: 19, 11: 21},
+    accuracy=55,
+    weight=35,
+))
+__LEGAL_EAGLE_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PECKING_ORDER,
+    damage={7: 12, 8: 15, 9: 17, 10: 19, 11: 22},
+    accuracy=70,
+    weight=30,
+))
+__LEGAL_EAGLE: SuitAttributes = SuitAttributes(key='le', name=TTLocalizer.SuitLegalEagle, singular=TTLocalizer.SuitLegalEagleS, plural=TTLocalizer.SuitLegalEagleP, tier=6, attacks=__LEGAL_EAGLE_ATTACKS)
+__registerSuitAttributes(__LEGAL_EAGLE)
+
+__BIG_WIG_ATTACKS = set()
+__BIG_WIG_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.GUILT_TRIP,
+    damage={8: 15, 9: 17, 10: 19, 11: 21, 12: 24},
+    accuracy=60,
+    weight=50,
+))
+__BIG_WIG_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.THROW_BOOK,
+    damage={8: 16, 9: 18, 10: 20, 11: 22, 12: 24},
+    accuracy=80,
+    weight=50,
+))
+__BIG_WIG: SuitAttributes = SuitAttributes(key='bw', name=TTLocalizer.SuitBigWig, singular=TTLocalizer.SuitBigWigS, plural=TTLocalizer.SuitBigWigP, tier=7, attacks=__BIG_WIG_ATTACKS)
+__registerSuitAttributes(__BIG_WIG)
+
+
+"""
+Helper methods for retrieving suit vitals and attack information.
+"""
+
+
+def getSuitAttributes(suitCode: str) -> SuitAttributes:
+    return __ALL_SUIT_ATTRIBUTES.get(suitCode)
+
+
+def getSuitAttacks(suitCode: str) -> Set[SuitAttackAttribute]:
+    return getSuitAttributes(suitCode).attacks
+
+
+# Given a set of SuitAttackAttribute instances, return a SuitAttackType.
+# Use given weights in the set of attack attributes to randomly select one.
+def pickSuitAttack(attacks: Set[SuitAttackAttribute], suitLevel: int) -> SuitAttackType:
+
+    # todo this can 100% be optimized, but for now we just generate a weight map.
+    choices = []
+
+    # Loop through every attack
+    for attack in attacks:
+        # Add as many instances of the attack as the weight specifies. Higher weight = more chance to pick.
+        choices.extend([attack.attack for _ in range(attack.weight)])
+
+    debugWeightMap = {attack.attack.name: attack.weight for attack in attacks}
+    notify.debug(f"pickSuitAttack() - Picking attack from {len(attacks)} options. Weight map: {debugWeightMap}")
+    # Now pick a random one.
+    return random.choice(choices)
+
+
+# Given a suit attack type and the suits info, return an ugly dictionary representing the data within it.
+# todo this is gross stop using cringe dicts
+def getSuitAttack(suitName: str, suitLevel: int, attackType: SuitAttackType = SuitAttackType.NO_ATTACK):
+
+    # If we passed in no attack or didn't specify one then generate a new one.
+    attackChoices = getSuitAttacks(suitName)
+    if attackType == SuitAttackType.NO_ATTACK:
         notify.debug('getSuitAttack: picking attacking for %s' % suitName)
-        attackNum = pickSuitAttack(attackChoices, suitLevel)
-    attack = attackChoices[attackNum]
-    adict = {}
-    adict['suitName'] = suitName
-    name = attack[0]
+        attackType = pickSuitAttack(attackChoices, suitLevel)
+
+    suitAttributes: SuitAttributes = getSuitAttributes(suitName)
+    attack: SuitAttackAttribute = suitAttributes.getAttack(attackType)
+    notify.debug(f'getSuitAttack: querying attack data for suit {suitName} for attackType: {attackType.name}')
+    adict = {'suitName': suitName}
+    name = attack.attack.name
     adict['name'] = name
-    adict['id'] = list(SuitAttacks.keys()).index(name)
-    adict['animName'] = SuitAttacks[name][0]
-
-    if suitLevel > (len(attack[1]) - 1):
-        adict['hp'] = math.ceil(attack[1][(len(attack[1]) - 1)] * (1.08 ** (suitLevel - len(attack[1]))))
-    else:
-        adict['hp'] = attack[1][suitLevel]
-
-    if suitLevel > (len(attack[2]) - 1):
-        adict['acc'] = attack[2][(len(attack[2]) - 1)]
-    else:
-        adict['acc'] = attack[2][suitLevel]
-
-    if suitLevel > (len(attack[3]) - 1):
-        adict['freq'] = attack[3][(len(attack[3]) - 1)]
-    else:
-        adict['freq'] = attack[3][suitLevel]
-
-    adict['group'] = SuitAttacks[name][1]
+    adict['id'] = attack.attack.getId()
+    adict['animName'] = __SuitAttacksToDefaultAnimation.get(attackType, 'magic1')
+    adict['hp'] = attack.getBaseAttackDamage(suitLevel)
+    adict['acc'] = suitAttributes.getAccuracyBoost(suitLevel) + attack.accuracy
+    adict['freq'] = attack.weight
+    adict['group'] = ATK_TGT_GROUP if attack.isGroupAttack() else ATK_TGT_SINGLE  # TODO refactor
     return adict
 
 
-MAX_SUIT_DEFENSE = 55
+# Used to retrieve a list of all registered suits in the game. This is a fresh mutable list containing unique keys.
+# For example, ['f', 'pp', 'ym', ...]
+def getAllRegisteredSuits() -> List[str]:
+    return list(__ALL_SUIT_ATTRIBUTES.keys())
 
 
-# Formatted by Jake S. - You're welcome!
-SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
-       'singularname': TTLocalizer.SuitFlunkyS, # cogs singular name, for tasks
-       'pluralname': TTLocalizer.SuitFlunkyP, # cogs plural name, for tasks
-       'level': 0, # level the cog starts at (level - 1)
-       'hp':(6,12,20,30,42), # cogs hp (more numbers, more levels)
-       'def':(2,5,10,12,15), # cogs defence (more numbers, more levels)
-       'freq':(50,30,10,5,5), # cogs level frequency
-       'acc':(35,40,45,50,55), # cogs accuracy (more numbers, more levels)
-       'attacks':
-                (('PoundKey',
-                    (2,2,3,4,6), # attack damage
-                    (75,75,80,80,90), # attack accuracy
-                    (30,35,40,45,50)), # move frequency (all move frequency of each attack must add up to 100, for example 30,10,60 from level 1 of each attack)
-                ('Shred',
-                    (3,4,5,6,7),
-                    (50,55,60,65,70),
-                    (10,15,20,25,30)),
-                ('ClipOnTie',
-                    (1,1,2,2,3),
-                    (75,80,85,90,95),
-                    (60,50,40,30,20)))},
- 'p': {'name': TTLocalizer.SuitPencilPusher,
-       'singularname': TTLocalizer.SuitPencilPusherS,
-       'pluralname': TTLocalizer.SuitPencilPusherP,
-       'level': 1,
-       'hp':(12,20,30,42,56),
-       'def':(5,10,15,20,25),
-       'freq':(50,30,10,5,5),
-       'acc':(45,50,55,60,65),
-       'attacks':
-                (('FountainPen',
-                    (2,3,4,6,9),
-                    (75,75,75,75,75),
-                    (20,20,20,20,20)),
-                ('RubOut',
-                    (4,5,6,8,12),
-                    (75,75,75,75,75),
-                    (20,20,20,20,20)),
-                ('FingerWag',
-                    (1,2,2,3,4),
-                    (75,75,75,75,75),
-                    (35,30,25,20,15)),
-                ('WriteOff',
-                    (4,6,8,10,12),
-                    (75,75,75,75,75),
-                    (5,10,15,20,25)),
-                ('FillWithLead',
-                    (3,4,5,6,7),
-                    (75,75,75,75,75),
-                    (20,20,20,20,20)))},
- 'ym': {'name': TTLocalizer.SuitYesman,
-        'singularname': TTLocalizer.SuitYesmanS,
-        'pluralname': TTLocalizer.SuitYesmanP,
-        'level': 2,
-        'hp':(20,30,42,56,72),
-        'def':(10,15,20,25,30),
-        'freq':(50,30,10,5,5),
-        'acc':(65,70,75,80,85),
-        'attacks':
-                (('RubberStamp',
-                    (2,2,3,3,4),
-                    (75,75,75,75,75),
-                    (35,35,35,35,35)),
-                ('RazzleDazzle',
-                    (1,1,1,1,1),
-                    (50,50,50,50,50),
-                    (25,20,15,10,5)),
-                ('Synergy',
-                    (4,5,6,7,8),
-                    (50,60,70,80,90),
-                    (5,10,15,20,25)),
-                ('TeeOff',
-                    (3,3,4,4,5),
-                    (50,60,70,80,90),
-                    (35,35,35,35,35)))},
- 'mm': {'name': TTLocalizer.SuitMicromanager,
-        'singularname': TTLocalizer.SuitMicromanagerS,
-        'pluralname': TTLocalizer.SuitMicromanagerP,
-        'level': 3,
-        'hp':(30,42,56,72,90),
-        'def':(15,20,25,30,35),
-        'freq':(50,30,10,5,5),
-        'acc':(70,75,80,82,85),
-        'attacks':
-                (('Demotion',
-                    (6,8,12,15,18),
-                    (50,60,70,80,90),
-                    (30,30,30,30,30)),
-                ('FingerWag',
-                    (4,6,9,12,15),
-                    (50,60,70,80,90),
-                    (10,10,10,10,10)),
-                ('FountainPen',
-                    (3,4,6,8,10),
-                    (50,60,70,80,90),
-                    (15,15,15,15,15)),
-                ('BrainStorm',
-                    (4,6,9,12,15),
-                    (5,5,5,5,5),
-                    (25,25,25,25,25)),
-                ('BuzzWord',
-                    (4,6,9,12,15),
-                    (50,60,70,80,90),
-                    (20,20,20,20,20)))},
- 'ds': {'name': TTLocalizer.SuitDownsizer,
-        'singularname': TTLocalizer.SuitDownsizerS,
-        'pluralname': TTLocalizer.SuitDownsizerP,
-        'level': 4,
-        'hp':(42,56,72,90,110),
-        'def':(20,25,30,35,40),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('Canned',
-                    (5,6,8,10,12),
-                    (60,75,80,85,90),
-                    (25,25,25,25,25)),
-                ('Downsize',
-                    (8,9,11,13,15),
-                    (50,65,70,75,80),
-                    (35,35,35,35,35)),
-                ('PinkSlip',
-                    (4,5,6,7,8),
-                    (60,65,75,80,85),
-                    (25,25,25,25,25)),
-                ('Sacked',
-                    (5,6,7,8,9),
-                    (50,50,50,50,50),
-                    (15,15,15,15,15)))},
- 'hh': {'name': TTLocalizer.SuitHeadHunter,
-        'singularname': TTLocalizer.SuitHeadHunterS,
-        'pluralname': TTLocalizer.SuitHeadHunterP,
-        'level': 5,
-        'hp':(56,72,90,110,132),
-        'def':(25,30,35,40,45),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('FountainPen',
-                    (5, 6, 8, 10, 12),
-                    (60, 75, 80, 85, 90),
-                    (10, 10, 10, 10, 10)),
-                 ('PowerTrip',
-                  (10, 11, 12, 14, 16),
-                  (50, 50, 60, 60, 70),
-                  (20, 20, 20, 20, 20)),
-                ('GlowerPower',
-                    (8, 9, 10, 11, 12),
-                    (75, 80, 85, 90, 95),
-                    (15, 15, 15, 15, 15)),
-                ('HalfWindsor',
-                    (8, 10, 12, 14, 16),
-                    (60, 65, 70, 75, 80),
-                    (15, 15, 15, 15, 15)),
-                ('HeadShrink',
-                    (13, 15, 17, 19, 21),
-                    (65, 75, 80, 85, 95),
-                    (30, 30, 30, 30, 30)),
-                ('Rolodex',
-                    (10, 12, 14, 16, 18),
-                    (60, 65, 70, 75, 80),
-                    (10, 10, 10, 10, 10)))},
- 'cr': {'name': TTLocalizer.SuitCorporateRaider,
-        'singularname': TTLocalizer.SuitCorporateRaiderS,
-        'pluralname': TTLocalizer.SuitCorporateRaiderP,
-        'level': 6,
-        'hp':(72,90,110,132,156),
-        'def':(30,35,40,45,50),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-            (('Canned',
-                (10,11,12,14,16),
-                (80,80,85,90,95),
-                (20,20,20,20,20)),
-            ('EvilEye',
-                (12,14,16,18,20),
-                (65,75,80,85,90),
-                (35,35,35,35,35)),
-            ('PlayHardball',
-                (12,15,18,20,22),
-                (55,60,65,70,70),
-                (30,30,30,30,30)),
-            ('PowerTie',
-                (10,12,14,16,18),
-                (65,75,80,85,95),
-                (15,15,15,15,15)))},
- 'tbc': {'name': TTLocalizer.SuitTheBigCheese,
-         'singularname': TTLocalizer.SuitTheBigCheeseS,
-         'pluralname': TTLocalizer.SuitTheBigCheeseP,
-         'level': 7,
-         'hp':(90,110,132,156,200),
-         'def':(35,40,45,50,55),
-         'freq':(50,30,10,5,5),
-         'acc':(35,40,45,50,55),
-         'attacks':
-                (('CigarSmoke',
-                    (12,14,16,18,20),
-                    (85,85,85,85,85),
-                    (20,20,20,20,20)),
-                ('FloodTheMarket',
-                    (8,10,12,14,16),
-                    (95,95,95,95,95),
-                    (10,10,10,10,10)),
-                ('PowerTrip',
-                    (12,15,18,21,24),
-                    (60,65,70,75,80),
-                    (50,50,50,50,50)),
-                ('TeeOff',
-                    (16,18,20,22,24),
-                    (70,75,80,85,90),
-                    (20,20,20,20,20)))},
- 'cc': {'name': TTLocalizer.SuitColdCaller,
-        'singularname': TTLocalizer.SuitColdCallerS,
-        'pluralname': TTLocalizer.SuitColdCallerP,
-        'level': 0,
-        'hp':(6,12,20,30,42),
-        'def':(2,5,10,12,15),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('FreezeAssets',
-                    (1,1,1,1,1),
-                    (90,90,90,90,90),
-                    (5,10,15,20,25)),
-                ('PoundKey',
-                    (2,2,3,4,5),
-                    (75,80,85,90,95),
-                    (25,25,25,25,25)),
-                ('DoubleTalk',
-                    (2,3,4,6,8),
-                    (50,55,60,65,70),
-                    (25,25,25,25,25)),
-                ('HotAir',
-                    (3,4,6,8,10),
-                    (50,50,50,50,50),
-                    (45,40,35,30,25)))},
- 'tm': {'name': TTLocalizer.SuitTelemarketer,
-        'singularname': TTLocalizer.SuitTelemarketerS,
-        'pluralname': TTLocalizer.SuitTelemarketerP,
-        'level': 1,
-        'hp':(12,20,30,42,56),
-        'def':(5,10,15,20,25),
-        'freq':(50,30,10,5,5),
-        'acc':(45,50,55,60,65),
-        'attacks':
-                (('ClipOnTie',
-                    (2,2,3,3,4),
-                    (75,75,75,75,75),
-                    (15,15,15,15,15)),
-                ('PickPocket',
-                    (1,1,1,1,1),
-                    (75,75,75,75,75),
-                    (15,15,15,15,15)),
-                ('Rolodex',
-                    (4,6,7,9,12),
-                    (50,50,50,50,50),
-                    (30,30,30,30,30)),
-                ('DoubleTalk',
-                    (4,6,7,9,12),
-                    (75,80,85,90,95),
-                    (40,40,40,40,40)))},
- 'nd': {'name': TTLocalizer.SuitNameDropper,
-        'singularname': TTLocalizer.SuitNameDropperS,
-        'pluralname': TTLocalizer.SuitNameDropperP,
-        'level': 2,
-        'hp':(20,30,42,56,72),
-        'def':(10,15,20,25,30),
-        'freq':(50,30,10,5,5),
-        'acc':(65,70,75,80,85),
-        'attacks':
-                (('RazzleDazzle',
-                    (4,5,6,9,12),
-                    (75,80,85,90,95),
-                    (30,30,30,30,30)),
-                ('Rolodex',
-                    (5,6,7,10,14),
-                    (95,95,95,95,95),
-                    (40,40,40,40,40)),
-                ('Synergy',
-                    (3,4,6,9,12),
-                    (50,50,50,50,50),
-                    (15,15,15,15,15)),
-                ('PickPocket',
-                    (2,2,2,2,2),
-                    (95,95,95,95,95),
-                    (15,15,15,15,15)))},
- 'gh': {'name': TTLocalizer.SuitGladHander,
-        'singularname': TTLocalizer.SuitGladHanderS,
-        'pluralname': TTLocalizer.SuitGladHanderP,
-        'level': 3,
-        'hp':(30,42,56,72,90),
-        'def':(15,20,25,30,35),
-        'freq':(50,30,10,5,5),
-        'acc':(70,75,80,82,85),
-        'attacks':
-                (('RubberStamp',
-                    (4,3,3,2,1),
-                    (90,70,50,30,10),
-                    (40,30,20,10,5)),
-                ('FountainPen',
-                    (3,3,2,1,1),
-                    (70,60,50,40,30),
-                    (40,30,20,10,5)),
-                ('Filibuster',
-                    (4,6,9,12,15),
-                    (30,40,50,60,70),
-                    (10,20,30,40,45)),
-                ('Schmooze',
-                    (5,7,11,15,20),
-                    (55,65,75,85,95),
-                    (10,20,30,40,45)))},
- 'ms': {'name': TTLocalizer.SuitMoverShaker,
-        'singularname': TTLocalizer.SuitMoverShakerS,
-        'pluralname': TTLocalizer.SuitMoverShakerP,
-        'level': 4,
-        'hp':(42,56,72,90,110),
-        'def':(20,25,30,35,40),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('BrainStorm',
-                    (5,6,8,10,12),
-                    (60,75,80,85,90),
-                    (15,15,15,15,15)),
-                ('HalfWindsor',
-                    (6,9,11,13,16),
-                    (50,65,70,75,80),
-                    (20,20,20,20,20)),
-                ('Quake',
-                    (10,12,14,16,18),
-                    (60,65,75,80,85),
-                    (20,20,20,20,20)),
-                ('Shake',
-                    (6,8,10,12,14),
-                    (70,75,80,85,90),
-                    (25,25,25,25,25)),
-                ('Tremor',
-                    (5,6,7,8,9),
-                    (50,50,50,50,50),
-                    (20,20,20,20,20)))},
- 'tf': {'name': TTLocalizer.SuitTwoFace,
-        'singularname': TTLocalizer.SuitTwoFaceS,
-        'pluralname': TTLocalizer.SuitTwoFaceP,
-        'level': 5,
-        'hp':(56,72,90,110,132),
-        'def':(25,30,35,40,45),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('EvilEye',
-                    (10,12,14,16,18),
-                    (60,75,80,85,90),
-                    (30,30,30,30,30)),
-                ('HangUp',
-                    (7,8,10,12,13),
-                    (50,60,70,80,90),
-                    (15,15,15,15,15)),
-                ('RazzleDazzle',
-                    (8,10,12,14,16),
-                    (60,65,70,75,80),
-                    (30,30,30,30,30)),
-                ('RedTape',
-                    (6,7,8,9,10),
-                    (60,65,75,85,90),
-                    (25,25,25,25,25)))},
- 'm': {'name': TTLocalizer.SuitTheMingler,
-       'singularname': TTLocalizer.SuitTheMinglerS,
-       'pluralname': TTLocalizer.SuitTheMinglerP,
-       'level': 6,
-       'hp':(72,90,110,132,156),
-       'def':(30,35,40,45,50),
-       'freq':(50,30,10,5,5),
-       'acc':(35,40,45,50,55),
-       'attacks':
-               (('BuzzWord',
-                    (10,11,13,15,16),
-                    (60,75,80,85,90),
-                    (25,25,25,25,25)),
-                ('ParadigmShift',
-                    (10,12,15,18,21),
-                    (65,65,70,70,75),
-                    (25,25,25,25,25)),
-                ('Schmooze',
-                    (7,8,12,15,16),
-                    (55,65,75,85,95),
-                    (35,35,35,35,35)),
-                ('TeeOff',
-                    (8,9,10,11,12),
-                    (70,75,80,85,95),
-                    (15,15,15,15,15)))},
- 'mh': {'name': TTLocalizer.SuitMrHollywood,
-        'singularname': TTLocalizer.SuitMrHollywoodS,
-        'pluralname': TTLocalizer.SuitMrHollywoodP,
-        'level': 7,
-        'hp':(90,110,132,156,200),
-        'def':(35,40,45,50,55),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('SongAndDance',
-                    (12,14,16,18,20),
-                    (50,55,60,65,70),
-                    (50,50,50,50,50)),
-                ('RazzleDazzle',
-                    (14,16,18,21,24),
-                    (75,80,85,90,95),
-                    (50,50,50,50,50)))},
- 'sc': {'name': TTLocalizer.SuitShortChange,
-        'singularname': TTLocalizer.SuitShortChangeS,
-        'pluralname': TTLocalizer.SuitShortChangeP,
-        'level': 0,
-        'hp':(6,12,20,30,42),
-        'def':(2,5,10,12,15),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('Watercooler',
-                    (2,2,3,4,6),
-                    (50,50,50,50,50),
-                    (20,20,20,20,20)),
-                ('BounceCheck',
-                    (3,5,7,9,11),
-                    (75,80,85,90,95),
-                    (15,15,15,15,15)),
-                ('ClipOnTie',
-                    (1,1,2,2,3),
-                    (50,50,50,50,50),
-                    (25,25,25,25,25)),
-                ('PickPocket',
-                    (2,2,3,4,6),
-                    (95,95,95,95,95),
-                    (40,40,40,40,40)))},
- 'pp': {'name': TTLocalizer.SuitPennyPincher,
-        'singularname': TTLocalizer.SuitPennyPincherS,
-        'pluralname': TTLocalizer.SuitPennyPincherP,
-        'level': 1,
-        'hp':(12,20,30,42,56),
-        'def':(5,10,15,20,25),
-        'freq':(50,30,10,5,5),
-        'acc':(45,50,55,60,65),
-        'attacks':
-                (('BounceCheck',
-                    (4,5,6,8,12),
-                    (75,75,75,75,75),
-                    (45,45,45,45,45)),
-                ('FreezeAssets',
-                    (2,3,4,6,9),
-                    (75,75,75,75,75),
-                    (20,20,20,20,20)),
-                ('FingerWag',
-                    (1,2,3,4,6),
-                    (50,50,50,50,50),
-                    (35,35,35,35,35)))},
- 'tw': {'name': TTLocalizer.SuitTightwad,
-        'singularname': TTLocalizer.SuitTightwadS,
-        'pluralname': TTLocalizer.SuitTightwadP,
-        'level': 2,
-        'hp':(20,30,42,56,72),
-        'def':(10,15,20,25,30),
-        'freq':(50,30,10,5,5),
-        'acc':(65,70,75,80,85),
-        'attacks':
-                (('Fired',
-                    (3,4,5,5,6),
-                    (75,75,75,75,75),
-                    (75,5,5,5,5)),
-                ('GlowerPower',
-                    (3,4,6,9,12),
-                    (95,95,95,95,95),
-                    (10,15,20,25,30)),
-                ('FingerWag',
-                    (3,3,4,4,5),
-                    (75,75,75,75,75),
-                    (5,70,5,5,5)),
-                ('FreezeAssets',
-                    (3,4,6,9,12),
-                    (75,75,75,75,75),
-                    (5,5,65,5,30)),
-                ('BounceCheck',
-                    (5,6,9,13,18),
-                    (75,75,75,75,75),
-                    (5,5,5,60,30)))},
- 'bc': {'name': TTLocalizer.SuitBeanCounter,
-        'singularname': TTLocalizer.SuitBeanCounterS,
-        'pluralname': TTLocalizer.SuitBeanCounterP,
-        'level': 3,
-        'hp':(30,42,56,72,90),
-        'def':(15,20,25,30,35),
-        'freq':(50,30,10,5,5),
-        'acc':(70,75,80,82,85),
-        'attacks':
-                (('Audit',
-                    (4,6,9,12,15),
-                    (95,95,95,95,95),
-                    (20,20,20,20,20)),
-                ('Calculate',
-                    (4,6,9,12,15),
-                    (75,75,75,75,75),
-                    (25,25,25,25,25)),
-                ('Tabulate',
-                    (4,6,9,12,15),
-                    (75,75,75,75,75),
-                    (25,25,25,25,25)),
-                ('WriteOff',
-                    (4,6,9,12,15),
-                    (95,95,95,95,95),
-                    (30,30,30,30,30)))},
- 'nc': {'name': TTLocalizer.SuitNumberCruncher,
-        'singularname': TTLocalizer.SuitNumberCruncherS,
-        'pluralname': TTLocalizer.SuitNumberCruncherP,
-        'level': 4,
-        'hp':(42,56,72,90,110),
-        'def':(20,25,30,35,40),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('Audit',
-                    (5,6,8,10,12),
-                    (60,75,80,85,90),
-                    (10,10,10,10,10)),
-                ('Calculate',
-                    (6,7,9,11,13),
-                    (50,65,70,75,80),
-                    (25,25,25,25,25)),
-                ('Synergy',
-                    (6,7,8,9,10),
-                    (50,50,60,60,65),
-                    (20,20,20,20,20)),
-                ('Crunch',
-                    (8,9,11,13,15),
-                    (60,65,75,80,85),
-                    (30,30,30,30,30)),
-                ('Tabulate',
-                    (5,6,7,8,9),
-                    (50,50,50,50,50),
-                    (15,15,15,15,15)))},
- 'mb': {'name': TTLocalizer.SuitMoneyBags,
-        'singularname': TTLocalizer.SuitMoneyBagsS,
-        'pluralname': TTLocalizer.SuitMoneyBagsP,
-        'level': 5,
-        'hp':(56,72,90,110,132),
-        'def':(25,30,35,40,45),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('Liquidate',
-                    (10,12,14,16,18),
-                    (60,75,80,85,90),
-                    (30,30,30,30,30)),
-                ('MarketCrash',
-                    (8,10,12,14,16),
-                    (60,65,70,75,80),
-                    (45,45,45,45,45)),
-                ('PowerTie',
-                    (6,7,8,9,10),
-                    (60,65,75,85,90),
-                    (25,25,25,25,25)))},
- 'ls': {'name': TTLocalizer.SuitLoanShark,
-        'singularname': TTLocalizer.SuitLoanSharkS,
-        'pluralname': TTLocalizer.SuitLoanSharkP,
-        'level': 6,
-        'hp':(72,90,110,132,156),
-        'def':(30,35,40,45,50),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('Bite',
-                    (10,11,13,15,16),
-                    (60,75,80,85,90),
-                    (30,30,30,30,30)),
-                ('Chomp',
-                    (13,15,17,19,21),
-                    (60,70,75,80,90),
-                    (35,35,35,35,35)),
-                ('PlayHardball',
-                    (9,11,12,13,15),
-                    (55,65,75,85,95),
-                    (20,20,20,20,20)),
-                ('WriteOff',
-                    (6,8,10,12,14),
-                    (70,75,80,85,95),
-                    (15,15,15,15,15)))},
- 'rb': {'name': TTLocalizer.SuitRobberBaron,
-        'singularname': TTLocalizer.SuitRobberBaronS,
-        'pluralname': TTLocalizer.SuitRobberBaronP,
-        'level': 7,
-        'hp':(90,110,132,156,200),
-        'def':(35,40,45,50,55),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('Synergy',
-                    (12,15,18,21,24),
-                    (60,65,70,70,75),
-                    (50,50,50,50,50)),
-                ('TeeOff',
-                    (10,12,14,16,18),
-                    (60,65,75,85,90),
-                    (50,50,50,50,50)))},
+"""
+Utilities for Suit animations and Taunts and various text displaying properties for suits and attacks.
+"""
 
- 'bf': {'name': TTLocalizer.SuitBottomFeeder,
-        'singularname': TTLocalizer.SuitBottomFeederS,
-        'pluralname': TTLocalizer.SuitBottomFeederP,
-        'level': 0,
-        'hp':(6,12,20,30,42),
-        'def':(2,5,10,12,15),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('RubberStamp',
-                    (2,3,4,5,6),
-                    (75,80,85,90,95),
-                    (20,20,20,20,20)),
-                ('Shred',
-                    (2,4,6,8,10),
-                    (50,55,60,65,70),
-                    (20,20,20,20,20)),
-                ('Watercooler',
-                    (3,4,5,6,7),
-                    (95,95,95,95,95),
-                    (10,10,10,10,10)),
-                ('PickPocket',
-                    (1,1,2,2,3),
-                    (25,30,35,40,45),
-                    (50,50,50,50,50)))},
- 'b': {'name': TTLocalizer.SuitBloodsucker,
-       'singularname': TTLocalizer.SuitBloodsuckerS,
-       'pluralname': TTLocalizer.SuitBloodsuckerP,
-       'level': 1,
-       'hp':(12,20,30,42,56),
-       'def':(5,10,15,20,25),
-       'freq':(50,30,10,5,5),
-       'acc':(45,50,55,60,65),
-       'attacks':
-                (('EvictionNotice',
-                    (1,2,3,3,4),
-                    (75,75,75,75,75),
-                    (20,20,20,20,20)),
-                ('RedTape',
-                    (2,3,4,6,9),
-                    (75,75,75,75,75),
-                    (20,20,20,20,20)),
-                ('Withdrawal',
-                    (6,8,10,12,14),
-                    (95,95,95,95,95),
-                    (10,10,10,10,10)),
-                ('Liquidate',
-                    (2,3,4,6,9),
-                    (50,60,70,80,90),
-                    (50,50,50,50,50)))},
- 'dt': {'name': TTLocalizer.SuitDoubleTalker,
-        'singularname': TTLocalizer.SuitDoubleTalkerS,
-        'pluralname': TTLocalizer.SuitDoubleTalkerP,
-        'level': 2,
-        'hp':(20,30,42,56,72),
-        'def':(10,15,20,25,30),
-        'freq':(50,30,10,5,5),
-        'acc':(65,70,75,80,85),
-        'attacks':
-                (('RubberStamp',
-                    (1,1,1,1,1),
-                    (50,60,70,80,90),
-                    (5,5,5,5,5)),
-                ('BounceCheck',
-                    (1,1,1,1,1),
-                    (50,60,70,80,90),
-                    (5,5,5,5,5)),
-                ('BuzzWord',
-                    (1,2,3,5,6),
-                    (50,60,70,80,90),
-                    (20,20,20,20,20)),
-                ('DoubleTalk',
-                    (6,6,9,13,18),
-                    (50,60,70,80,90),
-                    (25,25,25,25,25)),
-                ('Jargon',
-                    (3,4,6,9,12),
-                    (50,60,70,80,90),
-                    (25,25,25,25,25)),
-                ('MumboJumbo',
-                    (3,4,6,9,12),
-                    (50,60,70,80,90),
-                    (20,20,20,20,20)))},
- 'ac': {'name': TTLocalizer.SuitAmbulanceChaser,
-        'singularname': TTLocalizer.SuitAmbulanceChaserS,
-        'pluralname': TTLocalizer.SuitAmbulanceChaserP,
-        'level': 3,
-        'hp':(30,42,56,72,90),
-        'def':(15,20,25,30,35),
-        'freq':(50,30,10,5,5),
-        'acc':(65,70,75,80,85),
-        'attacks':
-                (('Shake',
-                    (4,6,9,12,15),
-                    (75,75,75,75,75),
-                    (15,15,15,15,15)),
-                ('RedTape',
-                    (6,8,12,15,19),
-                    (75,75,75,75,75),
-                    (30,30,30,30,30)),
-                ('Rolodex',
-                    (3,4,5,6,7),
-                    (75,75,75,75,75),
-                    (20,20,20,20,20)),
-                ('HangUp',
-                    (2,3,4,5,6),
-                    (75,75,75,75,75),
-                    (35,35,35,35,35)))},
- 'bs': {'name': TTLocalizer.SuitBackStabber,
-        'singularname': TTLocalizer.SuitBackStabberS,
-        'pluralname': TTLocalizer.SuitBackStabberP,
-        'level': 4,
-        'hp':(42,56,72,90,110),
-        'def':(20,25,30,35,40),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('GuiltTrip',
-                    (8,11,13,15,18),
-                    (60,75,80,85,90),
-                    (40,40,40,40,40)),
-                ('RestrainingOrder',
-                    (6,7,9,11,13),
-                    (50,65,70,75,90),
-                    (25,25,25,25,25)),
-                ('FingerWag',
-                    (5,6,7,8,9),
-                    (50,55,65,75,80),
-                    (35,35,35,35,35)))},
- 'sd': {'name': TTLocalizer.SuitSpinDoctor,
-        'singularname': TTLocalizer.SuitSpinDoctorS,
-        'pluralname': TTLocalizer.SuitSpinDoctorP,
-        'level': 5,
-        'hp':(56,72,90,110,132),
-        'def':(25,30,35,40,45),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('ParadigmShift',
-                    (9,10,13,16,17),
-                    (60,75,80,85,90),
-                    (30,30,30,30,30)),
-                ('Quake',
-                    (8,10,12,14,16),
-                    (60,65,70,75,80),
-                    (20,20,20,20,20)),
-                ('Spin',
-                    (10,12,15,18,20),
-                    (70,75,80,85,90),
-                    (35,35,35,35,35)),
-                ('WriteOff',
-                    (6,7,8,9,10),
-                    (60,65,75,85,90),
-                    (15,15,15,15,15)))},
- 'le': {'name': TTLocalizer.SuitLegalEagle,
-        'singularname': TTLocalizer.SuitLegalEagleS,
-        'pluralname': TTLocalizer.SuitLegalEagleP,
-        'level': 6,
-        'hp':(72,90,110,132,156),
-        'def':(30,35,40,45,50),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('EvilEye',
-                    (10,11,13,15,16),
-                    (60,75,80,85,90),
-                    (20,20,20,20,20)),
-                ('Jargon',
-                    (7,9,11,13,15),
-                    (60,70,75,80,90),
-                    (15,15,15,15,15)),
-                ('Legalese',
-                    (11,13,16,19,21),
-                    (55,65,75,85,95),
-                    (35,35,35,35,35)),
-                ('PeckingOrder',
-                    (12,15,17,19,22),
-                    (70,75,80,85,95),
-                    (30,30,30,30,30)))},
- 'bw': {'name': TTLocalizer.SuitBigWig,
-        'singularname': TTLocalizer.SuitBigWigS,
-        'pluralname': TTLocalizer.SuitBigWigP,
-        'level': 7,
-        'hp':(90,110,132,156,200),
-        'def':(35,40,45,50,55),
-        'freq':(50,30,10,5,5),
-        'acc':(35,40,45,50,55),
-        'attacks':
-                (('GuiltTrip',
-                    (15,17,19,21,24),
-                    (60,60,65,70,75),
-                    (50,50,50,50,50)),
-                ('ThrowBook',
-                    (16,18,20,22,24),
-                    (80,85,85,85,90),
-                    (50,50,50,50,50)))}}
 
-ATK_TGT_UNKNOWN = 1
-ATK_TGT_SINGLE = 2
-ATK_TGT_GROUP = 3
-SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
- 'Bite': ('throw-paper', ATK_TGT_SINGLE),
- 'BounceCheck': ('throw-paper', ATK_TGT_SINGLE),
- 'BrainStorm': ('effort', ATK_TGT_SINGLE),
- 'BuzzWord': ('speak', ATK_TGT_SINGLE),
- 'Calculate': ('phone', ATK_TGT_SINGLE),
- 'Canned': ('throw-paper', ATK_TGT_SINGLE),
- 'Chomp': ('throw-paper', ATK_TGT_SINGLE),
- 'CigarSmoke': ('cigar-smoke', ATK_TGT_SINGLE),
- 'ClipOnTie': ('throw-paper', ATK_TGT_SINGLE),
- 'Crunch': ('throw-object', ATK_TGT_SINGLE),
- 'Demotion': ('magic1', ATK_TGT_SINGLE),
- 'DoubleTalk': ('speak', ATK_TGT_SINGLE),
- 'Downsize': ('magic2', ATK_TGT_SINGLE),
- 'EvictionNotice': ('throw-paper', ATK_TGT_SINGLE),
- 'EvilEye': ('glower', ATK_TGT_SINGLE),
- 'Filibuster': ('speak', ATK_TGT_SINGLE),
- 'FillWithLead': ('pencil-sharpener', ATK_TGT_SINGLE),
- 'FingerWag': ('finger-wag', ATK_TGT_SINGLE),
- 'Fired': ('magic2', ATK_TGT_SINGLE),
- 'FiveOClockShadow': ('glower', ATK_TGT_SINGLE),
- 'FloodTheMarket': ('glower', ATK_TGT_SINGLE),
- 'FountainPen': ('pen-squirt', ATK_TGT_SINGLE),
- 'FreezeAssets': ('glower', ATK_TGT_SINGLE),
- 'Gavel': ('gavel', ATK_TGT_SINGLE),
- 'GlowerPower': ('glower', ATK_TGT_SINGLE),
- 'GuiltTrip': ('magic1', ATK_TGT_GROUP),
- 'HalfWindsor': ('throw-paper', ATK_TGT_SINGLE),
- 'HangUp': ('phone', ATK_TGT_SINGLE),
- 'HeadShrink': ('magic1', ATK_TGT_SINGLE),
- 'HotAir': ('speak', ATK_TGT_SINGLE),
- 'Jargon': ('speak', ATK_TGT_SINGLE),
- 'Legalese': ('speak', ATK_TGT_SINGLE),
- 'Liquidate': ('magic1', ATK_TGT_SINGLE),
- 'MarketCrash': ('throw-paper', ATK_TGT_SINGLE),
- 'MumboJumbo': ('speak', ATK_TGT_SINGLE),
- 'ParadigmShift': ('magic2', ATK_TGT_GROUP),
- 'PeckingOrder': ('throw-object', ATK_TGT_SINGLE),
- 'PickPocket': ('pickpocket', ATK_TGT_SINGLE),
- 'PinkSlip': ('throw-paper', ATK_TGT_SINGLE),
- 'PlayHardball': ('throw-paper', ATK_TGT_SINGLE),
- 'PoundKey': ('phone', ATK_TGT_SINGLE),
- 'PowerTie': ('throw-paper', ATK_TGT_SINGLE),
- 'PowerTrip': ('magic1', ATK_TGT_GROUP),
- 'Quake': ('quick-jump', ATK_TGT_GROUP),
- 'RazzleDazzle': ('smile', ATK_TGT_SINGLE),
- 'RedTape': ('throw-object', ATK_TGT_SINGLE),
- 'ReOrg': ('magic3', ATK_TGT_SINGLE),
- 'RestrainingOrder': ('throw-paper', ATK_TGT_SINGLE),
- 'Rolodex': ('roll-o-dex', ATK_TGT_SINGLE),
- 'RubberStamp': ('rubber-stamp', ATK_TGT_SINGLE),
- 'RubOut': ('hold-eraser', ATK_TGT_SINGLE),
- 'Sacked': ('throw-paper', ATK_TGT_SINGLE),
- 'SandTrap': ('golf-club-swing', ATK_TGT_SINGLE),
- 'Schmooze': ('speak', ATK_TGT_SINGLE),
- 'Shake': ('stomp', ATK_TGT_GROUP),
- 'Shred': ('shredder', ATK_TGT_SINGLE),
- 'SongAndDance': ('song-and-dance', ATK_TGT_GROUP),
- 'Spin': ('magic3', ATK_TGT_SINGLE),
- 'Synergy': ('magic3', ATK_TGT_GROUP),
- 'Tabulate': ('phone', ATK_TGT_SINGLE),
- 'TeeOff': ('golf-club-swing', ATK_TGT_SINGLE),
- 'ThrowBook': ('throw-object', ATK_TGT_SINGLE),
- 'Tremor': ('stomp', ATK_TGT_GROUP),
- 'Watercooler': ('watercooler', ATK_TGT_SINGLE),
- 'Withdrawal': ('magic1', ATK_TGT_SINGLE),
- 'WriteOff': ('hold-pencil', ATK_TGT_SINGLE)}
-AUDIT = list(SuitAttacks.keys()).index('Audit')
-BITE = list(SuitAttacks.keys()).index('Bite')
-BOUNCE_CHECK = list(SuitAttacks.keys()).index('BounceCheck')
-BRAIN_STORM = list(SuitAttacks.keys()).index('BrainStorm')
-BUZZ_WORD = list(SuitAttacks.keys()).index('BuzzWord')
-CALCULATE = list(SuitAttacks.keys()).index('Calculate')
-CANNED = list(SuitAttacks.keys()).index('Canned')
-CHOMP = list(SuitAttacks.keys()).index('Chomp')
-CIGAR_SMOKE = list(SuitAttacks.keys()).index('CigarSmoke')
-CLIPON_TIE = list(SuitAttacks.keys()).index('ClipOnTie')
-CRUNCH = list(SuitAttacks.keys()).index('Crunch')
-DEMOTION = list(SuitAttacks.keys()).index('Demotion')
-DOWNSIZE = list(SuitAttacks.keys()).index('Downsize')
-DOUBLE_TALK = list(SuitAttacks.keys()).index('DoubleTalk')
-EVICTION_NOTICE = list(SuitAttacks.keys()).index('EvictionNotice')
-EVIL_EYE = list(SuitAttacks.keys()).index('EvilEye')
-FILIBUSTER = list(SuitAttacks.keys()).index('Filibuster')
-FILL_WITH_LEAD = list(SuitAttacks.keys()).index('FillWithLead')
-FINGER_WAG = list(SuitAttacks.keys()).index('FingerWag')
-FIRED = list(SuitAttacks.keys()).index('Fired')
-FIVE_O_CLOCK_SHADOW = list(SuitAttacks.keys()).index('FiveOClockShadow')
-FLOOD_THE_MARKET = list(SuitAttacks.keys()).index('FloodTheMarket')
-FOUNTAIN_PEN = list(SuitAttacks.keys()).index('FountainPen')
-FREEZE_ASSETS = list(SuitAttacks.keys()).index('FreezeAssets')
-GAVEL = list(SuitAttacks.keys()).index('Gavel')
-GLOWER_POWER = list(SuitAttacks.keys()).index('GlowerPower')
-GUILT_TRIP = list(SuitAttacks.keys()).index('GuiltTrip')
-HALF_WINDSOR = list(SuitAttacks.keys()).index('HalfWindsor')
-HANG_UP = list(SuitAttacks.keys()).index('HangUp')
-HEAD_SHRINK = list(SuitAttacks.keys()).index('HeadShrink')
-HOT_AIR = list(SuitAttacks.keys()).index('HotAir')
-JARGON = list(SuitAttacks.keys()).index('Jargon')
-LEGALESE = list(SuitAttacks.keys()).index('Legalese')
-LIQUIDATE = list(SuitAttacks.keys()).index('Liquidate')
-MARKET_CRASH = list(SuitAttacks.keys()).index('MarketCrash')
-MUMBO_JUMBO = list(SuitAttacks.keys()).index('MumboJumbo')
-PARADIGM_SHIFT = list(SuitAttacks.keys()).index('ParadigmShift')
-PECKING_ORDER = list(SuitAttacks.keys()).index('PeckingOrder')
-PICK_POCKET = list(SuitAttacks.keys()).index('PickPocket')
-PINK_SLIP = list(SuitAttacks.keys()).index('PinkSlip')
-PLAY_HARDBALL = list(SuitAttacks.keys()).index('PlayHardball')
-POUND_KEY = list(SuitAttacks.keys()).index('PoundKey')
-POWER_TIE = list(SuitAttacks.keys()).index('PowerTie')
-POWER_TRIP = list(SuitAttacks.keys()).index('PowerTrip')
-QUAKE = list(SuitAttacks.keys()).index('Quake')
-RAZZLE_DAZZLE = list(SuitAttacks.keys()).index('RazzleDazzle')
-RED_TAPE = list(SuitAttacks.keys()).index('RedTape')
-RE_ORG = list(SuitAttacks.keys()).index('ReOrg')
-RESTRAINING_ORDER = list(SuitAttacks.keys()).index('RestrainingOrder')
-ROLODEX = list(SuitAttacks.keys()).index('Rolodex')
-RUBBER_STAMP = list(SuitAttacks.keys()).index('RubberStamp')
-RUB_OUT = list(SuitAttacks.keys()).index('RubOut')
-SACKED = list(SuitAttacks.keys()).index('Sacked')
-SANDTRAP = list(SuitAttacks.keys()).index('SandTrap')
-SCHMOOZE = list(SuitAttacks.keys()).index('Schmooze')
-SHAKE = list(SuitAttacks.keys()).index('Shake')
-SHRED = list(SuitAttacks.keys()).index('Shred')
-SONG_AND_DANCE = list(SuitAttacks.keys()).index('SongAndDance')
-SPIN = list(SuitAttacks.keys()).index('Spin')
-SYNERGY = list(SuitAttacks.keys()).index('Synergy')
-TABULATE = list(SuitAttacks.keys()).index('Tabulate')
-TEE_OFF = list(SuitAttacks.keys()).index('TeeOff')
-THROW_BOOK = list(SuitAttacks.keys()).index('ThrowBook')
-TREMOR = list(SuitAttacks.keys()).index('Tremor')
-WATERCOOLER = list(SuitAttacks.keys()).index('Watercooler')
-WITHDRAWAL = list(SuitAttacks.keys()).index('Withdrawal')
-WRITE_OFF = list(SuitAttacks.keys()).index('WriteOff')
+__SuitAttacksToDefaultAnimation = {
+    SuitAttackType.AUDIT:               'phone',
+    SuitAttackType.BITE:                'throw-paper',
+    SuitAttackType.BOUNCE_CHECK:        'throw-paper',
+    SuitAttackType.BRAIN_STORM:         'effort',
+    SuitAttackType.BUZZ_WORD:           'speak',
+    SuitAttackType.CALCULATE:           'phone',
+    SuitAttackType.CANNED:              'throw-paper',
+    SuitAttackType.CHOMP:               'throw-paper',
+    SuitAttackType.CIGAR_SMOKE:         'cigar-smoke',
+    SuitAttackType.CLIPON_TIE:          'throw-paper',
+    SuitAttackType.CRUNCH:              'throw-object',
+    SuitAttackType.DEMOTION:            'magic1',
+    SuitAttackType.DOUBLE_TALK:         'speak',
+    SuitAttackType.DOWNSIZE:            'magic2',
+    SuitAttackType.EVICTION_NOTICE:     'throw-paper',
+    SuitAttackType.EVIL_EYE:            'glower',
+    SuitAttackType.FILIBUSTER:          'speak',
+    SuitAttackType.FILL_WITH_LEAD:      'pencil-sharpener',
+    SuitAttackType.FINGER_WAG:          'finger-wag',
+    SuitAttackType.FIRED:               'magic2',
+    SuitAttackType.FIVE_O_CLOCK_SHADOW: 'glower',
+    SuitAttackType.FLOOD_THE_MARKET:    'glower',
+    SuitAttackType.FOUNTAIN_PEN:        'pen-squirt',
+    SuitAttackType.FREEZE_ASSETS:       'glower',
+    SuitAttackType.GAVEL:               'gavel',
+    SuitAttackType.GLOWER_POWER:        'glower',
+    SuitAttackType.GUILT_TRIP:          'magic1',
+    SuitAttackType.HALF_WINDSOR:        'throw-paper',
+    SuitAttackType.HANG_UP:             'phone',
+    SuitAttackType.HEAD_SHRINK:         'magic1',
+    SuitAttackType.HOT_AIR:             'speak',
+    SuitAttackType.JARGON:              'speak',
+    SuitAttackType.LEGALESE:            'speak',
+    SuitAttackType.LIQUIDATE:           'magic1',
+    SuitAttackType.MARKET_CRASH:        'throw-paper',
+    SuitAttackType.MUMBO_JUMBO:         'speak',
+    SuitAttackType.PARADIGM_SHIFT:      'magic2',
+    SuitAttackType.PECKING_ORDER:       'throw-object',
+    SuitAttackType.PICK_POCKET:         'pickpocket',
+    SuitAttackType.PINK_SLIP:           'throw-paper',
+    SuitAttackType.PLAY_HARDBALL:       'throw-paper',
+    SuitAttackType.POUND_KEY:           'phone',
+    SuitAttackType.POWER_TIE:           'throw-paper',
+    SuitAttackType.POWER_TRIP:          'magic1',
+    SuitAttackType.QUAKE:               'quick-jump',
+    SuitAttackType.RAZZLE_DAZZLE:       'smile',
+    SuitAttackType.RED_TAPE:            'throw-object',
+    SuitAttackType.RE_ORG:              'magic3',
+    SuitAttackType.RESTRAINING_ORDER:   'throw-paper',
+    SuitAttackType.ROLODEX:             'roll-o-dex',
+    SuitAttackType.RUBBER_STAMP:        'rubber-stamp',
+    SuitAttackType.RUB_OUT:             'hold-eraser',
+    SuitAttackType.SACKED:              'throw-paper',
+    SuitAttackType.SANDTRAP:            'golf-club-swing',
+    SuitAttackType.SCHMOOZE:            'speak',
+    SuitAttackType.SHAKE:               'stomp',
+    SuitAttackType.SHRED:               'shredder',
+    SuitAttackType.SONG_AND_DANCE:      'song-and-dance',
+    SuitAttackType.SPIN:                'magic3',
+    SuitAttackType.SYNERGY:             'magic3',
+    SuitAttackType.TABULATE:            'phone',
+    SuitAttackType.TEE_OFF:             'golf-club-swing',
+    SuitAttackType.THROW_BOOK:          'throw-object',
+    SuitAttackType.TREMOR:              'stomp',
+    SuitAttackType.WATERCOOLER:         'watercooler',
+    SuitAttackType.WITHDRAWAL:          'magic1',
+    SuitAttackType.WRITE_OFF:           'hold-pencil'
+}
+
+
+# Given an attack type, returns the default animation the suit will play for it.
+def getSuitAnimationForAttack(attackType: SuitAttackType) -> str:
+    return __SuitAttacksToDefaultAnimation.get(attackType, 'magic1')
+
 
 def getFaceoffTaunt(suitName, doId):
     if suitName in SuitFaceoffTaunts:
@@ -1085,8 +1347,9 @@ def getFaceoffTaunt(suitName, doId):
 
 SuitFaceoffTaunts = OTPLocalizer.SuitFaceoffTaunts
 
-def getAttackTauntIndexFromIndex(suit, attackIndex):
-    adict = getSuitAttack(suit.getStyleName(), suit.getLevel(), attackIndex)
+
+def getAttackTauntIndexFromIndex(suit, attackType: SuitAttackType):
+    adict = getSuitAttack(suit.getStyleName(), suit.getLevel(), attackType)
     return getAttackTauntIndex(adict['name'])
 
 
@@ -1098,7 +1361,7 @@ def getAttackTauntIndex(attackName):
         return 1
 
 
-def getAttackTaunt(attackName, index = None):
+def getAttackTaunt(attackName, index=None):
     if attackName in SuitAttackTaunts:
         taunts = SuitAttackTaunts[attackName]
     else:
@@ -1108,28 +1371,16 @@ def getAttackTaunt(attackName, index = None):
             notify.warning('index exceeds length of taunts list in getAttackTaunt')
             return TTLocalizer.SuitAttackDefaultTaunts[0]
         return taunts[index]
-    else:
-        return random.choice(taunts)
-    return
 
-
-# Returns a list of names of attacks a suit can perform.
-def getAttacksForSuit(suitName: str) -> Set[str]:
-
-    attackNames: Set[str] = set()
-    possibleSuitAttacks = SuitAttributes[suitName]['attacks']
-    for attack in possibleSuitAttacks:
-        attackNames.add(attack[0])
-
-    return attackNames
+    return random.choice(taunts)
 
 
 # Similarly to getAttacksForSuit(), just returns the key representation of an attack instead.
-def getAttackKeysForSuit(suitName: str) -> Set[str]:
-    attackKeys: Set[str] = set()
-    for attackName in getAttacksForSuit(suitName):
-        attackKeys.add(SuitAttacks[attackName][0])
-    return attackKeys
+def getAttackAnimationNamesForSuit(suitName: str) -> Set[str]:
+    attackAnimNames: Set[str] = set()
+    for attackType in getSuitAttacks(suitName):
+        attackAnimNames.add(getSuitAnimationForAttack(attackType.attack))
+    return attackAnimNames
 
 
 SuitAttackTaunts = TTLocalizer.SuitAttackTaunts

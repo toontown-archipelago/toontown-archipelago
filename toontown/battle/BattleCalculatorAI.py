@@ -1132,9 +1132,9 @@ class BattleCalculatorAI:
             return 1
         return 0
 
-    def __calcSuitAtkType(self, attackIndex):
+    def __calcSuitAtkType(self, attackIndex) -> SuitAttackType:
         theSuit = self.battle.activeSuits[attackIndex]
-        attacks = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['attacks']
+        attacks = SuitBattleGlobals.getSuitAttacks(theSuit.dna.name)
         atk = SuitBattleGlobals.pickSuitAttack(attacks, theSuit.getLevel())
         return atk
 

@@ -125,143 +125,143 @@ def __throwBouncePoint(startPoint, endPoint):
 
 def doSuitAttack(attack):
     notify.debug('building suit attack in doSuitAttack: %s' % attack['name'])
-    name = attack['id']
-    if name == AUDIT:
+    attackType: SuitAttackType = SuitAttackType.fromId(attack['id'])
+    if attackType == SuitAttackType.AUDIT:
         suitTrack = doAudit(attack)
-    elif name == BITE:
+    elif attackType == SuitAttackType.BITE:
         suitTrack = doBite(attack)
-    elif name == BOUNCE_CHECK:
+    elif attackType == SuitAttackType.BOUNCE_CHECK:
         suitTrack = doBounceCheck(attack)
-    elif name == BRAIN_STORM:
+    elif attackType == SuitAttackType.BRAIN_STORM:
         suitTrack = doBrainStorm(attack)
-    elif name == BUZZ_WORD:
+    elif attackType == SuitAttackType.BUZZ_WORD:
         suitTrack = doBuzzWord(attack)
-    elif name == CALCULATE:
+    elif attackType == SuitAttackType.CALCULATE:
         suitTrack = doCalculate(attack)
-    elif name == CANNED:
+    elif attackType == SuitAttackType.CANNED:
         suitTrack = doCanned(attack)
-    elif name == CHOMP:
+    elif attackType == SuitAttackType.CHOMP:
         suitTrack = doChomp(attack)
-    elif name == CIGAR_SMOKE:
+    elif attackType == SuitAttackType.CIGAR_SMOKE:
         suitTrack = doDefault(attack)
-    elif name == CLIPON_TIE:
+    elif attackType == SuitAttackType.CLIPON_TIE:
         suitTrack = doClipOnTie(attack)
-    elif name == CRUNCH:
+    elif attackType == SuitAttackType.CRUNCH:
         suitTrack = doCrunch(attack)
-    elif name == DEMOTION:
+    elif attackType == SuitAttackType.DEMOTION:
         suitTrack = doDemotion(attack)
-    elif name == DOUBLE_TALK:
+    elif attackType == SuitAttackType.DOUBLE_TALK:
         suitTrack = doDoubleTalk(attack)
-    elif name == DOWNSIZE:
+    elif attackType == SuitAttackType.DOWNSIZE:
         suitTrack = doDownsize(attack)
-    elif name == EVICTION_NOTICE:
+    elif attackType == SuitAttackType.EVICTION_NOTICE:
         suitTrack = doEvictionNotice(attack)
-    elif name == EVIL_EYE:
+    elif attackType == SuitAttackType.EVIL_EYE:
         suitTrack = doEvilEye(attack)
-    elif name == FILIBUSTER:
+    elif attackType == SuitAttackType.FILIBUSTER:
         suitTrack = doFilibuster(attack)
-    elif name == FILL_WITH_LEAD:
+    elif attackType == SuitAttackType.FILL_WITH_LEAD:
         suitTrack = doFillWithLead(attack)
-    elif name == FINGER_WAG:
+    elif attackType == SuitAttackType.FINGER_WAG:
         suitTrack = doFingerWag(attack)
-    elif name == FIRED:
+    elif attackType == SuitAttackType.FIRED:
         suitTrack = doFired(attack)
-    elif name == FIVE_O_CLOCK_SHADOW:
+    elif attackType == SuitAttackType.FIVE_O_CLOCK_SHADOW:
         suitTrack = doDefault(attack)
-    elif name == FLOOD_THE_MARKET:
+    elif attackType == SuitAttackType.FLOOD_THE_MARKET:
         suitTrack = doDefault(attack)
-    elif name == FOUNTAIN_PEN:
+    elif attackType == SuitAttackType.FOUNTAIN_PEN:
         suitTrack = doFountainPen(attack)
-    elif name == FREEZE_ASSETS:
+    elif attackType == SuitAttackType.FREEZE_ASSETS:
         suitTrack = doFreezeAssets(attack)
-    elif name == GAVEL:
+    elif attackType == SuitAttackType.GAVEL:
         suitTrack = doDefault(attack)
-    elif name == GLOWER_POWER:
+    elif attackType == SuitAttackType.GLOWER_POWER:
         suitTrack = doGlowerPower(attack)
-    elif name == GUILT_TRIP:
+    elif attackType == SuitAttackType.GUILT_TRIP:
         suitTrack = doGuiltTrip(attack)
-    elif name == HALF_WINDSOR:
+    elif attackType == SuitAttackType.HALF_WINDSOR:
         suitTrack = doHalfWindsor(attack)
-    elif name == HANG_UP:
+    elif attackType == SuitAttackType.HANG_UP:
         suitTrack = doHangUp(attack)
-    elif name == HEAD_SHRINK:
+    elif attackType == SuitAttackType.HEAD_SHRINK:
         suitTrack = doHeadShrink(attack)
-    elif name == HOT_AIR:
+    elif attackType == SuitAttackType.HOT_AIR:
         suitTrack = doHotAir(attack)
-    elif name == JARGON:
+    elif attackType == SuitAttackType.JARGON:
         suitTrack = doJargon(attack)
-    elif name == LEGALESE:
+    elif attackType == SuitAttackType.LEGALESE:
         suitTrack = doLegalese(attack)
-    elif name == LIQUIDATE:
+    elif attackType == SuitAttackType.LIQUIDATE:
         suitTrack = doLiquidate(attack)
-    elif name == MARKET_CRASH:
+    elif attackType == SuitAttackType.MARKET_CRASH:
         suitTrack = doMarketCrash(attack)
-    elif name == MUMBO_JUMBO:
+    elif attackType == SuitAttackType.MUMBO_JUMBO:
         suitTrack = doMumboJumbo(attack)
-    elif name == PARADIGM_SHIFT:
+    elif attackType == SuitAttackType.PARADIGM_SHIFT:
         suitTrack = doParadigmShift(attack)
-    elif name == PECKING_ORDER:
+    elif attackType == SuitAttackType.PECKING_ORDER:
         suitTrack = doPeckingOrder(attack)
-    elif name == PICK_POCKET:
+    elif attackType == SuitAttackType.PICK_POCKET:
         suitTrack = doPickPocket(attack)
-    elif name == PINK_SLIP:
+    elif attackType == SuitAttackType.PINK_SLIP:
         suitTrack = doPinkSlip(attack)
-    elif name == PLAY_HARDBALL:
+    elif attackType == SuitAttackType.PLAY_HARDBALL:
         suitTrack = doPlayHardball(attack)
-    elif name == POUND_KEY:
+    elif attackType == SuitAttackType.POUND_KEY:
         suitTrack = doPoundKey(attack)
-    elif name == POWER_TIE:
+    elif attackType == SuitAttackType.POWER_TIE:
         suitTrack = doPowerTie(attack)
-    elif name == POWER_TRIP:
+    elif attackType == SuitAttackType.POWER_TRIP:
         suitTrack = doPowerTrip(attack)
-    elif name == SONG_AND_DANCE:
+    elif attackType == SuitAttackType.SONG_AND_DANCE:
         suitTrack = doSongAndDance(attack)
-    elif name == QUAKE:
+    elif attackType == SuitAttackType.QUAKE:
         suitTrack = doQuake(attack)
-    elif name == RAZZLE_DAZZLE:
+    elif attackType == SuitAttackType.RAZZLE_DAZZLE:
         suitTrack = doRazzleDazzle(attack)
-    elif name == RED_TAPE:
+    elif attackType == SuitAttackType.RED_TAPE:
         suitTrack = doRedTape(attack)
-    elif name == RE_ORG:
+    elif attackType == SuitAttackType.RE_ORG:
         suitTrack = doReOrg(attack)
-    elif name == RESTRAINING_ORDER:
+    elif attackType == SuitAttackType.RESTRAINING_ORDER:
         suitTrack = doRestrainingOrder(attack)
-    elif name == ROLODEX:
+    elif attackType == SuitAttackType.ROLODEX:
         suitTrack = doRolodex(attack)
-    elif name == RUBBER_STAMP:
+    elif attackType == SuitAttackType.RUBBER_STAMP:
         suitTrack = doRubberStamp(attack)
-    elif name == RUB_OUT:
+    elif attackType == SuitAttackType.RUB_OUT:
         suitTrack = doRubOut(attack)
-    elif name == SACKED:
+    elif attackType == SuitAttackType.SACKED:
         suitTrack = doSacked(attack)
-    elif name == SANDTRAP:
+    elif attackType == SuitAttackType.SANDTRAP:
         suitTrack = doDefault(attack)
-    elif name == SCHMOOZE:
+    elif attackType == SuitAttackType.SCHMOOZE:
         suitTrack = doSchmooze(attack)
-    elif name == SHAKE:
+    elif attackType == SuitAttackType.SHAKE:
         suitTrack = doShake(attack)
-    elif name == SHRED:
+    elif attackType == SuitAttackType.SHRED:
         suitTrack = doShred(attack)
-    elif name == SPIN:
+    elif attackType == SuitAttackType.SPIN:
         suitTrack = doSpin(attack)
-    elif name == SYNERGY:
+    elif attackType == SuitAttackType.SYNERGY:
         suitTrack = doSynergy(attack)
-    elif name == TABULATE:
+    elif attackType == SuitAttackType.TABULATE:
         suitTrack = doTabulate(attack)
-    elif name == TEE_OFF:
+    elif attackType == SuitAttackType.TEE_OFF:
         suitTrack = doTeeOff(attack)
-    elif name == THROW_BOOK:
+    elif attackType == SuitAttackType.THROW_BOOK:
         suitTrack = doDefault(attack)
-    elif name == TREMOR:
+    elif attackType == SuitAttackType.TREMOR:
         suitTrack = doTremor(attack)
-    elif name == WATERCOOLER:
+    elif attackType == SuitAttackType.WATERCOOLER:
         suitTrack = doWatercooler(attack)
-    elif name == WITHDRAWAL:
+    elif attackType == SuitAttackType.WITHDRAWAL:
         suitTrack = doWithdrawal(attack)
-    elif name == WRITE_OFF:
+    elif attackType == SuitAttackType.WRITE_OFF:
         suitTrack = doWriteOff(attack)
     else:
-        notify.warning('unknown attack: %d substituting Finger Wag' % name)
+        notify.warning('unknown attack: %d substituting Finger Wag' % attackType)
         suitTrack = doDefault(attack)
     camTrack = MovieCamera.chooseSuitShot(attack, suitTrack.getDuration())
     battle = attack['battle']
@@ -326,162 +326,162 @@ def doDefault(attack):
     notify.debug('building suit attack in doDefault')
     suitName = attack['suitName']
     if suitName == 'f':
-        attack['id'] = POUND_KEY
+        attack['id'] = SuitAttackType.POUND_KEY
         attack['name'] = 'PoundKey'
         attack['animName'] = 'phone'
         return doPoundKey(attack)
     elif suitName == 'p':
-        attack['id'] = FOUNTAIN_PEN
+        attack['id'] = SuitAttackType.FOUNTAIN_PEN
         attack['name'] = 'FountainPen'
         attack['animName'] = 'pen-squirt'
         return doFountainPen(attack)
     elif suitName == 'ym':
-        attack['id'] = RUBBER_STAMP
+        attack['id'] = SuitAttackType.RUBBER_STAMP
         attack['name'] = 'RubberStamp'
         attack['animName'] = 'rubber-stamp'
         return doRubberStamp(attack)
     elif suitName == 'mm':
-        attack['id'] = FINGER_WAG
+        attack['id'] = SuitAttackType.FINGER_WAG
         attack['name'] = 'FingerWag'
         attack['animName'] = 'finger-wag'
         return doFingerWag(attack)
     elif suitName == 'ds':
-        attack['id'] = DEMOTION
+        attack['id'] = SuitAttackType.DEMOTION
         attack['name'] = 'Demotion'
         attack['animName'] = 'magic1'
         return doDemotion(attack)
     elif suitName == 'hh':
-        attack['id'] = GLOWER_POWER
+        attack['id'] = SuitAttackType.GLOWER_POWER
         attack['name'] = 'GlowerPower'
         attack['animName'] = 'glower'
         return doGlowerPower(attack)
     elif suitName == 'cr':
-        attack['id'] = PICK_POCKET
+        attack['id'] = SuitAttackType.PICK_POCKET
         attack['name'] = 'PickPocket'
         attack['animName'] = 'pickpocket'
         return doPickPocket(attack)
     elif suitName == 'tbc':
-        attack['id'] = GLOWER_POWER
+        attack['id'] = SuitAttackType.GLOWER_POWER
         attack['name'] = 'GlowerPower'
         attack['animName'] = 'glower'
         return doGlowerPower(attack)
     elif suitName == 'cc':
-        attack['id'] = POUND_KEY
+        attack['id'] = SuitAttackType.POUND_KEY
         attack['name'] = 'PoundKey'
         attack['animName'] = 'phone'
         return doPoundKey(attack)
     elif suitName == 'tm':
-        attack['id'] = CLIPON_TIE
+        attack['id'] = SuitAttackType.CLIPON_TIE
         attack['name'] = 'ClipOnTie'
         attack['animName'] = 'throw-paper'
         return doClipOnTie(attack)
     elif suitName == 'nd':
-        attack['id'] = PICK_POCKET
+        attack['id'] = SuitAttackType.PICK_POCKET
         attack['name'] = 'PickPocket'
         attack['animName'] = 'pickpocket'
         return doPickPocket(attack)
     elif suitName == 'gh':
-        attack['id'] = FOUNTAIN_PEN
+        attack['id'] = SuitAttackType.FOUNTAIN_PEN
         attack['name'] = 'FountainPen'
         attack['animName'] = 'pen-squirt'
         return doFountainPen(attack)
     elif suitName == 'ms':
-        attack['id'] = BRAIN_STORM
+        attack['id'] = SuitAttackType.BRAIN_STORM
         attack['name'] = 'BrainStorm'
         attack['animName'] = 'effort'
         return doBrainStorm(attack)
     elif suitName == 'tf':
-        attack['id'] = RED_TAPE
+        attack['id'] = SuitAttackType.RED_TAPE
         attack['name'] = 'RedTape'
         attack['animName'] = 'throw-object'
         return doRedTape(attack)
     elif suitName == 'm':
-        attack['id'] = BUZZ_WORD
+        attack['id'] = SuitAttackType.BUZZ_WORD
         attack['name'] = 'BuzzWord'
         attack['animName'] = 'speak'
         return doBuzzWord(attack)
     elif suitName == 'mh':
-        attack['id'] = RAZZLE_DAZZLE
+        attack['id'] = SuitAttackType.RAZZLE_DAZZLE
         attack['name'] = 'RazzleDazzle'
         attack['animName'] = 'smile'
         return doRazzleDazzle(attack)
     elif suitName == 'sc':
-        attack['id'] = WATERCOOLER
+        attack['id'] = SuitAttackType.WATERCOOLER
         attack['name'] = 'Watercooler'
         attack['animName'] = 'water-cooler'
         return doWatercooler(attack)
     elif suitName == 'pp':
-        attack['id'] = BOUNCE_CHECK
+        attack['id'] = SuitAttackType.BOUNCE_CHECK
         attack['name'] = 'BounceCheck'
         attack['animName'] = 'throw-paper'
         return doBounceCheck(attack)
     elif suitName == 'tw':
-        attack['id'] = GLOWER_POWER
+        attack['id'] = SuitAttackType.GLOWER_POWER
         attack['name'] = 'GlowerPower'
         attack['animName'] = 'glower'
         return doGlowerPower(attack)
     elif suitName == 'bc':
-        attack['id'] = AUDIT
+        attack['id'] = SuitAttackType.AUDIT
         attack['name'] = 'Audit'
         attack['animName'] = 'phone'
         return doAudit(attack)
     elif suitName == 'nc':
-        attack['id'] = RED_TAPE
+        attack['id'] = SuitAttackType.RED_TAPE
         attack['name'] = 'RedTape'
         attack['animName'] = 'throw-object'
         return doRedTape(attack)
     elif suitName == 'mb':
-        attack['id'] = LIQUIDATE
+        attack['id'] = SuitAttackType.LIQUIDATE
         attack['name'] = 'Liquidate'
         attack['animName'] = 'magic1'
         return doLiquidate(attack)
     elif suitName == 'ls':
-        attack['id'] = WRITE_OFF
+        attack['id'] = SuitAttackType.WRITE_OFF
         attack['name'] = 'WriteOff'
         attack['animName'] = 'hold-pencil'
         return doWriteOff(attack)
     elif suitName == 'rb':
-        attack['id'] = TEE_OFF
+        attack['id'] = SuitAttackType.TEE_OFF
         attack['name'] = 'TeeOff'
         attack['animName'] = 'golf-club-swing'
         return doTeeOff(attack)
     elif suitName == 'bf':
-        attack['id'] = RUBBER_STAMP
+        attack['id'] = SuitAttackType.RUBBER_STAMP
         attack['name'] = 'RubberStamp'
         attack['animName'] = 'rubber-stamp'
         return doRubberStamp(attack)
     elif suitName == 'b':
-        attack['id'] = EVICTION_NOTICE
+        attack['id'] = SuitAttackType.EVICTION_NOTICE
         attack['name'] = 'EvictionNotice'
         attack['animName'] = 'throw-paper'
         return doEvictionNotice(attack)
     elif suitName == 'dt':
-        attack['id'] = RUBBER_STAMP
+        attack['id'] = SuitAttackType.RUBBER_STAMP
         attack['name'] = 'RubberStamp'
         attack['animName'] = 'rubber-stamp'
         return doRubberStamp(attack)
     elif suitName == 'ac':
-        attack['id'] = RED_TAPE
+        attack['id'] = SuitAttackType.RED_TAPE
         attack['name'] = 'RedTape'
         attack['animName'] = 'throw-object'
         return doRedTape(attack)
     elif suitName == 'bs':
-        attack['id'] = FINGER_WAG
+        attack['id'] = SuitAttackType.FINGER_WAG
         attack['name'] = 'FingerWag'
         attack['animName'] = 'finger-wag'
         return doFingerWag(attack)
     elif suitName == 'sd':
-        attack['id'] = WRITE_OFF
+        attack['id'] = SuitAttackType.WRITE_OFF
         attack['name'] = 'WriteOff'
         attack['animName'] = 'hold-pencil'
         return doWriteOff(attack)
     elif suitName == 'le':
-        attack['id'] = JARGON
+        attack['id'] = SuitAttackType.JARGON
         attack['name'] = 'Jargon'
         attack['animName'] = 'speak'
         return doJargon(attack)
     elif suitName == 'bw':
-        attack['id'] = FINGER_WAG
+        attack['id'] = SuitAttackType.FINGER_WAG
         attack['name'] = 'FingerWag'
         attack['animName'] = 'finger-wag'
         return doFingerWag(attack)

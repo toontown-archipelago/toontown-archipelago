@@ -404,9 +404,9 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             id = attack[SUIT_ID_COL]
             index = suitIds.index(id) if id != -1 else -1
             attackCol = attack[SUIT_ATK_COL]
-            target = -1 if attackCol == NO_ATTACK else attack[SUIT_TGT_COL]
+            target = -1 if attackCol == SuitAttackType.NO_ATTACK else attack[SUIT_TGT_COL]
 
-            if attackCol != NO_ATTACK:
+            if attackCol != SuitAttackType.NO_ATTACK:
                 suit = self.findSuit(id)
                 attack[SUIT_TAUNT_COL] = getAttackTauntIndexFromIndex(suit, attackCol)
 

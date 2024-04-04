@@ -3002,7 +3002,7 @@ class Toon(Avatar.Avatar, ToonHead):
             else:
                 name = self.getName()
             suitDept = SuitDNA.suitDepts.index(SuitDNA.getSuitDept(suitType))
-            suitName = SuitBattleGlobals.SuitAttributes[suitType]['name']
+            suitName = SuitBattleGlobals.getSuitAttributes(suitType).name
             self.nametag.setDisplayName(TTLocalizer.SuitBaseNameWithLevel % {'name': name,
              'dept': suitName,
              'level': self.cogLevels[suitDept] + 1})

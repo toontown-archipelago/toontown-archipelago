@@ -131,3 +131,9 @@ class DistributedBattleSandboxAI(DistributedBattleBaseAI):
             return
 
         super().rewardDone()
+
+    def movieDone(self):
+        if not self.air:
+            return
+
+        super().movieDone()

@@ -451,7 +451,7 @@ class SuitPage(ShtikerPage.ShtikerPage):
             panel['text'] = TTLocalizer.SuitPageMystery
         elif status == COG_BATTLED:
             suitName = SuitDNA.suitHeadTypes[index]
-            suitFullName = SuitBattleGlobals.SuitAttributes[suitName]['name']
+            suitFullName = SuitBattleGlobals.getSuitAttributes(suitName).name
             panel['text'] = suitFullName
             if panel.quotaLabel:
                 panel.quotaLabel.show()
