@@ -180,6 +180,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         del suit.battleTrap
 
     def findSuit(self, id):
+        self.notify.warning(f"Attempting to find suit: {id}")
         for s in self.suits:
             if s.doId == id:
                 return s
@@ -1790,7 +1791,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             lastActiveSuitDied = 1
         for i in range(4):
             attack = self.suitAttacks[i][SUIT_ATK_COL]
-            if attack != NO_ATTACK:
+            if attack != SuitAttackType.NO_ATTACK:
                 suitId = self.suitAttacks[i][SUIT_ID_COL]
                 suit = self.findSuit(suitId)
                 if suit == None:

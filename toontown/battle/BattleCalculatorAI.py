@@ -1208,7 +1208,8 @@ class BattleCalculatorAI:
     def __createSuitTargetList(self, attackIndex):
         attack = self.battle.suitAttacks[attackIndex]
         targetList = []
-        if attack[SUIT_ATK_COL] == NO_ATTACK:
+        self.notify.debug(f"Creating suit target list for suit attack: {attack}")
+        if attack[SUIT_ATK_COL] == SuitAttackType.NO_ATTACK:
             self.notify.debug('No attack, no targets')
             return targetList
         debug = self.notify.getDebug()
@@ -1333,7 +1334,7 @@ class BattleCalculatorAI:
                     attack = self.battle.suitAttacks[i]
                     self.notify.debug('clearing suit attack, no avail targets')
                 self.__calcSuitAtkHp(i)
-                if attack[SUIT_ATK_COL] != NO_ATTACK:
+                if attack[SUIT_ATK_COL] != SuitAttackType.NO_ATTACK:
                     if self.__suitAtkAffectsGroup(attack):
                         for currTgt in self.battle.activeToons:
                             self.__updateSuitAtkStat(currTgt)

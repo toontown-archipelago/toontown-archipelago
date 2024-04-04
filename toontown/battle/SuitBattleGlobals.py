@@ -1184,8 +1184,17 @@ __BIG_WIG_ATTACKS.add(SuitAttackAttribute(
     accuracy=60,
     weight=50,
 ))
+
+# todo code animation for this
+# __BIG_WIG_ATTACKS.add(SuitAttackAttribute(
+#     attack=SuitAttackType.THROW_BOOK,
+#     damage={8: 16, 9: 18, 10: 20, 11: 22, 12: 24},
+#     accuracy=80,
+#     weight=50,
+# ))
+
 __BIG_WIG_ATTACKS.add(SuitAttackAttribute(
-    attack=SuitAttackType.THROW_BOOK,
+    attack=SuitAttackType.FINGER_WAG,
     damage={8: 16, 9: 18, 10: 20, 11: 22, 12: 24},
     accuracy=80,
     weight=50,
