@@ -3700,6 +3700,7 @@ dclass DistributedBattleDiners : DistributedBattleFinal {
 };
 
 dclass DistributedBattleSandbox : DistributedBattleBase {
+  updateSetting(uint32, uint32) airecv clsend;
 };
 
 dclass DistributedGolfSpot : DistributedObject {

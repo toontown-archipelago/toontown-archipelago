@@ -1,5 +1,6 @@
 import random
 
+from direct.fsm import State
 from panda3d.core import Point3
 
 from toontown.battle.DistributedBattleBaseAI import DistributedBattleBaseAI
@@ -7,16 +8,22 @@ from toontown.suit.DistributedSuitAI import DistributedSuitAI
 from toontown.suit.SuitDNA import SuitDNA, getRandomSuitType
 
 from toontown.battle.BattleBase import *
+from toontown.toon.DistributedToonAI import DistributedToonAI
+
+
+# Astron command #s
+SET_MIN_LEVEL = 1
+SET_MAX_LEVEL = 2
 
 
 class DistributedBattleSandboxAI(DistributedBattleBaseAI):
     def __init__(self, air, zoneId):
         super().__init__(air, zoneId)
 
-        self.pos = Point3(0, 0, 100)
+        self.pos = Point3(0, 0, 50)
 
-        self.minLevel: int = 20
-        self.maxLevel: int = 99
+        self.minLevel: int = 50
+        self.maxLevel: int = 50
 
         self.notify.setDebug(True)
 
@@ -24,7 +31,16 @@ class DistributedBattleSandboxAI(DistributedBattleBaseAI):
         suit = DistributedSuitAI(self.air, None)
 
         dna: SuitDNA = SuitDNA()
-        suitLevel = random.randint(self.minLevel, self.maxLevel)
+
+        # Assert that start level is non zero and that end level is not less than the start level.
+        startLevel = self.minLevel
+        endLevel = self.maxLevel
+        if startLevel < 1:
+            startLevel = 1
+        if endLevel < startLevel:
+            endLevel = startLevel
+
+        suitLevel = random.randint(startLevel, endLevel)
         randomSuitType = getRandomSuitType(suitLevel)
         dna.newSuitRandom(level=randomSuitType)
         suit.dna = dna
@@ -58,6 +74,22 @@ class DistributedBattleSandboxAI(DistributedBattleBaseAI):
 
     def end(self):
         self.b_setState('Resume')
+
+    # Called from clients participating in this battle. Update a setting we have
+    def updateSetting(self, command: int, value: int):
+        if command == SET_MIN_LEVEL:
+            self.minLevel = value
+            self.broadcast(f"Set min level to {self.minLevel}")
+        elif command == SET_MAX_LEVEL:
+            self.maxLevel = value
+            self.broadcast(f"Set max level to {self.maxLevel}")
+
+    # Send a message to active toons
+    def broadcast(self, msg: str):
+        for toonId in self.activeToons:
+            toon = self.air.getDo(toonId)
+            if isinstance(toon, DistributedToonAI):
+                toon.d_sendArchipelagoMessage(msg)
 
     """
     Boilerplate FSM code, this pretty much just makes the battle function correctly
@@ -137,3 +169,13 @@ class DistributedBattleSandboxAI(DistributedBattleBaseAI):
             return
 
         super().movieDone()
+
+    def localMovieDone(self, needUpdate, deadToons, deadSuits, lastActiveSuitDied):
+
+        spots = 4 - len(self.activeSuits)
+        for _ in range(spots):
+            self.suitRequestJoin(self.__generateSuit())
+
+        super().localMovieDone(needUpdate, deadToons, deadSuits, lastActiveSuitDied)
+
+

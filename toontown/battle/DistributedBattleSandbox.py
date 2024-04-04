@@ -1,13 +1,18 @@
 import random
 import typing
 
+from direct.fsm import State
+from direct.gui.DirectButton import DirectButton
+from direct.gui.DirectFrame import DirectFrame
+from direct.gui.DirectGui import DGG
+from direct.gui.DirectLabel import DirectLabel
 from direct.interval.FunctionInterval import Func, Wait
 from direct.interval.MetaInterval import Parallel, Sequence
-from panda3d.core import Point3, Vec3
+from panda3d.core import Point3, Vec3, TextNode
 from panda3d.otp import CFSpeech, CFTimeout
 
 from otp.avatar import Emote
-from toontown.battle import SuitBattleGlobals
+from toontown.battle import SuitBattleGlobals, DistributedBattleFinal
 from toontown.battle.DistributedBattle import DistributedBattle
 from toontown.suit.SuitDNA import getSuitType
 from toontown.toonbase import ToontownGlobals
@@ -16,9 +21,114 @@ if typing.TYPE_CHECKING:
     from toontown.toonbase.ToonBaseGlobals import *
 
 
+# Astron command #s
+SET_MIN_LEVEL = 1
+SET_MAX_LEVEL = 2
+
+
+class ButtonGroup(DirectFrame):
+
+    def __init__(self, option: str, callback, **kw: typing.Any):
+        super().__init__(**kw)
+
+        self.optionName: str = option
+        self.value: int = 50
+
+        self.__label = DirectLabel(parent=self, scale=0.05, text_align=TextNode.ACenter)
+        self.__update_label()
+        self.__decButton = DirectButton(parent=self, scale=.06, pos=(-.15, 0, 0), text='-1', command=self.__change_value, extraArgs=[-1])
+        self.__bigDecButton = DirectButton(parent=self, scale=.06, pos=(-.25, 0, 0), text='-10', command=self.__change_value, extraArgs=[-10])
+        self.__incButton = DirectButton(parent=self, scale=.06, pos=(.15, 0, 0), text='+1', command=self.__change_value, extraArgs=[1])
+        self.__bigIncButton = DirectButton(parent=self, scale=.06, pos=(.25, 0, 0), text='+10', command=self.__change_value, extraArgs=[10])
+
+        self.callback = callback
+
+    def __change_value(self, delta: int):
+        self.value += delta
+        self.value = min(200, max(0, self.value))
+        self.__update_label()
+        self.callback(self.value)
+
+    def __update_label(self):
+        self.__label['text'] = f"{self.optionName}\n{self.value}"
+
+
+class SandboxInterface(DirectFrame):
+    def __init__(self, battle, **kw):
+
+        optiondefs = (
+            ('parent', kw['parent'], None),
+            ('pos', kw['pos'], None),
+        )
+        self.defineoptions(kw, optiondefs)
+        super().__init__(**kw)
+        self.initialiseoptions(SandboxInterface)
+
+        self.battle = battle
+
+        self.minLevelGroup: ButtonGroup = ButtonGroup('Min Level', self.__setMinLevel, parent=self, pos=(0, 0, 0))
+        self.maxLevelGroup: ButtonGroup = ButtonGroup('Max Level', self.__setMaxLevel, parent=self, pos=(0, 0, -.12))
+
+    def __setMinLevel(self, level: int):
+        self.battle.d_sendCommand(SET_MIN_LEVEL, level)
+
+    def __setMaxLevel(self, level: int):
+        self.battle.d_sendCommand(SET_MAX_LEVEL, level)
+
+
 class DistributedBattleSandbox(DistributedBattle):
     def __init__(self, cr):
         super().__init__(cr)
+        self.streetBattle = 0
+
+        self.__optionsMenu: SandboxInterface = None
+
+
+    """
+    Management for spawning the "mod menu"
+    """
+
+    def __createOptionsMenu(self):
+        self.__destroyOptionsMenu()
+        self.__optionsMenu = SandboxInterface(self, parent=base.a2dLeftCenter, pos=(.35, 0, .3))
+
+    def __destroyOptionsMenu(self):
+        if self.__optionsMenu:
+            self.__optionsMenu.destroy()
+            self.__optionsMenu = None
+
+    # If local toon is active, spawn the menu
+    def enterWaitForInput(self, ts = 0):
+        super().enterWaitForInput(ts)
+        self.__destroyOptionsMenu()
+
+        if self.localToonActive():
+            self.__createOptionsMenu()
+
+    # If menu was created, destroy it
+    def exitWaitForInput(self):
+        super().exitWaitForInput()
+        self.__destroyOptionsMenu()
+
+    # If local av is not in list of toons and menu was created, destroy it
+    def setMembers(self, suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, immuneSuits, timestamp):
+        super().setMembers(suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, immuneSuits, timestamp)
+
+        if localAvatar.doId not in list(toons) + list(toonsActive) + list(toonsPending):
+            self.__destroyOptionsMenu()
+
+    # If menu was created, destroy it
+    def delete(self):
+        super().delete()
+        self.__destroyOptionsMenu()
+
+    # Sending command to the AI version of this battle
+    def d_sendCommand(self, setting: int, value: int):
+        self.sendUpdate('updateSetting', [setting, value])
+
+    """
+    Boilerplate code to make the battle function, can be ignored
+    """
 
     def __faceOff(self, ts, name, callback):
         if len(self.suits) == 0:
