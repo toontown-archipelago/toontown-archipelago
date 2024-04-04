@@ -7,15 +7,14 @@ from direct.distributed.ClockDelta import globalClockDelta
 from direct.distributed.MsgTypes import *
 from direct.task import Task
 from otp.otpbase import OTPGlobals
-from toontown.pets import Pet, PetBase, PetTraits, PetConstants, PetManager, PetAvatarPanel
+from toontown.pets import Pet, PetBase, PetTraits, PetConstants, PetManager
 from toontown.pets import PetMood, PetTricks
 from toontown.hood import ZoneUtil
-from toontown.toonbase import TTLocalizer
+
 from toontown.distributed import DelayDelete
 from toontown.distributed.DelayDeletable import DelayDeletable
 import random
-if __dev__:
-    import pdb
+
 BeanColors = (VBase4(1.0, 0.2, 0.2, 1.0),
  VBase4(0.2, 1.0, 0.2, 1.0),
  VBase4(0.2, 0.2, 1.0, 1.0),
@@ -23,6 +22,7 @@ BeanColors = (VBase4(1.0, 0.2, 0.2, 1.0),
  VBase4(1.0, 1.0, 0.0, 1.0),
  VBase4(1.0, 0.6, 1.0, 1.0),
  VBase4(0.6, 0.0, 0.6, 1.0))
+
 
 class DistributedPet(DistributedSmoothNode.DistributedSmoothNode, Pet.Pet, PetBase.PetBase, DelayDeletable):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedPet')
