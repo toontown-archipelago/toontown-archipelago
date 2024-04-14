@@ -4,7 +4,6 @@ server-version tt-ap-edition
 
 # Developer settings
 want-dev false
-want-injector false
 schellgames-dev false
 
 # Logging
@@ -57,7 +56,6 @@ want-news-tab false
 # Gameplay settings
 want-legacy-heads false
 want-gardening true
-want-cogdominiums true
 want-emblems true
 
 # Misc. settings
@@ -68,6 +66,5 @@ inactivity-timeout 180
 merge-lod-bundles false
 early-event-sphere true
 server-data-folder backups/
-isclient-check false
 model-cache-dir
 texture-anisotropic-degree 16
