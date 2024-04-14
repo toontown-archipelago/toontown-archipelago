@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Client
         run: |
-          python -m nuitka ./build/launcher/launch.py --standalone --output-dir=output --include-package=direct.distributed --include-package=otp --include-package=toontown
+          python -m nuitka ./build/launcher/launch.py --standalone --output-dir=output --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
 
       - name: Copy Built Files
         run: |
