@@ -43,8 +43,8 @@ jobs:
       - name: Copy Config Files
         run: |
           New-Item -Name "release\game\config" -ItemType "directory"
-          Copy-Item -Path "config\built.prc" -Destination "release\game\config\"
-          Copy-Item -Path "config\general.prc" -Destination "release\game\config\"
+          Copy-Item -Path "config\production.prc" -Destination "release\game\config\"
+          Copy-Item -Path "config\common.prc" -Destination "release\game\config\"
 
       - name: Copy Scripts
         run: |

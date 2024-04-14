@@ -10,7 +10,7 @@ start /B "%~dp0" "launch.exe" ^
     --stateserver 4002 ^
     --astron-ip 127.0.0.1:7199 ^
     --eventlogger-ip 127.0.0.1:7197 ^
-    config/general.prc ^
-    config/built.prc
+    config/common.prc ^
+    config/production.prc
 pause
 goto :launch

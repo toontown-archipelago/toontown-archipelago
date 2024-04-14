@@ -1,27 +1,4 @@
-# This is the PRC configuration file for settings that are
-# specific to developer instances of Toontown Online.
-
-# Notify settings
-console-output true
-
-# Server settings
-server-version tt-ap-edition
-
-# Developer settings
-want-dev false
-schellgames-dev false
-exec-chat false
-log-private-info true
-want-qa-regression true
-want-injector true
-
-# Chat settings
-want-whitelist false
-
-# Audio settings
-audio-library-name p3openal_audio
-
-# Resources settings
+# Resources
 vfs-mount resources/phase_3 /phase_3
 vfs-mount resources/phase_3.5 /phase_3.5
 vfs-mount resources/phase_4 /phase_4
@@ -37,5 +14,9 @@ vfs-mount resources/phase_12 /phase_12
 vfs-mount resources/phase_13 /phase_13
 vfs-mount resources/phase_14 /phase_14
 
-# DC file
-dc-file astron/dclass/tto.dc
+# Developer settings
+want-injector true
+
+# Logging
+log-private-info true
+want-qa-regression true

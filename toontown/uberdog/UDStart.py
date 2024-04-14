@@ -33,7 +33,7 @@ parser.add_argument(
 parser.add_argument(
     'config',
     nargs='*',
-    default=['config/general.prc', 'config/dev.prc'],
+    default=['config/common.prc', 'config/development.prc'],
     help='PRC file(s) that will be loaded on this UberDOG instance.'
 )
 

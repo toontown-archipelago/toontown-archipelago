@@ -11,7 +11,7 @@ start /B "%~dp0" "launch.exe" ^
     --astron-ip 127.0.0.1:7199 ^
     --eventlogger-ip 127.0.0.1:7197 ^
     --district-name "Toon Valley" ^
-    config/general.prc ^
-    config/built.prc
+    config/common.prc ^
+    config/production.prc
 pause
 goto :launch
