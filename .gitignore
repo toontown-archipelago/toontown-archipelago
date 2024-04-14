@@ -16,6 +16,7 @@ Library/
 backups/
 settings.json
 errorCode
+PPYTHON_PATH
 
 toontown/archipelago/output/
 
