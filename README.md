@@ -34,75 +34,62 @@ Credits:
 * [Open Toontown](https://github.com/open-toontown) for providing a great reference for a Toontown codebase ported to Python 3 and the HD Mickey Font
 * Toontown Infinite for Bossbot HQ suit paths
 * [Astron](https://github.com/Astron/Astron)
-* [Panda3D](https://github.com/panda3d/panda3d)  (More specifically, [Open Toontown's fork of Panda3D](https://github.com/open-toontown/panda3d))  
-* [libpandadna](https://github.com/loblao/libpandadna)
+* [Panda3D](https://github.com/panda3d/panda3d)  (More specifically, [Open Toontown's fork of Panda3D](https://github.com/open-toontown/panda3d))
 * [libotp-nametags](https://github.com/loblao/libotp-nametags)
 * [Ben Briggs](https://www.youtube.com/@benbriggsmusic) for the dripstinct music.
 * Reverse-engineered Toontown Online client/server source code is property of The Walt Disney Company.
 
+# Getting Started
 
-# Panda3D
-This source code requires a specific version of Panda3D to run. It can be installed by downloading the launcher below:
+At this time, Windows is the only supported platform. For other platforms, please see [Running From Source.](#running-the-source)
 
 ### Windows
-- For 64 bit machines (You probably want this one!): [Panda3D SDK (Python 3.9 x86_64)](https://mega.nz/file/uAMxEKqL#yQfS9UPpYHzKYDR5vq-LF5gxxLa6HUmxLUp65uzneVo)
-- For 32 bit machines: [Panda3D SDK (Python 3.9 x86)](https://mega.nz/file/6UsARa7R#pg5KgxW0NgkHEl_k0fK6NbBK8LfdEcDGZ6NsVeWwDKM)
 
-If you are on a non-Windows operating system, please refer to the [Panda3D SDK setup portion of Open Toontown's setup guide](https://github.com/open-toontown/open-toontown/blob/develop/README.md#setup). Those steps should also work for this source. You can use the following links to be taken to the respective operating system quickly:
-- [MacOS 10.9+](https://github.com/open-toontown/open-toontown/blob/develop/README.md#macos-109)
-- [Linux](https://github.com/open-toontown/open-toontown/blob/develop/README.md#linux-building-your-own)
+To play ToonTown: Archipelago, you will need to run a server.
+If someone else is running a server, skip steps 3 and 4.
 
-**NOTE:** If you install Panda3D in any other way that WAS NOT the 64 bit install listed above, you will need to pay extra
-attention to the `PPTYHON_PATH` step of this guide!
+1. Download the latest release [here.](https://github.com/toontown-archipelago/toontown-archipelago/releases/latest)
+2. Extract the ZIP to a folder of your choice.
+3. Open the folder and run `start_servers.bat`. This will make some windows appear, do not close these during gameplay!
+4. If you're looking to play with friends, see [here.](#i-set-up-the-server-and-everything-is-running-fine-i-can-connect-to-my-own-server-but-my-friends-cant-why)
+5. To start the game, run `start_client.bat`. This will open a window that will help you set up your client.
+6. Where it says "Username", enter a name unique to you. You should enter this same name everytime you play. Then press enter.
+7. Where it says "Server IP", enter the IP address of the server. Then press enter. If you're running the server locally, just press enter without typing anything.
+8. Enjoy ToonTown: Archipelago
 
-# Running the Source
+### Docker
 
-### PPYTHON_PATH
-
-If you installed Panda3D using the very first link (64 Bit version of Panda3D for Windows), you can probably skip this step.
-If you get an issue that relates to `The system cannot find the path specified`, then this is probably where your issue lies.
-
-First, navigate to the `PPYTHON_PATH` file in the root directory and open it. Make sure that the path to your Panda3D 
-install is present. If you left default options while running the 64 bit Panda3D installer for Windows, it should be `"C:/Panda3D-1.11.0-x64/python/ppython.exe"` 
-in almost all cases.
-
-For those who installed Panda3D via other means (32 bit version of Panda3D, other operating systems, different versions, etc.),
-you **must** verify that the path present in `PPTYHON_PATH` matches the install location of where you installed Panda3D.
-
-## Starting a Server/District
-
-The following steps relate to the server side of the game. If you are playing single player and/or hosting a server for
-yourself and friends, this part of the guide applies to you. If you are **only joining a friend who says they are hosting
-a game**, then you can skip to the `Starting the Game` part of this guide!
-
-Once you have done all the proper setup covered in this README, you can now navigate to the `win32` folder in the root directory.
-Once you are there, you need to run the `.bat` files present in the following order:
-- `start_astron_server.bat`
-- `start_uberdog_server.bat`
-- `start_ai_server.bat`
-
-Assuming that no errors occur, you are now running a Toontown: Archipelago mini-server!
-
-These are the three processes that are crucial for running a Toontown Server. If you want a TLDR on what each process
-does, UberDOG is meant for handling global services like login, cross district communication, etc. AI(s) is/are each separate 
-"district" in game, and is where most server side code is handled. Astron is the communication interface for the two and 
-game clients.
+Coming Soon...
 
 
-## Starting The Game/Joining a Mini-Server
+# Running from source
 
-Once you have done all the proper setup covered in this README, you can now navigate to the win32 folder in the root 
-directory. Once you are there, you need to run either of the following .bat files **(BUT ONLY ONE!)**:
+## Panda3D
+This source code requires a specific version of Panda3D to run.
 
-- `start_game.bat` *Runs the game client, and assumes you are playing on `localhost` w/ username `dev`*
-- `join_server.bat` *Runs the game client, but presents the option to input a Toontown: Archipelago gameserver IP and username*
+### Windows & Linux
 
-If you are playing solo and/or hosting the server yourself, it does not matter which one you use. But if you are joining
-someone else's mini-server, use `join_server.bat` and input the IP you were given and a random username. 
-Usernames are essentially your "login" as there is no true account management system in an offline source.
+Please download the latest engine build from [here.](https://github.com/toontown-archipelago/panda3d/releases/latest)
 
-The game should start up and you should be good to start playing!
+### Other
 
+At this time ToonTown: Archipelago only supports Windows & Linux Servers.
+To run on other platforms you will need to build the engine. 
+This is an advanced use-case and is unsupported.
+To get started, please see the build instructions [here.](https://github.com/toontown-archipelago/panda3d)
+
+## Starting the game
+
+Once Panda3D is installed, please find your systems launch directory.
+- Windows: `win32`
+- Mac: `darwin`
+- Linux: `linux`
+
+Then run the following scripts in order:
+- `start_astron_server`
+- `start_uberdog_server`
+- `start_ai_server`
+- `start_game`
 
 ## Common Issues/FAQ
 
