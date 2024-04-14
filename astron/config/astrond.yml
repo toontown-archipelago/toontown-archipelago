@@ -1,10 +1,10 @@
 general:
-    eventlogger: 127.0.0.1:7197
+    eventlogger: 0.0.0.0:7197
     dc_files:
         - ../dclass/tto.dc
 
 messagedirector:
-    bind: 127.0.0.1:7199
+    bind: 0.0.0.0:7199
     threaded: false
 
 uberdogs:
@@ -79,5 +79,5 @@ roles:
             max: 399999999
 
     - type: eventlogger
-      bind: 127.0.0.1:7197
+      bind: 0.0.0.0:7197
       output: ../logs/events-%y%m%d_%H%M%S.log
