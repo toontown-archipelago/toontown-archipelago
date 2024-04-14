@@ -48,7 +48,7 @@ At this time, Windows is the only supported platform. For other platforms, pleas
 To play Toontown: Archipelago, you will need to run a server.
 If someone else is running a server, skip steps 3 and 4.
 
-1. Download the latest release [here.](https://github.com/toontown-archipelago/toontown-archipelago/releases/latest)
+1. Download `TTAP.zip` from [here.](https://github.com/toontown-archipelago/toontown-archipelago/releases/latest)
 2. Extract the ZIP to a folder of your choice.
 3. Open the folder and run `start_servers.bat`. This will make some windows appear, do not close these during gameplay!
 4. If you're looking to play with friends, see [here.](#i-set-up-the-server-and-everything-is-running-fine-i-can-connect-to-my-own-server-but-my-friends-cant-why)
@@ -58,23 +58,29 @@ If someone else is running a server, skip steps 3 and 4.
 8. Enjoy Toontown: Archipelago!
 9. For Archipelago randomizer specific setup check the [FAQ section.](#common-issuesfaq), 
 
-### Docker
+### Docker (Linux Server)
 
-Coming Soon...
+Before starting, please ensure you have Docker and Docker Compose installed.
+You can find out how to install them [here.](https://docs.docker.com/engine/install/)
 
+1. Download the `Source Code (ZIP)` from [here.](https://github.com/toontown-archipelago/toontown-archipelago/releases/latest)
+2. Extract the ZIP to a folder of your choice.
+3. Using `cd`, navigate to the `launch/docker` directory.
+4. Start the server using `docker compose up`. This may take a while.
+5. Press `Control+C` to stop the server.
 
 # Running from source
 
 ## Panda3D
 This source code requires a specific version of Panda3D to run.
 
-### Windows & Linux
+### Windows
 
 Please download the latest engine build from [here.](https://github.com/toontown-archipelago/panda3d/releases/latest)
 
 ### Other
 
-At this time Toontown: Archipelago only supports Windows & Linux Servers.
+At this time Toontown: Archipelago only supports Windows.
 To run on other platforms you will need to build the engine. 
 This is an advanced use-case and is unsupported.
 To get started, please see the build instructions [here.](https://github.com/toontown-archipelago/panda3d)
