@@ -1,9 +1,6 @@
 # This is the PRC configuration file for settings that are
 # specific to developer instances of Toontown Online.
 
-# Window settings
-window-title Toontown: Archipelago
-
 # Notify settings
 console-output true
 
