@@ -1,7 +1,7 @@
 @echo off
 title Toontown Archipelago - Launcher
 
-echo Starting Astron
+echo Starting Servers
 start start_servers.bat
 
 TIMEOUT /T 2
