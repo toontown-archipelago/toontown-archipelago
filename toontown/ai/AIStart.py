@@ -1,21 +1,48 @@
 from panda3d.core import *
 from otp.otpbase import PythonUtil
 import builtins
+import os
 
 import argparse
 
 parser = argparse.ArgumentParser(description='Toontown Online - AI Server')
-parser.add_argument('--base-channel', help='The base channel that the server will use.')
-parser.add_argument('--max-channels', help='The number of channels that the server will be able to use.')
-parser.add_argument('--stateserver', help='The control channel of this AI\'s designated State Server.')
-parser.add_argument('--district-name', help='The name of the district on this AI server.')
-parser.add_argument('--astron-ip',
-                    help='The IP address of the Astron Message Director that this AI will connect to.')
-parser.add_argument('--eventlogger-ip', help='The IP address of the Astron Event Logger that this AI will log to.')
-parser.add_argument('config', nargs='*', default=['config/general.prc', 'config/dev.prc'],
-                    help='PRC file(s) that will be loaded on this AI instance.')
-args = parser.parse_args()
+parser.add_argument(
+    '--base-channel',
+    default=os.environ.get('BASE_CHANNEL'),
+    help='The base channel that the server will use.'
+)
+parser.add_argument(
+    '--max-channels',
+    default=os.environ.get('MAX_CHANNELS'),
+    help='The number of channels that the server will be able to use.'
+)
+parser.add_argument(
+    '--stateserver',
+    default=os.environ.get('STATESERVER'),
+    help='The control channel of this AI\'s designated State Server.'
+)
+parser.add_argument(
+    '--district-name',
+    default=os.environ.get('DISTRICT_NAME'),
+    help='The name of the district on this AI server.'
+)
+parser.add_argument(
+    '--astron-ip',
+    default=os.environ.get('ASTRON_IP'),
+    help='The IP address of the Astron Message Director that this AI will connect to.'
+)
+parser.add_argument(
+    '--eventlogger-ip',
+    default=os.environ.get('EVENTLOGGER_IP'),
+    help='The IP address of the Astron Event Logger that this AI will log to.')
+parser.add_argument(
+    'config',
+    nargs='*',
+    default=['config/general.prc', 'config/dev.prc'],
+    help='PRC file(s) that will be loaded on this AI instance.'
+)
 
+args = parser.parse_args()
 for prc in args.config:
     loadPrcFile(prc)
 
