@@ -16,8 +16,8 @@ that however you want to set up your slots for gameplay, it should work as you w
 - Multi-tooning 2-4 toons that all have unique slots
 - Playing with 2 other friends who are also multi-tooning 4 toons and all sharing the same slot
 
-The possibilities really are endless and you can play the game however you want, just make sure you set up your 
-Archipelago rooms to accommodate that.
+The possibilities really are endless, and you can play the game however you want. 
+Just make sure you set up your Archipelago rooms to accommodate that!
 
 
 # Source Code
@@ -41,11 +41,11 @@ Credits:
 
 # Getting Started
 
-At this time, Windows is the only supported platform. For other platforms, please see [Running From Source.](#running-the-source)
+At this time, Windows is the only supported platform. For other platforms, please see [Running From Source.](#running-from-source)
 
 ### Windows
 
-To play ToonTown: Archipelago, you will need to run a server.
+To play Toontown: Archipelago, you will need to run a server.
 If someone else is running a server, skip steps 3 and 4.
 
 1. Download the latest release [here.](https://github.com/toontown-archipelago/toontown-archipelago/releases/latest)
@@ -55,7 +55,8 @@ If someone else is running a server, skip steps 3 and 4.
 5. To start the game, run `start_client.bat`. This will open a window that will help you set up your client.
 6. Where it says "Username", enter a name unique to you. You should enter this same name everytime you play. Then press enter.
 7. Where it says "Server IP", enter the IP address of the server. Then press enter. If you're running the server locally, just press enter without typing anything.
-8. Enjoy ToonTown: Archipelago
+8. Enjoy Toontown: Archipelago!
+9. For Archipelago randomizer specific setup check the [FAQ section.](#common-issuesfaq), 
 
 ### Docker
 
@@ -73,7 +74,7 @@ Please download the latest engine build from [here.](https://github.com/toontown
 
 ### Other
 
-At this time ToonTown: Archipelago only supports Windows & Linux Servers.
+At this time Toontown: Archipelago only supports Windows & Linux Servers.
 To run on other platforms you will need to build the engine. 
 This is an advanced use-case and is unsupported.
 To get started, please see the build instructions [here.](https://github.com/toontown-archipelago/panda3d)
