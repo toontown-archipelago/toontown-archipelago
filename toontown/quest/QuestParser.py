@@ -29,7 +29,7 @@ curId = None
 
 
 if typing.TYPE_CHECKING:
-    from toontown.toonbase.ToontownBattleGlobals import *
+    from toontown.toonbase.ToonBaseGlobals import *
 
 def init():
     globalVarDict.update({'render': render,
