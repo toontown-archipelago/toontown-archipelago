@@ -23,20 +23,6 @@ class DatabaseObject:
         self.readObject(toon, fields)
         return toon
 
-    if simbase.wantPets:
-
-        def readPet(self):
-            from toontown.pets import DistributedPetAI
-            pet = DistributedPetAI.DistributedPetAI(self.air)
-            self.readObject(pet, None)
-            return pet
-
-        def readPetProxy(self):
-            from toontown.pets import DistributedPetProxyAI
-            petProxy = DistributedPetProxyAI.DistributedPetProxyAI(self.air)
-            self.readObject(petProxy, None)
-            return petProxy
-
     def readObject(self, do, fields = None):
         self.do = do
         className = do.__class__.__name__

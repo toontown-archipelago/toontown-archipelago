@@ -78,30 +78,7 @@ class FriendHandle:
         return understandable
 
     def scrubTalk(self, message, mods):
-        scrubbed = 0
-        text = copy.copy(message)
-        for mod in mods:
-            index = mod[0]
-            length = mod[1] - mod[0] + 1
-            newText = text[0:index] + length * '\x07' + text[index + length:]
-            text = newText
-
-        words = text.split(' ')
-        newwords = []
-        for word in words:
-            if word == '':
-                newwords.append(word)
-            elif word[0] == '\x07':
-                newwords.append('\x01WLDisplay\x01' + self.chatGarbler.garbleSingle(self, word) + '\x02')
-                scrubbed = 1
-            elif base.whiteList.isWord(word):
-                newwords.append(word)
-            else:
-                newwords.append('\x01WLDisplay\x01' + word + '\x02')
-                scrubbed = 1
-
-        newText = ' '.join(newwords)
-        return (newText, scrubbed)
+        return message, 0
 
     def replaceBadWords(self, text):
         words = text.split(' ')

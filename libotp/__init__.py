@@ -1,5 +1,3 @@
-from .movement.CImpulse import CImpulse
-from .movement.CMover import CMover
 from .nametag import NametagGlobals
 from .nametag.ChatBalloon import ChatBalloon
 from .nametag.ClickablePopup import ClickablePopup

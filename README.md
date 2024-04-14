@@ -34,9 +34,8 @@ Credits:
 * [Open Toontown](https://github.com/open-toontown) for providing a great reference for a Toontown codebase ported to Python 3 and the HD Mickey Font
 * Toontown Infinite for Bossbot HQ suit paths
 * [Astron](https://github.com/Astron/Astron)
-* [Panda3D](https://github.com/panda3d/panda3d)  (More specifically, [Astron's fork of Panda3D](https://github.com/Astron/panda3d))  
+* [Panda3D](https://github.com/panda3d/panda3d)  (More specifically, [Open Toontown's fork of Panda3D](https://github.com/open-toontown/panda3d))  
 * [libpandadna](https://github.com/loblao/libpandadna)
-* [libotp-movement](https://github.com/jwcotejr/libotp-movement)
 * [libotp-nametags](https://github.com/loblao/libotp-nametags)
 * [Ben Briggs](https://www.youtube.com/@benbriggsmusic) for the dripstinct music.
 * Reverse-engineered Toontown Online client/server source code is property of The Walt Disney Company.
