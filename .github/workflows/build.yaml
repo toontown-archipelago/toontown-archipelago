@@ -56,10 +56,17 @@ jobs:
 
       - name: Compress Release
         run: |
-          Compress-Archive -Path release\* -DestinationPath TTAP-${{ github.ref_name }}.zip
+          Compress-Archive -Path release\* -DestinationPath TTAP.zip
 
-      - name: Upload Game
+      - name: Upload Game Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "TTAP.zip"
+          path: "TTAP.zip"
+          if-no-files-found: "error"
+
+      - name: Upload Game to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.ref_name }} TTAP-${{ github.ref_name }}.zip
+          gh release upload ${{ github.ref_name }} TTAP.zip
