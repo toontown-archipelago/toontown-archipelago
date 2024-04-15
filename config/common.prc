@@ -1,16 +1,13 @@
-# This is the PRC configuration file for settings that are
-# used by both developer & production instances of Toontown Online.
+# Server settings
+version v0.7.0 Alpha
+server-version tt-ap-edition
 
-version v0.6.1 Alpha
+# Developer settings
+want-dev false
+schellgames-dev false
 
-# Window settings
-win-origin -2 -2
-show-frame-rate-meter #t
-frame-rate-meter-text-pattern %0.f FPS
-frame-rate-meter-update-interval 0.001
-window-title Toontown: Archipelago
-
-# Notify settings
+# Logging
+console-output true
 notify-level-gobj error
 notify-level-collide warning
 notify-level-chan warning
@@ -20,15 +17,26 @@ notify-integrate false
 notify-timestamp false
 default-directnotify-level info
 
+# Window settings
+load-display pandagl
+window-title Toontown: Archipelago
+win-origin -2 -2
+depth-bits 24
+frame-rate-meter-text-pattern %0.f FPS
+frame-rate-meter-update-interval 0.001
+
+# Audio settings
+audio-library-name p3openal_audio
+
+# Astron
+dc-file astron/dclass/tto.dc
+
 # Server settings
 ttoff-specific-login true
 
-# Resources settings
+# Resources
 model-path /
 default-model-extension .bam
-
-# Display settings
-depth-bits 24
 
 # GUI settings
 direct-wtext false
@@ -37,6 +45,7 @@ on-screen-debug-font ImpressBT.ttf
 # Chat settings
 parent-password-set true
 allow-secret-chat true
+want-whitelist false
 force-avatar-understandable true
 force-player-understandable true
 
@@ -47,7 +56,6 @@ want-news-tab false
 # Gameplay settings
 want-legacy-heads false
 want-gardening true
-want-cogdominiums true
 want-emblems true
 
 # Misc. settings
@@ -58,6 +66,5 @@ inactivity-timeout 180
 merge-lod-bundles false
 early-event-sphere true
 server-data-folder backups/
-isclient-check false
 model-cache-dir
 texture-anisotropic-degree 16

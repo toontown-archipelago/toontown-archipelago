@@ -1,7 +1,9 @@
 name: "Build Game"
-on: ["workflow_dispatch"]
+on:
+  release:
+    types: [published]
 jobs:
-  build-client:
+  build-game:
     runs-on: windows-latest
     permissions:
       contents: write  # Needed for release upload
@@ -9,7 +11,7 @@ jobs:
       run:
         shell: powershell
     steps:
-      - name: "Checkout files"
+      - name: Checkout files
         uses: actions/checkout@v4
 
       - name: Install Python
@@ -25,14 +27,14 @@ jobs:
 
       - name: Build Client
         run: |
-          python -m nuitka ./build/launcher/launch.py --standalone --output-dir=output --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
+          python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
 
       - name: Copy Built Files
         run: |
           New-Item -Name "release" -ItemType "directory"
           Copy-Item -Path "output\launch.dist" -Destination "release\game" -Recurse
 
-      - name: Building Resources
+      - name: Build & Copy Resources
         run: |
           New-Item -Name "release\game\resources" -ItemType "directory"
           cd resources
@@ -41,8 +43,8 @@ jobs:
       - name: Copy Config Files
         run: |
           New-Item -Name "release\game\config" -ItemType "directory"
-          Copy-Item -Path "config\built.prc" -Destination "release\game\config\"
-          Copy-Item -Path "config\general.prc" -Destination "release\game\config\"
+          Copy-Item -Path "config\production.prc" -Destination "release\game\config\"
+          Copy-Item -Path "config\common.prc" -Destination "release\game\config\"
 
       - name: Copy Scripts
         run: |
@@ -52,9 +54,12 @@ jobs:
         run: |
           Copy-Item -Path "astron" -Destination "release\game" -Recurse
 
+      - name: Compress Release
+        run: |
+          Compress-Archive -Path release\* -DestinationPath TTAP-${{ github.ref_name }}.zip
+
       - name: Upload Game
-        uses: actions/upload-artifact@v4
-        with:
-          name: "TTAP"
-          path: "release"
-          if-no-files-found: "error"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.ref_name }} TTAP-${{ github.ref_name }}.zip

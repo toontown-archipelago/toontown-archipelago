@@ -33,13 +33,7 @@ class AccountDB:
 
         # This uses dbm, so we open the DB file:
         accountDbFile = simbase.config.GetString('accountdb-local-file', 'astron/databases/accounts.db')
-
-        if sys.platform == 'darwin':
-            self.dbm = dbm.dumb.open(accountDbFile, 'c')
-            # dbm = dumbdbm
-        else:
-            self.dbm = dbm.open(accountDbFile, 'c')
-            # dbm = anydbm
+        self.dbm = dbm.dumb.open(accountDbFile, 'c')
 
     def lookup(self, playToken, callback):
         raise NotImplementedError('lookup')  # Must be overridden by subclass.
