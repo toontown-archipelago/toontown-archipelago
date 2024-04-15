@@ -7,9 +7,9 @@ cd ../..
 
 export BASE_CHANNEL=401000000
 export MAX_CHANNELS=999999
-export STATE_SERVER=4002
+export STATESERVER=4002
 export ASTRON_IP="127.0.0.1:7199"
-export EVENT_LOGGER_IP="127.0.0.1:7197"
+export EVENTLOGGER_IP="127.0.0.1:7197"
 export DISTRICT_NAME="Archipelago Avenue"
 
 while true

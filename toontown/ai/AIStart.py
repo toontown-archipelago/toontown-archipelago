@@ -34,7 +34,8 @@ parser.add_argument(
 parser.add_argument(
     '--eventlogger-ip',
     default=os.environ.get('EVENTLOGGER_IP'),
-    help='The IP address of the Astron Event Logger that this AI will log to.')
+    help='The IP address of the Astron Event Logger that this AI will log to.'
+)
 parser.add_argument(
     'config',
     nargs='*',
