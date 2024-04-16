@@ -1,0 +1,72 @@
+name: "Build Game"
+on:
+  release:
+    types: [published]
+jobs:
+  build-game:
+    runs-on: windows-latest
+    permissions:
+      contents: write  # Needed for release upload
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install nuitka
+          python -m pip install -r requirements.txt
+          python -m pip install "https://github.com/toontown-archipelago/panda3d/releases/latest/download/panda3d-1.11.0-cp311-cp311-win_amd64.whl"
+
+      - name: Build Client
+        run: |
+          python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
+
+      - name: Copy Built Files
+        run: |
+          New-Item -Name "release" -ItemType "directory"
+          Copy-Item -Path "output\launch.dist" -Destination "release\game" -Recurse
+
+      - name: Build & Copy Resources
+        run: |
+          New-Item -Name "release\game\resources" -ItemType "directory"
+          cd resources
+          Get-ChildItem -Directory | ForEach-Object { multify.exe -c -f "../release/game/resources/$($_.Name).mf" $_.Name }
+
+      - name: Copy Config Files
+        run: |
+          New-Item -Name "release\game\config" -ItemType "directory"
+          Copy-Item -Path "config\production.prc" -Destination "release\game\config\"
+          Copy-Item -Path "config\common.prc" -Destination "release\game\config\"
+
+      - name: Copy Scripts
+        run: |
+          Get-ChildItem build\scripts | ForEach-Object { Copy-Item -Path $_.FullName -Destination "release\" }
+
+      - name: Copy Astron
+        run: |
+          Copy-Item -Path "astron" -Destination "release\game" -Recurse
+
+      - name: Compress Release
+        run: |
+          Compress-Archive -Path release\* -DestinationPath TTAP.zip
+
+      - name: Upload Game Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "TTAP.zip"
+          path: "TTAP.zip"
+          if-no-files-found: "error"
+
+      - name: Upload Game to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.ref_name }} TTAP.zip

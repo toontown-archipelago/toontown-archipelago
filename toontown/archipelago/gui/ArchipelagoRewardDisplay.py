@@ -1,5 +1,4 @@
 from typing import List
-from unittest import loader
 
 from direct.gui import DirectGuiGlobals
 from direct.gui.DirectButton import DirectButton

@@ -22,7 +22,9 @@ toontown/archipelago/output/
 
 # PyCharm IDE
 .idea
+.run/
 venv/
 
+# Build
 output/
-.run/
+release/
