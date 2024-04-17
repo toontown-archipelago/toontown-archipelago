@@ -57,6 +57,18 @@ class MaxGlobalGagXPRange(Range):
     default = 15
 
 
+class GlobalDamageMultiplierRange(Range):
+    """
+    The numerator of the global damage multiplier for all gags, with a denominator of 10:
+    If you set this to x, the multiplier will actually be x/10.
+    This applies to all players in the server.
+    """
+    display_name = "Global Damage Multiplier"
+    range_start = 0
+    range_end = 160
+    default = 10
+
+
 class StartMoneyOption(Range):
     """
     The starting amount of jellybeans to have when starting a new game.
@@ -234,6 +246,7 @@ class ToontownOptions(PerGameCommonOptions):
     starting_laff: StartLaffOption
     base_global_gag_xp: BaseGlobalGagXPRange
     max_global_gag_xp: MaxGlobalGagXPRange
+    global_damage_multiplier: GlobalDamageMultiplierRange
     starting_money: StartMoneyOption
     cog_bosses_required: CogBossesRequired
     tpsanity: TPSanity

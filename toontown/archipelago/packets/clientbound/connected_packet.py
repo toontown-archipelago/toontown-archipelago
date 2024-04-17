@@ -132,6 +132,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         rng_option = self.slot_data.get('seed_generation_type', 'global')
         new_seed = self.handle_seed_generation_type(av, new_seed, rng_option)
         av.setSeed(new_seed)
+        
+        # Get damage multiplier
+        damage_mult = self.slot_data.get('global_damage_multiplier', 10)/10
+        simbase.air.archipelagoManager.setDamageMultiplier(damage_mult)
 
     def handle(self, client):
         self.debug(f"Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"

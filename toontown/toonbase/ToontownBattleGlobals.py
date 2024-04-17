@@ -236,6 +236,9 @@ def getAccuracyPercentString(track, level):
     return f"{AvPropAccuracy[track][level]}%"
 
 
+DamageMultiplier = 1
+
+
 AvPropDamage = (
     (   # Toonup
         ((8, 10), (Levels[0][0], Levels[0][1])),
@@ -363,7 +366,7 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
             damage += getDamageBonus(originalDamage)
     elif organicBonus or propBonus:
         damage += getDamageBonus(damage)
-    return math.floor(damage)
+    return math.floor(DamageMultiplier*damage)
 
 
 def getDamageBonus(normal):

@@ -7,6 +7,7 @@ from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
 from toontown.archipelago.util.archipelago_information import ArchipelagoInformation
 from toontown.toon.DistributedToonAI import DistributedToonAI
+from toontown.toonbase import ToontownBattleGlobals
 
 
 class DistributedArchipelagoManagerAI(DistributedObjectAI):
@@ -76,6 +77,13 @@ class DistributedArchipelagoManagerAI(DistributedObjectAI):
             infoToSend.append(ArchipelagoInformation(session.avatar.doId, session.getSlotId(), session.getTeamId()))
 
         self.d_sync(infoToSend)
+
+    def getDamageMultiplier(self):
+        return ToontownBattleGlobals.DamageMultiplier
+
+    def setDamageMultiplier(self, damage_mult: float):
+        ToontownBattleGlobals.DamageMultiplier = damage_mult
+        self.sendUpdate('setDamageMultiplier', [damage_mult])
 
     # Given an toon ID, return the ID of the team they are on.
     # Returns None if they are either not on a team, or not connected to Archipelago.

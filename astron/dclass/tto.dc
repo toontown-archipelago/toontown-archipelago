@@ -3942,6 +3942,7 @@ struct ArchipelagoInformation {
 
 dclass DistributedArchipelagoManager : DistributedObject {
   sync(ArchipelagoInformation[]) required broadcast ram;
+  setDamageMultiplier(float64) required broadcast ram;
 };
 
 dclass DistributedInGameNewsMgr : DistributedObjectGlobal {

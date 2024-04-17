@@ -7,6 +7,7 @@ from toontown.archipelago.definitions import color_profile
 from toontown.archipelago.definitions.color_profile import ColorProfile
 from toontown.archipelago.util.archipelago_information import ArchipelagoInformation
 from toontown.toon.DistributedToon import DistributedToon
+from toontown.toonbase import ToontownBattleGlobals
 
 # An array of default defined team colors to use.
 # Feel free to dynamically adjust this array however you please
@@ -188,3 +189,9 @@ class DistributedArchipelagoManager(DistributedObject):
         # Extract the toon's team information and find the team's corresponding color.
         teamID = info.teamId
         return self.getTeamColorProfile(teamID)
+
+    def getDamageMultiplier(self):
+        return ToontownBattleGlobals.DamageMultiplier
+
+    def setDamageMultiplier(self, damage_mult: float):
+        ToontownBattleGlobals.DamageMultiplier = damage_mult
