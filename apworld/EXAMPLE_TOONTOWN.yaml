@@ -38,6 +38,12 @@ Toontown:
   # Range: 0 to 9999
   starting_money: 1000
 
+  ### Boss Settings ###
+
+  # How many checks you will receive from a cog boss upon completion.
+  # Range: 0 to 5
+  checks_per_boss: 4
+
   ### Completion Settings ###
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
@@ -130,13 +136,6 @@ Toontown:
     - Cashbot Disguise
     - Lawbot Disguise
     - Bossbot Disguise
-
-  # Exclude boss clears from having important progression items
-  exclude_locations:
-    - Sellbot Proof
-    - Cashbot Proof
-    - Lawbot Proof
-    - Bossbot Proof
 
 game: Toontown
 requires:

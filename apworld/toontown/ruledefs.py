@@ -420,14 +420,16 @@ def CanFightCFO(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 def CanFightCJ(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachLBHQ, *args) and passes_rule(Rule.LawbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSevenOffenseGag, *args)
+            and passes_rule(Rule.HasLevelSevenOffenseGag, *args) and passes_rule(Rule.CanFightVP, *args) \
+            and passes_rule(Rule.CanFightCFO, *args)
 
 
 @rule(Rule.CanFightCEO)
 def CanFightCEO(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachBBHQ, *args) and passes_rule(Rule.BossbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelEightOffenseGag, *args)
+            and passes_rule(Rule.HasLevelEightOffenseGag, *args) and passes_rule(Rule.CanFightVP, *args) \
+            and passes_rule(Rule.CanFightCFO, *args)
 
 
 @rule(Rule.AllBossesDefeated)
