@@ -1,9 +1,12 @@
+from typing import List, Set
+
 from .BattleBase import *
 import random
 import math
 from direct.directnotify import DirectNotifyGlobal
 from otp.otpbase import OTPLocalizer
 from toontown.toonbase import TTLocalizer
+
 notify = DirectNotifyGlobal.directNotify.newCategory('SuitBattleGlobals')
 debugAttackSequence = {}
 
@@ -275,25 +278,29 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
         'acc':(35,40,45,50,55),
         'attacks':
                 (('FountainPen',
-                    (5,6,8,10,12),
-                    (60,75,80,85,90),
-                    (15,15,15,15,15)),
+                    (5, 6, 8, 10, 12),
+                    (60, 75, 80, 85, 90),
+                    (10, 10, 10, 10, 10)),
+                 ('PowerTrip',
+                  (10, 11, 12, 14, 16),
+                  (50, 50, 60, 60, 70),
+                  (20, 20, 20, 20, 20)),
                 ('GlowerPower',
-                    (7,8,10,12,13),
-                    (50,60,70,80,90),
-                    (20,20,20,20,20)),
+                    (8, 9, 10, 11, 12),
+                    (75, 80, 85, 90, 95),
+                    (15, 15, 15, 15, 15)),
                 ('HalfWindsor',
-                    (8,10,12,14,16),
-                    (60,65,70,75,80),
-                    (20,20,20,20,20)),
+                    (8, 10, 12, 14, 16),
+                    (60, 65, 70, 75, 80),
+                    (15, 15, 15, 15, 15)),
                 ('HeadShrink',
-                    (10,12,15,18,21),
-                    (65,75,80,85,95),
-                    (35,35,35,35,35)),
+                    (13, 15, 17, 19, 21),
+                    (65, 75, 80, 85, 95),
+                    (30, 30, 30, 30, 30)),
                 ('Rolodex',
-                    (6,7,8,9,10),
-                    (60,65,70,75,80),
-                    (10,10,10,10,10)))},
+                    (10, 12, 14, 16, 18),
+                    (60, 65, 70, 75, 80),
+                    (10, 10, 10, 10, 10)))},
  'cr': {'name': TTLocalizer.SuitCorporateRaider,
         'singularname': TTLocalizer.SuitCorporateRaiderS,
         'pluralname': TTLocalizer.SuitCorporateRaiderP,
@@ -304,16 +311,16 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
         'acc':(35,40,45,50,55),
         'attacks':
             (('Canned',
-                (6,7,8,9,10),
-                (60,75,80,85,90),
+                (10,11,12,14,16),
+                (80,80,85,90,95),
                 (20,20,20,20,20)),
             ('EvilEye',
-                (12,15,18,21,24),
-                (60,70,75,80,90),
+                (12,14,16,18,20),
+                (65,75,80,85,90),
                 (35,35,35,35,35)),
             ('PlayHardball',
-                (7,8,12,15,16),
-                (60,65,70,75,80),
+                (12,15,18,20,22),
+                (55,60,65,70,70),
                 (30,30,30,30,30)),
             ('PowerTie',
                 (10,12,14,16,18),
@@ -329,21 +336,21 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
          'acc':(35,40,45,50,55),
          'attacks':
                 (('CigarSmoke',
-                    (10,12,15,18,20),
-                    (55,65,75,85,95),
+                    (12,14,16,18,20),
+                    (85,85,85,85,85),
                     (20,20,20,20,20)),
                 ('FloodTheMarket',
-                    (14,16,18,20,22),
-                    (70,75,85,90,95),
+                    (8,10,12,14,16),
+                    (95,95,95,95,95),
                     (10,10,10,10,10)),
-                ('SongAndDance',
-                    (14,15,17,19,20),
+                ('PowerTrip',
+                    (12,15,18,21,24),
                     (60,65,70,75,80),
-                    (20,20,20,20,20)),
+                    (50,50,50,50,50)),
                 ('TeeOff',
-                    (8,11,14,17,20),
-                    (55,65,70,75,80),
-                    (50,50,50,50,50)))},
+                    (16,18,20,22,24),
+                    (70,75,80,85,90),
+                    (20,20,20,20,20)))},
  'cc': {'name': TTLocalizer.SuitColdCaller,
         'singularname': TTLocalizer.SuitColdCallerS,
         'pluralname': TTLocalizer.SuitColdCallerP,
@@ -462,7 +469,7 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
                     (50,65,70,75,80),
                     (20,20,20,20,20)),
                 ('Quake',
-                    (9,12,15,18,21),
+                    (10,12,14,16,18),
                     (60,65,75,80,85),
                     (20,20,20,20,20)),
                 ('Shake',
@@ -510,23 +517,19 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
                (('BuzzWord',
                     (10,11,13,15,16),
                     (60,75,80,85,90),
-                    (20,20,20,20,20)),
-                ('ParadigmShift',
-                    (12,15,18,21,24),
-                    (60,70,75,80,90),
                     (25,25,25,25,25)),
-                ('PowerTrip',
-                    (10,13,14,15,18),
-                    (60,65,70,75,80),
-                    (15,15,15,15,15)),
+                ('ParadigmShift',
+                    (10,12,15,18,21),
+                    (65,65,70,70,75),
+                    (25,25,25,25,25)),
                 ('Schmooze',
                     (7,8,12,15,16),
                     (55,65,75,85,95),
-                    (30,30,30,30,30)),
+                    (35,35,35,35,35)),
                 ('TeeOff',
                     (8,9,10,11,12),
                     (70,75,80,85,95),
-                    (10,10,10,10,10)))},
+                    (15,15,15,15,15)))},
  'mh': {'name': TTLocalizer.SuitMrHollywood,
         'singularname': TTLocalizer.SuitMrHollywoodS,
         'pluralname': TTLocalizer.SuitMrHollywoodP,
@@ -536,13 +539,13 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
         'freq':(50,30,10,5,5),
         'acc':(35,40,45,50,55),
         'attacks':
-                (('PowerTrip',
-                    (10,12,15,18,20),
-                    (55,65,75,85,95),
+                (('SongAndDance',
+                    (12,14,16,18,20),
+                    (50,55,60,65,70),
                     (50,50,50,50,50)),
                 ('RazzleDazzle',
-                    (8,11,14,17,20),
-                    (70,75,85,90,95),
+                    (14,16,18,21,24),
+                    (75,80,85,90,95),
                     (50,50,50,50,50)))},
  'sc': {'name': TTLocalizer.SuitShortChange,
         'singularname': TTLocalizer.SuitShortChangeS,
@@ -656,19 +659,23 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
                 (('Audit',
                     (5,6,8,10,12),
                     (60,75,80,85,90),
-                    (15,15,15,15,15)),
+                    (10,10,10,10,10)),
                 ('Calculate',
                     (6,7,9,11,13),
                     (50,65,70,75,80),
-                    (30,30,30,30,30)),
+                    (25,25,25,25,25)),
+                ('Synergy',
+                    (6,7,8,9,10),
+                    (50,50,60,60,65),
+                    (20,20,20,20,20)),
                 ('Crunch',
                     (8,9,11,13,15),
                     (60,65,75,80,85),
-                    (35,35,35,35,35)),
+                    (30,30,30,30,30)),
                 ('Tabulate',
                     (5,6,7,8,9),
                     (50,50,50,50,50),
-                    (20,20,20,20,20)))},
+                    (15,15,15,15,15)))},
  'mb': {'name': TTLocalizer.SuitMoneyBags,
         'singularname': TTLocalizer.SuitMoneyBagsS,
         'pluralname': TTLocalizer.SuitMoneyBagsP,
@@ -704,7 +711,7 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
                     (60,75,80,85,90),
                     (30,30,30,30,30)),
                 ('Chomp',
-                    (12,15,18,21,24),
+                    (13,15,17,19,21),
                     (60,70,75,80,90),
                     (35,35,35,35,35)),
                 ('PlayHardball',
@@ -724,9 +731,9 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
         'freq':(50,30,10,5,5),
         'acc':(35,40,45,50,55),
         'attacks':
-                (('PowerTrip',
-                    (11,14,16,18,21),
-                    (60,65,70,75,80),
+                (('Synergy',
+                    (12,15,18,21,24),
+                    (60,65,70,70,75),
                     (50,50,50,50,50)),
                 ('TeeOff',
                     (10,12,14,16,18),
@@ -921,12 +928,12 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
         'freq':(50,30,10,5,5),
         'acc':(35,40,45,50,55),
         'attacks':
-                (('PowerTrip',
-                    (10,11,13,15,16),
-                    (75,80,85,90,95),
+                (('GuiltTrip',
+                    (15,17,19,21,24),
+                    (60,60,65,70,75),
                     (50,50,50,50,50)),
-                ('ThrowBook',
-                    (13,15,17,19,21),
+                ('FingerWag',
+                    (16,18,20,22,24),
                     (80,85,85,85,90),
                     (50,50,50,50,50)))}}
 
@@ -990,7 +997,7 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'Schmooze': ('speak', ATK_TGT_SINGLE),
  'Shake': ('stomp', ATK_TGT_GROUP),
  'Shred': ('shredder', ATK_TGT_SINGLE),
- 'SongAndDance': ('song-and-dance', ATK_TGT_SINGLE),
+ 'SongAndDance': ('song-and-dance', ATK_TGT_GROUP),
  'Spin': ('magic3', ATK_TGT_SINGLE),
  'Synergy': ('magic3', ATK_TGT_GROUP),
  'Tabulate': ('phone', ATK_TGT_SINGLE),
@@ -1104,6 +1111,25 @@ def getAttackTaunt(attackName, index = None):
     else:
         return random.choice(taunts)
     return
+
+
+# Returns a list of names of attacks a suit can perform.
+def getAttacksForSuit(suitName: str) -> Set[str]:
+
+    attackNames: Set[str] = set()
+    possibleSuitAttacks = SuitAttributes[suitName]['attacks']
+    for attack in possibleSuitAttacks:
+        attackNames.add(attack[0])
+
+    return attackNames
+
+
+# Similarly to getAttacksForSuit(), just returns the key representation of an attack instead.
+def getAttackKeysForSuit(suitName: str) -> Set[str]:
+    attackKeys: Set[str] = set()
+    for attackName in getAttacksForSuit(suitName):
+        attackKeys.add(SuitAttacks[attackName][0])
+    return attackKeys
 
 
 SuitAttackTaunts = TTLocalizer.SuitAttackTaunts

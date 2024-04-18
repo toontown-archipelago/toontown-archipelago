@@ -102,6 +102,14 @@ class TreasuresPerLocation(Range):
     range_end = 6
     default = 4
 
+class ChecksPerBoss(Range):
+    """
+    How many checks you will receive from a cog boss upon completion.
+    """
+    display_name = "Checks Per Boss"
+    range_start = 0
+    range_end = 5
+    default = 4
 
 class GagTrainingCheckBehavior(Choice):
     """
@@ -238,6 +246,7 @@ class ToontownOptions(PerGameCommonOptions):
     cog_bosses_required: CogBossesRequired
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
+    checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
     logical_tasks_per_playground: LogicalTasksPerPlayground
     logical_maxed_cog_gallery: LogicalMaxedCogGallery

@@ -1,3 +1,4 @@
+import traceback
 import types
 import collections
 from typing import List, Dict
@@ -37,6 +38,7 @@ import json
 from apworld.toontown import locations, items
 from toontown.archipelago.definitions import rewards
 from ..archipelago.definitions.death_reason import DeathReason
+from ..archipelago.packets.clientbound.bounced_packet import BouncedPacket
 
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
@@ -142,7 +144,14 @@ class MagicWord:
             if self.execLocation == MagicWordConfig.EXEC_LOC_CLIENT:
                 self.args = json.loads(self.args)
 
-            executedWord = self.handleWord(invoker, avId, toon, *self.args)
+            # Attempt to run the command, if we fail then tell the user why.
+            try:
+                executedWord = self.handleWord(invoker, avId, toon, *self.args)
+            except Exception as e:
+                traceback.print_exc()
+                toCheck = 'AI logs' if self.execLocation == MagicWordConfig.EXEC_LOC_SERVER else 'logs'
+                return f"An exception was caught when trying to invoke {self.__class__.__name__}: {e}\n\nCheck {toCheck} for a traceback."
+
         if executedWord:
             return executedWord
 
@@ -285,7 +294,7 @@ class SetSpeed(MagicWord):
 
 
 class MaxToon(MagicWord):
-    aliases = ["max", "idkfa"]
+    aliases = ["max"]
     desc = "Maxes out the target's stats. You can provide a gag track to exclude from the target's unlocked tracks."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("missingTrack", str, False, '')]
@@ -293,7 +302,7 @@ class MaxToon(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         missingTrack = args[0]
 
-        gagTracks = [7, 7, 7, 7, 7, 7, 7]
+        gagTracks = [8, 8, 8, 8, 8, 8, 8]  # 8s to allow gag exp overflow
         if missingTrack != '':
             try:
                 index = ('toonup', 'trap', 'lure', 'sound', 'throw',
@@ -313,9 +322,9 @@ class MaxToon(MagicWord):
         toon.inventory.maxInventory(clearFirst=True)
         toon.b_setInventory(toon.inventory.makeNetString())
 
-        toon.b_setBaseGagSkillMultiplier(10)
+        toon.b_setBaseGagSkillMultiplier(50)
 
-        toon.b_setMaxMoney(5000)
+        toon.b_setMaxMoney(30000)
         toon.b_setMoney(toon.getMaxMoney())
         toon.b_setBankMoney(ToontownGlobals.DefaultMaxBankMoney)
 
@@ -492,7 +501,7 @@ class SkipMovie(MagicWord):
 
 
 class ToggleGod(MagicWord):
-    aliases = ["god"]
+    aliases = ["god", 'godmode']
     desc = "Makes the target fast, immortal, all-powerful, and omnipotent."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
 
@@ -511,7 +520,7 @@ class ToggleCollisionsOff(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
 
     def handleWord(self, invoker, avId, toon, *args):
-        toon.collisionsOff()
+        return "This command is not supported. If you need to noclip, please use ~ghost."
 
 
 class GetPos(MagicWord):
@@ -590,7 +599,7 @@ class PrintPosHpr(MagicWord):
         printPosHpr(0)
 
 
-class camera(MagicWord):
+class Camera(MagicWord):
     aliases = ['cam']
     desc = "Set a movie sequence"
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
@@ -657,14 +666,15 @@ class camera(MagicWord):
             return points
 
 
-class pc(MagicWord):
-    aliases = ['cacascasc']
-    desc = "Set a movie sequence"
+class PrintCamera(MagicWord):
+    aliases = ['pc']
+    desc = "Prints the coordinates of the current camera position."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
 
     def handleWord(self, invoker, avId, toon, *args):
-        print((base.camera))
-        print((base.localAvatar.camera))
+        print(f"current camera pos:          {base.camera}")
+        print(f"current local av camera pos: {base.localAvatar.camera}")
+        return "Printed your current camera positions in your logs."
 
 
 class ToggleCollisionsOn(MagicWord):
@@ -673,7 +683,7 @@ class ToggleCollisionsOn(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
 
     def handleWord(self, invoker, avId, toon, *args):
-        toon.collisionsOn()
+        return "This command is not supported. If you need to noclip, please use ~ghost."
 
 
 class GlobalTP(MagicWord):
@@ -1700,7 +1710,8 @@ class LeaveRace(MagicWord):
         messenger.send('leaveRace')
 
 
-class rsp(MagicWord):
+class RestartPieRound(MagicWord):
+    aliases = ['rsp', 'restartpie']
     desc = "Restarts the pie round"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
@@ -1784,7 +1795,8 @@ class HitCFO(MagicWord):
         boss.magicWordHit(dmg, invoker.doId)
 
 
-class rcr(MagicWord):
+class RestartCraneRound(MagicWord):
+    aliases = ['rcr', 'restartcrane']
     desc = "Restarts the crane round"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
@@ -1814,7 +1826,8 @@ class rcr(MagicWord):
         return "Restarting Crane Round"
 
 
-class modifiers(MagicWord):
+class SetCFOModifiers(MagicWord):
+    aliases = ['cfomodifiers', 'cfomods']
     desc = "Dynamically tweak modifiers mid CFO"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     accessLevel = "MODERATOR"
@@ -2008,7 +2021,7 @@ class SkipCJ(MagicWord):
                 return "Skipping final round..."
 
 
-class Stun(MagicWord):
+class StunLawyers(MagicWord):
     desc = "Stuns all the lawyers in the CJ Evidence round."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     accessLevel = "MODERATOR"
@@ -2031,7 +2044,8 @@ class Stun(MagicWord):
         return "Stunned the lawyers!"
 
 
-class rsc(MagicWord):
+class RestartScaleRound(MagicWord):
+    aliases = ['rsc', 'restartscale']
     desc = "Restarts the scale round"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
@@ -2055,7 +2069,8 @@ class rsc(MagicWord):
         return "Restarting Scale Round"
 
 
-class cannons(MagicWord):
+class StartCannonRound(MagicWord):
+    aliases = ['cannons', 'startcannons']
     desc = "Enters the cannon round"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
@@ -2102,7 +2117,9 @@ class FillJury(MagicWord):
             boss.chairs[i].requestToonJuror()
         return "Filled chairs."
 
-class rss(MagicWord):
+
+class RestartSeltzerRound(MagicWord):
+    aliases = ['rss', 'restartseltzer']
     desc = "Restarts the seltzer round"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
@@ -2172,33 +2189,6 @@ class SkipVP(MagicWord):
                     boss.b_setState("Introduction")
                 boss.b_setState('BattleOne')
                 return "Skipping introduction!"
-
-
-class rpr(MagicWord):
-    desc = "Restarts the pie round"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("round", str, False, "next")]
-    accessLevel = "MODERATOR"
-
-    def handleWord(self, invoker, avId, toon, *args):
-        battle = args[0]
-        from toontown.suit.DistributedSellbotBossAI import DistributedSellbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedSellbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-        if not boss:
-            return "You aren't in a VP!"
-
-        battle = battle.lower()
-        boss.exitIntroduction()
-        boss.b_setState('PrepareBattleTwo')
-        boss.b_setState('BattleTwo')
-        boss.b_setState('PrepareBattleThree')
-        return "Restarting Pie Round"
-
 
 class StunVP(MagicWord):
     desc = "Stuns the VP in the final round of his battle."
@@ -3101,7 +3091,8 @@ class StartBoss(MagicWord):
         return 'Cog HQ hood data not found!'
 
 
-class dna(MagicWord):
+class SetDNA(MagicWord):
+    aliases = ['dna']
     desc = 'Modify a DNA part on the invoker'
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("part", str, True), ("value", str, True)]
@@ -3440,7 +3431,44 @@ class Archipelago(MagicWord):
                 toon.d_showReward(item_def.unique_id, "The Spellbook", False)
             return f"Gave {toon.getName()} a few random AP rewards"
 
+        if operation in ('deathlink'):
+            # Simulate a deathlink packet.
+
+            # Hack in a fake "AP client"
+            class FakeAPClient:
+                pass
+            client = FakeAPClient()
+            client.av = toon
+            # Create a deathlink packet
+            deathlink_packet = BouncedPacket({'cmd': "Bounced"})
+            deathlink_packet.data = {
+                'time': globalClock.getRealTime(),
+                'source': 'The Spellbook',
+                'cause': 'the spellbook decided it was your time to go.',
+            }
+            deathlink_packet.handle_deathlink(client)
+            return f"Simulating deathlink packet for {toon.getName()}"
+
         return f"Invalid argument, valid arguments are: check"
+
+
+# Command that forces your state to the 'Walk' state.
+# Used in rare circumstances where your toon gets softlocked to prevent having to restart the game.
+# Note: This is still a cheat so it should only be used when needed, as there are many scenarios where you
+# can break the game by running this command when you shouldn't.
+class FreeLocalToon(MagicWord):
+    aliases = ['free', 'unstuck', 'freeme', 'unstick', 'imstuck', 'stuck']
+    desc = "Forces your toon to be set in the 'walk' state where you can regain control of your toon and walk around freely. Use at your own risk."
+    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        # Check for common errors when trying to do this
+        if not hasattr(self.cr, 'playGame') or not hasattr(self.cr.playGame, 'place') or self.cr.playGame.getPlace() is None:
+            return "Your toon is in an invalid state to run this command!"
+
+        self.cr.playGame.getPlace().setState('walk')
+        return "Freed your toon!"
 
 
 # Use this command template for spawning objects client side to tweak attributes quickly
@@ -3461,8 +3489,6 @@ class Archipelago(MagicWord):
 #         return "Spawned a barrel"
 
 
-# Instantiate all classes defined here to register them.
-# A bit hacky, but better than the old system
-for item in list(globals().values()):
-    if isinstance(item, type) and issubclass(item, MagicWord):
-        i = item()
+# Loop through every registered subclass of MagicWord and instantiate it.
+for magicWordSubclass in MagicWord.__subclasses__():
+    _ = magicWordSubclass()

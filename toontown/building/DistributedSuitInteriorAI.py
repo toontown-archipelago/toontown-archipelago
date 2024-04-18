@@ -13,6 +13,7 @@ from . import DistributedElevatorIntAI
 import copy
 
 from ..archipelago.definitions.death_reason import DeathReason
+from ..toon.DistributedToonAI import DistributedToonAI
 from ..hood import ZoneUtil
 from ..toon.ToonDNA import ToonDNA
 
@@ -294,6 +295,13 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
             mult += getMoreXpHolidayMultiplier()
 
         self.battle.battleCalc.setSkillCreditMultiplier(mult)
+        
+        # Because we tried to set battle ID before we generated, we need to set a proper battle ID now
+        # to properly disable unites
+        for toonId in self.toons:
+            toon = self.air.getDo(toonId)
+            if isinstance(toon, DistributedToonAI):
+                toon.b_setBattleId(self.battle.getDoId())
 
     def __cleanupFloorBattle(self):
         for suit in self.suits:

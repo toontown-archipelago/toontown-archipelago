@@ -10,7 +10,7 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
     ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
-    TREASURE_LOCATION_TYPES
+    TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES
 from .options import ToontownOptions, TPSanity
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
@@ -293,6 +293,7 @@ class ToontownWorld(World):
             "local_itempool": local_itempool,
             "tpsanity": self.options.tpsanity.value,
             "treasures_per_location": self.options.treasures_per_location.value,
+            "checks_per_boss": self.options.checks_per_boss.value,
         }
 
     def calculate_starting_tracks(self):
@@ -349,6 +350,11 @@ class ToontownWorld(World):
         tpl = self.options.treasures_per_location.value
         rev_locs = TREASURE_LOCATION_TYPES[::-1]
         for i in range(len(rev_locs) - tpl):
+            forbidden_location_types.add(rev_locs[i])
+
+        cpb = self.options.checks_per_boss.value
+        rev_locs = BOSS_LOCATION_TYPES[::-1]
+        for i in range(len(rev_locs) - cpb):
             forbidden_location_types.add(rev_locs[i])
 
         return forbidden_location_types

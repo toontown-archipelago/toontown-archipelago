@@ -466,7 +466,7 @@ class UberTrapAward(APReward):
         damage = av.getHp() - newHp
         if av.getHp() > 0:
             av.takeDamage(damage)
-        av.inventory.maxInventory()
+        av.inventory.maxInventory(clearFirst=True, restockAmount=20)
         av.b_setInventory(av.inventory.makeNetString())
 
         av.d_broadcastHpString("UBERFIED!", (.35, .7, .35))
