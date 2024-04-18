@@ -932,7 +932,7 @@ SuitAttributes = {'f': {'name': TTLocalizer.SuitFlunky, # cog name
                     (15,17,19,21,24),
                     (60,60,65,70,75),
                     (50,50,50,50,50)),
-                ('ThrowBook',
+                ('FingerWag',
                     (16,18,20,22,24),
                     (80,85,85,85,90),
                     (50,50,50,50,50)))}}
