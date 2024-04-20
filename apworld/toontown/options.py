@@ -117,9 +117,9 @@ class TotalTasksRequired(Range):
 
 class HoodTasksRequired(Range):
     """
-    How many total tasks must be finished before being able to talk to Flippy to complete the game.
-    Must be less than total tasks in game (6 zones times logical_tasks_per_playground tasks).
-    Unused if win_condition is not total_tasks.
+    How many tasks must be finished in each neighborhood before being able to talk to Flippy to complete the game.
+    Must be less than logical_tasks_per_playground.
+    Unused if win_condition is not hood_tasks.
     """
     display_name = "Hood Tasks Required"
     range_start = 0
