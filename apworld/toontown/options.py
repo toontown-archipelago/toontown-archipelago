@@ -115,6 +115,18 @@ class TotalTasksRequired(Range):
     default = 48
 
 
+class HoodTasksRequired(Range):
+    """
+    How many total tasks must be finished before being able to talk to Flippy to complete the game.
+    Must be less than total tasks in game (6 zones times logical_tasks_per_playground tasks).
+    Unused if win_condition is not total_tasks.
+    """
+    display_name = "Hood Tasks Required"
+    range_start = 0
+    range_end = 12
+    default = 8
+
+
 class TPSanity(Choice):
     """
     Determines how Teleport Access is shuffled in the Item Pool for all Playgrounds/HQs.
@@ -277,6 +289,7 @@ class ToontownOptions(PerGameCommonOptions):
     win_condition: WinCondition
     cog_bosses_required: CogBossesRequired
     total_tasks_required: TotalTasksRequired
+    hood_tasks_required: HoodTasksRequired
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
     gag_training_check_behavior: GagTrainingCheckBehavior

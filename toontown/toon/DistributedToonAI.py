@@ -4510,6 +4510,18 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             if quests_completed < self.slotData.get('total_tasks_required', 48):
                 return False
 
+        # Win condition is hood_tasks
+        elif win_condition == 2:
+            tier, reward_history = self.getRewardHistory()
+            for hood_i in range(0, 6):
+                quests_completed = 0
+                hood_id = list(ToontownGlobals.HoodHierarchy.keys())[hood_i]
+                for reward in Quests.getRewardIdsFromHood(hood_id):
+                    if reward in reward_history:
+                        quests_completed += 1
+                if quests_completed < self.slotData.get('hood_tasks_required', 8):
+                    return False
+
         # Win condition is satisfied!
         return True
 

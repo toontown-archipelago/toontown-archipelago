@@ -278,6 +278,11 @@ class ToontownWorld(World):
             raise Exception(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
                             f"Too many total tasks required (max is 6*logical_tasks: {6*self.options.logical_tasks_per_playground.value}), please tweak settings.")
 
+        # If win condition is hood_tasks, make sure that the player can actually complete them.
+        if self.options.win_condition.value == 2 and self.options.total_tasks_required.value > self.options.logical_tasks_per_playground.value:
+            raise Exception(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
+                            f"Too many total tasks required (max is logical_tasks: {self.options.logical_tasks_per_playground.value}), please tweak settings.")
+
         # Return the result.
         return {
             "seed": self.multiworld.seed,
@@ -292,6 +297,7 @@ class ToontownWorld(World):
             "win_condition": self.options.win_condition.value,
             "cog_bosses_required": self.options.cog_bosses_required.value,
             "total_tasks_required": self.options.total_tasks_required.value,
+            "hood_tasks_required": self.options.total_tasks_required.value,
             "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,
