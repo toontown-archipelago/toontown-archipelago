@@ -4484,15 +4484,31 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Default goal is to default all 4 bosses at least once
     # todo add more win conditions, maybe even a field on toons that keeps track of flags from APReward 's that we get
     def winConditionSatisfied(self):
-        # Determines how many bosses has been defeated (level > 0 => they have beaten it)
-        bosses_defeated = 0
-        for level in self.getCogLevels():
-            if level > 0:
-                bosses_defeated += 1
+        win_condition = self.slotData.get('win_condition', 0)
 
-        # Ensure they've defeated enough bosses.
-        if bosses_defeated < self.slotData.get('cog_bosses_required', 4):
-            return False
+        # Win condition is cog_bosses
+        if win_condition == 0:
+            # Determines how many bosses has been defeated (level > 0 => they have beaten it)
+            bosses_defeated = 0
+            for level in self.getCogLevels():
+                if level > 0:
+                    bosses_defeated += 1
+
+            # Ensure they've defeated enough bosses.
+            if bosses_defeated < self.slotData.get('cog_bosses_required', 4):
+                return False
+
+        # Win condition is total_tasks
+        elif win_condition == 1:
+            quests_completed = 0
+            tier, reward_history = self.getRewardHistory()
+            for hood_i in range(0, 6):
+                hood_id = list(ToontownGlobals.HoodHierarchy.keys())[hood_i]
+                for reward in Quests.getRewardIdsFromHood(hood_id):
+                    if reward in reward_history:
+                        quests_completed += 1
+            if quests_completed < self.slotData.get('total_tasks_required', 48):
+                return False
 
         # Win condition is satisfied!
         return True
