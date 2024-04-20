@@ -123,7 +123,7 @@ class TownBattleToonPanel(DirectFrame):
             self.gag.setScale(0.8)
             self.gag.setPos(0, 0, 0.02)
             self.hasGag = 1
-            dmg = getAvPropDamage(track, level, self.avatar.experience, self.avatar.trackBonusLevel[track] >= level)
+            dmg = getAvPropDamage(track, level, self.avatar.experience, self.avatar.trackBonusLevel[track] >= level, toonDamageMultiplier=self.avatar.damageMultiplier)
             operator = '+' if track == HEAL_TRACK else '-'
             if track == LURE_TRACK:
                 operator = '%'

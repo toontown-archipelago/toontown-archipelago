@@ -281,7 +281,7 @@ class ToontownWorld(World):
             "starting_laff": self.options.starting_laff.value,
             "starting_money": self.options.starting_money.value,
             "base_global_gag_xp": self.options.base_global_gag_xp.value,
-            "global_damage_multiplier": self.options.global_damage_multiplier.value,
+            "damage_multiplier": self.options.damage_multiplier.value,
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
             "cog_bosses_required": self.options.cog_bosses_required.value,

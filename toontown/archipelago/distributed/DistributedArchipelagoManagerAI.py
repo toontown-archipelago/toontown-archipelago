@@ -78,13 +78,6 @@ class DistributedArchipelagoManagerAI(DistributedObjectAI):
 
         self.d_sync(infoToSend)
 
-    def getDamageMultiplier(self):
-        return ToontownBattleGlobals.DamageMultiplier
-
-    def setDamageMultiplier(self, damage_mult: float):
-        ToontownBattleGlobals.DamageMultiplier = damage_mult
-        self.sendUpdate('setDamageMultiplier', [damage_mult])
-
     # Given an toon ID, return the ID of the team they are on.
     # Returns None if they are either not on a team, or not connected to Archipelago.
     def getToonTeam(self, avId) -> Union[int, None]:

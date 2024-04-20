@@ -1165,6 +1165,7 @@ dclass DistributedToon : DistributedPlayer {
   setMagicHeadAccessories(uint16, uint16, uint16, uint16) airecv clsend;
 
   setBaseGagSkillMultiplier(uint16=1) required ownrecv broadcast db;
+  setDamageMultiplier(uint16=1) required ownrecv broadcast db;
   setAccessKeys(uint16[] = []) required ownrecv broadcast db;
   setReceivedItems(APItem[]) required ownrecv broadcast db;
   setCheckedLocations(uint32[]=[]) required ownrecv broadcast db;
@@ -3942,7 +3943,6 @@ struct ArchipelagoInformation {
 
 dclass DistributedArchipelagoManager : DistributedObject {
   sync(ArchipelagoInformation[]) required broadcast ram;
-  setDamageMultiplier(float64) required broadcast ram;
 };
 
 dclass DistributedInGameNewsMgr : DistributedObjectGlobal {

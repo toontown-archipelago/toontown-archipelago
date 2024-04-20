@@ -206,6 +206,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.instaKill = False
         self.overheadLaffMeter = None
         self.baseGagSkillMultiplier = 1
+        self.damageMultiplier = 100
         self.accessKeys: List[int] = []
         self.receivedItems: List[Tuple[int, int]] = []
         self.receivedItemIDs: set[int] = set()
@@ -2797,6 +2798,14 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # Set this toon's base gag xp multiplier but only on the server
     def setBaseGagSkillMultiplier(self, newGagSkillMultiplier) -> None:
         self.baseGagSkillMultiplier = newGagSkillMultiplier
+
+    # What is this toon's damage multiplier
+    def getDamageMultiplier(self) -> int:
+        return self.damageMultiplier
+
+    # Set this toon's damage multiplier
+    def setDamageMultiplier(self, newDamageMultiplier) -> None:
+        self.damageMultiplier = newDamageMultiplier
 
     # What is this toon's list of access keys acquired
     def getAccessKeys(self) -> List[int]:

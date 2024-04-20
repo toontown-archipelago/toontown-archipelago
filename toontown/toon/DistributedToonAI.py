@@ -4319,6 +4319,23 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def setBaseGagSkillMultiplier(self, newGagSkillMultiplier) -> None:
         self.baseGagSkillMultiplier = newGagSkillMultiplier
 
+    # Set this toon's damage multiplier and tell its client counterpart what it is (and save it to db?)
+    def b_setDamageMultiplier(self, newDamageMultiplier) -> None:
+        self.setDamageMultiplier(newDamageMultiplier)
+        self.d_setDamageMultiplier(newDamageMultiplier)
+
+    # Only tell the client what its new damage multiplier is (and save it to db?)
+    def d_setDamageMultiplier(self, newDamageMultiplier) -> None:
+        self.sendUpdate('setDamageMultiplier', [newDamageMultiplier])
+
+    # What is this toon's damage multiplier
+    def getDamageMultiplier(self) -> int:
+        return self.damageMultiplier
+
+    # Set this toon's damage multiplier
+    def setDamageMultiplier(self, newDamageMultiplier) -> None:
+        self.damageMultiplier = newDamageMultiplier
+
     # Set this toon's list of access keys acquired and tell its client counterpart what it is (and save it to db?)
     def b_setAccessKeys(self, keys: List):
         self.setAccessKeys(keys)

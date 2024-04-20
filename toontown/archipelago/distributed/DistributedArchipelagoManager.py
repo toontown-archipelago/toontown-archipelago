@@ -189,9 +189,3 @@ class DistributedArchipelagoManager(DistributedObject):
         # Extract the toon's team information and find the team's corresponding color.
         teamID = info.teamId
         return self.getTeamColorProfile(teamID)
-
-    def getDamageMultiplier(self):
-        return ToontownBattleGlobals.DamageMultiplier
-
-    def setDamageMultiplier(self, damage_mult: float):
-        ToontownBattleGlobals.DamageMultiplier = damage_mult
