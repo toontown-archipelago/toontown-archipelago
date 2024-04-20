@@ -279,9 +279,9 @@ class ToontownWorld(World):
                             f"Too many total tasks required (max is 6*logical_tasks: {6*self.options.logical_tasks_per_playground.value}), please tweak settings.")
 
         # If win condition is hood_tasks, make sure that the player can actually complete them.
-        if self.options.win_condition.value == 2 and self.options.total_tasks_required.value > self.options.logical_tasks_per_playground.value:
+        if self.options.win_condition.value == 2 and self.options.hood_tasks_required.value > self.options.logical_tasks_per_playground.value:
             raise Exception(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
-                            f"Too many total tasks required (max is logical_tasks: {self.options.logical_tasks_per_playground.value}), please tweak settings.")
+                            f"Too many hood tasks required (max is logical_tasks: {self.options.logical_tasks_per_playground.value}), please tweak settings.")
 
         # Return the result.
         return {
