@@ -34,11 +34,10 @@ Toontown:
   # Range: 0 to 30
   max_global_gag_xp: 30
   
-  # The numerator of the global damage multiplier for all gags, with a denominator of 10:
-  # If you set this to x, the multiplier will actually be x/10.
-  # This applies to all players in the server.
-  # Range: 0 to 160
-  global_damage_multiplier: 10
+  # The numerator of the damage multiplier for all gags, with a denominator of 100:
+  # If you set this to x, the multiplier will actually be x/100.
+  # Range: 0 to 500
+  damage_multiplier: 100
 
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 9999
