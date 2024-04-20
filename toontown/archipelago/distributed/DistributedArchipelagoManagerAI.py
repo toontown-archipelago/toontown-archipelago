@@ -7,7 +7,6 @@ from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
 from toontown.archipelago.util.archipelago_information import ArchipelagoInformation
 from toontown.toon.DistributedToonAI import DistributedToonAI
-from toontown.toonbase import ToontownBattleGlobals
 
 
 class DistributedArchipelagoManagerAI(DistributedObjectAI):
