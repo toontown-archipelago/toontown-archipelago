@@ -78,14 +78,53 @@ class StartMoneyOption(Range):
     default = 50
 
 
+class WinCondition(Choice):
+    """
+    Determines the condition before being able to talk to Flippy to complete the game.
+    - cog_bosses (default): Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
+    - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
+    - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+    """
+    display_name = "Win Condition"
+    option_cog_bosses = 0
+    option_total_tasks = 1
+    option_hood_tasks = 2
+    default = 0
+
+
 class CogBossesRequired(Range):
     """
     How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
+    Unused if win_condition is not cog_bosses.
     """
     display_name = "Cog Bosses Required"
     range_start = 0
     range_end = 4
     default = 4
+
+
+class TotalTasksRequired(Range):
+    """
+    How many total tasks must be finished before being able to talk to Flippy to complete the game.
+    Must be less than total tasks in game (6 zones times logical_tasks_per_playground tasks).
+    Unused if win_condition is not total_tasks.
+    """
+    display_name = "Total Tasks Required"
+    range_start = 0
+    range_end = 72
+    default = 48
+
+
+class HoodTasksRequired(Range):
+    """
+    How many tasks must be finished in each neighborhood before being able to talk to Flippy to complete the game.
+    Must be less than logical_tasks_per_playground.
+    Unused if win_condition is not hood_tasks.
+    """
+    display_name = "Hood Tasks Required"
+    range_start = 0
+    range_end = 12
+    default = 8
 
 
 class TPSanity(Choice):
@@ -255,7 +294,10 @@ class ToontownOptions(PerGameCommonOptions):
     max_global_gag_xp: MaxGlobalGagXPRange
     damage_multiplier: DamageMultiplierRange
     starting_money: StartMoneyOption
+    win_condition: WinCondition
     cog_bosses_required: CogBossesRequired
+    total_tasks_required: TotalTasksRequired
+    hood_tasks_required: HoodTasksRequired
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
     checks_per_boss: ChecksPerBoss
