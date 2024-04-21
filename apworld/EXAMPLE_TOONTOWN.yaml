@@ -49,7 +49,7 @@ Toontown:
   # - cog_bosses (default): Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
   # - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
   # - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
-  win_condition: 0
+  win_condition: cog_bosses
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
   # Range: 0 to 4
