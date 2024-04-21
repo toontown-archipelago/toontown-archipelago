@@ -57,6 +57,17 @@ class MaxGlobalGagXPRange(Range):
     default = 15
 
 
+class DamageMultiplierRange(Range):
+    """
+    The percentage of damage that will be done when battling Cogs.
+    50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
+    """
+    display_name = "Damage Multiplier"
+    range_start = 0
+    range_end = 500
+    default = 100
+
+
 class StartMoneyOption(Range):
     """
     The starting amount of jellybeans to have when starting a new game.
@@ -242,6 +253,7 @@ class ToontownOptions(PerGameCommonOptions):
     starting_laff: StartLaffOption
     base_global_gag_xp: BaseGlobalGagXPRange
     max_global_gag_xp: MaxGlobalGagXPRange
+    damage_multiplier: DamageMultiplierRange
     starting_money: StartMoneyOption
     cog_bosses_required: CogBossesRequired
     tpsanity: TPSanity

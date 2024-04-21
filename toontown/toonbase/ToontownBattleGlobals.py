@@ -335,7 +335,7 @@ AvPropTarget = (0, 3, 0, 2, 3, 3, 3)
 
 
 def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
-                    organicBonus=False, propBonus=False, propAndOrganicBonusStack=False, npc=False):
+                    organicBonus=False, propBonus=False, propAndOrganicBonusStack=False, npc=False, toonDamageMultiplier=100):
 
     exp = experience.getExp(attackTrack)
 
@@ -363,6 +363,9 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
             damage += getDamageBonus(originalDamage)
     elif organicBonus or propBonus:
         damage += getDamageBonus(damage)
+
+    damage *= toonDamageMultiplier / 100
+
     return math.floor(damage)
 
 
