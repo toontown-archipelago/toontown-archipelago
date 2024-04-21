@@ -59,8 +59,8 @@ class MaxGlobalGagXPRange(Range):
 
 class DamageMultiplierRange(Range):
     """
-    The numerator of the damage multiplier for all gags, with a denominator of 100:
-    If you set this to x, the multiplier will actually be x/100.
+    The percentage of damage that will be done when battling Cogs.
+    50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
     """
     display_name = "Damage Multiplier"
     range_start = 0
