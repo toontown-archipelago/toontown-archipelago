@@ -4507,6 +4507,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 for reward in Quests.getRewardIdsFromHood(hood_id):
                     if reward in reward_history:
                         quests_completed += 1
+
+            # Ensure they've completed enough tasks
             if quests_completed < self.slotData.get('total_tasks_required', 48):
                 return False
 
@@ -4519,6 +4521,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 for reward in Quests.getRewardIdsFromHood(hood_id):
                     if reward in reward_history:
                         quests_completed += 1
+
+                # Ensure they've completed enough tasks
                 if quests_completed < self.slotData.get('hood_tasks_required', 8):
                     return False
 
