@@ -69,7 +69,26 @@ class DistributedNPCFlippyInToonHall(DistributedNPCToon):
 
     def doVictoryConditionNotMetMovie(self, toon):
         isLocalToon = toon.doId == base.localAvatar.doId
-        fullString = 'It seems like you have not completed your goal yet.\x07Once you have defeated all of the boss cogs at least once, please come talk to me!\x07Good luck!'
+
+        win_condition = -1
+
+        if toon.slotData != {}:
+            win_condition = toon.slotData['win_condition']
+            cog_bosses_required = toon.slotData['cog_bosses_required']
+            total_tasks_required = toon.slotData['total_tasks_required']
+            hood_tasks_required = toon.slotData['hood_tasks_required']
+
+        fullString = 'It seems like you have not completed your goal yet.\x07'
+        if win_condition == 0:
+            fullString += 'Once you have defeated ' + str(cog_bosses_required) + ' of the boss cogs at least once'
+        elif win_condition == 1:
+            fullString += 'Once you have completed ' + str(total_tasks_required) + ' total Toontasks'
+        elif win_condition == 2:
+            fullString += 'Once you have completed ' + str(hood_tasks_required) + ' Toontasks in each neighborhood'
+        else:
+            fullString = 'You don\'t have a win condition!\x07Once you\'re connected to a server'
+
+        fullString += ', please come talk to me.\x07Good luck!'
 
         if isLocalToon:
             self.setupCamera(None)
