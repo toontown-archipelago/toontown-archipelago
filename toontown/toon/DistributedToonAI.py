@@ -4488,46 +4488,60 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Win condition is cog_bosses
         if win_condition == 0:
-            # Determines how many bosses has been defeated (level > 0 => they have beaten it)
-            bosses_defeated = 0
-            for level in self.getCogLevels():
-                if level > 0:
-                    bosses_defeated += 1
-
             # Ensure they've defeated enough bosses.
-            if bosses_defeated < self.slotData.get('cog_bosses_required', 4):
-                return False
+            return self.getHasDefeatedCogBosses()
 
         # Win condition is total_tasks
         elif win_condition == 1:
-            quests_completed = 0
-            tier, reward_history = self.getRewardHistory()
-            for hood_i in range(0, 6):
-                hood_id = list(ToontownGlobals.HoodHierarchy.keys())[hood_i]
-                for reward in Quests.getRewardIdsFromHood(hood_id):
-                    if reward in reward_history:
-                        quests_completed += 1
-
             # Ensure they've completed enough tasks
-            if quests_completed < self.slotData.get('total_tasks_required', 48):
-                return False
+            return self.getHasCompletedTotalTasks()
 
         # Win condition is hood_tasks
         elif win_condition == 2:
-            tier, reward_history = self.getRewardHistory()
-            for hood_i in range(0, 6):
-                quests_completed = 0
-                hood_id = list(ToontownGlobals.HoodHierarchy.keys())[hood_i]
-                for reward in Quests.getRewardIdsFromHood(hood_id):
-                    if reward in reward_history:
-                        quests_completed += 1
-
-                # Ensure they've completed enough tasks
-                if quests_completed < self.slotData.get('hood_tasks_required', 8):
-                    return False
+            return self.getHasCompletedHoodsTasks()
 
         # Win condition is satisfied!
         return True
+
+    def getHasDefeatedCogBosses(self):
+        return self.getCogBossesDefeated() >= self.slotData.get('cog_bosses_required', 4)
+
+    def getHasCompletedTotalTasks(self):
+        return self.getTotalTasksCompleted() >= self.slotData.get('total_tasks_required', 48)
+
+    def getHasCompletedHoodsTasks(self):
+        for hood_index in range(0, 6):
+            # Ensure they've completed enough tasks
+            if not self.getHasCompletedHoodTasks(hood_index):
+                return False
+        return True
+
+    def getHasCompletedHoodTasks(self, hood_index):
+        return (self.getHoodTasksCompleted(hood_index) >= self.slotData.get('hood_tasks_required', 8))
+
+    def getCogBossesDefeated(self):
+        # Determines how many bosses have been defeated (level > 0 => they have beaten it)
+        bosses_defeated = 0
+        for level in self.getCogLevels():
+            if level > 0:
+                bosses_defeated += 1
+        return bosses_defeated
+
+    def getTotalTasksCompleted(self):
+        quests_completed = 0
+        tier, reward_history = self.getRewardHistory()
+        for hood_i in range(0, 6):
+            quests_completed += self.getHoodTasksCompleted(hood_i)
+        return quests_completed
+
+    def getHoodTasksCompleted(self, hood_index):
+        tier, reward_history = self.getRewardHistory()
+        quests_completed = 0
+        hood_id = list(ToontownGlobals.Hoods2NamesInOrder.keys())[hood_index]
+        for reward in Quests.getRewardIdsFromHood(hood_id):
+            if reward in reward_history:
+                quests_completed += 1
+        return quests_completed
 
     def b_setSlotData(self, slotData: dict):
         slotData = AstronDict.fromDict(slotData)

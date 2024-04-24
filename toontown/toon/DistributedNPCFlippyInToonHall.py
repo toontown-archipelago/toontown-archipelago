@@ -80,15 +80,25 @@ class DistributedNPCFlippyInToonHall(DistributedNPCToon):
 
         fullString = 'It seems like you have not completed your goal yet.\x07'
         if win_condition == 0:
-            fullString += 'Once you have defeated ' + str(cog_bosses_required) + ' of the boss cogs at least once'
+            fullString += 'You still have to defeat ' + str(cog_bosses_required - toon.getCogBossesDefeated()) + ' of the individual boss cogs at least once.'
         elif win_condition == 1:
-            fullString += 'Once you have completed ' + str(total_tasks_required) + ' total Toontasks'
+            if total_tasks_required == 72:
+                fullString += 'You have to complete every Toontask!\x07'
+            fullString += 'You still have to complete ' + str(total_tasks_required - toon.getTotalTasksCompleted()) + ' total Toontasks.'
         elif win_condition == 2:
-            fullString += 'Once you have completed ' + str(hood_tasks_required) + ' Toontasks in each neighborhood'
-        else:
-            fullString = 'You don\'t have a win condition!\x07Once you\'re connected to a server'
+            if hood_tasks_required == 12:
+                fullString += 'You have to complete every Toontask!\x07You still have to complete ' + str(72 - toon.getTotalTasksCompleted()) + ' total Toontasks.'
+            else:
+                fullString += 'You need to complete at least ' + str(hood_tasks_required) + ' Toontasks in each neighborhood.\x07'
 
-        fullString += ', please come talk to me.\x07Good luck!'
+                for i in range(0, 6):
+                    if not toon.getHasCompletedHoodTasks(i):
+                        fullString += 'One you could try next is ' + list(ToontownGlobals.Hoods2NamesInOrder.values())[i] + ', which has at least ' + str(hood_tasks_required - toon.getHoodTasksCompleted(i)) + ' Toontasks left.'
+                        break
+        else:
+            fullString = 'You have to connect to a server!'
+
+        fullString += '\x07Please come talk to me afterwards.\x07Good luck!'
 
         if isLocalToon:
             self.setupCamera(None)

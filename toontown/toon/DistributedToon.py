@@ -30,6 +30,7 @@ from . import TTEmote
 from otp.speedchat.SpeedChatGlobals import speedChatStyles
 from toontown.fishing import FishCollection
 from toontown.fishing import FishTank
+from toontown.quest import Quests
 from toontown.suit import SuitDNA
 from toontown.coghq import CogDisguiseGlobals
 from toontown.toonbase import TTLocalizer
@@ -517,6 +518,46 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setAsGM(self, state):
         self.notify.debug('Setting GM State: %s' % state)
         DistributedPlayer.DistributedPlayer.setAsGM(self, state)
+
+    def getHasDefeatedCogBosses(self):
+        return self.getCogBossesDefeated() >= self.slotData.get('cog_bosses_required', 4)
+
+    def getHasCompletedTotalTasks(self):
+        return self.getTotalTasksCompleted() >= self.slotData.get('total_tasks_required', 48)
+
+    def getHasCompletedHoodsTasks(self):
+        for hood_index in range(0, 6):
+            # Ensure they've completed enough tasks
+            if not self.getHasCompletedHoodTasks(hood_index):
+                return False
+        return True
+
+    def getHasCompletedHoodTasks(self, hood_index):
+        return (self.getHoodTasksCompleted(hood_index) >= self.slotData.get('hood_tasks_required', 8))
+
+    def getCogBossesDefeated(self):
+        # Determines how many bosses have been defeated (level > 0 => they have beaten it)
+        bosses_defeated = 0
+        for level in self.getCogLevels():
+            if level > 0:
+                bosses_defeated += 1
+        return bosses_defeated
+
+    def getTotalTasksCompleted(self):
+        quests_completed = 0
+        tier, reward_history = self.getRewardHistory()
+        for hood_i in range(0, 6):
+            quests_completed += self.getHoodTasksCompleted(hood_i)
+        return quests_completed
+
+    def getHoodTasksCompleted(self, hood_index):
+        tier, reward_history = self.getRewardHistory()
+        quests_completed = 0
+        hood_id = list(ToontownGlobals.Hoods2NamesInOrder.keys())[hood_index]
+        for reward in Quests.getRewardIdsFromHood(hood_id):
+            if reward in reward_history:
+                quests_completed += 1
+        return quests_completed
 
     def d_updateGMNameTag(self):
         self.refreshName()
