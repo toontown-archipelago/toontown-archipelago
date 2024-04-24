@@ -150,6 +150,9 @@ class SuitPlannerInteriorAI:
         dna = SuitDNA.SuitDNA()
         dna.newSuitRandom(suitType, bldgTrack)
         suit.dna = dna
+        # A catch if for whatever reason (most likely an invasion edge case), a cog is a lower level than its tier
+        if suitLevel < suitType:
+            suitLevel = suitType
         self.notify.debug('Creating suit type ' + suit.dna.name + ' of level ' + str(suitLevel) + ' from type ' + str(suitType) + ' and track ' + str(bldgTrack))
         suit.setLevel(suitLevel)
         return skeleton
