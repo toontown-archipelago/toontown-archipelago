@@ -47,7 +47,9 @@ from ..archipelago.apclient.distributed_toon_reward_queue import DistributedToon
 from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.definitions.rewards import EarnedAPReward
 from ..archipelago.definitions.util import get_zone_discovery_id
+from ..archipelago.util import win_condition
 from ..archipelago.util.location_scouts_cache import LocationScoutsCache
+from ..archipelago.util.win_condition import WinCondition
 from ..shtiker import CogPageGlobals
 from ..util.astron.AstronDict import AstronDict
 
@@ -232,6 +234,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.apMessageQueue: DistributedToonAPMessageQueue = DistributedToonAPMessageQueue(self)
         self.deathReason: DeathReason = DeathReason.UNKNOWN
         self.slotData = {}  # set in connected_packet.py
+        self.winCondition: WinCondition = win_condition.NoWinCondition(self)
 
     def generate(self):
         DistributedPlayerAI.DistributedPlayerAI.generate(self)
@@ -4480,55 +4483,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def requestHintPoints(self):
         self.sendUpdate('hintPointResp', [self.hintPoints])
 
-    # Checks whether or not this toon has "beat" their archipelago goal
-    # Default goal is to default all 4 bosses at least once
-    # todo add more win conditions, maybe even a field on toons that keeps track of flags from APReward 's that we get
-    def winConditionSatisfied(self):
-        win_condition = self.slotData.get('win_condition', 0)
-
-        # Win condition is cog_bosses
-        if win_condition == 0:
-            # Determines how many bosses has been defeated (level > 0 => they have beaten it)
-            bosses_defeated = 0
-            for level in self.getCogLevels():
-                if level > 0:
-                    bosses_defeated += 1
-
-            # Ensure they've defeated enough bosses.
-            if bosses_defeated < self.slotData.get('cog_bosses_required', 4):
-                return False
-
-        # Win condition is total_tasks
-        elif win_condition == 1:
-            quests_completed = 0
-            tier, reward_history = self.getRewardHistory()
-            for hood_i in range(0, 6):
-                hood_id = list(ToontownGlobals.HoodHierarchy.keys())[hood_i]
-                for reward in Quests.getRewardIdsFromHood(hood_id):
-                    if reward in reward_history:
-                        quests_completed += 1
-
-            # Ensure they've completed enough tasks
-            if quests_completed < self.slotData.get('total_tasks_required', 48):
-                return False
-
-        # Win condition is hood_tasks
-        elif win_condition == 2:
-            tier, reward_history = self.getRewardHistory()
-            for hood_i in range(0, 6):
-                quests_completed = 0
-                hood_id = list(ToontownGlobals.HoodHierarchy.keys())[hood_i]
-                for reward in Quests.getRewardIdsFromHood(hood_id):
-                    if reward in reward_history:
-                        quests_completed += 1
-
-                # Ensure they've completed enough tasks
-                if quests_completed < self.slotData.get('hood_tasks_required', 8):
-                    return False
-
-        # Win condition is satisfied!
-        return True
-
     def b_setSlotData(self, slotData: dict):
         slotData = AstronDict.fromDict(slotData)
         self.setSlotData(slotData)
@@ -4663,6 +4617,13 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # When the server processes it. (Think movies in turn based battles, we want to do deathlink when they die in that)
     def clientDied(self):
         self.archipelago_session.toon_died()
+
+    def updateWinCondition(self) -> None:
+        condition = win_condition.generate_win_condition(self.slotData.get('win_condition', -2), self)
+        self.winCondition = condition
+
+    def getWinCondition(self) -> WinCondition:
+        return self.winCondition
 
     # Magic word stuff
     def setMagicDNA(self, dnaString):

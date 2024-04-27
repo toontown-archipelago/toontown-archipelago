@@ -30,6 +30,7 @@ from . import TTEmote
 from otp.speedchat.SpeedChatGlobals import speedChatStyles
 from toontown.fishing import FishCollection
 from toontown.fishing import FishTank
+from toontown.quest import Quests
 from toontown.suit import SuitDNA
 from toontown.coghq import CogDisguiseGlobals
 from toontown.toonbase import TTLocalizer
@@ -65,6 +66,8 @@ import copy
 from ..archipelago.definitions import color_profile
 from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
+from ..archipelago.util import win_condition
+from ..archipelago.util.win_condition import WinCondition
 from ..util.astron.AstronDict import AstronDict
 
 
@@ -214,6 +217,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintPoints = 0
 
         self.slotData = {}
+        self.winCondition: WinCondition = win_condition.NoWinCondition(self)
         return
 
     def disable(self):
@@ -2859,10 +2863,18 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def setSlotData(self, slotData) -> None:
         self.slotData = AstronDict.fromStruct(slotData)
+        self.updateWinCondition()
 
     def hasConnected(self) -> bool:
         # kinda hacky
         return bool(self.slotData)
+
+    def updateWinCondition(self) -> None:
+        condition = win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self)
+        self.winCondition = condition
+
+    def getWinCondition(self) -> WinCondition:
+        return self.winCondition
 
     """
     Methods for managing Color Profiles and Nametags.
