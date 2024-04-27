@@ -155,6 +155,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         self.debug(f"Detected slot data: {self.slot_data}")
         client.av.b_setSlotData(self.slot_data)
+        client.av.updateWinCondition()
 
         self.handle_yaml_settings(client.av)
 
@@ -165,7 +166,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Tell AP we are playing
         status_packet = StatusUpdatePacket()
-        status_packet.status = ClientStatus.CLIENT_GOAL if client.av.winConditionSatisfied() else ClientStatus.CLIENT_PLAYING
+        status_packet.status = ClientStatus.CLIENT_GOAL if client.av.getWinCondition().satisfied() else ClientStatus.CLIENT_PLAYING
         client.send_packet(status_packet)
 
         # Scout some locations that we need to display

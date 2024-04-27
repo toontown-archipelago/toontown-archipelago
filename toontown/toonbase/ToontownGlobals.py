@@ -187,12 +187,6 @@ OakStreet = 5300
 LullabyLane = 9100
 PajamaPlace = 9200
 ToonHall = 2513
-Hoods2NamesInOrder = {ToontownCentral: TTLocalizer.ToontownCentral[2],
- DonaldsDock: TTLocalizer.DonaldsDock[2],
- DaisyGardens: TTLocalizer.DaisyGardens[2],
- MinniesMelodyland: TTLocalizer.MinniesMelodyland[2],
- TheBrrrgh: TTLocalizer.TheBrrrgh[2],
- DonaldsDreamland: TTLocalizer.DonaldsDreamland[2],}
 HoodHierarchy = {ToontownCentral: (SillyStreet, LoopyLane, PunchlinePlace),
  DonaldsDock: (BarnacleBoulevard, SeaweedStreet, LighthouseLane),
  TheBrrrgh: (WalrusWay, SleetStreet, PolarPlace),

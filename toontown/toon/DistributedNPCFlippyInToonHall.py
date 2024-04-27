@@ -1,12 +1,17 @@
+import typing
+
 from panda3d.core import *
 from .DistributedNPCToon import *
 from .NPCToons import QUEST_MOVIE_AP_WIN_CONDITION_NOT_MET
 
+if typing.TYPE_CHECKING:
+    from toontown.toonbase.ToonBaseGlobals import *
+
 
 class DistributedNPCFlippyInToonHall(DistributedNPCToon):
 
-    def __init__(self, cr):
-        DistributedNPCToon.__init__(self, cr)
+    def __init__(self, client_repo):
+        DistributedNPCToon.__init__(self, client_repo)
 
     def getCollSphereRadius(self):
         return 4
@@ -67,38 +72,10 @@ class DistributedNPCFlippyInToonHall(DistributedNPCToon):
 
         super().setMovie(mode, npcId, avId, quests, timestamp)
 
-    def doVictoryConditionNotMetMovie(self, toon):
+    def doVictoryConditionNotMetMovie(self, toon: DistributedToon.DistributedToon):
+
         isLocalToon = toon.doId == base.localAvatar.doId
-
-        win_condition = -1
-
-        if toon.slotData != {}:
-            win_condition = toon.slotData['win_condition']
-            cog_bosses_required = toon.slotData['cog_bosses_required']
-            total_tasks_required = toon.slotData['total_tasks_required']
-            hood_tasks_required = toon.slotData['hood_tasks_required']
-
-        fullString = 'It seems like you have not completed your goal yet.\x07'
-        if win_condition == 0:
-            fullString += 'You still have to defeat ' + str(cog_bosses_required - toon.getCogBossesDefeated()) + ' of the individual boss cogs at least once.'
-        elif win_condition == 1:
-            if total_tasks_required == 72:
-                fullString += 'You have to complete every Toontask!\x07'
-            fullString += 'You still have to complete ' + str(total_tasks_required - toon.getTotalTasksCompleted()) + ' total Toontasks.'
-        elif win_condition == 2:
-            if hood_tasks_required == 12:
-                fullString += 'You have to complete every Toontask!\x07You still have to complete ' + str(72 - toon.getTotalTasksCompleted()) + ' total Toontasks.'
-            else:
-                fullString += 'You need to complete at least ' + str(hood_tasks_required) + ' Toontasks in each neighborhood.\x07'
-
-                for i in range(0, 6):
-                    if not toon.getHasCompletedHoodTasks(i):
-                        fullString += 'One you could try next is ' + list(ToontownGlobals.Hoods2NamesInOrder.values())[i] + ', which has at least ' + str(hood_tasks_required - toon.getHoodTasksCompleted(i)) + ' Toontasks left.'
-                        break
-        else:
-            fullString = 'You have to connect to a server!'
-
-        fullString += '\x07Please come talk to me afterwards.\x07Good luck!'
+        npcDialogue = toon.getWinCondition().generate_npc_dialogue(delimiter='\x07')
 
         if isLocalToon:
             self.setupCamera(None)
@@ -106,4 +83,4 @@ class DistributedNPCFlippyInToonHall(DistributedNPCToon):
         self.setupAvatars(toon)
         self.acceptOnce(self.uniqueName('doneChatPage'), self.finishMovie, extraArgs=[toon, isLocalToon])
         self.clearChat()
-        self.setPageChat(toon.doId, 0, fullString, 1)
+        self.setPageChat(toon.doId, 0, npcDialogue, 1)

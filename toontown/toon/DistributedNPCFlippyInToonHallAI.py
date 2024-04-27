@@ -20,7 +20,7 @@ class DistributedNPCFlippyInToonHallAI(DistributedNPCToonAI):
             return
 
         # If they have not beat their game, reject them
-        hasWon = toon.winConditionSatisfied()
+        hasWon = toon.getWinCondition().satisfied()
         if not hasWon:
             return self.rejectAvatar(avId)
 
