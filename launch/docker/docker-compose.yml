@@ -1,6 +1,7 @@
 services:
   astron:
     build:
+      platform: linux/amd64
       context: ../..
       dockerfile: launch/docker/astron.dockerfile
     ports:
@@ -9,6 +10,7 @@ services:
       - "../..:/app/game"
 
   uberdog:
+    platform: linux/amd64
     depends_on:
       - astron
     image: ttap-server
@@ -27,6 +29,7 @@ services:
       - "../..:/app"
 
   ai:
+    platform: linux/amd64
     depends_on:
       - astron
       - uberdog
