@@ -95,7 +95,7 @@ class MakeAToon(StateData.StateData):
             self.notify.info('QA-REGRESSION: MAKEATOON: Starting Make A Toon')
         base.cr.centralLogger.writeClientEvent('MAT - startingMakeAToon')
         base.camLens.setFov(ToontownGlobals.MakeAToonCameraFov)
-        base.playMusic(self.music, looping=1, volume=self.musicVolume)
+        base.playMusic(self.music, looping=1)
         camera.setPosHpr(-5.7, -12.3501, 2.15, -24.8499, 2.73, 0)
         if self.warp:
             if self.toon.style.torso[1] == 's':
@@ -256,8 +256,6 @@ class MakeAToon(StateData.StateData):
         self.cls.load()
         self.ns.load()
         self.music = base.loader.loadMusic('phase_3/audio/bgm/create_a_toon.ogg')
-        self.musicVolume = base.config.GetFloat('makeatoon-music-volume', 1)
-        self.sfxVolume = base.config.GetFloat('makeatoon-sfx-volume', 1)
         self.soundBack = base.loader.loadSfx('phase_3/audio/sfx/GUI_create_toon_back.ogg')
         self.crashSounds = []
         self.crashSounds.append(base.loader.loadSfx('phase_3/audio/sfx/tt_s_ara_mat_crash_boing.ogg'))
@@ -740,7 +738,7 @@ class MakeAToon(StateData.StateData):
 
     def playRandomCrashSound(self):
         index = random.randint(0, len(self.crashSounds) - 1)
-        base.playSfx(self.crashSounds[index], volume=self.sfxVolume)
+        base.playSfx(self.crashSounds[index])
 
     def rotateToonLeft(self, event):
         taskMgr.add(self.rotateToonLeftTask, 'rotateToonLeftTask')
