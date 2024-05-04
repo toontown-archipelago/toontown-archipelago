@@ -27,6 +27,28 @@ toonSpeciesTypes = ['d',    # Dog
                     'k',    # Kiwi
                     'l',    # Armadillo
                     ]
+toonNameToSpecies = {
+    'dog': 'd',       # Dog
+    'cat': 'c',       # Cat
+    'horse': 'h',     # Horse
+    'mouse': 'm',     # Mouse
+    'rabbit': 'r',    # Rabbit
+    'duck': 'f',      # Duck
+    'monkey': 'p',    # Monkey
+    'bear': 'b',      # Bear
+    'pig': 's',       # Pig (swine)
+    'deer': 'x',      # Deer
+    'beaver': 'z',    # Beaver
+    'alligator': 'a', # Alligator
+    'fox': 'v',       # Fox
+    'bat': 'n',       # Bat
+    'raccoon': 't',   # Raccoon
+    'turkey': 'g',    # Turkey
+    'koala': 'e',     # Koala
+    'kangaroo': 'j',  # Kangaroo
+    'kiwi': 'k',      # Kiwi
+    'armadillo': 'l', # Armadillo
+}
 toonHeadTypes = [ "dls", "dss", "dsl", "dll",  # Dog
                   "cls", "css", "csl", "cll",  # Cat
                   "hls", "hss", "hsl", "hll",  # Horse

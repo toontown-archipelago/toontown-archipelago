@@ -8,6 +8,8 @@ from toontown.toonbase import TTLocalizer
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toontowngui import TeaserPanel
 from . import ShuffleButton
+from ..toon.LaffMeter import LaffMeter
+
 
 class BodyShop(StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('BodyShop')
@@ -45,7 +47,11 @@ class BodyShop(StateData.StateData):
         else:
             torsoStyle = 'd'
             torsoPool = ToonDNA.toonTorsoTypes[3:6]
-        self.__swapSpecies(0)
+
+        for button in self.speciesButtons:
+            button.setColor(self.dna.getHeadColor())
+
+        self.__swapSpecies(self.dna.head[0])
         self.__swapHead(0)
         self.__swapTorso(0)
         self.__swapLegs(0)
@@ -65,9 +71,11 @@ class BodyShop(StateData.StateData):
 
     def showButtons(self):
         self.parentFrame.show()
+        self.speciesFrame.show()
 
     def hideButtons(self):
         self.parentFrame.hide()
+        self.speciesFrame.hide()
         self.memberButton.hide()
 
     def exit(self):
@@ -96,15 +104,28 @@ class BodyShop(StateData.StateData):
         self.upsellModel = loader.loadModel('phase_3/models/gui/tt_m_gui_ups_mainGui')
         upsellTex = self.upsellModel.find('**/tt_t_gui_ups_banner')
         self.parentFrame = DirectFrame(relief=DGG.RAISED, parent=base.a2dTopRight, pos=(-0.353333, 0, -0.584), frameColor=(1, 0, 0, 0))
-        self.speciesFrame = DirectFrame(parent=self.parentFrame, image=shuffleFrame, image_scale=halfButtonInvertScale, relief=None, pos=(0, 0, -0.073), hpr=(0, 0, 0), scale=1.3, frameColor=(1, 1, 1, 1), text='Species', text_scale=0.0625, text_pos=(-0.001, -0.015), text_fg=(1, 1, 1, 1))
-        self.speciesLButton = DirectButton(parent=self.speciesFrame, relief=None, image=(shuffleArrowUp,
-         shuffleArrowDown,
-         shuffleArrowRollover,
-         shuffleArrowDisabled), image_scale=halfButtonScale, image1_scale=halfButtonHoverScale, image2_scale=halfButtonHoverScale, pos=(-0.2, 0, 0), command=self.__swapSpecies, extraArgs=[-1])
-        self.speciesRButton = DirectButton(parent=self.speciesFrame, relief=None, image=(shuffleArrowUp,
-         shuffleArrowDown,
-         shuffleArrowRollover,
-         shuffleArrowDisabled), image_scale=halfButtonInvertScale, image1_scale=halfButtonInvertHoverScale, image2_scale=halfButtonInvertHoverScale, pos=(0.2, 0, 0), command=self.__swapSpecies, extraArgs=[1])
+        self.speciesFrame = DirectFrame(
+            parent=base.a2dLeftCenter,
+            relief=None,
+            pos=(0.2, 0, 0),
+        )
+
+        self.speciesButtons = []
+
+        row, col = 0, 0
+        for i, (head, model) in enumerate(LaffMeter.headModels.items()):
+            self.speciesButtons.append(
+                DirectButton(parent=self.speciesFrame, relief=None, image=model, pos=(0.25 * row, 0, 0.5 + -0.25 * col),
+                             scale=0.065,
+                             command=self.__swapSpecies, extraArgs=[ToonDNA.toonNameToSpecies[head]])
+            )
+
+            if row % 4 == 3:
+                col += 1
+                row = 0
+            else:
+                row += 1
+
         self.headFrame = DirectFrame(parent=self.parentFrame, image=shuffleFrame, image_scale=halfButtonInvertScale, relief=None, pos=(0, 0, -0.3), hpr=(0, 0, 2), scale=0.9, frameColor=(1, 1, 1, 1), text=TTLocalizer.BodyShopHead, text_scale=0.0625, text_pos=(-0.001, -0.015), text_fg=(1, 1, 1, 1))
         self.headLButton = DirectButton(parent=self.headFrame, relief=None, image=(shuffleArrowUp,
          shuffleArrowDown,
@@ -137,6 +158,7 @@ class BodyShop(StateData.StateData):
          upsellTex,
          upsellTex), image_scale=halfButtonScale, image1_scale=halfButtonHoverScale, image2_scale=halfButtonHoverScale, scale=0.9, pos=(0, 0, -0.84), command=self.__restrictForward)
         self.parentFrame.hide()
+        self.speciesFrame.hide()
         self.memberButton.hide()
         self.shuffleFetchMsg = 'BodyShopShuffle'
         self.shuffleButton = ShuffleButton.ShuffleButton(self, self.shuffleFetchMsg)
@@ -152,8 +174,11 @@ class BodyShop(StateData.StateData):
         self.headFrame.destroy()
         self.bodyFrame.destroy()
         self.legsFrame.destroy()
-        self.speciesLButton.destroy()
-        self.speciesRButton.destroy()
+
+        for button in self.speciesButtons:
+            button.destroy()
+        del self.speciesButtons
+
         self.headLButton.destroy()
         self.headRButton.destroy()
         self.torsoLButton.destroy()
@@ -166,8 +191,6 @@ class BodyShop(StateData.StateData):
         del self.headFrame
         del self.bodyFrame
         del self.legsFrame
-        del self.speciesLButton
-        del self.speciesRButton
         del self.headLButton
         del self.headRButton
         del self.torsoLButton
@@ -258,13 +281,9 @@ class BodyShop(StateData.StateData):
         self.headChoice = (self.headChoice + offset) % length
         self.__updateHead()
 
-    def __swapSpecies(self, offset):
-        length = len(ToonDNA.toonSpeciesTypes)
-        self.speciesChoice = (self.speciesChoice + offset) % length
-        self.__updateScrollButtons(self.speciesChoice, length, self.speciesStart, self.speciesLButton, self.speciesRButton)
-        self.species = ToonDNA.toonSpeciesTypes[self.speciesChoice]
+    def __swapSpecies(self, species):
+        self.species = species
         self.headList = ToonDNA.getHeadList(self.species)
-        self.__changeSpeciesName(self.species)
         maxHeadChoice = len(self.headList) - 1
         if self.headChoice > maxHeadChoice:
             self.headChoice = maxHeadChoice
@@ -326,16 +345,14 @@ class BodyShop(StateData.StateData):
     def changeBody(self):
         newChoice = self.shuffleButton.getCurrChoice()
         newHead = newChoice[0]
-        newSpeciesIndex = ToonDNA.toonSpeciesTypes.index(ToonDNA.getSpecies(newHead))
         newHeadIndex = ToonDNA.toonHeadTypes.index(newHead) - ToonDNA.getHeadStartIndex(ToonDNA.getSpecies(newHead))
         newTorsoIndex = ToonDNA.toonTorsoTypes.index(newChoice[1])
         newLegsIndex = ToonDNA.toonLegTypes.index(newChoice[2])
         oldHead = self.toon.style.head
-        oldSpeciesIndex = ToonDNA.toonSpeciesTypes.index(ToonDNA.getSpecies(oldHead))
         oldHeadIndex = ToonDNA.toonHeadTypes.index(oldHead) - ToonDNA.getHeadStartIndex(ToonDNA.getSpecies(oldHead))
         oldTorsoIndex = ToonDNA.toonTorsoTypes.index(self.toon.style.torso)
         oldLegsIndex = ToonDNA.toonLegTypes.index(self.toon.style.legs)
-        self.__swapSpecies(newSpeciesIndex - oldSpeciesIndex)
+        self.__swapSpecies(newHead[0])
         self.__swapHead(newHeadIndex - oldHeadIndex)
         self.__swapTorso(newTorsoIndex - oldTorsoIndex)
         self.__swapLegs(newLegsIndex - oldLegsIndex)
