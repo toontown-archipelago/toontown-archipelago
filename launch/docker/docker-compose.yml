@@ -1,6 +1,5 @@
 services:
   astron:
-    platform: linux/amd64
     build:
       context: ../..
       dockerfile: launch/docker/astron.dockerfile
