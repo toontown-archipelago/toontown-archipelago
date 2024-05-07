@@ -104,8 +104,9 @@ PassiveHealFrequency = 10  # How often in seconds should toons passively regen?
 PassiveHealPercentage = .10  # How much percentage of laff should toons regen passively?
 MaxCarryLimit = 100
 MaxQuestCarryLimit = 4
-CogMoneyDropChance = 0.80  # What percent chance to drop jellybeans as a reward per cog?
-CogMoneyDropRange = (3, 7)  # How many jellybeans do we reward per cog? (Assuming we rolled the chance for it)
+CogMoneyDropChance = 0.90  # What percent chance to drop jellybeans as a reward per cog?
+CogMoneyBonusChance = 0.25
+CogMoneyDropRange = (25, 30)  # How many jellybeans do we reward per cog? (Assuming we rolled the chance for it)
 CogImmuneColor = Vec4(1, 1, 1, 1)
 CogImmuneGlowColor = CogImmuneColor - Vec4(0, 0, 0, 0.5)
 MaxCogSuitLevel = 50 - 1
@@ -1618,6 +1619,40 @@ hood2Coords = {
 # I hate these imports being here as much as you do, but putting them at the top crashes the AI on startup :)
 from ..archipelago.definitions import util
 from apworld.toontown import locations
+ZONE_TO_CHECK_COST = {
+    ToontownCentral: 600,
+    DonaldsDock: 900,
+    DaisyGardens: 1200,
+    MinniesMelodyland: 1500,
+    TheBrrrgh: 1800,
+    DonaldsDreamland: 2100
+}
+ZONE_TO_ID_TO_CHECK = {
+        ToontownCentral: {1: locations.ToontownLocationName.TTC_SHOP_1.value,
+                          2: locations.ToontownLocationName.TTC_SHOP_2.value,
+                          3: locations.ToontownLocationName.TTC_SHOP_3.value,
+                          },
+        DonaldsDock: {1: locations.ToontownLocationName.DD_SHOP_1.value,
+                      2: locations.ToontownLocationName.DD_SHOP_2.value,
+                      3: locations.ToontownLocationName.DD_SHOP_3.value,
+                      },
+        DaisyGardens: {1: locations.ToontownLocationName.DG_SHOP_1.value,
+                       2: locations.ToontownLocationName.DG_SHOP_2.value,
+                       3: locations.ToontownLocationName.DG_SHOP_3.value,
+                       },
+        MinniesMelodyland: {1: locations.ToontownLocationName.MML_SHOP_1.value,
+                            2: locations.ToontownLocationName.MML_SHOP_2.value,
+                            3: locations.ToontownLocationName.MML_SHOP_3.value,
+                            },
+        TheBrrrgh: {1: locations.ToontownLocationName.TB_SHOP_1.value,
+                    2: locations.ToontownLocationName.TB_SHOP_2.value,
+                    3: locations.ToontownLocationName.TB_SHOP_3.value,
+                    },
+        DonaldsDreamland: {1: locations.ToontownLocationName.DDL_SHOP_1.value,
+                           2: locations.ToontownLocationName.DDL_SHOP_2.value,
+                           3: locations.ToontownLocationName.DDL_SHOP_3.value,
+                           },
+}
 ARCHI_CODE_TO_LOCATION = {
         ToontownCentral: [util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_1.value),
                           util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_2.value),

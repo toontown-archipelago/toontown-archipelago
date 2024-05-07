@@ -2534,6 +2534,7 @@ dclass DistributedNPCPartyPerson : DistributedNPCToonBase {
 
 dclass DistributedNPCPetclerk : DistributedNPCToonBase {
   setMovie(uint8, uint32, uint32, uint32[], int16) broadcast ram;
+  setSubId(int8) broadcast ram;
   setPetSeeds(uint32[]);
   petAdopted(uint8, uint32) airecv clsend;
   petReturned() airecv clsend;

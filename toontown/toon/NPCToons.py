@@ -37,6 +37,7 @@ SELL_MOVIE_TIMEOUT = 8
 SELL_MOVIE_PETRETURNED = 9
 SELL_MOVIE_PETADOPTED = 10
 SELL_MOVIE_PETCANCELED = 11
+SELL_MOVIE_ALREADYCHECKED = 12
 PARTY_MOVIE_CLEAR = 0
 PARTY_MOVIE_START = 1
 PARTY_MOVIE_COMPLETE = 2
@@ -98,7 +99,7 @@ def createNPC(air, npcId, desc, zoneId, posIndex = 0, questCallback = None):
     elif type == NPC_FISHERMAN:
         npc = DistributedNPCFishermanAI.DistributedNPCFishermanAI(air, npcId)
     elif type == NPC_PETCLERK:
-        npc = DistributedNPCPetclerkAI.DistributedNPCPetclerkAI(air, npcId)
+        npc = DistributedNPCPetclerkAI.DistributedNPCPetclerkAI(air, npcId, subId=posIndex+1)
     elif type == NPC_KARTCLERK:
         npc = DistributedNPCKartClerkAI.DistributedNPCKartClerkAI(air, npcId)
     elif type == NPC_PARTYPERSON:
