@@ -4538,6 +4538,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setMaxMoney(1000)
         self.b_setMoney(100)
         self.b_setBankMoney(0)
+        self.b_setMaxBankMoney(0)
 
         # Fishing
         self.b_setFishCollection([], [], [])
