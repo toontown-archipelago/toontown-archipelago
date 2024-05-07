@@ -92,10 +92,10 @@ class ToontownItemName(enum.Enum):
     BOSSBOT_DISGUISE = "Bossbot Disguise"
 
     ### Jellybean Bundles ###
-    MONEY_250  = "250 Jellybeans"
-    MONEY_500  = "500 Jellybeans"
-    MONEY_1000 = "1000 Jellybeans"
-    MONEY_2000 = "2000 Jellybeans"
+    MONEY_150  = "150 Jellybeans"
+    MONEY_300  = "300 Jellybeans"
+    MONEY_500 = "500 Jellybeans"
+    MONEY_750 = "750 Jellybeans"
 
     ### Gag XP Bundles ###
     XP_10 = "10% Gag XP Bundle"
