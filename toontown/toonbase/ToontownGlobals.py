@@ -1622,10 +1622,10 @@ from apworld.toontown import locations
 ZONE_TO_CHECK_COST = {
     ToontownCentral: 600,
     DonaldsDock: 900,
-    DaisyGardens: 1200,
-    MinniesMelodyland: 1500,
-    TheBrrrgh: 1800,
-    DonaldsDreamland: 2100
+    DaisyGardens: 1300,
+    MinniesMelodyland: 1800,
+    TheBrrrgh: 2400,
+    DonaldsDreamland: 3000
 }
 ZONE_TO_ID_TO_CHECK = {
         ToontownCentral: {1: locations.ToontownLocationName.TTC_SHOP_1.value,
