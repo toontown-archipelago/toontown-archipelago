@@ -206,10 +206,10 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # endregion
     # region Filler Items
     # TODO - remember to account for the Fish filler when implementing weights here
-    ToontownItemDefinition(ToontownItemName.MONEY_250,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_500,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_2000,       ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_150,        ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_300,        ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_500,       ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_750,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_10,           ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_15,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_20,          ItemClassification.filler),
@@ -288,10 +288,10 @@ def hood_to_tp_item_name(hoodId: int) -> ToontownItemName:
 
 
 JUNK_WEIGHTS = {
-    ToontownItemName.MONEY_250:        0.5,
+    ToontownItemName.MONEY_150:        0.5,
+    ToontownItemName.MONEY_300:        0.5,
     ToontownItemName.MONEY_500:        0.5,
-    ToontownItemName.MONEY_1000:       0.5,
-    ToontownItemName.MONEY_2000:       0.5,
+    ToontownItemName.MONEY_750:        0.5,
 
     ToontownItemName.XP_10:            0.7,
     ToontownItemName.XP_15:            0.5,
