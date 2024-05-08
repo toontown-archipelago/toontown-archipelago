@@ -159,8 +159,6 @@ class PetsAvailablePoster(QuestsAvailablePoster):
         petsRemaining = 0
         petsPerPlayground = 3
         for pet in range(petsPerPlayground):
-            for _ in range(20):
-                print(pet+1)
             if self.getLocationFromZone(self.hoodId, pet+1) not in av.getCheckedLocations():
                 petsRemaining += 1
 
