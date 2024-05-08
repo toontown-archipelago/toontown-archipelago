@@ -974,7 +974,7 @@ struct APItem {
 dclass DistributedToon : DistributedPlayer {
   setDNAString(blob) required broadcast ownrecv db;
   setGM(uint8 = 0) required broadcast ownrecv db;
-  setMaxBankMoney(int16 = 12000) required broadcast ownrecv db;
+  setMaxBankMoney(int16 = 0) required broadcast ownrecv db;
   setBankMoney(int16 = 0) required broadcast ownrecv db;
   setMaxMoney(int16 = 40) required broadcast ownrecv db;
   setMoney(int16 = 0) required broadcast ownrecv db;
@@ -2534,6 +2534,7 @@ dclass DistributedNPCPartyPerson : DistributedNPCToonBase {
 
 dclass DistributedNPCPetclerk : DistributedNPCToonBase {
   setMovie(uint8, uint32, uint32, uint32[], int16) broadcast ram;
+  setSubId(int8) broadcast ram;
   setPetSeeds(uint32[]);
   petAdopted(uint8, uint32) airecv clsend;
   petReturned() airecv clsend;

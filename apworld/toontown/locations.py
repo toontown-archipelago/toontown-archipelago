@@ -292,6 +292,24 @@ class ToontownLocationName(Enum):
     DONALDS_DREAMLAND_TASK_10 =                 "Donald's Dreamland Task #10"
     DONALDS_DREAMLAND_TASK_11 =                 "Donald's Dreamland Task #11"
     DONALDS_DREAMLAND_TASK_12 =                 "Donald's Dreamland Task #12"
+    TTC_SHOP_1 =                                "Thickie (TTC Pet Shop)"
+    TTC_SHOP_2 =                                "Bowser (TTC Pet Shop)"
+    TTC_SHOP_3 =                                "Snowman (TTC Pet Shop)"
+    DD_SHOP_1 =                                 "Jo (DD Pet Shop)"
+    DD_SHOP_2 =                                 "Joe (DD Pet Shop)"
+    DD_SHOP_3 =                                 "Jojo (DD Pet Shop)"
+    DG_SHOP_1 =                                 "Lambchop (DG Pet Shop)"
+    DG_SHOP_2 =                                 "Pudgette (DG Pet Shop)"
+    DG_SHOP_3 =                                 "Yum Yum (DG Pet Shop)"
+    MML_SHOP_1 =                                "Zsa Zsa (MML Pet Shop)"
+    MML_SHOP_2 =                                "Arf (MML Pet Shop)"
+    MML_SHOP_3 =                                "Banana (MML Pet Shop)"
+    TB_SHOP_1 =                                 "Big Shot (TB Pet Shop)"
+    TB_SHOP_2 =                                 "Big Red (TB Pet Shop)"
+    TB_SHOP_3 =                                 "Bigbelly (TB Pet Shop)"
+    DDL_SHOP_1 =                                "Bozo (DDL Pet Shop)"
+    DDL_SHOP_2 =                                "Brainchild (DDL Pet Shop)"
+    DDL_SHOP_3 =                                "Critter (DDL Pet Shop)"
     TTC_TREASURE_1 =                            "Toontown Central AP Treasure 1"
     TTC_TREASURE_2 =                            "Toontown Central AP Treasure 2"
     TTC_TREASURE_3 =                            "Toontown Central AP Treasure 3"
@@ -462,6 +480,7 @@ class ToontownLocationType(IntEnum):
     PLAYGROUND_5    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_6    = auto()  # Locations for discovering playground treasures
     GAG_TRAINING    = auto()  # Locations for training gags
+    PET_SHOP     = auto()  # Locations for purchasing checks from pet shop clerks
     TTC_TASKS    = auto()  # Locations for TTC tasks
     DD_TASKS     = auto()  # Locations for DD tasks
     DG_TASKS     = auto()  # Locations for DG tasks
@@ -830,6 +849,26 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.FISHING_50_SPECIES,     ToontownLocationType.FISHING_GALLERY, ToontownRegionName.FISHING, [Rule.FishGallery]),
     ToontownLocationDefinition(ToontownLocationName.FISHING_60_SPECIES,     ToontownLocationType.FISHING_GALLERY, ToontownRegionName.FISHING, [Rule.FishGallery]),
     ToontownLocationDefinition(ToontownLocationName.FISHING_COMPLETE_ALBUM, ToontownLocationType.FISHING_GALLERY, ToontownRegionName.FISHING, [Rule.FishGallery]),
+    # endregion
+    # region shopping
+    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL]),
+    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL]),
+    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL]),
     # endregion
     # region Tasking
     ToontownLocationDefinition(ToontownLocationName.TOONTOWN_CENTRAL_TASK_1,    ToontownLocationType.TTC_TASKS, ToontownRegionName.TTC, [Rule.HasTTCHQAccess]),

@@ -5,11 +5,14 @@ from toontown.toonbase import TTLocalizer
 from direct.task import Task
 from toontown.fishing import FishGlobals
 from toontown.pets import PetUtil, PetDNA, PetConstants
+from toontown.archipelago.definitions import util
+from toontown.hood import ZoneUtil
 
 class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
 
-    def __init__(self, air, npcId):
+    def __init__(self, air, npcId, subId=1):
         DistributedNPCToonBaseAI.__init__(self, air, npcId)
+        self.subId = subId
         self.givesQuests = 0
         self.busy = 0
 
@@ -26,6 +29,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
         if self.isBusy():
             self.freeAvatar(avId)
             return
+        self.d_setSubId()
         self.petSeeds = simbase.air.petMgr.getAvailablePets(3, 2)
         numGenders = len(PetDNA.PetGenders)
         self.petSeeds *= numGenders
@@ -49,6 +53,9 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
          avId,
          extraArgs,
          ClockDelta.globalClockDelta.getRealNetworkTime()])
+
+    def d_setSubId(self):
+        self.sendUpdate('setSubId', [self.subId])
 
     def sendTimeoutMovie(self, task):
         self.d_setMovie(self.busy, NPCToons.SELL_MOVIE_TIMEOUT)
@@ -90,13 +97,12 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
             return
         av = simbase.air.doId2do.get(avId)
         if av:
-            from toontown.hood import ZoneUtil
             zoneId = ZoneUtil.getCanonicalSafeZoneId(self.zoneId)
             if petNum not in range(0, len(self.petSeeds)):
                 self.air.writeServerEvent('suspicious', avId, 'DistributedNPCPetshopAI.petAdopted and no such pet!')
                 self.notify.warning('somebody called petAdopted on a non-existent pet! avId: %s' % avId)
                 return
-            cost = PetUtil.getPetCostFromSeed(self.petSeeds[petNum], zoneId)
+            cost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
             if cost > av.getTotalMoney():
                 self.air.writeServerEvent('suspicious', avId, "DistributedNPCPetshopAI.petAdopted and toon doesn't have enough money!")
                 self.notify.warning("somebody called petAdopted and didn't have enough money to adopt! avId: %s" % avId)
@@ -108,12 +114,19 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 self.air.writeServerEvent('avoid_crash', avId, "DistributedNPCPetclerkAI.petAdopted and didn't have valid nameIndex!")
                 self.notify.warning("somebody called petAdopted and didn't have valid nameIndex to adopt! avId: %s" % avId)
                 return
-            simbase.air.petMgr.createNewPetFromSeed(avId, self.petSeeds[petNum], nameIndex=nameIndex, gender=gender, safeZoneId=zoneId)
-            self.transactionType = 'adopt'
+            if not av.hasCheckedLocation(util.ap_location_name_to_id(self.getCheckName())):
+                av.addCheckedLocation(util.ap_location_name_to_id(self.getCheckName()))
+                self.transactionType = 'adopt'
+            else:
+                self.transactionType = 'checked'
+                return
             bankPrice = min(av.getBankMoney(), cost)
             walletPrice = cost - bankPrice
             av.b_setBankMoney(av.getBankMoney() - bankPrice)
             av.b_setMoney(av.getMoney() - walletPrice)
+    def getCheckName(self):
+        zoneId = ZoneUtil.getCanonicalSafeZoneId(self.zoneId)
+        return ToontownGlobals.ZONE_TO_ID_TO_CHECK[zoneId][self.subId]
 
     def petReturned(self):
         avId = self.air.getAvatarIdFromSender()
@@ -140,6 +153,8 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 self.d_setMovie(avId, NPCToons.SELL_MOVIE_PETRETURNED)
             elif self.transactionType == '':
                 self.d_setMovie(avId, NPCToons.SELL_MOVIE_PETCANCELED)
+            elif self.transactionType == 'checked':
+                self.d_setMovie(avId, NPCToons.SELL_MOVIE_ALREADYCHECKED)
         self.sendClearMovie(None)
         return
 

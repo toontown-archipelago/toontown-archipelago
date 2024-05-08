@@ -10,7 +10,7 @@ from toontown.toontowngui import TeaserPanel
 
 class DistributedNPCPetclerk(DistributedNPCToonBase):
 
-    def __init__(self, cr):
+    def __init__(self, cr, subId=1):
         DistributedNPCToonBase.__init__(self, cr)
         self.isLocalToon = 0
         self.av = None
@@ -20,6 +20,7 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
         self.petSeeds = None
         self.waitingForPetSeeds = False
         self.cameraLerp = None
+        self.subId = subId
         return
 
     def disable(self):
@@ -108,6 +109,9 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
             self.popupPetshopGUI(None)
         return
 
+    def setSubId(self, subId):
+        self.subId = subId
+
     def setMovie(self, mode, npcId, avId, extraArgs, timestamp):
         timeStamp = ClockDelta.globalClockDelta.localElapsedTime(timestamp)
         self.remain = NPCToons.CLERK_COUNTDOWN_TIME - timeStamp
@@ -153,6 +157,9 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
             self.resetPetshopClerk()
         elif mode == NPCToons.SELL_MOVIE_PETCANCELED:
             self.setChatAbsolute(TTLocalizer.STOREOWNER_PETCANCELED, CFSpeech | CFTimeout)
+            self.resetPetshopClerk()
+        elif mode == NPCToons.SELL_MOVIE_ALREADYCHECKED:
+            self.setChatAbsolute(TTLocalizer.STOREOWNER_ALREADYCHECKED, CFSpeech | CFTimeout)
             self.resetPetshopClerk()
         elif mode == NPCToons.SELL_MOVIE_TROPHY:
             self.av = base.cr.doId2do.get(avId)
@@ -204,4 +211,4 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
         self.acceptOnce(self.eventDict['petAdopted'], self.__handlePetAdopted)
         self.acceptOnce(self.eventDict['petReturned'], self.__handlePetReturned)
         self.acceptOnce(self.eventDict['fishSold'], self.__handleFishSold)
-        self.petshopGui = PetshopGUI.PetshopGUI(self.eventDict, self.petSeeds)
+        self.petshopGui = PetshopGUI.PetshopGUI(self.eventDict, self.petSeeds, self.subId)
