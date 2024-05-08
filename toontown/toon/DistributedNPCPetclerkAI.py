@@ -124,6 +124,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
             walletPrice = cost - bankPrice
             av.b_setBankMoney(av.getBankMoney() - bankPrice)
             av.b_setMoney(av.getMoney() - walletPrice)
+
     def getCheckName(self):
         zoneId = ZoneUtil.getCanonicalSafeZoneId(self.zoneId)
         return ToontownGlobals.ZONE_TO_ID_TO_CHECK[zoneId][self.subId]

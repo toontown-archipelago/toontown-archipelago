@@ -3,6 +3,7 @@ from panda3d.core import *
 
 from apworld.toontown.fish import FishLocation, get_catchable_fish_no_rarity, FishProgression
 from toontown.toonbase import ToontownGlobals
+from toontown.archipelago.definitions import util
 
 
 class QuestsAvailablePoster(DirectFrame):
@@ -127,3 +128,41 @@ class TreasureAvailablePoster(QuestsAvailablePoster):
 
         # Show num available.
         self.showNumAvailable(treasuresRemaining)
+
+class PetsAvailablePoster(QuestsAvailablePoster):
+    def __init__(self, hoodId, **kw):
+        QuestsAvailablePoster.__init__(self, hoodId=hoodId, **kw)
+
+        optiondefs = (
+            ('parent', kw['parent'], None),
+            ('relief', None, None),
+            ('image', None, None),
+            ('image_scale', None, None),
+            ('state', DGG.NORMAL, None)
+        )
+        self.defineoptions(kw, optiondefs)
+
+        self.initialiseoptions(TreasureAvailablePoster)
+        self.numQuestsAvailableLabel['text_scale'] = 0.55
+        self.setImage(self.getImageNode())
+        self.setTransparency(TransparencyAttrib.MAlpha)
+        self['image_scale'] = (0.3, 0.3, 0.3)
+        self.setScale(self.getScale() * 1.4)
+
+    def getImageNode(self):
+        return 'phase_3.5/maps/doodle_silouette.png'
+
+    def getLocationFromZone(self, hood, index):
+        return util.ap_location_name_to_id(ToontownGlobals.ZONE_TO_ID_TO_CHECK[hood][index])
+
+    def update(self, av):
+        petsRemaining = 0
+        petsPerPlayground = 3
+        for pet in range(petsPerPlayground):
+            for _ in range(20):
+                print(pet+1)
+            if self.getLocationFromZone(self.hoodId, pet+1) not in av.getCheckedLocations():
+                petsRemaining += 1
+
+        # Show num available.
+        self.showNumAvailable(petsRemaining)
