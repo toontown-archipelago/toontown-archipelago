@@ -288,9 +288,9 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
                     newVotesArray = [TravelGameGlobals.DefaultStartingVotes] * len(playAgainList)
             if len(playAgainList) == 1 and simbase.config.GetBool('metagame-min-2-players', 1):
                 newRound = -1
-            MinigameCreatorAI.createMinigame(self.air, playAgainList, self.trolleyZone, minigameZone=self.zoneId, previousGameId=self.previousMinigameId, newbieIds=newbieIdsToPass, startingVotes=newVotesArray, metagameRound=newRound, desiredNextGame=self.desiredNextGame)
+            self.air.minigameMgr.createMinigame(playAgainList, self.trolleyZone, minigameZone=self.zoneId, previousGameId=self.previousMinigameId, newbieIds=newbieIdsToPass, startingVotes=newVotesArray, metagameRound=newRound, desiredNextGame=self.desiredNextGame)
         else:
-            MinigameCreatorAI.releaseMinigameZone(self.zoneId)
+            self.air.minigameMgr.releaseMinigameZone(self.zoneId)
         self.requestDelete()
         self.ignoreAll()
         return None

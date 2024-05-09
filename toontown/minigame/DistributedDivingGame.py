@@ -175,7 +175,7 @@ class DistributedDivingGame(DistributedMinigame):
                  toonSD.status])
 
     def fishSpawn(self, timestamp, fishcode, spawnerId, offset):
-        if self.dead is 1:
+        if self.dead:
             return
         ts = globalClockDelta.localElapsedTime(timestamp)
         if not hasattr(self, 'spawners'):
@@ -319,6 +319,7 @@ class DistributedDivingGame(DistributedMinigame):
         for crab in self.crabs:
             crab.moveLerp.finish()
             crab.moveLerp = None
+            crab.cleanup()
             crab.removeNode()
             del crab
 
@@ -414,7 +415,7 @@ class DistributedDivingGame(DistributedMinigame):
             cSphereNodePath = crab.attachNewNode(cSphereNode)
             cSphereNodePath.setScale(1, 3, 1)
             self.accept('hitby-' + 'crabby' + str(i), self.fishCollision)
-            if i % 2 is 0:
+            if i % 2 == 0:
                 crab.setPos(20, 0, -40)
                 crab.direction = -1
             else:
@@ -733,7 +734,7 @@ class DistributedDivingGame(DistributedMinigame):
                 fish.sound.setVolume(volume)
                 self.hitSound.play()
                 self.hitSound.setVolume(volume)
-            if fish.name is 'bear' or fish.name is 'nurse':
+            if fish.name == 'bear' or fish.name == 'nurse':
                 return
             colList = fish.findAllMatches('**/fc*')
             for col in colList:
@@ -768,6 +769,7 @@ class DistributedDivingGame(DistributedMinigame):
             fish.moveLerp.finish()
             fish.specialLerp = None
             fish.moveLerp = None
+            fish.cleanup()
             fish.removeNode()
             del fish
             del self.spawners[spawnerId].fishArray[spawnId]

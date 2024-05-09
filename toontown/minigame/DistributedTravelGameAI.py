@@ -256,13 +256,11 @@ class DistributedTravelGameAI(DistributedMinigameAI):
         numPlayers = len(self.avIdList)
         allowedGames = list(ToontownGlobals.MinigamePlayerMatrix[numPlayers])
         from toontown.minigame import MinigameCreatorAI
-        allowedGames = MinigameCreatorAI.removeUnreleasedMinigames(allowedGames)
         self.switchToMinigameDict = {}
         for switch in list(TravelGameGlobals.BoardLayouts[self.boardIndex].keys()):
             if self.isLeaf(switch):
                 if len(allowedGames) == 0:
                     allowedGames = list(ToontownGlobals.MinigamePlayerMatrix[numPlayers])
-                    allowedGames = MinigameCreatorAI.removeUnreleasedMinigames(allowedGames)
                 minigame = random.choice(allowedGames)
                 self.switchToMinigameDict[switch] = minigame
                 allowedGames.remove(minigame)
