@@ -388,23 +388,34 @@ MinigameNames = {'race': RaceGameId,
  'photo': PhotoGameId,
  'travel': TravelGameId}
 MinigameTemplateId = -1
-MinigameIDs = (RaceGameId,
- CannonGameId,
- TagGameId,
- PatternGameId,
- RingGameId,
- MazeGameId,
- TugOfWarGameId,
- CatchGameId,
- DivingGameId,
- TargetGameId,
- PairingGameId,
- VineGameId,
- IceGameId,
- CogThiefGameId,
- TwoDGameId,
- PhotoGameId,
- TravelGameId)
+MinigameIDs = (
+    RaceGameId,
+    CannonGameId,
+    TagGameId,
+    PatternGameId,
+    RingGameId,
+    MazeGameId,
+    TugOfWarGameId,
+    CatchGameId,
+    DivingGameId,
+    TargetGameId,
+    PairingGameId,
+    VineGameId,
+    IceGameId,
+    CogThiefGameId,
+    TwoDGameId,
+    PhotoGameId,
+    TravelGameId
+)
+
+MultiplayerMinigames = (
+    PatternGameId,
+    TagGameId,
+    IceGameId,
+    RaceGameId,
+    TravelGameId
+)
+
 MinigamePlayerMatrix = {1: (CannonGameId,
      RingGameId,
      MazeGameId,
@@ -460,10 +471,7 @@ MinigamePlayerMatrix = {1: (CannonGameId,
      IceGameId,
      CogThiefGameId,
      TwoDGameId)}
-MinigameReleaseDates = {IceGameId: (2008, 8, 5),
- PhotoGameId: (2008, 8, 13),
- TwoDGameId: (2008, 8, 20),
- CogThiefGameId: (2008, 8, 27)}
+
 KeyboardTimeout = 300
 phaseMap = {Tutorial: 4,
  ToontownCentral: 4,

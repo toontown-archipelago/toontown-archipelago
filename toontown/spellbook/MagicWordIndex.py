@@ -2313,6 +2313,24 @@ class AbortGame(MagicWord):
         messenger.send('minigameAbort')
 
 
+class RequestMinigame(MagicWord):
+    aliases = ['request', 'wantgame', 'requestgame']
+    desc = "Request a specific minigame for the trolley."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [('game', str, True)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        requested_name = args[0].lower()
+        wanted_game_id = ToontownGlobals.MinigameNames.get(requested_name)
+
+        if wanted_game_id is None:
+            return f"There is no game registered with the name: {requested_name}\nValid choices are: {', '.join(ToontownGlobals.MinigameNames.keys())}"
+
+        self.air.minigameMgr.storeRequest(toon.doId, wanted_game_id)
+        return f"The next trolley game that {toon.getName()} plays will be {requested_name}!"
+
+
 class ToggleSuitPaths(MagicWord):
     aliases = ['suitpaths']
     desc = "Toggles visualization of suit paths if they exist in your current zone."
