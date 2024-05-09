@@ -7,6 +7,11 @@ rulesDuration = 16
 JellybeanTrolleyHolidayScoreMultiplier = 2
 DifficultyOverrideMult = int(1 << 16)
 
+# Multipliers for trolley games, min is TTC max is DDL
+MinimumRewardMultiplier = 25.0
+MaximumRewardMultiplier = 75.0
+
+
 def QuantizeDifficultyOverride(diffOverride):
     return int(round(diffOverride * DifficultyOverrideMult)) / float(DifficultyOverrideMult)
 
@@ -31,5 +36,5 @@ def getSafezoneId(trolleyZone):
 
 def getScoreMult(trolleyZone):
     szId = getSafezoneId(trolleyZone)
-    multiplier = PythonUtil.lerp(1.0, 1.5, float(SafeZones.index(szId)) / (len(SafeZones) - 1))
+    multiplier = PythonUtil.lerp(MinimumRewardMultiplier, MaximumRewardMultiplier, float(SafeZones.index(szId)) / (len(SafeZones) - 1))
     return multiplier

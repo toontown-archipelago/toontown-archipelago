@@ -311,8 +311,8 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
             if ToontownGlobals.JELLYBEAN_TROLLEY_HOLIDAY in simbase.air.holidayManager.currentHolidays or ToontownGlobals.JELLYBEAN_TROLLEY_HOLIDAY_MONTH in simbase.air.holidayManager.currentHolidays:
                 score *= MinigameGlobals.JellybeanTrolleyHolidayScoreMultiplier
             logEvent = False
-            if score > 255:
-                score = 255
+            if score > 2**31-1:
+                score = 2**31-1
                 logEvent = True
             elif score < 0:
                 score = 0

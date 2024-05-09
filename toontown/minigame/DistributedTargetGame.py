@@ -453,7 +453,7 @@ class DistributedTargetGame(DistributedMinigame):
                     targetGN = GeomNode('target Circle')
                     targetNodePathGeom = self.targets.attachNewNode(targetGN)
                     targetNodePathGeom.setPos(placeX, placeY, 0)
-                    points = self.targetSize[combinedIndex] // 2 + 20
+                    points = int(self.targetSize[combinedIndex]) // 2 + 20
                     order = len(self.targetList) - combinedIndex + 10
                     if first:
                         first = 0
