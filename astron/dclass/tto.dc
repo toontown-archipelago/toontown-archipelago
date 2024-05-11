@@ -2123,7 +2123,7 @@ dclass PurchaseManager : DistributedObject {
   setVotesArray(int16[]) required broadcast ram;
   requestExit() airecv clsend;
   requestPlayAgain() airecv clsend;
-  setInventory(blob, int16, uint8) airecv clsend;
+  setInventory(blob, int16, uint8, int8) airecv clsend;
   setPurchaseExit() broadcast;
 };
 
@@ -2509,7 +2509,7 @@ dclass DistributedNPCScientist : DistributedNPCToonBase {
 
 dclass DistributedNPCClerk : DistributedNPCToonBase {
   setMovie(uint8, uint32, uint32, int16) broadcast ram;
-  setInventory(blob, int16, uint8) airecv clsend;
+  setInventory(blob, int16, uint8, int8) airecv clsend;
 };
 
 dclass DistributedNPCTailor : DistributedNPCToonBase {

@@ -214,6 +214,7 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         self.setChatAbsolute('', CFSpeech)
         self.acceptOnce(self.purchaseDoneEvent, self.__handlePurchaseDone)
         self.accept('boughtGag', self.__handleBoughtGag)
+        self.accept('boughtGagFast', self.__handleBoughtGagFast)
         self.purchase = ClerkPurchase.ClerkPurchase(base.localAvatar, self.remain, self.purchaseDoneEvent)
         self.purchase.load()
         self.purchase.enter()
@@ -222,8 +223,12 @@ class DistributedNPCClerk(DistributedNPCToonBase):
     def __handleBoughtGag(self):
         self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 0)
 
+    def __handleBoughtGagFast(self):
+        self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 0, laff=1)
+
     def __handlePurchaseDone(self):
         self.ignore('boughtGag')
+        self.ignore('boughtGagFast')
         self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 1)
         self.purchase.exit()
         self.purchase.unload()
@@ -232,5 +237,5 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         self.freeAvatar()
         return
 
-    def d_setInventory(self, invString, money, done):
-        self.sendUpdate('setInventory', [invString, money, done])
+    def d_setInventory(self, invString, money, done, laff=0):
+        self.sendUpdate('setInventory', [invString, money, done, laff])
