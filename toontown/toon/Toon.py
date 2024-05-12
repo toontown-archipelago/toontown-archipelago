@@ -2981,11 +2981,12 @@ class Toon(Avatar.Avatar, ToonHead):
         suit.initializeDropShadow()
         suit.setPos(self.getPos())
         suit.setHpr(self.getHpr())
-        for part in suit.getHeadParts():
-            part.hide()
+#        for part in suit.getHeadParts():
+#            part.hide()
 
         suitHeadNull = suit.find('**/joint_head')
         toonHead = self.getPart('head', '1000')
+        toonHead.hide()
         Emote.globalEmote.disableAll(self)
         toonGeom = self.getGeomNode()
         toonGeom.hide()
