@@ -35,7 +35,7 @@ class TTOffQuickLauncher(TTOffLauncherBase):
         return self.getValue('TTOFF_GAME_SERVER', '')
 
     def getLogFileName(self):
-        return 'ttoff'
+        return 'archipelago'
 
     def parseWebAcctParams(self):
         # these aren't ever used, as self.useTTOffSpecificLogin should
