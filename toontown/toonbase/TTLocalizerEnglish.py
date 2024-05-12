@@ -4993,6 +4993,7 @@ NPCForceAcknowledgeMessage9 = 'Good job using the phone!\n\n\n\n\n\n\n\n\nReturn
 NPCForceAcknowledgeMessage7 = "You are a cheater!\n\n\n\n\n\n\nHey! Cut it out! You might see something you're not supposed to!"
 NPCForceAcknowledgeMessage8 = '\n\n\nAnd now I see\nWith eyes serene\nThe very heart\nOf the machine'
 ToonSleepString = '. . . ZZZ . . .'
+ToonSleepStringBrrrgh = '. . . Brrrrghhhhh . . .'
 MovieTutorialReward1 = 'You received 1 Throw point! When you get 10, you will get a new gag!'
 MovieTutorialReward2 = 'You received 1 Squirt point! When you get 10, you will get a new gag!'
 MovieTutorialReward3 = 'Good job! You completed your first ToonTask!'
