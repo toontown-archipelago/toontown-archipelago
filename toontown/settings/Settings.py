@@ -56,6 +56,9 @@ class Settings:
         "magic-word-activator": 0,
         "camSensitivityX": 0.25,
         "camSensitivityY": 0.1,
+        # Options below this comment will not be exposed by OptionsPage
+        # They can still be configurable by the end user
+        "want-legacy-models": False
     }
 
     settingsFile = "settings.json"

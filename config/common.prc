@@ -54,7 +54,6 @@ want-news-page false
 want-news-tab false
 
 # Gameplay settings
-want-legacy-heads false
 want-gardening true
 want-emblems true
 

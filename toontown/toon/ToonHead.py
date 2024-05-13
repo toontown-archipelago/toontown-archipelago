@@ -42,7 +42,7 @@ if not base.config.GetBool('want-new-anims', 1):
      'l': '/models/char/armadillo-heads'
     }
 
-elif base.config.GetBool('want-legacy-heads', 1):
+elif base.settings.get('want-legacy-models'):
     HeadDict = {'dls': '/models/char/legacy/tt_a_chr_dgm_shorts_head_',
                 'dss': '/models/char/legacy/tt_a_chr_dgm_skirt_head_',
                 'dsl': '/models/char/legacy/tt_a_chr_dgs_shorts_head_',
@@ -408,7 +408,7 @@ class ToonHead(Actor.Actor):
             # mouse, short head, long muzzle
             filePrefix = HeadDict['m']
             fix = self.__fixHeadShortLong
-            if base.config.GetBool('want-legacy-heads', 1):
+            if base.settings.get('want-legacy-models'):
                 # TTO Mouse model fix
                 fix = self.__fixHeadShortShort
             headHeight = 0.75
@@ -416,7 +416,7 @@ class ToonHead(Actor.Actor):
             # mouse, long head, long muzzle
             filePrefix = HeadDict['m']
             fix = self.__fixHeadLongLong
-            if base.config.GetBool('want-legacy-heads', 1):
+            if base.settings.get('want-legacy-models'):
                 # TTO Mouse model fix
                 fix = self.__fixHeadLongShort
             headHeight = 0.5
@@ -960,7 +960,7 @@ class ToonHead(Actor.Actor):
             parts = self.findAllMatches('**/ear?-*')
             parts.setColor(style.getHeadColor())
             dogears = self.findAllMatches('**/ear*')
-            if not base.config.GetBool('want-legacy-heads', 1):
+            if not base.settings.get('want-legacy-models'):
                 dogears.setColor(style.getHeadColor())
 
     def __fixEyes(self, style, forGui = 0):
@@ -1204,7 +1204,7 @@ class ToonHead(Actor.Actor):
             else:
                 searchRoot.find('**/ears-short').hide()
         # Clash's rabbit model has 2 different eye nodes, TTO's has one
-        if base.config.GetBool('want-legacy-heads', 1):
+        if base.settings.get('want-legacy-models'):
             if animalType != 'rabbit':
                 if copy:
                     searchRoot.find('**/eyes-short').removeNode()
@@ -1263,7 +1263,7 @@ class ToonHead(Actor.Actor):
             else:
                 searchRoot.find('**/ears-long').hide()
         # Clash's rabbit model has 2 different eye nodes, TTO's has one
-        if base.config.GetBool('want-legacy-heads', 1):
+        if base.settings.get('want-legacy-models'):
             if animalType != 'rabbit':
                 if copy:
                     searchRoot.find('**/eyes-long').removeNode()
