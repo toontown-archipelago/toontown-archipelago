@@ -58,7 +58,8 @@ class Settings:
         "camSensitivityY": 0.1,
         # Options below this comment will not be exposed by OptionsPage
         # They can still be configurable by the end user
-        "want-legacy-models": False
+        "want-legacy-models": False,
+        "experimental-multithreading": False,
     }
 
     settingsFile = "settings.json"

@@ -41,6 +41,7 @@ class ToonBase(OTPBase.OTPBase):
         self.global_text_properties = global_text_properties
 
         self.settings = Settings()
+        self.setMultiThreading()
 
         mode = self.settings.get("borderless")
         music = self.settings.get("music")
@@ -574,6 +575,19 @@ class ToonBase(OTPBase.OTPBase):
     def setVerticalSync(self) -> None:
         vsync = self.settings.get("vertical-sync")
         loadPrcFileData('', f'sync-video {vsync}')
+
+    def setMultiThreading(self) -> None:
+        # It is current year, and multithreading has improved stability wise
+        # Still experimental, but for documentation's sake, let's add this in
+        multithread = self.settings.get("experimental-multithreading")
+        if multithread == True:
+            loadPrcFileData('', 'threading-model Cull/Draw')
+            print('===============================================================')
+            print('Warning! You are running this game with multithreading enabled.')
+            print('While this option yields performance gains, it can be unstable.')
+            print('Please do not report any issues that may be')
+            print('caused exclusively from using this setting.')
+            print('===============================================================')
 
     def updateDisplay(self) -> None:
         self.setAntiAliasing()
