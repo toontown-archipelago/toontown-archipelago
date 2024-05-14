@@ -3046,6 +3046,7 @@ class Toon(Avatar.Avatar, ToonHead):
         if not toonHeadNull:
             toonHeadNull = self.find('**/1000/**/joint_head')
         toonHead = self.getPart('head', '1000')
+        toonHead.show()
         toonHead.reparentTo(toonHeadNull)
         toonHead.setScale(self.headOrigScale)
         toonHead.setPos(0, 0, 0)
