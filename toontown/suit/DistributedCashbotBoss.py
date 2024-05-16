@@ -275,7 +275,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.resistanceToonOnstage = 1
         if withSuit:
             suit = self.resistanceToon.suitType
-            self.resistanceToon.putOnSuit(suit, False)
+            self.resistanceToon.putOnSuit(suit, False, False, True)
         else:
             self.resistanceToon.takeOffSuit()
 

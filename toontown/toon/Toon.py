@@ -2953,7 +2953,7 @@ class Toon(Avatar.Avatar, ToonHead):
             return Sequence(Func(self.nametag3d.show), self.__doToonGhostColorScale(None, lerpTime, keepDefault=1))
         return Sequence()
 
-    def putOnSuit(self, suitType, setDisplayName = True, rental = False):
+    def putOnSuit(self, suitType, setDisplayName=True, rental=False, isNpc=False):
         if self.isDisguised:
             self.takeOffSuit()
         if launcher and not launcher.getPhaseComplete(5):
@@ -2981,12 +2981,14 @@ class Toon(Avatar.Avatar, ToonHead):
         suit.initializeDropShadow()
         suit.setPos(self.getPos())
         suit.setHpr(self.getHpr())
-#        for part in suit.getHeadParts():
-#            part.hide()
 
         suitHeadNull = suit.find('**/joint_head')
         toonHead = self.getPart('head', '1000')
-        toonHead.hide()
+        if isNpc:
+            for part in suit.getHeadParts():
+                part.hide()
+        else:
+            toonHead.hide()
         Emote.globalEmote.disableAll(self)
         toonGeom = self.getGeomNode()
         toonGeom.hide()

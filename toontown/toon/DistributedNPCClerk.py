@@ -115,7 +115,7 @@ class DistributedNPCClerk(DistributedNPCToonBase):
         # Check if we should put on a suit.
         suit = ZONE_TO_DISGUISE.get(self.zoneId)
         if suit is not None:
-            self.putOnSuit(suit)
+            self.putOnSuit(suit, True, False, True)
 
     def allowedToEnter(self):
         if hasattr(base, 'ttAccess') and base.ttAccess and base.ttAccess.canAccess():
