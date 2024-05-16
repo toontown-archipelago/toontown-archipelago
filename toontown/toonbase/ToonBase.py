@@ -51,6 +51,7 @@ class ToonBase(OTPBase.OTPBase):
         sfxVol = self.settings.get("sfx-volume")
         res = self.settings.get("resolution")
         fpsMeter = self.settings.get("frame-rate-meter")  # or __debug__
+        fpsLimit = self.settings.get("fps-limit")
 
         loadPrcFileData("toonBase Settings Window Res", f"win-size {res[0]} {res[1]}")
         loadPrcFileData("toonBase Settings Window FullScreen", f"fullscreen {mode}")
@@ -97,6 +98,11 @@ class ToonBase(OTPBase.OTPBase):
         if 'launcher' in __builtins__ and launcher:
             launcher.setPandaErrorCode(11)
         globalClock.setMaxDt(0.2)
+        if fpsLimit != 0:
+            globalClock.setMode(ClockObject.MLimited)
+            globalClock.setFrameRate(fpsLimit)
+        else:
+            globalClock.setMode(ClockObject.MNormal)
         if self.config.GetBool('want-particles', 1) == 1:
             self.notify.debug('Enabling particles')
             self.enableParticles()

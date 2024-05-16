@@ -9973,6 +9973,7 @@ OptionNames = {
     "anisotropic-filter": "Anisotropic Filtering",
     "anti-aliasing": "Anti-Aliasing",
     "frame-rate-meter": "FPS Meter",
+    "fps-limit": "FPS Limit",
 
     # Audio
     "music": "Music",
@@ -9988,6 +9989,16 @@ OptionAnisotropic = {
     4: "Low",
     8: "High",
     16: "Highest",
+}
+OptionFPSLimit = {
+ 0: "Unlimited",
+ 30: "30 FPS",
+ 60: "60 FPS",
+ 120: "120 FPS",
+ 144: "144 FPS",
+ 165: "165 FPS",
+ 240: "240 FPS",
+ 360: "360 FPS"
 }
 
 OptionEnabled = "Enabled"
