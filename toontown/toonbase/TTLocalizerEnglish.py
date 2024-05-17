@@ -4720,16 +4720,6 @@ MapPageYouAreAtHome = 'You are at\nyour estate'
 MapPageYouAreAtSomeonesHome = 'You are at %s estate'
 MapPageGoTo = 'Go To\n%s'
 OptionsPageTitle = 'Options'
-OptionsPageTitle2 = "Rebind"
-
-OptionsEnabledKeybinds = 'Custom Keybinds are enabled.'
-OptionsDisabledKeybinds = 'Custom Keybinds are disabled.'
-OptionsKeybindsMenu = 'Keybinds'
-
-RemapPrompt = 'Choose the keys you wish to remap.'
-RemapPopup = 'Press the key you wish to remap this control to.'
-Controls = ['Move Up:', 'Move Left:', 'Move Down:', 'Move Right:', 'Jump:', 'Action Key:', 'Options Hotkey:', 'Chatbox Hotkey:',
-            'Screenshot Key:', 'Crane Grab Key:', 'Sprint Key:', 'Alt. Action Key:']
 OptionsTabTitle = 'Options'
 OptionsPagePurchase = 'Subscribe'
 OptionsPageLogout = 'Logout'
@@ -9961,6 +9951,7 @@ OptionNames = {
     "STREET_MAP_HOTKEY": "Street Map Hotkey",
     "INVENTORY_HOTKEY": "Gag Menu Hotkey",
     "QUEST_HOTKEY": "ToonTask Hotkey",
+    "GALLERY_HOTKEY": "Cog Gallery Hotkey",
     "CRANE_GRAB_KEY": "Crane Grab Key",
     "ACTION_BUTTON": "Action Button",
     "SECONDARY_ACTION": "Secondary Action Button",

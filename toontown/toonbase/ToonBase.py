@@ -529,6 +529,16 @@ class ToonBase(OTPBase.OTPBase):
             extraArgs=[ToontownGlobals.QuestsHotkeyOff]
         )
         self.accept(
+            self.controls.GALLERY_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.GalleryHotkeyOn]
+        )
+        self.accept(
+            f"{self.controls.GALLERY_HOTKEY}-up",
+            messenger.send,
+            extraArgs=[ToontownGlobals.GalleryHotkeyOff]
+        )
+        self.accept(
             self.controls.CHAT_HOTKEY,
             messenger.send,
             extraArgs=["enterNormalChat"]
@@ -554,6 +564,8 @@ class ToonBase(OTPBase.OTPBase):
         self.ignore(f"{self.controls.INVENTORY_HOTKEY}-up")
         self.ignore(self.controls.QUEST_HOTKEY)
         self.ignore(f"{self.controls.QUEST_HOTKEY}-up")
+        self.ignore(self.controls.GALLERY_HOTKEY)
+        self.ignore(f"{self.controls.GALLERY_HOTKEY}-up")
         self.ignore(self.controls.CHAT_HOTKEY)
         self.ignore(self.controls.MOVE_LEFT)
         self.ignore(self.controls.MOVE_RIGHT)

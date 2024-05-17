@@ -23,6 +23,7 @@ class ControlSettings:
     STREET_MAP_HOTKEY: str = "alt"
     INVENTORY_HOTKEY: str = "home"
     QUEST_HOTKEY: str = "end"
+    GALLERY_HOTKEY: str = "g"
     CRANE_GRAB_KEY: str = "control"
     ACTION_BUTTON: str = "delete"
     SECONDARY_ACTION: str = "insert"

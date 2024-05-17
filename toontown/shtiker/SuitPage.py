@@ -165,6 +165,9 @@ class SuitPage(ShtikerPage.ShtikerPage):
         ShtikerPage.ShtikerPage.load(self)
         frameModel = loader.loadModel('phase_3.5/models/gui/suitpage_frame')
 
+
+        self.onscreen = 0
+        self.lastHotkeyTime = 0
         self.guiTop = DirectFrame(
             self, relief=None,
             image=frameModel.find("**/frame"),
@@ -594,3 +597,33 @@ class SuitPage(ShtikerPage.ShtikerPage):
             else:
                 button.buildingRadarLabel.hide()
         return
+
+    def showGalleryOnscreen(self):
+        messenger.send('wakeup')
+        timedif = globalClock.getRealTime() - self.lastHotkeyTime
+        if timedif < 0.7:
+            return
+        self.lastHotkeyTime = globalClock.getRealTime()
+        if self.onscreen or base.localAvatar.invPage.onscreen:
+            return
+        self.onscreen = 1
+
+        self.updatePage()
+        self.reparentTo(aspect2d)
+        self.show()
+
+    def hideGalleryOnscreen(self):
+        if not self.onscreen:
+            return
+        self.onscreen = 0
+
+        self.reparentTo(self.book)
+        self.hide()
+
+    def acceptOnscreenHooks(self):
+        self.accept(ToontownGlobals.GalleryHotkeyOn, self.showGalleryOnscreen)
+        self.accept(ToontownGlobals.GalleryHotkeyOff, self.hideGalleryOnscreen)
+
+    def ignoreOnscreenHooks(self):
+        self.ignore(ToontownGlobals.GalleryHotkeyOn)
+        self.ignore(ToontownGlobals.GalleryHotkeyOff)
