@@ -9971,7 +9971,7 @@ OptionNames = {
     "resolution": "Window Resolution",
     "vertical-sync": "Vertical Sync",
     "anisotropic-filter": "Anisotropic Filtering",
-    "anti-aliasing": "Anti-Aliasing",
+    "anti-aliasing": "Anti-Aliasing*",
     "frame-rate-meter": "FPS Meter",
     "fps-limit": "FPS Limit",
 
@@ -9981,6 +9981,12 @@ OptionNames = {
     "music-volume": "Music Volume",
     "sfx-volume": "Sound Effects Volume",
     "toon-chat-sounds": "Toon Chat Sounds",
+}
+
+OptionAntiAlias = {
+    0: "Off",
+    4: "4x MSAA",
+    8: "8x MSAA",
 }
 
 OptionAnisotropic = {

@@ -391,6 +391,7 @@ class OptionElement(DirectFrame):
     optionOptions.update({
         "resolution": base.possibleScreenSizes,
         "anisotropic-filter": list(TTLocalizer.OptionAnisotropic),
+        "anti-aliasing": list(TTLocalizer.OptionAntiAlias),
         "fps-limit": list(TTLocalizer.OptionFPSLimit)
     })
 
@@ -506,6 +507,8 @@ class OptionElement(DirectFrame):
         elif isinstance(setting, int):
             # We're most likely dealing with a list of integer settings,
             # so return the string from the localizer given the current setting.
+            if self.optionName == "anti-aliasing":
+                return TTLocalizer.OptionAntiAlias[setting]
             if self.optionName == "anisotropic-filter":
                 return TTLocalizer.OptionAnisotropic[setting]
             if self.optionName == "fps-limit":
@@ -605,7 +608,7 @@ class OptionElement(DirectFrame):
         elif self.optionName == 'competitive-boss-scoring':
             base.localAvatar.wantCompetitiveBossScoring = newSetting
         elif self.optionName in ("borderless", "resolution", "vertical-sync",
-                                 "anisotropic-filter", "anti-aliasing"):
+                                 "anisotropic-filter"):
             base.updateDisplay()
         elif self.optionName == "frame-rate-meter":
             base.setFrameRateMeter(newSetting)

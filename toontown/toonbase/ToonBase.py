@@ -43,6 +43,7 @@ class ToonBase(OTPBase.OTPBase):
         self.settings = Settings()
         self.setMultiThreading()
 
+        antialias = self.settings.get("anti-aliasing")
         mode = self.settings.get("borderless")
         music = self.settings.get("music")
         sfx = self.settings.get("sfx")
@@ -61,6 +62,11 @@ class ToonBase(OTPBase.OTPBase):
         loadPrcFileData("toonBase Settings Sfx Volume", f"audio-master-sfx-volume {sfxVol}")
         loadPrcFileData("toonBase Settings Toon Chat Sounds", f"toon-chat-sounds {toonChatSounds}")
         loadPrcFileData("toonBase Settings Frame Rate Meter", f"show-frame-rate-meter {fpsMeter}")
+        if antialias:
+            loadPrcFileData("toonBase Settings Framebuffer MSAA", "framebuffer-multisample 1")
+            loadPrcFileData("toonBase Settings MSAA Level", f"multisamples {antialias}")
+        else:
+            loadPrcFileData("toonBase Settings Framebuffer MSAA", "framebuffer-multisample 0")
 
         OTPBase.OTPBase.__init__(self)
         if not self.isMainWindowOpen():
@@ -563,11 +569,12 @@ class ToonBase(OTPBase.OTPBase):
         self.accept("enable-hotkeys", self.enableHotkeys)
 
     def setAntiAliasing(self) -> None:
-        if self.settings.get("anti-aliasing"):
+        antialias = self.settings.get("anti-aliasing")
+        if antialias != 0:
             loadPrcFileData("", "framebuffer-multisample 1")
-            loadPrcFileData("", "multisamples 4")
-            self.render.setAntialias(AntialiasAttrib.MMultisample, 4)
-            self.aspect2d.setAntialias(AntialiasAttrib.MMultisample, 4)
+            loadPrcFileData("", f"multisamples {antialias}")
+            self.render.setAntialias(AntialiasAttrib.MMultisample, antialias)
+            self.aspect2d.setAntialias(AntialiasAttrib.MMultisample, antialias)
         else:
             loadPrcFileData("", "framebuffer-multisample 0")
             loadPrcFileData("", "multisamples 0")

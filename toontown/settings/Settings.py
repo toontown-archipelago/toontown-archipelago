@@ -43,7 +43,7 @@ class Settings:
         "music-volume": 0.4,
         "sfx-volume": 0.4,
         "competitive-boss-scoring": True,
-        "anti-aliasing": False,
+        "anti-aliasing": 0,
         "anisotropic-filter": 8,
         "frame-blending": True,
         "controls": asdict(controls),
