@@ -1,3 +1,5 @@
+import typing
+
 from . import ShtikerPage
 from toontown.toonbase import ToontownBattleGlobals
 from direct.gui.DirectGui import *
@@ -6,14 +8,15 @@ from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from ..battle.GagTrackBarGUI import GagTrackBarGUI
 
+if typing.TYPE_CHECKING:
+    from toontown.toonbase.ToonBaseGlobals import *
+
 
 class InventoryPage(ShtikerPage.ShtikerPage):
 
     def __init__(self):
         ShtikerPage.ShtikerPage.__init__(self)
         self.currentTrackInfo = None
-        self.onscreen = 0
-        self.lastInventoryTime = globalClock.getRealTime()
         return
 
     def load(self):
@@ -123,14 +126,16 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         self.ignore(ToontownGlobals.InventoryHotkeyOff)
 
     def showInventoryOnscreen(self):
+
+
+        # Check if there is currently something already displaying in the hotkey interface slot
+        if not base.localAvatar.allowOnscreenInterface():
+            return
+
+        # We can now own the slot
+        base.localAvatar.setCurrentOnscreenInterface(self)
         messenger.send('wakeup')
-        timedif = globalClock.getRealTime() - self.lastInventoryTime
-        if timedif < 0.7:
-            return
-        self.lastInventoryTime = globalClock.getRealTime()
-        if self.onscreen or base.localAvatar.questPage.onscreen:
-            return
-        self.onscreen = 1
+
         base.localAvatar.inventory.setActivateMode('book')
         base.localAvatar.inventory.show()
         base.localAvatar.inventory.reparentTo(self)
@@ -143,9 +148,13 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         self.show()
 
     def hideInventoryOnscreen(self):
-        if not self.onscreen:
+
+        # If the current onscreen interface is not us, don't do anything
+        if base.localAvatar.getCurrentOnscreenInterface() is not self:
             return
-        self.onscreen = 0
+
+        base.localAvatar.setCurrentOnscreenInterface(None)  # Free up the on screen interface slot
+
         self.ignore('enterTrackFrame')
         self.ignore('exitTrackFrame')
         self.ignore(localAvatar.uniqueName('moneyChange'))

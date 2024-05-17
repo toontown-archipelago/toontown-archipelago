@@ -1,13 +1,16 @@
+import typing
+
 from panda3d.core import *
 from . import ShtikerPage
 from direct.gui.DirectGui import *
 from toontown.quest import Quests
-from toontown.toon import NPCToons
-from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from toontown.quest import QuestBookPoster
 from direct.directnotify import DirectNotifyGlobal
+
+if typing.TYPE_CHECKING:
+    from toontown.toonbase.ToonBaseGlobals import *
 
 class QuestPage(ShtikerPage.ShtikerPage):
     notify = DirectNotifyGlobal.directNotify.newCategory('QuestPage')
@@ -21,8 +24,6 @@ class QuestPage(ShtikerPage.ShtikerPage):
         self.textRolloverColor = Vec4(1, 1, 0, 1)
         self.textDownColor = Vec4(0.5, 0.9, 1, 1)
         self.textDisabledColor = Vec4(0.4, 0.8, 0.4, 1)
-        self.onscreen = 0
-        self.lastQuestTime = globalClock.getRealTime()
         return
 
     def load(self):
@@ -134,14 +135,15 @@ class QuestPage(ShtikerPage.ShtikerPage):
         self.showQuestsOnscreen()
 
     def showQuestsOnscreen(self):
+
+        # Check if there is currently something already displaying in the hotkey interface slot
+        if not base.localAvatar.allowOnscreenInterface():
+            return
+
+        # We can now own the slot
+        base.localAvatar.setCurrentOnscreenInterface(self)
         messenger.send('wakeup')
-        timedif = globalClock.getRealTime() - self.lastQuestTime
-        if timedif < 0.7:
-            return
-        self.lastQuestTime = globalClock.getRealTime()
-        if self.onscreen or base.localAvatar.invPage.onscreen:
-            return
-        self.onscreen = 1
+
         for i in range(ToontownGlobals.MaxQuestCarryLimit):
             if hasattr(self.questFrames[i], 'mapIndex'):
                 self.questFrames[i].mapIndex.show()
@@ -156,9 +158,12 @@ class QuestPage(ShtikerPage.ShtikerPage):
         self.hideQuestsOnscreen()
 
     def hideQuestsOnscreen(self):
-        if not self.onscreen:
+
+        # If the current onscreen interface is not us, don't do anything
+        if base.localAvatar.getCurrentOnscreenInterface() is not self:
             return
-        self.onscreen = 0
+
+        base.localAvatar.setCurrentOnscreenInterface(None)  # Free up the on screen interface slot
         for i in range(ToontownGlobals.MaxQuestCarryLimit):
             if hasattr(self.questFrames[i], 'mapIndex'):
                 self.questFrames[i].mapIndex.hide()
@@ -168,7 +173,7 @@ class QuestPage(ShtikerPage.ShtikerPage):
         self.hide()
 
     def canDeleteQuest(self, questDesc):
-        return Quests.isQuestJustForFun(questDesc[0], questDesc[3]) and self.onscreen == 0
+        return Quests.isQuestJustForFun(questDesc[0], questDesc[3])
 
     def __deleteQuest(self, questDesc):
         base.localAvatar.d_requestDeleteQuest(questDesc)
