@@ -43,6 +43,7 @@ class ToonBase(OTPBase.OTPBase):
         self.settings = Settings()
         self.setMultiThreading()
 
+        antialias = self.settings.get("anti-aliasing")
         mode = self.settings.get("borderless")
         music = self.settings.get("music")
         sfx = self.settings.get("sfx")
@@ -51,6 +52,7 @@ class ToonBase(OTPBase.OTPBase):
         sfxVol = self.settings.get("sfx-volume")
         res = self.settings.get("resolution")
         fpsMeter = self.settings.get("frame-rate-meter")  # or __debug__
+        fpsLimit = self.settings.get("fps-limit")
 
         loadPrcFileData("toonBase Settings Window Res", f"win-size {res[0]} {res[1]}")
         loadPrcFileData("toonBase Settings Window FullScreen", f"fullscreen {mode}")
@@ -60,6 +62,11 @@ class ToonBase(OTPBase.OTPBase):
         loadPrcFileData("toonBase Settings Sfx Volume", f"audio-master-sfx-volume {sfxVol}")
         loadPrcFileData("toonBase Settings Toon Chat Sounds", f"toon-chat-sounds {toonChatSounds}")
         loadPrcFileData("toonBase Settings Frame Rate Meter", f"show-frame-rate-meter {fpsMeter}")
+        if antialias:
+            loadPrcFileData("toonBase Settings Framebuffer MSAA", "framebuffer-multisample 1")
+            loadPrcFileData("toonBase Settings MSAA Level", f"multisamples {antialias}")
+        else:
+            loadPrcFileData("toonBase Settings Framebuffer MSAA", "framebuffer-multisample 0")
 
         OTPBase.OTPBase.__init__(self)
         if not self.isMainWindowOpen():
@@ -97,6 +104,11 @@ class ToonBase(OTPBase.OTPBase):
         if 'launcher' in __builtins__ and launcher:
             launcher.setPandaErrorCode(11)
         globalClock.setMaxDt(0.2)
+        if fpsLimit != 0:
+            globalClock.setMode(ClockObject.MLimited)
+            globalClock.setFrameRate(fpsLimit)
+        else:
+            globalClock.setMode(ClockObject.MNormal)
         if self.config.GetBool('want-particles', 1) == 1:
             self.notify.debug('Enabling particles')
             self.enableParticles()
@@ -517,6 +529,16 @@ class ToonBase(OTPBase.OTPBase):
             extraArgs=[ToontownGlobals.QuestsHotkeyOff]
         )
         self.accept(
+            self.controls.GALLERY_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.GalleryHotkeyOn]
+        )
+        self.accept(
+            f"{self.controls.GALLERY_HOTKEY}-up",
+            messenger.send,
+            extraArgs=[ToontownGlobals.GalleryHotkeyOff]
+        )
+        self.accept(
             self.controls.CHAT_HOTKEY,
             messenger.send,
             extraArgs=["enterNormalChat"]
@@ -542,6 +564,8 @@ class ToonBase(OTPBase.OTPBase):
         self.ignore(f"{self.controls.INVENTORY_HOTKEY}-up")
         self.ignore(self.controls.QUEST_HOTKEY)
         self.ignore(f"{self.controls.QUEST_HOTKEY}-up")
+        self.ignore(self.controls.GALLERY_HOTKEY)
+        self.ignore(f"{self.controls.GALLERY_HOTKEY}-up")
         self.ignore(self.controls.CHAT_HOTKEY)
         self.ignore(self.controls.MOVE_LEFT)
         self.ignore(self.controls.MOVE_RIGHT)
@@ -557,11 +581,12 @@ class ToonBase(OTPBase.OTPBase):
         self.accept("enable-hotkeys", self.enableHotkeys)
 
     def setAntiAliasing(self) -> None:
-        if self.settings.get("anti-aliasing"):
+        antialias = self.settings.get("anti-aliasing")
+        if antialias != 0:
             loadPrcFileData("", "framebuffer-multisample 1")
-            loadPrcFileData("", "multisamples 4")
-            self.render.setAntialias(AntialiasAttrib.MMultisample, 4)
-            self.aspect2d.setAntialias(AntialiasAttrib.MMultisample, 4)
+            loadPrcFileData("", f"multisamples {antialias}")
+            self.render.setAntialias(AntialiasAttrib.MMultisample, antialias)
+            self.aspect2d.setAntialias(AntialiasAttrib.MMultisample, antialias)
         else:
             loadPrcFileData("", "framebuffer-multisample 0")
             loadPrcFileData("", "multisamples 0")

@@ -288,14 +288,9 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
         self.__barrier.cleanup()
         del self.__barrier
 
-    def hasScoreMult(self):
-        return 1
-
     def enterFrameworkCleanup(self):
         self.notify.debug('BASE: enterFrameworkCleanup: normalExit=%s' % self.normalExit)
         scoreMult = MinigameGlobals.getScoreMult(self.getSafezoneId())
-        if not self.hasScoreMult():
-            scoreMult = 1.0
         self.notify.debug('score multiplier: %s' % scoreMult)
         for avId in self.avIdList:
             self.scoreDict[avId] *= scoreMult

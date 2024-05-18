@@ -226,6 +226,3 @@ class DistributedTargetGameAI(DistributedMinigameAI):
         self.gameFSM.request('cleanup')
         DistributedMinigameAI.gameOver(self)
         return
-
-    def hasScoreMult(self):
-        return 0

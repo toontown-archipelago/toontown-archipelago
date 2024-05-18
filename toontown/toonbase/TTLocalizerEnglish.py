@@ -4720,16 +4720,6 @@ MapPageYouAreAtHome = 'You are at\nyour estate'
 MapPageYouAreAtSomeonesHome = 'You are at %s estate'
 MapPageGoTo = 'Go To\n%s'
 OptionsPageTitle = 'Options'
-OptionsPageTitle2 = "Rebind"
-
-OptionsEnabledKeybinds = 'Custom Keybinds are enabled.'
-OptionsDisabledKeybinds = 'Custom Keybinds are disabled.'
-OptionsKeybindsMenu = 'Keybinds'
-
-RemapPrompt = 'Choose the keys you wish to remap.'
-RemapPopup = 'Press the key you wish to remap this control to.'
-Controls = ['Move Up:', 'Move Left:', 'Move Down:', 'Move Right:', 'Jump:', 'Action Key:', 'Options Hotkey:', 'Chatbox Hotkey:',
-            'Screenshot Key:', 'Crane Grab Key:', 'Sprint Key:', 'Alt. Action Key:']
 OptionsTabTitle = 'Options'
 OptionsPagePurchase = 'Subscribe'
 OptionsPageLogout = 'Logout'
@@ -9961,6 +9951,7 @@ OptionNames = {
     "STREET_MAP_HOTKEY": "Street Map Hotkey",
     "INVENTORY_HOTKEY": "Gag Menu Hotkey",
     "QUEST_HOTKEY": "ToonTask Hotkey",
+    "GALLERY_HOTKEY": "Cog Gallery Hotkey",
     "CRANE_GRAB_KEY": "Crane Grab Key",
     "ACTION_BUTTON": "Action Button",
     "SECONDARY_ACTION": "Secondary Action Button",
@@ -9971,8 +9962,9 @@ OptionNames = {
     "resolution": "Window Resolution",
     "vertical-sync": "Vertical Sync",
     "anisotropic-filter": "Anisotropic Filtering",
-    "anti-aliasing": "Anti-Aliasing",
+    "anti-aliasing": "Anti-Aliasing*",
     "frame-rate-meter": "FPS Meter",
+    "fps-limit": "FPS Limit",
 
     # Audio
     "music": "Music",
@@ -9982,12 +9974,28 @@ OptionNames = {
     "toon-chat-sounds": "Toon Chat Sounds",
 }
 
+OptionAntiAlias = {
+    0: "Off",
+    4: "4x MSAA",
+    8: "8x MSAA",
+}
+
 OptionAnisotropic = {
     0: "Off",
     2: "Lowest",
     4: "Low",
     8: "High",
     16: "Highest",
+}
+OptionFPSLimit = {
+ 0: "Unlimited",
+ 30: "30 FPS",
+ 60: "60 FPS",
+ 120: "120 FPS",
+ 144: "144 FPS",
+ 165: "165 FPS",
+ 240: "240 FPS",
+ 360: "360 FPS"
 }
 
 OptionEnabled = "Enabled"

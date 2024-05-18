@@ -317,6 +317,3 @@ class DistributedTravelGameAI(DistributedMinigameAI):
 
     def getBoardIndex(self):
         return self.boardIndex
-
-    def hasScoreMult(self):
-        return 0
