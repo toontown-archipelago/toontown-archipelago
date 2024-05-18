@@ -571,7 +571,7 @@ class BossRewardAward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         if self.reward == BossRewardAward.SOS:
-            av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 4)))
+            av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 5)))
         elif self.reward == BossRewardAward.UNITE:
             uniteType = random.choice([ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK])
             uniteChoice = random.choice(ResistanceChat.getItems(uniteType))
@@ -699,9 +699,9 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.LAWBOT_DISGUISE.value: CogDisguiseReward(CogDisguiseReward.LAWBOT),
     ToontownItemName.BOSSBOT_DISGUISE.value: CogDisguiseReward(CogDisguiseReward.BOSSBOT),
     ToontownItemName.MONEY_150.value: JellybeanReward(150),
-    ToontownItemName.MONEY_300.value: JellybeanReward(300),
-    ToontownItemName.MONEY_500.value: JellybeanReward(500),
-    ToontownItemName.MONEY_750.value: JellybeanReward(750),
+    ToontownItemName.MONEY_400.value: JellybeanReward(400),
+    ToontownItemName.MONEY_700.value: JellybeanReward(700),
+    ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
     ToontownItemName.XP_10.value: GagExpBundleAward(10),
     ToontownItemName.XP_15.value: GagExpBundleAward(15),
     ToontownItemName.XP_20.value: GagExpBundleAward(20),

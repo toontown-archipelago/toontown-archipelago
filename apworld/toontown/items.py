@@ -93,9 +93,9 @@ class ToontownItemName(enum.Enum):
 
     ### Jellybean Bundles ###
     MONEY_150  = "150 Jellybeans"
-    MONEY_300  = "300 Jellybeans"
-    MONEY_500 = "500 Jellybeans"
-    MONEY_750 = "750 Jellybeans"
+    MONEY_400  = "400 Jellybeans"
+    MONEY_700 = "700 Jellybeans"
+    MONEY_1000 = "1000 Jellybeans"
 
     ### Gag XP Bundles ###
     XP_10 = "10% Gag XP Bundle"
@@ -207,9 +207,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # region Filler Items
     # TODO - remember to account for the Fish filler when implementing weights here
     ToontownItemDefinition(ToontownItemName.MONEY_150,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_300,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_500,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_750,       ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_400,        ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_700,       ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_10,           ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_15,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_20,          ItemClassification.filler),
@@ -289,9 +289,9 @@ def hood_to_tp_item_name(hoodId: int) -> ToontownItemName:
 
 JUNK_WEIGHTS = {
     ToontownItemName.MONEY_150:        0.5,
-    ToontownItemName.MONEY_300:        0.5,
-    ToontownItemName.MONEY_500:        0.5,
-    ToontownItemName.MONEY_750:        0.5,
+    ToontownItemName.MONEY_400:        0.5,
+    ToontownItemName.MONEY_700:        0.5,
+    ToontownItemName.MONEY_1000:        0.5,
 
     ToontownItemName.XP_10:            0.7,
     ToontownItemName.XP_15:            0.5,
