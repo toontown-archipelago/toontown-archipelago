@@ -246,6 +246,11 @@ __GENERAL_SUIT_ANIMATIONS: Set[SuitAnimation] = {
     SuitAnimation(key='soak', suit='B', path='soak', phase='5'),
     SuitAnimation(key='soak', suit='C', path='soak', phase='5'),
 
+    # CJ Evidence throwing animations.
+    SuitAnimation(key='throw-paper', suit='A', path='throw-paper', phase='5'),
+    SuitAnimation(key='throw-paper', suit='B', path='throw-paper', phase='5'),
+    SuitAnimation(key='throw-paper', suit='C', path='throw-paper', phase='3.5'),
+
     # CEO Diner animations.
     SuitAnimation(key='sit', suit='A', path='sit', phase='12'),
     SuitAnimation(key='sit', suit='B', path='sit', phase='12'),
@@ -301,9 +306,10 @@ __SUIT_BATTLE_ANIMATIONS: Set[SuitAnimation] = {
     SuitAnimation(key='pen-squirt', suit='B', path='pen-squirt', phase='5'),
     SuitAnimation(key='pen-squirt', suit='C', path='fountain-pen', phase='5'),
 
-    SuitAnimation(key='throw-paper', suit='A', path='throw-paper', phase='5'),
-    SuitAnimation(key='throw-paper', suit='B', path='throw-paper', phase='5'),
-    SuitAnimation(key='throw-paper', suit='C', path='throw-paper', phase='3.5'),
+    # Unneeded here because it is in general anims
+    # SuitAnimation(key='throw-paper', suit='A', path='throw-paper', phase='5'),
+    # SuitAnimation(key='throw-paper', suit='B', path='throw-paper', phase='5'),
+    # SuitAnimation(key='throw-paper', suit='C', path='throw-paper', phase='3.5'),
 
     SuitAnimation(key='finger-wag', suit='A', path='fingerwag', phase='5'),
     SuitAnimation(key='finger-wag', suit='B', path='finger-wag', phase='5'),
