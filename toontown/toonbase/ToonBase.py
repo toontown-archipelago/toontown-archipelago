@@ -41,7 +41,9 @@ class ToonBase(OTPBase.OTPBase):
         self.global_text_properties = global_text_properties
 
         self.settings = Settings()
+        self.setMultiThreading()
 
+        antialias = self.settings.get("anti-aliasing")
         mode = self.settings.get("borderless")
         music = self.settings.get("music")
         sfx = self.settings.get("sfx")
@@ -50,6 +52,7 @@ class ToonBase(OTPBase.OTPBase):
         sfxVol = self.settings.get("sfx-volume")
         res = self.settings.get("resolution")
         fpsMeter = self.settings.get("frame-rate-meter")  # or __debug__
+        fpsLimit = self.settings.get("fps-limit")
 
         loadPrcFileData("toonBase Settings Window Res", f"win-size {res[0]} {res[1]}")
         loadPrcFileData("toonBase Settings Window FullScreen", f"fullscreen {mode}")
@@ -59,6 +62,11 @@ class ToonBase(OTPBase.OTPBase):
         loadPrcFileData("toonBase Settings Sfx Volume", f"audio-master-sfx-volume {sfxVol}")
         loadPrcFileData("toonBase Settings Toon Chat Sounds", f"toon-chat-sounds {toonChatSounds}")
         loadPrcFileData("toonBase Settings Frame Rate Meter", f"show-frame-rate-meter {fpsMeter}")
+        if antialias:
+            loadPrcFileData("toonBase Settings Framebuffer MSAA", "framebuffer-multisample 1")
+            loadPrcFileData("toonBase Settings MSAA Level", f"multisamples {antialias}")
+        else:
+            loadPrcFileData("toonBase Settings Framebuffer MSAA", "framebuffer-multisample 0")
 
         OTPBase.OTPBase.__init__(self)
         if not self.isMainWindowOpen():
@@ -79,7 +87,7 @@ class ToonBase(OTPBase.OTPBase):
         camera.setPosHpr(0, 0, 0, 0, 0, 0)
         self.camLens.setMinFov(ToontownGlobals.DefaultCameraFov / (4. / 3.))
         self.camLens.setNearFar(ToontownGlobals.DefaultCameraNear, ToontownGlobals.DefaultCameraFar)
-        self.musicManager.setVolume(music ** 2)
+        self.musicManager.setVolume(musicVol ** 2)
         for sfm in self.sfxManagerList:
             sfm.setVolume(sfxVol ** 2)
         self.setBackgroundColor(ToontownGlobals.DefaultBackgroundColor)
@@ -96,6 +104,11 @@ class ToonBase(OTPBase.OTPBase):
         if 'launcher' in __builtins__ and launcher:
             launcher.setPandaErrorCode(11)
         globalClock.setMaxDt(0.2)
+        if fpsLimit != 0:
+            globalClock.setMode(ClockObject.MLimited)
+            globalClock.setFrameRate(fpsLimit)
+        else:
+            globalClock.setMode(ClockObject.MNormal)
         if self.config.GetBool('want-particles', 1) == 1:
             self.notify.debug('Enabling particles')
             self.enableParticles()
@@ -172,6 +185,7 @@ class ToonBase(OTPBase.OTPBase):
 
         self.WANT_FOV_EFFECTS = self.settings.get('fovEffects')
         self.CAM_TOGGLE_LOCK = self.settings.get('cam-toggle-lock')
+        self.WANT_LEGACY_MODELS = self.settings.get('want-legacy-models')
 
         self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {base.config.GetString('version', 'v???')}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)
 
@@ -515,6 +529,16 @@ class ToonBase(OTPBase.OTPBase):
             extraArgs=[ToontownGlobals.QuestsHotkeyOff]
         )
         self.accept(
+            self.controls.GALLERY_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.GalleryHotkeyOn]
+        )
+        self.accept(
+            f"{self.controls.GALLERY_HOTKEY}-up",
+            messenger.send,
+            extraArgs=[ToontownGlobals.GalleryHotkeyOff]
+        )
+        self.accept(
             self.controls.CHAT_HOTKEY,
             messenger.send,
             extraArgs=["enterNormalChat"]
@@ -540,6 +564,8 @@ class ToonBase(OTPBase.OTPBase):
         self.ignore(f"{self.controls.INVENTORY_HOTKEY}-up")
         self.ignore(self.controls.QUEST_HOTKEY)
         self.ignore(f"{self.controls.QUEST_HOTKEY}-up")
+        self.ignore(self.controls.GALLERY_HOTKEY)
+        self.ignore(f"{self.controls.GALLERY_HOTKEY}-up")
         self.ignore(self.controls.CHAT_HOTKEY)
         self.ignore(self.controls.MOVE_LEFT)
         self.ignore(self.controls.MOVE_RIGHT)
@@ -555,11 +581,12 @@ class ToonBase(OTPBase.OTPBase):
         self.accept("enable-hotkeys", self.enableHotkeys)
 
     def setAntiAliasing(self) -> None:
-        if self.settings.get("anti-aliasing"):
+        antialias = self.settings.get("anti-aliasing")
+        if antialias != 0:
             loadPrcFileData("", "framebuffer-multisample 1")
-            loadPrcFileData("", "multisamples 4")
-            self.render.setAntialias(AntialiasAttrib.MMultisample, 4)
-            self.aspect2d.setAntialias(AntialiasAttrib.MMultisample, 4)
+            loadPrcFileData("", f"multisamples {antialias}")
+            self.render.setAntialias(AntialiasAttrib.MMultisample, antialias)
+            self.aspect2d.setAntialias(AntialiasAttrib.MMultisample, antialias)
         else:
             loadPrcFileData("", "framebuffer-multisample 0")
             loadPrcFileData("", "multisamples 0")
@@ -573,6 +600,19 @@ class ToonBase(OTPBase.OTPBase):
     def setVerticalSync(self) -> None:
         vsync = self.settings.get("vertical-sync")
         loadPrcFileData('', f'sync-video {vsync}')
+
+    def setMultiThreading(self) -> None:
+        # It is current year, and multithreading has improved stability wise
+        # Still experimental, but for documentation's sake, let's add this in
+        multithread = self.settings.get("experimental-multithreading")
+        if multithread == True:
+            loadPrcFileData('', 'threading-model Cull/Draw')
+            print('===============================================================')
+            print('Warning! You are running this game with multithreading enabled.')
+            print('While this option yields performance gains, it can be unstable.')
+            print('Please do not report any issues that may be')
+            print('caused exclusively from using this setting.')
+            print('===============================================================')
 
     def updateDisplay(self) -> None:
         self.setAntiAliasing()

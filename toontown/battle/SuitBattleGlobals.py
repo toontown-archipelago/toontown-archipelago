@@ -1340,7 +1340,6 @@ __SuitAttacksToDefaultAnimation = {
     SuitAttackType.WRITE_OFF:           'hold-pencil'
 }
 
-
 # Given an attack type, returns the default animation the suit will play for it.
 def getSuitAnimationForAttack(attackType: SuitAttackType) -> str:
     return __SuitAttacksToDefaultAnimation.get(attackType, 'magic1')

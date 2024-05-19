@@ -15,12 +15,7 @@ class ToontownItemName(enum.Enum):
     LAFF_BOOST_5 = "+5 Laff Boost"
 
     ### Jellybean Jar Capacity ###
-    MONEY_CAP_750  = "+750 Jellybean Jar Capacity"
-    MONEY_CAP_1000 = "+1000 Jellybean Jar Capacity"
-    MONEY_CAP_1250 = "+1250 Jellybean Jar Capacity"
-    MONEY_CAP_1500 = "+1500 Jellybean Jar Capacity"
-    MONEY_CAP_2000 = "+2000 Jellybean Jar Capacity"
-    MONEY_CAP_2500 = "+2500 Jellybean Jar Capacity"
+    MONEY_CAP_1000 = "Progressive Jellybean Jar"
 
     ### Fishing ###
     FISHING_ROD_UPGRADE = "Progressive Fishing Rod"
@@ -97,10 +92,10 @@ class ToontownItemName(enum.Enum):
     BOSSBOT_DISGUISE = "Bossbot Disguise"
 
     ### Jellybean Bundles ###
-    MONEY_250  = "250 Jellybeans"
-    MONEY_500  = "500 Jellybeans"
+    MONEY_150  = "150 Jellybeans"
+    MONEY_400  = "400 Jellybeans"
+    MONEY_700 = "700 Jellybeans"
     MONEY_1000 = "1000 Jellybeans"
-    MONEY_2000 = "2000 Jellybeans"
 
     ### Gag XP Bundles ###
     XP_10 = "10% Gag XP Bundle"
@@ -142,12 +137,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.progression, quantity=0),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
     # endregion
     # region Jellybean Capacity
-    ToontownItemDefinition(ToontownItemName.MONEY_CAP_750,  ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.MONEY_CAP_1000, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.MONEY_CAP_1250, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.MONEY_CAP_1500, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.MONEY_CAP_2000, ItemClassification.useful, quantity=1),
-    ToontownItemDefinition(ToontownItemName.MONEY_CAP_2500, ItemClassification.useful, quantity=1),
+    ToontownItemDefinition(ToontownItemName.MONEY_CAP_1000, ItemClassification.progression, quantity=9),
     # endregion
     # region Gag Training Frames
     ToontownItemDefinition(ToontownItemName.TOONUP_FRAME, ItemClassification.progression),
@@ -216,10 +206,10 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # endregion
     # region Filler Items
     # TODO - remember to account for the Fish filler when implementing weights here
-    ToontownItemDefinition(ToontownItemName.MONEY_250,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_500,        ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_150,        ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_400,        ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_700,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_2000,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_10,           ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_15,          ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.XP_20,          ItemClassification.filler),
@@ -298,10 +288,10 @@ def hood_to_tp_item_name(hoodId: int) -> ToontownItemName:
 
 
 JUNK_WEIGHTS = {
-    ToontownItemName.MONEY_250:        0.5,
-    ToontownItemName.MONEY_500:        0.5,
-    ToontownItemName.MONEY_1000:       0.5,
-    ToontownItemName.MONEY_2000:       0.5,
+    ToontownItemName.MONEY_150:        0.5,
+    ToontownItemName.MONEY_400:        0.5,
+    ToontownItemName.MONEY_700:        0.5,
+    ToontownItemName.MONEY_1000:        0.5,
 
     ToontownItemName.XP_10:            0.7,
     ToontownItemName.XP_15:            0.5,

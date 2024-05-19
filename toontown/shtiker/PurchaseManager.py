@@ -55,6 +55,7 @@ class PurchaseManager(DistributedObject.DistributedObject):
             self.acceptOnce('purchaseBackToToontown', self.backToToontownHandler)
             self.acceptOnce('purchaseTimeout', self.setPurchaseExit)
             self.accept('boughtGag', self.__handleBoughtGag)
+            self.accept('boughtGagFast', self.__handleBoughtGagFast)
             base.cr.playGame.hood.fsm.request('purchase', [self.mpArray,
              self.moneyArray,
              self.playerIds,
@@ -87,15 +88,19 @@ class PurchaseManager(DistributedObject.DistributedObject):
         self.sendUpdate('requestPlayAgain', [])
         self.playAgain = 1
 
-    def d_setInventory(self, invString, money, done):
-        self.sendUpdate('setInventory', [invString, money, done])
+    def d_setInventory(self, invString, money, done, laff=0):
+        self.sendUpdate('setInventory', [invString, money, done, laff])
 
     def __handleBoughtGag(self):
         self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 0)
 
+    def __handleBoughtGagFast(self):
+        self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 0, laff=1)
+
     def setPurchaseExit(self):
         if self.hasLocalToon:
             self.ignore('boughtGag')
+            self.ignore('boughtGagFast')
             self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 1)
             messenger.send('purchaseOver', [self.playAgain])
 

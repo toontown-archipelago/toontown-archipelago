@@ -453,7 +453,7 @@ class DistributedTargetGame(DistributedMinigame):
                     targetGN = GeomNode('target Circle')
                     targetNodePathGeom = self.targets.attachNewNode(targetGN)
                     targetNodePathGeom.setPos(placeX, placeY, 0)
-                    points = self.targetSize[combinedIndex] / 2 + 20
+                    points = int(self.targetSize[combinedIndex]) // 2 + 20
                     order = len(self.targetList) - combinedIndex + 10
                     if first:
                         first = 0
@@ -1121,7 +1121,7 @@ class DistributedTargetGame(DistributedMinigame):
 
     def __updatePowerBarTask(self, task):
         powerUp = 0
-        timeDiff = None
+        timeDiff = 0
         if not self.arrowKeys.rightPressed():
             self.canPressRight = 1
         elif self.arrowKeys.rightPressed() and self.canPressRight:

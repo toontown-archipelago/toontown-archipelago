@@ -1,3 +1,5 @@
+import typing
+
 from . import ShtikerPage
 from direct.task.Task import Task
 from . import SummonCogDialog
@@ -9,6 +11,10 @@ from toontown.suit import SuitDNA
 from toontown.suit import Suit
 from toontown.battle import SuitBattleGlobals
 from .CogPageGlobals import *
+
+if typing.TYPE_CHECKING:
+    from toontown.toonbase.ToonBaseGlobals import *
+
 SCALE_FACTOR = 1.5
 RADAR_DELAY = 0.2
 BUILDING_RADAR_POS = (0.375,
@@ -594,3 +600,36 @@ class SuitPage(ShtikerPage.ShtikerPage):
             else:
                 button.buildingRadarLabel.hide()
         return
+
+    def showGalleryOnscreen(self):
+
+        # Check if there is currently something already displaying in the hotkey interface slot
+        if not base.localAvatar.allowOnscreenInterface():
+            return
+
+        # We can now own the slot
+        base.localAvatar.setCurrentOnscreenInterface(self)
+        messenger.send('wakeup')
+
+        self.updatePage()
+        self.reparentTo(aspect2d)
+        self.show()
+
+    def hideGalleryOnscreen(self):
+
+        # If the current onscreen interface is not us, don't do anything
+        if base.localAvatar.getCurrentOnscreenInterface() is not self:
+            return
+
+        base.localAvatar.setCurrentOnscreenInterface(None)  # Free up the on screen interface slot
+
+        self.reparentTo(self.book)
+        self.hide()
+
+    def acceptOnscreenHooks(self):
+        self.accept(ToontownGlobals.GalleryHotkeyOn, self.showGalleryOnscreen)
+        self.accept(ToontownGlobals.GalleryHotkeyOff, self.hideGalleryOnscreen)
+
+    def ignoreOnscreenHooks(self):
+        self.ignore(ToontownGlobals.GalleryHotkeyOn)
+        self.ignore(ToontownGlobals.GalleryHotkeyOff)

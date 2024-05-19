@@ -30,6 +30,7 @@ from . import TTEmote
 from otp.speedchat.SpeedChatGlobals import speedChatStyles
 from toontown.fishing import FishCollection
 from toontown.fishing import FishTank
+from toontown.quest import Quests
 from toontown.suit import SuitDNA
 from toontown.coghq import CogDisguiseGlobals
 from toontown.toonbase import TTLocalizer
@@ -65,6 +66,8 @@ import copy
 from ..archipelago.definitions import color_profile
 from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
+from ..archipelago.util import win_condition
+from ..archipelago.util.win_condition import WinCondition
 from ..util.astron.AstronDict import AstronDict
 
 
@@ -206,6 +209,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.instaKill = False
         self.overheadLaffMeter = None
         self.baseGagSkillMultiplier = 1
+        self.damageMultiplier = 100
         self.accessKeys: List[int] = []
         self.receivedItems: List[Tuple[int, int]] = []
         self.receivedItemIDs: set[int] = set()
@@ -213,6 +217,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintPoints = 0
 
         self.slotData = {}
+        self.winCondition: WinCondition = win_condition.NoWinCondition(self)
         return
 
     def disable(self):
@@ -2526,38 +2531,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                         break
 
     def scrubTalk(self, message, mods):
-        scrubbed = 0
-        text = copy.copy(message)
-        for mod in mods:
-            index = mod[0]
-            length = mod[1] - mod[0] + 1
-            newText = text[0:index] + length * '\x07' + text[index + length:]
-            text = newText
-
-        words = text.split(' ')
-        newwords = []
-        for word in words:
-            if word == '':
-                newwords.append(word)
-            elif word[0] == '\x07' or len(word) > 1 and word[0] == '.' and word[1] == '\x07':
-                newwords.append('\x01WLDisplay\x01' + self.chatGarbler.garbleSingle(self, word) + '\x02')
-                scrubbed = 1
-            elif base.whiteList.isWord(word):
-                newwords.append(word)
-            else:
-                flag = 0
-                for friendId, flags in self.friendsList:
-                    if not flags & ToontownGlobals.FriendChat:
-                        flag = 1
-
-                if flag:
-                    scrubbed = 1
-                    newwords.append('\x01WLDisplay\x01' + word + '\x02')
-                else:
-                    newwords.append(word)
-
-        newText = ' '.join(newwords)
-        return (newText, scrubbed)
+        return message, 0
 
     def replaceBadWords(self, text):
         words = text.split(' ')
@@ -2829,6 +2803,14 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setBaseGagSkillMultiplier(self, newGagSkillMultiplier) -> None:
         self.baseGagSkillMultiplier = newGagSkillMultiplier
 
+    # What is this toon's damage multiplier
+    def getDamageMultiplier(self) -> int:
+        return self.damageMultiplier
+
+    # Set this toon's damage multiplier
+    def setDamageMultiplier(self, newDamageMultiplier) -> None:
+        self.damageMultiplier = newDamageMultiplier
+
     # What is this toon's list of access keys acquired
     def getAccessKeys(self) -> List[int]:
         return self.accessKeys
@@ -2881,10 +2863,18 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def setSlotData(self, slotData) -> None:
         self.slotData = AstronDict.fromStruct(slotData)
+        self.updateWinCondition()
 
     def hasConnected(self) -> bool:
         # kinda hacky
         return bool(self.slotData)
+
+    def updateWinCondition(self) -> None:
+        condition = win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self)
+        self.winCondition = condition
+
+    def getWinCondition(self) -> WinCondition:
+        return self.winCondition
 
     """
     Methods for managing Color Profiles and Nametags.

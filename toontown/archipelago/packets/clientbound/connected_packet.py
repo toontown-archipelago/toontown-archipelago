@@ -132,6 +132,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         rng_option = self.slot_data.get('seed_generation_type', 'global')
         new_seed = self.handle_seed_generation_type(av, new_seed, rng_option)
         av.setSeed(new_seed)
+        
+        # Get damage multiplier
+        damageMultiplier = self.slot_data.get('damage_multiplier', 100)
+        av.b_setDamageMultiplier(damageMultiplier)
 
     def handle(self, client):
         self.debug(f"Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"
@@ -151,6 +155,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         self.debug(f"Detected slot data: {self.slot_data}")
         client.av.b_setSlotData(self.slot_data)
+        client.av.updateWinCondition()
 
         self.handle_yaml_settings(client.av)
 
@@ -161,7 +166,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Tell AP we are playing
         status_packet = StatusUpdatePacket()
-        status_packet.status = ClientStatus.CLIENT_GOAL if client.av.winConditionSatisfied() else ClientStatus.CLIENT_PLAYING
+        status_packet.status = ClientStatus.CLIENT_GOAL if client.av.getWinCondition().satisfied() else ClientStatus.CLIENT_PLAYING
         client.send_packet(status_packet)
 
         # Scout some locations that we need to display

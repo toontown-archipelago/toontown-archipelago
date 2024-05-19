@@ -37,6 +37,7 @@ SELL_MOVIE_TIMEOUT = 8
 SELL_MOVIE_PETRETURNED = 9
 SELL_MOVIE_PETADOPTED = 10
 SELL_MOVIE_PETCANCELED = 11
+SELL_MOVIE_ALREADYCHECKED = 12
 PARTY_MOVIE_CLEAR = 0
 PARTY_MOVIE_START = 1
 PARTY_MOVIE_COMPLETE = 2
@@ -98,7 +99,7 @@ def createNPC(air, npcId, desc, zoneId, posIndex = 0, questCallback = None):
     elif type == NPC_FISHERMAN:
         npc = DistributedNPCFishermanAI.DistributedNPCFishermanAI(air, npcId)
     elif type == NPC_PETCLERK:
-        npc = DistributedNPCPetclerkAI.DistributedNPCPetclerkAI(air, npcId)
+        npc = DistributedNPCPetclerkAI.DistributedNPCPetclerkAI(air, npcId, subId=posIndex+1)
     elif type == NPC_KARTCLERK:
         npc = DistributedNPCKartClerkAI.DistributedNPCKartClerkAI(air, npcId)
     elif type == NPC_PARTYPERSON:
@@ -11945,33 +11946,33 @@ HQnpcFriends = {
     2121: (ToontownBattleGlobals.HEAL_TRACK, 3, 45, 3),
 
     2011: (ToontownBattleGlobals.TRAP_TRACK, 4, 185, 5),
-    3007: (ToontownBattleGlobals.TRAP_TRACK, 4, 120, 4),
-    1001: (ToontownBattleGlobals.TRAP_TRACK, 3, 80, 3),
+    3007: (ToontownBattleGlobals.TRAP_TRACK, 4, 135, 4),
+    1001: (ToontownBattleGlobals.TRAP_TRACK, 3, 90, 3),
 
-    3112: (ToontownBattleGlobals.LURE_TRACK, 5, 60, 4),
+    3112: (ToontownBattleGlobals.LURE_TRACK, 5, 60, 5),
     1323: (ToontownBattleGlobals.LURE_TRACK, 3, 50, 4),
     2308: (ToontownBattleGlobals.LURE_TRACK, 1, 40, 3),
 
-    4119: (ToontownBattleGlobals.SOUND_TRACK, 5, 70, 5),
-    4219: (ToontownBattleGlobals.SOUND_TRACK, 4, 30, 4),
-    4115: (ToontownBattleGlobals.SOUND_TRACK, 3, 20, 3),
+    4119: (ToontownBattleGlobals.SOUND_TRACK, 5, 90, 5),
+    4219: (ToontownBattleGlobals.SOUND_TRACK, 4, 60, 4),
+    4115: (ToontownBattleGlobals.SOUND_TRACK, 3, 30, 3),
 
     1116: (ToontownBattleGlobals.DROP_TRACK, 5, 170, 5),
-    2311: (ToontownBattleGlobals.DROP_TRACK, 4, 100, 4),
+    2311: (ToontownBattleGlobals.DROP_TRACK, 4, 110, 4),
     4140: (ToontownBattleGlobals.DROP_TRACK, 3, 60, 3),
 
     3137: (ToontownBattleGlobals.NPC_COGS_MISS,  0, 0, 4),
-    4327: (ToontownBattleGlobals.NPC_COGS_MISS, 0, 0, 4),
-    4230: (ToontownBattleGlobals.NPC_COGS_MISS, 0, 0, 4),
+    # 4327: (ToontownBattleGlobals.NPC_COGS_MISS, 0, 0, 4),
+    # 4230: (ToontownBattleGlobals.NPC_COGS_MISS, 0, 0, 4),
     3135: (ToontownBattleGlobals.NPC_TOONS_HIT, 0, 0, 4),
-    2208: (ToontownBattleGlobals.NPC_TOONS_HIT, 0, 0, 4),
-    5124: (ToontownBattleGlobals.NPC_TOONS_HIT, 0, 0, 4),
-    2126: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 0, 0, 3),
-    4007: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 1, 0, 3),
-    1315: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 2, 0, 3),
-    5207: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 3, 0, 4),
-    3129: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 4, 0, 4),
-    4125: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 5, 0, 4),
+    # 2208: (ToontownBattleGlobals.NPC_TOONS_HIT, 0, 0, 4),
+    # 5124: (ToontownBattleGlobals.NPC_TOONS_HIT, 0, 0, 4),
+    2126: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 3, 0, 3),
+    # 4007: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 3, 0, 3),
+    # 1315: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 3, 0, 3),
+    5207: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 4, 0, 4),
+    # 3129: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 4, 0, 4),
+    4125: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 5, 0, 5),
     2003: (ToontownBattleGlobals.NPC_RESTOCK_GAGS, 6, 0, 5),
 }
 

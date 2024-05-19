@@ -335,31 +335,39 @@ class InventoryBase(DirectObject.DirectObject):
     # When calling this method, we attempt to fill an inventory until the pouch is full but
     # Explicitly add higher level gags first. This means that if a track is lagging behind in experience
     # We can end up with no gags for that track.
-    def fillPrioritizingLevel(self, maxLevel=LAST_REGULAR_GAG_LEVEL):
+    def fillPrioritizingLevel(self, maxLevel=LAST_REGULAR_GAG_LEVEL, restockAmount=100):
 
         # Loop through all the levels of gags in the game from level 7 gags to level 1
+        restockCount = 0
         for level in range(maxLevel, -1, -1):
             # Now at this level, keep iterating through all the tracks and attempt to add one gag over and over.
-            # Repeat this until we fail to add a gag for every single track.
+            # Repeat this until we fail to add a gag for every single track, or hit our restock amount.
             gagsAddedForThisLevel = True
             while gagsAddedForThisLevel is True:
                 gagsAddedForThisLevel = False
                 for track in range(len(Tracks)):
                     if self.addItem(track, level) > 0:
+                        restockCount += 1
+                        if restockCount == restockAmount:
+                            return
                         gagsAddedForThisLevel = True
 
     # Fills the inventory by prioritizing a balanced count of gags per track.
     # When calling this method, we attempt to fill an inventory until the pouch is full but
     # We attempt to keep a balanced distribution of gags per track.
     # This means that even if a toon has wildly uneven gag levels, they still are left with a balanced inventory.
-    def fillPrioritizingTrack(self, maxLevel=LAST_REGULAR_GAG_LEVEL):
+    def fillPrioritizingTrack(self, maxLevel=LAST_REGULAR_GAG_LEVEL, restockAmount=100):
 
-        # Keep iterating through every track adding one item until we do a run and fail.
+        # Keep iterating through every track adding one item until we do a run and fail, or hit our restock amount.
         gagAddedThisRun = True
+        restockCount = 0
         while gagAddedThisRun is True:
             gagAddedThisRun = False
             for track in range(len(Tracks)):
                 if self.addOneToTrack(track, maxGagLevel=maxLevel) is True:
+                    restockCount += 1
+                    if restockCount == restockAmount:
+                        return
                     gagAddedThisRun = True
 
     # Used to max an inventory. A fill mode can also be specified to determine how we should fill it.
@@ -368,7 +376,7 @@ class InventoryBase(DirectObject.DirectObject):
     # All:      Have at least one of every gag, then perform a balanced fill.
     # Additionally, you can specify a max level of gags to consider for filling. Default is the highest level gag.
     # You can also specify if we should clear the inventory first before filling with clearFirst=True.
-    def maxInventory(self, mode=FillMode.BALANCED, maxGagLevel=LAST_REGULAR_GAG_LEVEL, clearFirst=False):
+    def maxInventory(self, mode=FillMode.BALANCED, maxGagLevel=LAST_REGULAR_GAG_LEVEL, clearFirst=False, restockAmount=100):
 
         # Should we clear the inventory first?
         if clearFirst is True:
@@ -376,12 +384,12 @@ class InventoryBase(DirectObject.DirectObject):
 
         # Now figure out how we are filling this inventory
         if mode == self.FillMode.POWER:
-            self.fillPrioritizingLevel(maxLevel=maxGagLevel)
+            self.fillPrioritizingLevel(maxLevel=maxGagLevel, restockAmount=restockAmount)
             return
 
         if mode == self.FillMode.ALL:
             self.addOneOfAllGag(maxLevel=maxGagLevel)
-            self.fillPrioritizingTrack(maxLevel=maxGagLevel)
+            self.fillPrioritizingTrack(maxLevel=maxGagLevel, restockAmount=restockAmount)
             return
 
         # Were we given something that wasn't balanced?
@@ -389,7 +397,7 @@ class InventoryBase(DirectObject.DirectObject):
             self.notify.warning(f"Invalid fill mode: {mode}. Defaulting to FillMode.Balanced...")
 
         # Perform default fill mode (Balanced)
-        self.fillPrioritizingTrack(maxLevel=maxGagLevel)
+        self.fillPrioritizingTrack(maxLevel=maxGagLevel, restockAmount=restockAmount)
 
     # Wipes this inventory.
     def clearInventory(self):

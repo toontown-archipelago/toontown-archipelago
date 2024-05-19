@@ -504,6 +504,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             dmg = int(math.ceil(dmg))
         elif dmg >= self.STUN_THRESHOLD:
             self.b_setAttackCode(ToontownGlobals.BossCogDizzyNow)
+            self.movingToTable = False
             self.hitCount = 0
             self.d_stunBonus(avId, BossCogGlobals.POINTS_STUN_CEO)
             self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 7.0))
@@ -635,7 +636,15 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                toon.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.BOSSBOT_PROOF.value))
+                bundleCount = toon.slotData.get('checks_per_boss', 4)
+                bundle = [locations.ToontownLocationName.BOSSBOT_PROOF_1.value,
+                          locations.ToontownLocationName.BOSSBOT_PROOF_2.value,
+                          locations.ToontownLocationName.BOSSBOT_PROOF_3.value,
+                          locations.ToontownLocationName.BOSSBOT_PROOF_4.value,
+                          locations.ToontownLocationName.BOSSBOT_PROOF_5.value]
+                if bundleCount:
+                    for checkNum in range(bundleCount):
+                        toon.addCheckedLocation(ap_location_name_to_id(bundle[checkNum]))
                 self.givePinkSlipReward(toon)
                 toon.b_promote(self.deptIndex)
 
@@ -675,9 +684,6 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         optionalParam = 0
         if self.movingToTable:
             self.waitForNextAttack(5)
-        elif self.attackCode == ToontownGlobals.BossCogDizzyNow:
-            attackCode = ToontownGlobals.BossCogGolfAreaAttack
-            self.waitForNextAttack(3)
         elif self.getHealthPercentage() <= 0.66 and not self.doneOvertimeOneAttack:
             attackCode = ToontownGlobals.BossCogOvertimeAttack
             self.doneOvertimeOneAttack = True
@@ -694,6 +700,9 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
              ToontownGlobals.BossCogDirectedAttack])
         if attackCode == ToontownGlobals.BossCogAreaAttack:
             self.__doAreaAttack()
+        if self.attackCode in ToontownGlobals.BossCogDizzyStates:
+            self.b_setAttackCode(ToontownGlobals.BossCogRecoverDizzyAttack)
+            return
         if attackCode == ToontownGlobals.BossCogGolfAreaAttack:
             self.__doGolfAreaAttack()
         elif attackCode == ToontownGlobals.BossCogDirectedAttack:

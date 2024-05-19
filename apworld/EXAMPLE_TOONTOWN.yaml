@@ -33,16 +33,43 @@ Toontown:
   # Must be above or equal to the base_global_gag_xp.
   # Range: 0 to 30
   max_global_gag_xp: 30
+  
+  # The percentage of damage that will be done when battling Cogs.
+  # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
+  # Range: 0 to 500
+  damage_multiplier: 100
 
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 9999
   starting_money: 1000
 
+  ### Boss Settings ###
+
+  # How many checks you will receive from a cog boss upon completion.
+  # Range: 0 to 5
+  checks_per_boss: 4
+
   ### Completion Settings ###
+
+  # Determines the condition before being able to talk to Flippy to complete the game.
+  # - cog_bosses (default): Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
+  # - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
+  # - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+  win_condition: cog_bosses
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
   # Range: 0 to 4
   cog_bosses_required: 4
+  
+  # How many total tasks must be finished before being able to talk to Flippy to complete the game.
+  # Unused if win_condition is not total_tasks.
+  # Range: 0 to 72
+  total_tasks_required: 48
+  
+  # How many tasks must be finished in each neighborhood before being able to talk to Flippy to complete the game.
+  # Unused if win_condition is not hood_tasks.
+  # Range: 0 to 12
+  hood_tasks_required: 8
 
   ### Sanity Settings ###
 
@@ -130,13 +157,6 @@ Toontown:
     - Cashbot Disguise
     - Lawbot Disguise
     - Bossbot Disguise
-
-  # Exclude boss clears from having important progression items
-  exclude_locations:
-    - Sellbot Proof
-    - Cashbot Proof
-    - Lawbot Proof
-    - Bossbot Proof
 
 game: Toontown
 requires:

@@ -45,15 +45,3 @@ class PetshopBuildingAI:
         insideDoor.generateWithRequired(self.interiorZone)
         self.door = door
         self.insideDoor = insideDoor
-
-    def createPet(self, ownerId, seed):
-        zoneId = self.interiorZone
-        safeZoneId = ZoneUtil.getCanonicalSafeZoneId(zoneId)
-        name, dna, traitSeed = PetUtil.getPetInfoFromSeed(seed, safeZoneId)
-        pet = DistributedPetAI.DistributedPetAI(self.air, dna=dna)
-        pet.setOwnerId(ownerId)
-        pet.setPetName(name)
-        pet.traits = PetTraits.PetTraits(traitSeed=traitSeed, safeZoneId=safeZoneId)
-        pet.generateWithRequired(zoneId)
-        pet.setPos(0, 0, 0)
-        pet.b_setParent(ToontownGlobals.SPRender)

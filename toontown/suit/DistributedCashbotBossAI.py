@@ -1113,7 +1113,15 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                toon.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.CASHBOT_PROOF.value))
+                bundleCount = toon.slotData.get('checks_per_boss', 4)
+                bundle = [locations.ToontownLocationName.CASHBOT_PROOF_1.value,
+                          locations.ToontownLocationName.CASHBOT_PROOF_2.value,
+                          locations.ToontownLocationName.CASHBOT_PROOF_3.value,
+                          locations.ToontownLocationName.CASHBOT_PROOF_4.value,
+                          locations.ToontownLocationName.CASHBOT_PROOF_5.value]
+                if bundleCount:
+                    for checkNum in range(bundleCount):
+                        toon.addCheckedLocation(ap_location_name_to_id(bundle[checkNum]))
                 toon.b_promote(self.deptIndex)
 
                 for rewardId in rewards:

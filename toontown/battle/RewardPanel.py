@@ -266,7 +266,7 @@ class RewardPanel(DirectFrame):
             if toon.hasTrackAccess(i):
                 trackBar.show()
 
-                trackBar.forceShowExperience(curExp, toonExpCap)
+                trackBar.forceShowExperience(curExp, toonExpCap, i)
                 self.trackBars[i].resetBarColor()
             else:
                 trackBar.hide()
@@ -280,7 +280,7 @@ class RewardPanel(DirectFrame):
 
         trackBar = self.trackBars[track]
 
-        trackBar.forceShowExperience(currExpToShow, capToShow)
+        trackBar.forceShowExperience(currExpToShow, capToShow, track)
         if currExpToShow != capToShow:
             trackBar.makeBarBright()
         else:

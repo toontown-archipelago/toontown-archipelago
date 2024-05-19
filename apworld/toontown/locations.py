@@ -292,6 +292,24 @@ class ToontownLocationName(Enum):
     DONALDS_DREAMLAND_TASK_10 =                 "Donald's Dreamland Task #10"
     DONALDS_DREAMLAND_TASK_11 =                 "Donald's Dreamland Task #11"
     DONALDS_DREAMLAND_TASK_12 =                 "Donald's Dreamland Task #12"
+    TTC_SHOP_1 =                                "Thickie (TTC Pet Shop)"
+    TTC_SHOP_2 =                                "Bowser (TTC Pet Shop)"
+    TTC_SHOP_3 =                                "Snowman (TTC Pet Shop)"
+    DD_SHOP_1 =                                 "Jo (DD Pet Shop)"
+    DD_SHOP_2 =                                 "Joe (DD Pet Shop)"
+    DD_SHOP_3 =                                 "Jojo (DD Pet Shop)"
+    DG_SHOP_1 =                                 "Lambchop (DG Pet Shop)"
+    DG_SHOP_2 =                                 "Pudgette (DG Pet Shop)"
+    DG_SHOP_3 =                                 "Yum Yum (DG Pet Shop)"
+    MML_SHOP_1 =                                "Zsa Zsa (MML Pet Shop)"
+    MML_SHOP_2 =                                "Arf (MML Pet Shop)"
+    MML_SHOP_3 =                                "Banana (MML Pet Shop)"
+    TB_SHOP_1 =                                 "Big Shot (TB Pet Shop)"
+    TB_SHOP_2 =                                 "Big Red (TB Pet Shop)"
+    TB_SHOP_3 =                                 "Bigbelly (TB Pet Shop)"
+    DDL_SHOP_1 =                                "Bozo (DDL Pet Shop)"
+    DDL_SHOP_2 =                                "Brainchild (DDL Pet Shop)"
+    DDL_SHOP_3 =                                "Critter (DDL Pet Shop)"
     TTC_TREASURE_1 =                            "Toontown Central AP Treasure 1"
     TTC_TREASURE_2 =                            "Toontown Central AP Treasure 2"
     TTC_TREASURE_3 =                            "Toontown Central AP Treasure 3"
@@ -419,10 +437,26 @@ class ToontownLocationName(Enum):
     BACK_THREE_BARREL_5 =                       "Back Three Golfing Barrel (Hole 2)"
     BACK_THREE_BARREL_6 =                       "Back Three Golfing Barrel (Hole 3)"
     CLEAR_BACK_THREE =                          "Back Three Cleared"
-    SELLBOT_PROOF =                             "Sellbot Proof"
-    CASHBOT_PROOF =                             "Cashbot Proof"
-    LAWBOT_PROOF =                              "Lawbot Proof"
-    BOSSBOT_PROOF =                             "Bossbot Proof"
+    SELLBOT_PROOF_1 =                           "Sellbot Proof Bundle 1"
+    SELLBOT_PROOF_2 =                           "Sellbot Proof Bundle 2"
+    SELLBOT_PROOF_3 =                           "Sellbot Proof Bundle 3"
+    SELLBOT_PROOF_4 =                           "Sellbot Proof Bundle 4"
+    SELLBOT_PROOF_5 =                           "Sellbot Proof Bundle 5"
+    CASHBOT_PROOF_1 =                           "Cashbot Proof Bundle 1"
+    CASHBOT_PROOF_2 =                           "Cashbot Proof Bundle 2"
+    CASHBOT_PROOF_3 =                           "Cashbot Proof Bundle 3"
+    CASHBOT_PROOF_4 =                           "Cashbot Proof Bundle 4"
+    CASHBOT_PROOF_5 =                           "Cashbot Proof Bundle 5"
+    LAWBOT_PROOF_1 =                            "Lawbot Proof Bundle 1"
+    LAWBOT_PROOF_2 =                            "Lawbot Proof Bundle 2"
+    LAWBOT_PROOF_3 =                            "Lawbot Proof Bundle 3"
+    LAWBOT_PROOF_4 =                            "Lawbot Proof Bundle 4"
+    LAWBOT_PROOF_5 =                            "Lawbot Proof Bundle 5"
+    BOSSBOT_PROOF_1 =                           "Bossbot Proof Bundle 1"
+    BOSSBOT_PROOF_2 =                           "Bossbot Proof Bundle 2"
+    BOSSBOT_PROOF_3 =                           "Bossbot Proof Bundle 3"
+    BOSSBOT_PROOF_4 =                           "Bossbot Proof Bundle 4"
+    BOSSBOT_PROOF_5 =                           "Bossbot Proof Bundle 5"
     SAVED_TOONTOWN =                            "Save Toontown"
 
 
@@ -431,7 +465,11 @@ class ToontownLocationType(IntEnum):
     GALLERY         = auto()  # Locations for discovering cogs in the gallery
     GALLERY_MAX     = auto()  # Locations for maxing cogs in the gallery
     FACILITIES      = auto()  # Locations for clearing facilities
-    BOSSES          = auto()  # Locations for clearing bosses
+    BOSSES_1        = auto()  # Locations for clearing bosses
+    BOSSES_2        = auto()  # Locations for clearing bosses
+    BOSSES_3        = auto()  # Locations for clearing bosses
+    BOSSES_4        = auto()  # Locations for clearing bosses
+    BOSSES_5        = auto()  # Locations for clearing bosses
     FISHING         = auto()  # Locations for fishing trophies
     FISHING_GENUS   = auto()  # Locations for catching unique genus
     FISHING_GALLERY = auto()  # Locations for fishing gallery
@@ -442,6 +480,7 @@ class ToontownLocationType(IntEnum):
     PLAYGROUND_5    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_6    = auto()  # Locations for discovering playground treasures
     GAG_TRAINING    = auto()  # Locations for training gags
+    PET_SHOP     = auto()  # Locations for purchasing checks from pet shop clerks
     TTC_TASKS    = auto()  # Locations for TTC tasks
     DD_TASKS     = auto()  # Locations for DD tasks
     DG_TASKS     = auto()  # Locations for DG tasks
@@ -584,6 +623,61 @@ TREASURE_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
 ]
 # endregion
 
+# region Boss Check Definitions
+REGION_TO_BOSS_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName]] = {
+    ToontownRegionName.SBHQ: [
+        ToontownLocationName.SELLBOT_PROOF_1,
+        ToontownLocationName.SELLBOT_PROOF_2,
+        ToontownLocationName.SELLBOT_PROOF_3,
+        ToontownLocationName.SELLBOT_PROOF_4,
+        ToontownLocationName.SELLBOT_PROOF_5,
+    ],
+    ToontownRegionName.CBHQ: [
+        ToontownLocationName.CASHBOT_PROOF_1,
+        ToontownLocationName.CASHBOT_PROOF_2,
+        ToontownLocationName.CASHBOT_PROOF_3,
+        ToontownLocationName.CASHBOT_PROOF_4,
+        ToontownLocationName.CASHBOT_PROOF_5,
+    ],
+    ToontownRegionName.LBHQ: [
+        ToontownLocationName.LAWBOT_PROOF_1,
+        ToontownLocationName.LAWBOT_PROOF_2,
+        ToontownLocationName.LAWBOT_PROOF_3,
+        ToontownLocationName.LAWBOT_PROOF_4,
+        ToontownLocationName.LAWBOT_PROOF_5,
+    ],
+    ToontownRegionName.BBHQ: [
+        ToontownLocationName.BOSSBOT_PROOF_1,
+        ToontownLocationName.BOSSBOT_PROOF_2,
+        ToontownLocationName.BOSSBOT_PROOF_3,
+        ToontownLocationName.BOSSBOT_PROOF_4,
+        ToontownLocationName.BOSSBOT_PROOF_5,
+    ],
+}
+
+BOSS_LOCATION_TYPES: list[ToontownLocationType] = [
+    ToontownLocationType.BOSSES_1,
+    ToontownLocationType.BOSSES_2,
+    ToontownLocationType.BOSSES_3,
+    ToontownLocationType.BOSSES_4,
+    ToontownLocationType.BOSSES_5,
+]
+
+REGION_TO_BOSS_RULES: dict[ToontownRegionName, list[list]] = {
+    ToontownRegionName.SBHQ: [[Rule.CanFightVP], [Rule.CanFightVP], [Rule.CanFightVP], [Rule.CanFightVP], [Rule.CanFightVP]],
+    ToontownRegionName.CBHQ: [[Rule.CanFightCFO], [Rule.CanFightCFO], [Rule.CanFightCFO], [Rule.CanFightCFO], [Rule.CanFightCFO]],
+    ToontownRegionName.LBHQ: [[Rule.CanFightCJ], [Rule.CanFightCJ], [Rule.CanFightCJ], [Rule.CanFightCJ], [Rule.CanFightCJ]],
+    ToontownRegionName.BBHQ: [[Rule.CanFightCEO], [Rule.CanFightCEO], [Rule.CanFightCEO], [Rule.CanFightCEO], [Rule.CanFightCEO]]
+}
+
+BOSS_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
+    ToontownLocationDefinition(location_name,  location_type, region_name, rule_set, [ItemRule.RestrictDisguises])
+    for region_name in REGION_TO_BOSS_LOCATIONS.keys()
+    for location_name, location_type, rule_set in zip(
+        REGION_TO_BOSS_LOCATIONS.get(region_name), BOSS_LOCATION_TYPES, REGION_TO_BOSS_RULES.get(region_name)
+    )
+]
+# endregion
 
 LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     # region Login Locations
@@ -755,6 +849,26 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.FISHING_50_SPECIES,     ToontownLocationType.FISHING_GALLERY, ToontownRegionName.FISHING, [Rule.FishGallery]),
     ToontownLocationDefinition(ToontownLocationName.FISHING_60_SPECIES,     ToontownLocationType.FISHING_GALLERY, ToontownRegionName.FISHING, [Rule.FishGallery]),
     ToontownLocationDefinition(ToontownLocationName.FISHING_COMPLETE_ALBUM, ToontownLocationType.FISHING_GALLERY, ToontownRegionName.FISHING, [Rule.FishGallery]),
+    # endregion
+    # region shopping
+    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL]),
+    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL]),
+    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL]),
     # endregion
     # region Tasking
     ToontownLocationDefinition(ToontownLocationName.TOONTOWN_CENTRAL_TASK_1,    ToontownLocationType.TTC_TASKS, ToontownRegionName.TTC, [Rule.HasTTCHQAccess]),
@@ -939,13 +1053,7 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DROP_PIANO_UNLOCKED,          ToontownLocationType.GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSix]),
     ToontownLocationDefinition(ToontownLocationName.DROP_BOAT_UNLOCKED,           ToontownLocationType.GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSeven]),
     # endregion
-    # region Bosses
-    ToontownLocationDefinition(ToontownLocationName.SELLBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.SBHQ, [Rule.CanFightVP]),
-    ToontownLocationDefinition(ToontownLocationName.CASHBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.CBHQ, [Rule.CanFightCFO]),
-    ToontownLocationDefinition(ToontownLocationName.LAWBOT_PROOF,  ToontownLocationType.BOSSES, ToontownRegionName.LBHQ, [Rule.CanFightCJ]),
-    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_PROOF, ToontownLocationType.BOSSES, ToontownRegionName.BBHQ, [Rule.CanFightCEO]),
-    # endregion
-]
+    ] + BOSS_LOCATION_DEFINITIONS
 
 LOCATION_NAME_TO_DEFINITION: dict[ToontownLocationName, ToontownLocationDefinition] = {
     locdef.name: locdef for locdef in LOCATION_DEFINITIONS
@@ -964,6 +1072,7 @@ LOCATION_DESCRIPTIONS: Dict[str, str] = {
 }
 
 FISH_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.FISHING]
+SHOP_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.PET_SHOP]
 
 TTC_TASK_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.TTC_TASKS]
 DD_TASK_LOCATIONS  = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.DD_TASKS]
@@ -980,7 +1089,7 @@ ALL_TASK_LOCATIONS = (
     + MML_TASK_LOCATIONS + TB_TASK_LOCATIONS + DDL_TASK_LOCATIONS
 )
 
-SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy()
+SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy() + SHOP_LOCATIONS.copy()
 
 LOCATION_NAME_TO_ID = {location.name.value: i + consts.BASE_ID for i, location in enumerate(LOCATION_DEFINITIONS)}
 

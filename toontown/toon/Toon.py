@@ -2224,14 +2224,39 @@ class Toon(Avatar.Avatar, ToonHead):
         self.playingAnim = 'neutral'
         Emote.globalEmote.releaseBody(self)
 
-    def enterSleep(self, animMultiplier = 1, ts = 0, callback = None, extraArgs = []):
-        self.stopLookAround()
-        self.stopBlink()
-        self.closeEyes()
-        self.lerpLookAt(Point3(0, 1, -4))
-        self.loop('neutral')
-        self.setPlayRate(animMultiplier * 0.4, 'neutral')
-        self.setChatAbsolute(SLEEP_STRING, CFThought)
+    def enterSleep(self, animMultiplier=1, ts=0, callback=None, extraArgs=[]):
+        global SLEEP_STRING
+        if self.isDisguised:
+            self.sleepTrack = Sequence(Parallel(
+                Func(self.stopLookAround),
+                Func(self.stopBlink),
+                Func(self.closeEyes)),
+                Func(self.suit.loop, 'lured'),
+                Func(self.setChatAbsolute, SLEEP_STRING, CFThought))
+        elif ZoneUtil.getCanonicalHoodId(base.cr.playGame.getPlace().getZoneId()) == ToontownGlobals.TheBrrrgh \
+        and not ZoneUtil.isInterior(self.zoneId):
+            SLEEP_STRING = TTLocalizer.ToonSleepStringBrrrgh
+            self.sleepTrack = Sequence(
+                Func(self.sadEyes),
+                Func(self.blinkEyes),
+                Func(self.showAngryMuzzle),
+                Func(self.pingpong, 'bored', partName='torso', fromFrame=50, toFrame=51),
+                Func(self.setPlayRate, 0.8, 'bored'),
+                Func(self.setChatAbsolute, SLEEP_STRING, CFThought))
+        else:
+            self.sleepTrack = Sequence(Parallel(
+                Func(self.stopLookAround),
+                Func(self.stopBlink),
+                Func(self.closeEyes)),
+                Func(self.showSurpriseMuzzle),
+                self.actorInterval('victory', playRate=0.2, startFrame=100, endFrame=105),
+                self.actorInterval('victory', playRate=0.2, startFrame=105, endFrame=98),
+                Func(self.hideSurpriseMuzzle),
+                Func(self.lerpLookAt, Point3(0, 1, -4)),
+                Func(self.loop, 'neutral'),
+                Func(self.setPlayRate, 0.4, 'neutral'),
+                Func(self.setChatAbsolute, TTLocalizer.ToonSleepString, CFThought))
+        self.sleepTrack.start()
 
         # Disabling sleep bc we don't need to worry about afking on a private game :3
         # if self == base.localAvatar:
@@ -2253,6 +2278,9 @@ class Toon(Avatar.Avatar, ToonHead):
 
     def exitSleep(self):
         taskMgr.remove(self.uniqueName('afkTimeout'))
+        self.sleepTrack.finish()
+        self.hideAngryMuzzle()
+        self.normalEyes()
         self.startLookAround()
         self.openEyes()
         self.startBlink()
@@ -2925,7 +2953,7 @@ class Toon(Avatar.Avatar, ToonHead):
             return Sequence(Func(self.nametag3d.show), self.__doToonGhostColorScale(None, lerpTime, keepDefault=1))
         return Sequence()
 
-    def putOnSuit(self, suitType, setDisplayName = True, rental = False):
+    def putOnSuit(self, suitType, setDisplayName=True, rental=False, isNpc=False):
         if self.isDisguised:
             self.takeOffSuit()
         if launcher and not launcher.getPhaseComplete(5):
@@ -2953,11 +2981,14 @@ class Toon(Avatar.Avatar, ToonHead):
         suit.initializeDropShadow()
         suit.setPos(self.getPos())
         suit.setHpr(self.getHpr())
-        for part in suit.getHeadParts():
-            part.hide()
 
         suitHeadNull = suit.find('**/joint_head')
         toonHead = self.getPart('head', '1000')
+        if isNpc:
+            for part in suit.getHeadParts():
+                part.hide()
+        else:
+            toonHead.hide()
         Emote.globalEmote.disableAll(self)
         toonGeom = self.getGeomNode()
         toonGeom.hide()
@@ -3017,6 +3048,7 @@ class Toon(Avatar.Avatar, ToonHead):
         if not toonHeadNull:
             toonHeadNull = self.find('**/1000/**/joint_head')
         toonHead = self.getPart('head', '1000')
+        toonHead.show()
         toonHead.reparentTo(toonHeadNull)
         toonHead.setScale(self.headOrigScale)
         toonHead.setPos(0, 0, 0)

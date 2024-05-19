@@ -229,34 +229,22 @@ QuestsDefaultLeaving = ('Bye!',
  'Good luck!',
  'Have fun in Toontown!',
  'See you later!')
-QuestsDefaultReject = ('Hello.',
- 'Can I help you?',
- 'How are you?',
- 'Hello there.',
- "I'm a little busy now, _avName_.",
- 'Yes?',
- 'Howdy, _avName_!',
- 'Welcome, _avName_!',
- "Hey, _avName_! How's it going?",
- 'Did you know you can open your Shticker Book by hitting F8?',
- 'You can use your map to teleport back to the playground!',
- 'You can make friends with other players by clicking on them.',
- 'You can discover more about a ' + Cog + ' by clicking on him.',
- 'Gather treasures in the playgrounds to fill your Laff meter.',
- Cog + ' buildings are dangerous places! Do not go in alone!',
- 'When you lose a battle, the ' + Cogs + ' take all your gags.',
- 'To get more gags, play Trolley games!',
- 'You can get more Laff points by completing ToonTasks.',
- 'Every ToonTask gives you a reward.',
- 'Some rewards let you carry more gags.',
- 'If you win a battle, you get ToonTask credit for every ' + Cog + ' defeated.',
- 'If you recapture a ' + Cog + ' building, go back inside to see a special thank-you from its owner!',
- 'If you press the Page Up key, you can look up!',
- 'If you press the Tab key, you can see different views of your surroundings!',
- "To show True Friends what you're thinking, enter a '.' before your thought.",
- 'If a ' + Cog + ' is stunned, it is more difficult for them to avoid falling objects.',
- 'Each kind of ' + Cog + ' building has a distinct look.',
- 'Defeating ' + Cogs + ' on the higher floors of a building will give you greater skill rewards.')
+QuestsDefaultReject = ("Looking for a specific item? Use !hint and then the item name to see where it is!",
+ 'You can use your map to teleport to other Playgrounds that you have gotten TP Access to!',
+ "Out of ToonTasks in a Playground? Hint for another Playground's tasks by using the Playground's abbreviation and then 'HQ access'.",
+ "Items that display with red text are traps! They'll cause some form of negative affect on that player!",
+ "Items that display with purple text are likely important, try grabbing ToonTasks with them!",
+ 'All Toons within the same team are friends automatically!',
+ 'You can see the HP of a ' + Cog + ' by clicking on them.',
+ 'Gather the Archipelago Treasures in each location to give out easy checks! They are the ones that look like a bunch of circles.',
+ Cog + ' Buildings are a great place to fill out your ' + Cog + ' Gallery!',
+ 'To get more gags, visit a Gag Clerk! They are present in all Playgrounds, on every street, and in ' + Cog + ' HQs.',
+ 'You gain more Laff points by receiving Laff Boost items.',
+ 'Every ToonTask gives a reward, see what it is and who it is for on the bottom of the poster.',
+ 'You will need to find Gag Capacity items to carry more Gags.',
+ "If you've reached the Gag Experience cap for a track, getting another frame will automatically give you the new Gag!",
+ "Higher Playgrounds and " + Cog + " HQs have passive Gag Experience multipliers!",
+ "The more floors a " + Cog + " Building has, the higher the Gag Experience multiplier.")
 QuestsDefaultTierNotDone = ('Hello, _avName_! You must finish your current ToonTasks before getting a new one.', 'Hi there! You need to finish the ToonTasks you are working on in order to get a new one.', 'Hi, _avName_! Before I can give you a new ToonTask, you need to finish the ones you have.')
 QuestsDefaultQuest = None
 QuestsDefaultVisitQuestDialog = ('I heard _toNpcName_ is looking for you._where_',
@@ -4732,16 +4720,6 @@ MapPageYouAreAtHome = 'You are at\nyour estate'
 MapPageYouAreAtSomeonesHome = 'You are at %s estate'
 MapPageGoTo = 'Go To\n%s'
 OptionsPageTitle = 'Options'
-OptionsPageTitle2 = "Rebind"
-
-OptionsEnabledKeybinds = 'Custom Keybinds are enabled.'
-OptionsDisabledKeybinds = 'Custom Keybinds are disabled.'
-OptionsKeybindsMenu = 'Keybinds'
-
-RemapPrompt = 'Choose the keys you wish to remap.'
-RemapPopup = 'Press the key you wish to remap this control to.'
-Controls = ['Move Up:', 'Move Left:', 'Move Down:', 'Move Right:', 'Jump:', 'Action Key:', 'Options Hotkey:', 'Chatbox Hotkey:',
-            'Screenshot Key:', 'Crane Grab Key:', 'Sprint Key:', 'Alt. Action Key:']
 OptionsTabTitle = 'Options'
 OptionsPagePurchase = 'Subscribe'
 OptionsPageLogout = 'Logout'
@@ -5005,6 +4983,7 @@ NPCForceAcknowledgeMessage9 = 'Good job using the phone!\n\n\n\n\n\n\n\n\nReturn
 NPCForceAcknowledgeMessage7 = "You are a cheater!\n\n\n\n\n\n\nHey! Cut it out! You might see something you're not supposed to!"
 NPCForceAcknowledgeMessage8 = '\n\n\nAnd now I see\nWith eyes serene\nThe very heart\nOf the machine'
 ToonSleepString = '. . . ZZZ . . .'
+ToonSleepStringBrrrgh = '. . . Brrrrghhhhh . . .'
 MovieTutorialReward1 = 'You received 1 Throw point! When you get 10, you will get a new gag!'
 MovieTutorialReward2 = 'You received 1 Squirt point! When you get 10, you will get a new gag!'
 MovieTutorialReward3 = 'Good job! You completed your first ToonTask!'
@@ -5530,16 +5509,16 @@ RejectNameText = 'That name is not allowed. Please try again.'
 WaitingForNameSubmission = 'Submitting your name...'
 PetNameMaster = 'PetNameMasterEnglish.txt'
 PetNameIndexMAX = 2713
-PetshopUnknownName = 'Name: ???'
+PetshopUnknownName = 'Item: \t%s'
 PetshopDescGender = 'Gender:\t%s'
-PetshopDescCost = 'Cost:\t%s jellybeans'
+PetshopDescCost = 'Cost:\t%s Jellybeans'
 PetshopDescTrait = 'Traits:\t%s'
 PetshopDescStandard = 'Standard'
 PetshopCancel = lCancel
 PetshopSell = 'Sell Fish'
-PetshopAdoptAPet = 'Adopt a Doodle'
-PetshopReturnPet = 'Return your Doodle'
-PetshopAdoptConfirm = 'Adopt %s for %d jellybeans?'
+PetshopAdoptAPet = 'Adopt a Check'
+PetshopReturnPet = 'Return your Check'
+PetshopAdoptConfirm = 'Adopt your check for %d Jellybeans?'
 PetshopGoBack = 'Go Back'
 PetshopAdopt = 'Adopt'
 PetshopReturnConfirm = 'Return %s?'
@@ -5654,8 +5633,9 @@ STOREOWNER_NOFISH = 'Come back here to sell fish to the Pet Shop for jellybeans.
 STOREOWNER_THANKSFISH = 'Thanks! The Pet Shop will love these. Bye!'
 STOREOWNER_THANKSFISH_PETSHOP = 'These are some fine specimens! Thanks.'
 STOREOWNER_PETRETURNED = "Don't worry.  We'll find a good home for your Doodle."
-STOREOWNER_PETADOPTED = 'Congratulations on purchasing a Doodle! You can play with your new friend at your estate.'
-STOREOWNER_PETCANCELED = 'Remember, if you see a Doodle you like, make sure to adopt him before someone else does!'
+STOREOWNER_PETADOPTED = 'Congratulations on purchasing a Check! You can play with your new friend.'
+STOREOWNER_PETCANCELED = 'Remember, if you see a Check you like, make sure to adopt it before someone else does!'
+STOREOWNER_ALREADYCHECKED = 'It seems you have already adopted this Check, see if the other clerks have some in stock!'
 STOREOWNER_NOROOM = 'Hmm...you might want to make room in your closet before you buy new clothes.\n'
 STOREOWNER_CONFIRM_LOSS = 'Your closet is full.  You will lose the clothes you were wearing.'
 STOREOWNER_OK = lOK
@@ -9971,6 +9951,7 @@ OptionNames = {
     "STREET_MAP_HOTKEY": "Street Map Hotkey",
     "INVENTORY_HOTKEY": "Gag Menu Hotkey",
     "QUEST_HOTKEY": "ToonTask Hotkey",
+    "GALLERY_HOTKEY": "Cog Gallery Hotkey",
     "CRANE_GRAB_KEY": "Crane Grab Key",
     "ACTION_BUTTON": "Action Button",
     "SECONDARY_ACTION": "Secondary Action Button",
@@ -9981,8 +9962,9 @@ OptionNames = {
     "resolution": "Window Resolution",
     "vertical-sync": "Vertical Sync",
     "anisotropic-filter": "Anisotropic Filtering",
-    "anti-aliasing": "Anti-Aliasing",
+    "anti-aliasing": "Anti-Aliasing*",
     "frame-rate-meter": "FPS Meter",
+    "fps-limit": "FPS Limit",
 
     # Audio
     "music": "Music",
@@ -9992,12 +9974,28 @@ OptionNames = {
     "toon-chat-sounds": "Toon Chat Sounds",
 }
 
+OptionAntiAlias = {
+    0: "Off",
+    4: "4x MSAA",
+    8: "8x MSAA",
+}
+
 OptionAnisotropic = {
     0: "Off",
     2: "Lowest",
     4: "Low",
     8: "High",
     16: "Highest",
+}
+OptionFPSLimit = {
+ 0: "Unlimited",
+ 30: "30 FPS",
+ 60: "60 FPS",
+ 120: "120 FPS",
+ 144: "144 FPS",
+ 165: "165 FPS",
+ 240: "240 FPS",
+ 360: "360 FPS"
 }
 
 OptionEnabled = "Enabled"

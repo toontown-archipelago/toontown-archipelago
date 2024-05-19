@@ -2,9 +2,9 @@ from panda3d.core import VirtualFileSystem, ConfigVariableList, Filename
 
 if __debug__:
     from panda3d.core import loadPrcFile
-    loadPrcFile('config/general.prc')
-    loadPrcFile('config/dev.prc')
-    loadPrcFile('config/built.prc')
+    loadPrcFile('config/common.prc')
+    loadPrcFile('config/development.prc')
+    loadPrcFile('config/production.prc')
 else:
     import sys
     sys.path = ['']

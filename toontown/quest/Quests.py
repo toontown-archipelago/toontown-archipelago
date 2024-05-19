@@ -3721,6 +3721,21 @@ def getRewardIdsFromHood(hoodId) -> List[int]:
     return rewards
 
 
+# Given an AP Reward ID, return the first playground that is able to give a task that contains this reward
+def getHoodFromRewardId(rewardId) -> int:
+    for hood in ToontownGlobals.Hoods:
+        if rewardId in getRewardIdsFromHood(hood):
+            return hood
+
+    raise KeyError(f"Reward ID: {rewardID} is unobtainable from all available hoods")
+
+
+
+# Returns all registered AP reward IDs
+def getAllAPRewardIds() -> set[int]:
+    return set(__AP_LOCATION_TO_REWARD_ID.values())
+
+
 def isLoopingFinalTier(tier):
     return tier == LOOPING_FINAL_TIER
 

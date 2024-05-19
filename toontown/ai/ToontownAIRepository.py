@@ -44,6 +44,7 @@ from toontown.hood.LawbotHQDataAI import LawbotHQDataAI
 from toontown.hood.MMHoodDataAI import MMHoodDataAI
 from toontown.hood.OZHoodDataAI import OZHoodDataAI
 from toontown.hood.TTHoodDataAI import TTHoodDataAI
+from toontown.minigame.MinigameCreatorAI import MinigameCreatorAI
 from toontown.parties.ToontownTimeManager import ToontownTimeManager
 from toontown.pets.PetManagerAI import PetManagerAI
 from toontown.quest.QuestManagerAI import QuestManagerAI
@@ -94,6 +95,7 @@ class ToontownAIRepository(ToontownInternalRepository):
         self.suitPlanners = {}
         self.suitInvasionManager = None
         self.zoneAllocator = None
+        self.minigameMgr = None
         self.zoneId2owner = {}
         self.questManager = None
         self.cogPageManager = None
@@ -180,6 +182,9 @@ class ToontownAIRepository(ToontownInternalRepository):
 
         # Create our zone allocator...
         self.zoneAllocator = UniqueIdAllocator(ToontownGlobals.DynamicZonesBegin, ToontownGlobals.DynamicZonesEnd)
+
+        # Create our minigame manager...
+        self.minigameMgr = MinigameCreatorAI(self)
 
         # Create our quest manager...
         self.questManager = QuestManagerAI(self)

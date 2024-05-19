@@ -2,11 +2,14 @@ import sys
 import os
 import tokenize
 import copy
+
+import typing
 from direct.interval.IntervalGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from panda3d.core import *
-from panda3d.otp import *
 from direct.showbase import DirectObject
+
+from libotp import CFSpeech, CFTimeout
 from . import BlinkingArrows
 from toontown.toon import ToonHeadFrame
 from toontown.char import CharDNA
@@ -23,6 +26,10 @@ notify = DirectNotifyGlobal.directNotify.newCategory('QuestParser')
 lineDict = {}
 globalVarDict = {}
 curId = None
+
+
+if typing.TYPE_CHECKING:
+    from toontown.toonbase.ToonBaseGlobals import *
 
 def init():
     globalVarDict.update({'render': render,

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import random
 from typing import List, Tuple
 
@@ -56,6 +58,7 @@ from toontown.archipelago.gui.ArchipelagoRewardDisplay import ArchipelagoRewardD
 from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
+from ..shtiker.ShtikerPage import ShtikerPage
 
 WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
 from toontown.toontowngui import NewsPageButtonManager
@@ -185,6 +188,8 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.wantCompetitiveBossScoring = base.settings.get('competitive-boss-scoring')
 
             self.accept("disableControls", self.disableControls)
+
+            self.currentOnscreenInterface = None  # We can only exclusively show one hotkey interface at a time
 
     def wantLegacyLifter(self):
         return True
@@ -427,6 +432,19 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.accept('InputState-slide', self.__toonMoved)
         QuestParser.init()
         return
+
+    # Pass in a book page to give exclusive control for an onscreen hotkey interface
+    # Pass in None to free up the on screen hotkey interface slot
+    def setCurrentOnscreenInterface(self, interface):
+        self.currentOnscreenInterface = interface
+
+    # Returns a ShtickerPage instance that currently owns the onscreen page slot
+    def getCurrentOnscreenInterface(self) -> ShtikerPage | None:
+        return self.currentOnscreenInterface
+
+    # True if no display via hotkey is currently displaying, False otherwise
+    def allowOnscreenInterface(self) -> bool:
+        return self.currentOnscreenInterface is None
 
     def __handlePurchase(self):
         self.purchaseButton.hide()

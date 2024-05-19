@@ -98,10 +98,10 @@ class GagTrackBarGUI(DirectWaitBar):
         self.reset()
 
     # Sets this bar to display the string for when a toon has gags over the normal gag cap
-    def showExperienceOverflowText(self, currentExp: int):
+    def showExperienceOverflowText(self, currentExp: int, track: int):
 
         CAP: int = ToontownBattleGlobals.MaxSkill
-        boost = ToontownBattleGlobals.getUberDamageBonusString(currentExp)
+        boost = ToontownBattleGlobals.getUberDamageBonusString(currentExp, track)
         xp = TTLocalizer.InventoryUberTrackMaxed if currentExp >= CAP else currentExp
 
         self['text'] = TTLocalizer.InventoryUberTrackExp % {'curExp': xp, 'boost': boost}
@@ -122,11 +122,11 @@ class GagTrackBarGUI(DirectWaitBar):
         self['value'] = currentExp
         self['range'] = expCap
 
-    def forceShowExperience(self, currentExp: int, expCap: int):
+    def forceShowExperience(self, currentExp: int, expCap: int, track: int):
 
         # If the currentExp is over the normal gag limit, we can safely assume that this is overflow
         if currentExp >= ToontownBattleGlobals.regMaxSkill:
-            self.showExperienceOverflowText(currentExp)
+            self.showExperienceOverflowText(currentExp, track)
             return
 
         self.showExperienceDefaultText(currentExp, expCap)
@@ -141,7 +141,7 @@ class GagTrackBarGUI(DirectWaitBar):
             nextGagExp = ToontownBattleGlobals.regMaxSkill
 
         cap = min(experience.getExperienceCapForTrack(track), nextGagExp)
-        self.forceShowExperience(experience.getExp(track), cap)
+        self.forceShowExperience(experience.getExp(track), cap, track)
 
         if experience.getExperienceCapForTrack(track) < nextGagExp:
             self.makeFrameRed()

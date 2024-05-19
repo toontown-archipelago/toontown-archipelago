@@ -245,6 +245,7 @@ class PlayGame(StateData.StateData):
             count += ToontownGlobals.townCountMap[canonicalHoodId]
         if not loader.inBulkBlock:
             if hoodId == ToontownGlobals.MyEstate:
+                loader.loadingScreen.title['text_font'] = ToontownGlobals.getInterfaceFont()
                 if avId == -1:
                     loader.beginBulkLoad('hood', TTLocalizer.HeadingToYourEstate, count, 1, TTLocalizer.TIP_ESTATE)
                 else:
@@ -261,12 +262,15 @@ class PlayGame(StateData.StateData):
                         avName = owner.getName()
                         loader.beginBulkLoad('hood', TTLocalizer.HeadingToEstate % avName, count, 1, TTLocalizer.TIP_ESTATE)
             elif ZoneUtil.isCogHQZone(zoneId):
+                loader.loadingScreen.title['text_font'] = ToontownGlobals.getSuitFont()
                 loader.beginBulkLoad('hood', TTLocalizer.HeadingToHood % {'to': toHoodPhrase,
                  'hood': hoodName}, count, 1, TTLocalizer.TIP_COGHQ)
             elif ZoneUtil.isGoofySpeedwayZone(zoneId):
+                loader.loadingScreen.title['text_font'] = ToontownGlobals.getInterfaceFont()
                 loader.beginBulkLoad('hood', TTLocalizer.HeadingToHood % {'to': toHoodPhrase,
                  'hood': hoodName}, count, 1, TTLocalizer.TIP_KARTING)
             else:
+                loader.loadingScreen.title['text_font'] = ToontownGlobals.getInterfaceFont()
                 loader.beginBulkLoad('hood', TTLocalizer.HeadingToHood % {'to': toHoodPhrase,
                  'hood': hoodName}, count, 1, TTLocalizer.TIP_GENERAL)
         if hoodId == ToontownGlobals.Tutorial:

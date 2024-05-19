@@ -23,6 +23,7 @@ class ControlSettings:
     STREET_MAP_HOTKEY: str = "alt"
     INVENTORY_HOTKEY: str = "home"
     QUEST_HOTKEY: str = "end"
+    GALLERY_HOTKEY: str = "g"
     CRANE_GRAB_KEY: str = "control"
     ACTION_BUTTON: str = "delete"
     SECONDARY_ACTION: str = "insert"
@@ -43,7 +44,7 @@ class Settings:
         "music-volume": 0.4,
         "sfx-volume": 0.4,
         "competitive-boss-scoring": True,
-        "anti-aliasing": False,
+        "anti-aliasing": 0,
         "anisotropic-filter": 8,
         "frame-blending": True,
         "controls": asdict(controls),
@@ -56,6 +57,11 @@ class Settings:
         "magic-word-activator": 0,
         "camSensitivityX": 0.25,
         "camSensitivityY": 0.1,
+        "fps-limit": 0,
+        # Options below this comment will not be exposed by OptionsPage
+        # They can still be configurable by the end user
+        "want-legacy-models": False,
+        "experimental-multithreading": False,
     }
 
     settingsFile = "settings.json"
