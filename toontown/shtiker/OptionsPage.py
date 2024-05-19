@@ -16,6 +16,8 @@ from toontown.toonbase import TTLocalizer
 from toontown.toontowngui import TTDialog
 from toontown.toontowngui.ToontownScrolledFrame import ToontownScrolledFrame
 
+from direct.distributed.ClockDelta import *
+
 
 class OptionTypes(IntEnum):
     BUTTON = auto()
@@ -44,6 +46,7 @@ OptionToType = {
     "anisotropic-filter": OptionTypes.BUTTON,
     "anti-aliasing": OptionTypes.BUTTON,
     "frame-rate-meter": OptionTypes.BUTTON,
+    "fps-limit": OptionTypes.BUTTON,
 
     # Audio
     "music": OptionTypes.BUTTON,
@@ -137,7 +140,7 @@ class OptionsTabPage(DirectFrame, FSM):
         "Controls": [*list(base.settings.getControls())],
         "Video": [
             "borderless", "resolution", "vertical-sync", "anisotropic-filter",
-            "anti-aliasing", "frame-rate-meter",
+            "anti-aliasing", "frame-rate-meter", "fps-limit",
         ],
         "Audio": [
             "music", "sfx", "music-volume", "sfx-volume", "toon-chat-sounds",
@@ -388,6 +391,8 @@ class OptionElement(DirectFrame):
     optionOptions.update({
         "resolution": base.possibleScreenSizes,
         "anisotropic-filter": list(TTLocalizer.OptionAnisotropic),
+        "anti-aliasing": list(TTLocalizer.OptionAntiAlias),
+        "fps-limit": list(TTLocalizer.OptionFPSLimit)
     })
 
     def __init__(self, parent, name: str, index: int, gui, **kw):
@@ -502,8 +507,12 @@ class OptionElement(DirectFrame):
         elif isinstance(setting, int):
             # We're most likely dealing with a list of integer settings,
             # so return the string from the localizer given the current setting.
+            if self.optionName == "anti-aliasing":
+                return TTLocalizer.OptionAntiAlias[setting]
             if self.optionName == "anisotropic-filter":
                 return TTLocalizer.OptionAnisotropic[setting]
+            if self.optionName == "fps-limit":
+                return TTLocalizer.OptionFPSLimit[setting]
 
         return str(setting)
 
@@ -599,10 +608,16 @@ class OptionElement(DirectFrame):
         elif self.optionName == 'competitive-boss-scoring':
             base.localAvatar.wantCompetitiveBossScoring = newSetting
         elif self.optionName in ("borderless", "resolution", "vertical-sync",
-                                 "anisotropic-filter", "anti-aliasing"):
+                                 "anisotropic-filter"):
             base.updateDisplay()
         elif self.optionName == "frame-rate-meter":
             base.setFrameRateMeter(newSetting)
+        elif self.optionName == "fps-limit":
+            if newSetting != 0:
+                globalClock.setMode(ClockObject.MLimited)
+                globalClock.setFrameRate(newSetting)
+            else:
+                globalClock.setMode(ClockObject.MNormal)
         elif self.optionName == "movement_mode":
             base.localAvatar.updateMovementMode()
         elif self.optionName == "fovEffects":

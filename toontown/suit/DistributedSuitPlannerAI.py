@@ -1185,6 +1185,10 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         if level not in ToontownGlobals.SuitLevels:
             level = min(max(level, type), type + 4)
 
+        # A catch if for whatever reason (most likely an invasion), a cog is a lower level than its tier
+        if level < type:
+            level = type
+
         if track == None:
             track = SuitDNA.suitDepts[SuitBattleGlobals.pickFromFreqList(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])]
         self.notify.debug('pickLevelTypeAndTrack: %d %d %s' % (level, type, track))

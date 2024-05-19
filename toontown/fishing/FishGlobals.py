@@ -28,16 +28,16 @@ ProbabilityDict = {93: FishItem,
  100: BootItem}
 SortedProbabilityCutoffs = list(ProbabilityDict.keys())
 SortedProbabilityCutoffs.sort()
-Rod2JellybeanDict = {0: 10,
- 1: 20,
- 2: 30,
- 3: 75,
- 4: 150}
+Rod2JellybeanDict = {0: 150,
+ 1: 200,
+ 2: 250,
+ 3: 300,
+ 4: 450}
 HealAmount = 1
 JellybeanFishingHolidayScoreMultiplier = 2
 GlobalRarityDialBase = 4.3
 FishingAngleMax = 50.0
-OVERALL_VALUE_SCALE = 15
+OVERALL_VALUE_SCALE = 95
 RARITY_VALUE_SCALE = 0.2
 WEIGHT_VALUE_SCALE = 0.05 / 16.0
 COLLECT_NO_UPDATE = 0

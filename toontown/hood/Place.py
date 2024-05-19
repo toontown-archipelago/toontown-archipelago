@@ -225,6 +225,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.questPage.acceptOnscreenHooks()
         base.localAvatar.invPage.acceptOnscreenHooks()
         base.localAvatar.questMap.acceptOnscreenHooks()
+        base.localAvatar.suitPage.acceptOnscreenHooks()
         self.walkStateData.fsm.request('walking')
         self.enablePeriodTimer()
         base.localAvatar.enterPlaceWalk()
@@ -245,6 +246,8 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.questPage.ignoreOnscreenHooks()
         base.localAvatar.invPage.ignoreOnscreenHooks()
         base.localAvatar.invPage.hideInventoryOnscreen()
+        base.localAvatar.suitPage.hideGalleryOnscreen()
+        base.localAvatar.suitPage.ignoreOnscreenHooks()
         base.localAvatar.questMap.hide()
         base.localAvatar.questMap.ignoreOnscreenHooks()
         return
@@ -1001,3 +1004,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
     def handleQuietZoneDone(self):
         how = base.cr.handlerArgs['how']
         self.fsm.request(how, [base.cr.handlerArgs])
+
+    def enterZone(self, zoneId: int):
+        pass

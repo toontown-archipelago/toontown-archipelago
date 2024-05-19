@@ -290,6 +290,7 @@ from toontown.battle import DistributedBattleWaiters/AI
 from toontown.coghq import DistributedFoodBelt/AI
 from toontown.coghq import DistributedBanquetTable/AI
 from toontown.battle import DistributedBattleDiners/AI
+from toontown.battle import DistributedBattleSandbox/AI
 from toontown.coghq import DistributedGolfSpot/AI
 from toontown.minigame import DistributedIceGame/AI
 from toontown.minigame import DistributedCogThiefGame/AI
@@ -974,14 +975,14 @@ struct APItem {
 dclass DistributedToon : DistributedPlayer {
   setDNAString(blob) required broadcast ownrecv db;
   setGM(uint8 = 0) required broadcast ownrecv db;
-  setMaxBankMoney(int16 = 12000) required broadcast ownrecv db;
+  setMaxBankMoney(int16 = 0) required broadcast ownrecv db;
   setBankMoney(int16 = 0) required broadcast ownrecv db;
   setMaxMoney(int16 = 40) required broadcast ownrecv db;
   setMoney(int16 = 0) required broadcast ownrecv db;
-  setMaxHp(int16 = 15) required broadcast ownrecv db;
-  setHp(int16 = 15) required broadcast ownrecv db;
-  toonUp(uint16) broadcast ownrecv;
-  takeDamage(uint16) broadcast ownrecv;
+  setMaxHp(int32 = 15) required broadcast ownrecv db;
+  setHp(int32 = 15) required broadcast ownrecv db;
+  toonUp(uint32) broadcast ownrecv;
+  takeDamage(uint32) broadcast ownrecv;
   setBattleId(uint32 = 0) required broadcast ram;
   setExperience(uint32[] = [0, 0, 0, 0, 0, 0, 0]) required broadcast ownrecv db;
   setMaxCarry(uint8 = 20) required ownrecv db;
@@ -1165,6 +1166,7 @@ dclass DistributedToon : DistributedPlayer {
   setMagicHeadAccessories(uint16, uint16, uint16, uint16) airecv clsend;
 
   setBaseGagSkillMultiplier(uint16=1) required ownrecv broadcast db;
+  setDamageMultiplier(uint16=100) required ownrecv broadcast db;
   setAccessKeys(uint16[] = []) required ownrecv broadcast db;
   setReceivedItems(APItem[]) required ownrecv broadcast db;
   setCheckedLocations(uint32[]=[]) required ownrecv broadcast db;
@@ -1232,7 +1234,7 @@ dclass DistributedSuitBase : DistributedObject {
   setSkelecog(uint8) required broadcast ram;
   setSkeleRevives(uint8) required broadcast ram;
   setImmuneStatus(uint8) required broadcast ram;
-  setHP(int16) required broadcast ram;
+  setHP(int32) required broadcast ram;
 };
 
 dclass DistributedSuit : DistributedSuitBase {
@@ -2114,7 +2116,7 @@ dclass NewsManager : DistributedObject {
 dclass PurchaseManager : DistributedObject {
   setPlayerIds(uint32, uint32, uint32, uint32) required broadcast ram;
   setNewbieIds(uint32[]) required broadcast ram;
-  setMinigamePoints(uint8, uint8, uint8, uint8) required broadcast ram;
+  setMinigamePoints(uint32, uint32, uint32, uint32) required broadcast ram;
   setPlayerMoney(uint32, uint32, uint32, uint32) required broadcast ram;
   setPlayerStates(uint8, uint8, uint8, uint8) required broadcast ram;
   setCountdown(int16) required broadcast ram;
@@ -2122,7 +2124,7 @@ dclass PurchaseManager : DistributedObject {
   setVotesArray(int16[]) required broadcast ram;
   requestExit() airecv clsend;
   requestPlayAgain() airecv clsend;
-  setInventory(blob, int16, uint8) airecv clsend;
+  setInventory(blob, int16, uint8, int8) airecv clsend;
   setPurchaseExit() broadcast;
 };
 
@@ -2508,7 +2510,7 @@ dclass DistributedNPCScientist : DistributedNPCToonBase {
 
 dclass DistributedNPCClerk : DistributedNPCToonBase {
   setMovie(uint8, uint32, uint32, int16) broadcast ram;
-  setInventory(blob, int16, uint8) airecv clsend;
+  setInventory(blob, int16, uint8, int8) airecv clsend;
 };
 
 dclass DistributedNPCTailor : DistributedNPCToonBase {
@@ -2533,6 +2535,7 @@ dclass DistributedNPCPartyPerson : DistributedNPCToonBase {
 
 dclass DistributedNPCPetclerk : DistributedNPCToonBase {
   setMovie(uint8, uint32, uint32, uint32[], int16) broadcast ram;
+  setSubId(int8) broadcast ram;
   setPetSeeds(uint32[]);
   petAdopted(uint8, uint32) airecv clsend;
   petReturned() airecv clsend;
@@ -3696,6 +3699,10 @@ dclass DistributedBanquetTable : DistributedObject {
 };
 
 dclass DistributedBattleDiners : DistributedBattleFinal {
+};
+
+dclass DistributedBattleSandbox : DistributedBattleBase {
+  updateSetting(uint32, uint32) airecv clsend;
 };
 
 dclass DistributedGolfSpot : DistributedObject {

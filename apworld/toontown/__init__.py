@@ -273,6 +273,19 @@ class ToontownWorld(World):
             if location.address and location.item and location.item.code and location.item.player == self.player
         ]
 
+        # TODO: if actually removing tasks becomes implemented,
+        #       check if there are still enough tasks to complete
+
+        # If win condition is total_tasks, make sure that the player can actually complete them.
+        # if self.options.win_condition.value == 1 and self.options.total_tasks_required.value > 6*self.options.logical_tasks_per_playground.value:
+        #     raise Exception(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
+        #                     f"Too many total tasks required (max is 6*logical_tasks: {6*self.options.logical_tasks_per_playground.value}), please tweak settings.")
+
+        # If win condition is hood_tasks, make sure that the player can actually complete them.
+        # if self.options.win_condition.value == 2 and self.options.hood_tasks_required.value > self.options.logical_tasks_per_playground.value:
+        #     raise Exception(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
+        #                     f"Too many hood tasks required (max is logical_tasks: {self.options.logical_tasks_per_playground.value}), please tweak settings.")
+
         # Return the result.
         return {
             "seed": self.multiworld.seed,
@@ -281,9 +294,13 @@ class ToontownWorld(World):
             "starting_laff": self.options.starting_laff.value,
             "starting_money": self.options.starting_money.value,
             "base_global_gag_xp": self.options.base_global_gag_xp.value,
+            "damage_multiplier": self.options.damage_multiplier.value,
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
+            "win_condition": self.options.win_condition.value,
             "cog_bosses_required": self.options.cog_bosses_required.value,
+            "total_tasks_required": self.options.total_tasks_required.value,
+            "hood_tasks_required": self.options.hood_tasks_required.value,
             "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,

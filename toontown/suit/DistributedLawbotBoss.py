@@ -1855,9 +1855,9 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def hideBonusTimer(self):
         base.localAvatar.showHpString(TTLocalizer.StunBonusOver, color=self.stunTextColor)
 
-        self.witnessToon.clearChat()
-        text = TTLocalizer.WitnessToonBonusOver
-        self.witnessToon.setChatAbsolute(text, CFSpeech | CFTimeout)
+        #self.witnessToon.clearChat()
+        #text = TTLocalizer.WitnessToonBonusOver
+        #self.witnessToon.setChatAbsolute(text, CFSpeech | CFTimeout)
         if self.bonusTimer:
             Sequence(LerpScaleInterval(self.bonusTimer, 0.09, .45, blendType='easeInOut'),
                      LerpScaleInterval(self.bonusTimer, 0.2, 0, blendType='easeInOut'),

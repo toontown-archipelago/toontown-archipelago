@@ -68,13 +68,15 @@ class DistributedNPCClerkAI(DistributedNPCToonBaseAI):
         self.sendClearMovie(avId, None)
         return
 
-    def setInventory(self, blob, newMoney, done):
+    def setInventory(self, blob, newMoney, done, laff):
         avId = self.air.getAvatarIdFromSender()
 
         if avId in self.air.doId2do:
             av = self.air.doId2do[avId]
             newInventory = av.inventory.makeFromNetString(blob)
             currentMoney = av.getMoney()
+            if laff:
+                av.toonUp(av.getMaxHp())
             if av.inventory.validatePurchase(newInventory, currentMoney, newMoney):
                 av.setMoney(newMoney)
                 if done:

@@ -8,7 +8,7 @@ from toontown.hood import ZoneUtil
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.toonbase import TTLocalizer
-from .QuestsAvailablePoster import QuestsAvailablePoster, FishAvailablePoster, TreasureAvailablePoster
+from .QuestsAvailablePoster import QuestsAvailablePoster, FishAvailablePoster, TreasureAvailablePoster, PetsAvailablePoster
 from ..building import FADoorCodes
 from ..quest.Quests import getRewardIdsFromHood
 
@@ -74,6 +74,7 @@ class MapPage(ShtikerPage.ShtikerPage):
         self.questsAvailableIcons: List[QuestsAvailablePoster] = []
         self.fishAvailableIcons: List[FishAvailablePoster] = []
         self.treasureAvailableIcons: List[TreasureAvailablePoster] = []
+        self.petsAvailableIcons: List[PetsAvailablePoster] = []
 
         guiButton = loader.loadModel('phase_3/models/gui/quit_button')
         buttonLoc = (0.45, 0, - 0.74)
@@ -140,9 +141,10 @@ class MapPage(ShtikerPage.ShtikerPage):
                 extraArgs=[hood],
                 sortOrder=5)
             label.resetFrameSize()
-            self.questsAvailableIcons.append(QuestsAvailablePoster(hood, parent=label, pos=(0, 0, 0.08), scale=.1, sortOrder=1))
-            self.fishAvailableIcons.append(FishAvailablePoster(hood, parent=label, pos=(0.13, 0, 0.08), scale=.1, sortOrder=1))
-            self.treasureAvailableIcons.append(TreasureAvailablePoster(hood, parent=label, pos=(-0.12, 0, 0.09), scale=.1, sortOrder=1))
+            self.questsAvailableIcons.append(QuestsAvailablePoster(hood, parent=label, pos=(0.06, 0, 0.08), scale=.1, sortOrder=1))
+            self.fishAvailableIcons.append(FishAvailablePoster(hood, parent=label, pos=(0.19, 0, 0.08), scale=.1, sortOrder=1))
+            self.treasureAvailableIcons.append(TreasureAvailablePoster(hood, parent=label, pos=(-0.06, 0, 0.09), scale=.1, sortOrder=1))
+            self.petsAvailableIcons.append(PetsAvailablePoster(hood, parent=label, pos=(-0.16, 0, 0.09), scale=.1, sortOrder=1))
             label.bind(DGG.WITHIN, self.showTasksAvailableFrame, extraArgs=[hood, hoodIndex])
             label.bind(DGG.WITHOUT, self.hideTasksAvailableFrame, extraArgs=[hood,hoodIndex])
             self.labels.append(label)
@@ -167,38 +169,45 @@ class MapPage(ShtikerPage.ShtikerPage):
 
     def showTasksAvailableFrame(self, hood, hoodIndex, pos):
         self.__hoverCallback(1, hoodIndex, pos)
-        for questPoster, fishPoster, treasurePoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons):
+        for questPoster, fishPoster, treasurePoster, petPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons):
             if hood == questPoster.getHoodId():
                 treasurePoster.show()
                 # Only show if we need to.
                 if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
                     questPoster.show()
                     fishPoster.show()
+                    petPoster.show()
             else:
                 continue
 
     def hideTasksAvailableFrame(self, hood, hoodIndex, pos):
         self.__hoverCallback(0, hoodIndex, pos)
-        for questPoster, fishPoster, treasurePoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons):
+        for questPoster, fishPoster, treasurePoster, petPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons):
             if hood == questPoster.getHoodId():
                 treasurePoster.hide()
                 # Only hide if we need to.
                 if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
                     questPoster.hide()
                     fishPoster.hide()
+                    petPoster.hide()
             else:
                 continue
 
     def updateTasksAvailableFrames(self):
 
         # Loop through all the posters
-        for questPoster, fishPoster, treasurePoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons):
+        for questPoster, fishPoster, treasurePoster, petPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons):
             treasurePoster.hide()
             questPoster.hide()
             fishPoster.hide()
+            petPoster.hide()
             hoodId = questPoster.getHoodId()
 
             treasurePoster.update(base.localAvatar)
+
+            # Are there pets here?
+            if petPoster.hoodId in ToontownGlobals.ZONE_TO_ID_TO_CHECK.keys():
+                petPoster.update(base.localAvatar)
 
             # Can we fish here?
             if not fishPoster.isVisible(base.localAvatar):
@@ -235,13 +244,15 @@ class MapPage(ShtikerPage.ShtikerPage):
         for labelButton in self.labels:
             labelButton.destroy()
 
-        for questPoster, fishPoster, treasurePoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons):
+        for questPoster, fishPoster, treasurePoster, petPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons):
             questPoster.destroy()
             fishPoster.destroy()
             treasurePoster.destroy()
+            petPoster.destroy()
         self.questsAvailableIcons.clear()
         self.fishAvailableIcons.clear()
         self.treasureAvailableIcons.clear()
+        self.petsAvailableIcons.clear()
 
         del self.labels
         del self.clouds

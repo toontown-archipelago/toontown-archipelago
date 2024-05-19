@@ -314,9 +314,6 @@ class DistributedDivingGameAI(DistributedMinigameAI):
 
         self.sendUpdate('incrementScore', [avId, newSpot, timestamp])
 
-    def hasScoreMult(self):
-        return 0
-
     def setGameAbort(self):
         self.notify.debug('setGameAbort')
         taskMgr.remove(self.taskName('gameTimer'))

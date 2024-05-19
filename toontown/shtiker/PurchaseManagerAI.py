@@ -205,7 +205,7 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
             self.notify.warning('Avatar ' + str(avId) + ' requested PlayAgain, but I am not receiving button ' + 'requests now.')
         return
 
-    def setInventory(self, blob, newMoney, done):
+    def setInventory(self, blob, newMoney, done, laff):
         avId = self.air.getAvatarIdFromSender()
         if self.receivingInventory:
             if avId in self.air.doId2do:
@@ -217,6 +217,8 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
                 else:
                     newInventory = av.inventory.makeFromNetString(blob)
                     currentMoney = av.getMoney()
+                    if laff:
+                        av.toonUp(av.getMaxHp())
                     if av.inventory.validatePurchase(newInventory, currentMoney, newMoney):
                         av.setMoney(newMoney)
                         if not done:
@@ -288,9 +290,9 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
                     newVotesArray = [TravelGameGlobals.DefaultStartingVotes] * len(playAgainList)
             if len(playAgainList) == 1 and simbase.config.GetBool('metagame-min-2-players', 1):
                 newRound = -1
-            MinigameCreatorAI.createMinigame(self.air, playAgainList, self.trolleyZone, minigameZone=self.zoneId, previousGameId=self.previousMinigameId, newbieIds=newbieIdsToPass, startingVotes=newVotesArray, metagameRound=newRound, desiredNextGame=self.desiredNextGame)
+            self.air.minigameMgr.createMinigame(playAgainList, self.trolleyZone, minigameZone=self.zoneId, previousGameId=self.previousMinigameId, newbieIds=newbieIdsToPass, startingVotes=newVotesArray, metagameRound=newRound, desiredNextGame=self.desiredNextGame)
         else:
-            MinigameCreatorAI.releaseMinigameZone(self.zoneId)
+            self.air.minigameMgr.releaseMinigameZone(self.zoneId)
         self.requestDelete()
         self.ignoreAll()
         return None

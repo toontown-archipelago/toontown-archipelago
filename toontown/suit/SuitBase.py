@@ -7,6 +7,8 @@ from toontown.battle import SuitBattleGlobals
 from . import SuitTimings
 from . import SuitDNA
 from toontown.toonbase import TTLocalizer
+from ..battle.SuitBattleGlobals import SuitAttributes
+
 TIME_BUFFER_PER_WPT = 0.25
 TIME_DIVISOR = 100
 DISTRIBUTE_TASK_CREATION = 0
@@ -49,8 +51,9 @@ class SuitBase:
          'dept': self.getStyleDept(),
          'level': self.getActualLevel()}
         self.setDisplayName(nameWLevel)
-        attributes = SuitBattleGlobals.SuitAttributes[self.dna.name]
-        self.maxHP = (self.getActualLevel() + 1) * (self.getActualLevel() + 2)
+        attributes: SuitAttributes = SuitBattleGlobals.getSuitAttributes(self.dna.name)
+
+        self.maxHP = attributes.getBaseMaxHp(self.getActualLevel())
         self.currHP = self.maxHP
 
     def getSkelecog(self):
@@ -70,7 +73,9 @@ class SuitBase:
 
     def getActualLevel(self):
         if hasattr(self, 'dna'):
-            return SuitBattleGlobals.getActualFromRelativeLevel(self.getStyleName(), self.level) + 1
+
+            tier = SuitBattleGlobals.getSuitAttributes(self.getStyleName()).tier + 1
+            return tier + self.level
         else:
             self.notify.warning('called getActualLevel with no DNA, returning 1 for level')
             return 1

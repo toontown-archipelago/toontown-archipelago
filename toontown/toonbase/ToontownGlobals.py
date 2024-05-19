@@ -104,8 +104,9 @@ PassiveHealFrequency = 10  # How often in seconds should toons passively regen?
 PassiveHealPercentage = .10  # How much percentage of laff should toons regen passively?
 MaxCarryLimit = 100
 MaxQuestCarryLimit = 4
-CogMoneyDropChance = 0.80  # What percent chance to drop jellybeans as a reward per cog?
-CogMoneyDropRange = (3, 7)  # How many jellybeans do we reward per cog? (Assuming we rolled the chance for it)
+CogMoneyDropChance = 0.95  # What percent chance to drop jellybeans as a reward per cog?
+CogMoneyBonusChance = 0.30
+CogMoneyDropRange = (25, 35)  # How many jellybeans do we reward per cog? (Assuming we rolled the chance for it)
 CogImmuneColor = Vec4(1, 1, 1, 1)
 CogImmuneGlowColor = CogImmuneColor - Vec4(0, 0, 0, 0.5)
 MaxCogSuitLevel = 50 - 1
@@ -387,23 +388,34 @@ MinigameNames = {'race': RaceGameId,
  'photo': PhotoGameId,
  'travel': TravelGameId}
 MinigameTemplateId = -1
-MinigameIDs = (RaceGameId,
- CannonGameId,
- TagGameId,
- PatternGameId,
- RingGameId,
- MazeGameId,
- TugOfWarGameId,
- CatchGameId,
- DivingGameId,
- TargetGameId,
- PairingGameId,
- VineGameId,
- IceGameId,
- CogThiefGameId,
- TwoDGameId,
- PhotoGameId,
- TravelGameId)
+MinigameIDs = (
+    RaceGameId,
+    CannonGameId,
+    TagGameId,
+    PatternGameId,
+    RingGameId,
+    MazeGameId,
+    TugOfWarGameId,
+    CatchGameId,
+    DivingGameId,
+    TargetGameId,
+    PairingGameId,
+    VineGameId,
+    IceGameId,
+    CogThiefGameId,
+    TwoDGameId,
+    PhotoGameId,
+    TravelGameId
+)
+
+MultiplayerMinigames = (
+    PatternGameId,
+    TagGameId,
+    IceGameId,
+    RaceGameId,
+    TravelGameId
+)
+
 MinigamePlayerMatrix = {1: (CannonGameId,
      RingGameId,
      MazeGameId,
@@ -459,10 +471,7 @@ MinigamePlayerMatrix = {1: (CannonGameId,
      IceGameId,
      CogThiefGameId,
      TwoDGameId)}
-MinigameReleaseDates = {IceGameId: (2008, 8, 5),
- PhotoGameId: (2008, 8, 13),
- TwoDGameId: (2008, 8, 20),
- CogThiefGameId: (2008, 8, 27)}
+
 KeyboardTimeout = 300
 phaseMap = {Tutorial: 4,
  ToontownCentral: 4,
@@ -1269,7 +1278,7 @@ LawbotBossWitnessEpiloguePosHpr = (-3,
  0,
  0)
 LawbotBossChanceForTaunt = 25
-LawbotBossBonusWaitTime = 5
+LawbotBossBonusWaitTime = 15
 LawbotBossBonusDuration = 20
 LawbotBossBonusToonup = 10
 LawbotBossBonusWeightMultiplier = 2
@@ -1618,6 +1627,40 @@ hood2Coords = {
 # I hate these imports being here as much as you do, but putting them at the top crashes the AI on startup :)
 from ..archipelago.definitions import util
 from apworld.toontown import locations
+ZONE_TO_CHECK_COST = {
+    ToontownCentral: 600,
+    DonaldsDock: 900,
+    DaisyGardens: 1300,
+    MinniesMelodyland: 1800,
+    TheBrrrgh: 2400,
+    DonaldsDreamland: 3000
+}
+ZONE_TO_ID_TO_CHECK = {
+        ToontownCentral: {1: locations.ToontownLocationName.TTC_SHOP_1.value,
+                          2: locations.ToontownLocationName.TTC_SHOP_2.value,
+                          3: locations.ToontownLocationName.TTC_SHOP_3.value,
+                          },
+        DonaldsDock: {1: locations.ToontownLocationName.DD_SHOP_1.value,
+                      2: locations.ToontownLocationName.DD_SHOP_2.value,
+                      3: locations.ToontownLocationName.DD_SHOP_3.value,
+                      },
+        DaisyGardens: {1: locations.ToontownLocationName.DG_SHOP_1.value,
+                       2: locations.ToontownLocationName.DG_SHOP_2.value,
+                       3: locations.ToontownLocationName.DG_SHOP_3.value,
+                       },
+        MinniesMelodyland: {1: locations.ToontownLocationName.MML_SHOP_1.value,
+                            2: locations.ToontownLocationName.MML_SHOP_2.value,
+                            3: locations.ToontownLocationName.MML_SHOP_3.value,
+                            },
+        TheBrrrgh: {1: locations.ToontownLocationName.TB_SHOP_1.value,
+                    2: locations.ToontownLocationName.TB_SHOP_2.value,
+                    3: locations.ToontownLocationName.TB_SHOP_3.value,
+                    },
+        DonaldsDreamland: {1: locations.ToontownLocationName.DDL_SHOP_1.value,
+                           2: locations.ToontownLocationName.DDL_SHOP_2.value,
+                           3: locations.ToontownLocationName.DDL_SHOP_3.value,
+                           },
+}
 ARCHI_CODE_TO_LOCATION = {
         ToontownCentral: [util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_1.value),
                           util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_2.value),

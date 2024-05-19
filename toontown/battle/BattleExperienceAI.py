@@ -148,7 +148,10 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
 
         # Calculate a random amount of beans to give to the player
         _min, _max = ToontownGlobals.CogMoneyDropRange
-        moneyAward += random.randint(_min, _max)
+        if random.random() > ToontownGlobals.CogMoneyBonusChance:
+            moneyAward += (random.randint(_min, _max) * 3)
+        else:
+            moneyAward += random.randint(_min, _max)
 
     for toon in activeToonList:
 

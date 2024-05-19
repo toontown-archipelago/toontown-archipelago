@@ -84,7 +84,11 @@ class ClerkPurchase(PurchaseBase):
         # Now max out our inventory with default settings (Balanced fill, no clearing etc)
         self.toon.inventory.maxInventory()
         newGags = self.__getPropCounts()
-        cost = self.__calculateRestockCost(oldGags, newGags)
+        gagCost = self.__calculateRestockCost(oldGags, newGags)
+
+        # add the cost of getting laff back
+        laffCost = (self.toon.getMaxHp() - self.toon.getHp())
+        cost = laffCost + gagCost
 
         # If we didn't do anything
         if cost <= 0:
@@ -111,30 +115,32 @@ class ClerkPurchase(PurchaseBase):
         def callback():
             self.toon.setMoney(self.toon.getMoney() - cost)
             self.toon.inventory.updateGUI()
-            messenger.send('boughtGag')
+            messenger.send('boughtGagFast')
 
 
         popoutIval = Parallel()
         delay = 0
-        for level in range(ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL+1):
-            thisLevelSeq = Parallel()
-            thisLevelSeq.append(Func(doTickSfx))
-            numItemsTrack = 0
-            for track in range(len(ToontownBattleGlobals.Tracks)):
-                numGags = self.toon.inventory.numItem(track, level)
-                numItemsTrack += numGags
-                button = self.toon.inventory.buttons[track][level]
+        # we only need to do this if we're getting gags
+        if gagCost:
+            for level in range(ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL+1):
+                thisLevelSeq = Parallel()
+                thisLevelSeq.append(Func(doTickSfx))
+                numItemsTrack = 0
+                for track in range(len(ToontownBattleGlobals.Tracks)):
+                    numGags = self.toon.inventory.numItem(track, level)
+                    numItemsTrack += numGags
+                    button = self.toon.inventory.buttons[track][level]
 
-                if numGags > 0:
-                    thisLevelSeq.append(Parallel(
-                        LerpScaleInterval(button, startScale=1.0, scale=1+(numGags*.05), duration=.07),
-                        Func(self.toon.inventory.updateGUI, track, level),
-                        LerpScaleInterval(button, startScale=1+(numGags*.05), scale=1.0, duration=.07),
-                    ))
+                    if numGags > 0:
+                        thisLevelSeq.append(Parallel(
+                            LerpScaleInterval(button, startScale=1.0, scale=1+(numGags*.05), duration=.07),
+                            Func(self.toon.inventory.updateGUI, track, level),
+                            LerpScaleInterval(button, startScale=1+(numGags*.05), scale=1.0, duration=.07),
+                        ))
 
-            if numItemsTrack > 0:
-                popoutIval.append(Sequence(Wait(delay), thisLevelSeq))
-                delay += .05
+                if numItemsTrack > 0:
+                    popoutIval.append(Sequence(Wait(delay), thisLevelSeq))
+                    delay += .05
 
         popoutIval.append(Sequence(Wait(delay), Func(callback)))
         popoutIval.start()

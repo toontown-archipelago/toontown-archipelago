@@ -1,4 +1,5 @@
-from direct.directnotify import DirectNotifyGlobal
+import typing
+
 from panda3d.core import *
 from panda3d.toontown import *
 from libotp import *
@@ -11,8 +12,6 @@ from direct.fsm import State
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownTimer
 from direct.task.Task import Task
-import math
-from toontown.toon import ToonHead
 from . import PhotoGameGlobals
 from direct.gui.DirectGui import *
 from toontown.toonbase import TTLocalizer
@@ -21,13 +20,15 @@ from toontown.toon import Toon
 from toontown.toon import ToonDNA
 from direct.interval.IntervalGlobal import *
 import random
-from direct.showbase import PythonUtil
 import math
 import time
 from toontown.makeatoon import NameGenerator
-from otp.otpbase import OTPGlobals
 from toontown.battle import BattleParticles
 from toontown.minigame import PhotoGameBase
+
+if typing.TYPE_CHECKING:
+    from toontown.toonbase.ToonBaseGlobals import *
+
 WORLD_SCALE = 2.0
 FAR_PLANE_DIST = 600 * WORLD_SCALE
 STAGE_Z_OFFSET = 7.0
@@ -289,9 +290,9 @@ class DistributedPhotoGame(DistributedMinigame, PhotoGameBase.PhotoGameBase):
         self.traverser = CollisionTraverser('traverser name')
         self.rayArray = []
         vRange = (GOODROWS - BADROWS) / 2
-        for row in range(-(GOODROWS / 2), GOODROWS / 2 + 1):
-            for column in range(-(GOODROWS / 2), GOODROWS / 2 + 1):
-                goodRange = range(-((GOODROWS - BADROWS) / 2), (GOODROWS - BADROWS) / 2 + 1)
+        for row in range(-(GOODROWS // 2), GOODROWS // 2 + 1):
+            for column in range(-(GOODROWS // 2), GOODROWS // 2 + 1):
+                goodRange = range(-((GOODROWS - BADROWS) // 2), (GOODROWS - BADROWS) // 2 + 1)
                 rayQuality = 'g'
                 if row not in goodRange or column not in goodRange:
                     rayQuality = 'l'
@@ -846,10 +847,10 @@ class DistributedPhotoGame(DistributedMinigame, PhotoGameBase.PhotoGameBase):
         found = 0
         loop = 0
         while not found and loop < length:
-            if pointList[index] == point:
+            if pointList[pointIndex] == point:
                 found = 1
             else:
-                index += 1
+                pointIndex += 1
                 loop += 1
 
         if not found:

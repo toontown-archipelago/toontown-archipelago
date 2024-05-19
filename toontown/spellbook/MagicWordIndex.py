@@ -2313,6 +2313,24 @@ class AbortGame(MagicWord):
         messenger.send('minigameAbort')
 
 
+class RequestMinigame(MagicWord):
+    aliases = ['request', 'wantgame', 'requestgame']
+    desc = "Request a specific minigame for the trolley."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [('game', str, True)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        requested_name = args[0].lower()
+        wanted_game_id = ToontownGlobals.MinigameNames.get(requested_name)
+
+        if wanted_game_id is None:
+            return f"There is no game registered with the name: {requested_name}\nValid choices are: {', '.join(ToontownGlobals.MinigameNames.keys())}"
+
+        self.air.minigameMgr.storeRequest(toon.doId, wanted_game_id)
+        return f"The next trolley game that {toon.getName()} plays will be {requested_name}!"
+
+
 class ToggleSuitPaths(MagicWord):
     aliases = ['suitpaths']
     desc = "Toggles visualization of suit paths if they exist in your current zone."
@@ -2649,7 +2667,7 @@ class SetCogSuit(MagicWord):
             levelRange = list(range((typeIndex + 1), (typeIndex + 6)))
         if level not in levelRange:
             return "Invalid level specified for %s disguise %s." % (
-                corp.capitalize(), SuitBattleGlobals.SuitAttributes[type]['name'])
+                corp.capitalize(), SuitBattleGlobals.getSuitAttributes(type).name)
 
         # Reset their merits to 0.
         merits = toon.getCogMerits()
@@ -2686,7 +2704,7 @@ class SetCogSuit(MagicWord):
         toon.b_setCogLevels(levels)
 
         return "Set %s disguise to %s Level %d." % (
-            corp.capitalize(), SuitBattleGlobals.SuitAttributes[type]['name'], level)
+            corp.capitalize(), SuitBattleGlobals.getSuitAttributes(type).name, level)
 
 
 class Merits(MagicWord):
@@ -3469,6 +3487,38 @@ class FreeLocalToon(MagicWord):
 
         self.cr.playGame.getPlace().setState('walk')
         return "Freed your toon!"
+
+
+# Command to start a "sandbox" battle.
+# Used for toying with battle mechanics.
+class SandboxBattle(MagicWord):
+    aliases = ['sandbox', 'custombattle']
+    desc = 'Starts a sandbox turn based battle. Used for testing battle mechanics and gives control of a dynamic suit planner.'
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from ..battle.DistributedBattleSandboxAI import DistributedBattleSandboxAI
+        from ..toon.DistributedToonAI import DistributedToonAI
+
+        if toon.isBattling():
+            return f"{toon.getName()} is battling! Cannot start a new one."
+
+        teammates: List[int] = []
+        for otherToonId, otherToon in self.air.getObjectsOfClassInZone(self.air.districtId, toon.zoneId, DistributedToonAI).items():
+            if otherToon.isPlayerControlled() and toon != otherToon:
+                teammates.append(otherToonId)
+
+        if len(teammates) > 3:
+            teammates = teammates[:3]
+
+        zoneId = toon.zoneId
+
+        # Start a new battle for them.
+        battle: DistributedBattleSandboxAI = DistributedBattleSandboxAI(self.air, zoneId)
+        battle.generateWithRequired(zoneId)
+        battle.start(toon.doId, otherToons=teammates)
+        suff = f" and {len(teammates)} others!" if len(teammates) > 0 else '!'
+        return f"Started a sandbox battle for {toon.getName()}{suff}"
 
 
 # Use this command template for spawning objects client side to tweak attributes quickly

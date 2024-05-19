@@ -1,5 +1,5 @@
 # Server settings
-version v0.7.1 Alpha
+version v0.8.0 Alpha
 server-version tt-ap-edition
 
 # Developer settings
@@ -54,7 +54,6 @@ want-news-page false
 want-news-tab false
 
 # Gameplay settings
-want-legacy-heads false
 want-gardening true
 want-emblems true
 
@@ -68,3 +67,6 @@ early-event-sphere true
 server-data-folder backups/
 model-cache-dir
 texture-anisotropic-degree 16
+# Harfbuzz is good for handling non-latin text.
+# However, this causes odd spacing on Cog nametags, so let's disable it.
+text-use-harfbuzz #f

@@ -2,6 +2,7 @@ from direct.gui.DirectGui import *
 from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.DirectObject import DirectObject
+from toontown.archipelago.definitions import util
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from toontown.toonbase import ToontownTimer
@@ -212,21 +213,20 @@ class PetshopGUI(DirectObject):
         def __init__(self, doneEvent, petSeed, petNameIndex):
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
             name, dna, traitSeed = PetUtil.getPetInfoFromSeed(petSeed, zoneId)
-            name = PetNameGenerator.PetNameGenerator().getName(petNameIndex)
-            cost = PetUtil.getPetCostFromSeed(petSeed, zoneId)
+            cost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
             model = loader.loadModel('phase_4/models/gui/AdoptPet')
             modelPos = (0, 0, -0.3)
             modelScale = 0.055
-            DirectFrame.__init__(self, relief=None, state='normal', geom=model, geom_color=ToontownGlobals.GlobalDialogColor, geom_scale=modelScale, frameSize=(-1, 1, -1, 1), pos=modelPos, text=TTLocalizer.PetshopAdoptConfirm % (name, cost), text_wordwrap=12, text_scale=0.05, text_pos=(0, 0.55), text_fg=text0Color)
+            DirectFrame.__init__(self, relief=None, state='normal', geom=model, geom_color=ToontownGlobals.GlobalDialogColor, geom_scale=modelScale, frameSize=(-1, 1, -1, 1), pos=modelPos, text=TTLocalizer.PetshopAdoptConfirm % (cost), text_wordwrap=12, text_scale=0.05, text_pos=(0, 0.55), text_fg=text0Color)
             self.initialiseoptions(PetshopGUI.AdoptPetDlg)
             self.petView = self.attachNewNode('petView')
             self.petView.setPos(-0.13, 0, 0.8)
-            self.petModel = Pet.Pet(forGui=1)
-            self.petModel.setDNA(dna)
-            self.petModel.fitAndCenterHead(0.395, forGui=1)
-            self.petModel.reparentTo(self.petView)
-            self.petModel.setH(130)
-            self.petModel.enterNeutralHappy()
+            #self.petModel = Pet.Pet(forGui=1)
+            #self.petModel.setDNA(dna)
+            #self.petModel.fitAndCenterHead(0.395, forGui=1)
+            #self.petModel.reparentTo(self.petView)
+            #self.petModel.setH(130)
+            #self.petModel.enterNeutralHappy()
             self.moneyDisplay = DirectLabel(parent=self, relief=None, text=str(base.localAvatar.getTotalMoney()), text_scale=0.075, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.225, 0.33), text_font=ToontownGlobals.getSignFont())
             self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
             self.accept(localAvatar.uniqueName('bankMoneyChange'), self.__moneyChange)
@@ -242,7 +242,6 @@ class PetshopGUI(DirectObject):
         def destroy(self):
             self.ignore(localAvatar.uniqueName('moneyChange'))
             self.ignore(localAvatar.uniqueName('bankMoneyChange'))
-            self.petModel.delete()
             DirectFrame.destroy(self)
 
         def __moneyChange(self, money):
@@ -296,7 +295,7 @@ class PetshopGUI(DirectObject):
     class ChoosePetDlg(DirectFrame):
         notify = DirectNotifyGlobal.directNotify.newCategory('PetshopGUI.ChoosePetDlg')
 
-        def __init__(self, doneEvent, petSeeds):
+        def __init__(self, doneEvent, petSeeds, subId):
             model = loader.loadModel('phase_4/models/gui/PetShopInterface')
             modelPos = (0, 0, -0.9)
             modelScale = (0.185, 0.185, 0.185)
@@ -322,68 +321,90 @@ class PetshopGUI(DirectObject):
             self.petView = self.attachNewNode('petView')
             self.petView.setPos(-0.05, 0, 1.15)
             model.removeNode()
+            self.pawLButton['state'] = DGG.DISABLED
+            self.pawRButton['state'] = DGG.DISABLED
             self.petSeeds = petSeeds
-            self.makePetList()
+            self.subId = subId
+            self.makeCheckList()
             self.showPet()
             return
 
-        def makePetList(self):
+        def makeCheckList(self):
             self.numPets = len(self.petSeeds)
             self.curPet = 0
-            self.petDNA = []
             self.petName = []
             self.petDesc = []
             self.petCost = []
-            for i in range(self.numPets):
-                random.seed(self.petSeeds[i])
-                zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
-                name, dna, traitSeed = PetUtil.getPetInfoFromSeed(self.petSeeds[i], zoneId)
-                cost = PetUtil.getPetCostFromSeed(self.petSeeds[i], zoneId)
-                traits = PetTraits.PetTraits(traitSeed, zoneId)
-                traitList = traits.getExtremeTraitDescriptions()
-                numGenders = len(PetDNA.PetGenders)
-                gender = i % numGenders
-                PetDNA.setGender(dna, gender)
-                self.petDNA.append(dna)
-                self.petName.append(TTLocalizer.PetshopUnknownName)
-                descList = []
-                descList.append(TTLocalizer.PetshopDescGender % PetDNA.getGenderString(gender=gender))
-                if traitList:
-                    descList.append(TTLocalizer.PetshopDescTrait % traitList[0])
-                else:
-                    descList.append(TTLocalizer.PetshopDescTrait % TTLocalizer.PetshopDescStandard)
-                traitList.extend(['',
-                 '',
-                 '',
-                 ''])
-                for trait in traitList[1:4]:
-                    descList.append('\t%s' % trait)
+            random.seed(self.petSeeds[1])
+            zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
+            cost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            self.petName.append(self.getItemName())
+            name, dna, traitSeed = PetUtil.getPetInfoFromSeed(self.petSeeds[1], zoneId)
+            traits = PetTraits.PetTraits(traitSeed, zoneId)
+            traitList = traits.getExtremeTraitDescriptions()
+            gender = random.randint(0, 1)
+            PetDNA.setGender(dna, gender)
+            descList = []
+            descList.append(TTLocalizer.PetshopDescGender % PetDNA.getGenderString(gender=gender))
+            if traitList:
+                descList.append(TTLocalizer.PetshopDescTrait % traitList[0])
+            else:
+                descList.append(TTLocalizer.PetshopDescTrait % TTLocalizer.PetshopDescStandard)
+            traitList.extend(['',
+                '',
+                '',
+                ''])
+            for trait in traitList[1:4]:
+                descList.append('\t%s' % trait)
 
-                descList.append(TTLocalizer.PetshopDescCost % cost)
-                self.petDesc.append(string.join(descList, '\n'))
-                self.petCost.append(cost)
+            descList.append(TTLocalizer.PetshopDescCost % cost)
+            formattedStr = ""
+            for desc in descList:
+                formattedStr += (desc + '\n')
+            self.petDesc.append(formattedStr)
+            self.petCost.append(cost)
+
+        def getCheckId(self):
+            return util.ap_location_name_to_id(self.getCheckName())
+
+        def getCheckName(self):
+            zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
+            return ToontownGlobals.ZONE_TO_ID_TO_CHECK[zoneId][self.subId]
+
+        def getItemName(self):
+            av = None
+            try:
+                av = base.localAvatar
+            # This is the AI, just use the check name
+            except AttributeError:
+                return self.getCheckName()
+
+            # Do we have it cached?
+            if not av.hasCachedLocationReward(self.getCheckId()):
+                return self.getCheckName()
+
+            # Send
+            return av.getCachedLocationReward(self.getCheckId())
 
         def destroy(self):
             self.ignore(localAvatar.uniqueName('moneyChange'))
             self.ignore(localAvatar.uniqueName('bankMoneyChange'))
-            self.petModel.delete()
             DirectFrame.destroy(self)
 
         def __handlePetChange(self, nDir):
+            return
             self.curPet = (self.curPet + nDir) % self.numPets
             self.nameLabel.destroy()
-            self.petModel.delete()
+            self.apLabel.destroy()
             self.descLabel.destroy()
             self.showPet()
 
         def showPet(self):
-            self.nameLabel = DirectLabel(parent=self, pos=(0, 0, 1.35), relief=None, text=self.petName[self.curPet], text_fg=Vec4(0.45, 0, 0.61, 1), text_pos=(0, 0), text_scale=0.08, text_shadow=(1, 1, 1, 1))
-            self.petModel = Pet.Pet(forGui=1)
-            self.petModel.setDNA(self.petDNA[self.curPet])
-            self.petModel.fitAndCenterHead(0.57, forGui=1)
-            self.petModel.reparentTo(self.petView)
-            self.petModel.setH(130)
-            self.petModel.enterNeutralHappy()
+            self.nameLabel = DirectLabel(parent=self, pos=(0, 0, 1.35), relief=None, text=self.petName[self.curPet], text_pos=(0, 0), text_scale=0.04)
+            self.apLabel = DirectLabel(parent=self, pos=(-0.01, 0, 1.05), relief=None, text=None, text_fg=Vec4(1, 1, 1, 1), text_pos=(0, 0), text_scale=0.08, text_shadow=(1, 1, 1, 1))
+            self.apLabel.setImage('phase_14/maps/ap_icon_outline.png')
+            self.apLabel.setTransparency(TransparencyAttrib.MAlpha)
+            self.apLabel['image_scale'] = 0.12
             self.descLabel = DirectLabel(parent=self, pos=(-0.4, 0, 0.72), relief=None, scale=0.05, text=self.petDesc[self.curPet], text_align=TextNode.ALeft, text_wordwrap=TTLocalizer.PGUIwordwrap, text_scale=TTLocalizer.PGUIdescLabel)
             if self.petCost[self.curPet] > base.localAvatar.getTotalMoney():
                 self.okButton['state'] = DGG.DISABLED
@@ -394,7 +415,7 @@ class PetshopGUI(DirectObject):
         def __moneyChange(self, money):
             self.moneyDisplay['text'] = str(base.localAvatar.getTotalMoney())
 
-    def __init__(self, eventDict, petSeeds):
+    def __init__(self, eventDict, petSeeds, subId):
         self.eventDict = eventDict
         self.mainMenuDoneEvent = 'MainMenuGuiDone'
         self.adoptPetDoneEvent = 'AdoptPetGuiDone'
@@ -406,6 +427,7 @@ class PetshopGUI(DirectObject):
         self.dialog = None
         self.dialogStack = []
         self.petSeeds = petSeeds
+        self.subId = subId
         self.timer = ToontownTimer.ToontownTimer()
         self.timer.reparentTo(aspect2d)
         self.timer.posInTopRightCorner()
@@ -446,10 +468,10 @@ class PetshopGUI(DirectObject):
             self.dialog = self.MainMenuDlg(self.mainMenuDoneEvent)
         elif nDialog == Dialog_AdoptPet:
             self.acceptOnce(self.adoptPetDoneEvent, self.__handleAdoptPetDlg)
-            self.dialog = self.AdoptPetDlg(self.adoptPetDoneEvent, self.petSeeds[self.adoptPetNum], self.adoptPetNameIndex)
+            self.dialog = self.AdoptPetDlg(self.adoptPetDoneEvent, self.petSeeds[self.adoptPetNum], 0)#self.adoptPetNameIndex)
         elif nDialog == Dialog_ChoosePet:
             self.acceptOnce(self.petChooserDoneEvent, self.__handleChoosePetDlg)
-            self.dialog = self.ChoosePetDlg(self.petChooserDoneEvent, self.petSeeds)
+            self.dialog = self.ChoosePetDlg(self.petChooserDoneEvent, self.petSeeds, self.subId)
         elif nDialog == Dialog_ReturnPet:
             self.acceptOnce(self.returnPetDoneEvent, self.__handleReturnPetDlg)
             self.dialog = self.ReturnPetDlg(self.returnPetDoneEvent)
@@ -485,7 +507,7 @@ class PetshopGUI(DirectObject):
             self.popDialog()
         else:
             self.adoptPetNum = exitVal
-            self.doDialog(Dialog_NamePicker)
+            self.doDialog(Dialog_AdoptPet)
 
     def __handleNamePickerDlg(self, exitVal):
         if exitVal == -1:
@@ -502,7 +524,7 @@ class PetshopGUI(DirectObject):
             self.popDialog()
         elif exitVal == 1:
             self.destroyDialog()
-            messenger.send(self.eventDict['petAdopted'], [self.adoptPetNum, self.adoptPetNameIndex])
+            messenger.send(self.eventDict['petAdopted'], [self.adoptPetNum, 0])
             messenger.send(self.eventDict['guiDone'])
 
     def __handleGoHomeDlg(self, exitVal):
