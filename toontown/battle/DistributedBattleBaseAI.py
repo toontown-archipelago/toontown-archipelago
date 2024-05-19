@@ -180,6 +180,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         del suit.battleTrap
 
     def findSuit(self, id):
+        self.notify.warning(f"Attempting to find suit: {id}")
         for s in self.suits:
             if s.doId == id:
                 return s
@@ -404,9 +405,9 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             id = attack[SUIT_ID_COL]
             index = suitIds.index(id) if id != -1 else -1
             attackCol = attack[SUIT_ATK_COL]
-            target = -1 if attackCol == NO_ATTACK else attack[SUIT_TGT_COL]
+            target = -1 if attackCol == SuitAttackType.NO_ATTACK else attack[SUIT_TGT_COL]
 
-            if attackCol != NO_ATTACK:
+            if attackCol != SuitAttackType.NO_ATTACK:
                 suit = self.findSuit(id)
                 attack[SUIT_TAUNT_COL] = getAttackTauntIndexFromIndex(suit, attackCol)
 
@@ -1790,7 +1791,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             lastActiveSuitDied = 1
         for i in range(4):
             attack = self.suitAttacks[i][SUIT_ATK_COL]
-            if attack != NO_ATTACK:
+            if attack != SuitAttackType.NO_ATTACK:
                 suitId = self.suitAttacks[i][SUIT_ID_COL]
                 suit = self.findSuit(suitId)
                 if suit == None:
@@ -1859,6 +1860,30 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.d_setChosenToonAttacks()
         self.localMovieDone(needUpdate, deadToons, deadSuits, lastActiveSuitDied)
         return
+
+    def localMovieDone(self, needUpdate, deadToons, deadSuits, lastActiveSuitDied):
+        if len(self.toons) == 0:
+            self.d_setMembers()
+            self.b_setState('Resume')
+        elif len(self.suits) == 0:
+            for toonId in self.activeToons:
+                toon = self.getToon(toonId)
+                if toon:
+                    self.toonItems[toonId] = self.air.questManager.recoverItems(toon, self.suitsKilled, self.zoneId)
+                    if toonId in self.helpfulToons:
+                        self.toonMerits[toonId] = self.air.promotionMgr.recoverMerits(toon, self.suitsKilled, self.zoneId)
+                    else:
+                        self.notify.debug('toon %d not helpful, skipping merits' % toonId)
+
+            self.d_setMembers()
+            self.d_setBattleExperience()
+            self.b_setState('Reward')
+        else:
+            if needUpdate == 1:
+                self.d_setMembers()
+                if len(deadSuits) > 0 and lastActiveSuitDied == 0 or len(deadToons) > 0:
+                    self.needAdjust = 1
+            self.setState('WaitForJoin')
 
     def enterReward(self):
 

@@ -21,6 +21,7 @@ decorationHolidays = [ToontownGlobals.WINTER_DECORATIONS,
  ToontownGlobals.CRASHED_LEADERBOARD]
 promotionalSpeedChatHolidays = [ToontownGlobals.ELECTION_PROMOTION]
 
+
 class NewsManager(DistributedObject.DistributedObject):
     notify = DirectNotifyGlobal.directNotify.newCategory('NewsManager')
     neverDisable = 1
@@ -62,8 +63,15 @@ class NewsManager(DistributedObject.DistributedObject):
          cogType,
          numRemaining,
          skeleton))
-        cogName = SuitBattleGlobals.SuitAttributes[cogType]['name']
-        cogNameP = SuitBattleGlobals.SuitAttributes[cogType]['pluralname']
+
+        suitAttributes = SuitBattleGlobals.getSuitAttributes(cogType)
+        if suitAttributes is None:
+            self.notify.warning(f'Invalid suit type: {cogType}')
+            return
+
+        cogName = suitAttributes.name
+        cogNameP = suitAttributes.plural
+
         if skeleton:
             cogName = TTLocalizer.Skeleton
             cogNameP = TTLocalizer.SkeletonP

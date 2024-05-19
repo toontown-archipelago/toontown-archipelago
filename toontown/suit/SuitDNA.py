@@ -423,18 +423,22 @@ class SuitVisual:
             return suitBody2HeadPath[body]
     
     def addHeadModel(self, suit):
+
+        # Suit A body styles need to use a different joint for certain animations to work correctly.
+        attachPoint = '**/to_head' if suit.style.body == 'a' else '**/joint_head'
+
         # find if the head_type is a list or not
         if isinstance(self.head_type, list):
             for head in self.head_type:
                 headModel = loader.loadModel(self.headModelPath(suit.style.body))
                 head = headModel.find('**/' + head)
-                head.reparentTo(suit.find('**/joint_head'))
+                head.reparentTo(suit.find(attachPoint))
                 suit.headParts.append(head)
                 headModel.removeNode()
         else:
             headModel = loader.loadModel(self.headModelPath(suit.style.body))
             head = headModel.find('**/' + self.head_type)
-            head.reparentTo(suit.find('**/joint_head'))
+            head.reparentTo(suit.find(attachPoint))
             suit.headParts.append(head)
             headModel.removeNode()
     

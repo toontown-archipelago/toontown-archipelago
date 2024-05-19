@@ -475,7 +475,7 @@ def getTotalMerits(toon, index):
     from toontown.battle import SuitBattleGlobals
     cogIndex = toon.cogTypes[index] + SuitDNA.suitsPerDept * index
     cogTypeStr = SuitDNA.suitHeadTypes[cogIndex]
-    cogBaseLevel = SuitBattleGlobals.SuitAttributes[cogTypeStr]['level']
+    cogBaseLevel = SuitBattleGlobals.getSuitAttributes(cogTypeStr).tier
     cogLevel = toon.cogLevels[index] - cogBaseLevel
     cogLevel = max(min(cogLevel, len(MeritsPerLevel[cogIndex]) - 1), 0)
     return MeritsPerLevel[cogIndex][cogLevel]

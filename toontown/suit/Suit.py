@@ -262,7 +262,7 @@ class Suit(Avatar.Avatar):
         self.generateVisual()
         self.setHeight(visual.height)
 
-        self.setName(SuitBattleGlobals.SuitAttributes[dna.name]['name'])
+        self.setName(SuitBattleGlobals.getSuitAttributes(dna.name).name)
         self.getGeomNode().setScale(self.scale)
         self.generateHealthBar()
         self.generateCorporateMedallion()
@@ -286,7 +286,7 @@ class Suit(Avatar.Avatar):
 
         # Analyze what attacks this suit can do.
         # We can then load the animations that are attached.
-        attacks: Set[str] = SuitBattleGlobals.getAttackKeysForSuit(self.style.name)
+        attacks: Set[str] = SuitBattleGlobals.getAttackAnimationNamesForSuit(self.style.name)
         for animation in getBattleAnimationsForSuit(self.style.name, attacks):
 
             # Now add the animation!
@@ -379,9 +379,6 @@ class Suit(Avatar.Avatar):
         
         # Hands
         self.find('**/hands').setColor(self.handColor)
-        
-            
-            
 
     def generateCorporateTie(self, modelPath = None):
         if not modelPath:
