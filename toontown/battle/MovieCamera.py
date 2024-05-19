@@ -480,7 +480,7 @@ def chooseSuitShot(attack, attackDuration):
     elif attackType == SuitAttackType.SONG_AND_DANCE:
         camTrack.append(defaultCamera(openShotDuration=3.6))
     else:
-        notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % attackType.name)
+        notify.warning(f'chooseSuitShot(): unknown suit attack type: {attackType.name}, using default cam' % attackType.name)
         camTrack.append(defaultCamera())
     pbpText = attack['playByPlayText']
     displayName = TTLocalizer.SuitAttackNames.get(attackType.name)
