@@ -9,8 +9,8 @@ from direct.gui.DirectLabel import DirectLabel
 from direct.interval.FunctionInterval import Func, Wait
 from direct.interval.MetaInterval import Parallel, Sequence
 from panda3d.core import Point3, Vec3, TextNode
-from panda3d.otp import CFSpeech, CFTimeout
 
+from libotp import CFSpeech, CFTimeout
 from otp.avatar import Emote
 from toontown.battle import SuitBattleGlobals, DistributedBattleFinal
 from toontown.battle.DistributedBattle import DistributedBattle
