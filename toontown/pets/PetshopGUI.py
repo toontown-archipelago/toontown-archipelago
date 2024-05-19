@@ -400,7 +400,7 @@ class PetshopGUI(DirectObject):
             self.showPet()
 
         def showPet(self):
-            self.nameLabel = DirectLabel(parent=self, pos=(0, 0, 1.35), relief=None, text=self.petName[self.curPet], text_pos=(0, 0), text_scale=0.08)
+            self.nameLabel = DirectLabel(parent=self, pos=(0, 0, 1.35), relief=None, text=self.petName[self.curPet], text_pos=(0, 0), text_scale=0.04)
             self.apLabel = DirectLabel(parent=self, pos=(-0.01, 0, 1.05), relief=None, text=None, text_fg=Vec4(1, 1, 1, 1), text_pos=(0, 0), text_scale=0.08, text_shadow=(1, 1, 1, 1))
             self.apLabel.setImage('phase_14/maps/ap_icon_outline.png')
             self.apLabel.setTransparency(TransparencyAttrib.MAlpha)
