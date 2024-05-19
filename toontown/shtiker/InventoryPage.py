@@ -85,7 +85,7 @@ class InventoryPage(ShtikerPage.ShtikerPage):
 
             # If we are overflowing our xp for this track:
             if curExp >= ToontownBattleGlobals.regMaxSkill:
-                boost = ToontownBattleGlobals.getUberDamageBonusString(curExp)
+                boost = ToontownBattleGlobals.getUberDamageBonusString(curExp, trackIndex)
                 newTrackInfoText = TTLocalizer.InventoryPageTrackFull % (trackName, boost)
             # If we are able to overflow our xp, have all our gags, but haven't hit that part yet
             elif cap > ToontownBattleGlobals.regMaxSkill and curExp >= ToontownBattleGlobals.Levels[trackIndex][-1]:

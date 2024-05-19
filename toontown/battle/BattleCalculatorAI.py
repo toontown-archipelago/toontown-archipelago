@@ -1249,9 +1249,11 @@ class BattleCalculatorAI:
 
                 # Divide attack damage by 2 if they were trapped this turn
                 if attack[SUIT_ID_COL] in self.suitsTrappedThisTurn:
-                    result /= 2
+                    result *= 0.5
                     result = int(math.ceil(result))
-
+                elif attack[SUIT_ID_COL] in self.traps:
+                    result *= 0.75
+                    result = int(math.ceil(result))
             targetIndex = self.battle.activeToons.index(toonId)
             attack[SUIT_HP_COL][targetIndex] = result
 

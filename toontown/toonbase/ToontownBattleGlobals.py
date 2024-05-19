@@ -64,20 +64,23 @@ regMaxSkill = 20000
 MaxSkill = 999999  # How high should we allow xp to go
 
 
-def getUberDamageBonus(experience) -> float:
+def getUberDamageBonus(experience, track) -> float:
     overflow = experience - regMaxSkill
     if overflow < 0:
         overflow = 0
 
-    # Returns a multiplier to multiply base damage by, default is 1% damage per 100 xp
-    multiplier = 1 + overflow / regMaxSkill
+    # Returns a multiplier to multiply base damage by, default is 1% damage per 200 xp
+    if track == 3:  # This is sound, we want halved overflow
+        multiplier = 1 + overflow / (regMaxSkill * 2)
+    else:
+        multiplier = 1 + overflow / regMaxSkill
     multiplier = round(multiplier, 2)
     return multiplier
 
 
 # Returns a clean string representation of the damage bonus from above
-def getUberDamageBonusString(experience) -> str:
-    return str(int((getUberDamageBonus(experience) - 1) * 100))
+def getUberDamageBonusString(experience, track) -> str:
+    return str(int((getUberDamageBonus(experience, track) - 1) * 100))
 
 UnpaidMaxSkills = [Levels[0][1] - 1,
                    Levels[1][1] - 1,
@@ -94,7 +97,7 @@ CarryLimits = (
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
-    ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
+    ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 10, 5, 2, 1)),
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
