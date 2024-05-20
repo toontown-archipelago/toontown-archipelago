@@ -95,8 +95,9 @@ class DistributedLawOfficeFloor(DistributedLevel.DistributedLevel, LawOfficeBase
         messenger.send('LawOffice_Spec_Loaded')
 
         def printPos(self = self):
-            pos = base.localAvatar.getPos(self.getZoneNode(self.lastToonZone))
-            h = base.localAvatar.getH(self.getZoneNode(self.lastToonZone))
+            thisZone = self.getZoneNode(self.lastToonZone)
+            pos = base.localAvatar.getPos(thisZone) if thisZone is not None else [0] * 3
+            h = base.localAvatar.getH(thisZone) if thisZone is not None else 0
             print('factory pos: %s, h: %s, zone %s' % (repr(pos), h, self.lastToonZone))
             # Virgin py2 version that breaks the video game
             # posStr = 'X: %.3f' % pos[0] + '\nY: %.3f' % pos[1] + '\nZ: %.3f' % pos[2] + '\nH: %.3f' % h + '\nZone: %s' % str(self.lastToonZone)

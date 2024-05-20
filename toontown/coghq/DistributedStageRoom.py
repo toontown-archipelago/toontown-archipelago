@@ -148,8 +148,8 @@ class DistributedStageRoom(DistributedLevel.DistributedLevel, StageRoomBase.Stag
 
         def printPos(self = self):
             thisZone = self.getZoneNode(LevelConstants.UberZoneEntId)
-            pos = base.localAvatar.getPos(thisZone)
-            h = base.localAvatar.getH(thisZone)
+            pos = base.localAvatar.getPos(thisZone) if thisZone is not None else [0] * 3
+            h = base.localAvatar.getH(thisZone) if thisZone is not None else 0
             roomName = StageRoomSpecs.LawbotStageRoomId2RoomName[self.roomId]
             print('stage pos: %s, h: %s, room: %s' % (repr(pos), h, roomName))
             if self.stage is not None:
