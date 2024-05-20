@@ -3,19 +3,24 @@ services:
     build:
       context: ../..
       dockerfile: launch/docker/astron.dockerfile
+    platform: linux/amd64 # Force x64 on ARM platforms.
+    restart: always
     ports:
       - "7198:7198"
     volumes:
       - "../..:/app/game"
 
   uberdog:
+    platform: linux/amd64
     depends_on:
       - astron
     image: ttap-server
-    pull_policy: never
+    pull_policy: never # Hack to prevent building the same image twice
     build:
       context: ../..
       dockerfile: launch/docker/server.dockerfile
+    platform: linux/amd64 # Force x64 on ARM platforms.
+    restart: always
     environment:
       SERVICE_TO_RUN: UD
       BASE_CHANNEL: 1000000
@@ -31,7 +36,9 @@ services:
       - astron
       - uberdog
     image: ttap-server
-    pull_policy: never
+    pull_policy: never # Hack to prevent building the same image twice
+    platform: linux/amd64 # Force x64 on ARM platforms.
+    restart: always
     environment:
       SERVICE_TO_RUN: AI
       BASE_CHANNEL: 401000000

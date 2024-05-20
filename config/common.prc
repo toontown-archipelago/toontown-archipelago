@@ -1,5 +1,6 @@
 # Server settings
 version v0.8.2 Alpha
+
 server-version tt-ap-edition
 
 # Developer settings
