@@ -12,6 +12,7 @@ from direct.task import Task
 from toontown.launcher import DownloadForceAcknowledge
 from toontown.toon import HealthForceAcknowledge
 from toontown.toon.Toon import teleportDebug
+from toontown.town.TownBattle import TownBattle
 from toontown.tutorial import TutorialForceAcknowledge
 from toontown.toonbase.ToontownGlobals import *
 from toontown.building import ToonInterior
@@ -33,6 +34,8 @@ class SafeZoneLoader(StateData.StateData):
         self.placeDoneEvent = 'placeDone'
         self.place = None
         self.playgroundClass = None
+
+        self.townBattle = TownBattle('town-battle-done')
         return
 
     def load(self):
@@ -40,6 +43,7 @@ class SafeZoneLoader(StateData.StateData):
         self.activityMusic = base.loader.loadMusic(self.activityMusicFile)
         self.createSafeZone(self.dnaFile)
         self.parentFSMState.addChild(self.fsm)
+        self.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
 
     def unload(self):
         self.parentFSMState.removeChild(self.fsm)

@@ -1,8 +1,12 @@
+import random
+
 from otp.ai.AIBaseGlobal import *
 from otp.avatar import DistributedAvatarAI
 from . import SuitPlannerBase, SuitBase, SuitDNA
 from direct.directnotify import DirectNotifyGlobal
 from toontown.battle import SuitBattleGlobals
+from ..battle.SuitBattleGlobals import SuitAttributes
+
 
 class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.SuitBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedSuitBaseAI')
@@ -41,15 +45,20 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
         return
 
     def setLevel(self, lvl=None):
-        attributes = SuitBattleGlobals.SuitAttributes[self.dna.name]
-        if lvl:
-            self.level = lvl - attributes['level'] - 1
-        else:
-            self.level = SuitBattleGlobals.pickFromFreqList(attributes['freq'])
-        self.notify.debug('Assigning level ' + str(lvl))
+        attributes: SuitAttributes = SuitBattleGlobals.getSuitAttributes(self.dna.name)
+
+        # todo maybe something smarter than this
+        # todo if no level given, just pick a random one that this suit is typically allowed to be.
+        if lvl is None:
+            return self.setLevel(lvl=attributes.tier+1 + random.randint(0, 4))
+
+        self.level = lvl - attributes.tier - 1
+
+        self.notify.debug(f'Assigning level {lvl}')
         if hasattr(self, 'doId'):
             self.d_setLevelDist(self.level)
-        hp = (self.getActualLevel() + 1) * (self.getActualLevel() + 2)
+
+        hp = attributes.getBaseMaxHp(self.getActualLevel())
         self.maxHP = hp
         self.currHP = hp
 

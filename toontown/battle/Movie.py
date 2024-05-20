@@ -761,8 +761,8 @@ class Movie(DirectObject.DirectObject):
     def __genSuitAttackDicts(self, toons, suits, suitAttacks):
         for sa in suitAttacks:
             targetGone = 0
-            attack = sa[SUIT_ATK_COL]
-            if attack != NO_ATTACK:
+            attack: SuitAttackType = SuitAttackType.fromId(sa[SUIT_ATK_COL])
+            if attack != SuitAttackType.NO_ATTACK:
                 suitIndex = sa[SUIT_ID_COL]
                 suitId = suits[suitIndex]
                 suit = self.battle.findSuit(suitId)
