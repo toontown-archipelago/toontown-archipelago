@@ -1802,7 +1802,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                     self.notify.warning('_movieDone avoiding crash, sender=%s but suit has no dna' % toonId)
                     self.air.writeServerEvent('suspicious', toonId, '_movieDone avoiding crash, suit has no dna')
                     continue
-                adict = getSuitAttack(suit.getStyleName(), suit.getLevel(), attack)
+                adict = getSuitAttack(suit.getStyleName(), suit.getActualLevel(), attack)
                 hps = self.suitAttacks[i][SUIT_HP_COL]
                 if adict['group'] == ATK_TGT_GROUP:
                     for activeToon in self.activeToons:
