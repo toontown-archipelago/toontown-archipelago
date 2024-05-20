@@ -8,7 +8,7 @@ from toontown.toon import Toon
 from direct.fsm import State
 from . import CashbotHQExterior
 from . import CashbotHQBossBattle
-from panda3d.core import DecalEffect
+from panda3d.core import DecalEffect, Fog
 
 class CashbotCogHQLoader(CogHQLoader.CogHQLoader):
     notify = DirectNotifyGlobal.directNotify.newCategory('CashbotCogHQLoader')
@@ -54,6 +54,20 @@ class CashbotCogHQLoader(CogHQLoader.CogHQLoader):
             if base.config.GetBool('want-qa-regression', 0):
                 self.notify.info('QA-REGRESSION: COGHQ: Visit CashbotLobby')
             self.geom = loader.loadModel(self.cogHQLobbyModelPath)
+
+            buildings = self.geom.findAllMatches('**/BGBuildings2')
+            sky = self.geom.find('**/SkyBox')
+
+            fog = Fog('CBHQLobby')
+            fog.setColor(.15, .17, .15)
+            fog.setExpDensity(0.00125)
+
+            sky.setColorScale(0.61, 0.65, 0.62, 1)
+            sky.setFog(fog)
+
+            for building in buildings:
+                building.setColorScale(0.61, 0.65, 0.62, 1)
+                building.setFog(fog)
         else:
             self.notify.warning('loadPlaceGeom: unclassified zone %s' % zoneId)
         CogHQLoader.CogHQLoader.loadPlaceGeom(self, zoneId)

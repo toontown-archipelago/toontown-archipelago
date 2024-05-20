@@ -51,3 +51,11 @@ class CogHood(Hood.Hood):
         else:
             self.doneStatus = doneStatus
             messenger.send(self.doneEvent)
+
+    def setNoFog(self):
+        if base.wantFog:
+            render.clearFog()
+            self.sky.clearFog()
+
+    def setNoColorScale(self):
+        render.setColorScale(1, 1, 1, 1)

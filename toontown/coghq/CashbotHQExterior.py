@@ -51,11 +51,15 @@ class CashbotHQExterior(CogHQExterior.CogHQExterior):
 
     def enter(self, requestStatus):
         CogHQExterior.CogHQExterior.enter(self, requestStatus)
+        self.loader.hood.setColorScale()
+        self.loader.hood.setFog()
         for train in self.trains:
             train.show()
 
     def exit(self):
         CogHQExterior.CogHQExterior.exit(self)
+        self.loader.hood.setNoColorScale()
+        self.loader.hood.setNoFog()
         for train in self.trains:
             train.hide()
 
