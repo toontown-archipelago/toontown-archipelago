@@ -10,3 +10,13 @@ class DLStreet(Street.Street):
 
     def unload(self):
         Street.Street.unload(self)
+
+    def enter(self, requestStatus):
+        self.loader.hood.setColorScale()
+        self.loader.hood.setFog()
+        Street.Street.enter(self, requestStatus)
+
+    def exit(self):
+        self.loader.hood.setNoColorScale()
+        self.loader.hood.setNoFog()
+        Street.Street.exit(self)
