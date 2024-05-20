@@ -101,7 +101,7 @@ class InventoryPage(ShtikerPage.ShtikerPage):
             else:
                 morePoints = nextExp - curExp
                 newTrackInfoText = TTLocalizer.InventoryPageSinglePoint % {'trackName': trackName, 'numPoints': morePoints} if morePoints == 1 else TTLocalizer.InventoryPagePluralPoints % {'trackName': trackName, 'numPoints': morePoints}
-                self.trackProgress.forceShowExperience(curExp, min(ToontownBattleGlobals.regMaxSkill, cap))
+                self.trackProgress.forceShowExperience(curExp, min(ToontownBattleGlobals.regMaxSkill, cap), trackIndex)
 
             self.trackInfo['text'] = newTrackInfoText
             self.trackProgress.show()
