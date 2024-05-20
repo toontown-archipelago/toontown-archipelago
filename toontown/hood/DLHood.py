@@ -18,10 +18,25 @@ class DLHood(ToonHood.ToonHood):
          SPOOKY_PROPS: ['phase_8/dna/halloween_props_storage_DL.dna']}
         self.skyFile = 'phase_8/models/props/DL_sky'
         self.titleColor = (1.0, 0.9, 0.5, 1.0)
+        self.colorScale = (0.55, 0.55, 0.65, 1)
 
     def load(self):
         ToonHood.ToonHood.load(self)
         self.parentFSM.getStateNamed('DLHood').addChild(self.fsm)
+
+        self.fog = Fog('DLFog')
+
+    def setFog(self):
+        if base.wantFog:
+            self.fog.setColor(0.3, 0.3, 0.4)
+            self.fog.setExpDensity(0.003)
+            render.clearFog()
+            render.setFog(self.fog)
+            self.sky.clearFog()
+            self.sky.setFog(self.fog)
+
+    def setColorScale(self):
+        render.setColorScale(self.colorScale)
 
     def unload(self):
         self.parentFSM.getStateNamed('DLHood').removeChild(self.fsm)
