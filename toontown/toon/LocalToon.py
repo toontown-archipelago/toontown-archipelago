@@ -1198,7 +1198,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         strPosOnScreenText = 'toon id: ' + \
                              '\npos: ' + \
                              '\nang: ' + \
-                             '\nzone: ' + \
+                             '\nzone: ' # + \
 #                             '\ndistrict:'
 
         self.strPosOnScreen = OnscreenText(parent=base.a2dTopLeft,
