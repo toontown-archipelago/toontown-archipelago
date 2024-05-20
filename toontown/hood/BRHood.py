@@ -24,6 +24,8 @@ class BRHood(ToonHood.ToonHood):
         ToonHood.ToonHood.load(self)
         self.parentFSM.getStateNamed('BRHood').addChild(self.fsm)
 
+        self.fog = Fog('BRFog')
+
     def unload(self):
         self.parentFSM.getStateNamed('BRHood').removeChild(self.fsm)
         ToonHood.ToonHood.unload(self)
@@ -33,3 +35,12 @@ class BRHood(ToonHood.ToonHood):
 
     def exit(self):
         ToonHood.ToonHood.exit(self)
+
+    def setFog(self):
+        if base.wantFog:
+            self.fog.setColor(0.9, 0.9, 0.9)
+            self.fog.setExpDensity(0.004)
+            render.clearFog()
+            render.setFog(self.fog)
+            self.sky.clearFog()
+            self.sky.setFog(self.fog)

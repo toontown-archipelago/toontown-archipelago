@@ -10,3 +10,11 @@ class BRStreet(Street.Street):
 
     def unload(self):
         Street.Street.unload(self)
+
+    def enter(self, requestStatus):
+        Street.Street.enter(self, requestStatus)
+        self.loader.hood.setFog()
+
+    def exit(self):
+        Street.Street.exit(self)
+        self.loader.hood.setNoFog()
