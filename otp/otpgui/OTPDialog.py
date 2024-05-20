@@ -3,6 +3,9 @@ from direct.directnotify import DirectNotifyGlobal
 import string
 from otp.otpbase import OTPGlobals
 from otp.otpbase import OTPLocalizer
+
+from direct.interval.IntervalGlobal import *
+
 NoButtons = 0
 Acknowledge = 1
 CancelOnly = 2
@@ -75,7 +78,18 @@ class OTPDialog(DirectDialog):
         self.initialiseoptions(OTPDialog)
         if buttons != None:
             buttons.removeNode()
+
+        Sequence(
+            LerpScaleInterval(self, 0.2, 1.1, 0.01, blendType='easeInOut'),
+            LerpScaleInterval(self, 0.09, 1, blendType='easeInOut')).start()
+
         return
+
+    def destroyAnimation(self):
+        Sequence(
+            LerpScaleInterval(self, 0.09, 1.125, blendType='easeInOut'),
+            LerpScaleInterval(self, 0.09, .01, blendType='easeInOut'),
+            Func(messenger.send, self.__doneEvent)).start()
 
 
 class GlobalDialog(OTPDialog):
@@ -102,12 +116,23 @@ class GlobalDialog(OTPDialog):
         self.defineoptions(kw, optiondefs)
         OTPDialog.__init__(self, style=style)
         self.initialiseoptions(GlobalDialog)
+
+        Sequence(
+            LerpScaleInterval(self, 0.2, 1.1, 0.01, blendType='easeInOut'),
+            LerpScaleInterval(self, 0.09, 1, blendType='easeInOut')).start()
+
         return
 
     def handleButton(self, value):
         if value == DGG.DIALOG_OK:
             self.doneStatus = 'ok'
-            messenger.send(self.__doneEvent)
+            self.destroyAnimation()
         elif value == DGG.DIALOG_CANCEL:
             self.doneStatus = 'cancel'
-            messenger.send(self.__doneEvent)
+            self.destroyAnimation()
+
+    def destroyAnimation(self):
+        Sequence(
+            LerpScaleInterval(self, 0.09, 1.125, blendType='easeInOut'),
+            LerpScaleInterval(self, 0.09, .01, blendType='easeInOut'),
+            Func(messenger.send, self.__doneEvent)).start()
