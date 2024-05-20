@@ -1189,7 +1189,7 @@ class BattleCalculatorAI:
                 return 0
         theSuit = self.battle.activeSuits[attackIndex]
         atkType = self.battle.suitAttacks[attackIndex][SUIT_ATK_COL]
-        atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
+        atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getActualLevel(), atkType)
         atkAcc = atkInfo['acc']
         acc = atkAcc
         randChoice = random.randint(0, 99)
@@ -1202,7 +1202,7 @@ class BattleCalculatorAI:
     def __suitAtkAffectsGroup(self, attack):
         atkType = attack[SUIT_ATK_COL]
         theSuit = self.battle.findSuit(attack[SUIT_ID_COL])
-        atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
+        atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getActualLevel(), atkType)
         return atkInfo['group'] != SuitBattleGlobals.ATK_TGT_SINGLE
 
     def __createSuitTargetList(self, attackIndex):
@@ -1245,7 +1245,7 @@ class BattleCalculatorAI:
             elif self.__suitAtkHit(attackIndex):
                 atkType = attack[SUIT_ATK_COL]
                 theSuit = self.battle.findSuit(attack[SUIT_ID_COL])
-                atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
+                atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getActualLevel(), atkType)
                 result = atkInfo['hp']
 
                 # Divide attack damage by 2 if they were trapped this turn

@@ -189,7 +189,7 @@ class SuitAttackAttribute:
 
         # We are overleveled. Return an overflow modified amount of damage.
         levelDiff = suitLevel - highestLevel
-        return self.__getOverflowDamage(levelDiff) + self.__getOverflowDamage(levelDiff)
+        return highestDamage + self.__getOverflowDamage(levelDiff)
 
     def isGroupAttack(self) -> bool:
         return self.attack.isGroupAttack()
@@ -1357,7 +1357,7 @@ SuitFaceoffTaunts = OTPLocalizer.SuitFaceoffTaunts
 
 
 def getAttackTauntIndexFromIndex(suit, attackType: SuitAttackType):
-    adict = getSuitAttack(suit.getStyleName(), suit.getLevel(), attackType)
+    adict = getSuitAttack(suit.getStyleName(), suit.getActualLevel(), attackType)
     return getAttackTauntIndex(adict['name'])
 
 
