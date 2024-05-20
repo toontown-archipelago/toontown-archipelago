@@ -10,7 +10,7 @@ class LawbotHQ(CogHood.CogHood):
         self.cogHQLoaderClass = LawbotCogHQLoader.LawbotCogHQLoader
         self.storageDNAFile = None
         self.skyFile = 'phase_9/models/cogHQ/cog_sky'
-        self.titleColor = (0.5, 0.5, 0.5, 1.0)
+        self.titleColor = (0.6, 0.65, 0.75, 1.0)
         return
 
     def load(self):

@@ -11,7 +11,7 @@ class BossbotHQ(CogHood.CogHood):
         self.cogHQLoaderClass = BossbotCogHQLoader.BossbotCogHQLoader
         self.storageDNAFile = None
         self.skyFile = 'phase_9/models/cogHQ/cog_sky'
-        self.titleColor = (0.5, 0.5, 0.5, 1.0)
+        self.titleColor = (0.78, 0.70, 0.67, 1.0)
         return
 
     def load(self):
