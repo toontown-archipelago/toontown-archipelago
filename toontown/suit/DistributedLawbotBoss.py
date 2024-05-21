@@ -477,6 +477,21 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.scaleNodePath.stash()
         self.loadJuryBox()
         self.loadPodium()
+
+        buildings = self.geom.findAllMatches('**/LB_BGBuildings*')
+        sky = self.geom.findAllMatches('**/LB_Sky*')
+
+        fog = Fog('LBHQLobby')
+        fog.setColor(.12, .15, .23)
+        fog.setExpDensity(0.0005)
+        for node in sky:
+            node.setColorScale(0.88, 0.92, .96, 1)
+            node.setFog(fog)
+
+        for node in buildings:
+            node.setColorScale(0.88, 0.92, .96, 1)
+            node.setFog(fog)
+
         ug = self.geom.find('**/Reflections')
         ug.setBin('ground', -10)
 
