@@ -2233,7 +2233,8 @@ class Toon(Avatar.Avatar, ToonHead):
                 Func(self.closeEyes)),
                 Func(self.suit.loop, 'lured'),
                 Func(self.setChatAbsolute, SLEEP_STRING, CFThought))
-        elif ZoneUtil.getCanonicalHoodId(base.cr.playGame.getPlace().getZoneId()) == ToontownGlobals.TheBrrrgh \
+        elif base.cr.playGame.getPlace() \
+        and ZoneUtil.getCanonicalHoodId(base.cr.playGame.getPlace().getZoneId()) == ToontownGlobals.TheBrrrgh \
         and not ZoneUtil.isInterior(self.zoneId):
             SLEEP_STRING = TTLocalizer.ToonSleepStringBrrrgh
             self.sleepTrack = Sequence(
