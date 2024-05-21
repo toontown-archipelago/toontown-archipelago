@@ -2,6 +2,7 @@ from . import CogHood
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import BossbotCogHQLoader
 from toontown.hood import ZoneUtil
+from panda3d.core import Fog
 
 class BossbotHQ(CogHood.CogHood):
 
@@ -18,6 +19,7 @@ class BossbotHQ(CogHood.CogHood):
         CogHood.CogHood.load(self)
         self.sky.hide()
         self.parentFSM.getStateNamed('BossbotHQ').addChild(self.fsm)
+        self.fog = Fog('BBHQ')
 
     def unload(self):
         self.parentFSM.getStateNamed('BossbotHQ').removeChild(self.fsm)
@@ -40,3 +42,13 @@ class BossbotHQ(CogHood.CogHood):
             self.doSpawnTitleText(text)
         else:
             CogHood.CogHood.spawnTitleText(self, zoneId)
+
+    def setFog(self):
+        if base.wantFog:
+            self.fog.setColor(0.0, 0.0, 0.0)
+            self.fog.setExpDensity(0.005)
+            render.clearFog()
+            render.setFog(self.fog)
+            self.sky.clearFog()
+            self.sky.setFog(self.fog)
+
