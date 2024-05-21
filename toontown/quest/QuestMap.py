@@ -28,7 +28,6 @@ class QuestMap(DirectFrame):
         self.cogInfoFrame['geom_scale'] = (6, 1, 2)
         self.cogInfoFrame.setScale(0.05)
         self.cogInfoFrame.setPos(0, 0, 0.6)
-        self.buildingMarkers = []
         self.av = av
         self.wantToggle = False
         if base.config.GetBool('want-toggle-quest-map', True):
@@ -101,66 +100,6 @@ class QuestMap(DirectFrame):
         del self.mapCloseButton
         DirectFrame.destroy(self)
 
-    def putBuildingMarker(self, pos, hpr = (0, 0, 0), mapIndex = None):
-        marker = DirectLabel(parent=self.container, text='', text_pos=(-0.05, -0.15), text_fg=(1, 1, 1, 1), relief=None)
-        gui = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
-        icon = gui.find('**/startPartyButton_inactive')
-        iconNP = aspect2d.attachNewNode('iconNP')
-        icon.reparentTo(iconNP)
-        icon.setX(-12.0792 / 30.48)
-        icon.setZ(-9.7404 / 30.48)
-        marker['text'] = '%s' % mapIndex
-        marker['text_scale'] = 0.7
-        marker['image'] = iconNP
-        marker['image_color'] = (1, 0, 0, 1)
-        marker['image_scale'] = 6
-        marker.setScale(0.05)
-        relX, relY = self.transformAvPos(pos)
-        marker.setPos(relX, 0, relY)
-        self.buildingMarkers.append(marker)
-        iconNP.removeNode()
-        gui.removeNode()
-        return
-
-    def updateQuestInfo(self):
-        for marker in self.buildingMarkers:
-            marker.destroy()
-
-        self.buildingMarkers = []
-        dnaStore = base.cr.playGame.dnaStore
-        for questIndex in list(self.av.questPage.quests.keys()):
-            questDesc = self.av.questPage.quests.get(questIndex)
-            if questDesc is None:
-                continue
-            mapIndex = questIndex + 1
-            questId, fromNpcId, toNpcId, rewardId, toonProgress = questDesc
-            quest = Quests.getQuest(questId)
-            fComplete = quest.getCompletionStatus(self.av, questDesc) == Quests.COMPLETE
-            if not fComplete:
-                if quest.getType() == Quests.RecoverItemQuest:
-                    if quest.getHolder() == Quests.AnyFish:
-                        self.putBuildingMarker(self.fishingSpotInfo, mapIndex=mapIndex)
-                    continue
-                elif quest.getType() != Quests.DeliverGagQuest and quest.getType() != Quests.DeliverItemQuest and quest.getType() != Quests.VisitQuest and quest.getType() != Quests.TrackChoiceQuest:
-                    continue
-            if toNpcId == Quests.ToonHQ:
-                self.putBuildingMarker(self.hqPosInfo, mapIndex=mapIndex)
-            else:
-                npcZone = NPCToons.getNPCZone(toNpcId)
-                hoodId = ZoneUtil.getCanonicalHoodId(npcZone)
-                branchId = ZoneUtil.getCanonicalBranchZone(npcZone)
-                if self.hoodId == hoodId and self.zoneId == branchId:
-                    for blockIndex in range(dnaStore.getNumBlockTitles()):
-                        blockNumber = dnaStore.getTitleBlockAt(blockIndex)
-                        zone = dnaStore.getZoneFromBlockNumber(blockNumber)
-                        branchZone = zone - zone % 100
-                        finalZone = branchZone + 500 + blockNumber
-                        buildingType = dnaStore.getBlockBuildingType(blockNumber)
-                        if npcZone == finalZone:
-                            self.putBuildingMarker(dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(), dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getHpr(), mapIndex=mapIndex)
-
-        return
-
     def transformAvPos(self, pos):
         if self.cornerPosInfo is None:
             return (0, 0)
@@ -171,19 +110,14 @@ class QuestMap(DirectFrame):
         return (relativeX, relativeY)
 
     def update(self, task):
-        if self.av:
-            if self.updateMarker:
-                relX, relY = self.transformAvPos(self.av.getPos())
-                self.marker.setPos(relX, 0, relY)
-                self.marker.setHpr(0, 0, -180 - self.av.getH())
-        i = 0
 
-        try:
-            for buildingMarker in self.buildingMarkers:
-                buildingMarker.setScale((math.sin(task.time * 16.0 + i * math.pi / 3.0) + 1) * 0.005 + 0.04)
-                i = i + 1
-        except:
+        if not self.av:
             return Task.cont
+
+        if self.updateMarker:
+            relX, relY = self.transformAvPos(self.av.getPos())
+            self.marker.setPos(relX, 0, relY)
+            self.marker.setHpr(0, 0, -180 - self.av.getH())
 
         return Task.cont
 
@@ -205,7 +139,6 @@ class QuestMap(DirectFrame):
                     self.hide()
                     self.hoodId = hoodId
                     self.zoneId = zoneId
-                    self.updateQuestInfo()
                     self.updateCogInfo()
                     taskMgr.add(self.update, 'questMapUpdate')
                 else:
@@ -263,10 +196,7 @@ class QuestMap(DirectFrame):
 
     def stop(self):
         self.container['image'] = None
-        for marker in self.buildingMarkers:
-            marker.destroy()
 
-        self.buildingMarkers = []
         self.container.hide()
         self.hide()
         self.obscureButton()
