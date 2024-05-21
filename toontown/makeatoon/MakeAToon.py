@@ -91,6 +91,7 @@ class MakeAToon(StateData.StateData):
 
     def enter(self):
         self.notify.debug('Starting Make A Toon.')
+        base.transitions.fadeOut(0)
         if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: MAKEATOON: Starting Make A Toon')
         base.cr.centralLogger.writeClientEvent('MAT - startingMakeAToon')
