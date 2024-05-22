@@ -5,6 +5,8 @@ import os
 
 import argparse
 
+from toontown.toonbase.ErrorTrackingService import ErrorTrackingService, ServiceType, SentryErrorTrackingService
+
 parser = argparse.ArgumentParser(description='Toontown: Archipelago - AI Server')
 parser.add_argument(
     '--base-channel',
@@ -75,6 +77,9 @@ from otp.ai.AIBaseGlobal import *
 
 from toontown.ai.ToontownAIRepository import ToontownAIRepository
 
+version = simbase.config.GetString('version', 'v???')
+simbase.errorReportingService = SentryErrorTrackingService(ServiceType.AI, version)
+
 simbase.air = ToontownAIRepository(
     config.ConfigVariableInt('air-base-channel', 401000000).getValue(),
     config.ConfigVariableInt('air-stateserver', 10000).getValue(),
@@ -93,8 +98,9 @@ try:
     run()
 except SystemExit:
     raise
-except Exception:
+except Exception as error:
     info = PythonUtil.describeException()
     simbase.air.writeServerEvent('ai-exception', avId=simbase.air.getAvatarIdFromSender(),
                                  accId=simbase.air.getAccountIdFromSender(), exception=info)
+    simbase.errorReportingService.report(error)
     raise

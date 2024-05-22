@@ -28,6 +28,7 @@ services:
       STATESERVER: 4002
       ASTRON_IP: astron:7199
       EVENTLOGGER_IP: astron:7197
+      WANT_ERROR_REPORTING: true  # Reports errors to the sentry service for TT:AP
     volumes:
       - "../..:/app"
 
@@ -47,5 +48,6 @@ services:
       ASTRON_IP: astron:7199
       EVENTLOGGER_IP: astron:7197
       DISTRICT_NAME: "Archipelago Avenue"
+      WANT_ERROR_REPORTING: true  # Reports errors to the sentry service for TT:AP
     volumes:
       - "../..:/app"

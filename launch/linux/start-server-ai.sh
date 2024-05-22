@@ -11,6 +11,7 @@ export STATESERVER=4002
 export ASTRON_IP="127.0.0.1:7199"
 export EVENTLOGGER_IP="127.0.0.1:7197"
 export DISTRICT_NAME="Archipelago Avenue"
+export WANT_ERROR_REPORTING="true"
 
 while true
 do

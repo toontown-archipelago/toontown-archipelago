@@ -1,5 +1,5 @@
 """OptionsPage module: contains the OptionsPage class"""
-
+import os
 from enum import IntEnum, auto
 
 from panda3d.core import TextNode, Vec4
@@ -38,6 +38,7 @@ OptionToType = {
 
     # Privacy
     "competitive-boss-scoring": OptionTypes.BUTTON,
+    "report-errors": OptionTypes.BUTTON,
 
     # Video
     "borderless": OptionTypes.BUTTON,
@@ -136,6 +137,7 @@ class OptionsTabPage(DirectFrame, FSM):
         ],
         "Privacy": [
             "competitive-boss-scoring",
+            "report-errors"
         ],
         "Controls": [*list(base.settings.getControls())],
         "Video": [
@@ -607,6 +609,8 @@ class OptionElement(DirectFrame):
             base.toonChatSounds = newSetting
         elif self.optionName == 'competitive-boss-scoring':
             base.localAvatar.wantCompetitiveBossScoring = newSetting
+        elif self.optionName == 'report-errors':
+            os.environ['WANT_ERROR_REPORTING'] = 'true' if newSetting else 'false'
         elif self.optionName in ("borderless", "resolution", "vertical-sync",
                                  "anisotropic-filter"):
             base.updateDisplay()

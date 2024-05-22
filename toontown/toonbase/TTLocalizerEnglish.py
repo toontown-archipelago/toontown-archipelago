@@ -9937,6 +9937,7 @@ OptionNames = {
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",
+    "report-errors": "Report Crash Logs to TT:AP",
 
     # Controls
     "JUMP": "Jump",
