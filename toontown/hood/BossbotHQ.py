@@ -46,7 +46,7 @@ class BossbotHQ(CogHood.CogHood):
     def setFog(self):
         if base.wantFog:
             self.fog.setColor(0.0, 0.0, 0.0)
-            self.fog.setExpDensity(0.005)
+            self.fog.setExpDensity(0.004)
             render.clearFog()
             render.setFog(self.fog)
             self.sky.clearFog()

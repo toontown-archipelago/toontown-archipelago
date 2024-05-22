@@ -47,8 +47,8 @@ class CashbotHQ(CogHood.CogHood):
 
     def setFog(self):
         if base.wantFog:
-            self.fog.setColor(.15, .17, .15)
-            self.fog.setExpDensity(0.00125)
+            self.fog.setColor(.22, .26, .22)
+            self.fog.setExpDensity(0.0003)
             render.clearFog()
             render.setFog(self.fog)
             self.sky.clearFog()

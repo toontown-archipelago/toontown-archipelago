@@ -28,8 +28,8 @@ class DLHood(ToonHood.ToonHood):
 
     def setFog(self):
         if base.wantFog:
-            self.fog.setColor(0.3, 0.3, 0.4)
-            self.fog.setExpDensity(0.003)
+            self.fog.setColor(0.35, 0.35, 0.45)
+            self.fog.setExpDensity(0.00125)
             render.clearFog()
             render.setFog(self.fog)
             self.sky.clearFog()

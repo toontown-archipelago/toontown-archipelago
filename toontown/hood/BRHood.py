@@ -38,8 +38,8 @@ class BRHood(ToonHood.ToonHood):
 
     def setFog(self):
         if base.wantFog:
-            self.fog.setColor(0.9, 0.9, 0.9)
-            self.fog.setExpDensity(0.004)
+            self.fog.setColor(0.82, 0.82, 0.82)
+            self.fog.setExpDensity(0.00125)
             render.clearFog()
             render.setFog(self.fog)
             self.sky.clearFog()

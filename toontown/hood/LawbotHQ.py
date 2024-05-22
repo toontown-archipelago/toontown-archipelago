@@ -43,7 +43,7 @@ class LawbotHQ(CogHood.CogHood):
 
     def setFog(self):
         if base.wantFog:
-            self.fog.setColor(.12, .15, .23)
+            self.fog.setColor(.15, .18, .26)
             self.fog.setExpDensity(0.0005)
             render.clearFog()
             render.setFog(self.fog)
