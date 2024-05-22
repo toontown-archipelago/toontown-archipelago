@@ -1,5 +1,5 @@
 # Astron struct wrapper class for communicating information between the AI and the client.
-# See DistributedArchipelagoManager.sync() in tto.dc
+# See DistributedArchipelagoManager.sync() in ttap.dc
 import dataclasses
 from dataclasses import dataclass
 from typing import List

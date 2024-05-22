@@ -14,12 +14,14 @@ class CashbotHQ(CogHood.CogHood):
         self.cogHQLoaderClass = CashbotCogHQLoader.CashbotCogHQLoader
         self.storageDNAFile = None
         self.skyFile = 'phase_3.5/models/props/TT_sky'
-        self.titleColor = (0.5, 0.5, 0.5, 1.0)
+        self.titleColor = (0.79, 0.94, 0.87, 1.0)
+        self.colorScale = (0.61, 0.65, 0.62, 1)
         return
 
     def load(self):
         CogHood.CogHood.load(self)
         self.parentFSM.getStateNamed('CashbotHQ').addChild(self.fsm)
+        self.fog = Fog('CBHQ')
 
     def unload(self):
         self.parentFSM.getStateNamed('CashbotHQ').removeChild(self.fsm)
@@ -42,3 +44,15 @@ class CashbotHQ(CogHood.CogHood):
             self.doSpawnTitleText(text)
         else:
             CogHood.CogHood.spawnTitleText(self, zoneId)
+
+    def setFog(self):
+        if base.wantFog:
+            self.fog.setColor(.22, .26, .22)
+            self.fog.setExpDensity(0.0003)
+            render.clearFog()
+            render.setFog(self.fog)
+            self.sky.clearFog()
+            self.sky.setFog(self.fog)
+
+    def setColorScale(self):
+        base.render.setColorScale(self.colorScale)

@@ -44,6 +44,7 @@ class Settings:
         "music-volume": 0.4,
         "sfx-volume": 0.4,
         "competitive-boss-scoring": True,
+        "report-errors": True,
         "anti-aliasing": 0,
         "anisotropic-filter": 8,
         "frame-blending": True,

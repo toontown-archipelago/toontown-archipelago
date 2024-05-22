@@ -4158,7 +4158,7 @@ LauncherPhaseNames = {0: 'Initialization',
  13: 'Parties',
  14: 'AP'}
 LauncherProgress = '%(name)s (%(current)s of %(total)s)'
-LauncherStartingMessage = "Starting Toontown Online... "
+LauncherStartingMessage = "Starting Toontown: Archipelago... "
 LauncherDownloadFile = 'Downloading update for ' + LauncherProgress + '...'
 LauncherDownloadFileBytes = 'Downloading update for ' + LauncherProgress + ': %(bytes)s'
 LauncherDownloadFilePercent = 'Downloading update for ' + LauncherProgress + ': %(percent)s%%'
@@ -4174,7 +4174,7 @@ LauncherDownloadServerFileList = 'Updating Toontown...'
 LauncherCreatingDownloadDb = 'Updating Toontown...'
 LauncherDownloadClientFileList = 'Updating Toontown...'
 LauncherFinishedDownloadDb = 'Updating Toontown... '
-LauncherStartingGame = 'Starting Toontown Online...'
+LauncherStartingGame = 'Starting Toontown: Archipelago...'
 LauncherRecoverFiles = 'Updating Toontown. Recovering files...'
 LauncherCheckUpdates = 'Checking for updates for ' + LauncherProgress
 LauncherVerifyPhase = 'Updating Toontown...'
@@ -9937,6 +9937,7 @@ OptionNames = {
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",
+    "report-errors": "Report Crash Logs to TT:AP",
 
     # Controls
     "JUMP": "Jump",

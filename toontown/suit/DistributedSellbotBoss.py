@@ -66,7 +66,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.toonMopathInterval = []
         self.nerfed = ToontownGlobals.SELLBOT_NERF_HOLIDAY in base.cr.newsManager.getHolidayIdList()
         self.localToonPromoted = True
-        self.resetMaxDamage(setup=False)
+        self.bossMaxDamage = ToontownGlobals.SellbotBossMaxDamage
         return
 
     def announceGenerate(self):
@@ -152,12 +152,6 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         if OneBossCog == self:
             OneBossCog = None
         return
-
-    def resetMaxDamage(self, setup=True):
-        if not setup:
-            self.bossMaxDamage = ToontownGlobals.SellbotBossMaxDamage
-        else:
-            self.bossMaxDamage = min((ToontownGlobals.SellbotBossMaxDamage + (len(self.involvedToons) * 100)), 500)
 
     def d_hitBoss(self, bossDamage):
         self.sendUpdate('hitBoss', [bossDamage])
@@ -889,7 +883,8 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         bossDoneEventName = self.uniqueName('DestroyedBoss')
         self.bossDamageMovie.setDoneEvent(bossDoneEventName)
         self.acceptOnce(bossDoneEventName, self.__doneBattleThree)
-        self.resetMaxDamage()
+        vpMaxHp = ToontownGlobals.SellbotBossMinMaxDamage + 100 * (len(self.involvedToons) - 1)
+        self.bossMaxDamage = min(vpMaxHp, ToontownGlobals.SellbotBossMaxDamage)
         self.bossDamageToMovie = self.bossDamageMovie.getDuration() / self.bossMaxDamage
         self.bossDamageMovie.setT(self.bossDamage * self.bossDamageToMovie)
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)

@@ -532,7 +532,7 @@ class ClothingTabPage(DirectFrame):
             self.girlPantList.append(self.l['self.girlpants' + str(x)])
             self.girlPantIDs.append( x )
             self.girlPantTypes.append(pantsTypes[ToonDNA.GirlBottoms[x][1]])
-        for x in range(len(ToonDNA.ClothesColors)):
+        for x in range(len(ToonDNA.allColorsList)):
             self.l['self.colors' + str(x)] = DirectButton(parent=self, relief=None, text=str(x), text_align=TextNode.ALeft, text_scale=0.05, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=self.showWordInfo, extraArgs=[x, self.word1Desc, 'color'])
             self.colorList.append(self.l['self.colors' + str(x)])
             self.colorIDs.append(x)
@@ -558,9 +558,9 @@ class ClothingTabPage(DirectFrame):
                                       extraArgs=[8008135, 'huh', 'all', True])
 
         pickAToonGui.removeNode()
-        self.colorTest.setColor(ToonDNA.ClothesColors[self.color])
-        self.colorTest['text2_fg'] = Vec4(0, 0, 0, 1) + Vec4(ToonDNA.ClothesColors[self.color][0], ToonDNA.ClothesColors[self.color][1],
-                                                             ToonDNA.ClothesColors[self.color][2], 1)/3
+        self.colorTest.setColor(ToonDNA.allColorsList[self.color])
+        self.colorTest['text2_fg'] = Vec4(0, 0, 0, 1) + Vec4(ToonDNA.allColorsList[self.color][0], ToonDNA.allColorsList[self.color][1],
+                                                             ToonDNA.allColorsList[self.color][2], 1)/3
         self.nakedLabel = DirectLabel(relief=None,
                                       text="Naked Toons\nDon't Wear Clothing!", text_font=ToontownGlobals.getSignFont(), pos=(0, 0, 0),
                                       text_fg=(1, 0, 0, 1), text_align=TextNode.ACenter, text_scale=0.2)
@@ -576,7 +576,7 @@ class ClothingTabPage(DirectFrame):
             del self.l['self.boypants' + str(x)]
         for x in range(len(ToonDNA.GirlBottoms)):
             del self.l['self.girlpants' + str(x)]
-        for x in range(len(ToonDNA.ClothesColors)):
+        for x in range(len(ToonDNA.allColorsList)):
             del self.l['self.colors' + str(x)]
         del self.shirtLabel
         del self.sleeveLabel
@@ -873,11 +873,11 @@ class ClothingTabPage(DirectFrame):
         if clothType == 'all':
             if isColorChange:
                 self.sleeveColor = wordNum
-                self.model.find('**/sleeves').setColor(ToonDNA.ClothesColors[wordNum], 1)
+                self.model.find('**/sleeves').setColor(ToonDNA.allColorsList[wordNum], 1)
                 self.pantColor = wordNum
-                self.model.find('**/torso-bot').setColor(ToonDNA.ClothesColors[wordNum], 1)
+                self.model.find('**/torso-bot').setColor(ToonDNA.allColorsList[wordNum], 1)
                 self.shirtColor = wordNum
-                self.model.find('**/torso-top').setColor(ToonDNA.ClothesColors[wordNum], 1)
+                self.model.find('**/torso-top').setColor(ToonDNA.allColorsList[wordNum], 1)
                 self.shirtLabel['text'] = "Shirt ID: " + str(self.shirt) + ' / ' + str(self.shirtColor)
                 self.sleeveLabel['text'] = "Sleeve ID: " + str(self.sleeve) + ' / ' + str(self.sleeveColor)
                 self.pantLabel['text'] = "Pants ID: " + str(self.pant) + ' / ' + str(self.pantColor)
@@ -885,7 +885,7 @@ class ClothingTabPage(DirectFrame):
         if clothType == 'sleeve':
             if isColorChange:
                 self.sleeveColor = wordNum
-                self.model.find('**/sleeves').setColor(ToonDNA.ClothesColors[wordNum], 1)
+                self.model.find('**/sleeves').setColor(ToonDNA.allColorsList[wordNum], 1)
             else:
                 self.sleeve = wordNum
                 try:
@@ -905,7 +905,7 @@ class ClothingTabPage(DirectFrame):
                 self.createModel()
             else:
                 if isColorChange:
-                    self.model.find('**/torso-bot').setColor(ToonDNA.ClothesColors[wordNum], 1)
+                    self.model.find('**/torso-bot').setColor(ToonDNA.allColorsList[wordNum], 1)
                 else:
                     try:
                         if self.gender == 1:
@@ -919,7 +919,7 @@ class ClothingTabPage(DirectFrame):
         else:
             if isColorChange:
                 self.shirtColor = wordNum
-                self.model.find('**/torso-top').setColor(ToonDNA.ClothesColors[wordNum], 1)
+                self.model.find('**/torso-top').setColor(ToonDNA.allColorsList[wordNum], 1)
             else:
                 self.shirt = wordNum
                 try:
@@ -935,10 +935,10 @@ class ClothingTabPage(DirectFrame):
             self.pantLabel['text'] = "Pants ID: " + str(self.pant) + ' / ' + str(self.pantColor)
         elif clothType == 'color':
             self.colorSelectedLabel['text'] = "Color Selected: " + str(self.color)
-            self.colorTest.setColor(ToonDNA.ClothesColors[self.color])
-            self.colorTest['text2_fg'] = Vec4(0, 0, 0, 1) + Vec4(ToonDNA.ClothesColors[self.color][0],
-                                                                 ToonDNA.ClothesColors[self.color][1],
-                                                                 ToonDNA.ClothesColors[self.color][2], 1)/3
+            self.colorTest.setColor(ToonDNA.allColorsList[self.color])
+            self.colorTest['text2_fg'] = Vec4(0, 0, 0, 1) + Vec4(ToonDNA.allColorsList[self.color][0],
+                                                                 ToonDNA.allColorsList[self.color][1],
+                                                                 ToonDNA.allColorsList[self.color][2], 1)/3
 
     def makeScrollLists(self):
         gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')

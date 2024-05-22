@@ -1084,7 +1084,7 @@ class LauncherBase(DirectObject):
                 base.destroy()
             self.notify.info('Normal exit.')
             raise
-        except:
+        except Exception as e:
             self.setPandaErrorCode(12)
             self.notify.warning('Handling Python exception.')
             if hasattr(builtins, 'base') and getattr(base, 'cr', None):
@@ -1094,13 +1094,12 @@ class LauncherBase(DirectObject):
                     base.cr.timeManager.setExceptionInfo()
                 base.cr.sendDisconnect()
             if hasattr(builtins, 'base'):
+                base.errorReportingService.report(e)
                 base.destroy()
             self.notify.info('Exception exit.\n')
             import traceback
             traceback.print_exc()
             sys.exit()
-
-        return
 
     def updatePhase(self, phase):
         self.notify.info('Updating multifiles in phase: ' + repr(phase))

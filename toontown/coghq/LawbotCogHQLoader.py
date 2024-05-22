@@ -10,6 +10,7 @@ from . import StageInterior
 from . import LawbotHQExterior
 from . import LawbotHQBossBattle
 from . import LawbotOfficeExterior
+from panda3d.core import Fog
 aspectSF = 0.7227
 
 class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
@@ -64,6 +65,21 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
                 self.notify.info('QA-REGRESSION: COGHQ: Visit LawbotLobby')
             self.notify.debug('cogHQLobbyModelPath = %s' % self.cogHQLobbyModelPath)
             self.geom = loader.loadModel(self.cogHQLobbyModelPath)
+
+            buildings = self.geom.findAllMatches('**/CH_BGBuildings*')
+            sky = self.geom.findAllMatches('**/CH_Sky*')
+
+            fog = Fog('LBHQLobby')
+            fog.setColor(.12, .15, .23)
+            fog.setExpDensity(0.0005)
+            for node in sky:
+                node.setColorScale(0.88, 0.92, .96, 1)
+                node.setFog(fog)
+
+            for node in buildings:
+                node.setColorScale(0.88, 0.92, .96, 1)
+                node.setFog(fog)
+
             ug = self.geom.find('**/underground')
             ug.setBin('ground', -10)
         else:

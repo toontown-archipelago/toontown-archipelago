@@ -4,7 +4,9 @@ import os
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Toontown Online - UberDOG Server")
+from toontown.toonbase.ErrorTrackingService import SentryErrorTrackingService, ServiceType
+
+parser = argparse.ArgumentParser(description="Toontown: Archipelago - UberDOG Server")
 parser.add_argument(
     '--base-channel',
     default=os.environ.get('BASE_CHANNEL'),
@@ -67,6 +69,9 @@ from otp.ai.AIBaseGlobal import *
 
 from toontown.uberdog.ToontownUberRepository import ToontownUberRepository
 
+version = simbase.config.GetString('version', 'v???')
+simbase.errorReportingService = SentryErrorTrackingService(ServiceType.UBERDOG, version)
+
 simbase.air = ToontownUberRepository(config.ConfigVariableInt('air-base-channel', 400000000).getValue(),
                                      config.ConfigVariableInt('air-stateserver', 10000).getValue())
 host = config.ConfigVariableString('air-connect', '127.0.0.1').getValue()
@@ -81,8 +86,9 @@ try:
     run()
 except SystemExit:
     raise
-except Exception:
+except Exception as error:
     info = PythonUtil.describeException()
     simbase.air.writeServerEvent('uberdog-exception', avId=simbase.air.getAvatarIdFromSender(),
                                  accId=simbase.air.getAccountIdFromSender(), info=info)
+    simbase.errorReportingService.report(error)
     raise

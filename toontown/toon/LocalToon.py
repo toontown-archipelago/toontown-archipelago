@@ -191,6 +191,8 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
             self.currentOnscreenInterface = None  # We can only exclusively show one hotkey interface at a time
 
+            self.showPosInit()
+
     def wantLegacyLifter(self):
         return True
 
@@ -304,6 +306,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.LocalToon_deleted
         except:
             self.LocalToon_deleted = 1
+            self.cleanupShowPos()
             Toon.unloadDialog()
             QuestParser.clear()
             DistributedToon.DistributedToon.delete(self)
@@ -1190,6 +1193,55 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         print('Current position=', strPos.replace('\n', ', '))
         self.setChatAbsolute(strPos, CFThought | CFTimeout)
         return
+
+    def showPosInit(self):
+        strPosOnScreenText = 'toon id: ' + \
+                             '\npos: ' + \
+                             '\nang: ' + \
+                             '\nzone: ' # + \
+#                             '\ndistrict:'
+
+        self.strPosOnScreen = OnscreenText(parent=base.a2dTopLeft,
+                                     pos = (0, -0.4),
+                                     text = strPosOnScreenText,
+                                     scale=0.05,
+                                     fg=VBase4(1.0, 1.0, 1.0, 1.0),
+                                     bg=(0, 0, 0, 0),
+                                     shadow=(0, 0, 0, 1),
+                                     align=TextNode.ALeft,
+                                     mayChange=True)
+
+        taskMgr.add(self.__updateShowPos, 'updateShowPos')
+        self.strPosOnScreen.hide()
+
+    def showPos(self):
+        if self.strPosOnScreen.isHidden():
+            self.strPosOnScreen.show()
+        else:
+            self.strPosOnScreen.hide()
+
+    def stopShowPos(self):
+        taskMgr.remove('updateShowPos')
+
+    def cleanupShowPos(self):
+        self.stopShowPos()
+        self.strPosOnScreen.cleanup()
+        del self.strPosOnScreen
+
+    def __updateShowPos(self, task=None):
+        pos = self.getPos()
+        hpr = self.getHpr()
+        districtName = base.cr.getShardName(base.localAvatar.defaultShard)
+        if hasattr(base.cr.playGame.hood, 'loader') and hasattr(base.cr.playGame.hood.loader, 'place') and base.cr.playGame.getPlace() != None:
+            zoneId = base.cr.playGame.getPlace().getZoneId()
+        else:
+            zoneId = '?'
+        self.strPosOnScreen.setText(f"toon id: {str(self.doId - 100000000)}\
+                             \npos: {pos[0]:.2f}, {pos[1]:.2f}, {pos[2]:.2f}\
+                             \nang: {hpr[0]:.2f}\
+                             \nzone: {zoneId}")
+                             # \ndistrict: {districtName}")
+        return Task.cont
 
     def __placeMarker(self):
         pos = self.getPos()

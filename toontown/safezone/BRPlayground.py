@@ -25,6 +25,7 @@ class BRPlayground(Playground.Playground):
         Playground.Playground.unload(self)
 
     def enter(self, requestStatus):
+        self.loader.hood.setFog()
         Playground.Playground.enter(self, requestStatus)
         self.nextWindTime = 0
         taskMgr.add(self.__windTask, 'br-wind')
@@ -33,6 +34,7 @@ class BRPlayground(Playground.Playground):
     def exit(self):
         taskMgr.remove('br-wind')
         taskMgr.remove('lerp-snow')
+        self.loader.hood.setNoFog()
         Playground.Playground.exit(self)
 
     def enterTunnelOut(self, requestStatus):

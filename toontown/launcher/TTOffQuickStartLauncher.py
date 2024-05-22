@@ -1,4 +1,7 @@
+import os
+
 from panda3d.core import VirtualFileSystem, ConfigVariableList, Filename
+
 
 if __debug__:
     from panda3d.core import loadPrcFile

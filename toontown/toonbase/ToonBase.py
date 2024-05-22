@@ -27,6 +27,7 @@ import shutil
 import time
 
 import toontown.archipelago.util.global_text_properties as global_text_properties
+from .ErrorTrackingService import ErrorTrackingService, SentryErrorTrackingService, ServiceType
 from ..settings.Settings import Settings, ControlSettings
 
 if typing.TYPE_CHECKING:
@@ -38,10 +39,15 @@ class ToonBase(OTPBase.OTPBase):
 
     def __init__(self):
 
+        version = self.config.GetString('version', 'v???')
+        self.errorReportingService: ErrorTrackingService = SentryErrorTrackingService(ServiceType.CLIENT, version)
+
         self.global_text_properties = global_text_properties
 
         self.settings = Settings()
         self.setMultiThreading()
+
+        os.environ['WANT_ERROR_REPORTING'] = 'true' if self.settings.get('report-errors') else 'false'
 
         antialias = self.settings.get("anti-aliasing")
         mode = self.settings.get("borderless")
@@ -113,6 +119,8 @@ class ToonBase(OTPBase.OTPBase):
             self.notify.debug('Enabling particles')
             self.enableParticles()
         self.accept(ToontownGlobals.ScreenshotHotkey, self.takeScreenShot)
+        self.accept('f4', self.toggleNameTags)
+        self.accept('f3', self.toggleGui)
         self.accept('panda3d-render-error', self.panda3dRenderError)
         oldLoader = self.loader
         self.loader = ToontownLoader.ToontownLoader(self)
@@ -187,7 +195,7 @@ class ToonBase(OTPBase.OTPBase):
         self.CAM_TOGGLE_LOCK = self.settings.get('cam-toggle-lock')
         self.WANT_LEGACY_MODELS = self.settings.get('want-legacy-models')
 
-        self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {base.config.GetString('version', 'v???')}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)
+        self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {version}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)
 
         self.enableHotkeys()
 
@@ -281,6 +289,38 @@ class ToonBase(OTPBase.OTPBase):
 
     def __walking(self, pressed):
         self.walking = pressed
+
+    def toggleNameTags(self):
+        nametags3d = render.findAllMatches('**/nametag3d')
+        nametags2d = render2d.findAllMatches('**/Nametag2d')
+        hide = False
+        # Check if anything we're supposed to hide is visible
+        for nametag in nametags2d:
+            if not nametag.isHidden():
+                hide = True
+        for nametag in nametags3d:
+            if not nametag.isHidden():
+                hide = True
+
+        # If anything is visible, hide, else we will show everything
+        for nametag in nametags3d:
+            if hide:
+                nametag.hide()
+            else:
+                nametag.show()
+        for nametag in nametags2d:
+            if hide:
+                nametag.hide()
+            else:
+                nametag.show()
+
+    def toggleGui(self):
+        if aspect2d.isHidden():
+            base.transitions.noFade()
+            aspect2d.show()
+        else:
+            aspect2d.hide()
+            base.transitions.fadeScreen(alpha=0.01)
 
     def takeScreenShot(self):
         if not os.path.exists('screenshots/'):

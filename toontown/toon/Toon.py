@@ -39,7 +39,6 @@ def teleportDebug(requestStatus, msg, onlyIfToAv = True):
                 teleportNotify.debug(msg)
 
 
-SLEEP_STRING = TTLocalizer.ToonSleepString
 DogDialogueArray = []
 CatDialogueArray = []
 HorseDialogueArray = []
@@ -1493,6 +1492,16 @@ class Toon(Avatar.Avatar, ToonHead):
             self.jar.removeNode()
             self.jar = None
         return
+
+    # Determines if this toon is in an interior
+    def isIndoors(self) -> bool:
+        return ZoneUtil.isInterior(self.zoneId)
+
+    # Resolves the text to display when this toon falls asleep
+    def getSleepString(self) -> str:
+        if ZoneUtil.getCanonicalHoodId(self.zoneId) == ToontownGlobals.TheBrrrgh and not self.isIndoors():
+            return TTLocalizer.ToonSleepStringBrrrgh
+        return TTLocalizer.ToonSleepString
     
     def setGeomNodeH(self, h):
         self.getGeomNode().setH(h)
@@ -2225,24 +2234,22 @@ class Toon(Avatar.Avatar, ToonHead):
         Emote.globalEmote.releaseBody(self)
 
     def enterSleep(self, animMultiplier=1, ts=0, callback=None, extraArgs=[]):
-        global SLEEP_STRING
+
         if self.isDisguised:
             self.sleepTrack = Sequence(Parallel(
                 Func(self.stopLookAround),
                 Func(self.stopBlink),
                 Func(self.closeEyes)),
                 Func(self.suit.loop, 'lured'),
-                Func(self.setChatAbsolute, SLEEP_STRING, CFThought))
-        elif ZoneUtil.getCanonicalHoodId(base.cr.playGame.getPlace().getZoneId()) == ToontownGlobals.TheBrrrgh \
-        and not ZoneUtil.isInterior(self.zoneId):
-            SLEEP_STRING = TTLocalizer.ToonSleepStringBrrrgh
+                Func(self.setChatAbsolute, self.getSleepString(), CFThought))
+        elif ZoneUtil.getCanonicalHoodId(self.zoneId) == ToontownGlobals.TheBrrrgh and not self.isIndoors():
             self.sleepTrack = Sequence(
                 Func(self.sadEyes),
                 Func(self.blinkEyes),
                 Func(self.showAngryMuzzle),
                 Func(self.pingpong, 'bored', partName='torso', fromFrame=50, toFrame=51),
                 Func(self.setPlayRate, 0.8, 'bored'),
-                Func(self.setChatAbsolute, SLEEP_STRING, CFThought))
+                Func(self.setChatAbsolute, self.getSleepString(), CFThought))
         else:
             self.sleepTrack = Sequence(Parallel(
                 Func(self.stopLookAround),
@@ -2255,13 +2262,9 @@ class Toon(Avatar.Avatar, ToonHead):
                 Func(self.lerpLookAt, Point3(0, 1, -4)),
                 Func(self.loop, 'neutral'),
                 Func(self.setPlayRate, 0.4, 'neutral'),
-                Func(self.setChatAbsolute, TTLocalizer.ToonSleepString, CFThought))
-        self.sleepTrack.start()
+                Func(self.setChatAbsolute, self.getSleepString(), CFThought))
 
-        # Disabling sleep bc we don't need to worry about afking on a private game :3
-        # if self == base.localAvatar:
-        #     print('adding timeout task')
-        #     taskMgr.doMethodLater(self.afkTimeout, self.__handleAfkTimeout, self.uniqueName('afkTimeout'))
+        self.sleepTrack.start()
         self.setActiveShadow(0)
 
     def __handleAfkTimeout(self, task):
@@ -2284,11 +2287,7 @@ class Toon(Avatar.Avatar, ToonHead):
         self.startLookAround()
         self.openEyes()
         self.startBlink()
-        if config.GetBool('stuck-sleep-fix', 1):
-            doClear = SLEEP_STRING in (self.nametag.getChat(), self.nametag.getStompText())
-        else:
-            doClear = self.nametag.getChat() == SLEEP_STRING
-        if doClear:
+        if self.getSleepString() in (self.nametag.getChat(), self.nametag.getStompText()):
             self.clearChat()
         self.lerpLookAt(Point3(0, 1, 0), time=0.25)
         self.stop()

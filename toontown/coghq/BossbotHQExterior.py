@@ -56,3 +56,11 @@ class BossbotHQExterior(CogHQExterior.CogHQExterior):
             messenger.send(self.doneEvent)
         else:
             self.notify.error('Unknown mode: ' + where + ' in handleElevatorDone')
+
+    def enter(self, requestStatus):
+        CogHQExterior.CogHQExterior.enter(self, requestStatus)
+        self.loader.hood.setFog()
+
+    def exit(self):
+        CogHQExterior.CogHQExterior.exit(self)
+        self.loader.hood.setNoFog()

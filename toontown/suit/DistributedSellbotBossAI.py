@@ -326,6 +326,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.resetBattles()
 
     def enterPrepareBattleThree(self):
+        self.divideToons()
         self.barrier = self.beginBarrier('PrepareBattleThree', self.involvedToons, 30, self.__donePrepareBattleThree)
 
     def __donePrepareBattleThree(self, avIds):
@@ -340,7 +341,8 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.setPieType()
         self.b_setBossDamage(0, 0, 0)
         self.battleThreeStart = globalClock.getFrameTime()
-        self.bossMaxDamage = min((self.bossMaxDamage + (len(self.involvedToons) * 100)), 500)
+        vpMaxHp = ToontownGlobals.SellbotBossMinMaxDamage + 100 * (len(self.involvedToons)-1)
+        self.bossMaxDamage = min(vpMaxHp, ToontownGlobals.SellbotBossMaxDamage)
         if len(self.involvedToons) > 1:
             hitCount = 0.35
         else:

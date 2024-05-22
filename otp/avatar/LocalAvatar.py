@@ -1311,7 +1311,7 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
     def startChat(self):
         self.chatMgr.start()
         self.accept(OTPGlobals.WhisperIncomingEvent, self.handlePlayerFriendWhisper)
-        self.accept(OTPGlobals.ThinkPosHotkey, self.thinkPos)
+        self.accept(OTPGlobals.ThinkPosHotkey, self.showPos)
         self.accept(OTPGlobals.PrintCamPosHotkey, self.printCamPos)
         if self.__enableMarkerPlacement:
             self.accept(OTPGlobals.PlaceMarkerHotkey, self.__placeMarker)
