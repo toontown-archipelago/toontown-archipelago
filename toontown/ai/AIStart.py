@@ -5,7 +5,7 @@ import os
 
 import argparse
 
-parser = argparse.ArgumentParser(description='Toontown Online - AI Server')
+parser = argparse.ArgumentParser(description='Toontown: Archipelago - AI Server')
 parser.add_argument(
     '--base-channel',
     default=os.environ.get('BASE_CHANNEL'),
