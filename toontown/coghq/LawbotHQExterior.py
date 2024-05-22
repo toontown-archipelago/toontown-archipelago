@@ -9,3 +9,13 @@ from toontown.coghq import CogHQExterior
 
 class LawbotHQExterior(CogHQExterior.CogHQExterior):
     notify = DirectNotifyGlobal.directNotify.newCategory('LawbotHQExterior')
+
+    def enter(self, requestStatus):
+        CogHQExterior.CogHQExterior.enter(self, requestStatus)
+        self.loader.hood.setColorScale()
+        self.loader.hood.setFog()
+
+    def exit(self):
+        CogHQExterior.CogHQExterior.exit(self)
+        self.loader.hood.setNoColorScale()
+        self.loader.hood.setNoFog()

@@ -1237,7 +1237,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         else:
             zoneId = '?'
         self.strPosOnScreen.setText(f"toon id: {str(self.doId - 100000000)}\
-                             \npos: {pos[0]:.2f}, Y: {pos[1]:.2f}, Z: {pos[2]:.2f}\
+                             \npos: {pos[0]:.2f}, {pos[1]:.2f}, {pos[2]:.2f}\
                              \nang: {hpr[0]:.2f}\
                              \nzone: {zoneId}")
                              # \ndistrict: {districtName}")
