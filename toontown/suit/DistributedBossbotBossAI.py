@@ -412,6 +412,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def enterPrepareBattleFour(self):
         self.resetBattles()
+        self.divideToons()
         self.setupBattleFourObjects()
         self.barrier = self.beginBarrier('PrepareBattleFour', self.involvedToons, 45, self.__donePrepareBattleFour)
 
