@@ -1,7 +1,7 @@
 general:
     eventlogger: 0.0.0.0:7197
     dc_files:
-        - ../dclass/tto.dc
+        - ../dclass/ttap.dc
 
 messagedirector:
     bind: 0.0.0.0:7199

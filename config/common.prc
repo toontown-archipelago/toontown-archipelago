@@ -30,7 +30,7 @@ frame-rate-meter-update-interval 0.001
 audio-library-name p3openal_audio
 
 # Astron
-dc-file astron/dclass/tto.dc
+dc-file astron/dclass/ttap.dc
 
 # Server settings
 ttoff-specific-login true
