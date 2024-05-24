@@ -136,7 +136,8 @@ Phase4AnimList = (('sit', 'sit'),
  ('scientistJealous', 'scientistJealous'),
  ('scientistEmcee', 'scientistEmcee'),
  ('scientistWork', 'scientistWork'),
- ('scientistGame', 'scientistGame'))
+ ('scientistGame', 'scientistGame'),
+ ('taunt', 'taunt'))
 Phase5AnimList = (('water-gun', 'water-gun'),
  ('hold-bottle', 'hold-bottle'),
  ('firehose', 'firehose'),
