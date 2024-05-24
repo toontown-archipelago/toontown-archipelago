@@ -167,8 +167,7 @@ class DistributedBattleBldg(DistributedBattleBase.DistributedBattleBase):
 
         name = self.uniqueName('floorReward')
         track = Sequence(toonTracks, Func(callback), name=name)
-        camera.setPos(0, 0, 1)
-        camera.setHpr(180, 10, 0)
+        LerpPosHprInterval(camera, .5, (0, 0, 1), (180, 10, 0), blendType='easeInOut').start()
         self.storeInterval(track, name)
         track.start(ts)
 

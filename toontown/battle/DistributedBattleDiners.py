@@ -31,9 +31,9 @@ class DistributedBattleDiners(DistributedBattleFinal.DistributedBattleFinal):
         if self.hasLocalToon():
             camera.reparentTo(self)
             if random.choice([0, 1]):
-                camera.setPosHpr(20, -4, 7, 60, 0, 0)
+                LerpPosHprInterval(camera, 0.25, (20, -4, 7), (60, 0, 0), blendType='easeInOut').start()
             else:
-                camera.setPosHpr(-20, -4, 7, -60, 0, 0)
+                LerpPosHprInterval(camera, 0.25, (-20, -4, 7), (-60, 0, 0), blendType='easeInOut').start()
         track = Sequence(Wait(0.5), done, name=name)
         track.start(ts)
         self.storeInterval(track, name)

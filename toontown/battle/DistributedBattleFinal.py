@@ -118,9 +118,9 @@ class DistributedBattleFinal(DistributedBattleBase.DistributedBattleBase):
         if self.hasLocalToon():
             camera.reparentTo(self)
             if random.choice([0, 1]):
-                camera.setPosHpr(20, -4, 7, 60, 0, 0)
+                LerpPosHprInterval(camera, 0.25, (20, -4, 7), (60, 0, 0), blendType='easeInOut').start()
             else:
-                camera.setPosHpr(-20, -4, 7, -60, 0, 0)
+                LerpPosHprInterval(camera, 0.25, (-20, -4, 7), (-60, 0, 0), blendType='easeInOut').start()
         done = Func(callback)
         track = Sequence(openDoor, suitTrack, closeDoor, done, name=name)
         track.start(ts)
@@ -135,8 +135,7 @@ class DistributedBattleFinal(DistributedBattleBase.DistributedBattleBase):
         name = self.uniqueName('floorReward')
         track = Sequence(toonTracks, name=name)
         if self.hasLocalToon():
-            camera.setPos(0, 0, 1)
-            camera.setHpr(180, 10, 0)
+            LerpPosHprInterval(camera, .5, (0, 0, 1), (180, 10, 0), blendType='easeInOut').start()
         track += [self.bossCog.makeEndOfBattleMovie(self.hasLocalToon()), Func(callback)]
         self.storeInterval(track, name)
         track.start(ts)
