@@ -41,12 +41,12 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel, DirectObject.DirectObject):
         biggest = max(d[0], d[1], d[2])
         s = 0.3 / biggest
         self.head.setPosHprScale(0, 0, 0, 180, 0, 0, s, s, s)
-        self.nameLabel = DirectLabel(parent=self.frame, pos=(0.0125, 0, 0.36), relief=None, text=self.avName, text_font=avatar.getFont(), text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.047, text_wordwrap=7.5, text_shadow=(1, 1, 1, 1))
+        self.nameLabel = DirectLabel(parent=self.frame, pos=(0.0125, 0, 0.36), relief=None, text=self.avName, text_font=avatar.getFont(), text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.047, text_wordwrap=7.5)
         level = avatar.getActualLevel()
         revives = avatar.getMaxSkeleRevives() + 1
         maxHP = avatar.maxHP
         HP = avatar.currHP
-        self.hpLabel = DirectLabel(parent=self.frame, pos=(0.0125, 0, -0.15), relief=None, text=TTLocalizer.AvatarPanelCogHP % (HP, maxHP), text_font=avatar.getFont(), text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale = 0.047, text_wordwrap = 7.5, text_shadow=(1, 1, 1, 1))
+        self.hpLabel = DirectLabel(parent=self.frame, pos=(0.0125, 0, -0.15), relief=None, text=TTLocalizer.AvatarPanelCogHP % (HP, maxHP), text_font=avatar.getFont(), text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale = 0.047, text_wordwrap = 7.5)
         dept = SuitDNA.getSuitDeptFullname(avatar.dna.name)
         if revives == 1:
             self.levelLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.1), relief=None, text=TTLocalizer.AvatarPanelCogLevel % level, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
