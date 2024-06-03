@@ -236,6 +236,7 @@ class OptionsTabPage(DirectFrame, FSM):
     def enter(self) -> None:
         self.show()
 
+        base.localAvatar.disableOldPieKeys()
         self.request("Gameplay")
 
     def exit(self) -> None:
@@ -244,6 +245,7 @@ class OptionsTabPage(DirectFrame, FSM):
 
         # Write the settings to the local JSON file.
         base.settings.write()
+        base.localAvatar.resetPieKeys()
 
     def updateTabs(self) -> None:
         messenger.send("wakeup")
