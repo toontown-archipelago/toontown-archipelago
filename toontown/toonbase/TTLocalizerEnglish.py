@@ -5640,7 +5640,7 @@ STOREOWNER_NOROOM = 'Hmm...you might want to make room in your closet before you
 STOREOWNER_CONFIRM_LOSS = 'Your closet is full.  You will lose the clothes you were wearing.'
 STOREOWNER_OK = lOK
 STOREOWNER_CANCEL = lCancel
-STOREOWNER_TROPHY = 'Wow! You collected %s of %s fish. That deserves a trophy and a Laff boost!'
+STOREOWNER_TROPHY = 'Wow! You collected %s of %s fish. That deserves a trophy!'
 SuitInvasionBegin1 = lToonHQ + ': A Cog Invasion has begun!!!'
 SuitInvasionBegin2 = lToonHQ + ': %s have taken over Toontown!!!'
 SuitInvasionEnd1 = lToonHQ + ': The %s Invasion has ended!!!'
@@ -8452,7 +8452,7 @@ TipDict = {TIP_NONE: ('',),
                'The pond at your estate has fish that can only be found there.',
                'For every 10 species you catch, you will get a fishing trophy!',
                'You can see what fish you have collected in your Shticker Book.',
-               'Some fishing trophies reward you with a Laff boost.',
+               'Some fishing trophies reward you checks with the correct fishsanity setting.',
                'Fishing is a good way to earn more jellybeans.',
                'Adopt a Doodle at the Pet Shop!',
                'Pet Shops get new Doodles to sell every day.',
