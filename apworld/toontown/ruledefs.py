@@ -95,6 +95,16 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
     return state.has(argument[0].value, player)
 
 
+@rule(Rule.CanBuyTTCDoodle, 0)
+@rule(Rule.CanBuyDDDoodle, 1)
+@rule(Rule.CanBuyDGDoodle, 1)
+@rule(Rule.CanBuyMMLDoodle, 2)
+@rule(Rule.CanBuyTBDoodle, 3)
+@rule(Rule.CanBuyDDLDoodle, 4)
+def HasEnoughBeanCapacity(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    return (state.count(ToontownItemName.MONEY_CAP_1000.value, player) > argument[0])
+
+
 @rule(Rule.TunnelCanBeUsed)
 def TunnelCanBeUsed(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     if options.tpsanity.value == TPSanity.option_keys:
