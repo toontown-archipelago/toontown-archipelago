@@ -96,6 +96,15 @@ class Rule(Enum):
     LawbotDisguise  = auto()
     BossbotDisguise = auto()
 
+    ### Doodles ###
+
+    CanBuyTTCDoodle = auto()
+    CanBuyDDDoodle = auto()
+    CanBuyDGDoodle = auto()
+    CanBuyMMLDoodle = auto()
+    CanBuyTBDoodle = auto()
+    CanBuyDDLDoodle = auto()
+
     ### Gag Rules ###
 
     ToonUpOne   = auto()

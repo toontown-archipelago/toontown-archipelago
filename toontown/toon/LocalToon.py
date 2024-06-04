@@ -2179,3 +2179,15 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def disableControls(self) -> None:
         self.allowControls = False
         self.disableAvatarControls()
+
+    # Update pie throw keys without needing a game restart
+    def disableOldPieKeys(self) -> None:
+        controls = base.controls
+        self.ignore(controls.SECONDARY_ACTION)
+        self.ignore('time-' + controls.ACTION_BUTTON)
+        self.ignore('time-' + controls.ACTION_BUTTON + '-up')
+    def resetPieKeys(self) -> None:
+        controls = base.controls
+        self.accept(controls.SECONDARY_ACTION, self.__zeroPowerToss)
+        self.accept('time-' + controls.ACTION_BUTTON, self.__beginTossPie)
+        self.accept('time-' + controls.ACTION_BUTTON + '-up', self.__endTossPie)

@@ -290,7 +290,7 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
         mult = getInteriorCreditMultiplier(self.numFloors)
 
         battleHoodId = ZoneUtil.getHoodId(self.zoneId)
-        mult += getHoodSkillCreditMultiplier(battleHoodId)
+        mult *= getHoodSkillCreditMultiplier(battleHoodId)
         if self.air.holidayManager.isMoreXpHolidayRunning():
             mult += getMoreXpHolidayMultiplier()
 

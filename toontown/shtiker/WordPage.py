@@ -296,8 +296,10 @@ class WordsTabPage(DirectFrame):
         if lose:
             self.searchBarEntry['focus'] = 0
             base.localAvatar.chatMgr.fsm.request('mainMenu')
+            messenger.send("enable-hotkeys")
         else:
             base.localAvatar.chatMgr.fsm.request('otherDialog')
+            messenger.send("disable-hotkeys")
 
     def setupWords(self, returnWords=False):
         words = []

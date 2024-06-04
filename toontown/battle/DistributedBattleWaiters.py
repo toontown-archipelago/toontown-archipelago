@@ -1,6 +1,6 @@
 import random
 from panda3d.core import VBase3, Point3
-from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, Track
+from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, Track, LerpPosHprInterval
 from direct.directnotify import DirectNotifyGlobal
 from toontown.battle import DistributedBattleFinal
 from toontown.suit import SuitTimings
@@ -34,9 +34,9 @@ class DistributedBattleWaiters(DistributedBattleFinal.DistributedBattleFinal):
             self.notify.debug('parenting camera to distributed battle waiters')
             camera.reparentTo(self)
             if random.choice([0, 1]):
-                camera.setPosHpr(20, -4, 7, 60, 0, 0)
+                LerpPosHprInterval(camera, 0.25, (20, -4, 7), (60, 0, 0), blendType='easeInOut').start()
             else:
-                camera.setPosHpr(-20, -4, 7, -60, 0, 0)
+                LerpPosHprInterval(camera, 0.25, (-20, -4, 7), (-60, 0, 0), blendType='easeInOut').start()
         track = Sequence(Wait(0.5), done, name=name)
         track.start(ts)
         self.storeInterval(track, name)
@@ -79,9 +79,9 @@ class DistributedBattleWaiters(DistributedBattleFinal.DistributedBattleFinal):
         if self.hasLocalToon():
             camera.reparentTo(self)
             if random.choice([0, 1]):
-                camera.setPosHpr(20, -4, 7, 60, 0, 0)
+                LerpPosHprInterval(camera, 0.25, (20, -4, 7), (60, 0, 0), blendType='easeInOut').start()
             else:
-                camera.setPosHpr(-20, -4, 7, -60, 0, 0)
+                LerpPosHprInterval(camera, 0.25, (-20, -4, 7), (-60, 0, 0), blendType='easeInOut').start()
         done = Func(callback)
         track = Sequence(suitTrack, done, name=name)
         track.start(ts, playRate=3.0)

@@ -316,7 +316,9 @@ def __createPlacedTrapMultiTrack(trap, prop, propName, propPos = None, propHpr =
         trapTrack.append(Func(trapProp.setScale, Point3(0.1, 0.1, 0.1)))
         trapTrack.append(Func(trapProp.reparentTo, suit))
         trapTrack.append(Func(trapProp.setPos, trapPoint))
-        trapTrack.append(LerpScaleInterval(trapProp, 1.2, Point3(1.7, 1.7, 1.7)))
+        trapTrack.append(Sequence(
+            LerpScaleInterval(trapProp, .2, Point3(1.8, 1.8, 1.8), Point3(0.1, 0.1, 0.1), blendType='easeInOut'),
+            LerpScaleInterval(trapProp, .25, Point3(1.7, 1.7, 1.7), Point3(1.8, 1.8, 1.8), blendType='easeInOut')))
         trapTrack.append(Func(suit.showHpString, "WEAKENED!", 1.1, 0.7, (.3, .5, .8, 1)))
         if explode == 1:
             dustNode = hidden.attachNewNode('DustNode')
@@ -513,7 +515,9 @@ def __createPlacedGroupTrapTrack(trap, prop, propName, centerSuit, propPos = Non
         trapTrack.append(Func(trapProp.reparentTo, battle))
         trapTrack.append(Func(trapProp.setPos, trapPoint))
         trapTrack.append(Func(trapProp.setH, 0))
-        trapTrack.append(LerpScaleInterval(trapProp, 1.2, Point3(1.0, 1.0, 1.0)))
+        trapTrack.append(Sequence(
+            LerpScaleInterval(trapProp, .2, Point3(1.2, 1.2, 1.2), blendType='easeInOut'),
+            LerpScaleInterval(trapProp, .25, Point3(1.0, 1.0, 1.0), blendType='easeInOut')))
         for target in trap['target']:
             suit = target['suit']
             trapTrack.append(Func(suit.showHpString, "WEAKENED!", 1.1, 0.7, (.3, .5, .8, 1)))

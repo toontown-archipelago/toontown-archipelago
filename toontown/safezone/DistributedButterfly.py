@@ -74,6 +74,8 @@ class DistributedButterfly(DistributedObject.DistributedObject):
 
         self.butterfly2 = Actor.Actor(other=self.butterfly)
         self.butterfly.enableBlend(blendType=PartBundle.BTLinear)
+        self.butterfly.setBlend(frameBlend=True)
+        self.butterfly2.setBlend(frameBlend=True)
         self.butterfly.loop('flutter')
         self.butterfly.loop('land')
         self.butterfly.loop('glide')

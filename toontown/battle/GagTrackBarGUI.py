@@ -137,7 +137,7 @@ class GagTrackBarGUI(DirectWaitBar):
 
         nextGagExp = experience.getNextExpValue(track, experience.getExp(track))
         # Edge case, if we are able to overflow but haven't reached that part yet, display regmaxskill
-        if ToontownBattleGlobals.regMaxSkill > experience.getExp(track) > ToontownBattleGlobals.Levels[track][-1]:
+        if ToontownBattleGlobals.regMaxSkill > experience.getExp(track) >= ToontownBattleGlobals.Levels[track][-1]:
             nextGagExp = ToontownBattleGlobals.regMaxSkill
 
         cap = min(experience.getExperienceCapForTrack(track), nextGagExp)

@@ -61,7 +61,7 @@ class ToonBase(OTPBase.OTPBase):
         fpsLimit = self.settings.get("fps-limit")
 
         loadPrcFileData("toonBase Settings Window Res", f"win-size {res[0]} {res[1]}")
-        loadPrcFileData("toonBase Settings Window FullScreen", f"fullscreen {mode}")
+        loadPrcFileData("toonBase Settings Window Borderless", f"undecorated {mode}")
         loadPrcFileData("toonBase Settings Music Active", f"audio-music-active {music}")
         loadPrcFileData("toonBase Settings Sound Active", f"audio-sfx-active {sfx}")
         loadPrcFileData("toonBase Settings Music Volume", f"audio-master-music-volume {musicVol}")
@@ -664,7 +664,7 @@ class ToonBase(OTPBase.OTPBase):
 
         properties = WindowProperties()
         properties.setSize(xSize, ySize)
-        properties.setFullscreen(borderless)
+        properties.set_undecorated(borderless)
 
         # Force all the textures to reload.
         gsg = self.win.getGsg()
