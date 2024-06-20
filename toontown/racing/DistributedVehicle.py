@@ -987,7 +987,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
 
     def enableControls(self):
         self.canRace = True
-        self.accept(base.JUMP, self.__controlPressed)
+        self.accept(base.controls.JUMP, self.__controlPressed)
         self.accept('control-up', self.__controlReleased)
         self.accept('InputState-forward', self.__upArrow)
         self.accept('InputState-reverse', self.__downArrow)
@@ -997,7 +997,7 @@ class DistributedVehicle(DistributedSmoothNode.DistributedSmoothNode, Kart.Kart,
     def disableControls(self):
         self.arrowVert = 0
         self.arrowHorz = 0
-        self.ignore(base.JUMP)
+        self.ignore(base.controls.JUMP)
         self.ignore('control-up')
         self.ignore('tab')
         self.ignore('InputState-forward')
