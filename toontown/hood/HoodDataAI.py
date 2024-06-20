@@ -42,7 +42,6 @@ class HoodDataAI:
 
         self.createFishingPonds()
         self.createStreetClerks()
-        self.createPartyPeople()
         self.createBuildingManagers()
         self.createSuitPlanners()
 
@@ -77,19 +76,7 @@ class HoodDataAI:
     def removeDistObj(self, distObj):
         del self.doId2do[distObj.doId]
 
-    def createPartyPeople(self):
-        partyHats = []
-        for zone in self.air.zoneTable[self.canonicalHoodId]:
-            zoneId = ZoneUtil.getTrueZoneId(zone[0], self.zoneId)
-            dnaData = self.air.dnaDataMap.get(zone[0], None)
-            if isinstance(dnaData, DNAData):
-                foundPartyHats = self.air.findPartyHats(dnaData, zoneId)
-                partyHats += foundPartyHats
 
-        for distObj in partyHats:
-            self.addDistObj(distObj)
-
-        return
 
     def createFishingPonds(self):
         self.fishingPonds = []

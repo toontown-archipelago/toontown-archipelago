@@ -1,7 +1,4 @@
-// Parties
-model "phase_6/models/modules/partyGate_MM" [
- 	store_node [ "prop" "prop_party_gate" "" ]
-	]
+
     
 place_model "phase_6/models/neighborhoods/minnies_melody_land_ext" [
  	store_node [ "prop" "minnies_melody_land_ext" "" ]

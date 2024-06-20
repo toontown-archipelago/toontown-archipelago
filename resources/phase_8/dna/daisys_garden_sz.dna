@@ -1267,11 +1267,7 @@ group "daisysGarden" [
   pos [ -49.7454 233.211 9.99 ]
   nhpr [ 210 0 0 ]
  ]
- prop "prop_party_gate_DNARoot" [
-  code [ "prop_party_gate" ]
-  pos [ -54.0251 224.782 10.02 ]
-  nhpr [ 30 0 0 ]
- ]
+
  flat_building "tb0:random_DNARoot" [
   pos [ -24.6717 228.875 10 ]
   nhpr [ 293.962 0 0 ]

@@ -1,7 +1,4 @@
-// Parties
-model "phase_8/models/modules/partyGate_BR" [
- 	store_node [ "prop" "prop_party_gate" "" ]
-	]
+
     
 place_model "phase_8/models/neighborhoods/the_burrrgh" [
  	store_node [ "prop" "the_burrrgh" ]
