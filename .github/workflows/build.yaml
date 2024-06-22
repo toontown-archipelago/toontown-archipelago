@@ -22,6 +22,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install nuitka
+
           python -m pip install -r requirements.txt
           python -m pip install "https://github.com/toontown-archipelago/panda3d/releases/latest/download/panda3d-1.11.0-cp311-cp311-win_amd64.whl"
 
@@ -53,8 +54,7 @@ jobs:
 
       - name: Copy Scripts
         run: |
-          Get-ChildItem build\scripts | ForEach-Object { Copy-Item -Path $_.FullName -Destination "release\" }
-
+          Get-ChildItem build\scripts -Filter *.bat | ForEach-Object { Copy-Item -Path $_.FullName -Destination "release\" }
       - name: Copy Astron
         run: |
           Copy-Item -Path "astron" -Destination "release\game" -Recurse
@@ -82,3 +82,82 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload ${{ github.ref_name }} TTAP.zip
+
+# add build for macOS
+  build-game-macos:
+    runs-on: macos-latest
+    permissions:
+      contents: write  # Needed for release upload
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install nuitka
+          python -m pip install -r requirements.txt
+          brew install wget
+          python -m pip install "https://github.com/DarthMDev/panda3d-ttap/releases/download/mac-build-test-2/panda3d-1.11.0-cp311-cp311-macosx_11_0_arm64.whl"
+
+      - name: Build Client
+        run: |
+          python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
+
+
+
+      - name: Copy Built Files
+        run: |
+          mkdir release
+          cp -r output/launch.dist release/game
+          # rename launch.bin to launch
+          mv release/game/launch.bin release/game/launch
+          cp $pythonLocation/lib/python3.11/site-packages/panda3d/libpandaphysics.1.11.dylib release/game
+
+
+      - name: Build & Copy Resources
+        run: |
+          wget https://www.panda3d.org/download/panda3d-1.10.14/Panda3D-SDK-1.10.14-MacOSX10.9.dmg
+          hdiutil attach Panda3D-SDK-1.10.14-MacOSX10.9.dmg
+          sudo installer -pkg 	"/Volumes/Panda3D SDK 1.10.14/Panda3D.mpkg" -target  /
+          mkdir release/game/resources
+          cd resources
+          for dir in */; do /Library/Developer/Panda3D/bin/multify -c -f "../release/game/resources/${dir%/}.mf" ${dir%/}; done
+      - name: Copy Config Files
+        run: |
+          mkdir release/game/config
+          cp config/production.prc release/game/config/
+          cp config/common.prc release/game/config/
+
+      - name: Copy Scripts
+        run: |
+          # copy the .sh files
+          cp build/scripts/*.sh release/
+
+      - name: Copy Astron
+        run: |
+           cp -r astron release/game
+           
+
+      - name: Compress Release
+        run: |
+          zip -r TTAP-macos.zip release
+      - name: Upload Game Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "TTAP-macos.zip"
+          path: "TTAP-macos.zip"
+          if-no-files-found: "error"    
+
+      - name: Upload Game to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            gh release upload ${{ github.ref_name }} TTAP-macos.zip
