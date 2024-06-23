@@ -10001,3 +10001,4 @@ OptionFPSLimit = {
 
 OptionEnabled = "Enabled"
 OptionDisabled = "Disabled"
+WinConditionMet = 'Congratulations, you have completed your run. You may now talk to Flippy.'
