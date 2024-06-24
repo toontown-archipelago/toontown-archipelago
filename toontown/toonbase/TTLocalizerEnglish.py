@@ -10001,4 +10001,4 @@ OptionFPSLimit = {
 
 OptionEnabled = "Enabled"
 OptionDisabled = "Disabled"
-WinConditionMet = 'Congratulations, you have completed your run. You may now talk to Flippy.'
+WinConditionMet = 'Congratulations, you have completed your goal! You may now talk to Flippy to release your remaining checks!'
