@@ -26,15 +26,15 @@ class DiscordRPC(object):
         3200: ["https://static.wikia.nocookie.net/toontown/images/3/35/Sleet_Street_Tunnel.jpg    ", "On Sleet Street"],
         3300: ["https://static.wikia.nocookie.net/toontown/images/e/e9/Polar_Place_Tunnel.jpg", "On Polar Place"],
 
-        4000: ["https://static.wikia.nocookie.net/toontown/images/6/61/Minnies_Melodyland.png/revision", "In Minnie's Melodyland"],
-        4100: ["https://static.wikia.nocookie.net/toontown/images/d/d0/Alto_Avenue_Tunnel.jpg/revision", "On Alto Avenue"],
-        4200: ["https://static.wikia.nocookie.net/toontown/images/4/4c/Baritone_Boulevard_Tunnel.jpg/revision/", "On Baritone Boulevard"],
-        4300: ["https://static.wikia.nocookie.net/toontown/images/5/5e/Tenor_Terrace_Tunnel.jpg/revision", "On Tenor Terrace"],
+        4000: ["https://static.wikia.nocookie.net/toontown/images/6/61/Minnies_Melodyland.png", "In Minnie's Melodyland"],
+        4100: ["https://static.wikia.nocookie.net/toontown/images/d/d0/Alto_Avenue_Tunnel.jpg", "On Alto Avenue"],
+        4200: ["https://static.wikia.nocookie.net/toontown/images/4/4c/Baritone_Boulevard_Tunnel.jpg/", "On Baritone Boulevard"],
+        4300: ["https://static.wikia.nocookie.net/toontown/images/5/5e/Tenor_Terrace_Tunnel.jpg", "On Tenor Terrace"],
 
-        5000: ["https://static.wikia.nocookie.net/toontown/images/6/6c/Daisy_Gardens.png/revision", "In Daisy Gardens"],
-        5100: ["https://static.wikia.nocookie.net/toontown/images/d/dc/Elm_Street_Tunnel.jpg/revision", "On Elm Street"],
-        5200: ["https://static.wikia.nocookie.net/toontown/images/4/41/Maple_Street_Tunnel.jpg/revision", "On Maple Street"],
-        5300: ["https://static.wikia.nocookie.net/toontown/images/d/d3/Oak_Street_Tunnel.jpg/revision/", "On Oak Street"],
+        5000: ["https://static.wikia.nocookie.net/toontownrewritten/images/8/81/Daisy_Gardens.jpg", "In Daisy Gardens"],
+        5100: ["https://static.wikia.nocookie.net/toontown/images/d/dc/Elm_Street_Tunnel.jpg", "On Elm Street"],
+        5200: ["https://static.wikia.nocookie.net/toontown/images/4/41/Maple_Street_Tunnel.jpg", "On Maple Street"],
+        5300: ["https://static.wikia.nocookie.net/toontown/images/d/d3/Oak_Street_Tunnel.jpg", "On Oak Street"],
 
         6000: ["https://static.wikia.nocookie.net/toontown/images/8/88/Chip_n_Dales_Acorn_Acres.png/revision", "At Chip 'n Dale's Acorn Acres"],
 
