@@ -234,6 +234,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.resistanceToonOnstage = 0
 
     def enterElevator(self):
+        base.discord.ceo()
         DistributedBossCog.DistributedBossCog.enterElevator(self)
         self.resistanceToon.removeActive()
         self.__showResistanceToon(True)

@@ -9934,6 +9934,7 @@ OptionNames = {
     "fovEffects": "Sprinting FOV Effects",
     "cam-toggle-lock": "Camera Toggle Lock",
     "speedchat-style": "Speedchat Color",
+    'discord-rich-presence': 'Discord Rich Presence',
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",

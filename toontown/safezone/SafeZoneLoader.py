@@ -74,6 +74,7 @@ class SafeZoneLoader(StateData.StateData):
         self.fsm.request(stateName, [requestStatus])
 
     def createSafeZone(self, dnaFile):
+        base.discord.setZone(self.hood.id)
         if self.safeZoneStorageDNAFile:
             loader.loadDNAFile(self.hood.dnaStore, self.safeZoneStorageDNAFile)
         node = loader.loadDNAFile(self.hood.dnaStore, dnaFile)

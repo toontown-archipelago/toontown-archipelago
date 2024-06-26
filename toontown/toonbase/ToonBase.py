@@ -17,6 +17,7 @@ from libotp import *
 import sys
 import os
 import math
+from toontown.discord.DiscordRPC import DiscordRPC
 from toontown.toonbase import ToontownAccess
 from toontown.toonbase import TTLocalizer
 from toontown.toonbase import ToontownBattleGlobals
@@ -194,7 +195,9 @@ class ToonBase(OTPBase.OTPBase):
         self.WANT_FOV_EFFECTS = self.settings.get('fovEffects')
         self.CAM_TOGGLE_LOCK = self.settings.get('cam-toggle-lock')
         self.WANT_LEGACY_MODELS = self.settings.get('want-legacy-models')
-
+        self.wantRichPresence = self.settings.get('discord-rich-presence')
+        self.discord = DiscordRPC()
+        self.discord.launching()
         self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {version}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)
 
         self.enableHotkeys()
@@ -202,6 +205,7 @@ class ToonBase(OTPBase.OTPBase):
         self.setAntiAliasing()
         self.setAnisotropicFilter()
         self.setVerticalSync()
+        self.setRichPresence()
 
         if base.config.GetBool('want-injector', False):
             from ..util.dev.Injector import DeveloperInjector
@@ -619,6 +623,12 @@ class ToonBase(OTPBase.OTPBase):
         self.ignore("disable-hotkeys")
         self.ignoreHotkeys()
         self.accept("enable-hotkeys", self.enableHotkeys)
+
+    def setRichPresence(self) -> None:
+        if self.wantRichPresence:
+            self.discord.enable()
+        else:
+            self.discord.disable()
 
     def setAntiAliasing(self) -> None:
         antialias = self.settings.get("anti-aliasing")
