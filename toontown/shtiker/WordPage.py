@@ -893,7 +893,9 @@ class ClothingTabPage(DirectFrame):
                 try:
                     self.model.find('**/sleeves').setTexture(loader.loadTexture(ToonDNA.Sleeves[wordNum]), 1)
                 except IOError:
-                    pass
+                    wordNum = 0
+                    self.sleeve = wordNum
+                    self.model.find('**/sleeves').setTexture(loader.loadTexture(ToonDNA.Sleeves[wordNum]), 1)
         elif clothType == 'pants':
             if isColorChange:
                 self.pantColor = wordNum
@@ -915,7 +917,12 @@ class ClothingTabPage(DirectFrame):
                         else:
                             self.model.find('**/torso-bot').setTexture(loader.loadTexture(ToonDNA.BoyShorts[wordNum]), 1)
                     except IOError:
-                        pass
+                        wordNum = 0
+                        self.pant = wordNum
+                        if self.gender == 1:
+                            self.model.find('**/torso-bot').setTexture(loader.loadTexture(ToonDNA.GirlBottoms[wordNum][0]), 1)
+                        else:
+                            self.model.find('**/torso-bot').setTexture(loader.loadTexture(ToonDNA.BoyShorts[wordNum]), 1)
         elif clothType == 'color':
             self.color = wordNum
         else:
@@ -927,7 +934,9 @@ class ClothingTabPage(DirectFrame):
                 try:
                     self.model.find('**/torso-top').setTexture(loader.loadTexture(ToonDNA.Shirts[wordNum]), 1)
                 except IOError:
-                    pass
+                    wordNum = 0
+                    self.shirt = wordNum
+                    self.model.find('**/torso-top').setTexture(loader.loadTexture(ToonDNA.Shirts[wordNum]), 1)
 
         if clothType == 'shirt':
             self.shirtLabel['text'] = "Shirt ID: " + str(self.shirt) + ' / ' + str(self.shirtColor)
