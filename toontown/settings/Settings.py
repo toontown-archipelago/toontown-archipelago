@@ -63,6 +63,7 @@ class Settings:
         # They can still be configurable by the end user
         "want-legacy-models": False,
         "experimental-multithreading": False,
+        "archipelago-textsize": 0.5,
     }
 
     settingsFile = "settings.json"

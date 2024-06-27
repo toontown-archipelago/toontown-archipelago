@@ -35,6 +35,7 @@ OptionToType = {
     'fovEffects': OptionTypes.BUTTON,
     'cam-toggle-lock': OptionTypes.BUTTON,
     'speedchat-style': OptionTypes.BUTTON_SPEEDCHAT,
+    'archipelago-textsize': OptionTypes.SLIDER,
 
     # Privacy
     "competitive-boss-scoring": OptionTypes.BUTTON,
@@ -133,7 +134,9 @@ class OptionsTabPage(DirectFrame, FSM):
             'sprint_mode',
             'fovEffects',
             'cam-toggle-lock',
-            'speedchat-style'
+            'speedchat-style',
+            'archipelago-textsize',
+
         ],
         "Privacy": [
             "competitive-boss-scoring",

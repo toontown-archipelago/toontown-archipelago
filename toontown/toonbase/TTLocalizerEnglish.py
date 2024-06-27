@@ -9934,6 +9934,7 @@ OptionNames = {
     "fovEffects": "Sprinting FOV Effects",
     "cam-toggle-lock": "Camera Toggle Lock",
     "speedchat-style": "Speedchat Color",
+    "archipelago-textsize": "Archipelago Log Text Size",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",
