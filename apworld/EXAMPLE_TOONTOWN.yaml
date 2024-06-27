@@ -40,7 +40,7 @@ Toontown:
   damage_multiplier: 100
 
   # The starting amount of jellybeans to have when starting a new game.
-  # Range: 0 to 9999
+  # Range: 0 to 1000
   starting_money: 1000
 
   ### Boss Settings ###

@@ -74,8 +74,8 @@ class StartMoneyOption(Range):
     """
     display_name = "Starting Jellybeans"
     range_start = 0
-    range_end = 9999
-    default = 50
+    range_end = 1000
+    default = 1000
 
 
 class WinCondition(Choice):
