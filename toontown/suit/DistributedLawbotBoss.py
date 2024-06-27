@@ -735,6 +735,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.witnessToon.addActive()
 
     def enterElevator(self):
+        base.discord.cj()
         self.notify.debug('----- enterElevator')
         DistributedBossCog.DistributedBossCog.enterElevator(self)
         self.witnessToon.removeActive()

@@ -35,6 +35,7 @@ OptionToType = {
     'fovEffects': OptionTypes.BUTTON,
     'cam-toggle-lock': OptionTypes.BUTTON,
     'speedchat-style': OptionTypes.BUTTON_SPEEDCHAT,
+    'discord-rich-presence': OptionTypes.BUTTON,
     'archipelago-textsize': OptionTypes.SLIDER,
 
     # Privacy
@@ -135,6 +136,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'fovEffects',
             'cam-toggle-lock',
             'speedchat-style',
+            'discord-rich-presence',
             'archipelago-textsize',
 
         ],
@@ -631,6 +633,9 @@ class OptionElement(DirectFrame):
             base.localAvatar.updateMovementMode()
         elif self.optionName == "fovEffects":
             base.WANT_FOV_EFFECTS = newSetting
+        elif self.optionName == 'discord-rich-presence':
+            base.wantRichPresence = newSetting
+            base.setRichPresence()
         elif self.optionName == "cam-toggle-lock":
             base.CAM_TOGGLE_LOCK = newSetting
 

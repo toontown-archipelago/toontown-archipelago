@@ -9934,6 +9934,7 @@ OptionNames = {
     "fovEffects": "Sprinting FOV Effects",
     "cam-toggle-lock": "Camera Toggle Lock",
     "speedchat-style": "Speedchat Color",
+    'discord-rich-presence': 'Discord Rich Presence',
     "archipelago-textsize": "Archipelago Log Text Size",
 
     # Privacy
