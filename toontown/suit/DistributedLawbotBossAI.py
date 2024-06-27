@@ -1016,12 +1016,3 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
     def getDeathReasonFromBattle(self) -> DeathReason:
         return DeathReason.BATTLING_CJ
 
-    def checkSkip(self):
-        if len(self.toonsSkipped) >= len(self.involvedToons) - 1:
-            if self.state == 'Introduction':
-                self.exitIntroduction()
-                self.doneIntroduction(self.involvedToons)
-            elif self.state == 'RollToBattleTwo':
-                self.exitRollToBattleTwo()
-                self.__doneRollToBattleTwo(self.involvedToons)
-        super().checkSkip()

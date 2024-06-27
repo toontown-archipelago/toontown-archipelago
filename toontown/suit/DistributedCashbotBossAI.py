@@ -1223,13 +1223,3 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def d_updateUnstun(self, avId):
         self.sendUpdate('updateUnstun', [avId])
-
-    def checkSkip(self):
-        if len(self.toonsSkipped) >= len(self.involvedToons) - 1:
-            if self.state == 'Introduction':
-                self.exitIntroduction()
-                self.doneIntroduction(self.involvedToons)
-            elif self.state == 'PrepareBattleThree':
-                self.exitPrepareBattleThree()
-                self.__donePrepareBattleThree(self.involvedToons)
-        super().checkSkip()

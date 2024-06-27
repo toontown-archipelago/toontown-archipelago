@@ -743,7 +743,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'RollToBattleTwo'
         seq = Sequence(self.__makeRollToBattleTwoMovie(), Func(self.__onToPrepareBattleTwo), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.betweenBattleMusic, looping=1, volume=0.9)
         self.__showEasyBarrels()
@@ -1288,3 +1288,9 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def toonPromoted(self, promoted):
         self.localToonPromoted = promoted
+
+    def skipCutscene(self):
+        intervalName = ""
+        if self.state == 'RollToBattleTwo':
+            intervalName = 'RollToBattleTwo'
+        super().skipCutscene(intervalName)

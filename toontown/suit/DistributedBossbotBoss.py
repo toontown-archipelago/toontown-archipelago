@@ -740,7 +740,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'VictoryMovie'
         seq = Sequence(self.makeVictoryMovie(), Func(self.__continueVictory), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.bossHealthBar.deinitialize()
         self.storeInterval(seq, intervalName)
         base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
@@ -1560,3 +1560,13 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             attackBelts.append(seq)
         self.notify.debug('attackBelts duration= %.2f' % attackBelts.getDuration())
         self.doAnimate(attackBelts, now=1, raised=1)
+
+    def skipCutscene(self):
+        intervalName = ""
+        if self.state == 'PrepareBattleTwo':
+            intervalName = 'PrepareBattleTwoMovie'
+        elif self.state == 'PrepareBattleThree':
+            intervalName = 'PrepareBattleThreeMovie'
+        elif self.state == 'PrepareBattleFour':
+            intervalName = 'PrepareBattleFourMovie'
+        super().skipCutscene(intervalName)

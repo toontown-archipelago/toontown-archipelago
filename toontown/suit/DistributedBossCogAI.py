@@ -880,23 +880,23 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.notify.info('Sending client skip amount')
         self.sendUpdate('setSkipAmount', [len(self.toonsSkipped)])
 
+
+
     def checkSkip(self):
         """
-        This function checks if the cutscene can be skipped.
-        The specific logic depends on which boss cutscenes are in the boss.
+        This function is called when a toon requests to skip the boss battle cutscene . If 1 or more have voted to skip then broadcast to all clients to skip the cutscene.
         """
-        # Overwritten by other bosses
-        self.notify.info("Checking skip")
-        if len(self.toonsSkipped) >= len(self.involvedToons) - 1:
+        if len(self.toonsSkipped) >= 1:
             # exit cutscene
             self.notify.info('Skipping to next stage')
+            self.sendUpdate('skipCutscene', [])
             self.toonsSkipped = []
         else:
             # tell the client the amount of toons skipped
             self.notify.info('Sending client skip amount')
             self.sendUpdate('setSkipAmount', [len(self.toonsSkipped)])
         return
-
+    
     def requestSkip(self):
         toon = self.air.getAvatarIdFromSender()
         if (toon not in self.involvedToons) or (not self.canSkip) or (toon in self.toonsSkipped):

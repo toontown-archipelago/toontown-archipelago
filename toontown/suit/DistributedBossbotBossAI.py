@@ -426,21 +426,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.canSkip = False
         self.ignoreBarrier(self.barrier)
         
-    def checkSkip(self):
-        if len(self.toonsSkipped) >= len(self.involvedToons) - 1:
-            if self.state == 'Introduction':
-                self.exitIntroduction()
-                self.doneIntroduction(self.involvedToons)
-            elif self.state == 'PrepareBattleTwo':
-                self.exitPrepareBattleTwo()
-                self.__donePrepareBattleTwo(self.involvedToons)
-            elif self.state == 'PrepareBattleThree':
-                self.exitPrepareBattleThree()
-                self.__donePrepareBattleThree(self.involvedToons)
-            elif self.state == 'PrepareBattleFour':
-                self.exitPrepareBattleFour()
-                self.__donePrepareBattleFour(self.involvedToons)
-        super().checkSkip()
+
     def enterBattleFour(self):
         self.battleFourTimeStarted = globalClock.getFrameTime()
         self.numToonsAtStart = len(self.involvedToons)

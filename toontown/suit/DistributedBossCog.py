@@ -32,9 +32,6 @@ from ..coghq.CogBossScoreboard import CogBossScoreboard
 class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBossCog')
     allowClickedNameTag = True
-
-    CUTSCENE_SPEED = 10.0
-
     def __init__(self, cr):
         DistributedAvatar.DistributedAvatar.__init__(self, cr)
         BossCog.BossCog.__init__(self)
@@ -72,6 +69,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bossSpeedrunTimer.hide()
         self.scoreboard = CogBossScoreboard()
         self.scoreboard.hide()
+        self.cutsceneSpeed = 1.0
         return
 
     def announceGenerate(self):
@@ -130,12 +128,14 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bubbleF = self.rotateNode.attachNewNode(bubbleFNode)
         self.bubbleF.setTag('attackCode', str(ToontownGlobals.BossCogFrontAttack))
         self.bubbleF.stash()
-
+    
     def requestSkip(self):
         """
-        Ask the server to skip the cutscene.
+        Send a request to skip the cutscene to the server
         """
-        self.sendUpdate('requestSkip')
+        self.sendUpdate('requestSkip', [])
+        # rest is overriden depending on the boss 
+        
 
     def setSkipAmount(self, amount):
         messenger.send('cutsceneSkipAmountChange', [amount, len(self.involvedToons)])
@@ -152,6 +152,21 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         This sends a message indicating that the cutscene can be skipped.
         """
         messenger.send('enableSkipCutscene')
+
+    def skipCutscene(self, intervalName=""):
+        """
+        This function is called from the server to tell the client to skip the cutscene
+        """
+        if self.state == 'Introduction':
+            # override the interval name
+            intervalName = "IntroductionMovie"
+        if intervalName != "":
+            self.activeIntervals.get(intervalName).setPlayRate(20.0)
+            # disable the skip button as well
+            self.disableSkipCutscene()
+            
+        else:
+            self.notify.warning('Unknown interval name ' + intervalName)
 
     def startTimer(self):
         self.bossSpeedrunTimer.reset()
@@ -1136,7 +1151,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         seq = Sequence(self.makeIntroductionMovie(delayDeletes), Func(self.__beginBattleOne), name=intervalName)
         seq.delayDeletes = delayDeletes
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
 
     def __beginBattleOne(self):
