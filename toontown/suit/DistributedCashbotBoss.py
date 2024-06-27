@@ -1105,7 +1105,10 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         #grab a crane and put it in to Movie mode
         self.movieCrane = self.cranes[0]
         self.movieCrane.request('Movie')
-        
+
+        for safe in list(self.safes.values())[1:]:
+            safe.stash()
+
         seq = Sequence(self.makePrepareBattleThreeMovie(delayDeletes, self.movieCrane), Func(self.__beginBattleThree), name=intervalName)
         seq.delayDeletes = delayDeletes
         seq.start()
@@ -1128,6 +1131,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def exitPrepareBattleThree(self):
         self.disableSkipCutscene()
+        for safe in list(self.safes.values())[1:]:
+            safe.unstash()
         intervalName = 'PrepareBattleThreeMovie'
         self.clearInterval(intervalName)
         self.unstickToons()
