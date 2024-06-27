@@ -36,7 +36,7 @@ class DiscordRPC(object):
         5200: ["https://static.wikia.nocookie.net/toontown/images/4/41/Maple_Street_Tunnel.jpg", "On Maple Street"],
         5300: ["https://static.wikia.nocookie.net/toontown/images/d/d3/Oak_Street_Tunnel.jpg", "On Oak Street"],
 
-        6000: ["https://static.wikia.nocookie.net/toontown/images/8/88/Chip_n_Dales_Acorn_Acres.png/revision", "At Chip 'n Dale's Acorn Acres"],
+        6000: ["https://static.wikia.nocookie.net/toontown/images/8/88/Chip_n_Dales_Acorn_Acres.png", "At Chip 'n Dale's Acorn Acres"],
 
 
         8000: ["https://static.wikia.nocookie.net/toontownrewritten/images/1/10/Goofy_Speedway.png", "In Goofy Speedway"],
@@ -172,22 +172,22 @@ class DiscordRPC(object):
     def vp(self):
         if not base.wantRichPresence:
             return
-        self.image = 'https://static.wikia.nocookie.net/toontown-corporate-clash/images/9/92/VP.png/revision/latest?cb=20200612210821'
+        self.image = 'https://static.wikia.nocookie.net/toontown-corporate-clash/images/9/92/VP.png/'
         self.details = 'Fighting the VP.'
         self.setData()
 
     def cfo(self):
-        self.image = 'https://static.wikia.nocookie.net/toontown-corporate-clash/images/3/37/CFO.png/revision/latest?cb=20200612211437'
+        self.image = 'https://static.wikia.nocookie.net/toontown-corporate-clash/images/3/37/CFO.png'
         self.details = 'Fighting the CFO.'
         self.setData()
 
     def cj(self):
-        self.image = 'https://static.wikia.nocookie.net/toontown-corporate-clash/images/3/31/Cj1.png/revision/latest?cb=20200413051052'
+        self.image = 'https://static.wikia.nocookie.net/toontown-corporate-clash/images/3/31/Cj1.png'
         self.details = 'Fighting the CJ.'
         self.setData()
 
     def ceo(self):
-        self.image = 'https://static.wikia.nocookie.net/toontown/images/e/e4/CeoPic.png/revision/latest?cb=20120110074843'
+        self.image = 'https://static.wikia.nocookie.net/toontown/images/e/e4/CeoPic.png'
         self.details = 'Fighting the CEO.'
 
     def setZone(self,zone): # Set image and text based on the zone
