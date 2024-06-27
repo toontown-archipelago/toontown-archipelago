@@ -932,6 +932,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     ##### PrepareBattleThree state #####
     def enterPrepareBattleThree(self):
+        self.canSkip = True
         self.setupRuleset()
         self.setupSpawnpoints()
 
@@ -948,6 +949,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setState('BattleThree')
 
     def exitPrepareBattleThree(self):
+        self.canSkip = False
         if self.newState != 'BattleThree':
             self.__deleteBattleThreeObjects()
         self.ignoreBarrier(self.barrier)
@@ -1220,3 +1222,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def d_updateUnstun(self, avId):
         self.sendUpdate('updateUnstun', [avId])
+
+    def checkSkip(self):
+        if len(self.toonsSkipped) >= len(self.involvedToons) - 1:
+            if self.state == 'Introduction':
+                self.exitIntroduction()
+                self.doneIntroduction(self.involvedToons)
+            elif self.state == 'PrepareBattleThree':
+                self.exitPrepareBattleThree()
+                self.__donePrepareBattleThree(self.involvedToons)
+        super().checkSkip()

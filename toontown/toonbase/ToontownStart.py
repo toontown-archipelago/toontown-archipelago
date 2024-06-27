@@ -121,6 +121,7 @@ del version
 base.loader = base.loader
 builtins.loader = base.loader
 autoRun = ConfigVariableBool('toontown-auto-run', 1)
+base.discord.startTasks()
 if autoRun and launcher.isDummy() and (not Thread.isTrueThreads() or __name__ == '__main__'):
     try:
         base.run()

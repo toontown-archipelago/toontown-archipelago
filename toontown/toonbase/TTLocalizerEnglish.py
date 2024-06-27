@@ -9934,6 +9934,8 @@ OptionNames = {
     "fovEffects": "Sprinting FOV Effects",
     "cam-toggle-lock": "Camera Toggle Lock",
     "speedchat-style": "Speedchat Color",
+    'discord-rich-presence': 'Discord Rich Presence',
+    "archipelago-textsize": "Archipelago Log Text Size",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",
@@ -10001,3 +10003,4 @@ OptionFPSLimit = {
 
 OptionEnabled = "Enabled"
 OptionDisabled = "Disabled"
+WinConditionMet = 'Congratulations, you have completed your goal! You may now talk to Flippy to release your remaining checks!'

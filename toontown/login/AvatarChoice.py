@@ -33,6 +33,7 @@ class AvatarChoice(DirectButton):
 
     def __init__(self, av = None, position = 0, paid = 0, okToLockout = 1):
         DirectButton.__init__(self, relief=None, text='', text_font=ToontownGlobals.getSignFont())
+        base.discord.avChoice()
         self.initialiseoptions(AvatarChoice)
         self.hasPaid = paid
         self.mode = None
