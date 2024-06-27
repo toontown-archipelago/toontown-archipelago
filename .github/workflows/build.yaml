@@ -105,7 +105,7 @@ jobs:
           python -m pip install nuitka
           python -m pip install -r requirements.txt
           brew install wget
-          python -m pip install "https://github.com/DarthMDev/panda3d-ttap/releases/download/mac-build-test-2/panda3d-1.11.0-cp311-cp311-macosx_11_0_arm64.whl"
+          python -m pip install "https://github.com/toontown-archipelago/panda3d/releases/latest/download/panda3d-1.11.0-cp311-cp311-macosx_11_0_arm64.whl"
 
       - name: Build Client
         run: |
