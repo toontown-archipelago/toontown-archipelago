@@ -36,6 +36,7 @@ OptionToType = {
     'cam-toggle-lock': OptionTypes.BUTTON,
     'speedchat-style': OptionTypes.BUTTON_SPEEDCHAT,
     'discord-rich-presence': OptionTypes.BUTTON,
+    'archipelago-textsize': OptionTypes.SLIDER,
 
     # Privacy
     "competitive-boss-scoring": OptionTypes.BUTTON,
@@ -136,6 +137,8 @@ class OptionsTabPage(DirectFrame, FSM):
             'cam-toggle-lock',
             'speedchat-style',
             'discord-rich-presence',
+            'archipelago-textsize',
+
         ],
         "Privacy": [
             "competitive-boss-scoring",

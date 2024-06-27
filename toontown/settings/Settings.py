@@ -64,6 +64,7 @@ class Settings:
         "want-legacy-models": False,
         "experimental-multithreading": False,
         'discord-rich-presence': False,
+        "archipelago-textsize": 0.5,
     }
 
     settingsFile = "settings.json"

@@ -32,8 +32,8 @@ class ArchipelagoOnscreenLog(DirectFrame):
     def addToLog(self, msg):
 
         # We need to correctly scrub for color properties
-
-        msg_label = DirectLabel(relief=None, text=msg, text_scale=0.03, text_style=3,
+        text_scale_modifier = max(0.4, base.settings.get('archipelago-textsize'))
+        msg_label = DirectLabel(relief=None, text=msg, text_scale=(0.06 * text_scale_modifier), text_style=3,
                                 text_align=TextNode.ALeft, text_wordwrap=40, text_fg=(1, 1, 1, 1),
                                 text_shadow=(0, 0, 0, 1))
 
