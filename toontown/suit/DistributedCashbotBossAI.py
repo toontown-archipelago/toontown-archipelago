@@ -950,8 +950,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def exitPrepareBattleThree(self):
         self.canSkip = False
-        if self.newState != 'BattleThree':
-            self.__deleteBattleThreeObjects()
+        if hasattr(self, 'newState'):
+            if self.newState != 'BattleThree':
+                self.__deleteBattleThreeObjects()
         self.ignoreBarrier(self.barrier)
 
     def waitForNextAttack(self, delayTime):
