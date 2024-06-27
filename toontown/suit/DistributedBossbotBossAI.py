@@ -328,11 +328,13 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return
 
     def enterPrepareBattleThree(self):
+        self.canSkip = True
         self.barrier = self.beginBarrier('PrepareBattleThree', self.involvedToons, ToontownGlobals.BossbotBossServingDuration + 1, self.__donePrepareBattleThree)
         self.divideToons()
         self.makeBattleThreeBattles()
 
     def exitPrepareBattleThree(self):
+        self.canSkip = False
         self.ignoreBarrier(self.barrier)
 
     def __donePrepareBattleThree(self, avIds):
@@ -411,6 +413,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.resetBattles()
 
     def enterPrepareBattleFour(self):
+        self.canSkip = True
         self.resetBattles()
         self.divideToons()
         self.setupBattleFourObjects()
@@ -420,8 +423,24 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setState('BattleFour')
 
     def exitPrepareBattleFour(self):
+        self.canSkip = False
         self.ignoreBarrier(self.barrier)
-
+        
+    def checkSkip(self):
+        if len(self.toonsSkipped) >= len(self.involvedToons) - 1:
+            if self.state == 'Introduction':
+                self.exitIntroduction()
+                self.doneIntroduction(self.involvedToons)
+            elif self.state == 'PrepareBattleTwo':
+                self.exitPrepareBattleTwo()
+                self.__donePrepareBattleTwo(self.involvedToons)
+            elif self.state == 'PrepareBattleThree':
+                self.exitPrepareBattleThree()
+                self.__donePrepareBattleThree(self.involvedToons)
+            elif self.state == 'PrepareBattleFour':
+                self.exitPrepareBattleFour()
+                self.__donePrepareBattleFour(self.involvedToons)
+        super().checkSkip()
     def enterBattleFour(self):
         self.battleFourTimeStarted = globalClock.getFrameTime()
         self.numToonsAtStart = len(self.involvedToons)

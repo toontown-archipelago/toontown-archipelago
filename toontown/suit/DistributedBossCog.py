@@ -131,6 +131,28 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bubbleF.setTag('attackCode', str(ToontownGlobals.BossCogFrontAttack))
         self.bubbleF.stash()
 
+    def requestSkip(self):
+        """
+        Ask the server to skip the cutscene.
+        """
+        self.sendUpdate('requestSkip')
+
+    def setSkipAmount(self, amount):
+        messenger.send('cutsceneSkipAmountChange', [amount, len(self.involvedToons)])
+
+    def disableSkipCutscene(self):
+        """
+        This sends a message indicating that the cutscene can no longer be skipped.
+        """
+        messenger.send('disableSkipCutscene')
+        self.ignore('cutsceneSkip')
+
+    def enableSkipCutscene(self):
+        """
+        This sends a message indicating that the cutscene can be skipped.
+        """
+        messenger.send('enableSkipCutscene')
+
     def startTimer(self):
         self.bossSpeedrunTimer.reset()
         self.bossSpeedrunTimer.start_updating()
@@ -1104,6 +1126,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         ElevatorUtils.closeDoors(self.leftDoor, self.rightDoor, self.elevatorType)
 
     def enterIntroduction(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
         self.controlToons()
         ElevatorUtils.openDoors(self.leftDoor, self.rightDoor, self.elevatorType)
         NametagGlobals.setMasterArrowsOn(0)
@@ -1121,6 +1145,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.doneBarrier('Introduction')
 
     def exitIntroduction(self):
+        self.disableSkipCutscene()
         self.notify.debug('DistributedBossCog.exitIntroduction:')
         intervalName = 'IntroductionMovie'
         self.clearInterval(intervalName)

@@ -1089,6 +1089,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     ##### PrepareBattleThree state #####
     def enterPrepareBattleThree(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
+        self.canSkip = True 
         self.__hideSpectators()
         
         self.controlToons()
@@ -1123,6 +1126,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.doneBarrier('PrepareBattleThree')
 
     def exitPrepareBattleThree(self):
+        self.disableSkipCutscene()
         intervalName = 'PrepareBattleThreeMovie'
         self.clearInterval(intervalName)
         self.unstickToons()

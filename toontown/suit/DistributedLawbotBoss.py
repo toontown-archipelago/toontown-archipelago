@@ -806,6 +806,9 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.reparentTo(render)
 
     def enterRollToBattleTwo(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
+        self.canSkip = True
         self.notify.debug('----- enterRollToBattleTwo')
         self.releaseToons(finalBattle=1)
         self.stashBoss()
@@ -826,6 +829,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.doneBarrier('RollToBattleTwo')
 
     def exitRollToBattleTwo(self):
+        self.disableSkipCutscene()
         self.notify.debug('----- exitRollToBattleTwo')
         self.unstickBoss()
         intervalName = 'RollToBattleTwo'
