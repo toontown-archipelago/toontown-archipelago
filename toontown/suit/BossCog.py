@@ -68,8 +68,8 @@ class BossCog(Avatar.Avatar):
         )
         self.skipCButton.hide()
         self.accept('disableSkipCutscene', self.skipCButton.hide)
-        self.accept('enableSkipCutscene',self.skipCButton.show )
-        self.accept('cutsceneSkipAmountChange', self.updateSkipCButton, )
+        self.accept('enableSkipCutscene',self.skipCButton.show)
+        self.accept('cutsceneSkipAmountChange', self.updateSkipCButton)
         self.setBlend(frameBlend=True)
         return
 
