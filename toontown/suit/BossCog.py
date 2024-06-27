@@ -59,16 +59,17 @@ class BossCog(Avatar.Avatar):
         downButton = gui.find('**/InventoryButtonDown')
         rolloverButton = gui.find('**/InventoryButtonRollover')
         self.skipCButton = DirectButton(parent=base.a2dBottomRight, relief=None,
-                                     pos=(-0.46, 0, 0.1), scale=(1,1,1),
-                                     text='Skip cutscene', text_scale = (0.05, 0.05),
-                                    text_pos = (-0.005,-0.01), image = (upButton, downButton, rolloverButton, upButton),
-                                    image_color = (0.66274509803, 0.66274509803, 0.66274509803, 1),
-                                    image_scale = (5,1,2),
-                                    command = self._handleSkip
-        )
+                                        pos=(-0.34, 0, 0.09), scale=(0.75, 0.75, 0.75),
+                                        text_fg=(1, 1, 1, 1), text_shadow=(0, 0, 0, 1),
+                                        text='Skip Cutscene', text_scale=(0.07, 0.07),
+                                        text_pos=(-0.005, -0.01), image=(upButton, downButton, rolloverButton, upButton),
+                                        image_color=(0.66274509803, 0.66274509803, 0.66274509803, 1),
+                                        image_scale=(5, 1, 2),
+                                        command=self._handleSkip
+                                       )
         self.skipCButton.hide()
         self.accept('disableSkipCutscene', self.skipCButton.hide)
-        self.accept('enableSkipCutscene',self.skipCButton.show)
+        self.accept('enableSkipCutscene', self.skipCButton.show)
         self.accept('cutsceneSkipAmountChange', self.updateSkipCButton)
         self.setBlend(frameBlend=True)
         return
@@ -596,7 +597,7 @@ class BossCog(Avatar.Avatar):
         Updates the skip cutscene button to match the amount of people voting"
         """
         self.notify.info("Updating skip cutscene button")
-        self.skipCButton['text'] = f'Skip Cutscene:{minimum} / {maximum}'
+        self.skipCButton['text'] = f'Skip Cutscene: {minimum} / {maximum}'
         self.skipCButton['state'] = DGG.NORMAL
 
     def _handleSkip(self):
