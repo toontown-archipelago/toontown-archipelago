@@ -597,7 +597,6 @@ class BossCog(Avatar.Avatar):
         Updates the skip cutscene button to match the amount of people voting"
         """
         self.notify.info("Updating skip cutscene button")
-        self.skipCButton['text'] = f'Skip Cutscene: {minimum} / {maximum}'
         self.skipCButton['state'] = DGG.NORMAL
 
     def _handleSkip(self):
