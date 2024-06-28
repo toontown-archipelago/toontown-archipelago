@@ -137,6 +137,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         damageMultiplier = self.slot_data.get('damage_multiplier', 100)
         av.b_setDamageMultiplier(damageMultiplier)
 
+        # Get overflow modifier
+        overflowMod = self.slot_data.get('overflow_mod', 100)
+        av.b_setOverflowMod(overflowMod)
+
     def handle(self, client):
         self.debug(f"Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"
               f" playing {self.get_slot_info(self.slot).game}")

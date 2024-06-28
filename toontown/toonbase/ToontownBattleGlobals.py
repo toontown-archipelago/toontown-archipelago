@@ -63,17 +63,17 @@ Levels = [
 regMaxSkill = 20000
 MaxSkill = 999999  # How high should we allow xp to go
 
+# Exp needed per % increase
+overflowRates = [200, 200, 200, 400, 200, 200, 200]
 
-def getUberDamageBonus(experience, track) -> float:
+def getUberDamageBonus(experience, track, overflowMod=None) -> float:
     overflow = experience - regMaxSkill
     if overflow < 0:
         overflow = 0
-
-    # Returns a multiplier to multiply base damage by, default is 1% damage per 200 xp
-    if track == 3:  # This is sound, we want halved overflow
-        multiplier = 1 + overflow / (regMaxSkill * 2)
-    else:
-        multiplier = 1 + overflow / regMaxSkill
+    if not overflowMod:
+        overflowMod = base.localAvatar.getOverflowMod()
+    adjustedOverflow = overflowRates[track] / (overflowMod / 100)
+    multiplier = 1 + (overflow / adjustedOverflow / 100)
     multiplier = round(multiplier, 2)
     return multiplier
 
@@ -338,7 +338,7 @@ AvPropTarget = (0, 3, 0, 2, 3, 3, 3)
 
 
 def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
-                    organicBonus=False, propBonus=False, propAndOrganicBonusStack=False, npc=False, toonDamageMultiplier=100):
+                    organicBonus=False, propBonus=False, propAndOrganicBonusStack=False, npc=False, toonDamageMultiplier=100, overflowMod=100):
 
     exp = experience.getExp(attackTrack)
 
@@ -355,7 +355,7 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
         damage = minD
 
     if not npc:
-        multiplier = experience.getUberDamageBonus(attackTrack)
+        multiplier = experience.getUberDamageBonus(attackTrack, overflowMod=overflowMod)
         damage *= multiplier
 
     if propAndOrganicBonusStack:

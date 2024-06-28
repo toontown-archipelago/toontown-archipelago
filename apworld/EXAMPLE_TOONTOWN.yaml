@@ -36,8 +36,13 @@ Toontown:
   
   # The percentage of damage that will be done when battling Cogs.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
-  # Range: 0 to 500
+  # Range: 25 to 500
   damage_multiplier: 100
+
+  # The percentage multiplier that will applied exp overflow rate.
+  # 50 -> 50%/Half overflow rate, 200 -> 200%/2x overflow rate, etc.
+  # Range: 25 to 300
+  overflow_mod: 100
 
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 1000

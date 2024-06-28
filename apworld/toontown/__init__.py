@@ -295,6 +295,7 @@ class ToontownWorld(World):
             "starting_money": self.options.starting_money.value,
             "base_global_gag_xp": self.options.base_global_gag_xp.value,
             "damage_multiplier": self.options.damage_multiplier.value,
+            "overflow_mod": self.options.overflow_mod.value,
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
             "win_condition": self.options.win_condition.value,

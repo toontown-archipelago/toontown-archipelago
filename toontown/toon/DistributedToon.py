@@ -210,6 +210,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.overheadLaffMeter = None
         self.baseGagSkillMultiplier = 1
         self.damageMultiplier = 100
+        self.overflowMod = 100
         self.accessKeys: List[int] = []
         self.receivedItems: List[Tuple[int, int]] = []
         self.receivedItemIDs: set[int] = set()
@@ -2810,6 +2811,14 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # Set this toon's damage multiplier
     def setDamageMultiplier(self, newDamageMultiplier) -> None:
         self.damageMultiplier = newDamageMultiplier
+
+    # What is this toon's overflow modifier
+    def getOverflowMod(self) -> int:
+        return self.overflowMod
+
+    # Set this toon's overflow modifier
+    def setOverflowMod(self, newOverflow) -> None:
+        self.overflowMod = newOverflow
 
     # What is this toon's list of access keys acquired
     def getAccessKeys(self) -> List[int]:

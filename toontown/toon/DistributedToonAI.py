@@ -229,6 +229,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.receivedItems: List[Tuple[int, int]] = []  # List of AP items received so far, [(index, itemid), (index, itemid)]
         self.checkedLocations: List[int] = []  # List of AP checks we have completed
         self.hintPoints = 0  # How many hint points the player has
+        self.damageMultiplier = 100
+        self.overflowMod = 100
 
         self.archipelago_session: ArchipelagoSession = None
         self.apRewardQueue: DistributedToonRewardQueue = DistributedToonRewardQueue(self)
@@ -4339,6 +4341,23 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Set this toon's damage multiplier
     def setDamageMultiplier(self, newDamageMultiplier) -> None:
         self.damageMultiplier = newDamageMultiplier
+
+    # Set this toon's overflow modifier and tell its client counterpart what it is
+    def b_setOverflowMod(self, newOverflow) -> None:
+        self.setOverflowMod(newOverflow)
+        self.d_setOverflowMod(newOverflow)
+
+    # Tell the client what its new overflow modifier is
+    def d_setOverflowMod(self, newOverflow) -> None:
+        self.sendUpdate('setOverflowMod', [newOverflow])
+
+    # What is this toon's overflow modifier
+    def getOverflowMod(self) -> int:
+        return self.overflowMod
+
+    # Set this toon's overflow modidier
+    def setOverflowMod(self, newOverflow) -> None:
+        self.overflowMod = newOverflow
 
     # Set this toon's list of access keys acquired and tell its client counterpart what it is (and save it to db?)
     def b_setAccessKeys(self, keys: List):
