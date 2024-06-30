@@ -375,7 +375,10 @@ def __throwPie(throw, delay, hitCount):
         if revived != 0:
             suitResponseTrack.append(MovieUtil.createSuitReviveTrack(suit, toon, battle))
         elif died != 0:
-            suitResponseTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle))
+            if suit.getVirtual():
+                suitResponseTrack.append(MovieUtil.createVirtualSuitDeathTrack(suit, toon, battle))
+            else:
+                suitResponseTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle))
         else:
             suitResponseTrack.append(Func(suit.loop, 'neutral'))
         suitResponseTrack = Parallel(suitResponseTrack, bonusTrack)
@@ -573,7 +576,10 @@ def __throwGroupPie(throw, delay, groupHitDict):
             if revived != 0:
                 singleSuitResponseTrack.append(MovieUtil.createSuitReviveTrack(suit, toon, battle))
             elif died != 0:
-                singleSuitResponseTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle))
+                if suit.getVirtual():
+                    singleSuitResponseTrack.append(MovieUtil.createVirtualSuitDeathTrack(suit, toon, battle))
+                else:
+                    singleSuitResponseTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle))
             else:
                 singleSuitResponseTrack.append(Func(suit.loop, 'neutral'))
             singleSuitResponseTrack = Parallel(singleSuitResponseTrack, bonusTrack)

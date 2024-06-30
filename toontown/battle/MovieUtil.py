@@ -303,6 +303,24 @@ def createSuitReviveTrack(suit, toon, battle, npcs = []):
 
     return Parallel(suitTrack, deathSoundTrack, gears1Track, gears2MTrack, toonMTrack)
 
+def createVirtualSuitDeathTrack(suit, toon, battle, npcs = []):
+    suitTrack = Sequence()
+    suitPos, suitHpr = battle.getActorPosHpr(suit)
+    if hasattr(suit,
+               'battleTrapProp') and suit.battleTrapProp and suit.battleTrapProp.getName() == 'traintrack' and not suit.battleTrapProp.isHidden():
+        suitTrack.append(createTrainTrackAppearTrack(suit, toon, battle, npcs))
+    deathSuit = suit
+    suitTrack.append(Func(notify.debug, 'before insertDeathSuit'))
+    suitTrack.append(Func(insertDeathSuit, suit, deathSuit, battle, suitPos, suitHpr))
+    deathSound = base.loader.loadSfx('phase_11/audio/sfx/LB_laser_beam_off_2.ogg')
+    suitTrack.append(Parallel(
+        SoundInterval(deathSound, volume=0.2),
+        LerpScaleInterval(deathSuit, 0.3, 0,)))
+    suitTrack.append(Func(notify.debug, 'before removeDeathSuit'))
+    suitTrack.append(Func(removeDeathSuit, suit, deathSuit, name='remove-death-suit'))
+    suitTrack.append(Func(notify.debug, 'after removeDeathSuit'))
+    return suitTrack
+
 def createSuitDeathTrack(suit, toon, battle, npcs = []):
     suitTrack = Sequence()
     suitPos, suitHpr = battle.getActorPosHpr(suit)

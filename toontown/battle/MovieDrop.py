@@ -416,7 +416,10 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
         if revived != 0:
             suitTrack.append(MovieUtil.createSuitReviveTrack(suit, toon, battle, npcs))
         elif died != 0:
-            suitTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
+            if suit.getVirtual():
+                suitTrack.append(MovieUtil.createVirtualSuitDeathTrack(suit, toon, battle, npcs))
+            else:
+                suitTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
         else:
             suitTrack.append(Func(suit.loop, 'neutral'))
         if bonusTrack != None:

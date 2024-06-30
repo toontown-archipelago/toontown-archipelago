@@ -205,7 +205,10 @@ def __createMagnetMultiTrack(lure, magnet, pos, hpr, scale, isSmallMagnet = 1, n
                 if revived != 0:
                     suitTrack.append(MovieUtil.createSuitReviveTrack(suit, toon, battle, npcs))
                 elif died != 0:
-                    suitTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
+                    if suit.getVirtual():
+                        suitTrack.append(MovieUtil.createVirtualSuitDeathTrack(suit, toon, battle))
+                    else:
+                        suitTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
                 tracks.append(suitTrack)
                 tracks.append(lerpSuit(suit, suitDelay + 0.55 + shakeTotalDuration, suitMoveDuration, reachPos, battle, trapProp))
         else:
@@ -658,7 +661,10 @@ def __createSlideshowMultiTrack(lure, npcs = []):
                 if revived != 0:
                     suitTrack.append(MovieUtil.createSuitReviveTrack(suit, toon, battle, npcs))
                 elif died != 0:
-                    suitTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
+                    if suit.getVirtual():
+                        suitTrack.append(MovieUtil.createVirtualSuitDeathTrack(suit, toon, battle, npcs))
+                    else:
+                        suitTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
                 tracks.append(suitTrack)
                 tracks.append(lerpSuit(suit, suitDelay + 1.7, 0.7, reachPos, battle, trapProp))
         else:
