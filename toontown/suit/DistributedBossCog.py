@@ -87,20 +87,9 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.accept('enterNearBoss', self.avatarNearEnter)
         self.accept('exitNearBoss', self.avatarNearExit)
         self.collNode.removeSolid(0)
-        tube1 = CollisionTube(6.5, -7.5, 2, 6.5, 7.5, 2, 2.5)
-        tube2 = CollisionTube(-6.5, -7.5, 2, -6.5, 7.5, 2, 2.5)
-        roof = CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, 7.1, 5.5))
-        side1 = CollisionPolygon(Point3(-4.4, -7.1, 5.5), Point3(-4.4, 7.1, 5.5), Point3(-4.4, 7.1, 0), Point3(-4.4, -7.1, 0))
-        side2 = CollisionPolygon(Point3(4.4, 7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, -7.1, 0), Point3(4.4, 7.1, 0))
-        front1 = CollisionPolygon(Point3(4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.2), Point3(4.4, -7.1, 5.2))
-        back1 = CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.2), Point3(-4.4, 7.1, 5.2))
-        self.collNode.addSolid(tube1)
-        self.collNode.addSolid(tube2)
-        self.collNode.addSolid(roof)
-        self.collNode.addSolid(side1)
-        self.collNode.addSolid(side2)
-        self.collNode.addSolid(front1)
-        self.collNode.addSolid(back1)
+  
+        # function to create and add collision solids to the collision node 
+        self.createCollisionSolids()
         self.collNodePath.reparentTo(self.axle)
         self.collNode.setCollideMask(ToontownGlobals.PieBitmask | ToontownGlobals.WallBitmask | ToontownGlobals.CameraBitmask)
         self.collNode.setName('BossZap')
@@ -130,6 +119,27 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bubbleF = self.rotateNode.attachNewNode(bubbleFNode)
         self.bubbleF.setTag('attackCode', str(ToontownGlobals.BossCogFrontAttack))
         self.bubbleF.stash()
+
+    def createCollisionSolids(self):
+        """
+        Create the collision solids for the boss cog.
+        Then add the solids to the collision node.
+        This allows overriding for the specific collision solids
+        """
+        tube1 = CollisionTube(6.5, -7.5, 2, 6.5, 7.5, 2, 2.5)
+        tube2 = CollisionTube(-6.5, -7.5, 2, -6.5, 7.5, 2, 2.5)
+        roof =  CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, 7.1, 5.5))
+        side1 = CollisionPolygon(Point3(-4.4, -7.1, 5.5), Point3(-4.4, 7.1, 5.5), Point3(-4.4, 7.1, 0), Point3(-4.4, -7.1, 0))
+        side2 = CollisionPolygon(Point3(4.4, 7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, -7.1, 0), Point3(4.4, 7.1, 0))
+        front1 = CollisionPolygon(Point3(4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.2), Point3(4.4, -7.1, 5.2))
+        back1 = CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.2), Point3(-4.4, 7.1, 5.2))
+        self.collNode.addSolid(tube1)
+        self.collNode.addSolid(tube2)
+        self.collNode.addSolid(roof)
+        self.collNode.addSolid(side1)
+        self.collNode.addSolid(side2)
+        self.collNode.addSolid(front1)
+        self.collNode.addSolid(back1)
 
     def startTimer(self):
         self.bossSpeedrunTimer.reset()
