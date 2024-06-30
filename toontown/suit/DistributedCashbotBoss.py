@@ -155,7 +155,26 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         OneBossCog = self
         
         return
+    
+    def createCollisionSolids(self):
+        tube1 = CollisionTube(6.5, -7.5, 2, 6.5, 7.5, 2, 2.5)
+        tube2 = CollisionTube(-6.5, -7.5, 2, -6.5, 7.5, 2, 2.5)
+        # Calculate the center point of the box
+        center_x = (4.4 + -4.4) / 2
+        center_y = (7.1 + -7.1) / 2
+        center_z = (5.5 + 0) / 2
 
+        # Calculate the half extents of the box
+        half_width = (4.4 - -4.4) / 2
+        half_height = (7.1 - -7.1) / 2
+        half_depth = (5.5 - 0) / 2
+
+        # Create the CollisionBox around the boss 
+        box = CollisionBox(Point3(center_x, center_y, center_z), half_width, half_height, half_depth)
+        self.collNode.addSolid(box)
+        self.collNode.addSolid(tube1)
+        self.collNode.addSolid(tube2)
+        
     def getBossMaxDamage(self):
         return self.ruleset.CFO_MAX_HP
 
