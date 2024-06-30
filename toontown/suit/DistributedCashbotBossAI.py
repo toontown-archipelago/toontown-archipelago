@@ -438,6 +438,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         else:
             delayTime = ToontownGlobals.BossCogAttackTimes.get(attackCode, 5.0)
 
+        if len(self.involvedToons) == 1 and attackCode not in (ToontownGlobals.BossCogDizzy, ToontownGlobals.BossCogDizzyNow):
+            delayTime *= 1.5
+
         self.waitForNextAttack(delayTime)
         return
 
