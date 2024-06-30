@@ -314,8 +314,9 @@ def createVirtualSuitDeathTrack(suit, toon, battle, npcs = []):
     suitTrack.append(Func(insertDeathSuit, suit, deathSuit, battle, suitPos, suitHpr))
     deathSound = base.loader.loadSfx('phase_11/audio/sfx/LB_laser_beam_off_2.ogg')
     suitTrack.append(Parallel(
+        Func(suit.nametag3d.hide),
         SoundInterval(deathSound, volume=0.2),
-        LerpScaleInterval(deathSuit, 0.3, 0,)))
+        LerpScaleInterval(deathSuit, 0.3, 0.0001,)))
     suitTrack.append(Func(notify.debug, 'before removeDeathSuit'))
     suitTrack.append(Func(removeDeathSuit, suit, deathSuit, name='remove-death-suit'))
     suitTrack.append(Func(notify.debug, 'after removeDeathSuit'))
