@@ -440,6 +440,19 @@ class Suit(Avatar.Avatar):
     def resetHealthBarForSkele(self):
         self.healthBar.setPos(0.0, 0.1, 0.0)
 
+    def virtualize(self, condition):
+        self.healthBar.stash()
+        actorNode = self.find('**/__Actor_modelRoot')
+        actorCollection = actorNode.findAllMatches('*')
+        parts = ()
+        for thingIndex in range(0, actorCollection.getNumPaths()):
+            thing = actorCollection[thingIndex]
+            if thing.getName() not in ('joint_attachMeter', 'joint_nameTag', 'def_nameTag'):
+                thing.setColor(self.healthColors[condition])
+                thing.setAttrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd))
+                thing.setDepthWrite(False)
+                thing.setBin('fixed', 1)
+
     def updateHealthBar(self, hp, forceUpdate = 0):
 
         if not hasattr(self, 'currHP'):
@@ -479,6 +492,8 @@ class Suit(Avatar.Avatar):
 
             # Handle fast blink condition
             if newCondition == 5:
+                if self.getVirtual():
+                    self.virtualize(4)
                 taskMgr.remove(self.uniqueName('blink-task'))
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.25), Task(self.__blinkGray), Task.pause(0.1))
                 taskMgr.add(blinkTask, self.uniqueName('blink-task'))
