@@ -1246,7 +1246,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def enterVictory(self):
         # No more intervals should be playing.
         self.cleanupIntervals()
-        
+
         # Boss Cog flees out the door and gets nailed by a passing
         # train.
         self.reparentTo(render)
@@ -1278,7 +1278,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'VictoryMovie'
         seq = Sequence(self.makeBossFleeMovie(), Func(self.__continueVictory), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.cutsceneSpeed)
+        seq.setPlayRate(3.0)
         self.storeInterval(seq, intervalName)
         self.bossHealthBar.deinitialize()
         if self.oldState != 'BattleThree':

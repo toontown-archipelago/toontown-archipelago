@@ -874,7 +874,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'prepareBattleTwoCannonsAppear'
         seq = Sequence(allCannonsAppear, Func(self.__onToBattleTwo), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.cutsceneSpeed)
+        seq.setPlayRate(5.0)
         self.storeInterval(seq, intervalName)
 
     def __onToBattleTwo(self, elapsedTime = 0):
@@ -1120,7 +1120,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'VictoryMovie'
         seq = Sequence(self.makeVictoryMovie(), Func(self.__continueVictory), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.cutsceneSpeed)
+        seq.setPlayRate(3.0)
         self.storeInterval(seq, intervalName)
         self.bossHealthBar.deinitialize()
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
@@ -1151,7 +1151,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'DefeatMovie'
         seq = Sequence(self.makeDefeatMovie(), Func(self.__continueDefeat), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.cutsceneSpeed)
+        seq.setPlayRate(3.0)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
 
