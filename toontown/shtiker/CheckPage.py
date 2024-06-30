@@ -92,6 +92,11 @@ class CheckPage(ShtikerPage.ShtikerPage):
             allItems.setdefault(item_id, 0)
             allItems[item_id] += 1
 
+        # Container Lists for Item Classes
+        keyItems = []
+        progressionItems = []
+        usefulItems = []
+        junkItems = []
         # Generate new buttons
         for item_id, quantity in allItems.items():
             itemDef = get_item_def_from_id(item_id)
@@ -100,7 +105,17 @@ class CheckPage(ShtikerPage.ShtikerPage):
                 continue
 
             button = self.makeCheckButton(itemDef.name, itemsAndCount.get(itemDef.unique_id, 0), quantity)
-            self.checkButtons.append(button[0])
+            itemName = itemDef.name.value
+            if "Key" in itemName or "Disguise" in itemName:
+                keyItems.append(button[0])
+                continue
+            if itemDef.classification == 0b0001:  # Progression Items
+                progressionItems.append(button[0])
+            elif itemDef.classification == 0b0010:  # Useful Items
+                usefulItems.append(button[0])
+            else:
+                junkItems.append(button[0])
+        self.checkButtons = keyItems + progressionItems + usefulItems + junkItems
 
     def makeCheckButton(self, checkName, checkCount, checkMax):
         checkButtonParent = DirectFrame()
