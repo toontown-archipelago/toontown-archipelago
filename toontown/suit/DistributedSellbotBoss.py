@@ -1039,6 +1039,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.battleThreeMusic.stop()
 
     def enterEpilogue(self):
+        base.localAvatar.checkWinCondition()
         self.cleanupIntervals()
         self.clearChat()
         self.cagedToon.clearChat()

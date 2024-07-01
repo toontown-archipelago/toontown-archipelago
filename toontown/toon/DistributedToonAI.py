@@ -1741,6 +1741,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                     newRewardHistory = self.rewardHistory + [finalReward]
                     self.b_setRewardHistory(self.rewardTier, newRewardHistory)
 
+    def checkWinCondition(self):
+        self.sendUpdate('checkWinCondition')
+
     def removeAllTracesOfQuest(self, questId, rewardId):
         self.notify.debug('removeAllTracesOfQuest: questId: %s rewardId: %s' % (questId, rewardId))
         self.notify.debug('removeAllTracesOfQuest: quests before: %s' % self.quests)

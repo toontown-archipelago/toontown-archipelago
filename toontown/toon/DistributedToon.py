@@ -2881,8 +2881,11 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def updateWinCondition(self) -> None:
         condition = win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self)
         self.winCondition = condition
-        # check if we meet the win condition
-        # if we do send a system message to the player that they can complete their run and talk to flippy
+        # check if we have previously met the win condition on login
+        # if we have, send a system message to the player that they can complete their run and talk to flippy
+        self.checkWinCondition()
+
+    def checkWinCondition(self):
         if self.getWinCondition().satisfied():
             if hasattr(self, 'displaySystemClickableWhisper'):
                 self.displaySystemClickableWhisper(0, TTLocalizer.WinConditionMet, whisperType=WhisperType.WTSystem)

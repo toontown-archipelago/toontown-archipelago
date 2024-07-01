@@ -830,6 +830,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.betweenPhaseMusic.stop()
 
     def enterEpilogue(self):
+        base.localAvatar.checkWinCondition()
         self.cleanupIntervals()
         self.clearChat()
         self.resistanceToon.clearChat()
