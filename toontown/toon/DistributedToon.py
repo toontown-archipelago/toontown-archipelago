@@ -219,6 +219,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
         self.slotData = {}
         self.winCondition: WinCondition = win_condition.NoWinCondition(self)
+        self.rewardHistory = []
+        self.rewardTier = 0
         return
 
     def disable(self):
@@ -1368,7 +1370,11 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.rewardHistory = rewardList
 
     def getRewardHistory(self):
-        return (self.rewardTier, self.rewardHistory)
+        if hasattr(self, 'rewardTier'):
+            return (self.rewardTier, self.rewardHistory)
+        else:
+            self.notify.warning(f'Reward tier does not exist for this toon. Setting to an empty list. {base.localAvatar.doId}')
+            return (0, [])
 
     def doSmoothTask(self, task):
         self.smoother.computeAndApplySmoothPosHpr(self, self)
