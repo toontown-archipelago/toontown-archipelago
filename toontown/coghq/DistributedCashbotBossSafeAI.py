@@ -96,7 +96,7 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
                 self.boss.heldObject = self
                 self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_PENALTY_SAFEHEAD)
                 
-        elif impact >= ToontownGlobals.CashbotBossSafeKnockImpact:
+        elif impact >= self.getMinImpact():
             self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_DESAFE)
             self.boss.heldObject.demand('Dropped', avId, self.boss.doId)
             self.boss.heldObject.avoidHelmet = 1

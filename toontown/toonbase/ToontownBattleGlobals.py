@@ -63,17 +63,17 @@ Levels = [
 regMaxSkill = 20000
 MaxSkill = 999999  # How high should we allow xp to go
 
+# Exp needed per % increase
+overflowRates = [600, 200, 500, 400, 200, 200, 200]
 
-def getUberDamageBonus(experience, track) -> float:
+def getUberDamageBonus(experience, track, overflowMod=None) -> float:
     overflow = experience - regMaxSkill
     if overflow < 0:
         overflow = 0
-
-    # Returns a multiplier to multiply base damage by, default is 1% damage per 200 xp
-    if track == 3:  # This is sound, we want halved overflow
-        multiplier = 1 + overflow / (regMaxSkill * 2)
-    else:
-        multiplier = 1 + overflow / regMaxSkill
+    if not overflowMod:
+        overflowMod = base.localAvatar.getOverflowMod()
+    adjustedOverflow = overflowRates[track] / (overflowMod / 100)
+    multiplier = 1 + (overflow / adjustedOverflow / 100)
     multiplier = round(multiplier, 2)
     return multiplier
 
@@ -94,7 +94,7 @@ ExperienceCap = 99999
 MaxToonAcc = 95
 StartingLevel = 0
 CarryLimits = (
-    ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
+    ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 10, 5, 2, 1)),
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 10, 5, 2, 1)),
@@ -242,12 +242,12 @@ def getAccuracyPercentString(track, level):
 AvPropDamage = (
     (   # Toonup
         ((8, 10), (Levels[0][0], Levels[0][1])),
-        ((15, 20), (Levels[0][1], Levels[0][2])),
-        ((20, 25), (Levels[0][2], Levels[0][3])),
-        ((36, 48), (Levels[0][3], Levels[0][4])),
-        ((50, 60), (Levels[0][4], Levels[0][5])),
-        ((80, 120), (Levels[0][5], Levels[0][6])),
-        ((140, 200), (Levels[0][6], regMaxSkill))
+        ((12, 16), (Levels[0][1], Levels[0][2])),
+        ((18, 24), (Levels[0][2], Levels[0][3])),
+        ((32, 40), (Levels[0][3], Levels[0][4])),
+        ((45, 50), (Levels[0][4], Levels[0][5])),
+        ((72, 96), (Levels[0][5], Levels[0][6])),
+        ((100, 160), (Levels[0][6], regMaxSkill))
     ),
     (   # Trap
         ((12, 18), (Levels[1][0], Levels[1][1])),
@@ -295,11 +295,11 @@ AvPropDamage = (
         ((85, 110), (Levels[5][6], regMaxSkill))
     ),
     (   # Drop
-        ((10, 10), (Levels[6][0], Levels[6][1])),
-        ((18, 18), (Levels[6][1], Levels[6][2])),
-        ((30, 30), (Levels[6][2], Levels[6][3])),
-        ((45, 45), (Levels[6][3], Levels[6][4])),
-        ((60, 60), (Levels[6][4], Levels[6][5])),
+        ((8, 10), (Levels[6][0], Levels[6][1])),
+        ((15, 18), (Levels[6][1], Levels[6][2])),
+        ((25, 30), (Levels[6][2], Levels[6][3])),
+        ((42, 45), (Levels[6][3], Levels[6][4])),
+        ((56, 60), (Levels[6][4], Levels[6][5])),
         ((85, 170), (Levels[6][5], Levels[6][6])),
         ((175, 210), (Levels[6][6], regMaxSkill))
     )
@@ -338,7 +338,7 @@ AvPropTarget = (0, 3, 0, 2, 3, 3, 3)
 
 
 def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
-                    organicBonus=False, propBonus=False, propAndOrganicBonusStack=False, npc=False, toonDamageMultiplier=100):
+                    organicBonus=False, propBonus=False, propAndOrganicBonusStack=False, npc=False, toonDamageMultiplier=100, overflowMod=100):
 
     exp = experience.getExp(attackTrack)
 
@@ -355,7 +355,7 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
         damage = minD
 
     if not npc:
-        multiplier = experience.getUberDamageBonus(attackTrack)
+        multiplier = experience.getUberDamageBonus(attackTrack, overflowMod=overflowMod)
         damage *= multiplier
 
     if propAndOrganicBonusStack:

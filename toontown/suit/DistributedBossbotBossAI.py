@@ -328,11 +328,13 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return
 
     def enterPrepareBattleThree(self):
+        self.canSkip = True
         self.barrier = self.beginBarrier('PrepareBattleThree', self.involvedToons, ToontownGlobals.BossbotBossServingDuration + 1, self.__donePrepareBattleThree)
         self.divideToons()
         self.makeBattleThreeBattles()
 
     def exitPrepareBattleThree(self):
+        self.canSkip = False
         self.ignoreBarrier(self.barrier)
 
     def __donePrepareBattleThree(self, avIds):
@@ -411,6 +413,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.resetBattles()
 
     def enterPrepareBattleFour(self):
+        self.canSkip = True
         self.resetBattles()
         self.divideToons()
         self.setupBattleFourObjects()
@@ -420,7 +423,9 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setState('BattleFour')
 
     def exitPrepareBattleFour(self):
+        self.canSkip = False
         self.ignoreBarrier(self.barrier)
+        
 
     def enterBattleFour(self):
         self.battleFourTimeStarted = globalClock.getFrameTime()

@@ -33,7 +33,6 @@ from toontown.ai import WelcomeValleyManager/AI
 from toontown.building import DistributedAnimatedProp/AI
 from toontown.toon import DistributedToon/AI/UD
 from toontown.safezone import DistributedTrolley/AI
-from toontown.safezone import DistributedPartyGate/AI
 from toontown.suit import DistributedSuitPlanner/AI
 from toontown.suit import DistributedSuitBase/AI
 from toontown.suit import DistributedSuit/AI
@@ -1018,7 +1017,7 @@ dclass DistributedToon : DistributedPlayer {
   setTunnelOut(int16, int16/10, int16/10, int16/10, int16/10, int16/100, int32/100) ownsend broadcast;
   setAnimState(char [0-1024], int16/1000, int16) broadcast ram ownsend airecv;
   setEmoteState(int16, int16/1000, int16) broadcast ram ownsend;
-  setEmoteAccess(uint8[] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1]) required ownrecv db;
+  setEmoteAccess(uint8[] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1]) required ownrecv db;
   playEmote(int16, int16/1000, int16) broadcast ownrecv;
   setCustomMessages(uint16[] = []) required ownrecv db;
   setSleepAutoReply(uint32) broadcast clsend ownrecv;
@@ -1068,6 +1067,7 @@ dclass DistributedToon : DistributedPlayer {
   setCheesyEffect(int16 = 0, uint32 = 0, uint32 = 0) required broadcast ownrecv db;
   setGhostMode(uint8) broadcast ownrecv ram;
   playSound(char [0-1024]) ownrecv;
+  checkWinCondition() ownrecv;
   setPosIndex(uint8 = 0) required ownrecv db;
   setFishCollection(uint8[] = [], uint8[] = [], uint16[] = []) required ownrecv db;
   setMaxFishTank(uint8 = 100) required ownrecv db;
@@ -1167,6 +1167,7 @@ dclass DistributedToon : DistributedPlayer {
 
   setBaseGagSkillMultiplier(uint16=1) required ownrecv broadcast db;
   setDamageMultiplier(uint16=100) required ownrecv broadcast db;
+  setOverflowMod(uint16=100) required ownrecv broadcast db;
   setAccessKeys(uint16[] = []) required ownrecv broadcast db;
   setReceivedItems(APItem[]) required ownrecv broadcast db;
   setCheckedLocations(uint32[]=[]) required ownrecv broadcast db;
@@ -1194,13 +1195,6 @@ dclass DistributedCCharBase : DistributedObject {
   setNearbyAvatarSCToontask(uint32, uint32, uint32, uint8) airecv clsend;
 };
 
-dclass DistributedPartyGate : DistributedObject {
-  getPartyList(uint32) airecv clsend;
-  partyChoiceRequest(uint32, uint64, uint64) airecv clsend;
-  listAllPublicParties(publicPartyInfo []);
-  partyRequestDenied(uint8);
-  setParty(publicPartyInfo);
-};
 
 dclass DistributedTrolley : DistributedObject {
   setState(string, int16) broadcast ram;
@@ -1282,6 +1276,9 @@ dclass DistributedBossCog : DistributedNode {
   zapToon(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, int8/100, int8/100, uint8, int16) airecv clsend;
   showZapToon(uint32, int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, uint8, int16) broadcast;
   setAttackCode(uint8, uint32) broadcast;
+  setSkipAmount(uint8) broadcast;
+  requestSkip() airecv clsend;
+  skipCutscene() broadcast;
   updateTimer(uint32/255) broadcast ram;
   damageDealt(uint32, uint32) broadcast;
   stunBonus(uint32 avId, uint32) broadcast;

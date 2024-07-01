@@ -1372,10 +1372,6 @@ group "toontownCentral" [
    nhpr [ 31 0 0 ]
    scale [ 1.18418 1.18418 1.18418 ]
   ]
-  prop "prop_party_gate_DNARoot" [
-   code [ "prop_party_gate" ]
-   pos [ 77.935 -159.939 2.60141 ]
-   nhpr [ 195 0 0 ]
-  ]
+  
  ]
 ]

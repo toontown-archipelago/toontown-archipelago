@@ -21,7 +21,10 @@ class TreasurePlannerAI(DirectObject.DirectObject):
         self.lastRequestId = None
         self.requestStartTime = None
         self.requestCount = None
-        self.healAmount = TreasureGlobals.healAmounts[zoneId]
+        if zoneId in TreasureGlobals.healAmounts:
+            self.healAmount = TreasureGlobals.healAmounts[zoneId]
+        else:
+            self.healAmount = 0
         return
 
     def initSpawnPoints(self):

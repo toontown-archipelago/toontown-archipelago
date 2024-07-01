@@ -155,7 +155,26 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         OneBossCog = self
         
         return
+    
+    def createCollisionSolids(self):
+        tube1 = CollisionTube(6.5, -7.5, 2, 6.5, 7.5, 2, 2.5)
+        tube2 = CollisionTube(-6.5, -7.5, 2, -6.5, 7.5, 2, 2.5)
+        # Calculate the center point of the box
+        center_x = (4.4 + -4.4) / 2
+        center_y = (7.1 + -7.1) / 2
+        center_z = (5.5 + 0) / 2
 
+        # Calculate the half extents of the box
+        half_width = (4.4 - -4.4) / 2
+        half_height = (7.1 - -7.1) / 2
+        half_depth = (5.5 - 0) / 2
+
+        # Create the CollisionBox around the boss 
+        box = CollisionBox(Point3(center_x, center_y, center_z), half_width, half_height, half_depth)
+        self.collNode.addSolid(box)
+        self.collNode.addSolid(tube1)
+        self.collNode.addSolid(tube2)
+        
     def getBossMaxDamage(self):
         return self.ruleset.CFO_MAX_HP
 
@@ -1035,6 +1054,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
     ##### Elevator state #####
     def enterElevator(self):
+        base.discord.cfo()
         DistributedBossCog.DistributedBossCog.enterElevator(self)
         
         # The CFO himself is offstage at this point.
@@ -1089,6 +1109,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     ##### PrepareBattleThree state #####
     def enterPrepareBattleThree(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
+        self.canSkip = True 
         self.__hideSpectators()
         
         self.controlToons()
@@ -1101,11 +1124,14 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         #grab a crane and put it in to Movie mode
         self.movieCrane = self.cranes[0]
         self.movieCrane.request('Movie')
-        
+
+        for safe in list(self.safes.values())[1:]:
+            safe.stash()
+
         seq = Sequence(self.makePrepareBattleThreeMovie(delayDeletes, self.movieCrane), Func(self.__beginBattleThree), name=intervalName)
         seq.delayDeletes = delayDeletes
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
         
         self.endVault.unstash()
@@ -1123,6 +1149,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.doneBarrier('PrepareBattleThree')
 
     def exitPrepareBattleThree(self):
+        self.disableSkipCutscene()
+        for safe in list(self.safes.values())[1:]:
+            safe.unstash()
         intervalName = 'PrepareBattleThreeMovie'
         self.clearInterval(intervalName)
         self.unstickToons()
@@ -1236,7 +1265,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     def enterVictory(self):
         # No more intervals should be playing.
         self.cleanupIntervals()
-        
+
         # Boss Cog flees out the door and gets nailed by a passing
         # train.
         self.reparentTo(render)
@@ -1268,7 +1297,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'VictoryMovie'
         seq = Sequence(self.makeBossFleeMovie(), Func(self.__continueVictory), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(3.0)
         self.storeInterval(seq, intervalName)
         self.bossHealthBar.deinitialize()
         if self.oldState != 'BattleThree':
@@ -1343,6 +1372,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     ##### Epilogue state #####
     def enterEpilogue(self):
         assert self.notify.debug('enterEpilogue()')
+        base.localAvatar.checkWinCondition()
         # No more intervals should be playing.
         self.cleanupIntervals()
         self.clearChat()
@@ -1558,3 +1588,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
                 Func(lambda: sub.cleanup())
             ),
         ).start()
+
+    def skipCutscene(self):
+        intervalName = ""
+        if self.state == 'PrepareBattleThree':
+            intervalName = "PrepareBattleThreeMovie"
+        super().skipCutscene(intervalName)

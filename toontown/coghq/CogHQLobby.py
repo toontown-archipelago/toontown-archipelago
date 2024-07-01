@@ -44,6 +44,7 @@ class CogHQLobby(Place.Place):
 
     def enter(self, requestStatus):
         self.zoneId = requestStatus['zoneId']
+        base.discord.setZone(self.zoneId)
         Place.Place.enter(self)
         self.fsm.enterInitialState()
         base.playMusic(self.loader.music, looping=1, volume=0.8)

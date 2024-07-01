@@ -32,9 +32,6 @@ from ..coghq.CogBossScoreboard import CogBossScoreboard
 class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBossCog')
     allowClickedNameTag = True
-
-    CUTSCENE_SPEED = 10.0
-
     def __init__(self, cr):
         DistributedAvatar.DistributedAvatar.__init__(self, cr)
         BossCog.BossCog.__init__(self)
@@ -72,6 +69,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bossSpeedrunTimer.hide()
         self.scoreboard = CogBossScoreboard()
         self.scoreboard.hide()
+        self.cutsceneSpeed = 1.0
         return
 
     def announceGenerate(self):
@@ -87,20 +85,9 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.accept('enterNearBoss', self.avatarNearEnter)
         self.accept('exitNearBoss', self.avatarNearExit)
         self.collNode.removeSolid(0)
-        tube1 = CollisionTube(6.5, -7.5, 2, 6.5, 7.5, 2, 2.5)
-        tube2 = CollisionTube(-6.5, -7.5, 2, -6.5, 7.5, 2, 2.5)
-        roof = CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, 7.1, 5.5))
-        side1 = CollisionPolygon(Point3(-4.4, -7.1, 5.5), Point3(-4.4, 7.1, 5.5), Point3(-4.4, 7.1, 0), Point3(-4.4, -7.1, 0))
-        side2 = CollisionPolygon(Point3(4.4, 7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, -7.1, 0), Point3(4.4, 7.1, 0))
-        front1 = CollisionPolygon(Point3(4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.2), Point3(4.4, -7.1, 5.2))
-        back1 = CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.2), Point3(-4.4, 7.1, 5.2))
-        self.collNode.addSolid(tube1)
-        self.collNode.addSolid(tube2)
-        self.collNode.addSolid(roof)
-        self.collNode.addSolid(side1)
-        self.collNode.addSolid(side2)
-        self.collNode.addSolid(front1)
-        self.collNode.addSolid(back1)
+  
+        # function to create and add collision solids to the collision node 
+        self.createCollisionSolids()
         self.collNodePath.reparentTo(self.axle)
         self.collNode.setCollideMask(ToontownGlobals.PieBitmask | ToontownGlobals.WallBitmask | ToontownGlobals.CameraBitmask)
         self.collNode.setName('BossZap')
@@ -130,6 +117,66 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bubbleF = self.rotateNode.attachNewNode(bubbleFNode)
         self.bubbleF.setTag('attackCode', str(ToontownGlobals.BossCogFrontAttack))
         self.bubbleF.stash()
+    
+    def requestSkip(self):
+        """
+        Send a request to skip the cutscene to the server
+        """
+        self.sendUpdate('requestSkip', [])
+        # rest is overriden depending on the boss 
+        
+
+    def setSkipAmount(self, amount):
+        messenger.send('cutsceneSkipAmountChange', [amount, len(self.involvedToons)])
+
+    def disableSkipCutscene(self):
+        """
+        This sends a message indicating that the cutscene can no longer be skipped.
+        """
+        messenger.send('disableSkipCutscene')
+        self.ignore('cutsceneSkip')
+
+    def enableSkipCutscene(self):
+        """
+        This sends a message indicating that the cutscene can be skipped.
+        """
+        messenger.send('enableSkipCutscene')
+
+    def skipCutscene(self, intervalName=""):
+        """
+        This function is called from the server to tell the client to skip the cutscene
+        """
+        if self.state == 'Introduction':
+            # override the interval name
+            intervalName = "IntroductionMovie"
+        if intervalName != "":
+            self.activeIntervals.get(intervalName).setPlayRate(20.0)
+            # disable the skip button as well
+            self.disableSkipCutscene()
+            
+        else:
+            self.notify.warning('Unknown interval name ' + intervalName)
+
+    def createCollisionSolids(self):
+        """
+        Create the collision solids for the boss cog.
+        Then add the solids to the collision node.
+        This allows overriding for the specific collision solids
+        """
+        tube1 = CollisionTube(6.5, -7.5, 2, 6.5, 7.5, 2, 2.5)
+        tube2 = CollisionTube(-6.5, -7.5, 2, -6.5, 7.5, 2, 2.5)
+        roof =  CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, 7.1, 5.5))
+        side1 = CollisionPolygon(Point3(-4.4, -7.1, 5.5), Point3(-4.4, 7.1, 5.5), Point3(-4.4, 7.1, 0), Point3(-4.4, -7.1, 0))
+        side2 = CollisionPolygon(Point3(4.4, 7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, -7.1, 0), Point3(4.4, 7.1, 0))
+        front1 = CollisionPolygon(Point3(4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.2), Point3(4.4, -7.1, 5.2))
+        back1 = CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.2), Point3(-4.4, 7.1, 5.2))
+        self.collNode.addSolid(tube1)
+        self.collNode.addSolid(tube2)
+        self.collNode.addSolid(roof)
+        self.collNode.addSolid(side1)
+        self.collNode.addSolid(side2)
+        self.collNode.addSolid(front1)
+        self.collNode.addSolid(back1)
 
     def startTimer(self):
         self.bossSpeedrunTimer.reset()
@@ -1104,6 +1151,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         ElevatorUtils.closeDoors(self.leftDoor, self.rightDoor, self.elevatorType)
 
     def enterIntroduction(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
         self.controlToons()
         ElevatorUtils.openDoors(self.leftDoor, self.rightDoor, self.elevatorType)
         NametagGlobals.setMasterArrowsOn(0)
@@ -1112,7 +1161,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         seq = Sequence(self.makeIntroductionMovie(delayDeletes), Func(self.__beginBattleOne), name=intervalName)
         seq.delayDeletes = delayDeletes
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
 
     def __beginBattleOne(self):
@@ -1121,6 +1170,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.doneBarrier('Introduction')
 
     def exitIntroduction(self):
+        self.disableSkipCutscene()
         self.notify.debug('DistributedBossCog.exitIntroduction:')
         intervalName = 'IntroductionMovie'
         self.clearInterval(intervalName)

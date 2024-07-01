@@ -438,6 +438,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         else:
             delayTime = ToontownGlobals.BossCogAttackTimes.get(attackCode, 5.0)
 
+        if len(self.involvedToons) == 1 and attackCode not in (ToontownGlobals.BossCogDizzy, ToontownGlobals.BossCogDizzyNow):
+            delayTime *= 1.5
+
         self.waitForNextAttack(delayTime)
         return
 
@@ -932,6 +935,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     ##### PrepareBattleThree state #####
     def enterPrepareBattleThree(self):
+        self.canSkip = True
         self.setupRuleset()
         self.setupSpawnpoints()
 
@@ -948,8 +952,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setState('BattleThree')
 
     def exitPrepareBattleThree(self):
-        if self.newState != 'BattleThree':
-            self.__deleteBattleThreeObjects()
+        self.canSkip = False
+        if hasattr(self, 'newState'):
+            if self.newState != 'BattleThree':
+                self.__deleteBattleThreeObjects()
         self.ignoreBarrier(self.barrier)
 
     def waitForNextAttack(self, delayTime):

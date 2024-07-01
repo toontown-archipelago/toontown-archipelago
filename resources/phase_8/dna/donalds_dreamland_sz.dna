@@ -1175,10 +1175,6 @@ group "donaldsDreamland" [
    nhpr [ 0 0 0 ]
    color [ 0.5 0.5 0.5 1 ]
   ]
-  prop "prop_party_gate_DNARoot" [
-   code [ "prop_party_gate" ]
-   pos [ 82.6013 27.5211 -14.99 ]
-   nhpr [ 270 0 0 ]
-  ]
+
  ]
 ]

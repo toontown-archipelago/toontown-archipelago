@@ -63,8 +63,18 @@ class DamageMultiplierRange(Range):
     50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
     """
     display_name = "Damage Multiplier"
-    range_start = 0
+    range_start = 25
     range_end = 500
+    default = 100
+
+class OverflowModRange(Range):
+    """
+    The percentage multiplier that will given with exp overflow.
+    50 -> 50%/Half overflow rate, 200 -> 200%/2x overflow rate, etc.
+    """
+    display_name = "Damage Multiplier"
+    range_start = 25
+    range_end = 300
     default = 100
 
 
@@ -74,8 +84,8 @@ class StartMoneyOption(Range):
     """
     display_name = "Starting Jellybeans"
     range_start = 0
-    range_end = 9999
-    default = 50
+    range_end = 1000
+    default = 1000
 
 
 class WinCondition(Choice):
@@ -293,6 +303,7 @@ class ToontownOptions(PerGameCommonOptions):
     base_global_gag_xp: BaseGlobalGagXPRange
     max_global_gag_xp: MaxGlobalGagXPRange
     damage_multiplier: DamageMultiplierRange
+    overflow_mod: OverflowModRange
     starting_money: StartMoneyOption
     win_condition: WinCondition
     cog_bosses_required: CogBossesRequired
