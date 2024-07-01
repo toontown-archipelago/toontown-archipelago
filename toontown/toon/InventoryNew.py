@@ -267,7 +267,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         self.detailAmountLabel.configure(text=TTLocalizer.InventoryDetailAmount % {'numItems': self.numItem(track, level),
          'maxItems': self.getMax(track, level)})
         self.detailDataLabel.show()
-        damage = getAvPropDamage(track, level, self.toon.experience, toonDamageMultiplier=self.toon.getDamageMultiplier())
+        damage = getAvPropDamage(track, level, self.toon.experience, toonDamageMultiplier=self.toon.getDamageMultiplier(), overflowMod=self.toon.getOverflowMod())
         # damage = int(damage)
         organicBonus = self.toon.checkGagBonus(track, level)
         propBonus = self.checkPropBonus(track)

@@ -92,6 +92,8 @@ class TownLoader(StateData.StateData):
         TexturePool.garbageCollect()
 
     def enter(self, requestStatus):
+        base.discord.setZone(self.zoneId)
+
         teleportDebug(requestStatus, 'TownLoader.enter(%s)' % requestStatus)
         self.fsm.enterInitialState()
         teleportDebug(requestStatus, 'setting state: %s' % requestStatus['where'])

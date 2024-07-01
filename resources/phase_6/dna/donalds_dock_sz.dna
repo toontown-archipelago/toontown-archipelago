@@ -1329,10 +1329,6 @@ group "donaldsDock" [
     ]
    ]
   ]
-  prop "prop_party_gate_DNARoot" [
-   code [ "prop_party_gate" ]
-   pos [ 36.9924 113.67 3.28138 ]
-   nhpr [ 315 0 0 ]
-  ]
+ 
  ]
 ]

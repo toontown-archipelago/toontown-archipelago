@@ -87,6 +87,11 @@ class GlobalTaskWinCondition(WinCondition):
     def __get_tasks_completed(self) -> int:
         _, reward_history = self.toon.getRewardHistory()
         earned_ap_rewards: set[int] = set(reward_history) & Quests.getAllAPRewardIds()
+        # remove the "earned rewards" that are currently in our held quests
+        for quest in self.toon.quests:
+            questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
+            if rewardId in earned_ap_rewards:
+                earned_ap_rewards.remove(rewardId)
         return len(earned_ap_rewards)
 
     # Calculate how many tasks are needed to satisfy the win condition
@@ -120,6 +125,12 @@ class HoodTaskWinCondition(WinCondition):
         # First, filter out AP reward IDs specifically
         _, reward_history = self.toon.getRewardHistory()
         earned_ap_rewards: set[int] = set(reward_history) & Quests.getAllAPRewardIds()
+
+        # remove the "earned rewards" that are currently in our held quests
+        for quest in self.toon.quests:
+            questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
+            if rewardId in earned_ap_rewards:
+                earned_ap_rewards.remove(rewardId)
 
         # Then construct a mapping of how many quests were completed per hood
         completion_per_hood: dict[int, int] = {hood_id: 0 for hood_id in self.TASKING_HOODS}

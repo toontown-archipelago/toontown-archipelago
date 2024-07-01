@@ -343,6 +343,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         DistributedBossCogAI.DistributedBossCogAI.exitIntroduction(self)
 
     def enterRollToBattleTwo(self):
+        self.canSkip = True
         self.listenForToonDeaths()
         self.divideToons()
         self.__makeCannons()
@@ -352,6 +353,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.b_setState('PrepareBattleTwo')
 
     def exitRollToBattleTwo(self):
+        self.canSkip = False
         self.ignoreBarrier(self.barrier)
 
     def enterPrepareBattleTwo(self):
@@ -1013,3 +1015,4 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
 
     def getDeathReasonFromBattle(self) -> DeathReason:
         return DeathReason.BATTLING_CJ
+

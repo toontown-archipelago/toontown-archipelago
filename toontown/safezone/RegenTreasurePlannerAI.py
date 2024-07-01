@@ -13,7 +13,10 @@ class RegenTreasurePlannerAI(TreasurePlannerAI.TreasurePlannerAI):
         self.taskName = '%s-%s' % (taskName, zoneId)
         self.spawnInterval = spawnInterval
         self.maxTreasures = maxTreasures
-        self.healAmount = TreasureGlobals.healAmounts[zoneId]
+        if zoneId in TreasureGlobals.healAmounts:
+            self.healAmount = TreasureGlobals.healAmounts[zoneId]
+        else:
+            self.healAmount = 0
 
     def start(self):
         self.preSpawnTreasures()

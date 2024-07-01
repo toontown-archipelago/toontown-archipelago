@@ -1405,10 +1405,6 @@ group "theBurrrgh" [
    pos [ -11.2839 104.749 6.17428 ]
    nhpr [ -30 0 0 ]
   ]
-  prop "prop_party_gate_DNARoot" [
-   code [ "prop_party_gate" ]
-   pos [ -142.689 36.0939 6.19787 ]
-   nhpr [ 59.0362 0 0 ]
-  ]
+
  ]
 ]

@@ -291,6 +291,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.__resetDoobers()
 
     def enterRollToBattleTwo(self):
+        self.canSkip = True
         self.listenForToonDeaths()
         self.divideToons()
         self.barrier = self.beginBarrier('RollToBattleTwo', self.involvedToons, 45, self.__doneRollToBattleTwo)
@@ -299,6 +300,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setState('PrepareBattleTwo')
 
     def exitRollToBattleTwo(self):
+        self.canSkip = False
         self.ignoreToonDeaths()
         self.ignoreBarrier(self.barrier)
 
@@ -520,3 +522,4 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 barrel.requestDelete()
 
             self.barrels = []
+

@@ -1,7 +1,4 @@
-// Parties
-model "phase_8/models/modules/partyGate_DL" [
- 	store_node [ "prop" "prop_party_gate" "" ]
-	]
+
     
 place_model "phase_8/models/neighborhoods/donalds_dreamland" [
 	store_node [ "prop" "donalds_dreamland" "" ]

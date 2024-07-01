@@ -4918,7 +4918,7 @@ KartShtikerRim = 'Rim'
 KartShtikerDecal = 'Decal'
 KartShtikerDefault = 'Default %s'
 KartShtikerNo = 'No %s Accessory'
-CheckPageTitle = 'Checks'
+CheckPageTitle = 'Items'
 CheckPageScrollTitle = 'Item            Status'
 HintPointsTitle = 'Hint Points: %s'
 QuestChoiceGuiCancel = lCancel
@@ -9934,6 +9934,8 @@ OptionNames = {
     "fovEffects": "Sprinting FOV Effects",
     "cam-toggle-lock": "Camera Toggle Lock",
     "speedchat-style": "Speedchat Color",
+    'discord-rich-presence': 'Discord Rich Presence',
+    "archipelago-textsize": "Archipelago Log Text Size",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",
@@ -10001,3 +10003,4 @@ OptionFPSLimit = {
 
 OptionEnabled = "Enabled"
 OptionDisabled = "Disabled"
+WinConditionMet = 'Congratulations, you have completed your goal! You may now talk to Flippy to redeem your reward!'

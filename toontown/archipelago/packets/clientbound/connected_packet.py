@@ -137,6 +137,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         damageMultiplier = self.slot_data.get('damage_multiplier', 100)
         av.b_setDamageMultiplier(damageMultiplier)
 
+        # Get overflow modifier
+        overflowMod = self.slot_data.get('overflow_mod', 100)
+        av.b_setOverflowMod(overflowMod)
+
     def handle(self, client):
         self.debug(f"Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"
               f" playing {self.get_slot_info(self.slot).game}")
@@ -165,8 +169,9 @@ class ConnectedPacket(ClientBoundPacketBase):
             client.av.archipelago_session.sync()
 
         # Tell AP we are playing
+        won_id = ap_location_name_to_id(locations.ToontownLocationName.SAVED_TOONTOWN.value)
         status_packet = StatusUpdatePacket()
-        status_packet.status = ClientStatus.CLIENT_GOAL if client.av.getWinCondition().satisfied() else ClientStatus.CLIENT_PLAYING
+        status_packet.status = ClientStatus.CLIENT_GOAL if (client.av.getWinCondition().satisfied() and client.av.hasCheckedLocation(won_id)) else ClientStatus.CLIENT_PLAYING
         client.send_packet(status_packet)
 
         # Scout some locations that we need to display

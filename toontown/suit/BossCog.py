@@ -16,6 +16,7 @@ from toontown.battle import BattleProps
 from direct.showbase.PythonUtil import Functor
 import string
 import types
+from direct.gui.DirectGui import *
 GenericModel = 'phase_9/models/char/bossCog'
 ModelDict = {'s': 'phase_9/models/char/sellbotBoss',
  'm': 'phase_10/models/char/cashbotBoss',
@@ -53,6 +54,23 @@ class BossCog(Avatar.Avatar):
         self.healthCondition = 0
         self.animDoneEvent = 'BossCogAnimDone'
         self.animIvalName = 'BossCogAnimIval'
+        gui = loader.loadModel('phase_3.5/models/gui/inventory_gui.bam')
+        upButton = gui.find('**/InventoryButtonUp')
+        downButton = gui.find('**/InventoryButtonDown')
+        rolloverButton = gui.find('**/InventoryButtonRollover')
+        self.skipCButton = DirectButton(parent=base.a2dBottomRight, relief=None,
+                                        pos=(-0.34, 0, 0.09), scale=(0.75, 0.75, 0.75),
+                                        text_fg=(1, 1, 1, 1), text_shadow=(0, 0, 0, 1),
+                                        text='Skip Cutscene', text_scale=(0.07, 0.07),
+                                        text_pos=(-0.005, -0.01), image=(upButton, downButton, rolloverButton, upButton),
+                                        image_color=(0.66274509803, 0.66274509803, 0.66274509803, 1),
+                                        image_scale=(5, 1, 2),
+                                        command=self._handleSkip
+                                       )
+        self.skipCButton.hide()
+        self.accept('disableSkipCutscene', self.skipCButton.hide)
+        self.accept('enableSkipCutscene', self.skipCButton.show)
+        self.accept('cutsceneSkipAmountChange', self.updateSkipCButton)
         self.setBlend(frameBlend=True)
         return
 
@@ -66,6 +84,12 @@ class BossCog(Avatar.Avatar):
             self.doorB.request('Off')
             self.doorA = None
             self.doorB = None
+        # Ignore all messenger requsts then destroy the
+        # gui element for skipping cutscenes
+        self.ignoreAll()
+        if hasattr(self, 'skipButton'):
+            self.skipCButton.destroy()
+            del self.skipCButton
         return
 
     def setDNAString(self, dnaString):
@@ -567,3 +591,19 @@ class BossCog(Avatar.Avatar):
         else:
             ival = anim
         return ival
+    
+    def updateSkipCButton(self, minimum, maximum):
+        """
+        Updates the skip cutscene button to match the amount of people voting"
+        """
+        self.notify.info("Updating skip cutscene button")
+        self.skipCButton['state'] = DGG.NORMAL
+
+    def _handleSkip(self):
+        """
+        Handles the skip cutscene button being pressed,
+        this sends a global message to the specific distributed boss to skip the cutscene
+        """
+        self.notify.info('Handling skip')
+        messenger.send('cutsceneSkip')
+        return
