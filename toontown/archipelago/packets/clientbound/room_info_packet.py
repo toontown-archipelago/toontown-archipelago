@@ -35,10 +35,6 @@ class RoomInfoPacket(ClientBoundPacketBase):
 
         # The amount of hint points you receive per item/location check completed.
         self.location_check_points: int = self.read_raw_field('location_check_points', ignore_missing=True)
-
-        # Deprecated
-        self.datapackage_versions: dict[str, int] = self.read_raw_field('datapackage_versions', ignore_missing=True)
-
         # Checksum hash of the individual games' data packages the server will send. Used by newer clients to decide
         # which games' caches are outdated. See Data Package Contents for more information.
         self.datapackage_checksums: dict[str, str] = self.read_raw_field('datapackage_checksums', ignore_missing=True)
