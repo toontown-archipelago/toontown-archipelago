@@ -53,7 +53,6 @@ class DataPackagePacket(ClientBoundPacketBase):
             # Construct an actual game_data packet
             package = DataPackage()
             package.game = game_name
-            package.version = game_data['version']
             package.checksum = game_data['checksum']
 
             # Our datapackage is stored in reverse order for our location/item keys

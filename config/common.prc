@@ -1,5 +1,5 @@
 # Server settings
-version v0.8.5 Alpha
+version v0.8.6 Alpha
 
 server-version tt-ap-edition
 
