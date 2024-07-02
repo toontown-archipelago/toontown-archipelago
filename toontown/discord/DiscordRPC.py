@@ -23,7 +23,7 @@ class DiscordRPC(object):
 
         3000: ["https://static.wikia.nocookie.net/toontown/images/5/57/The_Brrrgh.png", "In The Brrrgh"],
         3100: ["https://static.wikia.nocookie.net/toontown/images/f/fd/Walrus_Way_Tunnel.jpg", "On Walrus Way"],
-        3200: ["https://static.wikia.nocookie.net/toontown/images/3/35/Sleet_Street_Tunnel.jpg    ", "On Sleet Street"],
+        3200: ["https://static.wikia.nocookie.net/toontown/images/3/35/Sleet_Street_Tunnel.jpg", "On Sleet Street"],
         3300: ["https://static.wikia.nocookie.net/toontown/images/e/e9/Polar_Place_Tunnel.jpg", "On Polar Place"],
 
         4000: ["https://static.wikia.nocookie.net/toontown/images/6/61/Minnies_Melodyland.png", "In Minnie's Melodyland"],
