@@ -79,7 +79,10 @@ class DiscordRPC(object):
 
     def __init__(self):
         self.discordRPC = None
-        self.enable()
+        if base.wantRichPresence:
+            self.enable()
+        else:
+            self.disable()
         self.updateTask = None
         self.details = "Loading" # text next to photo
         self.image = LOGO
@@ -208,7 +211,11 @@ class DiscordRPC(object):
         try:
             if self.discordRPC is None:
                 self.discordRPC = Presence(clientId)
-                self.discordRPC.connect()
+                try:
+                    self.discordRPC.connect()
+                except PermissionError as e:
+                    self.notify.warning(f"Failed to connect to Discord RPC: {e}")
+                    self.discordRPC = None
         except PyPresenceException:
             self.notify.warning("Discord not found for this client.")
             self.discordRPC = None
