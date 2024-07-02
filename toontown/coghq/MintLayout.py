@@ -716,6 +716,10 @@ class MintLayout:
         return len(self.hallways)
 
     def getHallwayModel(self, n):
+        # sanity check
+        if n >= len(self.hallways):
+            self.notify.warning(f'Hallway model {n} not found in {self.hallways}')
+            n = len(self.hallways) - 1
         return self.hallways[n]
 
     def getNumBattles(self):
