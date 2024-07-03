@@ -3,4 +3,4 @@ echo "Toontown Archipelago: Astron Launcher"
 echo
 cd ../../astron
 
-./astrond --loglevel info config/astrond.yml
+./astrond-linux --loglevel info config/astrond.yml

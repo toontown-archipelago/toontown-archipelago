@@ -161,3 +161,77 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             gh release upload ${{ github.ref_name }} TTAP-macos.zip
+# add build for linux
+  build-game-linux:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Needed for release upload
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install nuitka
+          python -m pip install -r requirements.txt
+          sudo apt-get install wget
+          python -m pip install "https://github.com/toontown-archipelago/panda3d/releases/latest/download/panda3d-1.11.0-cp311-cp311-linux_x86_64.whl"
+
+      - name: Build Client
+        run: |
+            python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
+  
+  
+  
+      - name: Copy Built Files
+        run: |
+            mkdir release
+            cp -r output/launch.dist release/game
+            # rename launch.bin to launch
+            mv release/game/launch.bin release/game/launch
+            cp $pythonLocation/lib/python3.11/site-packages/panda3d/libpandaphysics.1.11.so release/game
+      
+      - name: Build & Copy Resources
+        run: |
+            mkdir release/game/resources
+            cd resources
+            for dir in */; do multify -c -f "../release/game/resources/${dir%/}.mf" ${dir%/}; done
+      - name: Copy Config Files
+        run: |
+            mkdir release/game/config
+            cp config/production.prc release/game/config/
+            cp config/common.prc release/game/config/
+  
+      - name: Copy Scripts
+        run: |
+            
+            cp build/scripts/linux/* release/
+  
+      - name: Copy Astron
+        run: |
+          cp -r astron/astrond-linux release/game
+             
+  
+      - name: Compress Release
+        run: |
+            zip -r TTAP-linux.zip release
+      - name: Upload Game Artifact
+        uses: actions/upload-artifact@v4
+        with:
+            name: "TTAP-linux.zip"
+            path: "TTAP-linux.zip"
+            if-no-files-found: "error"    
+  
+      - name: Upload Game to Release
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+              gh release upload ${{ github.ref_name }} TTAP-linux.zip
