@@ -231,6 +231,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.hintPoints = 0  # How many hint points the player has
         self.damageMultiplier = 100
         self.overflowMod = 100
+        self.beingShuffled = False
 
         self.archipelago_session: ArchipelagoSession = None
         self.apRewardQueue: DistributedToonRewardQueue = DistributedToonRewardQueue(self)
@@ -4361,6 +4362,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Set this toon's overflow modidier
     def setOverflowMod(self, newOverflow) -> None:
         self.overflowMod = newOverflow
+
+    def getBeingShuffled(self):
+        return self.beingShuffled
+
+    def setBeingShuffled(self, beingShuffled):
+        self.beingShuffled = beingShuffled
 
     # Set this toon's list of access keys acquired and tell its client counterpart what it is (and save it to db?)
     def b_setAccessKeys(self, keys: List):
