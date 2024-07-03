@@ -121,7 +121,6 @@ jobs:
           mv release/game/launch.bin release/game/launch
           cp $pythonLocation/lib/python3.11/site-packages/panda3d/libpandaphysics.1.11.dylib release/game
 
-
       - name: Build & Copy Resources
         run: |
           wget https://www.panda3d.org/download/panda3d-1.10.14/Panda3D-SDK-1.10.14-MacOSX10.9.dmg
@@ -196,11 +195,12 @@ jobs:
             mkdir release
             cp -r output/launch.dist release/game
             # rename launch.bin to launch
-            mv release/game/launch.bin release/game/launch
-            cp $pythonLocation/lib/python3.11/site-packages/panda3d/libpandaphysics.1.11.so release/game
-      
+            mv release/game/launch.bin release/game/launch      
       - name: Build & Copy Resources
         run: |
+            sudo apt-get install libassimp5 libavcodec58 libavformat58 libavutil56 libbullet3.06 libcg libcggl libegl1 libode8 libopenal1 libopusfile0 libsquish0 libswresample3 libswscale5 nvidia-cg-toolkit
+            wget https://www.panda3d.org/download/panda3d-1.10.14/panda3d1.10_1.10.14~jammy_amd64.deb
+            sudo dpkg -i panda3d1.10_1.10.14~jammy_amd64.deb
             mkdir release/game/resources
             cd resources
             for dir in */; do multify -c -f "../release/game/resources/${dir%/}.mf" ${dir%/}; done
