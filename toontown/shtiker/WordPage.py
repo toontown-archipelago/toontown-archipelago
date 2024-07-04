@@ -745,6 +745,7 @@ class ClothingTabPage(DirectFrame):
                                       text='Set As Outfit', text_scale=0.05, text_pos=(0, -0.0125), scale=0.8,
                                       pos=(0, 0, -0.65), command=self.setAsClothing)
         av = base.cr.doId2do.get(base.localAvatar.doId)
+        self.toggleNude.hide()
         if len(av.style.torso) == 1:
             self.changeBody("nude")
 

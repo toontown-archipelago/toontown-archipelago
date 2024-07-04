@@ -139,8 +139,9 @@ class DistributedAvatar(DistributedActor, Avatar):
                 messenger.send(self.uniqueName('hpChange'), [self.hp, self.maxHp, quietly])
             if self.hp != None and self.hp > 0:
                 messenger.send(self.uniqueName('positiveHP'))
-
-        base.discord.setLaff(self.hp, self.maxHp)
+        # make sure its the local toon being changed
+        if self == base.localAvatar:
+            base.discord.setLaff(self.hp, self.maxHp)
         return
 
     def died(self):

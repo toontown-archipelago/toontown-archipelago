@@ -501,8 +501,14 @@ class GagShuffleAward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
+        # Let's make sure we aren't already being shuffled
+        if av.getBeingShuffled():
+            av.d_broadcastHpString("GAG SHUFFLE!", (.3, .5, .8))
+            av.d_playEmote(EmoteFuncDict['Confused'], 1)
+            return
 
-        # Clear inventory, randomly choose gags and add them until we fill up
+        # Clear inventory, set being shuffled, randomly choose gags and add them until we fill up
+        av.setBeingShuffled(True)
         av.inventory.calcTotalProps()  # Might not be necessary, but just to be safe
         target = av.inventory.totalProps
         av.inventory.clearInventory()  # Wipe inventory
@@ -522,7 +528,8 @@ class GagShuffleAward(APReward):
             # Edge case, if we are out of gags we need to stop (in theory this should never happen but let's be safe :p)
             if len(allowedGags) <= 0:
                 break
-
+        # We're done shuffling, should be good now
+        av.setBeingShuffled(False)
         av.b_setInventory(av.inventory.makeNetString())
         av.d_broadcastHpString("GAG SHUFFLE!", (.3, .5, .8))
         av.d_playEmote(EmoteFuncDict['Confused'], 1)
