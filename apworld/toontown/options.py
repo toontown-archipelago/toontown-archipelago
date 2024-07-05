@@ -72,7 +72,7 @@ class OverflowModRange(Range):
     The percentage multiplier that will given with exp overflow.
     50 -> 50%/Half overflow rate, 200 -> 200%/2x overflow rate, etc.
     """
-    display_name = "Damage Multiplier"
+    display_name = "Overflow Modifier"
     range_start = 25
     range_end = 300
     default = 100
