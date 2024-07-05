@@ -49,7 +49,7 @@ OptionToType = {
     "resolution": OptionTypes.DROPDOWN,
     "vertical-sync": OptionTypes.BUTTON,
     "anisotropic-filter": OptionTypes.DROPDOWN,
-    "anti-aliasing": OptionTypes.BUTTON,
+    "anti-aliasing": OptionTypes.DROPDOWN,
     "frame-rate-meter": OptionTypes.BUTTON,
     "fps-limit": OptionTypes.DROPDOWN,
 
