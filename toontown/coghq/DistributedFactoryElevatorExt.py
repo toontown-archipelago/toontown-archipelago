@@ -30,6 +30,8 @@ class DistributedFactoryElevatorExt(DistributedElevatorExt.DistributedElevatorEx
             self.elevatorModel.setPosHpr(62.74, -85.31, 0.0, 2.0, 0.0, 0.0)
         elif self.entranceId == 1:
             self.elevatorModel.setPosHpr(-162.25, 26.43, 0.0, 269.0, 0.0, 0.0)
+            self.cogDeptIconDifficultColorSequence = self.getDifficultyVisualColorSequence()
+            self.cogDeptIconDifficultColorSequence.loop()
         else:
             self.notify.error('Invalid entranceId: %s' % entranceId)
 
@@ -42,6 +44,7 @@ class DistributedFactoryElevatorExt(DistributedElevatorExt.DistributedElevatorEx
         self.elevatorModel.find('**/light_panel').removeNode()
         self.elevatorModel.find('**/light_panel_frame').removeNode()
         DistributedElevator.DistributedElevator.setupElevator(self)
+        self.setUpCogIcon('s')    
 
     def getElevatorModel(self):
         return self.elevatorModel

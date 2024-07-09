@@ -46,6 +46,9 @@ class DistributedMintElevatorExt(DistributedElevatorExt.DistributedElevatorExt):
         signText = DirectGui.OnscreenText(text=TextEncoder.upper(TTLocalizer.GlobalStreetNames[mintId][-1]), font=ToontownGlobals.getSuitFont(), scale=TTLocalizer.DMEEsignText, fg=(0.87, 0.87, 0.87, 1), mayChange=False, parent=backgroundGeom)
         signText.setPosHpr(locator, 0, 0, 0, 0, 0, 0)
         signText.setDepthWrite(0)
+        if self.mintId == ToontownGlobals.CashbotMintIntC:
+            self.cogDeptIconDifficultColorSequence = self.getDifficultyVisualColorSequence()
+            self.cogDeptIconDifficultColorSequence.loop()
 
     def setupElevator(self):
         self.elevatorModel = loader.loadModel('phase_10/models/cogHQ/mintElevator')
@@ -54,6 +57,8 @@ class DistributedMintElevatorExt(DistributedElevatorExt.DistributedElevatorExt):
         self.rightDoor = self.elevatorModel.find('**/right_door')
         DistributedElevator.DistributedElevator.setupElevator(self)
         self.elevatorSphereNodePath.setY(-1.42)
+        self.setUpCogIcon('m')
+        self.cogDeptIcon.setPos(-0.0184298, 5.83557, 8.835)
 
     def getElevatorModel(self):
         return self.elevatorModel

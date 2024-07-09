@@ -11,6 +11,7 @@ from toontown.building import ElevatorConstants
 from toontown.distributed import DelayDelete
 from direct.showbase import PythonUtil
 from toontown.building import BoardingGroupShow
+from toontown.suit import SuitDNA, Suit
 
 class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCogKart')
@@ -27,6 +28,18 @@ class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
         self.rightDoor = None
         self.fillSlotTrack = None
         return
+    
+    def setUpCogIcon(self, dept, elevatorModel):
+        cogIcons = loader.loadModel('phase_3/models/gui/cog_icons')
+        self.cogDeptIcon = cogIcons.find(SuitDNA.suitDeptToIconBldg[dept])
+        self.cogDeptIcon.reparentTo(elevatorModel)
+        self.cogDeptIcon.setPos(-0.0184298, 3.2, 1.50405)
+        self.cogDeptIcon.setScale(1.35)
+        self.cogDeptIcon.setH(180)
+        cogIcons.removeNode()
+
+        self.cogDeptIcon.setColor(Suit.Suit.medallionColors[dept])
+        self.elevatorDept = dept
 
     def generate(self):
         DistributedElevatorExt.DistributedElevatorExt.generate(self)
@@ -44,6 +57,7 @@ class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
         self.golfKart.reparentTo(self.loader.geom)
         self.wheels = self.kart.findAllMatches('**/wheelNode*')
         self.numWheels = self.wheels.getNumPaths()
+        self.setUpCogIcon('c', self.kart)
 
     def announceGenerate(self):
         DistributedElevatorExt.DistributedElevatorExt.announceGenerate(self)
@@ -172,6 +186,9 @@ class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
 
     def setCountryClubId(self, countryClubId):
         self.countryClubId = countryClubId
+        if self.countryClubId == ToontownGlobals.BossbotCountryClubIntC:
+            self.cogDeptIconDifficultColorSequence = self.getDifficultyVisualColorSequence()
+            self.cogDeptIconDifficultColorSequence.loop()
 
     def getZoneId(self):
         return 0

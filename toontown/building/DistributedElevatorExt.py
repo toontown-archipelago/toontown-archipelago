@@ -12,6 +12,7 @@ from direct.fsm import State
 from toontown.hood import ZoneUtil
 from toontown.toonbase import TTLocalizer
 from toontown.toontowngui import TeaserPanel
+from toontown.suit import SuitDNA, Suit
 
 class DistributedElevatorExt(DistributedElevator.DistributedElevator):
 
@@ -19,6 +20,9 @@ class DistributedElevatorExt(DistributedElevator.DistributedElevator):
         DistributedElevator.DistributedElevator.__init__(self, cr)
         self.nametag = None
         self.currentFloor = -1
+        self.cogDeptIcon = None
+        self.cogDeptIconDifficultColorSequence = None
+        self.elevatorDept = None
         return
 
     def setupElevator(self):
@@ -28,10 +32,37 @@ class DistributedElevatorExt(DistributedElevator.DistributedElevator):
         self.rightDoor = self.bldg.rightDoor
         DistributedElevator.DistributedElevator.setupElevator(self)
         self.setupNametag()
+    
+    def delete(self):
+        DistributedElevator.DistributedElevator.delete(self)
+        if self.cogDeptIconDifficultColorSequence:
+            self.cogDeptIconDifficultColorSequence.finish()
+            self.cogDeptIconDifficultColorSequence = None
+        if self.cogDeptIcon:
+            self.cogDeptIcon.removeNode()
+            self.cogDeptIcon = None
+        if self.elevatorDept:
+            self.elevatorDept = None
 
     def disable(self):
         self.clearNametag()
         DistributedElevator.DistributedElevator.disable(self)
+    
+    def setUpCogIcon(self, dept):
+        cogIcons = loader.loadModel('phase_3/models/gui/cog_icons')
+        self.cogDeptIcon = cogIcons.find(SuitDNA.suitDeptToIconBldg[dept])
+        self.cogDeptIcon.reparentTo(self.elevatorModel)
+        self.cogDeptIcon.setPos(0, 6.79, 6.8)
+        self.cogDeptIcon.setScale(3)
+        cogIcons.removeNode()
+
+        self.cogDeptIcon.setColor(Suit.Suit.medallionColors[dept])
+        self.elevatorDept = dept
+    
+    def getDifficultyVisualColorSequence(self) -> Sequence:
+        return Sequence(
+            LerpColorInterval(self.cogDeptIcon, 1.5, Vec4(0.85, 0.6, 0.6, 1)),
+            LerpColorInterval(self.cogDeptIcon, 1.5, Suit.Suit.medallionColors[self.elevatorDept]))
 
     def setupNametag(self):
         if self.nametag == None:

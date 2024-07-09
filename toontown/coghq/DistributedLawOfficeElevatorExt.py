@@ -44,6 +44,9 @@ class DistributedLawOfficeElevatorExt(DistributedElevatorExt.DistributedElevator
         signText = DirectGui.OnscreenText(text=TextEncoder.upper(TTLocalizer.GlobalStreetNames[self.intZoneId][-1]), font=ToontownGlobals.getSuitFont(), scale=2, fg=(0.87, 0.87, 0.87, 1), mayChange=False, parent=backgroundGeom)
         signText.setPosHpr(locator, 0, 0, 0, 0, 0, 0)
         signText.setDepthWrite(0)
+        if self.entranceId in [2, 3]:
+            self.cogDeptIconDifficultColorSequence = self.getDifficultyVisualColorSequence()
+            self.cogDeptIconDifficultColorSequence.loop()
 
     def setupElevator(self):
         self.elevatorModel = loader.loadModel('phase_10/models/cogHQ/mintElevator')
@@ -52,6 +55,8 @@ class DistributedLawOfficeElevatorExt(DistributedElevatorExt.DistributedElevator
         self.rightDoor = self.elevatorModel.find('**/right_door')
         DistributedElevator.DistributedElevator.setupElevator(self)
         self.elevatorSphereNodePath.setY(-1.42)
+        self.setUpCogIcon('l')
+        self.cogDeptIcon.setPos(-0.0184298, 5.83557, 8.835)
 
     def getElevatorModel(self):
         return self.elevatorModel

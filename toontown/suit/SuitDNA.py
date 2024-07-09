@@ -150,6 +150,12 @@ suitBody2HeadPath = {
     'c': 'phase_3.5/models/char/suitC-heads'
 }
 
+suitDeptToIconBldg = {
+    'c': '**/CorpIcon',
+    'l': '**/LegalIcon',
+    'm': '**/MoneyIcon',
+    's': '**/SalesIcon'
+}
 
 @dataclass
 class SuitAnimation:
