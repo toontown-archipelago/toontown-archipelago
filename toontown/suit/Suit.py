@@ -346,7 +346,8 @@ class Suit(Avatar.Avatar):
         modelRoot.find('**/torso').setTexture(torsoTex, 1)
         modelRoot.find('**/arms').setTexture(armTex, 1)
         modelRoot.find('**/legs').setTexture(legTex, 1)
-        modelRoot.find('**/hands').setColor(self.handColor)
+        handTexture = loader.loadTexture('phase_' + str(suitDeptToPhase[self.style.dept]) + '/maps/tt_t_ene_suitHand_' + self.style.name + '.png')
+        modelRoot.find('**/hands').setTexture(handTexture, 1)
 
     def makeRentalSuit(self, suitType, modelRoot = None):
         if not modelRoot:
@@ -378,7 +379,8 @@ class Suit(Avatar.Avatar):
                 headPart.setColor(self.headColor)
         
         # Hands
-        self.find('**/hands').setColor(self.handColor)
+        handTexture = loader.loadTexture('phase_' + str(suitDeptToPhase[self.style.dept]) + '/maps/tt_t_ene_suitHand_' + self.style.name + '.png')
+        self.find('**/hands').setTexture(handTexture, 1)
 
     def generateCorporateTie(self, modelPath = None):
         if not modelPath:
@@ -566,7 +568,8 @@ class Suit(Avatar.Avatar):
         
         # Set the hand color
         if not self.isSkeleton:
-            self.loseActor.find('**/hands').setColor(self.handColor)
+            handTexture = loader.loadTexture('phase_' + str(suitDeptToPhase[self.style.dept]) + '/maps/tt_t_ene_suitHand_' + self.style.name + '.png')
+            self.loseActor.find('**/hands').setTexture(handTexture, 1)
         return self.loseActor
 
     def cleanupLoseActor(self):
