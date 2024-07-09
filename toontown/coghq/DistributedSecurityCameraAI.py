@@ -2,6 +2,7 @@ from otp.ai.AIBase import *
 from direct.interval.IntervalGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed import ClockDelta
+from toontown.toonbase import ToontownGlobals
 from direct.task import Task
 from otp.level import DistributedEntityAI
 from otp.level import BasicEntities
@@ -11,7 +12,7 @@ from toontown.archipelago.definitions.death_reason import DeathReason
 from toontown.coghq import BattleBlockerAI
 from toontown.coghq import LaserGameMineSweeper
 from toontown.coghq import LaserGameRoll
-import random
+import random, math
 
 class DistributedSecurityCameraAI(DistributedEntityAI.DistributedEntityAI, NodePath, BasicEntities.NodePathAttribs):
 
@@ -75,9 +76,16 @@ class DistributedSecurityCameraAI(DistributedEntityAI.DistributedEntityAI, NodeP
     def trapFire(self):
         avId = self.air.getAvatarIdFromSender()
         toon = self.air.doId2do[avId]
+        damPowExtra = 0
+        if hasattr(self, 'level') and hasattr(self.level, 'stageId'):
+            if self.level.stageId in [ToontownGlobals.LawbotStageIntC, ToontownGlobals.LawbotStageIntD]:
+                damPowExtra = int(math.ceil(self.damPow * 0.5))
+        if hasattr(self, 'level') and hasattr(self.level, 'mintId'):
+            if self.level.mintId == ToontownGlobals.CashbotMintIntC:
+                damPowExtra = int(math.ceil(self.damPow * 0.5))
         if toon:
             toon.setDeathReason(DeathReason.SPOTLIGHT)
-            toon.takeDamage(self.damPow)
+            toon.takeDamage(self.damPow + damPowExtra)
 
     def trapDisable(self):
         self.enabled = 0

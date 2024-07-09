@@ -344,8 +344,15 @@ class DistributedStomper(DistributedCrusherEntity.DistributedCrusherEntity):
             zRange = self.headScale[2]
             xRange = self.headScale[0]
             yRange = 5
+            hitPtsTakenExtra = 0
+            if hasattr(self, 'level') and hasattr(self.level, 'stageId'):
+                if self.level.stageId in [ToontownGlobals.LawbotStageIntC, ToontownGlobals.LawbotStageIntD]:
+                    hitPtsTakenExtra = int(math.ceil(self.damage * 0.5))
+            if hasattr(self, 'level') and hasattr(self.level, 'mintId'):
+                if self.level.mintId == ToontownGlobals.CashbotMintIntC:
+                    hitPtsTakenExtra = int(math.ceil(self.damage * 0.5))
             if tPos[2] < zRange and tPos[2] > -zRange and tPos[0] < xRange and tPos[0] > -xRange and tPos[1] < yRange / 10.0 and tPos[1] > -yRange:
-                self.level.b_setOuch(self.damage, 'Squish')
+                self.level.b_setOuch(self.damage + hitPtsTakenExtra, 'Squish')
                 base.localAvatar.setZ(self.getZ(render) + 0.025)
 
     if __dev__:

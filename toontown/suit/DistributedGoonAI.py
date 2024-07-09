@@ -2,10 +2,11 @@ from otp.ai.AIBaseGlobal import *
 from .GoonGlobals import *
 from direct.directnotify import DirectNotifyGlobal
 from toontown.battle import SuitBattleGlobals
+from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCrushableEntityAI
 from . import GoonPathData
 from direct.distributed import ClockDelta
-import random
+import random, math
 from direct.task import Task
 
 class DistributedGoonAI(DistributedCrushableEntityAI.DistributedCrushableEntityAI):
@@ -229,8 +230,18 @@ class DistributedGoonAI(DistributedCrushableEntityAI.DistributedCrushableEntityA
         return self.scale
 
     def b_setupGoon(self, velocity, hFov, attackRadius, strength, scale):
-        self.setupGoon(velocity, hFov, attackRadius, strength, scale)
-        self.d_setupGoon(velocity, hFov, attackRadius, strength, scale)
+        # check if self.level has attribute 'stageId'
+        strengthExtra = 0
+        if hasattr(self, 'level') and hasattr(self.level, 'stageId'):
+            if self.level.stageId in [ToontownGlobals.LawbotStageIntC, ToontownGlobals.LawbotStageIntD]:
+                strengthExtra = int(math.ceil(strength * 0.5))
+        if hasattr(self, 'level') and hasattr(self.level, 'mintId'):
+            if self.level.mintId == ToontownGlobals.CashbotMintIntC:
+                strengthExtra = int(math.ceil(strength * 0.5))
+                
+
+        self.setupGoon(velocity, hFov, attackRadius, strength + strengthExtra, scale)
+        self.d_setupGoon(velocity, hFov, attackRadius, strength + strengthExtra, scale)
 
     def setupGoon(self, velocity, hFov, attackRadius, strength, scale):
         self.setVelocity(velocity)

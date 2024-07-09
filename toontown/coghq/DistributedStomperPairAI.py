@@ -1,11 +1,12 @@
 from otp.ai.AIBase import *
 from direct.directnotify import DirectNotifyGlobal
 from otp.level import DistributedEntityAI
+from toontown.toonbase import ToontownGlobals
 from . import StomperGlobals
 from direct.distributed import ClockDelta
 
 from ..archipelago.definitions.death_reason import DeathReason
-
+import math
 
 class DistributedStomperPairAI(DistributedEntityAI.DistributedEntityAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedStomperAI')
@@ -31,6 +32,13 @@ class DistributedStomperPairAI(DistributedEntityAI.DistributedEntityAI):
     def setSquash(self):
         avId = self.air.getAvatarIdFromSender()
         av = simbase.air.doId2do.get(avId)
+        hitPtsTakenExtra = 0
+        if hasattr(self, 'level') and hasattr(self.level, 'stageId'):
+            if self.level.stageId in [ToontownGlobals.LawbotStageIntC, ToontownGlobals.LawbotStageIntD]:
+                hitPtsTakenExtra = int(math.ceil(self.hitPtsTaken * 0.5))
+        if hasattr(self, 'level') and hasattr(self.level, 'mintId'):
+            if self.level.mintId == ToontownGlobals.CashbotMintIntC:
+                hitPtsTakenExtra = int(math.ceil(self.hitPtsTaken * 0.5))
         if av:
             av.setDeathReason(DeathReason.STOMPER)
-            av.takeDamage(self.hitPtsTaken)
+            av.takeDamage(self.hitPtsTaken + hitPtsTakenExtra)
