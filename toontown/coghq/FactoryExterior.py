@@ -75,8 +75,7 @@ class FactoryExterior(BattlePlace.BattlePlace):
         self.tunnelOriginList = base.cr.hoodMgr.addLinkTunnelHooks(self, self.nodeList, self.zoneId)
         how = requestStatus['how']
         self.fsm.request(how, [requestStatus])
-        if self.zoneId != ToontownGlobals.LawbotOfficeExt:
-            self.handleInterests()
+        self.handleInterests()
 
     def exit(self):
         self._telemLimiter.destroy()

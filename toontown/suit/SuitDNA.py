@@ -157,6 +157,11 @@ suitDeptToIconBldg = {
     's': '**/SalesIcon'
 }
 
+suitDeptToPhase = {'s': 9,
+                   'm': 10,
+                   'l': 11,
+                   'c': 12}
+
 @dataclass
 class SuitAnimation:
     key:   str  # The key that the codebase references this animation by.

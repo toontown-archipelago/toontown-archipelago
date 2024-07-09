@@ -374,7 +374,7 @@ class ToontownAIRepository(ToontownInternalRepository):
 
         # Lawbot HQ
         self.zoneTable[ToontownGlobals.LawbotHQ] = (
-            (ToontownGlobals.LawbotHQ, 0, 1),
+            (ToontownGlobals.LawbotHQ, 0, 1), (ToontownGlobals.LawbotOfficeExt, 0, 1)
         )
         self.createHood(LawbotHQDataAI, ToontownGlobals.LawbotHQ)
         NPCToons.createNpcsInZone(self, ToontownGlobals.LawbotHQ)
