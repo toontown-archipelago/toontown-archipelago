@@ -502,6 +502,7 @@ class GagShuffleAward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         # Let's make sure we aren't already being shuffled
+        avId = av.getDoId()
         if av.getBeingShuffled():
             av.d_broadcastHpString("GAG SHUFFLE!", (.3, .5, .8))
             av.d_playEmote(EmoteFuncDict['Confused'], 1)
@@ -517,16 +518,20 @@ class GagShuffleAward(APReward):
         # Only do enough attempts to fill us back up to what we were
         for _ in range(target):
             # Randomly select a gag and attempt to add it
-            gag: Tuple[int, int] = random.choice(allowedGags)
-            track, level = gag
-            gagsAdded = av.inventory.addItem(track, level)
+            if allowedGags: # sanity check for possible empty list
+                gag: Tuple[int, int] = random.choice(allowedGags)
+                track, level = gag
+                gagsAdded = av.inventory.addItem(track, level)
 
-            # If this gag failed to add, we can no longer query for this gag. Remove it.
-            if gagsAdded <= 0:
-                allowedGags.remove(gag)
+                # If this gag failed to add, we can no longer query for this gag. Remove it.
+                if gagsAdded <= 0:
+                    allowedGags.remove(gag)
 
-            # Edge case, if we are out of gags we need to stop (in theory this should never happen but let's be safe :p)
-            if len(allowedGags) <= 0:
+                # Edge case, if we are out of gags we need to stop (in theory this should never happen but let's be safe :p)
+                if len(allowedGags) <= 0:
+                    break
+            else:
+                print(f"archipelago rewards WARNING: Could not find any allowed gags. For avId: {avId}")
                 break
         # We're done shuffling, should be good now
         av.setBeingShuffled(False)
