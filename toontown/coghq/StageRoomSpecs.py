@@ -3,16 +3,20 @@ from toontown.toonbase import ToontownGlobals
 from toontown.coghq import NullCogs
 from toontown.coghq import LawbotOfficeOilRoom_Battle00_Cogs
 from toontown.coghq import LawbotOfficeOilRoom_Battle01_Cogs
+from toontown.coghq import LawbotOfficeOilRoom_Battle02_Cogs
 from toontown.coghq import LawbotOfficeBoilerRoom_Battle00_Cogs
 from toontown.coghq import LawbotOfficeBoilerRoom_Trap00_Cogs
 from toontown.coghq import LawbotOfficeLobby_Trap00_Cogs
 from toontown.coghq import LawbotOfficeDiamondRoom_Trap00_Cogs
 from toontown.coghq import LawbotOfficeDiamondRoom_Battle00_Cogs
 from toontown.coghq import LawbotOfficeGearRoom_Battle00_Cogs
+from toontown.coghq import LawbotOfficeDuctRoom_Battle00_Cogs
+from toontown.coghq import LawbotOfficeDuctRoom_Battle01_Cogs
 
 from toontown.coghq import LawbotOfficeEntrance_Action00
 from toontown.coghq import LawbotOfficeOilRoom_Battle00
 from toontown.coghq import LawbotOfficeOilRoom_Battle01
+from toontown.coghq import LawbotOfficeOilRoom_Battle02
 from toontown.coghq import LawbotOfficeBoilerRoom_Security00
 from toontown.coghq import LawbotOfficeBoilerRoom_Battle00
 from toontown.coghq import LawbotOfficeGearRoom_Action00
@@ -29,6 +33,8 @@ from toontown.coghq import LawbotOfficeDiamondRoom_Action01
 from toontown.coghq import LawbotOfficeLobby_Action01
 from toontown.coghq import LawbotOfficeDiamondRoom_Battle00
 from toontown.coghq import LawbotOfficeGearRoom_Battle00
+from toontown.coghq import LawbotOfficeDuctRoom_Battle00
+from toontown.coghq import LawbotOfficeDuctRoom_Battle01
 
 
 LawbotStageSpecModules = {
@@ -51,6 +57,9 @@ LawbotStageSpecModules = {
     103: LawbotOfficeLobby_Action01,
     104: LawbotOfficeDiamondRoom_Battle00,
     105: LawbotOfficeGearRoom_Battle00,
+    106: LawbotOfficeDuctRoom_Battle00,
+    107: LawbotOfficeOilRoom_Battle02,
+    108: LawbotOfficeDuctRoom_Battle01
 }
 
 # Ok don't freak out. What we are doing here is grabbing the name of the module that we imported.
@@ -67,7 +76,10 @@ CogSpecModules = {
     'LawbotOfficeLobby_Trap00': LawbotOfficeLobby_Trap00_Cogs,
     'LawbotOfficeDiamondRoom_Trap00': LawbotOfficeDiamondRoom_Trap00_Cogs,
     'LawbotOfficeDiamondRoom_Battle00': LawbotOfficeDiamondRoom_Battle00_Cogs,
-    'LawbotOfficeGearRoom_Battle00': LawbotOfficeGearRoom_Battle00_Cogs
+    'LawbotOfficeGearRoom_Battle00': LawbotOfficeGearRoom_Battle00_Cogs,
+    'LawbotOfficeDuctRoom_Battle00': LawbotOfficeDuctRoom_Battle00_Cogs,
+    'LawbotOfficeDuctRoom_Battle01': LawbotOfficeDuctRoom_Battle01_Cogs,
+    'LawbotOfficeOilRoom_Battle02': LawbotOfficeOilRoom_Battle02_Cogs
 }
 
 
