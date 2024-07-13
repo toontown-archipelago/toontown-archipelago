@@ -176,7 +176,7 @@ LawOfficeLayout4_1 = [
 
 LawOfficeLayout4_2 = [
     (0, 108, 3, 105, 107),
-    (0, 104, 106, 11, 2)
+    (0, 104, 106, 11, 3, 2)
 ]
 
 LawOfficeLayout5_0 = [
