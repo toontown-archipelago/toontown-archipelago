@@ -57,7 +57,9 @@ If someone else is running a server, skip steps 3 and 4.
 6. Where it says "Username", enter a name unique to you. You should enter this same name everytime you play. Then press enter.
 7. Where it says "Server IP", enter the IP address of the server. Then press enter. If you're running the server locally, just press enter without typing anything.
 8. Enjoy Toontown: Archipelago!
-9. For Archipelago randomizer specific setup check the [FAQ section.](#common-issuesfaq), 
+9. For Archipelago randomizer specific setup check the [FAQ section.](#common-issuesfaq),
+
+If you need more assistance, try following the video tutorial [here.](https://youtu.be/TJTC7A5OFTE)
 
 ### Docker (Linux Server)
 
@@ -163,17 +165,17 @@ to play! The AP Server IP is usually listed at the top where it says "You can ty
 ### I want to Play Toontown: Archipelago in my friend's multiworld, and they are asking for my .apworld file. What the heck is that??
 
 .apworld files are what tell Archipelago what items a game has and what locations it can check. They are essentially just zip files
-of the source code for seed generation. All you need to do, is go to the `apworld/` folder, and run `make_apworld.bat`. This will 
-generate the .apworld file you need to give to your friend who is generating an AP seed.
+of the source code for seed generation. The .apworld file is available on the releases page. If you are running from source,
+go to the `apworld/` folder, and run `make_apworld.bat`. This will generate the .apworld file you need to give to your friend who is generating an AP seed.
 
 
 ### Okay now they are asking for my YAML??? HELP!!!!
 
-Archipelago uses .YAML files to define player settings and slot names for the game they want to play. In the `apworld/`
-directory, you will see an `EXAMPLE_TOONTOWN.yaml` file. Go ahead and make a copy of this, and edit its name to whatever
-you want.
+Archipelago uses .YAML files to define player settings and slot names for the game they want to play. If you're downloading from the releases
+page, the yaml is available from download there. If you are running from source, you should look in the `apworld/` directory,
+you will see an `EXAMPLE_TOONTOWN.yaml` file. Go ahead and make a copy of this, and edit its name to whatever you want.
 (It is typical AP etiquette to name the file after your online alias and the game you are playing. e.g. `devvydont-tt.yaml`).
-Now, edit the file and change the `name` field at the bottom. Replace `PUTTOONNAMEHERE` with what you would like your slot
+Now, edit the file and change the `name` field at the top. Replace `PUTTOONNAMEHERE` with what you would like your slot
 name (and toon name!) to be. You can also change any other settings present here as well to affect how your run will play out.
 
 
@@ -183,8 +185,9 @@ As a warning, if you are not familiar with running unofficial Archipelago games 
 may be extremely difficult and daunting for you, but I will try my best to break it down here. If you are an Archipelago 
 veteran, then refer to the previous two FAQ. These will tell you how to get ahold of the .apworld file and an example YAML.
 
-Toontown is currently (and probably will be for a long time) an unofficial Archipelago game. For the forseeable future,
-it will be a lengthy process to generate AP games with Toontown in them.
+Toontown is currently not (and never will be) an unofficial Archipelago game, due to the nature of the status of Toontown as a whole.
+As a result, generating seeds with Toontown in them may be a bit difficult. The [video tutorial](https://youtu.be/TJTC7A5OFTE) however,
+does go over these steps if you are confused.
 
 When generating an Archipelago game, you need to follow the [Archipelago Setup Guide](https://archipelago.gg/tutorial/Archipelago/setup/en)
 and install all the prerequisites there before continuing. This guide should tell you everything you need to know about

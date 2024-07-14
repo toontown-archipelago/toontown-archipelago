@@ -483,13 +483,10 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         toons = self.involvedToons[:]
         random.shuffle(toons)
         numToons = min(len(toons), 8)
-        if numToons >= 5:
-            if numToons < 4:
-                numToonsB = numToons // 2
-            else:
-                numToonsB = (numToons + random.choice([0, 1])) // 2
+        if numToons < 4:
+            numToonsB = numToons // 2
         else:
-            numToonsB = 0
+            numToonsB = (numToons + random.choice([0, 1])) // 2
         teamA = toons[numToonsB:numToons]
         teamB = toons[:numToonsB]
         loose = toons[numToons:]

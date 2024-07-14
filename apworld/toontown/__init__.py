@@ -218,9 +218,13 @@ class ToontownWorld(World):
 
         # Dynamically generate training frames.
         for frame in items.GAG_TRAINING_FRAMES:
-            quantity = 9 if frame not in (self.first_track, self.second_track) else 8
+            quantity = 8 if frame not in (self.first_track, self.second_track) else 7
             for _ in range(quantity):
                 pool.append(self.create_item(frame.value))
+
+        # Dynamically generate gag upgrades.
+        for upgrade in items.GAG_UPGRADES:
+            pool.append(self.create_item(upgrade.value))
 
         # Dynamically generate training multipliers.
         GAG_MULTI_TO_GIVE = self.options.max_global_gag_xp.value - self.options.base_global_gag_xp.value
