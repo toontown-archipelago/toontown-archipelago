@@ -99,6 +99,7 @@ class WinCondition(Choice):
     option_cog_bosses = 0
     option_total_tasks = 1
     option_hood_tasks = 2
+    option_total_gag_tracks = 3
     default = 0
 
 
@@ -136,7 +137,17 @@ class HoodTasksRequired(Range):
     range_end = 12
     default = 8
 
-
+class GagTracksRequired(Range):
+    """
+    How many gag tracks must be maxxed before being able to talk to Flippy to complete the game.
+    Must be less than or equal to total number of gag tracks a toon can obtain.
+    Unused if win_condition is not total_gag_tracks
+    """
+    display_name = "Gag Tracks Required"
+    range_start = 0
+    range_end = 7
+    default = 5
+    
 class TPSanity(Choice):
     """
     Determines how Teleport Access is shuffled in the Item Pool for all Playgrounds/HQs.
@@ -309,6 +320,7 @@ class ToontownOptions(PerGameCommonOptions):
     cog_bosses_required: CogBossesRequired
     total_tasks_required: TotalTasksRequired
     hood_tasks_required: HoodTasksRequired
+    gag_tracks_required: GagTracksRequired
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
     checks_per_boss: ChecksPerBoss
