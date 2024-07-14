@@ -512,7 +512,7 @@ class UberTrapAward(APReward):
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("UBER TRAP\n", color='salmon'),
-            MinimalJsonMessagePart(f"Don't get hit!"),
+            MinimalJsonMessagePart(f"Will you survive?"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
@@ -522,7 +522,10 @@ class UberTrapAward(APReward):
             av.takeDamage(damage)
         av.inventory.maxInventory(clearFirst=True, restockAmount=20)
         av.b_setInventory(av.inventory.makeNetString())
-
+        if newHp == 1:
+            av.playSound('phase_4/audio/sfx/BLACK_KNIGHT.ogg')
+        else:
+            av.playSound('phase_4/audio/sfx/NO_NO_NO.ogg')
         av.d_broadcastHpString("UBERFIED!", (.35, .7, .35))
         av.d_playEmote(EmoteFuncDict['Cry'], 1)
 
@@ -558,6 +561,7 @@ class GagShuffleAward(APReward):
         # Let's make sure we aren't already being shuffled
         avId = av.getDoId()
         if av.getBeingShuffled():
+            av.playSound('phase_4/audio/sfx/LETS_GO_GAMBLING.ogg')
             av.d_broadcastHpString("GAG SHUFFLE!", (.3, .5, .8))
             av.d_playEmote(EmoteFuncDict['Confused'], 1)
             return
@@ -572,7 +576,7 @@ class GagShuffleAward(APReward):
         # Only do enough attempts to fill us back up to what we were
         for _ in range(target):
             # Randomly select a gag and attempt to add it
-            if allowedGags: # sanity check for possible empty list
+            if allowedGags:  # sanity check for possible empty list
                 gag: Tuple[int, int] = random.choice(allowedGags)
                 track, level = gag
                 gagsAdded = av.inventory.addItem(track, level)
@@ -589,6 +593,7 @@ class GagShuffleAward(APReward):
                 break
         # We're done shuffling, should be good now
         av.setBeingShuffled(False)
+        av.playSound('phase_4/audio/sfx/LETS_GO_GAMBLING.ogg')
         av.b_setInventory(av.inventory.makeNetString())
         av.d_broadcastHpString("GAG SHUFFLE!", (.3, .5, .8))
         av.d_playEmote(EmoteFuncDict['Confused'], 1)
