@@ -158,13 +158,6 @@ class GagTrainingFrameReward(APReward):
     def formatted_header(self) -> str:
         track_name_color = self.TRACK_TO_COLOR.get(self.track)
         level = base.localAvatar.getTrackAccessLevel(self.track)
-        # Check for organic text popup first
-        if base.localAvatar.getTrackBonusLevel()[self.track] == 7:
-            return global_text_properties.get_raw_formatted_string([
-                MinimalJsonMessagePart("Received a training frame!\nYour "),
-                MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
-                MinimalJsonMessagePart(" Gags are now organic!"),
-            ])
         # Check for new levels
         if level <= 7:
             return global_text_properties.get_raw_formatted_string([
