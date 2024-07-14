@@ -64,7 +64,7 @@ regMaxSkill = 20000
 MaxSkill = 999999  # How high should we allow xp to go
 
 # Exp needed per % increase
-overflowRates = [600, 200, 500, 400, 200, 200, 200]
+overflowRates = [600, 300, 600, 500, 300, 300, 300]
 
 def getUberDamageBonus(experience, track, overflowMod=None) -> float:
     overflow = experience - regMaxSkill

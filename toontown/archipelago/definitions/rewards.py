@@ -190,14 +190,6 @@ class GagTrainingFrameReward(APReward):
         oldLevel = av.getTrackAccessLevel(self.track)
         newLevel = oldLevel + 1
 
-        bonusArray = av.getTrackBonusLevel()
-
-        # If we get a frame when we already maxed and can overflow, make the track organic. No need to do anything else
-        if newLevel > 8:
-            bonusArray[self.track] = 7
-            av.b_setTrackBonusLevel(bonusArray)
-            return
-
         # Before we do anything, we need to see if they were capped before this so we can award them gags later
         wasCapped = av.experience.getExp(self.track) == av.experience.getExperienceCapForTrack(self.track)
         # Edge case, we were not technically capped if we are unlocking the "overflow xp" mechanic
@@ -206,8 +198,6 @@ class GagTrainingFrameReward(APReward):
 
         # Otherwise increment the gag level allowed and make sure it is not organic
         av.setTrackAccessLevel(self.track, newLevel)
-        bonusArray[self.track] = -1
-        av.b_setTrackBonusLevel(bonusArray)
 
         # Consider the case where we just learned a new gag track, we should give them as many of them as possible
         if newLevel == 1:
@@ -220,6 +210,70 @@ class GagTrainingFrameReward(APReward):
             av.b_setExperience(av.experience.getCurrentExperience())
             av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
             av.b_setInventory(av.inventory.makeNetString())
+
+class GagUpgradeReward(APReward):
+    TOONUP = 0
+    TRAP = 1
+    LURE = 2
+    SOUND = 3
+    THROW = 4
+    SQUIRT = 5
+    DROP = 6
+
+    TRACK_TO_NAME = {
+        TOONUP: "Toon-Up",
+        TRAP: "Trap",
+        LURE: "Lure",
+        SOUND: "Sound",
+        THROW: "Throw",
+        SQUIRT: "Squirt",
+        DROP: "Drop",
+    }
+
+    TRACK_TO_COLOR = {
+        TOONUP: 'slateblue',
+        TRAP: 'yellow',
+        LURE: 'green',
+        SOUND: 'plum',
+        THROW: 'yellow',  #  todo add a gold text property
+        SQUIRT: 'slateblue',  # todo add a pinkish text property
+        DROP: 'cyan'
+    }
+
+    TRACK_TO_ICON = {
+        TOONUP: "toonup_%s",
+        TRAP: "trap_%s",
+        LURE: "lure_%s",
+        SOUND: "sound_%s",
+        THROW: "throw_%s",
+        SQUIRT: "squirt_%s",
+        DROP: "drop_%s",
+    }
+
+    def __init__(self, track):
+        self.track = track
+
+    # todo: find a way to show dynamic info based on what this reward did for us exactly
+    # todo: new system was two steps forward one step back in this regard
+    def formatted_header(self) -> str:
+        track_name_color = self.TRACK_TO_COLOR.get(self.track)
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Trees have been planted!\nYour "),
+            MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
+            MinimalJsonMessagePart(" Gags are now organic!"),
+        ])
+
+    def get_image_path(self) -> str:
+        level = base.localAvatar.getTrackAccessLevel(self.track)
+        if not level:
+            level = 1
+        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(level, 7))
+        return f'phase_14/maps/gags/{ap_icon}.png'
+
+    def apply(self, av: "DistributedToonAI"):
+        bonusArray = av.getTrackBonusLevel()
+        bonusArray[self.track] = 7
+        av.b_setTrackBonusLevel(bonusArray)
 
 
 class GagTrainingMultiplierReward(APReward):
@@ -666,6 +720,13 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.THROW_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.THROW),
     ToontownItemName.SQUIRT_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.SQUIRT),
     ToontownItemName.DROP_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.DROP),
+    ToontownItemName.TOONUP_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.TOONUP),
+    ToontownItemName.TRAP_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.TRAP),
+    ToontownItemName.LURE_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.LURE),
+    ToontownItemName.SOUND_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.SOUND),
+    ToontownItemName.THROW_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.THROW),
+    ToontownItemName.SQUIRT_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.SQUIRT),
+    ToontownItemName.DROP_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.DROP),
     ToontownItemName.GAG_MULTIPLIER_1.value: GagTrainingMultiplierReward(1),
     ToontownItemName.GAG_MULTIPLIER_2.value: GagTrainingMultiplierReward(2),
     ToontownItemName.FISHING_ROD_UPGRADE.value: FishingRodUpgradeReward(),
