@@ -184,8 +184,9 @@ As a warning, if you are not familiar with running unofficial Archipelago games 
 may be extremely difficult and daunting for you, but I will try my best to break it down here. If you are an Archipelago 
 veteran, then refer to the previous two FAQ. These will tell you how to get ahold of the .apworld file and an example YAML.
 
-Toontown is currently is not (and never will be) an unofficial Archipelago game. As a result, generating seeds with Toontown
-in them may be a bit difficult. The [video tutorial](https://youtu.be/TJTC7A5OFTE) however, does go over these steps if you are confused.
+Toontown is currently not (and never will be) an unofficial Archipelago game, due to the nature of the status of Toontown as a whole.
+As a result, generating seeds with Toontown in them may be a bit difficult. The [video tutorial](https://youtu.be/TJTC7A5OFTE) however,
+does go over these steps if you are confused.
 
 When generating an Archipelago game, you need to follow the [Archipelago Setup Guide](https://archipelago.gg/tutorial/Archipelago/setup/en)
 and install all the prerequisites there before continuing. This guide should tell you everything you need to know about
