@@ -617,6 +617,8 @@ class GagExpBundleAward(APReward):
             exptoAdd = math.ceil(currentCap * (self.amount/100))
             av.experience.addExp(index, exptoAdd)
         av.b_setExperience(av.experience.getCurrentExperience())
+        # now check for win condition since we have one for maxxed gags
+        av.checkWinCondition()
 
 
 class BossRewardAward(APReward):

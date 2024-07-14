@@ -60,6 +60,7 @@ Toontown:
   # - cog_bosses (default): Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
   # - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
   # - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+  # - total_gag_tracks: Player must max a certain amount of gag tracks to complete the game (determined by gag_tracks_required).
   win_condition: cog_bosses
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
@@ -75,6 +76,10 @@ Toontown:
   # Unused if win_condition is not hood_tasks.
   # Range: 0 to 12
   hood_tasks_required: 8
+  # How many gag tracks must be maxxed before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not total_gag_tracks
+  # Range 0 to 7
+  gag_tracks_required: 5
 
   ### Sanity Settings ###
 
