@@ -195,7 +195,7 @@ class GagTrackWinCondition(WinCondition):
         gags_maxxed = {track: 0 for track in self.GAG_TRACKS}
         experience = self.toon.experience.getCurrentExperience()
         for track in self.GAG_TRACKS:
-            if experience[track] >= 20000:
+            if experience[track] >= 19999:
                 gags_maxxed[track] = 1
         return gags_maxxed
     
