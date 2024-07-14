@@ -36,6 +36,15 @@ class ToontownItemName(enum.Enum):
     SQUIRT_FRAME = "Squirt Training Frame"
     DROP_FRAME   = "Drop Training Frame"
 
+    ### Gag Upgrades ###
+    TOONUP_UPGRADE = "Organic Toon-Up Upgrade"
+    TRAP_UPGRADE   = "Organic Trap Upgrade"
+    LURE_UPGRADE   = "Organic Lure Upgrade"
+    SOUND_UPGRADE  = "Organic Sound Upgrade"
+    THROW_UPGRADE  = "Organic Throw Upgrade"
+    SQUIRT_UPGRADE = "Organic Squirt Upgrade"
+    DROP_UPGRADE   = "Organic Drop Upgrade"
+
     ### Gag Capacity ###
     GAG_CAPACITY_5  = "+5 Gag Capacity"
     GAG_CAPACITY_10 = "+10 Gag Capacity"
@@ -148,6 +157,15 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.SQUIRT_FRAME, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.DROP_FRAME,   ItemClassification.progression),
     # endregion
+    # region Gag Upgrades
+    ToontownItemDefinition(ToontownItemName.TOONUP_UPGRADE, ItemClassification.useful),
+    ToontownItemDefinition(ToontownItemName.TRAP_UPGRADE,   ItemClassification.useful),
+    ToontownItemDefinition(ToontownItemName.LURE_UPGRADE,   ItemClassification.useful),
+    ToontownItemDefinition(ToontownItemName.SOUND_UPGRADE,  ItemClassification.useful),
+    ToontownItemDefinition(ToontownItemName.THROW_UPGRADE,  ItemClassification.useful),
+    ToontownItemDefinition(ToontownItemName.SQUIRT_UPGRADE, ItemClassification.useful),
+    ToontownItemDefinition(ToontownItemName.DROP_UPGRADE,   ItemClassification.useful),
+    # endregion
     # region Gag Training Multipliers
     ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_1, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_2, ItemClassification.progression),
@@ -243,6 +261,16 @@ GAG_TRAINING_FRAMES = (
     ToontownItemName.THROW_FRAME,
     ToontownItemName.SQUIRT_FRAME,
     ToontownItemName.DROP_FRAME
+)
+
+GAG_UPGRADES = (
+    ToontownItemName.TOONUP_UPGRADE,
+    ToontownItemName.TRAP_UPGRADE,
+    ToontownItemName.LURE_UPGRADE,
+    ToontownItemName.SOUND_UPGRADE,
+    ToontownItemName.THROW_UPGRADE,
+    ToontownItemName.SQUIRT_UPGRADE,
+    ToontownItemName.DROP_UPGRADE
 )
 
 FISHING_LICENSES = (

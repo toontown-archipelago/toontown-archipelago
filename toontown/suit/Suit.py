@@ -503,7 +503,7 @@ class Suit(Avatar.Avatar):
             self.healthBar.setColor(self.healthColors[newCondition], 1)
             self.healthBarGlow.setColor(self.healthGlowColors[newCondition], 1)
             if self.getVirtual():
-                self.virtualize(condition)
+                self.virtualize(newCondition)
 
     def __blinkRed(self, task):
         self.healthBar.setColor(self.healthColors[3], 1)
