@@ -306,6 +306,7 @@ class ToontownWorld(World):
             "cog_bosses_required": self.options.cog_bosses_required.value,
             "total_tasks_required": self.options.total_tasks_required.value,
             "hood_tasks_required": self.options.hood_tasks_required.value,
+            "gag_tracks_required": self.options.gag_tracks_required.value,
             "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,
