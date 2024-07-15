@@ -12,8 +12,10 @@ from toontown.coghq import LawbotOfficeDiamondRoom_Battle00_Cogs
 from toontown.coghq import LawbotOfficeGearRoom_Battle00_Cogs
 from toontown.coghq import LawbotOfficeDuctRoom_Battle00_Cogs
 from toontown.coghq import LawbotOfficeDuctRoom_Battle01_Cogs
+from toontown.coghq import LawbotOfficeDiamondRoomDiff_Battle00_Cogs
 
 from toontown.coghq import LawbotOfficeEntrance_Action00
+from toontown.coghq import LawbotOfficeEntrance_Action01
 from toontown.coghq import LawbotOfficeOilRoom_Battle00
 from toontown.coghq import LawbotOfficeOilRoom_Battle01
 from toontown.coghq import LawbotOfficeOilRoom_Battle02
@@ -30,6 +32,7 @@ from toontown.coghq import LawbotOfficeLobby_Lights00
 from toontown.coghq import LawbotOfficeBoilerRoom_Action01
 from toontown.coghq import LawbotOfficeDiamondRoom_Action00
 from toontown.coghq import LawbotOfficeDiamondRoom_Action01
+from toontown.coghq import LawbotOfficeDiamondRoomDiff_Battle00
 from toontown.coghq import LawbotOfficeLobby_Action01
 from toontown.coghq import LawbotOfficeDiamondRoom_Battle00
 from toontown.coghq import LawbotOfficeGearRoom_Battle00
@@ -59,7 +62,9 @@ LawbotStageSpecModules = {
     105: LawbotOfficeGearRoom_Battle00,
     106: LawbotOfficeDuctRoom_Battle00,
     107: LawbotOfficeOilRoom_Battle02,
-    108: LawbotOfficeDuctRoom_Battle01
+    108: LawbotOfficeDuctRoom_Battle01,
+    109: LawbotOfficeDiamondRoomDiff_Battle00,
+    110: LawbotOfficeEntrance_Action01
 }
 
 # Ok don't freak out. What we are doing here is grabbing the name of the module that we imported.
@@ -79,7 +84,8 @@ CogSpecModules = {
     'LawbotOfficeGearRoom_Battle00': LawbotOfficeGearRoom_Battle00_Cogs,
     'LawbotOfficeDuctRoom_Battle00': LawbotOfficeDuctRoom_Battle00_Cogs,
     'LawbotOfficeDuctRoom_Battle01': LawbotOfficeDuctRoom_Battle01_Cogs,
-    'LawbotOfficeOilRoom_Battle02': LawbotOfficeOilRoom_Battle02_Cogs
+    'LawbotOfficeOilRoom_Battle02': LawbotOfficeOilRoom_Battle02_Cogs,
+    'LawbotOfficeDiamondRoomDiff_Battle00': LawbotOfficeDiamondRoomDiff_Battle00_Cogs
 }
 
 
