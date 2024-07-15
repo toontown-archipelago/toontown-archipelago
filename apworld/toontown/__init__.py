@@ -218,9 +218,13 @@ class ToontownWorld(World):
 
         # Dynamically generate training frames.
         for frame in items.GAG_TRAINING_FRAMES:
-            quantity = 9 if frame not in (self.first_track, self.second_track) else 8
+            quantity = 8 if frame not in (self.first_track, self.second_track) else 7
             for _ in range(quantity):
                 pool.append(self.create_item(frame.value))
+
+        # Dynamically generate gag upgrades.
+        for upgrade in items.GAG_UPGRADES:
+            pool.append(self.create_item(upgrade.value))
 
         # Dynamically generate training multipliers.
         GAG_MULTI_TO_GIVE = self.options.max_global_gag_xp.value - self.options.base_global_gag_xp.value
@@ -302,6 +306,7 @@ class ToontownWorld(World):
             "cog_bosses_required": self.options.cog_bosses_required.value,
             "total_tasks_required": self.options.total_tasks_required.value,
             "hood_tasks_required": self.options.hood_tasks_required.value,
+            "gag_tracks_required": self.options.gag_tracks_required.value,
             "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,

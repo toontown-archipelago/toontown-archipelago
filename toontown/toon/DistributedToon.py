@@ -221,6 +221,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.winCondition: WinCondition = win_condition.NoWinCondition(self)
         self.rewardHistory = []
         self.rewardTier = 0
+        self.alreadyNotified = False
         return
 
     def disable(self):
@@ -2893,10 +2894,14 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def checkWinCondition(self):
         if self.getWinCondition().satisfied():
-            if hasattr(self, 'displaySystemClickableWhisper'):
-                self.displaySystemClickableWhisper(0, TTLocalizer.WinConditionMet, whisperType=WhisperType.WTSystem)
-            else:
-                self.setSystemMessage(0, TTLocalizer.WinConditionMet)
+            if not self.alreadyNotified:
+                if hasattr(self, 'displaySystemClickableWhisper'):
+                    self.displaySystemClickableWhisper(0, TTLocalizer.WinConditionMet, whisperType=WhisperType.WTSystem)
+                else:
+                    self.setSystemMessage(0, TTLocalizer.WinConditionMet)
+                # play the golf victory sound so they dont miss it
+                base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
+                self.alreadyNotified = True
 
     def getWinCondition(self) -> WinCondition:
         return self.winCondition
