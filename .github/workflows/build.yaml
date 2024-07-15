@@ -132,7 +132,11 @@ jobs:
             f_universal="output_universal/$sub_dir/$(basename "$f_arm64")"
             mkdir -p "output_x86_64/unzipped/$sub_dir"
             mkdir -p "output_universal/$sub_dir"
-            lipo -create "$f_arm64" "$f_x86_64" -output "$f_universal"
+            # make sure it exists in x86_64 folder
+            if [ -f "$f_x86_64" ]; then
+              lipo -create "$f_arm64" "$f_x86_64" -output "$f_universal"
+            fi
+           
           ' bash {} \;
           lipo -create output_arm64/unzipped/Python output_x86_64/unzipped/Python -output output_universal/Python
           cp -r output_universal release/game
