@@ -76,6 +76,7 @@ Toontown:
   # Unused if win_condition is not hood_tasks.
   # Range: 0 to 12
   hood_tasks_required: 8
+  
   # How many gag tracks must be maxxed before being able to talk to Flippy to complete the game
   # Unused if win_condition is not total_gag_tracks
   # Range 0 to 7
