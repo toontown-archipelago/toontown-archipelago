@@ -9327,7 +9327,7 @@ group "minniesMelodyLand" [
   ]
   landmark_building "tb70:toon_landmark_MM_A1_DNARoot" [
    code [ "toon_landmark_MM_A1" ]
-   title [ "Ziggy's Zoo of Zigeunermusik" ]
+   title [ "Ziggy's Zeitlose Zukunftsmusik" ]
    pos [ 545 45 0 ]
    nhpr [ 90 0 -0 ]
    door [
