@@ -207,6 +207,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.immortalMode = False
         self.unlimitedGags = False
         self.instaKill = False
+        self.hasPaidTaxes = False
         self.overheadLaffMeter = None
         self.baseGagSkillMultiplier = 1
         self.damageMultiplier = 100
@@ -1457,6 +1458,12 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def getMoney(self):
         return self.money
+
+    def setHasPaidTaxes(self, paidTaxes):
+        self.hasPaidTaxes = paidTaxes
+
+    def getHasPaidTaxes(self):
+        return self.hasPaidTaxes
 
     def setMaxBankMoney(self, maxMoney):
         self.maxBankMoney = maxMoney

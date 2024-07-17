@@ -221,6 +221,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.instaKill = False
         self.instantDelivery = False
         self.alwaysHitSuits = False
+        self.hasPaidTaxes = False
 
         # Archipelago Stuff
         self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
@@ -2393,6 +2394,19 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def getSpeedChatStyleIndex(self):
         return self.speedChatStyleIndex
+
+    def b_setHasPaidTaxes(self, paidTaxes):
+        self.d_setHasPaidTaxes(paidTaxes)
+        self.setHasPaidTaxes(paidTaxes)
+
+    def d_setHasPaidTaxes(self, paidTaxes):
+        self.sendUpdate('setHasPaidTaxes', [paidTaxes])
+
+    def setHasPaidTaxes(self, paidTaxes):
+        self.hasPaidTaxes = paidTaxes
+
+    def getHasPaidTaxes(self):
+        return self.hasPaidTaxes
 
     def b_setMaxMoney(self, maxMoney):
         self.d_setMaxMoney(maxMoney)
