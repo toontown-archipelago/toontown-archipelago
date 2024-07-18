@@ -51,6 +51,7 @@ class DistributedStageRoom(DistributedLevel.DistributedLevel, StageRoomBase.Stag
     def setStageId(self, stageId):
         self.notify.debug('stageId: %s' % stageId)
         StageRoomBase.StageRoomBase.setStageId(self, stageId)
+        base.discord.setZone(stageId)
 
     def setRoomId(self, roomId):
         self.notify.debug('roomId: %s' % roomId)
