@@ -2902,10 +2902,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def checkWinCondition(self):
         if self.getWinCondition().satisfied():
             if not self.alreadyNotified:
-                if hasattr(self, 'displaySystemClickableWhisper'):
-                    self.displaySystemClickableWhisper(0, TTLocalizer.WinConditionMet, whisperType=WhisperType.WTSystem)
-                else:
-                    self.setSystemMessage(0, TTLocalizer.WinConditionMet)
+                self.setSystemMessage(0, TTLocalizer.WinConditionMet)
                 # play the golf victory sound so they dont miss it
                  # check if its localtoon to potentially fix a bug with this playing for unknown reasons 
                 if self == base.localAvatar:
