@@ -174,7 +174,6 @@ class DistributedBattle(DistributedBattleBase.DistributedBattleBase):
         self._removeMembersKeep()
 
     def enterReward(self, ts):
-        base.localAvatar.checkWinCondition()
         self.notify.debug('enterReward()')
         self.disableCollision()
         self.delayDeleteMembers()

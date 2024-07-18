@@ -119,6 +119,9 @@ class ToontownItemName(enum.Enum):
 
     ### Traps ###
     UBER_TRAP = "Uber Trap"
+    BEAN_TAX_TRAP_750 = "750 Bean Tax"
+    BEAN_TAX_TRAP_1000 = "1000 Bean Tax"
+    BEAN_TAX_TRAP_1250 = "1250 Bean Tax"
     DRIP_TRAP = "Drip Trap"
     GAG_SHUFFLE_TRAP = "Gag Shuffle Trap"
 
@@ -237,6 +240,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # endregion
     # region Traps
     ToontownItemDefinition(ToontownItemName.UBER_TRAP,        ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.BEAN_TAX_TRAP_750,    ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.BEAN_TAX_TRAP_1000,    ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.BEAN_TAX_TRAP_1250,    ItemClassification.trap),
     ToontownItemDefinition(ToontownItemName.DRIP_TRAP,        ItemClassification.trap),
     ToontownItemDefinition(ToontownItemName.GAG_SHUFFLE_TRAP, ItemClassification.trap),
     # endregion
@@ -329,9 +335,13 @@ JUNK_WEIGHTS = {
     ToontownItemName.UNITE_REWARD:     0.65,
     ToontownItemName.PINK_SLIP_REWARD: 0.65,
 }
+
 TRAP_WEIGHTS = {
     ToontownItemName.UBER_TRAP:        1.0,
     ToontownItemName.DRIP_TRAP:        0.5,
+    ToontownItemName.BEAN_TAX_TRAP_750:    0.12,
+    ToontownItemName.BEAN_TAX_TRAP_1000:    0.12,
+    ToontownItemName.BEAN_TAX_TRAP_1250:    0.12,
     ToontownItemName.GAG_SHUFFLE_TRAP: 1.0,
 }
 
