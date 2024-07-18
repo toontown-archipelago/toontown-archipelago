@@ -2900,7 +2900,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.checkWinCondition()
 
     def checkWinCondition(self):
-       
         if self.getWinCondition().satisfied():
             if not self.alreadyNotified:
                 if hasattr(self, 'displaySystemClickableWhisper'):
