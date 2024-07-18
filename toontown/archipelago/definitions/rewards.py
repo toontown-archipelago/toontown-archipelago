@@ -158,13 +158,6 @@ class GagTrainingFrameReward(APReward):
     def formatted_header(self) -> str:
         track_name_color = self.TRACK_TO_COLOR.get(self.track)
         level = base.localAvatar.getTrackAccessLevel(self.track)
-        # Check for organic text popup first
-        if base.localAvatar.getTrackBonusLevel()[self.track] == 7:
-            return global_text_properties.get_raw_formatted_string([
-                MinimalJsonMessagePart("Received a training frame!\nYour "),
-                MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
-                MinimalJsonMessagePart(" Gags are now organic!"),
-            ])
         # Check for new levels
         if level <= 7:
             return global_text_properties.get_raw_formatted_string([
@@ -530,6 +523,53 @@ class UberTrapAward(APReward):
         av.d_playEmote(EmoteFuncDict['Cry'], 1)
 
 
+class BeanTaxTrapAward(APReward):
+    def __init__(self, tax: int):
+        self.tax: int = tax
+
+    def formatted_header(self) -> str:
+        if base.localAvatar.getHasPaidTaxes():
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("BEAN TAX PAID\n", color='salmon'),
+                MinimalJsonMessagePart("You paid the tax for "),
+                MinimalJsonMessagePart(f"{self.tax} beans.", color='cyan'),
+            ])
+
+        else:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("BEAN TAX FAILED\n", color='salmon'),
+                MinimalJsonMessagePart("You tried evading the tax for "),
+                MinimalJsonMessagePart(f"{self.tax} beans.", color='cyan'),
+            ])
+
+    def getPassed(self, avMoney):
+        if avMoney >= self.tax:
+            return True
+        else:
+            return False
+
+    def apply(self, av: "DistributedToonAI"):
+        avMoney = av.getMoney()
+
+        if self.getPassed(avMoney):
+            av.b_setHasPaidTaxes(True)
+            av.takeMoney(self.tax, bUseBank=False)
+            av.playSound('phase_4/audio/sfx/tax_paid.ogg')
+            av.d_broadcastHpString("TAXES PAID!", (.35, .7, .35))
+            av.d_playEmote(EmoteFuncDict['Happy'], 1)
+        else:
+            av.b_setHasPaidTaxes(False)
+            if av.getMoney() >= 100:
+                av.b_setMoney(100)
+            damage = av.getHp() - 1
+            if av.getHp() > 0:
+                av.takeDamage(damage)
+            av.playSound('phase_4/audio/sfx/tax_evasion.ogg')
+            av.d_broadcastHpString("EVASION ATTEMPTED!", (.3, .5, .8))
+            av.d_playEmote(EmoteFuncDict['Belly Flop'], 1)
+
+
+
 class DripTrapAward(APReward):
 
     def formatted_header(self) -> str:
@@ -789,6 +829,9 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.UNITE_REWARD.value: BossRewardAward(BossRewardAward.UNITE),
     ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP),
     ToontownItemName.UBER_TRAP.value: UberTrapAward(),
+    ToontownItemName.BEAN_TAX_TRAP_750.value: BeanTaxTrapAward(750),
+    ToontownItemName.BEAN_TAX_TRAP_1000.value: BeanTaxTrapAward(1000),
+    ToontownItemName.BEAN_TAX_TRAP_1250.value: BeanTaxTrapAward(1250),
     ToontownItemName.DRIP_TRAP.value: DripTrapAward(),
     ToontownItemName.GAG_SHUFFLE_TRAP.value: GagShuffleAward(),
 }
