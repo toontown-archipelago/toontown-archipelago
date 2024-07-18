@@ -22,6 +22,7 @@ class MinigameRulesPanel(StateData.StateData):
         self.gameTitleText = DirectLabel(parent=self.frame, text=self.gameTitle, scale=TTLocalizer.MRPgameTitleText, text_align=TextNode.ACenter, text_font=getSignFont(), text_fg=(1.0, 0.33, 0.33, 1.0), pos=TTLocalizer.MRgameTitleTextPos, relief=None)
         self.instructionsText = DirectLabel(parent=self.frame, text=self.instructions, scale=TTLocalizer.MRPinstructionsText, text_align=TextNode.ACenter, text_wordwrap=TTLocalizer.MRPinstructionsTextWordwrap, pos=TTLocalizer.MRPinstructionsTextPos, relief=None)
         self.playButton = DirectButton(parent=self.frame, relief=None, image=(buttonGui.find('**/InventoryButtonUp'), buttonGui.find('**/InventoryButtonDown'), buttonGui.find('**/InventoryButtonRollover')), image_color=Vec4(0, 0.9, 0.1, 1), text=TTLocalizer.MinigameRulesPanelPlay, text_fg=(1, 1, 1, 1), text_pos=(0, -0.02, 0), text_scale=TTLocalizer.MRPplayButton, pos=(1.0025, 0, -0.203), scale=1.05, command=self.playCallback)
+        self.skipButton = DirectButton(parent=self.frame, relief=None, image=(buttonGui.find('**/InventoryButtonUp'), buttonGui.find('**/InventoryButtonDown'), buttonGui.find('**/InventoryButtonRollover')), image_color=Vec4(0.9, 0.3, 0.3, 1), text=TTLocalizer.MinigameRulesPanelSkip, text_fg=(1, 1, 1, 1), text_pos=(0, -0.02, 0), text_scale=TTLocalizer.MRPskipButton, pos=(1.0025, 0, 0.253), scale=0.95, command=self.skipCallback)
         minigameGui.removeNode()
         buttonGui.removeNode()
         self.timer = ToontownTimer.ToontownTimer()
@@ -37,6 +38,7 @@ class MinigameRulesPanel(StateData.StateData):
         del self.gameTitleText
         del self.instructionsText
         self.playButton.destroy()
+        self.skipButton.destroy()
         del self.playButton
         del self.timer
 
@@ -52,3 +54,6 @@ class MinigameRulesPanel(StateData.StateData):
 
     def playCallback(self):
         messenger.send(self.doneEvent)
+
+    def skipCallback(self):
+        messenger.send('minigameAbort')
