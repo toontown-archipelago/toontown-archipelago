@@ -61,6 +61,7 @@ Toontown:
   # - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
   # - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
   # - total_gag_tracks: Player must max a certain amount of gag tracks to complete the game (determined by gag_tracks_required).
+  # - total_fish_species: Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
   win_condition: cog_bosses
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
@@ -81,6 +82,11 @@ Toontown:
   # Unused if win_condition is not total_gag_tracks
   # Range 0 to 7
   gag_tracks_required: 5
+
+  # How many fish species must be caught before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not total_fish_species
+  # Range 0 to 70
+  fish_species_required: 70
 
   ### Sanity Settings ###
 
