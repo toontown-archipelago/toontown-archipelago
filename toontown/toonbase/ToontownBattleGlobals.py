@@ -246,8 +246,8 @@ AvPropDamage = (
         ((18, 24), (Levels[0][2], Levels[0][3])),
         ((32, 40), (Levels[0][3], Levels[0][4])),
         ((45, 50), (Levels[0][4], Levels[0][5])),
-        ((72, 96), (Levels[0][5], Levels[0][6])),
-        ((100, 160), (Levels[0][6], regMaxSkill))
+        ((72, 90), (Levels[0][5], Levels[0][6])),
+        ((100, 140), (Levels[0][6], regMaxSkill))
     ),
     (   # Trap
         ((12, 18), (Levels[1][0], Levels[1][1])),
@@ -255,8 +255,8 @@ AvPropDamage = (
         ((35, 45), (Levels[1][2], Levels[1][3])),
         ((50, 75), (Levels[1][3], Levels[1][4])),
         ((85, 100), (Levels[1][4], Levels[1][5])),
-        ((110, 195), (Levels[1][5], Levels[1][6])),
-        ((200, 240), (Levels[1][6], regMaxSkill))
+        ((110, 180), (Levels[1][5], Levels[1][6])),
+        ((200, 220), (Levels[1][6], regMaxSkill))
     ),
     (   # Lure
         ((30, 40), (Levels[2][0], Levels[2][1])),
@@ -265,7 +265,7 @@ AvPropDamage = (
         ((40, 50), (Levels[2][3], Levels[2][4])),
         ((50, 60), (Levels[2][4], Levels[2][5])),
         ((50, 60), (Levels[2][5], Levels[2][6])),
-        ((65, 100), (Levels[2][6], regMaxSkill))
+        ((65, 80), (Levels[2][6], regMaxSkill))
     ),
     (   # Sound
         ((2, 3), (Levels[3][0], Levels[3][1])),
@@ -273,8 +273,8 @@ AvPropDamage = (
         ((9, 11), (Levels[3][2], Levels[3][3])),
         ((14, 16), (Levels[3][3], Levels[3][4])),
         ((20, 25), (Levels[3][4], Levels[3][5])),
-        ((35, 60), (Levels[3][5], Levels[3][6])),
-        ((70, 100), (Levels[3][6], regMaxSkill))
+        ((35, 50), (Levels[3][5], Levels[3][6])),
+        ((60, 80), (Levels[3][6], regMaxSkill))
     ),
     (   # Throw
         ((4, 6), (Levels[4][0], Levels[4][1])),
@@ -282,8 +282,8 @@ AvPropDamage = (
         ((14, 17), (Levels[4][2], Levels[4][3])),
         ((24, 27), (Levels[4][3], Levels[4][4])),
         ((36, 40), (Levels[4][4], Levels[4][5])),
-        ((48, 100), (Levels[4][5], Levels[4][6])),
-        ((110, 140), (Levels[4][6], regMaxSkill))
+        ((48, 80), (Levels[4][5], Levels[4][6])),
+        ((100, 120), (Levels[4][6], regMaxSkill))
     ),
     (   # Squirt
         ((3, 4), (Levels[5][0], Levels[5][1])),
@@ -292,7 +292,7 @@ AvPropDamage = (
         ((18, 21), (Levels[5][3], Levels[5][4])),
         ((27, 30), (Levels[5][4], Levels[5][5])),
         ((36, 80), (Levels[5][5], Levels[5][6])),
-        ((85, 110), (Levels[5][6], regMaxSkill))
+        ((85, 100), (Levels[5][6], regMaxSkill))
     ),
     (   # Drop
         ((8, 10), (Levels[6][0], Levels[6][1])),
@@ -300,8 +300,8 @@ AvPropDamage = (
         ((25, 30), (Levels[6][2], Levels[6][3])),
         ((42, 50), (Levels[6][3], Levels[6][4])),
         ((60, 75), (Levels[6][4], Levels[6][5])),
-        ((90, 170), (Levels[6][5], Levels[6][6])),
-        ((175, 210), (Levels[6][6], regMaxSkill))
+        ((90, 140), (Levels[6][5], Levels[6][6])),
+        ((150, 180), (Levels[6][6], regMaxSkill))
     )
 )
 ATK_SINGLE_TARGET = 0
