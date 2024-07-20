@@ -266,7 +266,7 @@ class FishProgression(Choice):
     option_licenses = 1
     option_rods = 2
     option_none = 3
-    default = 0
+    default = 2
 
 
 class SeedGenerationTypeOption(Choice):
@@ -292,9 +292,53 @@ class TrapPercentOption(Range):
     """
 
     display_name = "Trap Percentage"
-    range_start = 1
+    range_start = 0
     range_end = 100
     default = 20
+
+
+class UberWeightOption(Range):
+    """
+    Weight of uber traps in the trap pool.
+    """
+
+    display_name = "Uber Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 100
+
+
+class DripWeightOption(Range):
+    """
+    Weight of drip traps in the trap pool.
+    """
+
+    display_name = "Drip Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 50
+
+
+class TaxWeightOption(Range):
+    """
+    Weight of bean taxes in the trap pool.
+    """
+
+    display_name = "Bean Tax Weight"
+    range_start = 0
+    range_end = 100
+    default = 36
+
+
+class ShuffleWeightOption(Range):
+    """
+    Weight of gag shuffles in the trap pool.
+    """
+
+    display_name = "Gag Shuffle Weight"
+    range_start = 0
+    range_end = 100
+    default = 100
 
 
 class DeathLinkOption(Toggle):
@@ -333,4 +377,8 @@ class ToontownOptions(PerGameCommonOptions):
     fish_progression: FishProgression
     seed_generation_type: SeedGenerationTypeOption
     trap_percent: TrapPercentOption
+    uber_trap_weight: UberWeightOption
+    drip_trap_weight: DripWeightOption
+    bean_tax_weight: TaxWeightOption
+    gag_shuffle_weight: ShuffleWeightOption
     death_link: DeathLinkOption

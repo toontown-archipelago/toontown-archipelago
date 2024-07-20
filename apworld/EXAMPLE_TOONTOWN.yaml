@@ -152,8 +152,17 @@ Toontown:
   # wild: RNG elements are completely random and will shuffle upon relogging
   seed_generation_type: 'global'
 
+  ### Trap Settings ###
+
   # Percentage of junk items to be replaced with traps
   trap_percent: 20
+
+  # Weights for all of the various traps (0-100).
+  # At least 1 trap must have a value of >0 if trap_percent is >=1.
+  uber_trap_weight: 100
+  drip_trap_weight: 50
+  bean_tax_weight: 36
+  gag_shuffle_weight: 100
 
   ### General Gameplay Settings ###
 

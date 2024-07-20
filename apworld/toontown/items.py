@@ -336,15 +336,6 @@ JUNK_WEIGHTS = {
     ToontownItemName.PINK_SLIP_REWARD: 0.65,
 }
 
-TRAP_WEIGHTS = {
-    ToontownItemName.UBER_TRAP:        1.0,
-    ToontownItemName.DRIP_TRAP:        0.5,
-    ToontownItemName.BEAN_TAX_TRAP_750:    0.12,
-    ToontownItemName.BEAN_TAX_TRAP_1000:    0.12,
-    ToontownItemName.BEAN_TAX_TRAP_1250:    0.12,
-    ToontownItemName.GAG_SHUFFLE_TRAP: 1.0,
-}
-
 
 def get_item_def_from_id(_id: int) -> Optional[ToontownItemDefinition]:
     index = _id - consts.BASE_ID
@@ -356,11 +347,6 @@ def get_item_def_from_id(_id: int) -> Optional[ToontownItemDefinition]:
 def random_junk() -> ToontownItemName:
     JUNK_ITEMS = list(JUNK_WEIGHTS.keys())
     return random.choices(JUNK_ITEMS, weights=[JUNK_WEIGHTS[i] for i in JUNK_ITEMS])[0]
-
-
-def random_trap() -> ToontownItemName:
-    TRAP_ITEMS = list(TRAP_WEIGHTS.keys())
-    return random.choices(TRAP_ITEMS, weights=[TRAP_WEIGHTS[i] for i in TRAP_ITEMS])[0]
 
 
 ITEM_NAME_TO_ID = {item.name.value: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}
