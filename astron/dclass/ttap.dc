@@ -2091,6 +2091,7 @@ dclass NewsManager : DistributedObject {
   setPopulation(uint32) broadcast ram;
   setBingoWin(uint32) broadcast ram;
   setBingoStart() broadcast;
+  setToonShout(string) broadcast;
   setBingoEnd() broadcast;
   setCircuitRaceStart() broadcast;
   setCircuitRaceEnd() broadcast;
