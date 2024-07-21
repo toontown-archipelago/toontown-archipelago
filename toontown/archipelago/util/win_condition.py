@@ -217,7 +217,7 @@ class FishSpeciesWinCondition(WinCondition):
     
     # Calculate how many fish species the toon has caught
     def _get_fish_species_caught(self) -> int:
-        toonsFishCollection = self.toon.getFishCollection()
+        toonsFishCollection = self.toon.fishCollection
         toonsFishCollection = toonsFishCollection.getNetLists()
         toonsFishSpecies = toonsFishCollection[1] # 1 is fish species
         return len(toonsFishSpecies)
