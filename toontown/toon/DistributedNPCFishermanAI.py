@@ -38,6 +38,7 @@ class DistributedNPCFishermanAI(DistributedNPCToonBaseAI):
             flag = NPCToons.SELL_MOVIE_NOFISH
             self.d_setMovie(avId, flag)
             self.sendClearMovie(None)
+        av.checkWinCondition()
         DistributedNPCToonBaseAI.avatarEnter(self)
         return
 
