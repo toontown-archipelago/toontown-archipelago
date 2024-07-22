@@ -384,6 +384,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     LEVEL = argument[0]
     OVERLEVEL = min(argument[0] + 1, 8)
     UNDERLEVEL = max(0, argument[0] - 1)
+    LUREMIN = max(0, argument[0] - 2)
 
     # To pass the check, we must have:
     # - A way to kill enemies (OR):
@@ -394,6 +395,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     # - Sufficient healing (Toon-up level - 1)
     # - EXP required at level
 
+    minimum_lure = state.has(ToontownItemName.LURE_FRAME.value, player, LUREMIN)
     powerful_lure_knockback = any(
         state.has(offensive_frame.value, player, LEVEL)
         for offensive_frame in [
@@ -409,7 +411,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     can_obtain_exp_required = has_collected_items_for_gag_level(state, player, options, LEVEL)
 
     return (powerful_lure_knockback or powerful_sound or powerful_trap or powerful_drop) \
-            and sufficient_healing and can_obtain_exp_required
+            and sufficient_healing and minimum_lure and can_obtain_exp_required
 
 
 @rule(Rule.CanFightVP)
