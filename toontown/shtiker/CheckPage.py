@@ -15,13 +15,24 @@ class HintNode(DirectFrame):
         super().__init__(parent)
 
         self.title = DirectLabel(parent=self, scale=0.07, pos=(0, 0, -0.1), text="Target goes here", textMayChange=True, relief=None)
+
+        gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
+        quitHover = gui.find('**/QuitBtn_UP')
+
         self.hintButton = DirectButton(
             text=('Give me a hint', 'Give me a hint', 'Give me a hint', ''),
             command=self.askForHint,
-            scale=0.05,
+            text_scale=0.05,
             parent=self,
             pos=(0, 0, -0.16),
+            relief=None,
+            image=(quitHover, quitHover, quitHover),
+            image_scale=0.85,
+            text_pos=(0, -0.015),
         )
+
+        gui.removeNode()
+
         self.hintName = None
         self.hintNodes = []
 
