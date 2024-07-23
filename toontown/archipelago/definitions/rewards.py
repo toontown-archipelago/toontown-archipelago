@@ -186,7 +186,7 @@ class GagTrainingFrameReward(APReward):
         # Before we do anything, we need to see if they were capped before this so we can award them gags later
         wasCapped = av.experience.getExp(self.track) == av.experience.getExperienceCapForTrack(self.track)
         # Edge case, we were not technically capped if we are unlocking the "overflow xp" mechanic
-        if newLevel == 8:
+        if newLevel >= 8:
             wasCapped = False
 
         # Otherwise increment the gag level allowed and make sure it is not organic
@@ -382,8 +382,9 @@ class AccessKeyReward(APReward):
                 av.addTeleportAccess(pg)
         else:
             # Get the key ID for this playground
-            key = FADoorCodes.ZONE_TO_ACCESS_CODE[self.playground]
-            av.addAccessKey(key)
+            if self.playground in list(FADoorCodes.ZONE_TO_ACCESS_CODE.keys()):
+                key = FADoorCodes.ZONE_TO_ACCESS_CODE[self.playground]
+                av.addAccessKey(key)
 
 
 class FishingLicenseReward(APReward):
