@@ -1,8 +1,10 @@
 # Represents a gameplay session attached to toon players, handles rewarding and sending items through the multiworld
+import os
 from typing import List, TYPE_CHECKING
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
+from toontown.archipelago.data.ArchipelagoDataMiddleware import ArchipelagoDataMiddleware
 from toontown.archipelago.definitions import util
 from toontown.archipelago.definitions.death_reason import DeathReason
 from toontown.archipelago.packets.serverbound.bounce_packet import BouncePacket
@@ -23,6 +25,7 @@ class ArchipelagoSession:
     def __init__(self, avatar: "DistributedToonAI"):
         self.avatar = avatar  # The avatar that owns this session, DistributedToonAI
         self.client = ArchipelagoClient(self.avatar, self.avatar.getName())  # The client responsible for socket communication
+        self.datastore = ArchipelagoDataMiddleware(self.avatar, self.client)
 
         self.default_ip = os.getenv("ARCHIPELAGO_IP", "127.0.0.1")
         self.connect_tried = False
