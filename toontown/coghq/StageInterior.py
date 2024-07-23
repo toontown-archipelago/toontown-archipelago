@@ -14,6 +14,7 @@ from toontown.toontowngui import TTDialog
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.coghq import DistributedStage
 from toontown.building import Elevator
+import json
 
 class StageInterior(BattlePlace.BattlePlace):
     notify = DirectNotifyGlobal.directNotify.newCategory('StageInterior')
@@ -69,7 +70,14 @@ class StageInterior(BattlePlace.BattlePlace):
     def load(self):
         self.parentFSM.getStateNamed('stageInterior').addChild(self.fsm)
         BattlePlace.BattlePlace.load(self)
-        self.music = base.loader.loadMusic('phase_9/audio/bgm/CHQ_FACT_bg.ogg')
+        self.musicJson = json.load(open('resources/content_pack/music.json'))
+
+        if str(self.zoneId) in self.musicJson['global_music']:
+            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.zoneId)])
+            if (str(self.zoneId) + '_battle') in self.musicJson['global_music']:
+                self.loader.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.zoneId) + '_battle')])
+        else:
+            self.music = base.loader.loadMusic('phase_9/audio/bgm/CHQ_FACT_bg.ogg')
 
     def unload(self):
         self.parentFSM.getStateNamed('stageInterior').removeChild(self.fsm)
@@ -117,6 +125,7 @@ class StageInterior(BattlePlace.BattlePlace):
         self.music.stop()
         self.ignoreAll()
         del self.stageReadyWatcher
+        self.loader.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
 
     def enterWalk(self, teleportIn = 0):
         BattlePlace.BattlePlace.enterWalk(self, teleportIn)

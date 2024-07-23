@@ -29,6 +29,7 @@ from panda3d.direct import *
 from libotp import *
 import random
 import math
+import json
 
 # This pointer keeps track of the one DistributedCashbotBoss that
 # should appear within the avatar's current visibility zones.  If
@@ -71,6 +72,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
         self.latency = 0.5 #default latency for updating object posHpr
         self.toonSpawnpointOrder = [i for i in range(8)]
+
+        self.musicJson = json.load(open('resources/content_pack/music.json'))
         return
 
     def setToonSpawnpoints(self, order):

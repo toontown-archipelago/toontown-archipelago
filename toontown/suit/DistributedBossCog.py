@@ -25,6 +25,7 @@ from toontown.friends import FriendsListManager
 from direct.controls.ControlManager import CollisionHandlerRayStart
 from direct.showbase import PythonUtil
 import random
+import json
 
 from ..coghq.CogBossScoreboard import CogBossScoreboard
 
@@ -70,6 +71,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.scoreboard = CogBossScoreboard()
         self.scoreboard.hide()
         self.cutsceneSpeed = 1.0
+        self.musicJson = json.load(open('resources/content_pack/music.json'))
         return
 
     def announceGenerate(self):
@@ -1084,11 +1086,47 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
             self.zapLocalToon(ToontownGlobals.BossCogAreaAttack)
 
     def loadEnvironment(self):
-        self.elevatorMusic = base.loader.loadMusic('phase_7/audio/bgm/tt_elevator.ogg')
-        self.stingMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        self.battleOneMusic = base.loader.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.ogg')
-        self.battleThreeMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        self.epilogueMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_hall_of_fame.ogg')
+        if ('boss-' + str(self.style.dept) + '-elevator') in self.musicJson['global_music']:
+            self.elevatorMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-elevator')])
+        else:
+            self.elevatorMusic = base.loader.loadMusic('phase_7/audio/bgm/tt_elevator.ogg')
+        if ('boss-' + str(self.style.dept) + '-promotion') in self.musicJson['global_music']:
+            self.promotionMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-promotion')])
+        else:
+            self.promotionMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning_indoor.ogg')
+        if ('boss-' + str(self.style.dept) + '-between') in self.musicJson['global_music']:
+            self.betweenBattleMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-between')])
+        else:
+            self.betweenBattleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_toon_winning.ogg')
+        if ('boss-' + str(self.style.dept) + '-one') in self.musicJson['global_music']:
+            self.battleOneMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-one')])
+        else:
+            self.battleOneMusic = base.loader.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.ogg')
+        if ('boss-' + str(self.style.dept) + '-two') in self.musicJson['global_music']:
+            self.battleTwoMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-two')])
+        else:
+            self.battleTwoMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+        if ('boss-' + str(self.style.dept) + '-sting') in self.musicJson['global_music']:
+            self.stingMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-sting')])
+        else:
+            self.stingMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+        if ('boss-' + str(self.style.dept) + '-three') in self.musicJson['global_music']:
+            self.battleThreeMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-three')])
+        else:
+            self.battleThreeMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+        if ('boss-' + str(self.style.dept) + '-four') in self.musicJson['global_music']:
+            self.battleFourMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-four')])
+        else:
+            self.battleFourMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+        if ('boss-' + str(self.style.dept) + '-jury') in self.musicJson['global_music']:
+            self.juryMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-jury')])
+        else:
+            self.juryMusic = base.loader.loadMusic('phase_11/audio/bgm/LB_juryBG.ogg')
+        if ('boss-' + str(self.style.dept) + '-epilogue') in self.musicJson['global_music']:
+            self.epilogueMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-epilogue')])
+        else:
+            self.epilogueMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_hall_of_fame.ogg')
+        
 
     def unloadEnvironment(self):
         pass
