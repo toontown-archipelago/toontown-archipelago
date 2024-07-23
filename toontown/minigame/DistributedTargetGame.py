@@ -526,6 +526,7 @@ class DistributedTargetGame(DistributedMinigame):
         self.environModel.removeNode()
         del self.environModel
         self.fogOver.delete()
+        self.umbrella.hide()
         self.umbrella.removeNode()
         del self.umbrella
         for umbrella in self.remoteUmbrellas:
