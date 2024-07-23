@@ -205,6 +205,21 @@ class LogicalTasksPerPlayground(Range):
     default = 12
 
 
+class StartingTaskOption(Choice):
+    """
+    Determines the starting tasking PG of a player
+    """
+    display_name = "Starting Task Playground"
+    option_ttc = 0
+    option_dd = 1
+    option_dg = 2
+    option_mml = 3
+    option_tb = 4
+    option_ddl = 5
+    option_random = 6
+    default = 0
+
+
 class LogicalMaxedCogGallery(Toggle):
     """
     Enable to make Cog Gallery Maxed checks be in logic.
@@ -370,6 +385,7 @@ class ToontownOptions(PerGameCommonOptions):
     checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
     logical_tasks_per_playground: LogicalTasksPerPlayground
+    starting_task_playground: StartingTaskOption
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     maxed_cog_gallery_quota: MaxedCogGalleryQuota
     fish_locations: FishLocations

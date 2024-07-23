@@ -111,6 +111,16 @@ Toontown:
   # Range: 0 to 12
   logical_tasks_per_playground: 12
 
+  # Determines what the starting playground is for quests (includes TP access)
+  # - ttc: start with TTC access
+  # - dd: start with DD access
+  # - dg: start with DG access
+  # - mml: start with MML access
+  # - tb: start with TB access
+  # - ddl: start with DDL access
+  # - random: start with a random access
+  starting_task_playground: 'ttc'
+
   ### Cog Gallery Settings ###
 
   # Enable to have Cog Gallery Maxed checks include progression items.
