@@ -28,31 +28,21 @@ class QuestPage(ShtikerPage.ShtikerPage):
 
     def load(self):
         self.title = DirectLabel(parent=self, relief=None, text=TTLocalizer.QuestPageToonTasks, text_scale=0.12, textMayChange=0, pos=(0, 0, 0.6))
-        questFramePlaceList = ((-0.45,
-          0,
-          0.25,
-          0,
-          0,
-          0),
-         (-0.45,
-          0,
-          -0.35,
-          0,
-          0,
-          0),
-         (0.45, 0, 0.25, 0, 0, 0),
-         (0.45,
-          0,
-          -0.35,
-          0,
-          0,
-          0))
+        questFramePlaceList = (
+            (-0.45, 0, 0.35, 0, 0, 0),
+            (-0.45, 0, -0.25, 0, 0, 0),
+            (0.45, 0, 0.35, 0, 0, 0),
+            (0.45, 0, -0.25, 0, 0, 0),
+            (0.45, 0, -0.55, 0, 0, 0),
+            (-0.45, 0, -0.55, 0, 0, 0)
+           
+        )
         self.questFrames = []
         for i in range(ToontownGlobals.MaxQuestCarryLimit):
             frame = QuestBookPoster.QuestBookPoster(reverse=i > 1, mapIndex=i + 1)
             frame.reparentTo(self)
             frame.setPosHpr(*questFramePlaceList[i])
-            frame.setScale(1.06)
+            frame.setScale(0.5)
             self.questFrames.append(frame)
 
         self.accept('questsChanged', self.updatePage)
