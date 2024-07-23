@@ -476,7 +476,7 @@ __HEAD_HUNTER_ATTACKS.add(SuitAttackAttribute(
 ))
 __HEAD_HUNTER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.HEAD_SHRINK,
-    damage={6: 13, 7: 15, 8: 17, 9: 19, 10: 21},
+    damage={6: 13, 7: 15, 8: 17, 9: 18, 10: 19},
     accuracy=65,
     weight=30,
 ))
@@ -673,7 +673,7 @@ __GLAD_HANDER_ATTACKS.add(SuitAttackAttribute(
 ))
 __GLAD_HANDER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.SCHMOOZE,
-    damage={4: 5, 5: 7, 6: 11, 7: 15, 8: 20},
+    damage={4: 5, 5: 7, 6: 11, 7: 14, 8: 17},
     accuracy=55,
     weight=45,
 ))
@@ -1091,7 +1091,7 @@ __BLOODSUCKER_ATTACKS.add(SuitAttackAttribute(
 ))
 __BLOODSUCKER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.WITHDRAWAL,
-    damage={2: 6, 3: 8, 4: 10, 5: 12, 6: 14},
+    damage={2: 4, 3: 6, 4: 8, 5: 10, 6: 12},
     accuracy=95,
     weight=10,
 ))
@@ -1153,7 +1153,7 @@ __AMBULANCE_CHASER_ATTACKS.add(SuitAttackAttribute(
 ))
 __AMBULANCE_CHASER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.RED_TAPE,
-    damage={4: 6, 5: 8, 6: 12, 7: 15, 8: 19},
+    damage={4: 6, 5: 8, 6: 12, 7: 14, 8: 16},
     accuracy=75,
     weight=30,
 ))
