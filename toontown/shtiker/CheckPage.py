@@ -124,7 +124,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         check = model.find('**/checkmark')
         x = model.find('**/x')
         hinted = model.find('**/questionMark')
-        geomToUse = None
         hasBeenHinted = False  # TODO: Check for player hinting
         if checkCount >= checkMax:
             geomToUse = check

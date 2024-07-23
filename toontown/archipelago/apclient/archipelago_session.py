@@ -1,5 +1,5 @@
 # Represents a gameplay session attached to toon players, handles rewarding and sending items through the multiworld
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
@@ -14,8 +14,7 @@ from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.archipelago.util.net_utils import ClientStatus
 
-# Typing hack, delete later #todo
-if False:
+if TYPE_CHECKING:
     from toontown.toon.DistributedToonAI import DistributedToonAI
 
 

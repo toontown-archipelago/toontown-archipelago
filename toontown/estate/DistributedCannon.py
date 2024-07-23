@@ -1060,11 +1060,10 @@ class DistributedCannon(DistributedObject.DistributedObject):
         if self.localToonShooting:
             track.append(Func(self.av.collisionsOn))
 
-        if 1:
-            if self.hitTrack:
-                self.hitTrack.finish()
-            self.hitTrack = track
-            self.hitTrack.start()
+        if self.hitTrack:
+            self.hitTrack.finish()
+        self.hitTrack = track
+        self.hitTrack.start()
 
     def __hitGround(self, avatar, pos, extraArgs = []):
         hitP = avatar.getPos(render)
@@ -1122,35 +1121,9 @@ class DistributedCannon(DistributedObject.DistributedObject):
         t.start()
 
     def __hitRoof(self, avatar, collisionEntry, extraArgs = []):
-        if True:
-            self.__hitBumper(avatar, collisionEntry, self.sndHitHouse, kr=0.3, angVel=3)
-            pinballScore = ToontownGlobals.PinballScoring[ToontownGlobals.PinballRoof]
-            self.incrementPinballInfo(pinballScore[0], pinballScore[1])
-            return
-        np = collisionEntry.getIntoNodePath()
-        roof = np.getParent()
-        normal = collisionEntry.getSurfaceNormal(np)
-        normal.normalize()
-        vel = self.trajectory.getVel(self.t)
-        vel.normalize()
-        dot = normal.dot(vel)
-        self.notify.debug('--------------dot product = %s---------------' % dot)
-        temp = render.attachNewNode('temp')
-        temp.setPosHpr(0, 0, 0, 0, 0, 0)
-        temp.lookAt(Point3(normal))
-        temp.reparentTo(roof)
-        self.notify.debug('avatar pos = %s, landingPos = %s' % (avatar.getPos(), self.landingPos))
-        temp.setPos(render, self.landingPos)
-        avatar.reparentTo(temp)
-        avatar.setPosHpr(0, 0.25, 0.5, 0, 270, 180)
-        avatar.pose('slip-forward', 25)
-        base.playSfx(self.sndHitHouse)
-        avatar.setPlayRate(1.0, 'jump')
-        h = self.barrel.getH(render)
-        t = Sequence(LerpPosInterval(avatar, 0.5, Point3(0, 0, -.5), blendType='easeInOut'), Func(avatar.clearColorScale), Func(avatar.wrtReparentTo, render), Wait(0.3), Parallel(Func(avatar.setP, 0), Func(avatar.play, 'jump', None, 19, 39), LerpHprInterval(avatar, 0.3, Vec3(h, 0, 0), blendType='easeOut')), Func(avatar.play, 'neutral'))
-        t.start()
-        hitP = avatar.getPos(render)
-        return
+        self.__hitBumper(avatar, collisionEntry, self.sndHitHouse, kr=0.3, angVel=3)
+        pinballScore = ToontownGlobals.PinballScoring[ToontownGlobals.PinballRoof]
+        self.incrementPinballInfo(pinballScore[0], pinballScore[1])
 
     def __hitBridge(self, avatar, collisionEntry, extraArgs = []):
         self.notify.debug('hit bridge')
@@ -1196,21 +1169,15 @@ class DistributedCannon(DistributedObject.DistributedObject):
         self.incrementPinballInfo(score, multiplier)
 
     def __hitCloudPlatform(self, avatar, collisionEntry, extraArgs = []):
-        if True:
-            self.__hitBumper(avatar, collisionEntry, self.sndHitHouse, kr=0.4, angVel=5)
-            score, multiplier = ToontownGlobals.PinballScoring[ToontownGlobals.PinballCloudBumperLow]
-            intoNodePath = collisionEntry.getIntoNodePath()
-            name = intoNodePath.getParent().getName()
-            splitParts = name.split('-')
-            if len(splitParts) >= 3:
-                score = int(splitParts[1])
-                multiplier = int(splitParts[2])
-            self.incrementPinballInfo(score, multiplier)
-            return
-        avatar.reparentTo(collisionEntry.getIntoNodePath())
-        h = self.barrel.getH(render)
-        avatar.setPosHpr(0, 0, 0, h, 0, 0)
-        messenger.send('hitCloud')
+        self.__hitBumper(avatar, collisionEntry, self.sndHitHouse, kr=0.4, angVel=5)
+        score, multiplier = ToontownGlobals.PinballScoring[ToontownGlobals.PinballCloudBumperLow]
+        intoNodePath = collisionEntry.getIntoNodePath()
+        name = intoNodePath.getParent().getName()
+        splitParts = name.split('-')
+        if len(splitParts) >= 3:
+            score = int(splitParts[1])
+            multiplier = int(splitParts[2])
+        self.incrementPinballInfo(score, multiplier)
 
     def __setToonUpright(self, avatar, pos = None):
         if avatar:
