@@ -441,7 +441,10 @@ class SuitVisual:
         # find if the head_type is a list or not
         if isinstance(self.head_type, list):
             for head in self.head_type:
-                headModel = loader.loadModel(self.headModelPath(suit.style.body))
+                headPath = self.headModelPath(suit.style.body)
+                if self.key == 'ds':
+                    headPath = self.headModelPath(suit.style.body, 'phase_4/models/char/suitB-heads2')
+                headModel = loader.loadModel(headPath)
                 head = headModel.find('**/' + head)
                 head.reparentTo(suit.find(attachPoint))
                 suit.headParts.append(head)
@@ -472,7 +475,7 @@ GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
     SuitVisual('p',   3.35 / bSize,  corpPolyColor,                 None,                         None,                   'pencilpusher',        5.0),
     SuitVisual('ym',  4.125 / aSize, corpPolyColor,                 None,                         None,                   'yesman',              5.28),
     SuitVisual('mm',  2.5 / cSize,   corpPolyColor,                 None,                         None,                   'micromanager',        3.25),
-    SuitVisual('ds',  4.5 / bSize,   corpPolyColor,                 None,                         None,                   'beancounter',         6.08),
+    SuitVisual('ds',  4.5 / bSize,   corpPolyColor,                 None,                         None,                   ['downsizer', 'downsizer_hat'],         6.08),
     SuitVisual('hh',  6.5 / aSize,   corpPolyColor,                 None,                         None,                   'headhunter',          7.45),
     SuitVisual('cr',  6.75 / cSize,  VBase4(0.85, 0.55, 0.55, 1.0), None,                         'corporate-raider.jpg', 'flunky',              8.23),
     SuitVisual('tbc', 7.0 / aSize,   VBase4(0.75, 0.95, 0.75, 1.0), None,                         None,                   'bigcheese',           9.34),
