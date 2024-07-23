@@ -292,6 +292,11 @@ class ToontownLocationName(Enum):
     DONALDS_DREAMLAND_TASK_10 =                 "Donald's Dreamland Task #10"
     DONALDS_DREAMLAND_TASK_11 =                 "Donald's Dreamland Task #11"
     DONALDS_DREAMLAND_TASK_12 =                 "Donald's Dreamland Task #12"
+    ONE_STORY =                                 "One Story Building Clear"
+    TWO_STORY =                                 "Two Story Building Clear"
+    THREE_STORY =                               "Three Story Building Clear"
+    FOUR_STORY =                                "Four Story Building Clear"
+    FIVE_STORY =                                "Five Story Building Clear"
     TTC_SHOP_1 =                                "Thickie (TTC Pet Shop)"
     TTC_SHOP_2 =                                "Bowser (TTC Pet Shop)"
     TTC_SHOP_3 =                                "Snowman (TTC Pet Shop)"
@@ -465,6 +470,7 @@ class ToontownLocationType(IntEnum):
     GALLERY         = auto()  # Locations for discovering cogs in the gallery
     GALLERY_MAX     = auto()  # Locations for maxing cogs in the gallery
     FACILITIES      = auto()  # Locations for clearing facilities
+    BUILDINGS       = auto()  # Locations for clearing cog buildings
     BOSSES_1        = auto()  # Locations for clearing bosses
     BOSSES_2        = auto()  # Locations for clearing bosses
     BOSSES_3        = auto()  # Locations for clearing bosses
@@ -943,6 +949,13 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_10,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_11,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_12,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag]),
+    # endregion
+    # region Buildings
+    ToontownLocationDefinition(ToontownLocationName.ONE_STORY,                  ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelThreeOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.TWO_STORY,                  ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFourOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.THREE_STORY,                ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFiveOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY,                 ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY,                 ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag]),
     # endregion
 ] + TREASURE_LOCATION_DEFINITIONS + [
     # region Facilities

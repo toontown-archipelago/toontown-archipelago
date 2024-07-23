@@ -67,12 +67,6 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
 def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return True
 
-
-@rule(Rule.HasDDHQAccess,   ToontownItemName.DD_HQ_ACCESS)
-@rule(Rule.HasDGHQAccess,   ToontownItemName.DG_HQ_ACCESS)
-@rule(Rule.HasMMLHQAccess,  ToontownItemName.MML_HQ_ACCESS)
-@rule(Rule.HasTBHQAccess,   ToontownItemName.TB_HQ_ACCESS)
-@rule(Rule.HasDDLHQAccess,  ToontownItemName.DDL_HQ_ACCESS)
 @rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
 @rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS)
 @rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS)
@@ -94,6 +88,13 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
         return state.has(argument[0].value, player, argument[1])
     return state.has(argument[0].value, player)
 
+@rule(Rule.HasDDHQAccess,   ToontownItemName.DD_ACCESS)
+@rule(Rule.HasDGHQAccess,   ToontownItemName.DG_ACCESS)
+@rule(Rule.HasMMLHQAccess,  ToontownItemName.MML_ACCESS)
+@rule(Rule.HasTBHQAccess,   ToontownItemName.TB_ACCESS)
+@rule(Rule.HasDDLHQAccess,  ToontownItemName.DDL_ACCESS)
+def HasItemCountRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    return state.count(argument[0].value, player) == 2
 
 @rule(Rule.CanBuyTTCDoodle, 0)
 @rule(Rule.CanBuyDDDoodle, 1)
@@ -115,18 +116,18 @@ def TunnelCanBeUsed(state: CollectionState, locentr: LocEntrDef, world: MultiWor
 @rule(Rule.HasTeleportAccess)
 def HasTeleportAccess(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     region_to_tp_item = {
-        ToontownRegionName.TTC: ToontownItemName.TTC_TELEPORT,
-        ToontownRegionName.DD: ToontownItemName.DD_TELEPORT,
-        ToontownRegionName.DG: ToontownItemName.DG_TELEPORT,
-        ToontownRegionName.MML: ToontownItemName.MML_TELEPORT,
-        ToontownRegionName.TB: ToontownItemName.TB_TELEPORT,
-        ToontownRegionName.DDL: ToontownItemName.DDL_TELEPORT,
-        ToontownRegionName.GS: ToontownItemName.GS_TELEPORT,
-        ToontownRegionName.AA: ToontownItemName.AA_TELEPORT,
-        ToontownRegionName.SBHQ: ToontownItemName.SBHQ_TELEPORT,
-        ToontownRegionName.CBHQ: ToontownItemName.CBHQ_TELEPORT,
-        ToontownRegionName.LBHQ: ToontownItemName.LBHQ_TELEPORT,
-        ToontownRegionName.BBHQ: ToontownItemName.BBHQ_TELEPORT,
+        ToontownRegionName.TTC: ToontownItemName.TTC_ACCESS,
+        ToontownRegionName.DD: ToontownItemName.DD_ACCESS,
+        ToontownRegionName.DG: ToontownItemName.DG_ACCESS,
+        ToontownRegionName.MML: ToontownItemName.MML_ACCESS,
+        ToontownRegionName.TB: ToontownItemName.TB_ACCESS,
+        ToontownRegionName.DDL: ToontownItemName.DDL_ACCESS,
+        ToontownRegionName.GS: ToontownItemName.GS_ACCESS,
+        ToontownRegionName.AA: ToontownItemName.AA_ACCESS,
+        ToontownRegionName.SBHQ: ToontownItemName.SBHQ_ACCESS,
+        ToontownRegionName.CBHQ: ToontownItemName.CBHQ_ACCESS,
+        ToontownRegionName.LBHQ: ToontownItemName.LBHQ_ACCESS,
+        ToontownRegionName.BBHQ: ToontownItemName.BBHQ_ACCESS,
     }
     return state.has(region_to_tp_item[locentr.connects_to].value, player)
 

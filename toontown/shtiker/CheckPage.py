@@ -1,6 +1,6 @@
 from typing import Dict
 from . import ShtikerPage
-from apworld.toontown import ToontownItemDefinition, get_item_def_from_id
+from apworld.toontown import ToontownItemName, ToontownItemDefinition, get_item_def_from_id
 from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
 from panda3d.core import *
@@ -103,14 +103,23 @@ class CheckPage(ShtikerPage.ShtikerPage):
             if itemDef is None:
                 print("ALERT I DON'T KNOW WHAT %s IS -- ENRAGE AT MICA" % item_id)
                 continue
-
-            button = self.makeCheckButton(itemDef.name, itemsAndCount.get(itemDef.unique_id, 0), quantity)
+            playgroundKeys = [ToontownItemName.TTC_ACCESS.value, ToontownItemName.DD_ACCESS.value,
+                              ToontownItemName.DG_ACCESS.value,  ToontownItemName.MML_ACCESS.value,
+                              ToontownItemName.TB_ACCESS.value,  ToontownItemName.DDL_ACCESS.value]
             itemName = itemDef.name.value
+            # A little hack to get around the visual funny with giving the keys on start
+            if itemName in playgroundKeys:
+                quantity = 2
+            button = self.makeCheckButton(itemDef.name, itemsAndCount.get(itemDef.unique_id, 0), quantity)
             if "Key" in itemName or "Disguise" in itemName:
+                if "Access" in itemName:
+                    progressionItems.append(button[0])
+                    continue
                 keyItems.append(button[0])
                 continue
             if itemDef.classification == 0b0001:  # Progression Items
-                progressionItems.append(button[0])
+                if button[0] not in (progressionItems + keyItems):  # Make sure item isn't already in one of these
+                    progressionItems.append(button[0])
             elif itemDef.classification == 0b0010:  # Useful Items
                 usefulItems.append(button[0])
             else:
