@@ -55,6 +55,13 @@ suitHeadTypes = [
     'bgh'
 ]
 
+notMainTypes = [
+    'trf',
+    'ski',
+    'def',
+    'bgh'
+]
+
 suitATypes = [
     'ym',
     'hh',
