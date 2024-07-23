@@ -161,7 +161,7 @@ class TPSanity(Choice):
     option_treasure = 1
     option_shuffle = 2
     option_none = 3
-    default = 3
+    default = 0
 
 
 class TreasuresPerLocation(Range):

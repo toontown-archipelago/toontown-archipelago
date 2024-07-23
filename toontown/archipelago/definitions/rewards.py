@@ -303,7 +303,7 @@ class FishingRodUpgradeReward(APReward):
         av.b_setFishingRod(nextRodID)
 
 
-class TeleportAccessUpgradeReward(APReward):
+class AccessKeyReward(APReward):
     TOONTOWN_CENTRAL = ToontownGlobals.ToontownCentral
     DONALDS_DOCK = ToontownGlobals.DonaldsDock
     DAISYS_GARDENS = ToontownGlobals.DaisyGardens
@@ -336,53 +336,54 @@ class TeleportAccessUpgradeReward(APReward):
         GOOFY_SPEEDWAY: "Goofy Speedway",
     }
 
-    def __init__(self, playground: int):
-        self.playground: int = playground
-
-    def formatted_header(self) -> str:
-        return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("You can now teleport\nto "),
-            MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
-            MinimalJsonMessagePart("!"),
-        ])
-
-    def apply(self, av: "DistributedToonAI"):
-        av.addTeleportAccess(self.playground)
-        for pg in self.LINKED_PGS.get(self.playground, []):
-            av.addTeleportAccess(pg)
-
-
-class TaskAccessReward(APReward):
-    TOONTOWN_CENTRAL = ToontownGlobals.ToontownCentral
-    DONALDS_DOCK = ToontownGlobals.DonaldsDock
-    DAISYS_GARDENS = ToontownGlobals.DaisyGardens
-    MINNIES_MELODYLAND = ToontownGlobals.MinniesMelodyland
-    THE_BRRRGH = ToontownGlobals.TheBrrrgh
-    DONALDS_DREAMLAND = ToontownGlobals.DonaldsDreamland
-
-    ZONE_TO_DISPLAY_NAME = {
-        TOONTOWN_CENTRAL: "Toontown Central",
-        DONALDS_DOCK: "Donald's Dock",
-        DAISYS_GARDENS: "Daisy Gardens",
-        MINNIES_MELODYLAND: "Minnie's Melodyland",
-        THE_BRRRGH: "The Brrrgh",
-        DONALDS_DREAMLAND: "Donald's Dreamland",
+    ZONE_TO_ACCESS_ITEM = {
+        TOONTOWN_CENTRAL: ToontownItemName.TTC_ACCESS,
+        DONALDS_DOCK: ToontownItemName.DD_ACCESS,
+        DAISYS_GARDENS: ToontownItemName.DG_ACCESS,
+        MINNIES_MELODYLAND: ToontownItemName.MML_ACCESS,
+        THE_BRRRGH: ToontownItemName.TB_ACCESS,
+        DONALDS_DREAMLAND: ToontownItemName.DDL_ACCESS,
+        SELLBOT_HQ: ToontownItemName.SBHQ_ACCESS,
+        CASHBOT_HQ: ToontownItemName.CBHQ_ACCESS,
+        LAWBOT_HQ: ToontownItemName.LBHQ_ACCESS,
+        BOSSBOT_HQ: ToontownItemName.BBHQ_ACCESS,
+        ACORN_ACRES: ToontownItemName.AA_ACCESS,
+        GOOFY_SPEEDWAY: ToontownItemName.GS_ACCESS,
     }
 
     def __init__(self, playground: int):
         self.playground: int = playground
 
     def formatted_header(self) -> str:
-        return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("You may now complete ToonTasks\nin "),
-            MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
-            MinimalJsonMessagePart("!"),
-        ])
+        accessCount = 0
+        items = base.localAvatar.getReceivedItems()
+        for item in items:
+            index_received, item_id = item
+            if get_item_def_from_id(item_id).name == self.ZONE_TO_ACCESS_ITEM.get(self.playground, ToontownGlobals.ToontownCentral):
+                accessCount += 1
+        if accessCount >= 2:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("You may now complete ToonTasks\nin "),
+                MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+                MinimalJsonMessagePart("!"),
+            ])
+        else:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("You can now teleport\nto "),
+                MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+                MinimalJsonMessagePart("!"),
+            ])
 
     def apply(self, av: "DistributedToonAI"):
-        # Get the key ID for this playground
-        key = FADoorCodes.ZONE_TO_ACCESS_CODE[self.playground]
-        av.addAccessKey(key)
+        # Apply TP before HQ
+        if not av.hasTeleportAccess(self.playground):
+            av.addTeleportAccess(self.playground)
+            for pg in self.LINKED_PGS.get(self.playground, []):
+                av.addTeleportAccess(pg)
+        else:
+            # Get the key ID for this playground
+            key = FADoorCodes.ZONE_TO_ACCESS_CODE[self.playground]
+            av.addAccessKey(key)
 
 
 class FishingLicenseReward(APReward):
@@ -777,24 +778,18 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.GAG_MULTIPLIER_1.value: GagTrainingMultiplierReward(1),
     ToontownItemName.GAG_MULTIPLIER_2.value: GagTrainingMultiplierReward(2),
     ToontownItemName.FISHING_ROD_UPGRADE.value: FishingRodUpgradeReward(),
-    ToontownItemName.TTC_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.TOONTOWN_CENTRAL),
-    ToontownItemName.DD_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.DONALDS_DOCK),
-    ToontownItemName.DG_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.DAISYS_GARDENS),
-    ToontownItemName.MML_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.MINNIES_MELODYLAND),
-    ToontownItemName.TB_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.THE_BRRRGH),
-    ToontownItemName.DDL_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.DONALDS_DREAMLAND),
-    ToontownItemName.SBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.SELLBOT_HQ),
-    ToontownItemName.CBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.CASHBOT_HQ),
-    ToontownItemName.LBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.LAWBOT_HQ),
-    ToontownItemName.BBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.BOSSBOT_HQ),
-    ToontownItemName.AA_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.ACORN_ACRES),
-    ToontownItemName.GS_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.GOOFY_SPEEDWAY),
-    ToontownItemName.TTC_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.TOONTOWN_CENTRAL),
-    ToontownItemName.DD_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DONALDS_DOCK),
-    ToontownItemName.DG_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DAISYS_GARDENS),
-    ToontownItemName.MML_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.MINNIES_MELODYLAND),
-    ToontownItemName.TB_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.THE_BRRRGH),
-    ToontownItemName.DDL_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DONALDS_DREAMLAND),
+    ToontownItemName.TTC_ACCESS.value: AccessKeyReward(AccessKeyReward.TOONTOWN_CENTRAL),
+    ToontownItemName.DD_ACCESS.value: AccessKeyReward(AccessKeyReward.DONALDS_DOCK),
+    ToontownItemName.DG_ACCESS.value: AccessKeyReward(AccessKeyReward.DAISYS_GARDENS),
+    ToontownItemName.MML_ACCESS.value: AccessKeyReward(AccessKeyReward.MINNIES_MELODYLAND),
+    ToontownItemName.TB_ACCESS.value: AccessKeyReward(AccessKeyReward.THE_BRRRGH),
+    ToontownItemName.DDL_ACCESS.value: AccessKeyReward(AccessKeyReward.DONALDS_DREAMLAND),
+    ToontownItemName.SBHQ_ACCESS.value: AccessKeyReward(AccessKeyReward.SELLBOT_HQ),
+    ToontownItemName.CBHQ_ACCESS.value: AccessKeyReward(AccessKeyReward.CASHBOT_HQ),
+    ToontownItemName.LBHQ_ACCESS.value: AccessKeyReward(AccessKeyReward.LAWBOT_HQ),
+    ToontownItemName.BBHQ_ACCESS.value: AccessKeyReward(AccessKeyReward.BOSSBOT_HQ),
+    ToontownItemName.AA_ACCESS.value: AccessKeyReward(AccessKeyReward.ACORN_ACRES),
+    ToontownItemName.GS_ACCESS.value: AccessKeyReward(AccessKeyReward.GOOFY_SPEEDWAY),
     ToontownItemName.TTC_FISHING.value: FishingLicenseReward(FishingLicenseReward.TOONTOWN_CENTRAL),
     ToontownItemName.DD_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DOCK),
     ToontownItemName.DG_FISHING.value: FishingLicenseReward(FishingLicenseReward.DAISYS_GARDENS),

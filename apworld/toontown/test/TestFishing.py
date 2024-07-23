@@ -12,12 +12,12 @@ class ToontownTestFishingProgression(ToontownTestBase):
     }
 
     FISHING_DATA = {
-        FishZone.ToontownCentral:   [ToontownItemName.TTC_TELEPORT.value, ToontownItemName.TTC_FISHING.value],
-        FishZone.DonaldsDock:       [ToontownItemName.DD_TELEPORT.value,  ToontownItemName.DD_FISHING.value],
-        FishZone.DaisyGardens:      [ToontownItemName.DG_TELEPORT.value,  ToontownItemName.DG_FISHING.value],
-        FishZone.MinniesMelodyland: [ToontownItemName.MML_TELEPORT.value, ToontownItemName.MML_FISHING.value],
-        FishZone.TheBrrrgh:         [ToontownItemName.TB_TELEPORT.value,  ToontownItemName.TB_FISHING.value],
-        FishZone.DonaldsDreamland:  [ToontownItemName.DDL_TELEPORT.value, ToontownItemName.DDL_FISHING.value],
+        FishZone.ToontownCentral:   [ToontownItemName.TTC_ACCESS.value, ToontownItemName.TTC_FISHING.value],
+        FishZone.DonaldsDock:       [ToontownItemName.DD_ACCESS.value, ToontownItemName.DD_FISHING.value],
+        FishZone.DaisyGardens:      [ToontownItemName.DG_ACCESS.value, ToontownItemName.DG_FISHING.value],
+        FishZone.MinniesMelodyland: [ToontownItemName.MML_ACCESS.value, ToontownItemName.MML_FISHING.value],
+        FishZone.TheBrrrgh:         [ToontownItemName.TB_ACCESS.value, ToontownItemName.TB_FISHING.value],
+        FishZone.DonaldsDreamland:  [ToontownItemName.DDL_ACCESS.value, ToontownItemName.DDL_FISHING.value],
     }
 
     def test_all_species(self):
@@ -46,7 +46,7 @@ class ToontownTestFishingProgression(ToontownTestBase):
                 for fz in TEST_ZONES:
                     tp_access, license = self.FISHING_DATA[fz]
 
-                    if tp_access == ToontownItemName.TTC_TELEPORT.value:
+                    if tp_access == ToontownItemName.TTC_ACCESS.value:
                         # TTC has optional TP access still
                         add_location_test(expected_fish, True, [license] + rods)
                     else:

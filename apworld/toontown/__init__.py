@@ -109,7 +109,7 @@ class ToontownWorld(World):
         # Determine forbidden location types.
         forbidden_location_types: set[ToontownLocationType] = self.get_disabled_location_types()
 
-        # Noe create locations.
+        # Now create locations.
         for i, location_data in enumerate(LOCATION_DEFINITIONS):
             # Do we skip this location generation?
             if location_data.type in forbidden_location_types:
@@ -145,24 +145,24 @@ class ToontownWorld(World):
                 location.place_locked_item(self.create_event(location_data.name.value))
 
         # Force various item placements.
-        self._force_item_placement(ToontownLocationName.STARTING_NEW_GAME,  ToontownItemName.TTC_HQ_ACCESS)
+        self._force_item_placement(ToontownLocationName.STARTING_NEW_GAME,  ToontownItemName.TTC_ACCESS)
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.first_track)
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.second_track)
 
         # Do we have force teleport access? if so place our tps
         if self.options.tpsanity.value == TPSanity.option_treasure:
-            self._force_item_placement(ToontownLocationName.TTC_TREASURE_1,  ToontownItemName.TTC_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DD_TREASURE_1,   ToontownItemName.DD_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DG_TREASURE_1,   ToontownItemName.DG_TELEPORT)
-            self._force_item_placement(ToontownLocationName.MML_TREASURE_1,  ToontownItemName.MML_TELEPORT)
-            self._force_item_placement(ToontownLocationName.TB_TREASURE_1,   ToontownItemName.TB_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DDL_TREASURE_1,  ToontownItemName.DDL_TELEPORT)
-            self._force_item_placement(ToontownLocationName.SBHQ_TREASURE_1, ToontownItemName.SBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.CBHQ_TREASURE_1, ToontownItemName.CBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.LBHQ_TREASURE_1, ToontownItemName.LBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.BBHQ_TREASURE_1, ToontownItemName.BBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.AA_TREASURE_1,   ToontownItemName.AA_TELEPORT)
-            self._force_item_placement(ToontownLocationName.GS_TREASURE_1,   ToontownItemName.GS_TELEPORT)
+            self._force_item_placement(ToontownLocationName.TTC_TREASURE_1, ToontownItemName.TTC_ACCESS)
+            self._force_item_placement(ToontownLocationName.DD_TREASURE_1, ToontownItemName.DD_ACCESS)
+            self._force_item_placement(ToontownLocationName.DG_TREASURE_1, ToontownItemName.DG_ACCESS)
+            self._force_item_placement(ToontownLocationName.MML_TREASURE_1, ToontownItemName.MML_ACCESS)
+            self._force_item_placement(ToontownLocationName.TB_TREASURE_1, ToontownItemName.TB_ACCESS)
+            self._force_item_placement(ToontownLocationName.DDL_TREASURE_1, ToontownItemName.DDL_ACCESS)
+            self._force_item_placement(ToontownLocationName.SBHQ_TREASURE_1, ToontownItemName.SBHQ_ACCESS)
+            self._force_item_placement(ToontownLocationName.CBHQ_TREASURE_1, ToontownItemName.CBHQ_ACCESS)
+            self._force_item_placement(ToontownLocationName.LBHQ_TREASURE_1, ToontownItemName.LBHQ_ACCESS)
+            self._force_item_placement(ToontownLocationName.BBHQ_TREASURE_1, ToontownItemName.BBHQ_ACCESS)
+            self._force_item_placement(ToontownLocationName.AA_TREASURE_1, ToontownItemName.AA_ACCESS)
+            self._force_item_placement(ToontownLocationName.GS_TREASURE_1, ToontownItemName.GS_ACCESS)
 
         # Debug, use this to print a pretty picture to make sure our regions are set up correctly
         if DEBUG_MODE:
@@ -181,11 +181,17 @@ class ToontownWorld(World):
         if self.options.tpsanity.value in (TPSanity.option_keys, TPSanity.option_shuffle):
             for itemName in TELEPORT_ACCESS_ITEMS:
                 item = self.create_item(itemName.value)
-                if itemName == ToontownItemName.TTC_TELEPORT and \
+                if itemName == ToontownItemName.TTC_ACCESS and \
                         self.options.tpsanity.value == TPSanity.option_keys:
                     self.multiworld.push_precollected(item)
                 else:
                     pool.append(item)
+
+        # Automatically apply teleport access across the board so hq access can be gotten from an item
+        if self.options.tpsanity.value == TPSanity.option_none:
+            for itemName in TELEPORT_ACCESS_ITEMS:
+                item = self.create_item(itemName.value)
+                self.multiworld.push_precollected(item)
 
         # Dynamically generate laff boosts.
         LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
