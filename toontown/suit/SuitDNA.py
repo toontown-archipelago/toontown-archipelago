@@ -48,7 +48,11 @@ suitHeadTypes = [
     'ms',
     'tf',
     'm',
-    'mh'
+    'mh',
+    'trf',
+    'ski',
+    'def',
+    'bgh'
 ]
 
 suitATypes = [
@@ -64,6 +68,7 @@ suitATypes = [
     'rb',
     'nd',
     'tf',
+    'trf',
     'm',
     'mh'
 ]
@@ -73,11 +78,13 @@ suitBTypes = [
     'ds',
     'b',
     'ac',
+    'def',
     'sd',
     'bc',
+    'ski',
     'ls',
     'tm',
-    'ms'
+    'ms',
 ]
 
 suitCTypes = [
@@ -89,7 +96,8 @@ suitCTypes = [
     'tw',
     'mb',
     'cc',
-    'gh'
+    'gh',
+    'bgh'
 ]
 
 suitDepts = [
@@ -442,17 +450,21 @@ class SuitVisual:
         if isinstance(self.head_type, list):
             for head in self.head_type:
                 headPath = self.headModelPath(suit.style.body)
-                if self.key == 'ds':
+                if self.key in ['ds', 'def']:
                     headPath = self.headModelPath(suit.style.body, 'phase_4/models/char/suitB-heads2')
+                elif self.key == 'trf':
+                    headPath = self.headModelPath(suit.style.body, 'phase_4/models/char/suitA-heads2')
                 headModel = loader.loadModel(headPath)
                 head = headModel.find('**/' + head)
                 head.reparentTo(suit.find(attachPoint))
+                head.setTwoSided(True)
                 suit.headParts.append(head)
                 headModel.removeNode()
         else:
             headModel = loader.loadModel(self.headModelPath(suit.style.body))
             head = headModel.find('**/' + self.head_type)
             head.reparentTo(suit.find(attachPoint))
+            head.setTwoSided(True)
             suit.headParts.append(head)
             headModel.removeNode()
     
@@ -502,7 +514,12 @@ GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
     SuitVisual('ms',  4.75 / bSize,  salesPolyColor,                None,                         None,                   'movershaker',         6.7),
     SuitVisual('tf',  5.25 / aSize,  salesPolyColor,                None,                         None,                   'twoface',             6.95),
     SuitVisual('m',   5.75 / aSize,  salesPolyColor,                None,                         'mingler.jpg',          'twoface',             7.61),
-    SuitVisual('mh',  7.0 / aSize,   salesPolyColor,                None,                         None,                   'yesman',              8.95)
+    SuitVisual('mh',  7.0 / aSize,   salesPolyColor,                None,                         None,                   'yesman',              8.95),
+
+    SuitVisual('trf',  5.25 / aSize,  salesPolyColor,                None,                         None,                   ['flunky', 'hat'],             6.95),
+    SuitVisual('ski',  5.65 / bSize,  VBase4(0.5, 0.8, 0.75, 1.0),   None,                        'skinflint.jpg',      'telemarketer',        7.9),
+    SuitVisual('def',  4.4 / bSize,   moneyPolyColor,                None,                        'suit-heads_palette_3cmla_5.jpg',                   ['downsizer', 'downsizer_hat'],         5.95),
+    SuitVisual('bgh',   4.0 / cSize,   corpPolyColor,                 None,                         'bag_holder.jpg',                   'tightwad', 4.88),
 }
 
 SuitClotheParts = ['blazer', 'leg', 'sleeve']
@@ -560,6 +577,12 @@ def getWaiterClotheTexture():
 
 CUSTOM_SUIT_CLOTHES: Set[CustomSuitClothes] = set()
 
+customSuit2Dept = {
+    'trf': 's',
+    'ski': 'm',
+    'def': 'l',
+    'bgh': 'c'
+}
 
 def getSuitDept(name):
     index = suitHeadTypes.index(name)
@@ -571,6 +594,8 @@ def getSuitDept(name):
         return suitDepts[2]
     elif index < suitsPerDept * 4:
         return suitDepts[3]
+    elif name in customSuit2Dept:
+        return customSuit2Dept[name]
     else:
         print('Unknown dept for suit name: ', name)
         return None
@@ -594,10 +619,10 @@ def getSuitType(name):
 
 
 def getRandomSuitType(level, rng=random):
-    if level >= 11:
+    if level >= 12:
         return random.choice([6, 7, 8])
     else:
-        return random.randint(max(level - 4, 1), min(level, 8))
+        return random.randint(max(level - 7, 1), min(level, 8))
 
 
 def getRandomSuitByDept(dept):
@@ -701,6 +726,41 @@ class SuitDNA(AvatarDNA.AvatarDNA):
         bottom = _base + offset
         top = bottom + suitsPerLevel[level - 1]
         self.name = suitHeadTypes[random.choice(list(range(bottom, top)))]
+
+        # this is where we include some of the new suits
+
+         # we get it's parent suit
+        if self.name == 'f':
+            # we define it's rng
+            alternateSuitChance = 0.4
+            # if the rng is less than the chance, we set the suit to the alternate suit
+            if random.random() < alternateSuitChance:
+                self.name = 'bgh'
+
+        # we get it's parent suit
+        if self.name == 'ac':
+            # we define it's rng
+            alternateSuitChance = 0.4
+            # if the rng is less than the chance, we set the suit to the alternate suit
+            if random.random() < alternateSuitChance:
+                self.name = 'def'
+        
+        # we get it's parent suit
+        if self.name == 'mb':
+            # we define it's rng
+            alternateSuitChance = 0.4
+            # if the rng is less than the chance, we set the suit to the alternate suit
+            if random.random() < alternateSuitChance:
+                self.name = 'ski'
+        
+        # we get it's parent suit
+        if self.name == 'tf':
+            # we define it's rng
+            alternateSuitChance = 0.4
+            # if the rng is less than the chance, we set the suit to the alternate suit
+            if random.random() < alternateSuitChance:
+                self.name = 'trf'
+
         self.body = getSuitBodyType(self.name)
         return
 
