@@ -13,6 +13,7 @@ from toontown.toonbase import TTLocalizer
 from libotp import *
 from direct.showbase import AppRunnerGlobal
 import string
+import json
 import os
 
 TutorialModelDict = ModelDict
@@ -312,8 +313,13 @@ class Suit(Avatar.Avatar):
                 customClothesVisual = s_clothes
                 customClothesNeeeded = True
                 break
-
-        if customClothesNeeeded:
+        
+        clothesJson = json.load(open('resources/content_pack/suit_clothes.json'))
+        
+        if self.style.name in clothesJson['suit_clothes']:
+            if clothesJson['suit_clothes'][self.style.name] == True:
+                torsoTex, legTex, armTex = getSuitNameContentPackClotheTexture(self.style.name)
+        elif customClothesNeeeded:
             torsoTex, legTex, armTex = customClothesVisual.getClotheTexture(self)
         else:
             torsoTex, legTex, armTex = getNormalClotheTexture(self.style.dept)
@@ -346,7 +352,8 @@ class Suit(Avatar.Avatar):
         modelRoot.find('**/torso').setTexture(torsoTex, 1)
         modelRoot.find('**/arms').setTexture(armTex, 1)
         modelRoot.find('**/legs').setTexture(legTex, 1)
-        modelRoot.find('**/hands').setColor(self.handColor)
+        handTexture = loader.loadTexture('phase_' + str(suitDeptToPhase[self.style.dept]) + '/maps/tt_t_ene_suitHand_' + self.style.name + '.png')
+        modelRoot.find('**/hands').setTexture(handTexture, 1)
 
     def makeRentalSuit(self, suitType, modelRoot = None):
         if not modelRoot:
@@ -378,7 +385,8 @@ class Suit(Avatar.Avatar):
                 headPart.setColor(self.headColor)
         
         # Hands
-        self.find('**/hands').setColor(self.handColor)
+        handTexture = loader.loadTexture('phase_' + str(suitDeptToPhase[self.style.dept]) + '/maps/tt_t_ene_suitHand_' + self.style.name + '.png')
+        self.find('**/hands').setTexture(handTexture, 1)
 
     def generateCorporateTie(self, modelPath = None):
         if not modelPath:
@@ -566,7 +574,8 @@ class Suit(Avatar.Avatar):
         
         # Set the hand color
         if not self.isSkeleton:
-            self.loseActor.find('**/hands').setColor(self.handColor)
+            handTexture = loader.loadTexture('phase_' + str(suitDeptToPhase[self.style.dept]) + '/maps/tt_t_ene_suitHand_' + self.style.name + '.png')
+            self.loseActor.find('**/hands').setTexture(handTexture, 1)
         return self.loseActor
 
     def cleanupLoseActor(self):

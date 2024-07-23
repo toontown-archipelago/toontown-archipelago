@@ -99,6 +99,11 @@ suitDepts = [
     's'
 ]
 
+suitDeptToPhase = {'s': 9,
+                   'm': 10,
+                   'l': 11,
+                   'c': 12}
+
 suitDeptFullnames = {
     'c': TTLocalizer.Bossbot,
     'l': TTLocalizer.Lawbot,
@@ -526,6 +531,15 @@ def getNormalClotheTexture(dept):
 
     for partName in SuitClotheParts:
         texName = "phase_3.5/maps/%s_%s.jpg" % (dept, partName)
+        SuitClothes[partName] = loader.loadTexture(texName)
+        
+    return SuitClothes['blazer'], SuitClothes['leg'], SuitClothes['sleeve']
+
+def getSuitNameContentPackClotheTexture(suit_name):
+    SuitClothes = {}
+
+    for partName in SuitClotheParts:
+        texName = "phase_3.5/maps/tt_t_ene_clothe_%s_%s.jpg" % (suit_name, partName)
         SuitClothes[partName] = loader.loadTexture(texName)
         
     return SuitClothes['blazer'], SuitClothes['leg'], SuitClothes['sleeve']
