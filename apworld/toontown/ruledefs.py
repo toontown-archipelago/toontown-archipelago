@@ -373,6 +373,48 @@ def TierEightCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
            and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options)
 
 
+@rule(Rule.OneStory, 1)
+@rule(Rule.TwoStory, 2)
+@rule(Rule.ThreeStory, 3)
+@rule(Rule.FourStory, 4)
+@rule(Rule.FiveStory, 5)
+def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    if argument[0] == 1:
+        pgs = [
+            ToontownRegionName.TTC,
+            ToontownRegionName.DD,
+        ]
+    elif argument[0] == 2:
+        pgs = [
+            ToontownRegionName.TTC,
+            ToontownRegionName.DD,
+            ToontownRegionName.DG,
+        ]
+    elif argument[0] == 3:
+        pgs = [
+            ToontownRegionName.TTC,
+            ToontownRegionName.DD,
+            ToontownRegionName.DG,
+            ToontownRegionName.MML,
+            ToontownRegionName.TB,
+            ToontownRegionName.DDL
+        ]
+    elif argument[0] == 4:
+        pgs = [
+            ToontownRegionName.DG,
+            ToontownRegionName.MML,
+            ToontownRegionName.TB,
+            ToontownRegionName.DDL,
+        ]
+    elif argument[0] == 5:
+        pgs = [
+            ToontownRegionName.MML,
+            ToontownRegionName.TB,
+            ToontownRegionName.DDL,
+        ]
+    return any(state.can_reach(pg.value, None, player) for pg in pgs)
+
+
 @rule(Rule.HasLevelOneOffenseGag,   1)
 @rule(Rule.HasLevelTwoOffenseGag,   2)
 @rule(Rule.HasLevelThreeOffenseGag, 3)
