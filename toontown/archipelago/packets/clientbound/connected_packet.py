@@ -88,11 +88,6 @@ class ConnectedPacket(ClientBoundPacketBase):
         if need_gold_rod:
             av.b_setFishingRod(FishGlobals.MaxRodId)
 
-        # Give them global TP access if set in yaml
-        global_tpsanity = self.slot_data.get('tpsanity', TPSanity.default) == TPSanity.option_none
-        if global_tpsanity:
-            av.b_setTeleportAccess(ToontownGlobals.HoodsForTeleportAll)
-
     # Given the option defined in the YAML for RNG generation and the seed of the AP playthrough
     # Return a new modified seed based on what option was chosen in the YAML
     #     option_global = 0

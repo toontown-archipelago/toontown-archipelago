@@ -2,6 +2,7 @@ from typing import Dict, Any, List
 
 from BaseClasses import Tutorial, Region, ItemClassification, CollectionState, Location, LocationProgressType
 from worlds.AutoWorld import World, WebWorld
+import random
 from worlds.generic.Rules import set_rule
 
 from . import regions, consts
@@ -108,7 +109,7 @@ class ToontownWorld(World):
         # Determine forbidden location types.
         forbidden_location_types: set[ToontownLocationType] = self.get_disabled_location_types()
 
-        # Noe create locations.
+        # Now create locations.
         for i, location_data in enumerate(LOCATION_DEFINITIONS):
             # Do we skip this location generation?
             if location_data.type in forbidden_location_types:
@@ -144,24 +145,23 @@ class ToontownWorld(World):
                 location.place_locked_item(self.create_event(location_data.name.value))
 
         # Force various item placements.
-        self._force_item_placement(ToontownLocationName.STARTING_NEW_GAME,  ToontownItemName.TTC_HQ_ACCESS)
+        self._force_item_placement(ToontownLocationName.STARTING_NEW_GAME,  ToontownItemName.TTC_ACCESS)
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.first_track)
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.second_track)
 
         # Do we have force teleport access? if so place our tps
         if self.options.tpsanity.value == TPSanity.option_treasure:
-            self._force_item_placement(ToontownLocationName.TTC_TREASURE_1,  ToontownItemName.TTC_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DD_TREASURE_1,   ToontownItemName.DD_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DG_TREASURE_1,   ToontownItemName.DG_TELEPORT)
-            self._force_item_placement(ToontownLocationName.MML_TREASURE_1,  ToontownItemName.MML_TELEPORT)
-            self._force_item_placement(ToontownLocationName.TB_TREASURE_1,   ToontownItemName.TB_TELEPORT)
-            self._force_item_placement(ToontownLocationName.DDL_TREASURE_1,  ToontownItemName.DDL_TELEPORT)
-            self._force_item_placement(ToontownLocationName.SBHQ_TREASURE_1, ToontownItemName.SBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.CBHQ_TREASURE_1, ToontownItemName.CBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.LBHQ_TREASURE_1, ToontownItemName.LBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.BBHQ_TREASURE_1, ToontownItemName.BBHQ_TELEPORT)
-            self._force_item_placement(ToontownLocationName.AA_TREASURE_1,   ToontownItemName.AA_TELEPORT)
-            self._force_item_placement(ToontownLocationName.GS_TREASURE_1,   ToontownItemName.GS_TELEPORT)
+            self._force_item_placement(ToontownLocationName.DD_TREASURE_1, ToontownItemName.DD_ACCESS)
+            self._force_item_placement(ToontownLocationName.DG_TREASURE_1, ToontownItemName.DG_ACCESS)
+            self._force_item_placement(ToontownLocationName.MML_TREASURE_1, ToontownItemName.MML_ACCESS)
+            self._force_item_placement(ToontownLocationName.TB_TREASURE_1, ToontownItemName.TB_ACCESS)
+            self._force_item_placement(ToontownLocationName.DDL_TREASURE_1, ToontownItemName.DDL_ACCESS)
+            self._force_item_placement(ToontownLocationName.SBHQ_TREASURE_1, ToontownItemName.SBHQ_ACCESS)
+            self._force_item_placement(ToontownLocationName.CBHQ_TREASURE_1, ToontownItemName.CBHQ_ACCESS)
+            self._force_item_placement(ToontownLocationName.LBHQ_TREASURE_1, ToontownItemName.LBHQ_ACCESS)
+            self._force_item_placement(ToontownLocationName.BBHQ_TREASURE_1, ToontownItemName.BBHQ_ACCESS)
+            self._force_item_placement(ToontownLocationName.AA_TREASURE_1, ToontownItemName.AA_ACCESS)
+            self._force_item_placement(ToontownLocationName.GS_TREASURE_1, ToontownItemName.GS_ACCESS)
 
         # Debug, use this to print a pretty picture to make sure our regions are set up correctly
         if DEBUG_MODE:
@@ -180,11 +180,21 @@ class ToontownWorld(World):
         if self.options.tpsanity.value in (TPSanity.option_keys, TPSanity.option_shuffle):
             for itemName in TELEPORT_ACCESS_ITEMS:
                 item = self.create_item(itemName.value)
-                if itemName == ToontownItemName.TTC_TELEPORT and \
-                        self.options.tpsanity.value == TPSanity.option_keys:
+                if itemName == ToontownItemName.TTC_ACCESS:
                     self.multiworld.push_precollected(item)
                 else:
                     pool.append(item)
+
+        # Automatically apply teleport access across the board so hq access can be gotten from an item
+        if self.options.tpsanity.value == TPSanity.option_none:
+            for itemName in TELEPORT_ACCESS_ITEMS:
+                item = self.create_item(itemName.value)
+                self.multiworld.push_precollected(item)
+
+        # Automatically give both keys at the start for treasure TP sanity
+        if self.options.tpsanity.value == TPSanity.option_treasure:
+            item = self.create_item(ToontownItemName.TTC_ACCESS.value)
+            self.multiworld.push_precollected(item)
 
         # Dynamically generate laff boosts.
         LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
@@ -259,12 +269,24 @@ class ToontownWorld(World):
         trap: int = round(junk * (self.options.trap_percent / 100))
         filler: int = junk - trap
         for i in range(trap):
-            pool.append(self.create_item(items.random_trap().value))
+            pool.append(self.create_item(self.make_random_trap()))
         for i in range(filler):
             pool.append(self.create_item(items.random_junk().value))
 
         # Finalize item pool.
         self.multiworld.itempool += pool
+
+    def make_random_trap(self):
+        trap_weights = {
+            ToontownItemName.UBER_TRAP.value: self.options.uber_trap_weight,
+            ToontownItemName.DRIP_TRAP.value: self.options.drip_trap_weight,
+            ToontownItemName.BEAN_TAX_TRAP_750.value: (self.options.bean_tax_weight/3),
+            ToontownItemName.BEAN_TAX_TRAP_1000.value: (self.options.bean_tax_weight/3),
+            ToontownItemName.BEAN_TAX_TRAP_1250.value: (self.options.bean_tax_weight/3),
+            ToontownItemName.GAG_SHUFFLE_TRAP.value: self.options.gag_shuffle_weight
+        }
+        trap_items = list(trap_weights.keys())
+        return random.choices(trap_items, weights=[trap_weights[i] for i in trap_items])[0]
 
     def fill_slot_data(self) -> Dict[str, Any]:
         """
@@ -307,6 +329,7 @@ class ToontownWorld(World):
             "total_tasks_required": self.options.total_tasks_required.value,
             "hood_tasks_required": self.options.hood_tasks_required.value,
             "gag_tracks_required": self.options.gag_tracks_required.value,
+            "fish_species_required": self.options.fish_species_required.value,
             "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,

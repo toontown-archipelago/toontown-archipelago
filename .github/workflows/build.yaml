@@ -106,7 +106,7 @@ jobs:
           python -m pip install -r requirements.txt
           brew install wget
           # will change this to official repo once the changes are merged 
-          python -m pip install "https://github.com/DarthMDev/panda3d-ttap/releases/latest/download/panda3d-1.11.0-cp311-cp311-macosx_10_9_universal2.whl"
+          python -m pip install "https://github.com/toontown-archipelago/panda3d/releases/latest/download/panda3d-1.11.0-cp311-cp311-macosx_10_9_universal2.whl"
 
       - name: Build Client
         run: |

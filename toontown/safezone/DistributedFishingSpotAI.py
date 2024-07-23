@@ -187,6 +187,7 @@ class DistributedFishingSpotAI(DistributedObjectAI):
         self.lastFish = catch
         self.d_setMovie(FishGlobals.PullInMovie, catch[0], catch[1], catch[2], catch[3], 0, 0)
         self.d_setPity(self.air.fishManager.getAvPity(av))
+        av.checkWinCondition()
         self.cast = False
 
     def d_setPity(self, pity: float):

@@ -207,6 +207,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.immortalMode = False
         self.unlimitedGags = False
         self.instaKill = False
+        self.hasPaidTaxes = False
         self.overheadLaffMeter = None
         self.baseGagSkillMultiplier = 1
         self.damageMultiplier = 100
@@ -1457,6 +1458,12 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def getMoney(self):
         return self.money
+
+    def setHasPaidTaxes(self, paidTaxes):
+        self.hasPaidTaxes = paidTaxes
+
+    def getHasPaidTaxes(self):
+        return self.hasPaidTaxes
 
     def setMaxBankMoney(self, maxMoney):
         self.maxBankMoney = maxMoney
@@ -2895,12 +2902,11 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def checkWinCondition(self):
         if self.getWinCondition().satisfied():
             if not self.alreadyNotified:
-                if hasattr(self, 'displaySystemClickableWhisper'):
-                    self.displaySystemClickableWhisper(0, TTLocalizer.WinConditionMet, whisperType=WhisperType.WTSystem)
-                else:
-                    self.setSystemMessage(0, TTLocalizer.WinConditionMet)
+                self.setSystemMessage(0, TTLocalizer.WinConditionMet)
                 # play the golf victory sound so they dont miss it
-                base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
+                 # check if its localtoon to potentially fix a bug with this playing for unknown reasons 
+                if self == base.localAvatar:
+                    base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
                 self.alreadyNotified = True
 
     def getWinCondition(self) -> WinCondition:
