@@ -54,28 +54,20 @@ class ToontownItemName(enum.Enum):
     GAG_MULTIPLIER_1 = "+1 Base Gag XP Multiplier"
     GAG_MULTIPLIER_2 = "+2 Base Gag XP Multiplier"
 
-    ### Teleport Access ###
-    TTC_TELEPORT  = "TTC TP Access"
-    DD_TELEPORT   = "DD TP Access"
-    DG_TELEPORT   = "DG TP Access"
-    MML_TELEPORT  = "MML TP Access"
-    TB_TELEPORT   = "TB TP Access"
-    DDL_TELEPORT  = "DDL TP Access"
-    SBHQ_TELEPORT = "SBHQ TP Access"
-    CBHQ_TELEPORT = "CBHQ TP Access"
-    LBHQ_TELEPORT = "LBHQ TP Access"
-    BBHQ_TELEPORT = "BBHQ TP Access"
+    ### Access Keys ###
+    TTC_ACCESS  = "TTC Access Key"
+    DD_ACCESS   = "DD Access Key"
+    DG_ACCESS   = "DG Access Key"
+    MML_ACCESS  = "MML Access Key"
+    TB_ACCESS   = "TB Access Key"
+    DDL_ACCESS  = "DDL Access Key"
+    SBHQ_ACCESS = "SBHQ Access Key"
+    CBHQ_ACCESS = "CBHQ Access Key"
+    LBHQ_ACCESS = "LBHQ Access Key"
+    BBHQ_ACCESS = "BBHQ Access Key"
 
-    AA_TELEPORT = "AA TP Access"
-    GS_TELEPORT = 'GS TP Access'
-
-    ### HQ Access ###
-    TTC_HQ_ACCESS = "TTC HQ Access"
-    DD_HQ_ACCESS  = "DD HQ Access"
-    DG_HQ_ACCESS  = "DG HQ Access"
-    MML_HQ_ACCESS = "MML HQ Access"
-    TB_HQ_ACCESS  = "TB HQ Access"
-    DDL_HQ_ACCESS = "DDL HQ Access"
+    AA_ACCESS = "AA Access Key"
+    GS_ACCESS = 'GS Access Key'
 
     ### Facility Keys ###
     FRONT_FACTORY_ACCESS = "Front Factory Key"
@@ -184,26 +176,18 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.FISH, ItemClassification.filler),
     # endregion
     # region Teleport Access
-    ToontownItemDefinition(ToontownItemName.TTC_TELEPORT,  ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.DD_TELEPORT,   ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.DG_TELEPORT,   ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.MML_TELEPORT,  ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.TB_TELEPORT,   ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.DDL_TELEPORT,  ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.SBHQ_TELEPORT, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.CBHQ_TELEPORT, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.LBHQ_TELEPORT, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.BBHQ_TELEPORT, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.AA_TELEPORT,   ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.GS_TELEPORT,   ItemClassification.progression),
-    # endregion
-    # region Tasking Access (Playground HQ entry access)
-    ToontownItemDefinition(ToontownItemName.TTC_HQ_ACCESS, ItemClassification.progression),  # Given as a starting item ATM
-    ToontownItemDefinition(ToontownItemName.DD_HQ_ACCESS,  ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DG_HQ_ACCESS,  ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.MML_HQ_ACCESS, ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.TB_HQ_ACCESS,  ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DDL_HQ_ACCESS, ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.TTC_ACCESS, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DD_ACCESS, ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.DG_ACCESS, ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.MML_ACCESS, ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.TB_ACCESS, ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.DDL_ACCESS, ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.SBHQ_ACCESS, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.CBHQ_ACCESS, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LBHQ_ACCESS, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.BBHQ_ACCESS, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.AA_ACCESS, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GS_ACCESS, ItemClassification.progression),
     # endregion
     # region Facility Access
     ToontownItemDefinition(ToontownItemName.FRONT_FACTORY_ACCESS, ItemClassification.progression, quantity=1),
@@ -288,36 +272,36 @@ FISHING_LICENSES = (
     ToontownItemName.DDL_FISHING,
 )
 TELEPORT_ACCESS_ITEMS = (
-    ToontownItemName.TTC_TELEPORT,
-    ToontownItemName.DD_TELEPORT,
-    ToontownItemName.DG_TELEPORT,
-    ToontownItemName.MML_TELEPORT,
-    ToontownItemName.TB_TELEPORT,
-    ToontownItemName.DDL_TELEPORT,
-    ToontownItemName.SBHQ_TELEPORT,
-    ToontownItemName.CBHQ_TELEPORT,
-    ToontownItemName.LBHQ_TELEPORT,
-    ToontownItemName.BBHQ_TELEPORT,
-    ToontownItemName.AA_TELEPORT,
-    ToontownItemName.GS_TELEPORT,
+    ToontownItemName.TTC_ACCESS,
+    ToontownItemName.DD_ACCESS,
+    ToontownItemName.DG_ACCESS,
+    ToontownItemName.MML_ACCESS,
+    ToontownItemName.TB_ACCESS,
+    ToontownItemName.DDL_ACCESS,
+    ToontownItemName.SBHQ_ACCESS,
+    ToontownItemName.CBHQ_ACCESS,
+    ToontownItemName.LBHQ_ACCESS,
+    ToontownItemName.BBHQ_ACCESS,
+    ToontownItemName.AA_ACCESS,
+    ToontownItemName.GS_ACCESS,
 )
 
 
 def hood_to_tp_item_name(hoodId: int) -> ToontownItemName:
     return {
-        2000: ToontownItemName.TTC_TELEPORT,
-        1000: ToontownItemName.DD_TELEPORT,
-        5000: ToontownItemName.DG_TELEPORT,
-        4000: ToontownItemName.MML_TELEPORT,
-        3000: ToontownItemName.TB_TELEPORT,
-        9000: ToontownItemName.DDL_TELEPORT,
-        11000: ToontownItemName.SBHQ_TELEPORT,
-        12000: ToontownItemName.CBHQ_TELEPORT,
-        13000: ToontownItemName.LBHQ_TELEPORT,
-        10000: ToontownItemName.BBHQ_TELEPORT,
-        6000: ToontownItemName.AA_TELEPORT,
-        17000: ToontownItemName.AA_TELEPORT,
-        8000: ToontownItemName.GS_TELEPORT,
+        2000: ToontownItemName.TTC_ACCESS,
+        1000: ToontownItemName.DD_ACCESS,
+        5000: ToontownItemName.DG_ACCESS,
+        4000: ToontownItemName.MML_ACCESS,
+        3000: ToontownItemName.TB_ACCESS,
+        9000: ToontownItemName.DDL_ACCESS,
+        11000: ToontownItemName.SBHQ_ACCESS,
+        12000: ToontownItemName.CBHQ_ACCESS,
+        13000: ToontownItemName.LBHQ_ACCESS,
+        10000: ToontownItemName.BBHQ_ACCESS,
+        6000: ToontownItemName.AA_ACCESS,
+        17000: ToontownItemName.AA_ACCESS,
+        8000: ToontownItemName.GS_ACCESS,
     }.get(hoodId)
 
 

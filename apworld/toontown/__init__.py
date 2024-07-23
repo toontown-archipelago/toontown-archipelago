@@ -122,7 +122,7 @@ class ToontownWorld(World):
         # Determine forbidden location types.
         forbidden_location_types: set[ToontownLocationType] = self.get_disabled_location_types()
 
-        # Noe create locations.
+        # Now create locations.
         for i, location_data in enumerate(LOCATION_DEFINITIONS):
             # Do we skip this location generation?
             if location_data.type in forbidden_location_types:
@@ -158,7 +158,7 @@ class ToontownWorld(World):
                 location.place_locked_item(self.create_event(location_data.name.value))
 
         # Force various item placements.
-        self._force_item_placement(ToontownLocationName.STARTING_NEW_GAME,  ToontownItemName.TTC_HQ_ACCESS)
+        self._force_item_placement(ToontownLocationName.STARTING_NEW_GAME,  ToontownItemName.TTC_ACCESS)
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.first_track)
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.second_track)
 
@@ -182,6 +182,7 @@ class ToontownWorld(World):
             self._force_item_placement(ToontownLocationName.BBHQ_TREASURE_1, ToontownItemName.BBHQ_ACCESS)
             self._force_item_placement(ToontownLocationName.AA_TREASURE_1, ToontownItemName.AA_ACCESS)
             self._force_item_placement(ToontownLocationName.GS_TREASURE_1, ToontownItemName.GS_ACCESS)
+
         # Debug, use this to print a pretty picture to make sure our regions are set up correctly
         if DEBUG_MODE:
             from Utils import visualize_regions
@@ -370,6 +371,7 @@ class ToontownWorld(World):
             "hood_tasks_required": self.options.hood_tasks_required.value,
             "gag_tracks_required": self.options.gag_tracks_required.value,
             "starting_task_playground": self.options.starting_task_playground.value,
+            "fish_species_required": self.options.fish_species_required.value,
             "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,

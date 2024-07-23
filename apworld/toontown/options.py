@@ -94,12 +94,14 @@ class WinCondition(Choice):
     - cog_bosses (default): Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
     - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
     - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+    - total_fish_species:  Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
     """
     display_name = "Win Condition"
     option_cog_bosses = 0
     option_total_tasks = 1
     option_hood_tasks = 2
     option_total_gag_tracks = 3
+    option_total_fish_species = 4
     default = 0
 
 
@@ -147,6 +149,17 @@ class GagTracksRequired(Range):
     range_start = 0
     range_end = 7
     default = 5
+
+class FishSpeciesRequired(Range):
+    """
+    How many fish species must be caught before being able to talk to Flippy to complete the game.
+    Must be less than or equal to total number of fish species a toon can obtain.
+    Unused if win_condition is not total_fish_species
+    """
+    display_name = "Fish Species Required"
+    range_start = 0
+    range_end = 70
+    default = 70
     
 class TPSanity(Choice):
     """
@@ -161,7 +174,7 @@ class TPSanity(Choice):
     option_treasure = 1
     option_shuffle = 2
     option_none = 3
-    default = 3
+    default = 0
 
 
 class TreasuresPerLocation(Range):
@@ -380,6 +393,7 @@ class ToontownOptions(PerGameCommonOptions):
     total_tasks_required: TotalTasksRequired
     hood_tasks_required: HoodTasksRequired
     gag_tracks_required: GagTracksRequired
+    fish_species_required: FishSpeciesRequired
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
     checks_per_boss: ChecksPerBoss

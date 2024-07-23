@@ -11,6 +11,7 @@ from . import LawbotHQExterior
 from . import LawbotHQBossBattle
 from . import LawbotOfficeExterior
 from panda3d.core import Fog
+import json
 aspectSF = 0.7227
 
 class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
@@ -28,6 +29,7 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
             state = self.fsm.getStateNamed(stateName)
             state.addTransition('factoryExterior')
 
+        self.musicJson = json.load(open('resources/content_pack/music.json'))
         self.musicFile = 'phase_11/audio/bgm/LB_courtyard.ogg'
         self.cogHQExteriorModelPath = 'phase_11/models/lawbotHQ/LawbotPlaza'
         self.factoryExteriorModelPath = 'phase_11/models/lawbotHQ/LB_DA_Lobby'
@@ -38,6 +40,11 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
     def load(self, zoneId):
         CogHQLoader.CogHQLoader.load(self, zoneId)
         Toon.loadSellbotHQAnims()
+
+        if str(zoneId) in self.musicJson['global_music']:
+            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(zoneId)])
+            if (str(zoneId) + '_battle') in self.musicJson['global_music']:
+                self.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(zoneId) + '_battle')])
 
     def unloadPlaceGeom(self):
         if self.geom:

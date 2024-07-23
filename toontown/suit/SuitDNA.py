@@ -99,6 +99,11 @@ suitDepts = [
     's'
 ]
 
+suitDeptToPhase = {'s': 9,
+                   'm': 10,
+                   'l': 11,
+                   'c': 12}
+
 suitDeptFullnames = {
     'c': TTLocalizer.Bossbot,
     'l': TTLocalizer.Lawbot,
@@ -436,7 +441,10 @@ class SuitVisual:
         # find if the head_type is a list or not
         if isinstance(self.head_type, list):
             for head in self.head_type:
-                headModel = loader.loadModel(self.headModelPath(suit.style.body))
+                headPath = self.headModelPath(suit.style.body)
+                if self.key == 'ds':
+                    headPath = self.headModelPath(suit.style.body, 'phase_4/models/char/suitB-heads2')
+                headModel = loader.loadModel(headPath)
                 head = headModel.find('**/' + head)
                 head.reparentTo(suit.find(attachPoint))
                 suit.headParts.append(head)
@@ -467,7 +475,7 @@ GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
     SuitVisual('p',   3.35 / bSize,  corpPolyColor,                 None,                         None,                   'pencilpusher',        5.0),
     SuitVisual('ym',  4.125 / aSize, corpPolyColor,                 None,                         None,                   'yesman',              5.28),
     SuitVisual('mm',  2.5 / cSize,   corpPolyColor,                 None,                         None,                   'micromanager',        3.25),
-    SuitVisual('ds',  4.5 / bSize,   corpPolyColor,                 None,                         None,                   'beancounter',         6.08),
+    SuitVisual('ds',  4.5 / bSize,   corpPolyColor,                 None,                         None,                   ['downsizer', 'downsizer_hat'],         6.08),
     SuitVisual('hh',  6.5 / aSize,   corpPolyColor,                 None,                         None,                   'headhunter',          7.45),
     SuitVisual('cr',  6.75 / cSize,  VBase4(0.85, 0.55, 0.55, 1.0), None,                         'corporate-raider.jpg', 'flunky',              8.23),
     SuitVisual('tbc', 7.0 / aSize,   VBase4(0.75, 0.95, 0.75, 1.0), None,                         None,                   'bigcheese',           9.34),
@@ -487,7 +495,7 @@ GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
     SuitVisual('mb',  5.3 / cSize,   moneyPolyColor,                None,                         None,                   'moneybags',           6.97),
     SuitVisual('ls',  6.5 / bSize,   VBase4(0.5, 0.85, 0.75, 1.0),  None,                         None,                   'loanshark',           8.58),
     SuitVisual('rb',  7.0 / aSize,   moneyPolyColor,                None,                         'robber-baron.jpg',     'yesman',              8.95),
-    SuitVisual('cc',  3.5 / cSize,   VBase4(0.55, 0.65, 1.0, 1.0),  VBase4(0.25, 0.35, 1.0, 1.0), None,                   'coldcaller',          4.63),
+    SuitVisual('cc',  3.5 / cSize,   VBase4(0.55, 0.65, 1.0, 1.0),  None,                         'tutorial_suits_palette_3cmla_2.jpg',                   'coldcaller',          4.63),
     SuitVisual('tm',  3.75 / bSize,  salesPolyColor,                None,                         None,                   'telemarketer',        5.24),
     SuitVisual('nd',  4.35 / aSize,  salesPolyColor,                None,                         'name-dropper.jpg',     'numbercruncher',      5.98),
     SuitVisual('gh',  4.75 / cSize,  salesPolyColor,                None,                         None,                   'gladhander',          6.4),
@@ -526,6 +534,15 @@ def getNormalClotheTexture(dept):
 
     for partName in SuitClotheParts:
         texName = "phase_3.5/maps/%s_%s.jpg" % (dept, partName)
+        SuitClothes[partName] = loader.loadTexture(texName)
+        
+    return SuitClothes['blazer'], SuitClothes['leg'], SuitClothes['sleeve']
+
+def getSuitNameContentPackClotheTexture(suit_name):
+    SuitClothes = {}
+
+    for partName in SuitClotheParts:
+        texName = "phase_3.5/maps/tt_t_ene_clothe_%s_%s.jpg" % (suit_name, partName)
         SuitClothes[partName] = loader.loadTexture(texName)
         
     return SuitClothes['blazer'], SuitClothes['leg'], SuitClothes['sleeve']

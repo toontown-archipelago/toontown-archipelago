@@ -9936,6 +9936,7 @@ OptionNames = {
     "speedchat-style": "Speedchat Color",
     'discord-rich-presence': 'Discord Rich Presence',
     "archipelago-textsize": "Archipelago Log Text Size",
+    "color-blind-mode": "Colorblind Mode",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",

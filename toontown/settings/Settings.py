@@ -65,6 +65,7 @@ class Settings:
         "experimental-multithreading": False,
         'discord-rich-presence': False,
         "archipelago-textsize": 0.5,
+        "color-blind-mode": False,
     }
 
     settingsFile = "settings.json"
