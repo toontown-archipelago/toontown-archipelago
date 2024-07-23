@@ -492,7 +492,7 @@ GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
     SuitVisual('mb',  5.3 / cSize,   moneyPolyColor,                None,                         None,                   'moneybags',           6.97),
     SuitVisual('ls',  6.5 / bSize,   VBase4(0.5, 0.85, 0.75, 1.0),  None,                         None,                   'loanshark',           8.58),
     SuitVisual('rb',  7.0 / aSize,   moneyPolyColor,                None,                         'robber-baron.jpg',     'yesman',              8.95),
-    SuitVisual('cc',  3.5 / cSize,   VBase4(0.55, 0.65, 1.0, 1.0),  VBase4(0.25, 0.35, 1.0, 1.0), None,                   'coldcaller',          4.63),
+    SuitVisual('cc',  3.5 / cSize,   VBase4(0.55, 0.65, 1.0, 1.0),  None,                         'tutorial_suits_palette_3cmla_2.jpg',                   'coldcaller',          4.63),
     SuitVisual('tm',  3.75 / bSize,  salesPolyColor,                None,                         None,                   'telemarketer',        5.24),
     SuitVisual('nd',  4.35 / aSize,  salesPolyColor,                None,                         'name-dropper.jpg',     'numbercruncher',      5.98),
     SuitVisual('gh',  4.75 / cSize,  salesPolyColor,                None,                         None,                   'gladhander',          6.4),
