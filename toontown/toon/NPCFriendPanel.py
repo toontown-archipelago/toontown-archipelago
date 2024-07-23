@@ -78,9 +78,15 @@ class NPCFriendCard(DirectFrame):
         DirectFrame.__init__(self, parent=parent)
         self.initialiseoptions(NPCFriendCard)
         cardModel = loader.loadModel('phase_3.5/models/gui/playingCard')
+        cardLogo = cardModel.find('**/logo')
+        cardLogo.setState(RenderState.makeEmpty())
+        cardTex = loader.loadTexture('phase_3/maps/toontown-logo.png')
+        cardTex.setMinfilter(Texture.FTLinearMipmapLinear)
+        cardTex.setMagfilter(Texture.FTLinear)
+        cardLogo.setTexture(cardTex, 1)
         self.front = DirectFrame(parent=self, relief=None, image=cardModel.find('**/card_front'))
         self.front.hide()
-        self.back = DirectFrame(parent=self, relief=None, image=cardModel.find('**/card_back'), geom=cardModel.find('**/logo'))
+        self.back = DirectFrame(parent=self, relief=None, image=cardModel.find('**/card_back'), geom=cardLogo)
         callButtonPosZ = -0.9
         textWordWrap = 16.0
         textScale = 0.35
