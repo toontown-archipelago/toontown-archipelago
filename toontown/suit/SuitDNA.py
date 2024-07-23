@@ -734,6 +734,29 @@ class SuitDNA(AvatarDNA.AvatarDNA):
         top = bottom + suitsPerLevel[level - 1]
         self.name = suitHeadTypes[random.choice(list(range(bottom, top)))]
 
+        self.body = getSuitBodyType(self.name)
+        return
+    
+    def newSuitRandomCustom(self, level = None, dept = None):
+        self.type = 's'
+        if level is None:
+            level = random.choice(list(range(1, len(suitsPerLevel))))
+        elif level < 0 or level > len(suitsPerLevel):
+            notify.error('Invalid suit level: %d' % level)
+        if dept is None:
+            dept = random.choice(suitDepts)
+        self.dept = dept
+        index = suitDepts.index(dept)
+        _base = index * suitsPerDept
+        offset = 0
+        if level > 1:
+            for i in range(1, level):
+                offset = offset + suitsPerLevel[i - 1]
+
+        bottom = _base + offset
+        top = bottom + suitsPerLevel[level - 1]
+        self.name = suitHeadTypes[random.choice(list(range(bottom, top)))]
+
         # this is where we include some of the new suits
 
          # we get it's parent suit
