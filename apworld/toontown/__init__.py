@@ -151,7 +151,6 @@ class ToontownWorld(World):
 
         # Do we have force teleport access? if so place our tps
         if self.options.tpsanity.value == TPSanity.option_treasure:
-            self._force_item_placement(ToontownLocationName.TTC_TREASURE_1, ToontownItemName.TTC_ACCESS)
             self._force_item_placement(ToontownLocationName.DD_TREASURE_1, ToontownItemName.DD_ACCESS)
             self._force_item_placement(ToontownLocationName.DG_TREASURE_1, ToontownItemName.DG_ACCESS)
             self._force_item_placement(ToontownLocationName.MML_TREASURE_1, ToontownItemName.MML_ACCESS)
@@ -181,8 +180,7 @@ class ToontownWorld(World):
         if self.options.tpsanity.value in (TPSanity.option_keys, TPSanity.option_shuffle):
             for itemName in TELEPORT_ACCESS_ITEMS:
                 item = self.create_item(itemName.value)
-                if itemName == ToontownItemName.TTC_ACCESS and \
-                        self.options.tpsanity.value == TPSanity.option_keys:
+                if itemName == ToontownItemName.TTC_ACCESS:
                     self.multiworld.push_precollected(item)
                 else:
                     pool.append(item)
@@ -192,6 +190,11 @@ class ToontownWorld(World):
             for itemName in TELEPORT_ACCESS_ITEMS:
                 item = self.create_item(itemName.value)
                 self.multiworld.push_precollected(item)
+
+        # Automatically give both keys at the start for treasure TP sanity
+        if self.options.tpsanity.value == TPSanity.option_treasure:
+            item = self.create_item(ToontownItemName.TTC_ACCESS.value)
+            self.multiworld.push_precollected(item)
 
         # Dynamically generate laff boosts.
         LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
