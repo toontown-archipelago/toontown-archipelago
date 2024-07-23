@@ -971,6 +971,17 @@ struct APItem {
   uint32 id;
 }
 
+struct APHint {
+  string owner;
+  uint32 location;
+  uint8 wasObtained;
+}
+
+struct APItemHint {
+  uint32 itemId;
+  APHint hints[];
+}
+
 dclass DistributedToon : DistributedPlayer {
   setDNAString(blob) required broadcast ownrecv db;
   setGM(uint8 = 0) required broadcast ownrecv db;
@@ -1182,6 +1193,8 @@ dclass DistributedToon : DistributedPlayer {
   setArchipelagoAuto(string, string) ownsend airecv;
   setDeathReason(string) airecv clsend;
   clientDied() airecv clsend;
+
+  setArchipelagoData(APItemHint[] = []) required ownrecv db;
 };
 
 dclass DistributedCCharBase : DistributedObject {
