@@ -17,6 +17,9 @@ class CogPageManagerAI:
         for suit in suitsEncountered:
             if toon.getDoId() in suit['activeToons']:
                 suitIndex = SuitDNA.suitHeadTypes.index(suit['type'])
+                # Loop past suits we don't keep track of in gallery
+                if suit['type'] in SuitDNA.notMainTypes:
+                    continue
                 if cogStatus[suitIndex] == COG_UNSEEN:
                     cogStatus[suitIndex] = COG_BATTLED
 
