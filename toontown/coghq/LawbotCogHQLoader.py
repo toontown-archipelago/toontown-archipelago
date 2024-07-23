@@ -59,12 +59,16 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
         self.notify.debug('zoneId = %d ToontownGlobals.LawbotHQ=%d' % (zoneId, ToontownGlobals.LawbotHQ))
         if zoneId == ToontownGlobals.LawbotHQ:
             self.geom = loader.loadModel(self.cogHQExteriorModelPath)
+            self.geom.setY(0)
+            self.geom.setX(0)
             ug = self.geom.find('**/underground')
             ug.setBin('ground', -10)
             brLinkTunnel = self.geom.find('**/TunnelEntrance1')
             brLinkTunnel.setName('linktunnel_br_3326_DNARoot')
         elif zoneId == ToontownGlobals.LawbotOfficeExt:
             self.geom = loader.loadModel(self.factoryExteriorModelPath)
+            self.geom.setY(120)
+            self.geom.setX(-50)
             ug = self.geom.find('**/underground')
             ug.setBin('ground', -10)
         elif zoneId == ToontownGlobals.LawbotLobby:
@@ -72,6 +76,8 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
                 self.notify.info('QA-REGRESSION: COGHQ: Visit LawbotLobby')
             self.notify.debug('cogHQLobbyModelPath = %s' % self.cogHQLobbyModelPath)
             self.geom = loader.loadModel(self.cogHQLobbyModelPath)
+            self.geom.setY(0)
+            self.geom.setX(0)
 
             buildings = self.geom.findAllMatches('**/CH_BGBuildings*')
             sky = self.geom.findAllMatches('**/CH_Sky*')

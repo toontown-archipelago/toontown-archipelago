@@ -32,7 +32,7 @@ class CogPageManagerAI:
 
             if toon.getDoId() in suit['activeToons']:
                 
-                # ik this is hacky, but it works for now with custom cogs as we dont have extra room for cog gallery
+                # ik this is hacky, but it works for now with custom cogs as we dont have extra room for cog gallery besides the OG 32.
                 try:
                     # AP location check
                     cog_location_unique_name = cog_code_to_ap_location(suit['type'])[0]
