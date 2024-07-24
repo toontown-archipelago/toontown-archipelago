@@ -365,7 +365,7 @@ class ToontownWorld(World):
             "starting_laff": self.options.starting_laff.value,
             "starting_money": self.options.starting_money.value,
             "starting_task_capacity": self.options.starting_task_capacity.value,
-            "max_task_capacity": self.options.max_task_capacity,
+            "max_task_capacity": self.options.max_task_capacity.value,
             "base_global_gag_xp": self.options.base_global_gag_xp.value,
             "damage_multiplier": self.options.damage_multiplier.value,
             "overflow_mod": self.options.overflow_mod.value,
