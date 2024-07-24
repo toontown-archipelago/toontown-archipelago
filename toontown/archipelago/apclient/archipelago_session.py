@@ -1,8 +1,10 @@
 # Represents a gameplay session attached to toon players, handles rewarding and sending items through the multiworld
-from typing import List
+import os
+from typing import List, TYPE_CHECKING
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
+from toontown.archipelago.data.ArchipelagoDataMiddleware import ArchipelagoDataMiddleware
 from toontown.archipelago.definitions import util
 from toontown.archipelago.definitions.death_reason import DeathReason
 from toontown.archipelago.packets.serverbound.bounce_packet import BouncePacket
@@ -14,8 +16,7 @@ from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.archipelago.util.net_utils import ClientStatus
 
-# Typing hack, delete later #todo
-if False:
+if TYPE_CHECKING:
     from toontown.toon.DistributedToonAI import DistributedToonAI
 
 
@@ -24,12 +25,18 @@ class ArchipelagoSession:
     def __init__(self, avatar: "DistributedToonAI"):
         self.avatar = avatar  # The avatar that owns this session, DistributedToonAI
         self.client = ArchipelagoClient(self.avatar, self.avatar.getName())  # The client responsible for socket communication
+        self.datastore = ArchipelagoDataMiddleware(self.avatar, self.client)
+
+        self.default_ip = os.getenv("ARCHIPELAGO_IP", "127.0.0.1")
+        self.connect_tried = False
 
     def handle_connect(self, server_url: str = None):
 
-        if server_url:
+        if server_url or not self.connect_tried:
+            server_url = server_url or self.default_ip
             self.avatar.d_setSystemMessage(0, f"DEBUG: set AP server URL to {server_url}")
             self.client.set_connect_url(server_url)
+            self.connect_tried = True
 
         try:
             self.client.connect()

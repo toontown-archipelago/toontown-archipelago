@@ -1,0 +1,18 @@
+{
+    "global_music": {
+      "none": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+      "none_battle": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+      "none_activity": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+
+      "boss-none-elevator": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+      "boss-none-one": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+      "boss-none-two": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+      "boss-none-three": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+      "boss-none-four": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+      "boss-none-promotion": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+      "boss-none-epilogue": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+      "boss-none-sting": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+      "boss-none-jury": "phase_9/audio/bgm/encntr_head_suit_theme.ogg"
+    }
+  }
+  

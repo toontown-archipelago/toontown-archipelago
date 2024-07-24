@@ -4609,6 +4609,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         cogStatus = self.getCogStatus()
         cogCount = self.getCogCount()
         for suitIndex, suitCode in enumerate(SuitDNA.suitHeadTypes):
+            # Don't try to set cogs not in gallery to unseen
+            if suitCode in SuitDNA.notMainTypes:
+                continue
             cogStatus[suitIndex] = CogPageGlobals.COG_UNSEEN
             cogCount[suitIndex] = 0
         self.b_setCogStatus(cogStatus)

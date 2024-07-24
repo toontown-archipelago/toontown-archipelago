@@ -2036,7 +2036,7 @@ TeleportPanelYes = lYes
 TeleportPanelNo = lNo
 TeleportPanelCheckAvailability = 'Trying to go to %s.'
 TeleportPanelNotAvailable = '%s is busy right now; try again later.'
-TeleportPanelNoHqAccess = '%s is in the %s Toon HQ right now, and you do not have clearance for it!'
+TeleportPanelNoHqAccess = '%s is in the %s Toon HQ right now, and you do not have enough Playground access for it!'
 TeleportPanelIgnored = '%s is ignoring you.'
 TeleportPanelNotOnline = "%s isn't online right now."
 TeleportPanelWentAway = '%s went away.'
@@ -2405,6 +2405,18 @@ SuitBackStabberP = 'Back Stabbers'
 SuitSpinDoctorP = 'Spin Doctors'
 SuitLegalEagleP = 'Legal Eagles'
 SuitBigWigP = 'Big Wigs'
+SuitDefendent = 'Defendent'
+SuitDefendentS = 'a Defendent'
+SuitDefendentP = 'Defendents'
+SuitSkinflint = 'Skinflint'
+SuitSkinflintS = 'a Skinflint'
+SuitSkinflintP = 'Skinflints'
+SuitTrafficManager = 'Traffic Manager'
+SuitTrafficManagerS = 'a Traffic Manager'
+SuitTrafficManagerP = 'Traffic Managers'
+SuitBagHolder = 'Bag Holder'
+SuitBagHolderS = 'a Bag Holder'
+SuitBagHolderP = 'Bag Holders'
 SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
 SuitAttackNames = {'AUDIT': 'Audit!',
@@ -3128,12 +3140,12 @@ FADoorCodes_CB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon
 FADoorCodes_LB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Lawbot Disguise first!\n\nBuild your Lawbot Disguise by doing the ToonTasks after Donald's Dreamland."
 FADoorCodes_BB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Bossbot Disguise first!\n\nBuild your Bossbot Disguise by doing the ToonTasks after Donald's Dreamland."
 
-FADoorCodes_TTC_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Toontown Central HQ Clearance before you can enter and complete toontasks here."
-FADoorCodes_DD_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Donald's Dock HQ Clearance before you can enter and complete toontasks here."
-FADoorCodes_DG_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Daisy Gardens HQ Clearance before you can enter and complete toontasks here."
-FADoorCodes_MM_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Minnie's Melodyland HQ Clearance before you can enter and complete toontasks here."
-FADoorCodes_TB_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need The Brrrgh HQ Clearance before you can enter and complete toontasks here."
-FADoorCodes_DDL_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need Donald's Dreamland HQ Clearance before you can enter and complete toontasks here."
+FADoorCodes_TTC_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need enough Toontown Central Access Keys before you can enter and complete toontasks here."
+FADoorCodes_DD_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need enough Donald's Dock Access Keys before you can enter and complete toontasks here."
+FADoorCodes_DG_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need enough Daisy Gardens Access Keys before you can enter and complete toontasks here."
+FADoorCodes_MM_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need enough Minnie's Melodyland Access Keys before you can enter and complete toontasks here."
+FADoorCodes_TB_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need enough The Brrrgh Access Keys before you can enter and complete toontasks here."
+FADoorCodes_DDL_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need enough Donald's Dreamland Access Keys before you can enter and complete toontasks here."
 
 FADoorCodes_FRONT_FACTORY_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Front Factory Entrance Key."
 FADoorCodes_SIDE_FACTORY_ACCESS_MISSING = "No access!\n\nIn order to access this elevator, you need the Side Factory Entrance Key."
@@ -5435,6 +5447,7 @@ CogThiefBarrelSaved = '%(num)d Barrel\nSaved!'
 CogThiefNoBarrelsSaved = 'No Barrels\nSaved'
 CogThiefPerfect = 'PERFECT!'
 MinigameRulesPanelPlay = 'PLAY'
+MinigameRulesPanelSkip = 'SKIP'
 GagShopName = "Goofy's Gag Shop"
 GagShopPlayAgain = 'PLAY\nAGAIN'
 GagShopBackToPlayground = 'EXIT BACK TO\nPLAYGROUND'
@@ -9936,6 +9949,7 @@ OptionNames = {
     "speedchat-style": "Speedchat Color",
     'discord-rich-presence': 'Discord Rich Presence',
     "archipelago-textsize": "Archipelago Log Text Size",
+    "color-blind-mode": "Colorblind Mode",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",

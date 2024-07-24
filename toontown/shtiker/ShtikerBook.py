@@ -257,6 +257,11 @@ class ShtikerBook(DirectFrame, StateData.StateData):
             iconModels = loader.loadModel('phase_3.5/models/gui/playingCard')
             iconImage = iconModels.find('**/card_back')
             iconGeom = iconModels.find('**/logo')
+            iconGeom.setState(RenderState.makeEmpty())
+            cardTex = loader.loadTexture('phase_3/maps/toontown-logo.png')
+            cardTex.setMinfilter(Texture.FTLinearMipmapLinear)
+            cardTex.setMagfilter(Texture.FTLinear)
+            iconGeom.setTexture(cardTex, 1)
             iconScale = 0.22
             iconModels.detachNode()
         elif pageName == TTLocalizer.KartPageTitle:

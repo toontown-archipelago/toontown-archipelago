@@ -8,5 +8,5 @@ read -r gameServer
 export TTOFF_GAME_SERVER=${gameServer:="127.0.0.1"}
 
  # launch the unix executable
-./launch 
-sleep 1
+ ./launch 
+sleep 5

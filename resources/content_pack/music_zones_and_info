@@ -1,0 +1,87 @@
+DonaldsDock = 1000
+ToontownCentral = 2000
+TheBrrrgh = 3000
+MinniesMelodyland = 4000
+DaisyGardens = 5000
+OutdoorZone = 6000
+FunnyFarm = 7000
+GoofySpeedway = 8000
+DonaldsDreamland = 9000
+BarnacleBoulevard = 1100
+SeaweedStreet = 1200
+LighthouseLane = 1300
+SillyStreet = 2100
+LoopyLane = 2200
+PunchlinePlace = 2300
+WalrusWay = 3100
+SleetStreet = 3200
+PolarPlace = 3300
+AltoAvenue = 4100
+BaritoneBoulevard = 4200
+TenorTerrace = 4300
+ElmStreet = 5100
+MapleStreet = 5200
+OakStreet = 5300
+LullabyLane = 9100
+PajamaPlace = 9200
+ToonHall = 2513
+HoodHierarchy = {ToontownCentral: (SillyStreet, LoopyLane, PunchlinePlace),
+ DonaldsDock: (BarnacleBoulevard, SeaweedStreet, LighthouseLane),
+ TheBrrrgh: (WalrusWay, SleetStreet, PolarPlace),
+ MinniesMelodyland: (AltoAvenue, BaritoneBoulevard, TenorTerrace),
+ DaisyGardens: (ElmStreet, MapleStreet, OakStreet),
+ DonaldsDreamland: (LullabyLane, PajamaPlace),
+ GoofySpeedway: ()}
+WelcomeValleyToken = 0
+BossbotHQ = 10000
+BossbotLobby = 10100 # Bossbot CEO Lobby
+BossbotCountryClubIntA = 10500 # Front One
+BossbotCountryClubIntB = 10600 # Middle Two
+BossbotCountryClubIntC = 10700 # Back Three
+SellbotHQ = 11000
+SellbotLobby = 11100 # Sellbot VP Lobby
+SellbotFactoryExt = 11200 # Sellbot Front Entrance
+SellbotFactoryInt = 11500 # Sellbot Side Entrance
+SellbotFactoryIntS = 11600
+CashbotHQ = 12000
+CashbotLobby = 12100 # Cashbot CFO Lobby
+CashbotMintIntA = 12500 # Coin Mint
+CashbotMintIntB = 12600 # Dollar Mint
+CashbotMintIntC = 12700 # Bullion Mint
+LawbotHQ = 13000
+LawbotLobby = 13100 # Lawbot CJ Lobby
+LawbotOfficeExt = 13200 # Lawbot DA Office
+LawbotOfficeInt = 13300 # Lawbot DA Office
+LawbotStageIntA = 13300 # Office A
+LawbotStageIntB = 13400 # Office B
+LawbotStageIntC = 13500 # Office C
+LawbotStageIntD = 13600 # Office D
+Tutorial = 15000
+MyEstate = 16000
+GolfZone = 17000
+PartyHood = 18000
+HoodsAlwaysVisited = [17000, 18000]
+WelcomeValleyBegin = 22000
+WelcomeValleyEnd = 61000
+DynamicZonesBegin = 61000
+DynamicZonesEnd = 1 << 20
+
+for adding battle music, you can do it like this:
+'zone_battle': 'path/to/battle_music_file.ogg'
+
+if you want to add custom boss music, you can do it like this:
+
+'boss-dept-phase': 'path/to/music_file.ogg'
+
+'boss-dept-elevator' --> this is the music that plays when you're in the elevator to the boss battle
+'boss-dept-sting' --> this is the music that plays for the intro to the boss battle
+'boss-dept-promotion' --> this is the music that plays when you're being promoted in the boss battle
+'boss-dept-between' --> this is the music that plays between the boss battle phases
+'boss-dept-1' --> this is the music that plays during the first phase of the boss battle
+'boss-dept-2' --> this is the music that plays during the second phase of the boss battle
+'boss-dept-3' --> this is the music that plays during the battle three phase of the boss battle
+'boss-dept-4' --> this is the music that plays during the fourth phase of the boss battle
+'boss-dept-epilogue' --> this is the music that plays when you win the boss battle
+
+--custom--
+'boss-l-jury' --> this is the music that plays during the Lawbot Jury phase for the Chief Justice boss battle

@@ -41,6 +41,7 @@ class DistributedLawOffice(DistributedObject, LawOfficeBase.LawOfficeBase):
 
     def setLawOfficeId(self, id):
         LawOfficeBase.LawOfficeBase.setLawOfficeId(self, id)
+        base.discord.setZone(id)
 
     def levelAnnounceGenerate(self):
         self.notify.debug('levelAnnounceGenerate')

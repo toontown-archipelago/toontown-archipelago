@@ -231,6 +231,22 @@ class StartHoliday(MagicWord):
             return "Invalid holiday ID: %d" % id
 
 
+class Shout(MagicWord):
+    aliases = ["shout", "yell", "s"]
+    desc = "Sends a direct message to every toon on the server."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("shout", str, True)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        shout = args[0]
+        shoutString = f"{toon.getName()} shouts: {shout}"
+        try:
+            self.air.newsManager.d_setToonShout(shoutString)
+            return "Sent your shout!"
+        except:
+            return "Invalid shout!"
+
+
 class EndHoliday(MagicWord):
     aliases = ["endH"]
     desc = "Ends a specified holiday ID."

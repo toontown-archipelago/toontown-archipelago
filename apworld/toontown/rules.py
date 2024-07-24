@@ -56,6 +56,14 @@ class Rule(Enum):
     HasTBHQAccess  = auto()
     HasDDLHQAccess = auto()
 
+    ### Building Access ###
+
+    OneStory      = auto()
+    TwoStory      = auto()
+    ThreeStory    = auto()
+    FourStory     = auto()
+    FiveStory     = auto()
+
     ### Cog Tier Access ###
 
     TierOneCogs   = auto()

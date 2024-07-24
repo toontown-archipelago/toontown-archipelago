@@ -38,3 +38,4 @@ class PrintJSONPacket(ClientBoundPacketBase):
             ret += f"\1{p3dcolor}\1{text}\2"
 
         client.av.queueArchipelagoMessage(ret)
+        client.av.archipelago_session.datastore.parsePrintJSON(self._raw_data)
