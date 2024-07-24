@@ -214,8 +214,9 @@ class ToontownWorld(World):
                     pool.append(item)
         # handle task carry capacity item generation.
         # the amount to give will be based on the starting capacity defined by the yaml
-        for _ in range(max(0, self.options.max_task_capacity - self.options.starting_task_capacity.value)):
-            pool.append(self.create_item(ToontownItemName.TASK_CARRY_CAPACITY))
+        item = self.create_item(ToontownItemName.TASK_CAPACITY.value)
+        for _ in range(max(0, self.options.max_task_capacity.value - self.options.starting_task_capacity.value)):
+            pool.append(item)
 
         # Automatically apply teleport access across the board so hq access can be gotten from an item
         if self.options.tpsanity.value == TPSanity.option_none:
