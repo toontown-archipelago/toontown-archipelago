@@ -13,6 +13,7 @@ from toontown.toonbase import TTLocalizer
 from libotp import *
 from direct.showbase import AppRunnerGlobal
 import string
+from direct.stdpy.file import open as sopen
 import json
 import os
 
@@ -340,7 +341,7 @@ class Suit(Avatar.Avatar):
                 customClothesNeeeded = True
                 break
         
-        clothesJson = json.load(open('resources/content_pack/suit_clothes.json'))
+        clothesJson = json.load(sopen('resources/content_pack/suit_clothes.json'))
         
         if self.style.name in clothesJson['suit_clothes']:
             if clothesJson['suit_clothes'][self.style.name] == True:

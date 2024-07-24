@@ -2935,8 +2935,8 @@ class SetTaskCarryLimit(MagicWord):
         amt = args[0]
         plural = 's'
 
-        if not 1 <= amt <= 4:
-            return "The amount must be between 1 and 4!"
+        if not 1 <= amt <= 6:
+            return "The amount must be between 1 and 6!"
         if amt == 1:
             plural = ''
         toon.b_setQuestCarryLimit(amt)

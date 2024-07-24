@@ -48,6 +48,13 @@ Toontown:
   # Range: 0 to 1000
   starting_money: 1000
 
+ # the starting amount of tasks you can carry when starting a new game
+ # range:  1 to 6
+  starting_task_capacity: 4
+
+  # the max amount of tasks you can carry at any given time
+  # range: 1 to 6
+  max_task_capacity: 4
   ### Boss Settings ###
 
   # How many checks you will receive from a cog boss upon completion.

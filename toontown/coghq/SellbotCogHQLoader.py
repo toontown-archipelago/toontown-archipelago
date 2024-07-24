@@ -13,6 +13,7 @@ from . import FactoryInterior
 from . import SellbotHQExterior
 from . import SellbotHQBossBattle
 from panda3d.core import DecalEffect
+from direct.stdpy.file import open as sopen
 import json
 aspectSF = 0.7227
 
@@ -33,7 +34,7 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
             state.addTransition('factoryInterior')
             state.addTransition('factoryInteriorSide')
 
-        self.musicJson = json.load(open('resources/content_pack/music.json'))
+        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
         self.musicFile = 'phase_9/audio/bgm/encntr_suit_HQ_nbrhood.ogg'
         self.cogHQExteriorModelPath = 'phase_9/models/cogHQ/SellbotHQExterior'
         self.cogHQLobbyModelPath = 'phase_9/models/cogHQ/SellbotHQLobby'
