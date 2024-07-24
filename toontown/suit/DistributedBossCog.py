@@ -1094,7 +1094,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         if ('boss-' + str(self.style.dept) + '-promotion') in self.musicJson['global_music']:
             self.promotionMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-promotion')])
         else:
-            self.promotionMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning_indoor.ogg')
+            self.promotionMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
         if ('boss-' + str(self.style.dept) + '-between') in self.musicJson['global_music']:
             self.betweenBattleMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-between')])
         else:

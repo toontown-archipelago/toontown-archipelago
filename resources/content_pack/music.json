@@ -12,7 +12,10 @@
       "boss-none-promotion": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
       "boss-none-epilogue": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
       "boss-none-sting": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
-      "boss-none-jury": "phase_9/audio/bgm/encntr_head_suit_theme.ogg"
+      "boss-none-jury": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
+
+      "BOSSES" : "s = vp, m = cfo, l = cj, c = ceo",
+      "boss-c-two": "phase_12/audio/bgm/BossBot_CEO_v1.ogg",
+      "boss-c-four": "phase_12/audio/bgm/BossBot_CEO_v2.ogg"
     }
   }
-  

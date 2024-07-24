@@ -167,7 +167,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.geom.reparentTo(render)
         self.betweenPhaseMusic = self.betweenBattleMusic
         self.phaseTwoMusic = self.battleTwoMusic
-        self.phaseFourMusic = self.battleTwoMusic
+        self.phaseFourMusic = self.battleFourMusic
         self.pickupFoodSfx = loader.loadSfx('phase_6/audio/sfx/SZ_MM_gliss.ogg')
         self.explodeSfx = loader.loadSfx('phase_4/audio/sfx/firework_distance_02.ogg')
 
