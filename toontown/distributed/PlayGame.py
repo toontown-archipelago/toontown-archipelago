@@ -158,6 +158,7 @@ class PlayGame(StateData.StateData):
         if hasattr(self, 'dnaStore'):
             self.dnaStore.resetNodes()
             self.dnaStore.resetTextures()
+            self.dnaStore.resetSuitBlocks()
             del self.dnaStore
             ModelPool.garbageCollect()
             TexturePool.garbageCollect()

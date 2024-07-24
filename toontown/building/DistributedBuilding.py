@@ -439,6 +439,9 @@ class DistributedBuilding(DistributedObject.DistributedObject):
         zoneId = ZoneUtil.getTrueZoneId(zoneId, self.interiorZoneId)
         newParentNP = base.cr.playGame.hood.loader.zoneDict[zoneId]
         suitBuildingNP = suitNP.copyTo(newParentNP)
+        zoneIdBlock = zoneId + self.block
+        if not dnaStore.isSuitBlock(zoneIdBlock):
+            dnaStore.storeSuitBlock(zoneIdBlock, chr(self.track))
         buildingTitle = dnaStore.getTitleFromBlockNumber(self.block)
         if not buildingTitle:
             buildingTitle = TTLocalizer.CogsInc
