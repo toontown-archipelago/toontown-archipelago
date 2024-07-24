@@ -20,43 +20,57 @@ class QuestPage(ShtikerPage.ShtikerPage):
         self.quests = {0: None,
          1: None,
          2: None,
-         3: None}
+         3: None,
+         4: None,
+         5: None,
+        }
         self.textRolloverColor = Vec4(1, 1, 0, 1)
         self.textDownColor = Vec4(0.5, 0.9, 1, 1)
         self.textDisabledColor = Vec4(0.4, 0.8, 0.4, 1)
+        self.questFrames = []
         return
 
     def load(self):
         self.title = DirectLabel(parent=self, relief=None, text=TTLocalizer.QuestPageToonTasks, text_scale=0.12, textMayChange=0, pos=(0, 0, 0.6))
-        questFramePlaceList = ((-0.45,
-          0,
-          0.25,
-          0,
-          0,
-          0),
-         (-0.45,
-          0,
-          -0.35,
-          0,
-          0,
-          0),
-         (0.45, 0, 0.25, 0, 0, 0),
-         (0.45,
-          0,
-          -0.35,
-          0,
-          0,
-          0))
+        self.loadQuestFrames()
+        self.accept('questsChanged', self.updatePage)
+        return
+    
+    def loadQuestFrames(self):
+        if base.localAvatar.getQuestCarryLimit() <= 4:
+            questFramePlaceList = (
+            (-0.45, 0, 0.25, 0, 0, 0),
+            (-0.45, 0, -0.35, 0, 0, 0),
+            (0.45, 0, 0.25, 0, 0, 0),
+            (0.45, 0, -0.35, 0, 0, 0),
+            # these are here just to make python happy
+            (0, 0, 0, 0, 0, 0), 
+            (0, 0, 0, 0, 0, 0)
+)
+        else:
+            questFramePlaceList = (
+            (-0.45, 0, 0.35, 0, 0, 0),
+            (-0.45, 0, -0.075, 0, 0, 0),
+            (0.45, 0, 0.35, 0, 0, 0),
+            (0.45, 0, -0.075, 0, 0, 0),
+            (0.45, 0, -0.50, 0, 0, 0),
+            (-0.45, 0, -0.50, 0, 0, 0)
+            )
+            
+        # clear any existing frames before creating new ones
+        for frame in self.questFrames:
+            frame.destroy()
         self.questFrames = []
+
         for i in range(ToontownGlobals.MaxQuestCarryLimit):
             frame = QuestBookPoster.QuestBookPoster(reverse=i > 1, mapIndex=i + 1)
             frame.reparentTo(self)
             frame.setPosHpr(*questFramePlaceList[i])
-            frame.setScale(1.06)
+            if base.localAvatar.getQuestCarryLimit() <= 4:
+                frame.setScale(1.06)
+            else:
+                frame.setScale(0.7)
             self.questFrames.append(frame)
-
-        self.accept('questsChanged', self.updatePage)
-        return
 
     def acceptOnscreenHooks(self):
         self.accept(ToontownGlobals.QuestsHotkeyOn, self.showQuestsOnscreen)
@@ -94,6 +108,7 @@ class QuestPage(ShtikerPage.ShtikerPage):
         self.notify.debug('updatePage()')
         newQuests = base.localAvatar.quests
         carryLimit = base.localAvatar.getQuestCarryLimit()
+        self.loadQuestFrames()
         for i in range(ToontownGlobals.MaxQuestCarryLimit):
             if i < carryLimit:
                 self.questFrames[i].show()
@@ -119,7 +134,6 @@ class QuestPage(ShtikerPage.ShtikerPage):
                 self.questFrames[i].update(questDesc)
             else:
                 self.questFrames[i].unbindMouseEnter()
-
         messenger.send('questPageUpdated')
         return
 
