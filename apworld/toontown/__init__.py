@@ -184,6 +184,10 @@ class ToontownWorld(World):
                     self.multiworld.push_precollected(item)
                 else:
                     pool.append(item)
+        # handle task carry capacity item generation.
+        # the amount to give will be based on the starting capacity defined by the yaml
+        for _ in range(self.options.max_task_capacity - self.options.starting_task_capacity.value):
+            pool.append(self.create_item(ToontownItemName.TASK_CARRY_CAPACITY))
 
         # Automatically apply teleport access across the board so hq access can be gotten from an item
         if self.options.tpsanity.value == TPSanity.option_none:
@@ -319,6 +323,8 @@ class ToontownWorld(World):
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "starting_money": self.options.starting_money.value,
+            "starting_task_capacity": self.options.starting_task_capacity.value,
+            "max_task_capacity": self.options.max_task_capacity,
             "base_global_gag_xp": self.options.base_global_gag_xp.value,
             "damage_multiplier": self.options.damage_multiplier.value,
             "overflow_mod": self.options.overflow_mod.value,

@@ -79,6 +79,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Set their starting money
         av.b_setMoney(self.slot_data.get('starting_money', 50))
 
+        # Set their starting task capacity
+
+        av.b_setQuestCarryLimit(self.slot_data.get('starting_task_capacity', 4))
+
         # Set their starting gag xp multiplier
         av.b_setBaseGagSkillMultiplier(self.slot_data.get('base_global_gag_xp', 2))
 

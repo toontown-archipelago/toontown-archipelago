@@ -87,7 +87,24 @@ class StartMoneyOption(Range):
     range_end = 1000
     default = 1000
 
+class StartingTaskCapacityOption(Range):
+    """
+    The starting amount of tasks a toon can hold when starting a new game.
+    """
+    display_name = "Starting Task Capacity"
+    range_start = 1
+    range_end = 6
+    default = 4
 
+class MaxTaskCapacityOption(Range):
+    """
+    The max amount of tasks a toon can hold.
+    """
+    display_name = "Max Task Capacity"
+    range_start = 1
+    range_end = 6
+    default = 4
+    
 class WinCondition(Choice):
     """
     Determines the condition before being able to talk to Flippy to complete the game.
@@ -373,6 +390,8 @@ class ToontownOptions(PerGameCommonOptions):
     damage_multiplier: DamageMultiplierRange
     overflow_mod: OverflowModRange
     starting_money: StartMoneyOption
+    starting_task_capacity: StartingTaskCapacityOption
+    max_task_capacity: MaxTaskCapacityOption
     win_condition: WinCondition
     cog_bosses_required: CogBossesRequired
     total_tasks_required: TotalTasksRequired

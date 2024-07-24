@@ -16,6 +16,11 @@ class ToontownItemName(enum.Enum):
 
     ### Jellybean Jar Capacity ###
     MONEY_CAP_1000 = "Progressive Jellybean Jar"
+    
+    ### Task Carry Capacity ###
+    TASK_CAPACITY = "Progressive Task Capacity"
+
+
 
     ### Fishing ###
     FISHING_ROD_UPGRADE = "Progressive Fishing Rod"
@@ -142,6 +147,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # endregion
     # region Jellybean Capacity
     ToontownItemDefinition(ToontownItemName.MONEY_CAP_1000, ItemClassification.progression, quantity=9),
+    # region Task Capacity
+    # range depends on the starting capacity
+    ToontownItemDefinition(ToontownItemName.TASK_CAPACITY, ItemClassification.progression),
     # endregion
     # region Gag Training Frames
     ToontownItemDefinition(ToontownItemName.TOONUP_FRAME, ItemClassification.progression),
