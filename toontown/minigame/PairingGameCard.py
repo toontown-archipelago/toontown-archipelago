@@ -1,6 +1,6 @@
 from .PlayingCard import PlayingCardNodePath
 from . import PlayingCardGlobals
-from panda3d.core import NodePath, Vec3
+from panda3d.core import NodePath, Vec3, RenderState, Texture
 from direct.interval.IntervalGlobal import LerpHprInterval, Parallel, SoundInterval
 
 class PairingGameCard(PlayingCardNodePath):
