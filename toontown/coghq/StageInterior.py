@@ -14,6 +14,7 @@ from toontown.toontowngui import TTDialog
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.coghq import DistributedStage
 from toontown.building import Elevator
+from direct.stdpy.file import open as sopen
 import json
 
 class StageInterior(BattlePlace.BattlePlace):
@@ -70,7 +71,7 @@ class StageInterior(BattlePlace.BattlePlace):
     def load(self):
         self.parentFSM.getStateNamed('stageInterior').addChild(self.fsm)
         BattlePlace.BattlePlace.load(self)
-        self.musicJson = json.load(open('resources/content_pack/music.json'))
+        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
 
         if str(self.zoneId) in self.musicJson['global_music']:
             self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.zoneId)])

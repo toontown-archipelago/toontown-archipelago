@@ -9,6 +9,7 @@ from direct.fsm import State
 from . import CashbotHQExterior
 from . import CashbotHQBossBattle
 from panda3d.core import DecalEffect, Fog
+from direct.stdpy.file import open as sopen
 import json
 
 class CashbotCogHQLoader(CogHQLoader.CogHQLoader):
@@ -21,7 +22,7 @@ class CashbotCogHQLoader(CogHQLoader.CogHQLoader):
             state = self.fsm.getStateNamed(stateName)
             state.addTransition('mintInterior')
 
-        self.musicJson = json.load(open('resources/content_pack/music.json'))
+        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
         self.musicFile = 'phase_9/audio/bgm/encntr_suit_HQ_nbrhood.ogg'
         self.cogHQExteriorModelPath = 'phase_10/models/cogHQ/CashBotShippingStation'
         self.cogHQLobbyModelPath = 'phase_10/models/cogHQ/VaultLobby'

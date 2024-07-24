@@ -8,6 +8,7 @@ from direct.showbase import DirectObject
 from direct.fsm import StateData
 from direct.fsm import ClassicFSM, State
 from direct.fsm import State
+from direct.stdpy.file import open as sopen
 from direct.task import Task
 from toontown.launcher import DownloadForceAcknowledge
 from toontown.toon import HealthForceAcknowledge
@@ -37,7 +38,7 @@ class SafeZoneLoader(StateData.StateData):
         self.playgroundClass = None
 
         self.townBattle = TownBattle('town-battle-done')
-        self.musicJson = json.load(open('resources/content_pack/music.json'))
+        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
         return
 
     def load(self):

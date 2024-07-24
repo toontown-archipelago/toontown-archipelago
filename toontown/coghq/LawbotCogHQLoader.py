@@ -11,6 +11,7 @@ from . import LawbotHQExterior
 from . import LawbotHQBossBattle
 from . import LawbotOfficeExterior
 from panda3d.core import Fog
+from direct.stdpy.file import open as sopen
 import json
 aspectSF = 0.7227
 
@@ -29,7 +30,7 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
             state = self.fsm.getStateNamed(stateName)
             state.addTransition('factoryExterior')
 
-        self.musicJson = json.load(open('resources/content_pack/music.json'))
+        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
         self.musicFile = 'phase_11/audio/bgm/LB_courtyard.ogg'
         self.cogHQExteriorModelPath = 'phase_11/models/lawbotHQ/LawbotPlaza'
         self.factoryExteriorModelPath = 'phase_11/models/lawbotHQ/LB_DA_Lobby'
