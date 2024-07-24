@@ -1743,13 +1743,40 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             speech += TTLocalizer.WitnessToonMaxed % (ToontownGlobals.MaxCogSuitLevel + 1)
         return speech
 
+    def __getCannonSpawnOrder(self) -> list[int]:
+        """
+        Returns a list of indexes to use when determining cannon spawns
+        """
+
+        if len(self.cannons) <= 0:
+            return []
+
+        # Start with the center and branch outwards
+        center = len(self.cannons) // 2 - 1
+        left = center
+        right = center + 1
+        order = []
+
+        # Add cannon spots until we have enough
+        while len(order) < len(self.cannons):
+            if left >= 0:
+                order.append(left)
+                left -= 1
+
+            if right < len(self.cannons):
+                order.append(right)
+                right += 1
+
+        return order
+
     def __positionToonsInFrontOfCannons(self):
         self.notify.debug('__positionToonsInFrontOfCannons')
         index = 0
         self.involvedToons.sort()
+        cannonOrder = self.__getCannonSpawnOrder()
         for toonId in self.involvedToons:
             if index in self.cannons:
-                cannon = self.cannons[index]
+                cannon = self.cannons[cannonOrder[index]]
                 toon = self.cr.doId2do.get(toonId)
                 self.notify.debug('cannonId = %d' % cannon.doId)
                 cannonPos = cannon.nodePath.getPos(render)
