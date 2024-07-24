@@ -50,11 +50,11 @@ class QuestPage(ShtikerPage.ShtikerPage):
         else:
             questFramePlaceList = (
             (-0.45, 0, 0.35, 0, 0, 0),
-            (-0.45, 0, -0.25, 0, 0, 0),
+            (-0.45, 0, -0.075, 0, 0, 0),
             (0.45, 0, 0.35, 0, 0, 0),
-            (0.45, 0, -0.25, 0, 0, 0),
-            (0.45, 0, -0.55, 0, 0, 0),
-            (-0.45, 0, -0.55, 0, 0, 0)
+            (0.45, 0, -0.075, 0, 0, 0),
+            (0.45, 0, -0.50, 0, 0, 0),
+            (-0.45, 0, -0.50, 0, 0, 0)
             )
             
         # clear any existing frames before creating new ones
@@ -69,7 +69,7 @@ class QuestPage(ShtikerPage.ShtikerPage):
             if base.localAvatar.getQuestCarryLimit() <= 4:
                 frame.setScale(1.06)
             else:
-                frame.setScale(0.5)
+                frame.setScale(0.7)
             self.questFrames.append(frame)
 
     def acceptOnscreenHooks(self):

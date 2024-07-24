@@ -257,7 +257,6 @@ class QuestPoster(DirectFrame):
          0))
         quest = Quests.getQuest(questId)
         self.rewardText.show()
-        self.rewardText.setZ(-0.205)
         self.questProgress.hide()
         if not hasattr(self, 'chooseButton'):
             guiButton = loader.loadModel('phase_3/models/gui/quit_button')
@@ -276,8 +275,6 @@ class QuestPoster(DirectFrame):
             self.chooseButton['extraArgs'] = [questId]
         self.unbind(DGG.WITHIN)
         self.unbind(DGG.WITHOUT)
-        if not quest.getType() == Quests.TrackChoiceQuest:
-            self.questInfo.setZ(-0.0625)
         return
 
     def update(self, questDesc):
