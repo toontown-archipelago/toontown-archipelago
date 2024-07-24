@@ -44,7 +44,7 @@ class MinigameRulesPanel(StateData.StateData):
 
     def enter(self):
         self.frame.show()
-        # self.timer.countdown(self.TIMEOUT, self.playCallback)
+        self.timer.countdown(self.TIMEOUT, self.playCallback)
         self.accept('enter', self.playCallback)
 
     def exit(self):
