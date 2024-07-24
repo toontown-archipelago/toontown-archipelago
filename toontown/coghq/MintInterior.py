@@ -68,6 +68,7 @@ class MintInterior(BattlePlace.BattlePlace):
     def load(self):
         self.parentFSM.getStateNamed('mintInterior').addChild(self.fsm)
         BattlePlace.BattlePlace.load(self)
+        self.musicJson = json.load(open('resources/content_pack/music.json'))
         if str(self.zoneId) in self.musicJson['global_music']:
             self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.zoneId)])
             if (str(self.zoneId) + '_battle') in self.musicJson['global_music']:
