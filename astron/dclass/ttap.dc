@@ -1690,6 +1690,7 @@ dclass DistributedMinigame : DistributedObject {
   setAvatarReady() airecv clsend;
   setAvatarExited() airecv clsend;
   requestExit() airecv clsend;
+  requestSkip() airecv clsend;
   setGameReady() broadcast;
   setGameStart(int16) broadcast;
   setGameExit() broadcast;
