@@ -40,6 +40,7 @@ class DistributedMinigame(DistributedObject.DistributedObject):
         hoodMinigameState.addChild(self.frameworkFSM)
         self.rulesDoneEvent = 'rulesDone'
         self.acceptOnce('minigameAbort', self.d_requestExit)
+        self.accept('minigameSkip', self.d_requestSkip)
         base.curMinigame = self
         self.modelCount = 500
         self.cleanupActions = []
@@ -315,6 +316,9 @@ class DistributedMinigame(DistributedObject.DistributedObject):
     def d_requestExit(self):
         self.notify.debug('BASE: Sending requestExit')
         self.sendUpdate('requestExit', [])
+
+    def d_requestSkip(self):
+        self.sendUpdate('requestSkip')
 
     def enterFrameworkInit(self):
         self.notify.debug('BASE: enterFrameworkInit')
