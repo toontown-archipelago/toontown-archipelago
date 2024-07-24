@@ -165,7 +165,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         planeNode.setCollideMask(ToontownGlobals.PieBitmask)
         self.geom.attachNewNode(planeNode)
         self.geom.reparentTo(render)
-        self.betweenPhaseMusic = betweenBattleMusic
+        self.betweenPhaseMusic = self.betweenBattleMusic
         self.phaseTwoMusic = self.battleTwoMusic
         self.phaseFourMusic = self.battleTwoMusic
         self.pickupFoodSfx = loader.loadSfx('phase_6/audio/sfx/SZ_MM_gliss.ogg')
