@@ -39,6 +39,7 @@ OptionToType = {
     'speedchat-style': OptionTypes.BUTTON_SPEEDCHAT,
     'discord-rich-presence': OptionTypes.BUTTON,
     'archipelago-textsize': OptionTypes.SLIDER,
+    'color-blind-mode': OptionTypes.BUTTON,
 
     # Privacy
     "competitive-boss-scoring": OptionTypes.BUTTON,
@@ -140,6 +141,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'speedchat-style',
             'discord-rich-presence',
             'archipelago-textsize',
+            'color-blind-mode',
 
         ],
         "Privacy": [
@@ -756,6 +758,8 @@ class OptionElement(DirectFrame):
             base.setRichPresence()
         elif self.optionName == "cam-toggle-lock":
             base.CAM_TOGGLE_LOCK = newSetting
+        elif self.optionName == "color-blind-mode":
+            base.colorBlindMode = newSetting
 
         # Update the button text with the new setting.
         self.optionModifier["text"] = self.formatSetting(newSetting)

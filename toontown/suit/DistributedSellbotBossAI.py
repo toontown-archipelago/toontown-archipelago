@@ -210,8 +210,11 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if self.attackCode != ToontownGlobals.BossCogDizzyNow:
             side = random.choice([0, 1])
             direction = random.choice([0, 1])
+            # If we are on a slope, force open the back
+            if (self.getHealthPercentage() <= 0.84 and self.getHealthPercentage() >= 0.65) or (self.getHealthPercentage() <= 0.48 and self.getHealthPercentage() >= 0.28):
+                side = 1
             # If we are near the end, always force the front door to open
-            if self.getHealthPercentage() <= .06:
+            if self.getHealthPercentage() <= 0.06:
                 side = 0
             self.sendUpdate('doStrafe', [side, direction])
         delayTime = 9

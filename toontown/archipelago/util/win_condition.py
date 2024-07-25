@@ -210,6 +210,29 @@ class GagTrackWinCondition(WinCondition):
                 f'When you finish, come back and see me!{delimiter}'
                 f'Good luck!')
     
+class FishSpeciesWinCondition(WinCondition):
+    def __init__(self, toon: DistributedToon | DistributedToonAI, fish_species: int):
+        super().__init__(toon)
+        self.fish_species = fish_species # fish species needed to meet win condition
+    
+    # Calculate how many fish species the toon has caught
+    def _get_fish_species_caught(self) -> int:
+        toonsFishCollection = self.toon.fishCollection
+        toonsFishCollection = toonsFishCollection.getNetLists()
+        toonsFishSpecies = toonsFishCollection[1] # 1 is fish species
+        return len(toonsFishSpecies)
+    
+    def satisfied(self) -> bool:
+        return self._get_fish_species_caught() >= self.fish_species
+    
+    def generate_npc_dialogue(self, delimiter='\x07') -> str:
+        fish_needed = self.fish_species - self._get_fish_species_caught()
+        plural = 's' if fish_needed > 1 else ''
+        return (f'You still have not completed your goal!{delimiter}'
+                f'You still need to catch {fish_needed} more fish species.{delimiter}'
+                f'When you finish, come back and see me!{delimiter}'
+                f'Good luck!')
+
 # Given a win condition ID (given to us via slot data from archipelago) generate and return the corresponding condition
 # When new win conditions are added, be sure to add them here
 def generate_win_condition(condition_id: int, toon: DistributedToon | DistributedToonAI) -> WinCondition:
@@ -233,6 +256,10 @@ def generate_win_condition(condition_id: int, toon: DistributedToon | Distribute
     # Check for gag tracks condition
     if condition_id == 3:
         return GagTrackWinCondition(toon, toon.slotData.get('gag_tracks_required', 5))
+    
+    # check for fish species condition
+    if condition_id == 4:
+        return FishSpeciesWinCondition(toon, toon.slotData.get('fish_species_required', 70))
 
     # We don't have a valid win condition
     return InvalidWinCondition(toon)

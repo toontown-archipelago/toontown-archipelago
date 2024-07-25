@@ -22,15 +22,34 @@ class QuestBookPoster(QuestPoster):
     def __init__(self, parent = aspect2d, **kw):
         bookModel = loader.loadModel('phase_3.5/models/gui/stickerbook_gui')
         questCard = bookModel.find('**/questCard')
-        optiondefs = (('relief', None, None),
-         ('reverse', 0, None),
-         ('mapIndex', 0, None),
-         ('image', questCard, None),
-         ('image_scale', (0.8, 1.0, 0.58), None),
-         ('state', DGG.NORMAL, None))
-        self.defineoptions(kw, optiondefs)
-        QuestPoster.__init__(self, relief=None)
-        self.initialiseoptions(QuestBookPoster)
+        self.extraTaskSlots = base.localAvatar.getQuestCarryLimit() > 4
+        if self.extraTaskSlots:
+            optiondefs = (('relief', None, None),
+             ('reverse', 0, None),
+             ('mapIndex', 0, None),
+             ('image', questCard, None),
+             ('image_scale', (1.0, 1.0, 0.54), None),
+             ('state', DGG.NORMAL, None))
+            self.defineoptions(kw, optiondefs)
+            QuestPoster.__init__(self, relief=None)
+            self.initialiseoptions(QuestBookPoster)
+            self.headline.setPos(0, 0, 0.21)    
+            self.questInfo.setPos(0, 0, -0.035)
+            self.rewardText.setPos(0, 0, -0.19)
+            self.rewardText.show()
+            self.questProgress.setPos(0, 0, -0.12)
+            self.rewardText.setScale(1.33)
+            self.questProgress.setScale(0.3)
+        else:
+            optiondefs = (('relief', None, None),
+             ('reverse', 0, None),
+             ('mapIndex', 0, None),
+             ('image', questCard, None),
+             ('image_scale', (0.8, 1.0, 0.58), None),
+             ('state', DGG.NORMAL, None))
+            self.defineoptions(kw, optiondefs)
+            QuestPoster.__init__(self, relief=None)
+            self.initialiseoptions(QuestBookPoster)
         self._deleteCallback = None
         self.questFrame = DirectFrame(parent=self, relief=None)
         gui = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
@@ -59,3 +78,11 @@ class QuestBookPoster(QuestPoster):
             else:
                 self.initImageScale.setX(abs(self.initImageScale[0]))
             self['image_scale'] = self.initImageScale
+
+    def mouseEnterPoster(self, event):
+        if not self.extraTaskSlots:
+            super().mouseEnterPoster(event)
+
+    def mouseExitPoster(self, event):
+        if not self.extraTaskSlots:
+            super().mouseExitPoster(event)

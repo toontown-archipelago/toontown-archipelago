@@ -12,8 +12,6 @@ from toontown.toonbase.ToontownBattleGlobals import *
 
 class TownBattleSuitPanel(DirectFrame):
     notify = DirectNotifyGlobal.directNotify.newCategory('TownBattleSuitPanel')
-    healthColors = Suit.healthColors
-    healthGlowColors = Suit.healthGlowColors
 
     def __init__(self, id):
         gui = loader.loadModel('phase_3.5/models/gui/battle_gui')
@@ -22,6 +20,14 @@ class TownBattleSuitPanel(DirectFrame):
         self.hpText = DirectLabel(parent=self, text='', pos=(-0.06, 0, -0.0325), text_scale=0.045)
         self.setScale(0.8)
         self.initialiseoptions(TownBattleSuitPanel)
+
+        if not base.colorBlindMode:
+            self.healthColors = Suit.healthColors
+            self.healthGlowColors = Suit.healthGlowColors
+        else:
+            self.healthColors = Suit.healthColorsAccess
+            self.healthGlowColors = Suit.healthGlowColorsAccess
+
         self.hidden = False
         self.cog = None
         self.isLoaded = 0
@@ -31,7 +37,10 @@ class TownBattleSuitPanel(DirectFrame):
         button = healthGui.find('**/minnieCircle')
         button.setScale(0.5)
         button.setH(180)
-        button.setColor(Vec4(0, 1, 0, 1))
+        if not base.colorBlindMode:
+            button.setColor(Vec4(0.2, 1, 0, 1))
+        else:
+            button.setColor(Vec4(0, 0.8, 0, 1))
         self.accept('inventory-levels', self.__handleToggle)
         self.healthNode = self.attachNewNode('health')
         self.healthNode.setPos(-0.06, 0, 0.05)
@@ -40,7 +49,10 @@ class TownBattleSuitPanel(DirectFrame):
         glow.reparentTo(button)
         glow.setScale(0.28)
         glow.setPos(-0.005, 0.01, 0.015)
-        glow.setColor(Vec4(0.25, 1, 0.25, 0.5))
+        if not base.colorBlindMode:
+            glow.setColor(Vec4(0.25, 1, 0.25, 0.5))
+        else:
+            glow.setColor(Vec4(0.2, 0.8, 0, 1))
         self.button = button
         self.glow = glow
         self.head = None

@@ -1,4 +1,5 @@
 # Resources
+vfs-mount resources/content_pack.mf /
 vfs-mount resources/phase_3.mf /
 vfs-mount resources/phase_3.5.mf /
 vfs-mount resources/phase_4.mf /

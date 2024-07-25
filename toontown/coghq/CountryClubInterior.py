@@ -15,6 +15,7 @@ from toontown.toonbase import ToontownBattleGlobals
 from toontown.coghq import DistributedCountryClub
 from toontown.building import Elevator
 import random
+import json
 
 class CountryClubInterior(BattlePlace.BattlePlace):
     notify = DirectNotifyGlobal.directNotify.newCategory('CountryClubInterior')
@@ -72,8 +73,17 @@ class CountryClubInterior(BattlePlace.BattlePlace):
     def load(self):
         self.parentFSM.getStateNamed('countryClubInterior').addChild(self.fsm)
         BattlePlace.BattlePlace.load(self)
-        musicName = random.choice(['phase_12/audio/bgm/Bossbot_Factory_v1.ogg', 'phase_12/audio/bgm/Bossbot_Factory_v2.ogg', 'phase_12/audio/bgm/Bossbot_Factory_v3.ogg'])
-        self.music = base.loader.loadMusic(musicName)
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
+
+        if str(self.zoneId) in self.musicJson['global_music']:
+            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.zoneId)])
+            if (str(self.zoneId) + '_battle') in self.musicJson['global_music']:
+                self.loader.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.zoneId) + '_battle')])
+        else:
+            musicName = random.choice(['phase_12/audio/bgm/Bossbot_Factory_v1.ogg', 'phase_12/audio/bgm/Bossbot_Factory_v2.ogg', 'phase_12/audio/bgm/Bossbot_Factory_v3.ogg'])
+            self.music = base.loader.loadMusic(musicName)
+        
 
     def unload(self):
         self.parentFSM.getStateNamed('countryClubInterior').removeChild(self.fsm)
@@ -121,6 +131,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         self.music.stop()
         self.ignoreAll()
         del self.CountryClubReadyWatcher
+        self.loader.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
 
     def enterStopped(self):
         BattlePlace.BattlePlace.enterStopped(self)
@@ -212,10 +223,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
 
         self.CountryClubDefeated = 1
 
-        if 1:
-            zoneId = ZoneUtil.getHoodId(self.zoneId)
-        else:
-            zoneId = ZoneUtil.getSafeZoneId(base.localAvatar.defaultZone)
+        zoneId = ZoneUtil.getHoodId(self.zoneId)
 
         self.fsm.request('teleportOut', [{
             'loader': ZoneUtil.getLoaderName(zoneId),
