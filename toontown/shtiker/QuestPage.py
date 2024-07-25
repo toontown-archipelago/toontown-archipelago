@@ -53,8 +53,8 @@ class QuestPage(ShtikerPage.ShtikerPage):
             (-0.45, 0, -0.075, 0, 0, 0),
             (0.45, 0, 0.35, 0, 0, 0),
             (0.45, 0, -0.075, 0, 0, 0),
+            (-0.45, 0, -0.50, 0, 0, 0),
             (0.45, 0, -0.50, 0, 0, 0),
-            (-0.45, 0, -0.50, 0, 0, 0)
             )
             
         # clear any existing frames before creating new ones
@@ -63,7 +63,7 @@ class QuestPage(ShtikerPage.ShtikerPage):
         self.questFrames = []
 
         for i in range(ToontownGlobals.MaxQuestCarryLimit):
-            frame = QuestBookPoster.QuestBookPoster(reverse=i > 1, mapIndex=i + 1)
+            frame = QuestBookPoster.QuestBookPoster(reverse=i in (2, 3, 5), mapIndex=i + 1)
             frame.reparentTo(self)
             frame.setPosHpr(*questFramePlaceList[i])
             if base.localAvatar.getQuestCarryLimit() <= 4:

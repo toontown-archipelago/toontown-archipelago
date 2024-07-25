@@ -3,7 +3,7 @@ from enum import IntEnum
 from . import TTLocalizer
 from otp.otpbase.OTPGlobals import *
 from direct.showbase.PythonUtil import invertDict
-from panda3d.core import BitMask32, Vec4
+from panda3d.core import BitMask32, Vec4, Filename
 import collections
 
 MapHotkey = 'MapHotkey'
@@ -1625,6 +1625,10 @@ hood2Coords = {
  'BACK': [(-73.911, 87.426, 11.803, 10.170, 0, 0)],
  'MIDDLE': [(-98.805, 39.180, 11.364, -253.350, 0, 0)],
  'FRONT': [(-105.626, -33.441, 9.777, -211.885, 0, 0)]}
+
+musicJsonFilePath = Filename('/content_pack/music.json')
+suitClothesJsonFilePath = Filename('/content_pack/suit_clothes.json')
+
 # I hate these imports being here as much as you do, but putting them at the top crashes the AI on startup :)
 from ..archipelago.definitions import util
 from apworld.toontown import locations

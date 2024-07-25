@@ -20,7 +20,6 @@ from toontown.building import ToonInterior
 from toontown.hood import QuietZoneState
 from toontown.hood import ZoneUtil
 from direct.interval.IntervalGlobal import *
-from direct.stdpy.file import open as sopen
 import json
 
 class TownLoader(StateData.StateData):
@@ -39,7 +38,8 @@ class TownLoader(StateData.StateData):
         self.canonicalBranchZone = None
         self.placeDoneEvent = 'placeDone'
         self.townBattleDoneEvent = 'town-battle-done'
-        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         return
 
     def loadBattleAnims(self):
