@@ -39,7 +39,7 @@ class TownLoader(StateData.StateData):
         self.placeDoneEvent = 'placeDone'
         self.townBattleDoneEvent = 'town-battle-done'
         fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
+        self.musicJson = json.loads(fileSystem.readFile(musicJsonFilePath, True))
         return
 
     def loadBattleAnims(self):
