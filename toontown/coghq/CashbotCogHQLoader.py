@@ -8,8 +8,7 @@ from toontown.toon import Toon
 from direct.fsm import State
 from . import CashbotHQExterior
 from . import CashbotHQBossBattle
-from panda3d.core import DecalEffect, Fog
-from direct.stdpy.file import open as sopen
+from panda3d.core import DecalEffect, Fog, VirtualFileSystem
 import json
 
 class CashbotCogHQLoader(CogHQLoader.CogHQLoader):
@@ -22,7 +21,8 @@ class CashbotCogHQLoader(CogHQLoader.CogHQLoader):
             state = self.fsm.getStateNamed(stateName)
             state.addTransition('mintInterior')
 
-        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         self.musicFile = 'phase_9/audio/bgm/encntr_suit_HQ_nbrhood.ogg'
         self.cogHQExteriorModelPath = 'phase_10/models/cogHQ/CashBotShippingStation'
         self.cogHQLobbyModelPath = 'phase_10/models/cogHQ/VaultLobby'

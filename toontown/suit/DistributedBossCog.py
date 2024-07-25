@@ -25,7 +25,6 @@ from toontown.friends import FriendsListManager
 from direct.controls.ControlManager import CollisionHandlerRayStart
 from direct.showbase import PythonUtil
 import random
-from direct.stdpy.file import open as sopen
 import json
 
 from ..coghq.CogBossScoreboard import CogBossScoreboard
@@ -72,7 +71,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.scoreboard = CogBossScoreboard()
         self.scoreboard.hide()
         self.cutsceneSpeed = 1.0
-        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         return
 
     def announceGenerate(self):

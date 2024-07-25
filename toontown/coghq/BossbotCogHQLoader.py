@@ -10,8 +10,7 @@ from toontown.coghq import BossbotHQExterior
 from toontown.coghq import BossbotHQBossBattle
 from toontown.coghq import BossbotOfficeExterior
 from toontown.coghq import CountryClubInterior
-from panda3d.core import DecalEffect, TextEncoder
-from direct.stdpy.file import open as sopen
+from panda3d.core import DecalEffect, TextEncoder, VirtualFileSystem
 import random
 import json
 aspectSF = 0.7227
@@ -26,7 +25,8 @@ class BossbotCogHQLoader(CogHQLoader.CogHQLoader):
             state = self.fsm.getStateNamed(stateName)
             state.addTransition('countryClubInterior')
 
-        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         self.musicFile = random.choice(['phase_12/audio/bgm/Bossbot_Entry_v1.ogg', 'phase_12/audio/bgm/Bossbot_Entry_v2.ogg', 'phase_12/audio/bgm/Bossbot_Entry_v3.ogg'])
         self.cogHQExteriorModelPath = 'phase_12/models/bossbotHQ/CogGolfHub'
         self.factoryExteriorModelPath = 'phase_11/models/lawbotHQ/LB_DA_Lobby'

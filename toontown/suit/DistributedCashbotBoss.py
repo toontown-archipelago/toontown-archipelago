@@ -26,7 +26,6 @@ from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
 from panda3d.core import *
 from panda3d.physics import *
 from panda3d.direct import *
-from direct.stdpy.file import open as sopen
 from libotp import *
 import random
 import math
@@ -74,7 +73,8 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
         self.latency = 0.5 #default latency for updating object posHpr
         self.toonSpawnpointOrder = [i for i in range(8)]
-        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         return
 
     def setToonSpawnpoints(self, order):
