@@ -4592,6 +4592,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setFishCollection([], [], [])
         self.b_setFishingRod(0)
         self.b_setFishingTrophies([])
+        # empty bucket
+        self.b_setFishTank([], [], [])
 
         # TP access
         self.b_setHoodsVisited([])
