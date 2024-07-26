@@ -217,15 +217,16 @@ class FishSpeciesWinCondition(WinCondition):
     
     # Calculate how many fish species the toon has caught
     def _get_fish_species_caught(self) -> int:
-        if hasattr(self.toon, 'fishCollection'):
-            toonsFishCollection = self.toon.fishCollection
-        else:
-            toonsFishCollection = None 
-            print(f'win_condition warning: fish collection not found in toon {self.toon.getDoId()}')
-            return 0
-        toonsFishCollection = toonsFishCollection.getNetLists()
-        toonsFishSpecies = toonsFishCollection[1] # 1 is fish species
-        return len(toonsFishSpecies)
+        if self.toon == base.localAvatar:
+            if hasattr(self.toon, 'fishCollection'):
+                toonsFishCollection = self.toon.fishCollection
+            else:
+                toonsFishCollection = None 
+                print(f'win_condition warning: fish collection not found in toon {self.toon.getDoId()}')
+                return 0
+            toonsFishCollection = toonsFishCollection.getNetLists()
+            toonsFishSpecies = toonsFishCollection[1] # 1 is fish species
+            return len(toonsFishSpecies)
     
     def satisfied(self) -> bool:
         return self._get_fish_species_caught() >= self.fish_species
