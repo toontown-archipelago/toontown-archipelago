@@ -127,7 +127,7 @@ class QuestMap(DirectFrame):
         iconNP.removeNode()
         gui.removeNode()
 
-    def putSuitBuildingMarker(self, pos, hpr = (0, 0, 0), blockNumber = None, track = None):
+    def putSuitBuildingMarker(self, pos, blockNumber = None, track = None):
         if base.localAvatar.buildingRadar[SuitDNA.suitDepts.index(track)]:
             marker = DirectLabel(parent = self.container, text = '', text_pos = (-0.05, -0.15), text_fg = (1, 1, 1, 1),  relief = None)
             icon = self.getSuitIcon(track)
@@ -209,7 +209,6 @@ class QuestMap(DirectFrame):
                 print(base.cr.playGame.getSuitBlockTrack(blockNumber))
                 self.putSuitBuildingMarker(
                     base.cr.playGame.dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(),
-                    base.cr.playGame.dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getHpr(),
                     blockNumber,
                     base.cr.playGame.getSuitBlockTrack(blockNumber))
 
