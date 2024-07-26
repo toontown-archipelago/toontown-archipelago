@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from apworld.toontown.locations import LOCATION_ID_TO_NAME
 from . import ShtikerPage
@@ -7,6 +7,8 @@ from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
 from panda3d.core import *
 
+from ..archipelago.util.HintContainer import HintContainer, HintedItem
+from ..archipelago.util.global_text_properties import get_raw_formatted_string, MinimalJsonMessagePart
 from ..util.ui import make_dsl_scrollable
 
 
@@ -14,7 +16,7 @@ class HintNode(DirectFrame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.title = DirectLabel(parent=self, scale=0.07, pos=(0, 0, -0.1), text="Target goes here", textMayChange=True, relief=None)
+        self.title = DirectLabel(parent=self, scale=0.07, pos=(0, 0, -0.08), text="Target goes here", textMayChange=True, relief=None)
 
         gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
         quitHover = gui.find('**/QuitBtn_UP')
@@ -41,42 +43,61 @@ class HintNode(DirectFrame):
             return
         base.talkAssistant.sendOpenTalk("!hint " + self.hintName.value)
 
-    def setTexts(self, checkDef, checkMax, hintData):
+    def getHintContainer(self) -> HintContainer:
+        return base.localAvatar.getHintContainer()
+
+    def __createHintDisplay(self, text, icon, yOffset) -> DirectLabel:
+        return DirectLabel(
+            parent=self, relief=None, image=icon, image_scale=(1.25, 1.25, 1.25),
+            pos=(-0.36, 0, -0.25 - 0.05 * yOffset), text=text, text_scale=0.032,
+            text_align=TextNode.ALeft, text_pos=(0.03, -0.0125), text_fg=Vec4(0, 0, 0, 1),
+            text_wordwrap=24
+        )
+
+
+    def updateHintDisplays(self, checkDef, checkMax):
+
+        # Clear the old hint lines
         for h in self.hintNodes:
             h.destroy()
         self.hintNodes.clear()
 
-        model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
-        check = model.find('**/checkmark')
-        x = model.find('**/x')
-        hinted = model.find('**/questionMark')
-
-        hintedThreshold = sum(1 for x in hintData)
-        hintData = sorted(hintData, key=lambda s: (s[2], s[0], s[1]))
         self.title["text"] = checkDef.name.value
-        for i in range(checkMax):
-            text = None
-            if i < hintedThreshold:
-                text = hintData[i]
-                icon = check if text[2] else hinted
-            else:
-                icon = x
 
-            if text is not None:
-                text = (text[0] + "'s " if text[0] else "") + LOCATION_ID_TO_NAME[text[1]]
-            else:
-                # TODO: randomize out of a set of messages for fun
-                text = "Where is it?"
+        model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
+        checkIcon = model.find('**/checkmark')
+        xIcon = model.find('**/x')
+        questionMarkIcon = model.find('**/questionMark')
 
-            node = DirectLabel(parent=self, relief=None, image=icon, image_scale=(1.25, 1.25, 1.25), pos=(-0.3, 0, -0.25 - 0.13 * i), text=text, text_scale=0.05, text_align=TextNode.ALeft, text_pos=(0.03, -0.0125), text_fg=Vec4(0, 0, 0, 1), text_wordwrap=11)
+        hintContainer: HintContainer = self.getHintContainer()
+        hints: List[HintedItem] = hintContainer.getHintsForItem(checkDef.unique_id)
+
+        # Using our hints we have so far, start constructing text to show that
+        for labelIndex in range(checkMax):
+
+            # If we do not have a hint for this, set defaults
+            if labelIndex >= len(hints):
+                text = "Where is it?"  # TODO: randomize out of a set of messages for fun
+                node = self.__createHintDisplay(text, xIcon, labelIndex)
+                self.hintNodes.append(node)
+                continue
+
+            # We have a hint! Set up the text to tell the player where it is
+            hint: HintedItem = hints[labelIndex]
+            text = get_raw_formatted_string([
+                MinimalJsonMessagePart(hint.player_name, color='magenta'),
+                MinimalJsonMessagePart('\'s ', color='black'),
+                MinimalJsonMessagePart(hint.location_name, color='green'),
+            ])
+            icon = checkIcon if hint.found else questionMarkIcon
+            node = self.__createHintDisplay(text, icon, labelIndex)
             self.hintNodes.append(node)
 
-        if hintedThreshold == checkMax:
+        # If we know where everything is, then we shouldn't need the hint button anymore
+        if len(hints) >= checkMax:
             self.hintButton.hide()
-            # self.hintButton["state"] = DirectGuiGlobals.DISABLED
         else:
             self.hintButton.show()
-            # self.hintButton["state"] = DirectGuiGlobals.NORMAL
 
         model.removeNode()
 
@@ -92,7 +113,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.textDisabledColor = Vec4(0.4, 0.8, 0.4, 1)
         self.checkButtons = []
         self.hintNode = HintNode(self)
-        self.hintNode.setPos(0.5, 0, 0.5)
+        self.hintNode.setPos(0.42, 0, 0.5)
         self.hintNode.hide()
 
     def load(self):
@@ -102,8 +123,8 @@ class CheckPage(ShtikerPage.ShtikerPage):
         #helpText_ycoord = 0.403
         #self.helpText = DirectLabel(parent=self, relief=None, text='', text_scale=main_text_scale, text_wordwrap=12, text_align=TextNode.ALeft, textMayChange=1, pos=(0.058, 0, helpText_ycoord))
         self.gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
-        self.listXorigin = -0.02
-        self.listFrameSizeX = 0.9
+        self.listXorigin = 0.02
+        self.listFrameSizeX = 0.7
         self.listZorigin = -0.96
         self.listFrameSizeZ = 1.04
         self.arrowButtonScale = 1.3
@@ -120,6 +141,8 @@ class CheckPage(ShtikerPage.ShtikerPage):
 
     def enter(self):
         ShtikerPage.ShtikerPage.enter(self)
+        # Request our hints
+        base.cr.archipelagoManager.d_requestHints()
         self.regenerateScrollList()
         base.localAvatar.sendUpdate('requestHintPoints')
 
@@ -133,18 +156,31 @@ class CheckPage(ShtikerPage.ShtikerPage):
 
         hostUi = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         checkmarkGeom = hostUi.find('**/checkmark')
-        self.scrollList = DirectScrolledList(parent=self, relief=None, pos=(-0.625, 0, 0), incButton_image=(self.gui.find('**/FndsLst_ScrollUp'),
-         self.gui.find('**/FndsLst_ScrollDN'),
-         self.gui.find('**/FndsLst_ScrollUp_Rllvr'),
-         self.gui.find('**/FndsLst_ScrollUp')), incButton_relief=None, incButton_scale=(self.arrowButtonScale * 1.5, self.arrowButtonScale, -self.arrowButtonScale), incButton_pos=(self.buttonXstart, 0, self.itemFrameZorigin - 0.999), incButton_image3_color=Vec4(1, 1, 1, 0.2), decButton_image=(self.gui.find('**/FndsLst_ScrollUp'),
-         self.gui.find('**/FndsLst_ScrollDN'),
-         self.gui.find('**/FndsLst_ScrollUp_Rllvr'),
-         self.gui.find('**/FndsLst_ScrollUp')), decButton_relief=None, decButton_scale=(self.arrowButtonScale * 1.5, self.arrowButtonScale, self.arrowButtonScale), decButton_pos=(self.buttonXstart, 0, self.itemFrameZorigin + 0.125), decButton_image3_color=Vec4(1, 1, 1, 0.2), itemFrame_pos=(self.itemFrameXorigin, 0, self.itemFrameZorigin), itemFrame_scale=1.0, itemFrame_relief=DGG.SUNKEN, itemFrame_frameSize=(self.listXorigin,
-         self.listXorigin + self.listFrameSizeX,
-         self.listZorigin,
-         self.listZorigin + self.listFrameSizeZ), itemFrame_frameColor=(0.85, 0.95, 1, 1), itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=15, forceHeight=0.065, items=self.checkButtons)
+        self.scrollList = DirectScrolledList(
+            parent=self, relief=None, pos=(-0.625, 0, 0),
+            # scale=0.75,
+            incButton_image=(self.gui.find('**/FndsLst_ScrollUp'),
+            self.gui.find('**/FndsLst_ScrollDN'),
+            self.gui.find('**/FndsLst_ScrollUp_Rllvr'),
+            self.gui.find('**/FndsLst_ScrollUp')), incButton_relief=None,
+            incButton_scale=(self.arrowButtonScale * 1.5, self.arrowButtonScale, -self.arrowButtonScale),
+            incButton_pos=(self.buttonXstart, 0, self.itemFrameZorigin - 0.999),
+            incButton_image3_color=Vec4(1, 1, 1, 0.2), decButton_image=(self.gui.find('**/FndsLst_ScrollUp'),
+            self.gui.find('**/FndsLst_ScrollDN'),
+            self.gui.find('**/FndsLst_ScrollUp_Rllvr'),
+            self.gui.find('**/FndsLst_ScrollUp')), decButton_relief=None,
+            decButton_scale=(self.arrowButtonScale * 1.5, self.arrowButtonScale, self.arrowButtonScale),
+            decButton_pos=(self.buttonXstart, 0, self.itemFrameZorigin + 0.125),
+            decButton_image3_color=Vec4(1, 1, 1, 0.2), itemFrame_pos=(self.itemFrameXorigin, 0, self.itemFrameZorigin),
+            itemFrame_scale=1.0, itemFrame_relief=DGG.SUNKEN, itemFrame_frameSize=(self.listXorigin,
+            self.listXorigin + self.listFrameSizeX,
+            self.listZorigin,
+            self.listZorigin + self.listFrameSizeZ), itemFrame_frameColor=(0.85, 0.95, 1, 1),
+            itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=15, forceHeight=0.065, items=self.checkButtons
+        )
         make_dsl_scrollable(self.scrollList)
         self.scrollList.scrollTo(selectedIndex)
+
         return
 
     def updateHintPointText(self):
@@ -206,21 +242,20 @@ class CheckPage(ShtikerPage.ShtikerPage):
 
     def makeCheckButton(self, itemDef, checkCount, checkMax):
         checkName = itemDef.name
-        hintLocations = base.localAvatar.archipelagoDatastore.getHint(itemDef.unique_id)
-        command = lambda: self.setHint(checkName, itemDef, checkMax, hintLocations)
+        command = lambda: self.setHint(checkName, itemDef, checkMax)
         checkButtonParent = DirectFrame()
-        checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=checkName.value, text_scale=0.06, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
+        checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=checkName.value, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
         model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         check = model.find('**/checkmark')
         x = model.find('**/x')
         hinted = model.find('**/questionMark')
         if checkCount >= checkMax:
             geomToUse = check
-        elif any(not h[2] for h in hintLocations):
+        elif any([hint.found for hint in base.localAvatar.getHintContainer().getHintsForItem(itemDef.unique_id)]):
             geomToUse = hinted
         else:
             geomToUse = x
-        checkButtonR = DirectButton(parent=checkButtonParent, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.99, 0, 0.0125), text=str(checkCount) + '/' + str(checkMax), text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
+        checkButtonR = DirectButton(parent=checkButtonParent, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text=str(checkCount) + '/' + str(checkMax), text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
         # checkButtonR.bind(DirectGuiGlobals.ENTER, lambda t: self.setHint(checkName, itemDef, checkMax, hintLocations))
         # checkButtonR.bind(DirectGuiGlobals.EXIT, lambda t: self.clearHintIf(checkName))
         model.removeNode()
@@ -235,8 +270,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
             self.hintNode.hide()
             self.hintNode.hintName = None
 
-    def setHint(self, checkName, checkDef, checkMax, hintLocations):
+    def setHint(self, checkName, checkDef, checkMax):
         self.hintNode.hintName = checkName
         self.hintNode.show()
-        self.hintNode.setTexts(checkDef, checkMax, hintLocations)
-
+        self.hintNode.updateHintDisplays(checkDef, checkMax)

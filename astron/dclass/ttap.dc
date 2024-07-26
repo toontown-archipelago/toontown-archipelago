@@ -971,16 +971,6 @@ struct APItem {
   uint32 id;
 }
 
-struct APHint {
-  string owner;
-  uint32 location;
-  uint8 wasObtained;
-}
-
-struct APItemHint {
-  uint32 itemId;
-  APHint hints[];
-}
 
 dclass DistributedToon : DistributedPlayer {
   setDNAString(blob) required broadcast ownrecv db;
@@ -1193,8 +1183,6 @@ dclass DistributedToon : DistributedPlayer {
   setArchipelagoAuto(string, string) ownsend airecv;
   setDeathReason(string) airecv clsend;
   clientDied() airecv clsend;
-
-  setArchipelagoData(APItemHint[] = []) required ownrecv db;
 };
 
 dclass DistributedCCharBase : DistributedObject {
@@ -3960,8 +3948,25 @@ struct ArchipelagoInformation {
   int16 teamId;
 };
 
+struct ArchipelagoItem {
+    int32 item;
+    int32 location;
+    int32 player;
+    uint8 flags;
+};
+
+struct ArchipelagoHint {
+    int32 destination;
+    ArchipelagoItem item;
+    string player_name;
+    string location_name;
+    bool found;
+};
+
 dclass DistributedArchipelagoManager : DistributedObject {
   sync(ArchipelagoInformation[]) required broadcast ram;
+  requestHints() clsend airecv;
+  setHints(ArchipelagoHint[]);
 };
 
 dclass DistributedInGameNewsMgr : DistributedObjectGlobal {

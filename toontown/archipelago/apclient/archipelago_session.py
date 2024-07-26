@@ -4,7 +4,6 @@ from typing import List, TYPE_CHECKING
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
-from toontown.archipelago.data.ArchipelagoDataMiddleware import ArchipelagoDataMiddleware
 from toontown.archipelago.definitions import util
 from toontown.archipelago.definitions.death_reason import DeathReason
 from toontown.archipelago.packets.serverbound.bounce_packet import BouncePacket
@@ -13,6 +12,7 @@ from toontown.archipelago.packets.serverbound.location_scouts_packet import Loca
 from toontown.archipelago.packets.serverbound.say_packet import SayPacket
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
 from toontown.archipelago.util import global_text_properties
+from toontown.archipelago.util.HintContainer import HintContainer
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.archipelago.util.net_utils import ClientStatus
 
@@ -25,7 +25,7 @@ class ArchipelagoSession:
     def __init__(self, avatar: "DistributedToonAI"):
         self.avatar = avatar  # The avatar that owns this session, DistributedToonAI
         self.client = ArchipelagoClient(self.avatar, self.avatar.getName())  # The client responsible for socket communication
-        self.datastore = ArchipelagoDataMiddleware(self.avatar, self.client)
+        self.hint_container: HintContainer = HintContainer(self.avatar.doId)
 
         self.default_ip = os.getenv("ARCHIPELAGO_IP", "127.0.0.1")
         self.connect_tried = False
@@ -171,3 +171,9 @@ class ArchipelagoSession:
 
     def getTeamId(self) -> int:
         return self.client.team
+
+    """
+    Methods to help with hint management
+    """
+    def getHintContainer(self) -> HintContainer:
+        return self.hint_container

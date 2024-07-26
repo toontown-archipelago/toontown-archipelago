@@ -71,15 +71,8 @@ class ArchipelagoClient(DirectObject):
         self.global_data_package: DataPackage = DataPackage()
         self.location_scouts_cache: LocationScoutsCache = LocationScoutsCache()
 
-        self.slotInfo: dict[int, NetworkPlayer] = None
-
-    def setSlotInfo(self, slotInfo):
-        self.slotInfo = {int(slot): data for slot, data in slotInfo.items()}
-
-    def getPlayerName(self, player: int):
-        if player not in self.slotInfo:
-            return "Someone"
-        return self.slotInfo[player].name
+    def has_slot_info(self, slot_id: int) -> bool:
+        return slot_id in self.slot_id_to_slot_name
 
     # Given a slot number (as string or int, doesn't matter but must be a number) return the NetworkSlot as cached
     def get_slot_info(self, slot: Union[str, int]) -> NetworkSlot:
@@ -88,6 +81,14 @@ class ArchipelagoClient(DirectObject):
     # Returns the local slot ID (int) that this client belongs to
     def get_local_slot(self) -> int:
         return self.slot
+
+    # Retrieve the name of a player in this AP session
+    def get_player_name(self, slot_id: int) -> str:
+
+        if not self.has_slot_info(slot_id):
+            return f"??? (player {slot_id})"
+
+        return self.get_slot_info(slot_id).name
 
     # Given the ID of an item, find a display name for the item using our data package
     def get_item_name(self, item_id: Union[str, int]) -> str:

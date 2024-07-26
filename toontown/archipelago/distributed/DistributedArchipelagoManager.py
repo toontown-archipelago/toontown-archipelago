@@ -5,6 +5,7 @@ from direct.distributed.DistributedObject import DistributedObject
 
 from toontown.archipelago.definitions import color_profile
 from toontown.archipelago.definitions.color_profile import ColorProfile
+from toontown.archipelago.util.HintContainer import HintContainer
 from toontown.archipelago.util.archipelago_information import ArchipelagoInformation
 from toontown.toon.DistributedToon import DistributedToon
 
@@ -188,3 +189,19 @@ class DistributedArchipelagoManager(DistributedObject):
         # Extract the toon's team information and find the team's corresponding color.
         teamID = info.teamId
         return self.getTeamColorProfile(teamID)
+
+
+    """
+    Code related to hint management
+    """
+
+    def d_requestHints(self):
+        self.sendUpdate('requestHints')
+
+    def setHints(self, primitive_hint_container):
+        """
+        Called from the AI, updates hint container stored locally
+        """
+        container = HintContainer.from_struct(base.localAvatar.getDoId(), primitive_hint_container)
+        base.localAvatar.setHintContainer(container)
+        messenger.send('archipelago-hint-update')
