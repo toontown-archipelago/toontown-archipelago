@@ -1213,7 +1213,7 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
              self.destFrame[0],
              self.destFrameNum,
              newPos))
-        self.playbackFrameNum += 1
+        self.playbackFrameNum = min(self.playbackFrameNum + GolfGlobals.SHOT_PLAYBACK_RATE, lastFrame)
 
     def enterCleanup(self):
         taskMgr.remove('update task')
@@ -1541,7 +1541,7 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
             childNodePath.removeNode()
 
         self.flyOverJoint = flyOverJoint
-        self.flyOverInterval = Sequence(Func(base.camera.reparentTo, flyOverJoint), Func(base.camera.clearTransform), Func(self.titleLabel.show), ActorInterval(self.flyOverActor, 'camera'), Func(base.camera.reparentTo, self.ballFollow), Func(base.camera.setPos, self.camPosBallFollow), Func(base.camera.setHpr, self.camHprBallFollow))
+        self.flyOverInterval = Sequence(Func(base.camera.reparentTo, flyOverJoint), Func(base.camera.clearTransform), Func(self.titleLabel.show), ActorInterval(self.flyOverActor, 'camera', playRate=GolfGlobals.INTRO_PLAYBACK_RATE), Func(base.camera.reparentTo, self.ballFollow), Func(base.camera.setPos, self.camPosBallFollow), Func(base.camera.setHpr, self.camHprBallFollow))
         if avId == localAvatar.doId:
             self.flyOverInterval.append(Func(self.setCamera2Ball))
             self.flyOverInterval.append(Func(self.safeRequestToState, 'ChooseTee'))
