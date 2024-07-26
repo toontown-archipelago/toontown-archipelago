@@ -149,6 +149,7 @@ class PlayGame(StateData.StateData):
     def loadDnaStore(self):
         if not hasattr(self, 'dnaStore'):
             self.dnaStore = DNAStorage()
+            self.suitBlocks = {}
             loader.loadDNAFile(self.dnaStore, 'phase_4/dna/storage.dna')
             self.dnaStore.storeFont('humanist', ToontownGlobals.getInterfaceFont())
             self.dnaStore.storeFont('mickey', ToontownGlobals.getSignFont())
@@ -160,8 +161,15 @@ class PlayGame(StateData.StateData):
             self.dnaStore.resetNodes()
             self.dnaStore.resetTextures()
             del self.dnaStore
+            self.suitBlocks.clear()
             ModelPool.garbageCollect()
             TexturePool.garbageCollect()
+
+    def isSuitBlock(self, blockNumber):
+        return blockNumber in self.suitBlocks
+
+    def getSuitBlockTrack(self, blockNumber):
+        return self.suitBlocks.get(blockNumber)
 
     def unload(self):
         self.unloadDnaStore()
