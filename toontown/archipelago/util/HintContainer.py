@@ -41,13 +41,18 @@ class HintContainer:
         """
         return any(hint.similar(other) for hint in self.hints)
 
-    def addHint(self, hint: HintedItem):
+    def addHint(self, hint: HintedItem) -> bool:
+        """
+        Adds a new hint to the hint container
+        Returns true if the hint was added, false otherwise
+        """
 
         # If we already have this hint don't store it
         if self.contains(hint):
-            return
+            return False
 
         self.hints.append(hint)
+        return True
 
     def getHints(self) -> List[HintedItem]:
         return self.hints

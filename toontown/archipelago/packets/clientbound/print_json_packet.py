@@ -66,4 +66,6 @@ class PrintJSONPacket(ClientBoundPacketBase):
 
         # If this is a hint packet, go ahead and add the hint to the hint cache
         if self.is_hint_packet():
-            client.av.archipelago_session.getHintContainer().addHint(self.parse_hint(client))
+            hint = self.parse_hint(client)
+            client.av.archipelago_session.getHintContainer().addHint(hint)
+            client.av.sendHint(hint)

@@ -48,6 +48,7 @@ from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.definitions.rewards import EarnedAPReward
 from ..archipelago.definitions.util import get_zone_discovery_id
 from ..archipelago.util import win_condition
+from ..archipelago.util.HintContainer import HintedItem
 from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..archipelago.util.win_condition import WinCondition
 from ..shtiker import CogPageGlobals
@@ -4503,6 +4504,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             cache = self.archipelago_session.client.location_scouts_cache
 
         self.sendUpdate('updateLocationScoutsCache', [cache.struct()])
+
+    def sendHint(self, hint: HintedItem):
+        self.air.archipelagoManager.d_sendHint(self.getDoId(), hint)
 
     def queueArchipelagoMessage(self, message: str):
         self.apMessageQueue.queue(message)

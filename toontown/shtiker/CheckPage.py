@@ -124,6 +124,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.hintNode = HintNode(self)
         self.hintNode.setPos(0.42, 0, 0.5)
         self.hintNode.hide()
+        self.viewingHint: bool | tuple = False
 
     def load(self):
         main_text_scale = 0.06
@@ -154,6 +155,17 @@ class CheckPage(ShtikerPage.ShtikerPage):
         base.cr.archipelagoManager.d_requestHints()
         self.regenerateScrollList()
         base.localAvatar.sendUpdate('requestHintPoints')
+
+        self.accept('archipelago-hints-updated', self.__handleHintsUpdated)
+        self.viewingHint = False
+
+    def exit(self):
+        super().exit()
+        self.ignore('archipelago-hints-updated')
+        self.viewingHint = False
+
+    def __handleHintsUpdated(self, _=None):
+        self.regenerateScrollList()
 
     def regenerateScrollList(self):
         selectedIndex = 0
@@ -189,6 +201,10 @@ class CheckPage(ShtikerPage.ShtikerPage):
         )
         make_dsl_scrollable(self.scrollList)
         self.scrollList.scrollTo(selectedIndex)
+
+        # If we were viewing a hint, force the button command to execute as if we clicked it to refresh the page
+        if self.viewingHint and isinstance(self.viewingHint, tuple):
+            self.setHint(*self.viewingHint)
 
         return
 
@@ -280,12 +296,8 @@ class CheckPage(ShtikerPage.ShtikerPage):
         del x
         return (checkButtonParent, checkButtonR, checkButtonL)
 
-    def clearHintIf(self, name):
-        if name == self.hintNode.hintName:
-            self.hintNode.hide()
-            self.hintNode.hintName = None
-
     def setHint(self, checkName, checkDef, checkMax):
+        self.viewingHint = (checkName, checkDef, checkMax)
         self.hintNode.hintName = checkName
         self.hintNode.show()
         self.hintNode.updateHintDisplays(checkDef, checkMax)
