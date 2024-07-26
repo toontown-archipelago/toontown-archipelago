@@ -100,6 +100,12 @@ class DistributedArchipelagoManager(DistributedObject):
     def getInformation(self, avId) -> Union[ArchipelagoInformation, None]:
         return self._ap_info_cache.get(avId, None)
 
+    def getLocalInformation(self) -> ArchipelagoInformation | None:
+        """
+        Returns the local toon's information. Returns None if local toon is not currently in an Archipelago session
+        """
+        return self.getInformation(base.localAvatar.getDoId())
+
     """
     Helper methods to be called throughout the client for game code
     

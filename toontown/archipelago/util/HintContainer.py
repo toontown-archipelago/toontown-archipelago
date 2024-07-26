@@ -15,6 +15,12 @@ class HintedItem:
     def __str__(self):
         return f"HintedItem<destination={self.destination}, item={self.item}, player_name={self.player_name}, location_name={self.location_name}, found={self.found}>"
 
+    def similar(self, other: "HintedItem") -> bool:
+        return (self.destination == other.destination and
+                self.item.item == other.item.item and
+                self.item.location == other.item.location and
+                self.item.player == other.item.player)
+
     def to_struct(self):
         return [self.destination, list(self.item), self.player_name, self.location_name, self.found]
 
@@ -29,28 +35,51 @@ class HintContainer:
         self.avId = avId
         self.hints: list[HintedItem] = []
 
-    def hintIsSimilar(self, hint1: HintedItem, hint2: HintedItem) -> bool:
+    def contains(self, other: HintedItem) -> bool:
         """
-        Checks if an hint is too similar to another hint to be stored as a duplicate
+        Checks if a hint is too similar to another hint to be stored as a duplicate
         """
-        return hint1 == hint2 or (hint1.item.item == hint2.item.item and hint1.item.location == hint2.item.location and hint1.item.player == hint2.item.player)
+        return any(hint.similar(other) for hint in self.hints)
 
     def addHint(self, hint: HintedItem):
 
         # If we already have this hint don't store it
-        for otherHint in self.hints:
-            if self.hintIsSimilar(hint, otherHint):
-                return
+        if self.contains(hint):
+            return
 
         self.hints.append(hint)
 
     def getHints(self) -> List[HintedItem]:
         return self.hints
 
+    def getHintsForSlot(self, slot: int) -> List[HintedItem]:
+        """
+        Returns a list of hints that strictly only apply to a certain slot number
+        """
+        hints = []
+        for hint in self.hints:
+            # If the player this hint is for matches the slot, it is a valid hint
+            if hint.destination == slot:
+                hints.append(hint)
+        return hints
+
     def getHintsForItem(self, item_id) -> List[HintedItem]:
+        """
+        Returns a list of hints that strictly only apply to a certain item ID
+        """
         hints = []
         for hint in self.hints:
             if hint.item.item == item_id:
+                hints.append(hint)
+        return hints
+
+    def getHintsForItemAndSlot(self, item_id: int, slot: int) -> List[HintedItem]:
+        """
+        A combination of getHintsForSlot and getHintsForItem
+        """
+        hints = []
+        for hint in self.hints:
+            if hint.item.item == item_id and hint.destination == slot:
                 hints.append(hint)
         return hints
 

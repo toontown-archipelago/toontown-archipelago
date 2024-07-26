@@ -8,6 +8,7 @@ from direct.gui.DirectGui import *
 from panda3d.core import *
 
 from ..archipelago.util.HintContainer import HintContainer, HintedItem
+from ..archipelago.util.archipelago_information import ArchipelagoInformation
 from ..archipelago.util.global_text_properties import get_raw_formatted_string, MinimalJsonMessagePart
 from ..util.ui import make_dsl_scrollable
 
@@ -64,13 +65,21 @@ class HintNode(DirectFrame):
 
         self.title["text"] = checkDef.name.value
 
+        # If the archipelago manager is not defined we cannot continue
+        if base.cr.archipelagoManager is None:
+            return
+
+        localToonInformation: ArchipelagoInformation = base.cr.archipelagoManager.getLocalInformation()
+        if localToonInformation is None:
+            return
+
         model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         checkIcon = model.find('**/checkmark')
         xIcon = model.find('**/x')
         questionMarkIcon = model.find('**/questionMark')
 
         hintContainer: HintContainer = self.getHintContainer()
-        hints: List[HintedItem] = hintContainer.getHintsForItem(checkDef.unique_id)
+        hints: List[HintedItem] = hintContainer.getHintsForItemAndSlot(checkDef.unique_id, localToonInformation.slotId)
 
         # Using our hints we have so far, start constructing text to show that
         for labelIndex in range(checkMax):
@@ -249,9 +258,15 @@ class CheckPage(ShtikerPage.ShtikerPage):
         check = model.find('**/checkmark')
         x = model.find('**/x')
         hinted = model.find('**/questionMark')
+
+        # Check if this item has been hinted safely
+        isHinted = False
+        if base.cr.archipelagoManager is not None and (localToonInformation := base.cr.archipelagoManager.getLocalInformation()) is not None:
+            isHinted = any(hint.found for hint in base.localAvatar.getHintContainer().getHintsForItemAndSlot(itemDef.unique_id, localToonInformation.slotId))
+
         if checkCount >= checkMax:
             geomToUse = check
-        elif any([hint.found for hint in base.localAvatar.getHintContainer().getHintsForItem(itemDef.unique_id)]):
+        elif isHinted:
             geomToUse = hinted
         else:
             geomToUse = x
