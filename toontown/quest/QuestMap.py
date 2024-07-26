@@ -7,6 +7,7 @@ from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
 from toontown.quest import Quests
 from toontown.suit import SuitPlannerBase
+from toontown.suit import SuitDNA
 from . import QuestMapGlobals
 
 class QuestMap(DirectFrame):
@@ -29,6 +30,8 @@ class QuestMap(DirectFrame):
         self.cogInfoFrame.setScale(0.05)
         self.cogInfoFrame.setPos(0, 0, 0.6)
         self.buildingMarkers = []
+        self.suitBuildingMarkers = []
+        self.questBlocks = []
         self.av = av
         self.wantToggle = False
         if base.config.GetBool('want-toggle-quest-map', True):
@@ -101,7 +104,7 @@ class QuestMap(DirectFrame):
         del self.mapCloseButton
         DirectFrame.destroy(self)
 
-    def putBuildingMarker(self, pos, mapIndex = None):
+    def putBuildingMarker(self, pos, mapIndex = None, isSuitBlock = False):
         marker = DirectLabel(parent=self.container, text='', text_pos=(-0.05, -0.15), text_fg=(1, 1, 1, 1), relief=None)
         gui = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         icon = gui.find('**/startPartyButton_inactive')
@@ -112,7 +115,10 @@ class QuestMap(DirectFrame):
         marker['text'] = '%s' % mapIndex
         marker['text_scale'] = 0.7
         marker['image'] = iconNP
-        marker['image_color'] = (1, 0, 0, 1)
+        if isSuitBlock: # Make the bubble appear gray if a cog took over a task building
+            marker['image_color'] = (0.5, 0.5, 0.5, 1)
+        else:
+            marker['image_color'] = (1, 0, 0, 1)
         marker['image_scale'] = 6
         marker.setScale(0.05)
         relX, relY = self.transformAvPos(pos)
@@ -121,11 +127,44 @@ class QuestMap(DirectFrame):
         iconNP.removeNode()
         gui.removeNode()
 
+    def putSuitBuildingMarker(self, pos, blockNumber = None, track = None):
+        if base.localAvatar.buildingRadar[SuitDNA.suitDepts.index(track)]:
+            marker = DirectLabel(parent = self.container, text = '', text_pos = (-0.05, -0.15), text_fg = (1, 1, 1, 1),  relief = None)
+            icon = self.getSuitIcon(track)
+            iconNP = aspect2d.attachNewNode('suitBlock-%s' % blockNumber)
+            icon.reparentTo(iconNP)
+            marker['image'] = iconNP
+            marker['image_scale'] = 1
+            marker.setScale(0.05)
+            relX, relY = self.transformAvPos(pos)
+            marker.setPos(relX, 0, relY)
+            self.suitBuildingMarkers.append(marker)
+            iconNP.removeNode()
+        else:
+            pass
+
+    def getSuitIcon(self, dept):
+        icons = loader.loadModel('phase_3/models/gui/cog_icons')
+        if dept == 'c':
+            corpIcon = icons.find('**/CorpIcon')
+        elif dept == 's':
+            corpIcon = icons.find('**/SalesIcon')
+        elif dept == 'l':
+            corpIcon = icons.find('**/LegalIcon')
+        elif dept == 'm':
+            corpIcon = icons.find('**/MoneyIcon')
+        else:
+            corpIcon = None
+        icons.removeNode()
+        return corpIcon
+
     def updateQuestInfo(self):
         for marker in self.buildingMarkers:
             marker.destroy()
 
         self.buildingMarkers = []
+        self.questBlocks = []
+
         for questIndex in list(self.av.questPage.quests.keys()):
             questDesc = self.av.questPage.quests.get(questIndex)
             if questDesc == None:
@@ -139,10 +178,35 @@ class QuestMap(DirectFrame):
                     if quest.getHolder() == Quests.AnyFish:
                         self.putBuildingMarker(self.fishingSpotInfo, mapIndex=mapIndex)
                     continue
-                elif quest.getType() != Quests.DeliverGagQuest and quest.getType() != Quests.DeliverItemQuest and quest.getType() != Quests.VisitQuest and quest.getType() != Quests.TrackChoiceQuest:
+                elif quest.getType() not in (
+                    Quests.DeliverGagQuest, Quests.DeliverItemQuest,
+                    Quests.VisitQuest, Quests.TrackChoiceQuest):
                     continue
+
             if toNpcId == Quests.ToonHQ:
                 self.putBuildingMarker(self.hqPosInfo, mapIndex=mapIndex)
+
+            npcZoneId = NPCToons.getNPCZone(toNpcId)
+            hoodId = ZoneUtil.getCanonicalHoodId(npcZoneId)
+            branchId = ZoneUtil.getCanonicalBranchZone(npcZoneId)
+
+            if self.hoodId == hoodId and self.zoneId == branchId:
+                for blockIndex in range(base.cr.playGame.dnaStore.getNumBlockNumbers()):
+                    blockNumber = base.cr.playGame.dnaStore.getBlockNumberAt(blockIndex)
+                    zoneId = base.cr.playGame.dnaStore.getZoneFromBlockNumber(blockNumber)
+                    interiorZoneId = (zoneId - (zoneId%100)) + 500 + blockNumber
+                    if npcZoneId == interiorZoneId:
+                        self.questBlocks.append(blockNumber)
+                        self.putBuildingMarker(
+                            base.cr.playGame.dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(render),
+                            mapIndex=mapIndex,
+                            isSuitBlock=base.cr.playGame.dnaStore.isSuitBlock(blockNumber))
+                        continue
+
+        for blockIndex in range(base.cr.playGame.dnaStore.getNumBlockNumbers()):
+            blockNumber = base.cr.playGame.dnaStore.getBlockNumberAt(blockIndex)
+            if base.cr.playGame.isSuitBlock(blockNumber) and blockNumber not in self.questBlocks:
+                print(base.cr.playGame.getSuitBlockTrack(blockNumber))
 
     def transformAvPos(self, pos):
         if self.cornerPosInfo is None:
@@ -159,11 +223,15 @@ class QuestMap(DirectFrame):
                 relX, relY = self.transformAvPos(self.av.getPos())
                 self.marker.setPos(relX, 0, relY)
                 self.marker.setHpr(0, 0, -180 - self.av.getH())
-        i = 0
+
         for buildingMarker in self.buildingMarkers:
+            i = self.buildingMarkers.index(buildingMarker)
             if not buildingMarker.isEmpty():
                 buildingMarker.setScale((math.sin(task.time * 16.0 + i * math.pi / 3.0) + 1) * 0.005 + 0.04)
-                i = i + 1
+        for buildingMarker in self.suitBuildingMarkers:
+            i = self.buildingMarkers.index(buildingMarker)
+            if not buildingMarker.isEmpty():
+                buildingMarker.setScale((math.sin(task.time * 16.0 + i * math.pi / 3.0) + 1) * 0.005 + 0.04)
 
         return Task.cont
 
@@ -243,9 +311,15 @@ class QuestMap(DirectFrame):
 
     def stop(self):
         self.container['image'] = None
+
         for marker in self.buildingMarkers:
             marker.destroy()
+        for marker in self.suitBuildingMarkers:
+            marker.destroy()
 
+        self.buildingMarkers = []
+        self.suitBuildingMarkers = []
+        self.questBlocks = []
         self.container.hide()
         self.hide()
         self.obscureButton()
