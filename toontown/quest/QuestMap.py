@@ -31,7 +31,6 @@ class QuestMap(DirectFrame):
         self.cogInfoFrame.setPos(0, 0, 0.6)
         self.buildingMarkers = []
         self.suitBuildingMarkers = []
-        self.questBlocks = []
         self.av = av
         self.wantToggle = False
         if base.config.GetBool('want-toggle-quest-map', True):
@@ -140,7 +139,6 @@ class QuestMap(DirectFrame):
             marker.destroy()
 
         self.buildingMarkers = []
-        self.questBlocks = []
         dnaStore = base.cr.playGame.dnaStore
 
         for blockIndex in range(dnaStore.getNumBlockNumbers()):
@@ -148,7 +146,7 @@ class QuestMap(DirectFrame):
             blockZoneId = dnaStore.getZoneFromBlockNumber(blockNumber)
             streetId = ZoneUtil.getCanonicalBranchZone(self.av.getLocation()[1])
             zoneIdBlock = blockZoneId + blockNumber
-            if dnaStore.isSuitBlock(zoneIdBlock) and (zoneIdBlock in range(streetId, streetId+99)) and blockNumber not in self.questBlocks:
+            if dnaStore.isSuitBlock(zoneIdBlock) and (zoneIdBlock in range(streetId, streetId+99)):
                 self.putSuitBuildingMarker(
                     dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(),
                     zoneIdBlock,
@@ -265,7 +263,6 @@ class QuestMap(DirectFrame):
 
         self.buildingMarkers = []
         self.suitBuildingMarkers = []
-        self.questBlocks = []
         self.container.hide()
         self.hide()
         self.obscureButton()
