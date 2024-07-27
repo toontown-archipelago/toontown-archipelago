@@ -390,7 +390,7 @@ __registerSuitAttributes(__YESMAN)
 __MICROMANAGER_ATTACKS = set()
 __MICROMANAGER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.DEMOTION,
-    damage={4: 6, 5: 8, 6: 12, 7: 15, 8: 18},
+    damage={4: 6, 5: 8, 6: 12, 7: 15, 8: 17},
     accuracy=50,
     weight=30,
 ))
@@ -891,7 +891,7 @@ __TIGHTWAD_ATTACKS.add(SuitAttackAttribute(
 ))
 __TIGHTWAD_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.BOUNCE_CHECK,
-    damage={3: 5, 4: 6, 5: 9, 6: 13, 7: 18},
+    damage={3: 5, 4: 6, 5: 9, 6: 12, 7: 15},
     accuracy=75,
     weight=30,
 ))
@@ -1125,7 +1125,7 @@ __DOUBLE_TALKER_ATTACKS.add(SuitAttackAttribute(
 ))
 __DOUBLE_TALKER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.DOUBLE_TALK,
-    damage={3: 6, 4: 6, 5: 9, 6: 13, 7: 18},
+    damage={3: 6, 4: 6, 5: 9, 6: 12, 7: 15},
     accuracy=50,
     weight=25,
 ))
