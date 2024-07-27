@@ -290,7 +290,6 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
         camera.reparentTo(self.elevatorModelIn)
         camera.setH(180)
         camera.setPos(0, 14, 4)
-        self.elevatorMusic.setPlayRate(2.0)
         base.playMusic(self.elevatorMusic, looping=1, volume=0.8)
         track = Sequence(ElevatorUtils.getRideElevatorInterval(ELEVATOR_NORMAL), ElevatorUtils.getOpenInterval(self, self.leftDoorIn, self.rightDoorIn, self.openSfx, None, type=ELEVATOR_NORMAL), Func(camera.wrtReparentTo, render))
         for toon in self.toons:

@@ -1174,7 +1174,6 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.toMovieMode()
         camera.reparentTo(self.elevatorModel)
         camera.setPosHpr(0, 30, 8, 180, 0, 0)
-        self.elevatorMusic.setPlayRate(3.0)
         base.playMusic(self.elevatorMusic, looping=1, volume=1.0)
         ival = Sequence(ElevatorUtils.getRideElevatorInterval(self.elevatorType), ElevatorUtils.getRideElevatorInterval(self.elevatorType), self.openDoors, Func(camera.wrtReparentTo, render), Func(self.__doneElevator))
         intervalName = 'ElevatorMovie'
