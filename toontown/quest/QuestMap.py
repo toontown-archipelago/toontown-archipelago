@@ -210,9 +210,7 @@ class QuestMap(DirectFrame):
             blockZoneId = dnaStore.getZoneFromBlockNumber(blockNumber)
             streetId = ZoneUtil.getCanonicalBranchZone(self.av.getLocation()[1])
             zoneIdBlock = blockZoneId + blockNumber
-            print(streetId)
             if dnaStore.isSuitBlock(zoneIdBlock) and (zoneIdBlock in range(streetId, streetId+99)) and blockNumber not in self.questBlocks:
-                print(zoneIdBlock)
                 self.putSuitBuildingMarker(
                     dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(),
                     zoneIdBlock,
