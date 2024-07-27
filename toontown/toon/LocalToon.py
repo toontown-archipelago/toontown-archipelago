@@ -56,9 +56,9 @@ from toontown.archipelago.gui.ArchipelagoOnscreenLog import ArchipelagoOnscreenL
 from toontown.archipelago.definitions.rewards import get_ap_reward_from_id
 from toontown.archipelago.gui.ArchipelagoRewardDisplay import ArchipelagoRewardDisplay, APRewardGift
 from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
-from ..archipelago.data.ArchipelagoClientDatastore import ArchipelagoClientDatastore
 from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
+from ..archipelago.util.HintContainer import HintContainer
 from ..shtiker.ShtikerPage import ShtikerPage
 
 WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
@@ -187,7 +187,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.locationScoutsCache: LocationScoutsCache = LocationScoutsCache()
             self.currentlyInHQ = False
             self.wantCompetitiveBossScoring = base.settings.get('competitive-boss-scoring')
-            self.archipelagoDatastore = ArchipelagoClientDatastore()
+            self.hintContainer: HintContainer = HintContainer(0)
 
             self.accept("disableControls", self.disableControls)
 
@@ -2194,5 +2194,8 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.accept('time-' + controls.ACTION_BUTTON, self.__beginTossPie)
         self.accept('time-' + controls.ACTION_BUTTON + '-up', self.__endTossPie)
 
-    def setArchipelagoData(self, hints):
-        self.archipelagoDatastore.setHints(hints)
+    def getHintContainer(self) -> HintContainer:
+        return self.hintContainer
+
+    def setHintContainer(self, container: HintContainer):
+        self.hintContainer = container
