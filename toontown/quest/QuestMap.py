@@ -164,13 +164,7 @@ class QuestMap(DirectFrame):
 
         self.buildingMarkers = []
         self.questBlocks = []
-        zoneIdList = []
-        streetIdList = []
         dnaStore = base.cr.playGame.dnaStore
-
-        for zoneId, streetId in ToontownGlobals.HoodHierarchy.items():
-            zoneIdList.append(zoneId)
-            streetIdList.append(streetId)
 
         for (i, questDesc) in enumerate(self.av.quests):
             i += 1
