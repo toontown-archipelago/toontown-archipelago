@@ -231,6 +231,22 @@ class StartHoliday(MagicWord):
             return "Invalid holiday ID: %d" % id
 
 
+class Shout(MagicWord):
+    aliases = ["shout", "yell", "s"]
+    desc = "Sends a direct message to every toon on the server."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("shout", str, True)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        shout = args[0]
+        shoutString = f"{toon.getName()} shouts: {shout}"
+        try:
+            self.air.newsManager.d_setToonShout(shoutString)
+            return "Sent your shout!"
+        except:
+            return "Invalid shout!"
+
+
 class EndHoliday(MagicWord):
     aliases = ["endH"]
     desc = "Ends a specified holiday ID."
@@ -2919,8 +2935,8 @@ class SetTaskCarryLimit(MagicWord):
         amt = args[0]
         plural = 's'
 
-        if not 1 <= amt <= 4:
-            return "The amount must be between 1 and 4!"
+        if not 1 <= amt <= 6:
+            return "The amount must be between 1 and 6!"
         if amt == 1:
             plural = ''
         toon.b_setQuestCarryLimit(amt)

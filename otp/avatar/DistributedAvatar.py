@@ -139,6 +139,9 @@ class DistributedAvatar(DistributedActor, Avatar):
                 messenger.send(self.uniqueName('hpChange'), [self.hp, self.maxHp, quietly])
             if self.hp != None and self.hp > 0:
                 messenger.send(self.uniqueName('positiveHP'))
+        # make sure its the local toon being changed
+        if self == base.localAvatar:
+            base.discord.setLaff(self.hp, self.maxHp)
         return
 
     def died(self):
@@ -178,26 +181,38 @@ class DistributedAvatar(DistributedActor, Avatar):
                     self.HpTextGenerator.setText('+' + str(number))
                 self.HpTextGenerator.clearShadow()
                 self.HpTextGenerator.setAlign(TextNode.ACenter)
-                if bonus == 1:
-                    r = 1.0
-                    g = 1.0
-                    b = 0
-                    a = 1
-                elif bonus == 2:
-                    r = 1.0
-                    g = 0.5
-                    b = 0
-                    a = 1
-                elif number < 0:
-                    r = 0.9
-                    g = 0
-                    b = 0
-                    a = 1
+                if not base.colorBlindMode:
+                    if bonus == 1:
+                        r = 1.0
+                        g = 1.0
+                        b = 0
+                        a = 1
+                    elif bonus == 2:
+                        r = 1.0
+                        g = 0.5
+                        b = 0
+                        a = 1
+                    elif number < 0:
+                        r = 0.9
+                        g = 0
+                        b = 0
+                        a = 1
                 else:
-                    r = 0
-                    g = 0.9
-                    b = 0
-                    a = 1
+                    if bonus == 1:
+                        r = 0.8
+                        g = 0.8
+                        b = 0.3
+                        a = 1
+                    elif bonus == 2:
+                        r = 0.8
+                        g = 0.4
+                        b = 0.22
+                        a = 1
+                    elif number < 0:
+                        r = 0.75
+                        g = 0.15
+                        b = 0.15
+                        a = 1
             elif number == 0 and isBoss==1:
                 if self.hpText:
                     self.hideHpText()
@@ -205,10 +220,16 @@ class DistributedAvatar(DistributedActor, Avatar):
                 self.HpTextGenerator.setText(TTLocalizer.BossCogDoStunned)
                 self.HpTextGenerator.clearShadow()
                 self.HpTextGenerator.setAlign(TextNode.ACenter)
-                r = 1.0
-                g = 0.5
-                b = 0
-                a = 1
+                if not base.colorBlindMode:
+                    r = 1.0
+                    g = 0.5
+                    b = 0
+                    a = 1
+                else:
+                    r = 0.8
+                    g = 0.5
+                    b = 0.3
+                    a = 1
             self.HpTextGenerator.setTextColor(r, g, b, a)
             self.hpTextNode = self.HpTextGenerator.generate()
             self.hpText = self.attachNewNode(self.hpTextNode)
@@ -238,7 +259,10 @@ class DistributedAvatar(DistributedActor, Avatar):
                 self.hpTextSeq.start()
 
     def broadcastHpString(self, message: str, r: float, g: float, b: float):
-        self.showHpString(message, color=(r, g, b, 1))
+        if not base.colorBlindMode:
+            self.showHpString(message, color=(r, g, b, 1))
+        else:
+            self.showHpString(message, color=(r * 0.8, g * 0.8, b * 0.8, 1))
 
     def hideHpText(self):
         if self.hpText:

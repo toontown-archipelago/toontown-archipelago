@@ -25,6 +25,7 @@ from toontown.friends import FriendsListManager
 from direct.controls.ControlManager import CollisionHandlerRayStart
 from direct.showbase import PythonUtil
 import random
+import json
 
 from ..coghq.CogBossScoreboard import CogBossScoreboard
 
@@ -32,9 +33,6 @@ from ..coghq.CogBossScoreboard import CogBossScoreboard
 class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBossCog')
     allowClickedNameTag = True
-
-    CUTSCENE_SPEED = 10.0
-
     def __init__(self, cr):
         DistributedAvatar.DistributedAvatar.__init__(self, cr)
         BossCog.BossCog.__init__(self)
@@ -72,6 +70,9 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bossSpeedrunTimer.hide()
         self.scoreboard = CogBossScoreboard()
         self.scoreboard.hide()
+        self.cutsceneSpeed = 1.0
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         return
 
     def announceGenerate(self):
@@ -87,20 +88,9 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.accept('enterNearBoss', self.avatarNearEnter)
         self.accept('exitNearBoss', self.avatarNearExit)
         self.collNode.removeSolid(0)
-        tube1 = CollisionTube(6.5, -7.5, 2, 6.5, 7.5, 2, 2.5)
-        tube2 = CollisionTube(-6.5, -7.5, 2, -6.5, 7.5, 2, 2.5)
-        roof = CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, 7.1, 5.5))
-        side1 = CollisionPolygon(Point3(-4.4, -7.1, 5.5), Point3(-4.4, 7.1, 5.5), Point3(-4.4, 7.1, 0), Point3(-4.4, -7.1, 0))
-        side2 = CollisionPolygon(Point3(4.4, 7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, -7.1, 0), Point3(4.4, 7.1, 0))
-        front1 = CollisionPolygon(Point3(4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.2), Point3(4.4, -7.1, 5.2))
-        back1 = CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.2), Point3(-4.4, 7.1, 5.2))
-        self.collNode.addSolid(tube1)
-        self.collNode.addSolid(tube2)
-        self.collNode.addSolid(roof)
-        self.collNode.addSolid(side1)
-        self.collNode.addSolid(side2)
-        self.collNode.addSolid(front1)
-        self.collNode.addSolid(back1)
+  
+        # function to create and add collision solids to the collision node 
+        self.createCollisionSolids()
         self.collNodePath.reparentTo(self.axle)
         self.collNode.setCollideMask(ToontownGlobals.PieBitmask | ToontownGlobals.WallBitmask | ToontownGlobals.CameraBitmask)
         self.collNode.setName('BossZap')
@@ -130,6 +120,66 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bubbleF = self.rotateNode.attachNewNode(bubbleFNode)
         self.bubbleF.setTag('attackCode', str(ToontownGlobals.BossCogFrontAttack))
         self.bubbleF.stash()
+    
+    def requestSkip(self):
+        """
+        Send a request to skip the cutscene to the server
+        """
+        self.sendUpdate('requestSkip', [])
+        # rest is overriden depending on the boss 
+        
+
+    def setSkipAmount(self, amount):
+        messenger.send('cutsceneSkipAmountChange', [amount, len(self.involvedToons)])
+
+    def disableSkipCutscene(self):
+        """
+        This sends a message indicating that the cutscene can no longer be skipped.
+        """
+        messenger.send('disableSkipCutscene')
+        self.ignore('cutsceneSkip')
+
+    def enableSkipCutscene(self):
+        """
+        This sends a message indicating that the cutscene can be skipped.
+        """
+        messenger.send('enableSkipCutscene')
+
+    def skipCutscene(self, intervalName=""):
+        """
+        This function is called from the server to tell the client to skip the cutscene
+        """
+        if self.state == 'Introduction':
+            # override the interval name
+            intervalName = "IntroductionMovie"
+        if intervalName != "":
+            self.activeIntervals.get(intervalName).setPlayRate(20.0)
+            # disable the skip button as well
+            self.disableSkipCutscene()
+            
+        else:
+            self.notify.warning('Unknown interval name ' + intervalName)
+
+    def createCollisionSolids(self):
+        """
+        Create the collision solids for the boss cog.
+        Then add the solids to the collision node.
+        This allows overriding for the specific collision solids
+        """
+        tube1 = CollisionTube(6.5, -7.5, 2, 6.5, 7.5, 2, 2.5)
+        tube2 = CollisionTube(-6.5, -7.5, 2, -6.5, 7.5, 2, 2.5)
+        roof =  CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, 7.1, 5.5))
+        side1 = CollisionPolygon(Point3(-4.4, -7.1, 5.5), Point3(-4.4, 7.1, 5.5), Point3(-4.4, 7.1, 0), Point3(-4.4, -7.1, 0))
+        side2 = CollisionPolygon(Point3(4.4, 7.1, 5.5), Point3(4.4, -7.1, 5.5), Point3(4.4, -7.1, 0), Point3(4.4, 7.1, 0))
+        front1 = CollisionPolygon(Point3(4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.5), Point3(-4.4, -7.1, 5.2), Point3(4.4, -7.1, 5.2))
+        back1 = CollisionPolygon(Point3(-4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.5), Point3(4.4, 7.1, 5.2), Point3(-4.4, 7.1, 5.2))
+        self.collNode.addSolid(tube1)
+        self.collNode.addSolid(tube2)
+        self.collNode.addSolid(roof)
+        self.collNode.addSolid(side1)
+        self.collNode.addSolid(side2)
+        self.collNode.addSolid(front1)
+        self.collNode.addSolid(back1)
 
     def startTimer(self):
         self.bossSpeedrunTimer.reset()
@@ -1037,11 +1087,47 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
             self.zapLocalToon(ToontownGlobals.BossCogAreaAttack)
 
     def loadEnvironment(self):
-        self.elevatorMusic = base.loader.loadMusic('phase_7/audio/bgm/tt_elevator.ogg')
-        self.stingMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        self.battleOneMusic = base.loader.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.ogg')
-        self.battleThreeMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        self.epilogueMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_hall_of_fame.ogg')
+        if ('boss-' + str(self.style.dept) + '-elevator') in self.musicJson['global_music']:
+            self.elevatorMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-elevator')])
+        else:
+            self.elevatorMusic = base.loader.loadMusic('phase_7/audio/bgm/tt_elevator.ogg')
+        if ('boss-' + str(self.style.dept) + '-promotion') in self.musicJson['global_music']:
+            self.promotionMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-promotion')])
+        else:
+            self.promotionMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+        if ('boss-' + str(self.style.dept) + '-between') in self.musicJson['global_music']:
+            self.betweenBattleMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-between')])
+        else:
+            self.betweenBattleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_toon_winning.ogg')
+        if ('boss-' + str(self.style.dept) + '-one') in self.musicJson['global_music']:
+            self.battleOneMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-one')])
+        else:
+            self.battleOneMusic = base.loader.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.ogg')
+        if ('boss-' + str(self.style.dept) + '-two') in self.musicJson['global_music']:
+            self.battleTwoMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-two')])
+        else:
+            self.battleTwoMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+        if ('boss-' + str(self.style.dept) + '-sting') in self.musicJson['global_music']:
+            self.stingMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-sting')])
+        else:
+            self.stingMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+        if ('boss-' + str(self.style.dept) + '-three') in self.musicJson['global_music']:
+            self.battleThreeMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-three')])
+        else:
+            self.battleThreeMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+        if ('boss-' + str(self.style.dept) + '-four') in self.musicJson['global_music']:
+            self.battleFourMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-four')])
+        else:
+            self.battleFourMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+        if ('boss-' + str(self.style.dept) + '-jury') in self.musicJson['global_music']:
+            self.juryMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-jury')])
+        else:
+            self.juryMusic = base.loader.loadMusic('phase_11/audio/bgm/LB_juryBG.ogg')
+        if ('boss-' + str(self.style.dept) + '-epilogue') in self.musicJson['global_music']:
+            self.epilogueMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-epilogue')])
+        else:
+            self.epilogueMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_hall_of_fame.ogg')
+        
 
     def unloadEnvironment(self):
         pass
@@ -1104,6 +1190,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         ElevatorUtils.closeDoors(self.leftDoor, self.rightDoor, self.elevatorType)
 
     def enterIntroduction(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
         self.controlToons()
         ElevatorUtils.openDoors(self.leftDoor, self.rightDoor, self.elevatorType)
         NametagGlobals.setMasterArrowsOn(0)
@@ -1112,7 +1200,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         seq = Sequence(self.makeIntroductionMovie(delayDeletes), Func(self.__beginBattleOne), name=intervalName)
         seq.delayDeletes = delayDeletes
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
 
     def __beginBattleOne(self):
@@ -1121,6 +1209,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.doneBarrier('Introduction')
 
     def exitIntroduction(self):
+        self.disableSkipCutscene()
         self.notify.debug('DistributedBossCog.exitIntroduction:')
         intervalName = 'IntroductionMovie'
         self.clearInterval(intervalName)

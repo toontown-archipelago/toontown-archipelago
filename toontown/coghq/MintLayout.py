@@ -71,20 +71,20 @@ def printNumBattles():
 
 BakedFloorLayouts = {12500:
          {0: (0,
-             4,
-             1,
-             6,
              13,
+             9,
              11,
-             7,
+             8,
+             1,
+             4,
              19),
          1: (0,
-             4,
-             1,
-             6,
              13,
+             9,
              11,
-             7,
+             8,
+             1,
+             4,
              19),
          2: (0,
              4,
@@ -716,6 +716,10 @@ class MintLayout:
         return len(self.hallways)
 
     def getHallwayModel(self, n):
+        # sanity check
+        if n >= len(self.hallways):
+            self.notify.warning(f'Hallway model {n} not found in {self.hallways}')
+            n = len(self.hallways) - 1
         return self.hallways[n]
 
     def getNumBattles(self):

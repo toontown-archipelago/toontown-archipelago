@@ -45,6 +45,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.treasures = {}
         self.grabbingTreasures = {}
         self.recycledTreasures = []
+        self.bossMaxDamage = self.bossMaxDamage
 
         # We need a scene to do the collision detection in.
         self.scene = NodePath('scene')
@@ -137,7 +138,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return toons
 
     def progressValue(self, fromValue, toValue):
-        t0 = float(self.bossDamage) / float(self.ruleset.CFO_MAX_HP)
+        t0 = float(self.bossDamage) / float(self.bossMaxDamage)
         elapsed = globalClock.getFrameTime() - self.battleThreeStart
         t1 = elapsed / float(self.battleThreeDuration)
         t = max(t0, t1)
@@ -437,6 +438,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             delayTime = self.progressValue(20, 9)
         else:
             delayTime = ToontownGlobals.BossCogAttackTimes.get(attackCode, 5.0)
+
+        if len(self.involvedToons) == 1 and attackCode not in (ToontownGlobals.BossCogDizzy, ToontownGlobals.BossCogDizzyNow):
+            delayTime *= 1.5
 
         self.waitForNextAttack(delayTime)
         return
@@ -821,7 +825,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.debug(doId=avId, content='Damaged for %s with impact: %.2f' % (damage, impact))
 
         # The CFO has been defeated, proceed to Victory state
-        if self.bossDamage >= self.ruleset.CFO_MAX_HP:
+        if self.bossDamage >= self.bossMaxDamage:
             self.d_killingBlowDealt(avId)
             self.toonsWon = True
             self.b_setState('Victory')
@@ -932,8 +936,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     ##### PrepareBattleThree state #####
     def enterPrepareBattleThree(self):
+        self.canSkip = True
         self.setupRuleset()
         self.setupSpawnpoints()
+        self.divideToons()
 
         self.resetBattles()
 
@@ -948,8 +954,10 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.b_setState('BattleThree')
 
     def exitPrepareBattleThree(self):
-        if self.newState != 'BattleThree':
-            self.__deleteBattleThreeObjects()
+        self.canSkip = False
+        if hasattr(self, 'newState'):
+            if self.newState != 'BattleThree':
+                self.__deleteBattleThreeObjects()
         self.ignoreBarrier(self.barrier)
 
     def waitForNextAttack(self, delayTime):
@@ -958,6 +966,9 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     ##### BattleThree state #####
     def enterBattleThree(self):
+        # Calculate the max hp of the boss
+        cfoMaxHp = self.ruleset.CFO_MAX_HP + self.ruleset.HP_PER_EXTRA * (len(self.involvedToons) - 1)
+        self.bossMaxDamage = min(self.ruleset.get_max_allowed_hp(), cfoMaxHp)
 
         # Force unstun the CFO if he was stunned in a previous Battle Three round
         if self.attackCode == ToontownGlobals.BossCogDizzy or self.attackCode == ToontownGlobals.BossCogDizzyNow:

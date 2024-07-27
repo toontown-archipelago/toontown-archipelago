@@ -63,8 +63,18 @@ class DamageMultiplierRange(Range):
     50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
     """
     display_name = "Damage Multiplier"
-    range_start = 0
+    range_start = 25
     range_end = 500
+    default = 100
+
+class OverflowModRange(Range):
+    """
+    The percentage multiplier that will given with exp overflow.
+    50 -> 50%/Half overflow rate, 200 -> 200%/2x overflow rate, etc.
+    """
+    display_name = "Overflow Modifier"
+    range_start = 25
+    range_end = 300
     default = 100
 
 
@@ -74,21 +84,41 @@ class StartMoneyOption(Range):
     """
     display_name = "Starting Jellybeans"
     range_start = 0
-    range_end = 9999
-    default = 50
+    range_end = 1000
+    default = 1000
 
+class StartingTaskCapacityOption(Range):
+    """
+    The starting amount of tasks a toon can hold when starting a new game.
+    """
+    display_name = "Starting Task Capacity"
+    range_start = 1
+    range_end = 6
+    default = 4
 
+class MaxTaskCapacityOption(Range):
+    """
+    The max amount of tasks a toon can hold.
+    """
+    display_name = "Max Task Capacity"
+    range_start = 1
+    range_end = 6
+    default = 4
+    
 class WinCondition(Choice):
     """
     Determines the condition before being able to talk to Flippy to complete the game.
     - cog_bosses (default): Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
     - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
     - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+    - total_fish_species:  Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
     """
     display_name = "Win Condition"
     option_cog_bosses = 0
     option_total_tasks = 1
     option_hood_tasks = 2
+    option_total_gag_tracks = 3
+    option_total_fish_species = 4
     default = 0
 
 
@@ -126,7 +156,28 @@ class HoodTasksRequired(Range):
     range_end = 12
     default = 8
 
+class GagTracksRequired(Range):
+    """
+    How many gag tracks must be maxxed before being able to talk to Flippy to complete the game.
+    Must be less than or equal to total number of gag tracks a toon can obtain.
+    Unused if win_condition is not total_gag_tracks
+    """
+    display_name = "Gag Tracks Required"
+    range_start = 0
+    range_end = 7
+    default = 5
 
+class FishSpeciesRequired(Range):
+    """
+    How many fish species must be caught before being able to talk to Flippy to complete the game.
+    Must be less than or equal to total number of fish species a toon can obtain.
+    Unused if win_condition is not total_fish_species
+    """
+    display_name = "Fish Species Required"
+    range_start = 0
+    range_end = 70
+    default = 70
+    
 class TPSanity(Choice):
     """
     Determines how Teleport Access is shuffled in the Item Pool for all Playgrounds/HQs.
@@ -140,7 +191,7 @@ class TPSanity(Choice):
     option_treasure = 1
     option_shuffle = 2
     option_none = 3
-    default = 3
+    default = 0
 
 
 class TreasuresPerLocation(Range):
@@ -182,6 +233,21 @@ class LogicalTasksPerPlayground(Range):
     range_start = 0
     range_end = 12
     default = 12
+
+
+class StartingTaskOption(Choice):
+    """
+    Determines the starting tasking PG of a player
+    """
+    display_name = "Starting Task Playground"
+    option_ttc = 0
+    option_dd = 1
+    option_dg = 2
+    option_mml = 3
+    option_tb = 4
+    option_ddl = 5
+    option_random = 6
+    default = 0
 
 
 class LogicalMaxedCogGallery(Toggle):
@@ -245,7 +311,7 @@ class FishProgression(Choice):
     option_licenses = 1
     option_rods = 2
     option_none = 3
-    default = 0
+    default = 2
 
 
 class SeedGenerationTypeOption(Choice):
@@ -271,9 +337,53 @@ class TrapPercentOption(Range):
     """
 
     display_name = "Trap Percentage"
-    range_start = 1
+    range_start = 0
     range_end = 100
     default = 20
+
+
+class UberWeightOption(Range):
+    """
+    Weight of uber traps in the trap pool.
+    """
+
+    display_name = "Uber Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 100
+
+
+class DripWeightOption(Range):
+    """
+    Weight of drip traps in the trap pool.
+    """
+
+    display_name = "Drip Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 50
+
+
+class TaxWeightOption(Range):
+    """
+    Weight of bean taxes in the trap pool.
+    """
+
+    display_name = "Bean Tax Weight"
+    range_start = 0
+    range_end = 100
+    default = 36
+
+
+class ShuffleWeightOption(Range):
+    """
+    Weight of gag shuffles in the trap pool.
+    """
+
+    display_name = "Gag Shuffle Weight"
+    range_start = 0
+    range_end = 100
+    default = 100
 
 
 class DeathLinkOption(Toggle):
@@ -293,16 +403,22 @@ class ToontownOptions(PerGameCommonOptions):
     base_global_gag_xp: BaseGlobalGagXPRange
     max_global_gag_xp: MaxGlobalGagXPRange
     damage_multiplier: DamageMultiplierRange
+    overflow_mod: OverflowModRange
     starting_money: StartMoneyOption
+    starting_task_capacity: StartingTaskCapacityOption
+    max_task_capacity: MaxTaskCapacityOption
     win_condition: WinCondition
     cog_bosses_required: CogBossesRequired
     total_tasks_required: TotalTasksRequired
     hood_tasks_required: HoodTasksRequired
+    gag_tracks_required: GagTracksRequired
+    fish_species_required: FishSpeciesRequired
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
     checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
     logical_tasks_per_playground: LogicalTasksPerPlayground
+    starting_task_playground: StartingTaskOption
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     maxed_cog_gallery_quota: MaxedCogGalleryQuota
     fish_locations: FishLocations
@@ -310,4 +426,8 @@ class ToontownOptions(PerGameCommonOptions):
     fish_progression: FishProgression
     seed_generation_type: SeedGenerationTypeOption
     trap_percent: TrapPercentOption
+    uber_trap_weight: UberWeightOption
+    drip_trap_weight: DripWeightOption
+    bean_tax_weight: TaxWeightOption
+    gag_shuffle_weight: ShuffleWeightOption
     death_link: DeathLinkOption

@@ -35,13 +35,12 @@ def doSquirts(squirts):
         if skip:
             pass
         elif type(squirt['target']) == type([]):
-            if 1:
-                target = squirt['target'][0]
-                suitId = target['suit'].doId
-                if suitId in suitSquirtsDict:
-                    suitSquirtsDict[suitId].append(squirt)
-                else:
-                    suitSquirtsDict[suitId] = [squirt]
+            target = squirt['target'][0]
+            suitId = target['suit'].doId
+            if suitId in suitSquirtsDict:
+                suitSquirtsDict[suitId].append(squirt)
+            else:
+                suitSquirtsDict[suitId] = [squirt]
         else:
             suitId = squirt['target']['suit'].doId
             if suitId in suitSquirtsDict:
@@ -212,7 +211,10 @@ def __getSuitTrack(suit, tContact, tDodge, hp, hpbonus, kbbonus, anim, died, lef
             bonusTrack.append(Func(suit.showHpText, -hpbonus, 1, openEnded=0, attackTrack=SQUIRT_TRACK))
             bonusTrack.append(Func(suit.updateHealthBar, hpbonus))
         if died != 0:
-            suitTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle))
+            if suit.getVirtual():
+                suitTrack.append(MovieUtil.createVirtualSuitDeathTrack(suit, toon, battle))
+            else:
+                suitTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle))
         else:
             suitTrack.append(Func(suit.loop, 'neutral'))
         if revived != 0:

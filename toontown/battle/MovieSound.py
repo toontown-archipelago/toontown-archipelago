@@ -146,7 +146,10 @@ def __doSoundsLevel(sounds, delay, hitCount, npcs):
             if revived:
                 deathTracks.append(MovieUtil.createSuitReviveTrack(suit, toon, battle, npcs))
             elif died:
-                deathTracks.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
+                if suit.getVirtual():
+                    deathTracks.append(MovieUtil.createVirtualSuitDeathTrack(suit, toon, battle, npcs))
+                else:
+                    deathTracks.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
 
     mainTrack.append(tracks)
     mainTrack.append(deathTracks)

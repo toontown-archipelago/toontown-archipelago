@@ -108,6 +108,7 @@ class PlayGame(StateData.StateData):
         return
 
     def enter(self, hoodId, zoneId, avId):
+        base.discord.setZone(zoneId)
         if hoodId == ToontownGlobals.Tutorial:
             loaderName = 'townLoader'
             whereName = 'toonInterior'

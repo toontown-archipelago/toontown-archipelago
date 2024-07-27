@@ -221,6 +221,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.instaKill = False
         self.instantDelivery = False
         self.alwaysHitSuits = False
+        self.hasPaidTaxes = False
 
         # Archipelago Stuff
         self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
@@ -229,6 +230,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.receivedItems: List[Tuple[int, int]] = []  # List of AP items received so far, [(index, itemid), (index, itemid)]
         self.checkedLocations: List[int] = []  # List of AP checks we have completed
         self.hintPoints = 0  # How many hint points the player has
+        self.damageMultiplier = 100
+        self.overflowMod = 100
+        self.beingShuffled = False
 
         self.archipelago_session: ArchipelagoSession = None
         self.apRewardQueue: DistributedToonRewardQueue = DistributedToonRewardQueue(self)
@@ -1739,6 +1743,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                     newRewardHistory = self.rewardHistory + [finalReward]
                     self.b_setRewardHistory(self.rewardTier, newRewardHistory)
 
+    def checkWinCondition(self):
+        self.sendUpdate('checkWinCondition')
+
     def removeAllTracesOfQuest(self, questId, rewardId):
         self.notify.debug('removeAllTracesOfQuest: questId: %s rewardId: %s' % (questId, rewardId))
         self.notify.debug('removeAllTracesOfQuest: quests before: %s' % self.quests)
@@ -2387,6 +2394,19 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def getSpeedChatStyleIndex(self):
         return self.speedChatStyleIndex
+
+    def b_setHasPaidTaxes(self, paidTaxes):
+        self.d_setHasPaidTaxes(paidTaxes)
+        self.setHasPaidTaxes(paidTaxes)
+
+    def d_setHasPaidTaxes(self, paidTaxes):
+        self.sendUpdate('setHasPaidTaxes', [paidTaxes])
+
+    def setHasPaidTaxes(self, paidTaxes):
+        self.hasPaidTaxes = paidTaxes
+
+    def getHasPaidTaxes(self):
+        return self.hasPaidTaxes
 
     def b_setMaxMoney(self, maxMoney):
         self.d_setMaxMoney(maxMoney)
@@ -4340,6 +4360,29 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def setDamageMultiplier(self, newDamageMultiplier) -> None:
         self.damageMultiplier = newDamageMultiplier
 
+    # Set this toon's overflow modifier and tell its client counterpart what it is
+    def b_setOverflowMod(self, newOverflow) -> None:
+        self.setOverflowMod(newOverflow)
+        self.d_setOverflowMod(newOverflow)
+
+    # Tell the client what its new overflow modifier is
+    def d_setOverflowMod(self, newOverflow) -> None:
+        self.sendUpdate('setOverflowMod', [newOverflow])
+
+    # What is this toon's overflow modifier
+    def getOverflowMod(self) -> int:
+        return self.overflowMod
+
+    # Set this toon's overflow modidier
+    def setOverflowMod(self, newOverflow) -> None:
+        self.overflowMod = newOverflow
+
+    def getBeingShuffled(self):
+        return self.beingShuffled
+
+    def setBeingShuffled(self, beingShuffled):
+        self.beingShuffled = beingShuffled
+
     # Set this toon's list of access keys acquired and tell its client counterpart what it is (and save it to db?)
     def b_setAccessKeys(self, keys: List):
         self.setAccessKeys(keys)
@@ -4566,6 +4609,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         cogStatus = self.getCogStatus()
         cogCount = self.getCogCount()
         for suitIndex, suitCode in enumerate(SuitDNA.suitHeadTypes):
+            # Don't try to set cogs not in gallery to unseen
+            if suitCode in SuitDNA.notMainTypes:
+                continue
             cogStatus[suitIndex] = CogPageGlobals.COG_UNSEEN
             cogCount[suitIndex] = 0
         self.b_setCogStatus(cogStatus)

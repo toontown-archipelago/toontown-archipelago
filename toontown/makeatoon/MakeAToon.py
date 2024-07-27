@@ -90,6 +90,7 @@ class MakeAToon(StateData.StateData):
         return self.toon
 
     def enter(self):
+        base.discord.making()
         self.notify.debug('Starting Make A Toon.')
         base.transitions.fadeOut(0)
         if base.config.GetBool('want-qa-regression', 0):

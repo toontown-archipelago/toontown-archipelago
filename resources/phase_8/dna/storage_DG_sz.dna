@@ -1,7 +1,4 @@
-// Parties
-model "phase_8/models/modules/partyGate_DG" [
- 	store_node [ "prop" "prop_party_gate" "" ]
-	]
+
     
 place_model "phase_8/models/neighborhoods/daisys_garden_ext" [
  	store_node [ "prop" "daisys_garden_ext" "" ]

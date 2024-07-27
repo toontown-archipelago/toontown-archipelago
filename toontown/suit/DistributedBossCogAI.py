@@ -54,6 +54,8 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         self.numNormalDiguises = 0
         self.comboTrackers: Dict[int, BossComboTrackerAI] = {}
         AllBossCogs.append(self)
+        self.canSkip = True
+        self.toonsSkipped = []
         return
 
     def generateWithRequired(self, zoneId):
@@ -337,7 +339,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
                 toon = simbase.air.doId2do.get(toonId)
                 if toon:
                     self.notify.debug('%s. involved toon %s, %s/%s' % (self.doId, toonId, toon.getHp(), toon.getMaxHp()))
-
+        self.checkSkipWithoutSkipping()
         self.resetBattles()
         self.barrier = self.beginBarrier('Elevator', self.involvedToons, 30, self.__doneElevator)
 
@@ -481,13 +483,10 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         toons = self.involvedToons[:]
         random.shuffle(toons)
         numToons = min(len(toons), 8)
-        if numToons >= 5:
-            if numToons < 4:
-                numToonsB = numToons // 2
-            else:
-                numToonsB = (numToons + random.choice([0, 1])) // 2
+        if numToons < 4:
+            numToonsB = numToons // 2
         else:
-            numToonsB = 0
+            numToonsB = (numToons + random.choice([0, 1])) // 2
         teamA = toons[numToonsB:numToons]
         teamB = toons[:numToonsB]
         loose = toons[numToons:]
@@ -869,3 +868,37 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def d_updateTimer(self, time):
         self.sendUpdate('updateTimer', [time])
+
+    def checkSkipWithoutSkipping(self):
+        """
+        This function allows the toons to know how many people have already voted to skip
+        """
+        # tell the client the amount of toons skipped
+        self.notify.info('Sending client skip amount')
+        self.sendUpdate('setSkipAmount', [len(self.toonsSkipped)])
+
+
+
+    def checkSkip(self):
+        """
+        This function is called when a toon requests to skip the boss battle cutscene . If 1 or more have voted to skip then broadcast to all clients to skip the cutscene.
+        """
+        if len(self.toonsSkipped) >= 1:
+            # exit cutscene
+            self.notify.info('Skipping to next stage')
+            self.sendUpdate('skipCutscene', [])
+            self.toonsSkipped = []
+        else:
+            # tell the client the amount of toons skipped
+            self.notify.info('Sending client skip amount')
+            self.sendUpdate('setSkipAmount', [len(self.toonsSkipped)])
+        return
+    
+    def requestSkip(self):
+        toon = self.air.getAvatarIdFromSender()
+        if (toon not in self.involvedToons) or (not self.canSkip) or (toon in self.toonsSkipped):
+            self.notify.warning('Unable to request skip')
+            return
+        self.toonsSkipped.append(toon)
+        self.notify.info('toons Skipped appended')
+        self.checkSkip()

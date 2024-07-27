@@ -79,6 +79,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Set their starting money
         av.b_setMoney(self.slot_data.get('starting_money', 50))
 
+        # Set their starting task capacity
+
+        av.b_setQuestCarryLimit(self.slot_data.get('starting_task_capacity', 4))
+
         # Set their starting gag xp multiplier
         av.b_setBaseGagSkillMultiplier(self.slot_data.get('base_global_gag_xp', 2))
 
@@ -87,11 +91,6 @@ class ConnectedPacket(ClientBoundPacketBase):
         need_gold_rod = fish_progression in (FishProgression.Licenses, FishProgression.Nonne)
         if need_gold_rod:
             av.b_setFishingRod(FishGlobals.MaxRodId)
-
-        # Give them global TP access if set in yaml
-        global_tpsanity = self.slot_data.get('tpsanity', TPSanity.default) == TPSanity.option_none
-        if global_tpsanity:
-            av.b_setTeleportAccess(ToontownGlobals.HoodsForTeleportAll)
 
     # Given the option defined in the YAML for RNG generation and the seed of the AP playthrough
     # Return a new modified seed based on what option was chosen in the YAML
@@ -137,6 +136,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         damageMultiplier = self.slot_data.get('damage_multiplier', 100)
         av.b_setDamageMultiplier(damageMultiplier)
 
+        # Get overflow modifier
+        overflowMod = self.slot_data.get('overflow_mod', 100)
+        av.b_setOverflowMod(overflowMod)
+
     def handle(self, client):
         self.debug(f"Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"
               f" playing {self.get_slot_info(self.slot).game}")
@@ -165,8 +168,9 @@ class ConnectedPacket(ClientBoundPacketBase):
             client.av.archipelago_session.sync()
 
         # Tell AP we are playing
+        won_id = ap_location_name_to_id(locations.ToontownLocationName.SAVED_TOONTOWN.value)
         status_packet = StatusUpdatePacket()
-        status_packet.status = ClientStatus.CLIENT_GOAL if client.av.getWinCondition().satisfied() else ClientStatus.CLIENT_PLAYING
+        status_packet.status = ClientStatus.CLIENT_GOAL if (client.av.getWinCondition().satisfied() and client.av.hasCheckedLocation(won_id)) else ClientStatus.CLIENT_PLAYING
         client.send_packet(status_packet)
 
         # Scout some locations that we need to display
@@ -183,3 +187,4 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)
+        client.setSlotInfo(self.slot_info)

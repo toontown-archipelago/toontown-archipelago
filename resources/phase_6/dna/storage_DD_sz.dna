@@ -1,7 +1,5 @@
 // Parties
-model "phase_6/models/modules/partyGate_DD" [
- 	store_node [ "prop" "prop_party_gate" "" ]
-	]
+
     
 place_model "phase_6/models/modules/safe_zone_tunnel_DD" [
 	store_node [ "prop" "prop_safe_zone_tunnel" ]

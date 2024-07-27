@@ -1634,6 +1634,17 @@ class Toon(Avatar.Avatar, ToonHead):
         return
 
     def enterSad(self, animMultiplier = 1, ts = 0, callback = None, extraArgs = []):
+        if self.isDisguised:
+            self.standWalkRunReverse = (
+                ('neutral', 1.0),
+                ('walk', 1.0),
+                ('run', 1.0),
+                ('walk', -1.0),
+                ('run', 1.0),
+                ('run', 1.0),
+                ('run', 1.25)
+            )
+            return
         self.playingAnim = 'sad'
         self.playingRate = None
         self.standWalkRunReverse = (
@@ -3082,7 +3093,8 @@ class Toon(Avatar.Avatar, ToonHead):
             del self.oldForward
             del self.oldReverse
             del self.oldRotate
-            self.controlManager.enableAvatarJump()
+            if self.controlManager.forceAvJumpToken:
+                self.controlManager.enableAvatarJump()
             self.chatMgr.chatInputSpeedChat.removeCogMenu()
         self.suit.delete()
         del self.suit

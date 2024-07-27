@@ -56,6 +56,7 @@ from toontown.archipelago.gui.ArchipelagoOnscreenLog import ArchipelagoOnscreenL
 from toontown.archipelago.definitions.rewards import get_ap_reward_from_id
 from toontown.archipelago.gui.ArchipelagoRewardDisplay import ArchipelagoRewardDisplay, APRewardGift
 from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
+from ..archipelago.data.ArchipelagoClientDatastore import ArchipelagoClientDatastore
 from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
 from ..shtiker.ShtikerPage import ShtikerPage
@@ -186,6 +187,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.locationScoutsCache: LocationScoutsCache = LocationScoutsCache()
             self.currentlyInHQ = False
             self.wantCompetitiveBossScoring = base.settings.get('competitive-boss-scoring')
+            self.archipelagoDatastore = ArchipelagoClientDatastore()
 
             self.accept("disableControls", self.disableControls)
 
@@ -2191,3 +2193,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.accept(controls.SECONDARY_ACTION, self.__zeroPowerToss)
         self.accept('time-' + controls.ACTION_BUTTON, self.__beginTossPie)
         self.accept('time-' + controls.ACTION_BUTTON + '-up', self.__endTossPie)
+
+    def setArchipelagoData(self, hints):
+        self.archipelagoDatastore.setHints(hints)

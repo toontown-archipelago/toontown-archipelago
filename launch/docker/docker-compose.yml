@@ -48,5 +48,6 @@ services:
       EVENTLOGGER_IP: astron:7197
       DISTRICT_NAME: "Archipelago Avenue"
       WANT_ERROR_REPORTING: true  # Reports errors to the sentry service for TT:AP
+      ARCHIPELAGO_IP: 172.17.0.1  # by default assume that archipelago is running on the same machine
     volumes:
       - "../..:/app"

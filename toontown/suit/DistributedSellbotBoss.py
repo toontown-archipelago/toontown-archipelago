@@ -544,9 +544,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.rope.ropeNode.setUvScale(0.8)
         self.rope.setTexture(self.cage.findTexture('hq_chain'))
         self.rope.setTransparency(1)
-        self.promotionMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        self.betweenBattleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_toon_winning.ogg')
-        self.battleTwoMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+
         self.geom.reparentTo(render)
 
     def unloadEnvironment(self):
@@ -672,6 +670,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.cagedToon.addActive()
 
     def enterElevator(self):
+        base.discord.vp()
         DistributedBossCog.DistributedBossCog.enterElevator(self)
         self.rampA.request('extended')
         self.rampB.request('extended')
@@ -724,6 +723,9 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         DistributedBossCog.DistributedBossCog.exitBattleOne(self)
 
     def enterRollToBattleTwo(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
+        self.canSkip = True
         self.disableToonCollision()
         self.releaseToons()
         if self.arenaSide:
@@ -739,7 +741,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'RollToBattleTwo'
         seq = Sequence(self.__makeRollToBattleTwoMovie(), Func(self.__onToPrepareBattleTwo), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.betweenBattleMusic, looping=1, volume=0.9)
         self.__showEasyBarrels()
@@ -752,6 +754,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.doneBarrier('RollToBattleTwo')
 
     def exitRollToBattleTwo(self):
+        self.disableSkipCutscene()
         self.unstickBoss()
         intervalName = 'RollToBattleTwo'
         self.clearInterval(intervalName)
@@ -1034,6 +1037,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.battleThreeMusic.stop()
 
     def enterEpilogue(self):
+        base.localAvatar.checkWinCondition()
         self.cleanupIntervals()
         self.clearChat()
         self.cagedToon.clearChat()
@@ -1283,3 +1287,9 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def toonPromoted(self, promoted):
         self.localToonPromoted = promoted
+
+    def skipCutscene(self):
+        intervalName = ""
+        if self.state == 'RollToBattleTwo':
+            intervalName = 'RollToBattleTwo'
+        super().skipCutscene(intervalName)

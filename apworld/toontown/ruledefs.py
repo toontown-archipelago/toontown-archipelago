@@ -67,12 +67,6 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
 def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return True
 
-
-@rule(Rule.HasDDHQAccess,   ToontownItemName.DD_HQ_ACCESS)
-@rule(Rule.HasDGHQAccess,   ToontownItemName.DG_HQ_ACCESS)
-@rule(Rule.HasMMLHQAccess,  ToontownItemName.MML_HQ_ACCESS)
-@rule(Rule.HasTBHQAccess,   ToontownItemName.TB_HQ_ACCESS)
-@rule(Rule.HasDDLHQAccess,  ToontownItemName.DDL_HQ_ACCESS)
 @rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
 @rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS)
 @rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS)
@@ -94,6 +88,13 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
         return state.has(argument[0].value, player, argument[1])
     return state.has(argument[0].value, player)
 
+@rule(Rule.HasDDHQAccess,   ToontownItemName.DD_ACCESS)
+@rule(Rule.HasDGHQAccess,   ToontownItemName.DG_ACCESS)
+@rule(Rule.HasMMLHQAccess,  ToontownItemName.MML_ACCESS)
+@rule(Rule.HasTBHQAccess,   ToontownItemName.TB_ACCESS)
+@rule(Rule.HasDDLHQAccess,  ToontownItemName.DDL_ACCESS)
+def HasItemCountRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    return state.count(argument[0].value, player) == 2
 
 @rule(Rule.CanBuyTTCDoodle, 0)
 @rule(Rule.CanBuyDDDoodle, 1)
@@ -115,18 +116,18 @@ def TunnelCanBeUsed(state: CollectionState, locentr: LocEntrDef, world: MultiWor
 @rule(Rule.HasTeleportAccess)
 def HasTeleportAccess(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     region_to_tp_item = {
-        ToontownRegionName.TTC: ToontownItemName.TTC_TELEPORT,
-        ToontownRegionName.DD: ToontownItemName.DD_TELEPORT,
-        ToontownRegionName.DG: ToontownItemName.DG_TELEPORT,
-        ToontownRegionName.MML: ToontownItemName.MML_TELEPORT,
-        ToontownRegionName.TB: ToontownItemName.TB_TELEPORT,
-        ToontownRegionName.DDL: ToontownItemName.DDL_TELEPORT,
-        ToontownRegionName.GS: ToontownItemName.GS_TELEPORT,
-        ToontownRegionName.AA: ToontownItemName.AA_TELEPORT,
-        ToontownRegionName.SBHQ: ToontownItemName.SBHQ_TELEPORT,
-        ToontownRegionName.CBHQ: ToontownItemName.CBHQ_TELEPORT,
-        ToontownRegionName.LBHQ: ToontownItemName.LBHQ_TELEPORT,
-        ToontownRegionName.BBHQ: ToontownItemName.BBHQ_TELEPORT,
+        ToontownRegionName.TTC: ToontownItemName.TTC_ACCESS,
+        ToontownRegionName.DD: ToontownItemName.DD_ACCESS,
+        ToontownRegionName.DG: ToontownItemName.DG_ACCESS,
+        ToontownRegionName.MML: ToontownItemName.MML_ACCESS,
+        ToontownRegionName.TB: ToontownItemName.TB_ACCESS,
+        ToontownRegionName.DDL: ToontownItemName.DDL_ACCESS,
+        ToontownRegionName.GS: ToontownItemName.GS_ACCESS,
+        ToontownRegionName.AA: ToontownItemName.AA_ACCESS,
+        ToontownRegionName.SBHQ: ToontownItemName.SBHQ_ACCESS,
+        ToontownRegionName.CBHQ: ToontownItemName.CBHQ_ACCESS,
+        ToontownRegionName.LBHQ: ToontownItemName.LBHQ_ACCESS,
+        ToontownRegionName.BBHQ: ToontownItemName.BBHQ_ACCESS,
     }
     return state.has(region_to_tp_item[locentr.connects_to].value, player)
 
@@ -372,6 +373,48 @@ def TierEightCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
            and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options)
 
 
+@rule(Rule.OneStory, 1)
+@rule(Rule.TwoStory, 2)
+@rule(Rule.ThreeStory, 3)
+@rule(Rule.FourStory, 4)
+@rule(Rule.FiveStory, 5)
+def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    if argument[0] == 1:
+        pgs = [
+            ToontownRegionName.TTC,
+            ToontownRegionName.DD,
+        ]
+    elif argument[0] == 2:
+        pgs = [
+            ToontownRegionName.TTC,
+            ToontownRegionName.DD,
+            ToontownRegionName.DG,
+        ]
+    elif argument[0] == 3:
+        pgs = [
+            ToontownRegionName.TTC,
+            ToontownRegionName.DD,
+            ToontownRegionName.DG,
+            ToontownRegionName.MML,
+            ToontownRegionName.TB,
+            ToontownRegionName.DDL
+        ]
+    elif argument[0] == 4:
+        pgs = [
+            ToontownRegionName.DG,
+            ToontownRegionName.MML,
+            ToontownRegionName.TB,
+            ToontownRegionName.DDL,
+        ]
+    elif argument[0] == 5:
+        pgs = [
+            ToontownRegionName.MML,
+            ToontownRegionName.TB,
+            ToontownRegionName.DDL,
+        ]
+    return any(state.can_reach(pg.value, None, player) for pg in pgs)
+
+
 @rule(Rule.HasLevelOneOffenseGag,   1)
 @rule(Rule.HasLevelTwoOffenseGag,   2)
 @rule(Rule.HasLevelThreeOffenseGag, 3)
@@ -382,8 +425,9 @@ def TierEightCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
 @rule(Rule.HasLevelEightOffenseGag, 7)
 def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     LEVEL = argument[0]
-    OVERLEVEL = min(argument[0] + 1, 7)
+    OVERLEVEL = min(argument[0] + 1, 8)
     UNDERLEVEL = max(0, argument[0] - 1)
+    LUREMIN = max(0, argument[0] - 2)
 
     # To pass the check, we must have:
     # - A way to kill enemies (OR):
@@ -394,6 +438,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     # - Sufficient healing (Toon-up level - 1)
     # - EXP required at level
 
+    minimum_lure = state.has(ToontownItemName.LURE_FRAME.value, player, LUREMIN)
     powerful_lure_knockback = any(
         state.has(offensive_frame.value, player, LEVEL)
         for offensive_frame in [
@@ -409,7 +454,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     can_obtain_exp_required = has_collected_items_for_gag_level(state, player, options, LEVEL)
 
     return (powerful_lure_knockback or powerful_sound or powerful_trap or powerful_drop) \
-            and sufficient_healing and can_obtain_exp_required
+            and sufficient_healing and minimum_lure and can_obtain_exp_required
 
 
 @rule(Rule.CanFightVP)

@@ -432,9 +432,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         elevatorModel = loader.loadModel('phase_11/models/lawbotHQ/LB_Elevator')
         elevatorModel.reparentTo(self.elevatorEntrance)
         self.setupElevator(elevatorModel)
-        self.promotionMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        self.betweenBattleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_toon_winning.ogg')
-        self.battleTwoMusic = base.loader.loadMusic('phase_11/audio/bgm/LB_juryBG.ogg')
+        self.battleTwoMusic = self.juryMusic
         floor = self.geom.find('**/MidVaultFloor1')
         if floor.isEmpty():
             floor = self.geom.find('**/CR3_Floor')
@@ -735,6 +733,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.witnessToon.addActive()
 
     def enterElevator(self):
+        base.discord.cj()
         self.notify.debug('----- enterElevator')
         DistributedBossCog.DistributedBossCog.enterElevator(self)
         self.witnessToon.removeActive()
@@ -806,6 +805,9 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.reparentTo(render)
 
     def enterRollToBattleTwo(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
+        self.canSkip = True
         self.notify.debug('----- enterRollToBattleTwo')
         self.releaseToons(finalBattle=1)
         self.stashBoss()
@@ -814,7 +816,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'RollToBattleTwo'
         seq = Sequence(self.__makeRollToBattleTwoMovie(), Func(self.__onToPrepareBattleTwo), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.betweenBattleMusic, looping=1, volume=0.9)
         taskMgr.doMethodLater(0.01, self.unstashBoss, 'unstashBoss')
@@ -826,6 +828,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.doneBarrier('RollToBattleTwo')
 
     def exitRollToBattleTwo(self):
+        self.disableSkipCutscene()
         self.notify.debug('----- exitRollToBattleTwo')
         self.unstickBoss()
         intervalName = 'RollToBattleTwo'
@@ -844,7 +847,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'prepareBattleTwo'
         seq = Sequence(prepareBattleTwoMovie, name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
         self.acceptOnce('doneChatPage', self.__showCannonsAppearing)
         base.playMusic(self.stingMusic, looping=0, volume=1.0)
@@ -869,7 +872,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'prepareBattleTwoCannonsAppear'
         seq = Sequence(allCannonsAppear, Func(self.__onToBattleTwo), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(5.0)
         self.storeInterval(seq, intervalName)
 
     def __onToBattleTwo(self, elapsedTime = 0):
@@ -949,7 +952,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'RollToBattleThree'
         seq = Sequence(self.__makeRollToBattleThreeMovie(), Func(self.__onToPrepareBattleThree), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.betweenBattleMusic, looping=1, volume=0.9)
 
@@ -980,7 +983,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'prepareBattleThree'
         seq = Sequence(prepareBattleThreeMovie, name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
 
     def __onToBattleThree(self, elapsed):
@@ -1115,7 +1118,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'VictoryMovie'
         seq = Sequence(self.makeVictoryMovie(), Func(self.__continueVictory), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(3.0)
         self.storeInterval(seq, intervalName)
         self.bossHealthBar.deinitialize()
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
@@ -1146,7 +1149,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'DefeatMovie'
         seq = Sequence(self.makeDefeatMovie(), Func(self.__continueDefeat), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(3.0)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
 
@@ -1202,6 +1205,7 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.battleThreeMusic.stop()
 
     def enterEpilogue(self):
+        base.localAvatar.checkWinCondition()
         self.cleanupIntervals()
         self.clearChat()
         self.witnessToon.clearChat()
@@ -1739,13 +1743,40 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             speech += TTLocalizer.WitnessToonMaxed % (ToontownGlobals.MaxCogSuitLevel + 1)
         return speech
 
+    def __getCannonSpawnOrder(self) -> list[int]:
+        """
+        Returns a list of indexes to use when determining cannon spawns
+        """
+
+        if len(self.cannons) <= 0:
+            return []
+
+        # Start with the center and branch outwards
+        center = len(self.cannons) // 2 - 1
+        left = center
+        right = center + 1
+        order = []
+
+        # Add cannon spots until we have enough
+        while len(order) < len(self.cannons):
+            if left >= 0:
+                order.append(left)
+                left -= 1
+
+            if right < len(self.cannons):
+                order.append(right)
+                right += 1
+
+        return order
+
     def __positionToonsInFrontOfCannons(self):
         self.notify.debug('__positionToonsInFrontOfCannons')
         index = 0
         self.involvedToons.sort()
+        cannonOrder = self.__getCannonSpawnOrder()
         for toonId in self.involvedToons:
             if index in self.cannons:
-                cannon = self.cannons[index]
+                cannon = self.cannons[cannonOrder[index]]
                 toon = self.cr.doId2do.get(toonId)
                 self.notify.debug('cannonId = %d' % cannon.doId)
                 cannonPos = cannon.nodePath.getPos(render)
@@ -1950,3 +1981,9 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             newWeight = defaultWeight + bonusWeight
             self.notify.debug('toon %d has weight of %d' % (toonId, newWeight))
         return (newWeight, bonusWeight, numJurors)
+
+    def skipCutscene(self):
+        intervalName = ""
+        if self.state == 'RollToBattleTwo':
+            intervalName = 'RollToBattleTwo'
+        super().skipCutscene(intervalName)

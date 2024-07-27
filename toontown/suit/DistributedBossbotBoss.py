@@ -165,10 +165,9 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         planeNode.setCollideMask(ToontownGlobals.PieBitmask)
         self.geom.attachNewNode(planeNode)
         self.geom.reparentTo(render)
-        self.promotionMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        self.betweenPhaseMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_toon_winning.ogg')
-        self.phaseTwoMusic = base.loader.loadMusic('phase_12/audio/bgm/BossBot_CEO_v1.ogg')
-        self.phaseFourMusic = base.loader.loadMusic('phase_12/audio/bgm/BossBot_CEO_v2.ogg')
+        self.betweenPhaseMusic = self.betweenBattleMusic
+        self.phaseTwoMusic = self.battleTwoMusic
+        self.phaseFourMusic = self.battleFourMusic
         self.pickupFoodSfx = loader.loadSfx('phase_6/audio/sfx/SZ_MM_gliss.ogg')
         self.explodeSfx = loader.loadSfx('phase_4/audio/sfx/firework_distance_02.ogg')
 
@@ -234,6 +233,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.resistanceToonOnstage = 0
 
     def enterElevator(self):
+        base.discord.ceo()
         DistributedBossCog.DistributedBossCog.enterElevator(self)
         self.resistanceToon.removeActive()
         self.__showResistanceToon(True)
@@ -285,6 +285,8 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.show()
 
     def enterPrepareBattleTwo(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
         self.controlToons()
         self.setToonsToNeutral(self.involvedToons)
         for toonId in self.involvedToons:
@@ -300,7 +302,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         seq = Sequence(self.makePrepareBattleTwoMovie(delayDeletes), Func(self.__onToBattleTwo), name=intervalName)
         seq.delayDeletes = delayDeletes
         seq.start()
-        seq.setPlayRate(5.0)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.betweenPhaseMusic, looping=1, volume=0.9)
 
@@ -393,6 +395,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.doneBarrier('PrepareBattleTwo')
 
     def exitPrepareBattleTwo(self):
+        self.disableSkipCutscene()
         self.clearInterval('PrepareBattleTwoMovie')
         self.betweenPhaseMusic.stop()
 
@@ -525,6 +528,8 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         table.serveFood(food, chairIndex)
 
     def enterPrepareBattleThree(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
         self.calcNotDeadList()
         self.battleANode.setPosHpr(*ToontownGlobals.DinerBattleAPosHpr)
         self.battleBNode.setPosHpr(*ToontownGlobals.DinerBattleBPosHpr)
@@ -539,7 +544,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'PrepareBattleThreeMovie'
         seq = Sequence(self.makePrepareBattleThreeMovie(), Func(self.__onToBattleThree), name=intervalName)
         seq.start()
-        seq.setPlayRate(5.0)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.betweenPhaseMusic, looping=1, volume=0.9)
 
@@ -552,6 +557,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
                 self.notDeadList += tableInfo
 
     def exitPrepareBattleThree(self):
+        self.disableSkipCutscene()
         self.clearInterval('PrepareBattleThreeMovie')
         self.betweenPhaseMusic.stop()
 
@@ -618,15 +624,18 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         return chairInfo
 
     def enterPrepareBattleFour(self):
+        self.enableSkipCutscene()
+        self.accept('cutsceneSkip', self.requestSkip)
         self.controlToons()
         intervalName = 'PrepareBattleFourMovie'
         seq = Sequence(self.makePrepareBattleFourMovie(), Func(self.__onToBattleFour), name=intervalName)
         seq.start()
-        seq.setPlayRate(5.0)
+        seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
         base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
 
     def exitPrepareBattleFour(self):
+        self.disableSkipCutscene()
         self.clearInterval('PrepareBattleFourMovie')
         self.phaseFourMusic.stop()
 
@@ -730,7 +739,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         intervalName = 'VictoryMovie'
         seq = Sequence(self.makeVictoryMovie(), Func(self.__continueVictory), name=intervalName)
         seq.start()
-        seq.setPlayRate(self.CUTSCENE_SPEED)
+        seq.setPlayRate(3.0)
         self.bossHealthBar.deinitialize()
         self.storeInterval(seq, intervalName)
         base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
@@ -820,6 +829,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.betweenPhaseMusic.stop()
 
     def enterEpilogue(self):
+        base.localAvatar.checkWinCondition()
         self.cleanupIntervals()
         self.clearChat()
         self.resistanceToon.clearChat()
@@ -1397,8 +1407,6 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         throwAnim = self.getAnim('golf_swing')
         neutral2Anim = ActorInterval(self, neutral)
         extraAnim = Sequence()
-        if False:
-            extraAnim = ActorInterval(self, neutral)
         gearModel = self.getGolfBall()
         toToonH = self.rotateNode.getH() + 360
         self.notify.debug('toToonH = %s' % toToonH)
@@ -1550,3 +1558,13 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             attackBelts.append(seq)
         self.notify.debug('attackBelts duration= %.2f' % attackBelts.getDuration())
         self.doAnimate(attackBelts, now=1, raised=1)
+
+    def skipCutscene(self):
+        intervalName = ""
+        if self.state == 'PrepareBattleTwo':
+            intervalName = 'PrepareBattleTwoMovie'
+        elif self.state == 'PrepareBattleThree':
+            intervalName = 'PrepareBattleThreeMovie'
+        elif self.state == 'PrepareBattleFour':
+            intervalName = 'PrepareBattleFourMovie'
+        super().skipCutscene(intervalName)

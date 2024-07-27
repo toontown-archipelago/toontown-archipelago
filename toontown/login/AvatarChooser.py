@@ -47,8 +47,8 @@ class AvatarChooser(StateData.StateData):
         self.quitButton.show()
         if base.cr.loginInterface.supportsRelogin():
             self.logoutButton.show()
-        self.shine.reparentTo(aspect2d)
-        self.shadow.reparentTo(aspect2d)
+#        self.shine.reparentTo(aspect2d)
+#        self.shadow.reparentTo(aspect2d)
         self.pickAToonBG.setBin('background', 1)
         self.pickAToonBG.reparentTo(aspect2d)
         base.setBackgroundColor(Vec4(0.145, 0.368, 0.78, 1))
@@ -69,8 +69,8 @@ class AvatarChooser(StateData.StateData):
         self.title.reparentTo(hidden)
         self.quitButton.hide()
         self.logoutButton.hide()
-        self.shine.reparentTo(hidden)
-        self.shadow.reparentTo(hidden)
+#        self.shine.reparentTo(hidden)
+#        self.shadow.reparentTo(hidden)
         self.pickAToonBG.reparentTo(hidden)
         base.setBackgroundColor(ToontownGlobals.DefaultBackgroundColor)
         return None
@@ -86,11 +86,11 @@ class AvatarChooser(StateData.StateData):
             shineAndShadowScale = (base.getAspectRatio(), 1, 1)
         else:
             shineAndShadowScale = (1.33, 1, 1)
-        self.shine = OnscreenImage(image='phase_3/maps/tt_t_gui_pat_background_shine.png', scale=shineAndShadowScale)
-        self.shine.setAttrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd))
-        self.shadow = OnscreenImage(image='phase_3/maps/tt_t_gui_pat_background_shadow.png', scale=shineAndShadowScale)
-        self.shadow.setTransparency(TransparencyAttrib.MAlpha)
-        self.accept('aspectRatioChanged', self.aspectRatioChanged)
+#        self.shine = OnscreenImage(image='phase_3/maps/tt_t_gui_pat_background_shine.png', scale=shineAndShadowScale)
+#        self.shine.setAttrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd))
+#        self.shadow = OnscreenImage(image='phase_3/maps/tt_t_gui_pat_background_shadow.png', scale=shineAndShadowScale)
+#        self.shadow.setTransparency(TransparencyAttrib.MAlpha)
+#        self.accept('aspectRatioChanged', self.aspectRatioChanged)
         self.pickAToonBG = newGui.find('**/tt_t_gui_pat_background')
         self.pickAToonBG.reparentTo(hidden)
         self.pickAToonBG.setPos(0.0, 2.73, 0.0)
@@ -219,10 +219,10 @@ class AvatarChooser(StateData.StateData):
         del self.quitButton
         self.logoutButton.destroy()
         del self.logoutButton
-        self.shine.destroy()
-        del self.shine
-        self.shadow.destroy()
-        del self.shadow
+#        self.shine.destroy()
+#        del self.shine
+#        self.shadow.destroy()
+#        del self.shadow
         self.pickAToonBG.removeNode()
         del self.pickAToonBG
         del self.avatarList
@@ -292,10 +292,10 @@ class AvatarChooser(StateData.StateData):
     def __handleLogoutWithoutConfirm(self):
         base.cr.loginFSM.request('login')
 
-    def aspectRatioChanged(self):
-        if base.getAspectRatio() > 1.33:
-            self.shine['scale'] = (base.getAspectRatio(), 1, 1)
-            self.shadow['scale'] = (base.getAspectRatio(), 1, 1)
-        else:
-            self.shine['scale'] = (1.33, 1, 1)
-            self.shadow['scale'] = (1.33, 1, 1)
+#    def aspectRatioChanged(self):
+#        if base.getAspectRatio() > 1.33:
+#            self.shine['scale'] = (base.getAspectRatio(), 1, 1)
+#            self.shadow['scale'] = (base.getAspectRatio(), 1, 1)
+#        else:
+#            self.shine['scale'] = (1.33, 1, 1)
+#            self.shadow['scale'] = (1.33, 1, 1)

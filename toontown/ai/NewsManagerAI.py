@@ -300,6 +300,9 @@ class NewsManagerAI(DistributedObjectAI):
     def d_setBingoStart(self):
         self.sendUpdate('setBingoStart')
 
+    def d_setToonShout(self, shout):
+        self.sendUpdate('setToonShout', [shout])
+
     def d_setBingoEnd(self):
         self.sendUpdate('setBingoEnd')
 
