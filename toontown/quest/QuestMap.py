@@ -104,29 +104,6 @@ class QuestMap(DirectFrame):
         del self.mapCloseButton
         DirectFrame.destroy(self)
 
-    def putBuildingMarker(self, pos, mapIndex = None, isSuitBlock = False):
-        marker = DirectLabel(parent=self.container, text='', text_pos=(-0.05, -0.15), text_fg=(1, 1, 1, 1), relief=None)
-        gui = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
-        icon = gui.find('**/startPartyButton_inactive')
-        iconNP = aspect2d.attachNewNode('iconNP')
-        icon.reparentTo(iconNP)
-        icon.setX(-12.0792 / 30.48)
-        icon.setZ(-9.7404 / 30.48)
-        marker['text'] = '%s' % mapIndex
-        marker['text_scale'] = 0.7
-        marker['image'] = iconNP
-        if isSuitBlock: # Make the bubble appear gray if a cog took over a task building
-            marker['image_color'] = (0.5, 0.5, 0.5, 1)
-        else:
-            marker['image_color'] = (1, 0, 0, 1)
-        marker['image_scale'] = 6
-        marker.setScale(0.05)
-        relX, relY = self.transformAvPos(pos)
-        marker.setPos(relX, 0, relY)
-        self.buildingMarkers.append(marker)
-        iconNP.removeNode()
-        gui.removeNode()
-
     def putSuitBuildingMarker(self, pos, blockNumber = None, track = None):
         if base.localAvatar.buildingRadar[SuitDNA.suitDepts.index(track)]:
             marker = DirectLabel(parent = self.container, text = '', text_pos = (-0.05, -0.15), text_fg = (1, 1, 1, 1),  relief = None)
@@ -158,52 +135,13 @@ class QuestMap(DirectFrame):
         icons.removeNode()
         return corpIcon
 
-    def updateQuestInfo(self):
+    def updateBuildingInfo(self):
         for marker in self.buildingMarkers:
             marker.destroy()
 
         self.buildingMarkers = []
         self.questBlocks = []
         dnaStore = base.cr.playGame.dnaStore
-
-        for (i, questDesc) in enumerate(self.av.quests):
-            i += 1
-            quest = Quests.getQuest(questDesc[0])
-            toNpcId = questDesc[2]
-            if quest is None:
-                return
-
-            completed = quest.getCompletionStatus(self.av, questDesc) == Quests.COMPLETE
-            if not completed:
-                if quest.getType() == Quests.RecoverItemQuest:
-                    if quest.getHolder() == Quests.AnyFish:
-                        self.putBuildingMarker(self.fishingSpotInfo, mapIndex=i)
-                    continue
-                elif quest.getType() not in (
-                    Quests.DeliverGagQuest, Quests.DeliverItemQuest,
-                    Quests.VisitQuest, Quests.TrackChoiceQuest):
-                    continue
-
-            if toNpcId == Quests.ToonHQ:
-                self.putBuildingMarker(self.hqPosInfo, mapIndex=i)
-
-            npcZoneId = NPCToons.getNPCZone(toNpcId)
-            hoodId = ZoneUtil.getCanonicalHoodId(npcZoneId)
-            branchId = ZoneUtil.getCanonicalBranchZone(npcZoneId)
-
-            if self.hoodId == hoodId and self.zoneId == branchId:
-                for blockIndex in range(dnaStore.getNumBlockNumbers()):
-                    blockNumber = dnaStore.getBlockNumberAt(blockIndex)
-                    zoneId = dnaStore.getZoneFromBlockNumber(blockNumber)
-                    zoneIdBlock = zoneId + blockNumber
-                    interiorZoneId = (zoneId - (zoneId%100)) + 500 + blockNumber
-                    if npcZoneId == interiorZoneId:
-                        self.questBlocks.append(zoneIdBlock)
-                        self.putBuildingMarker(
-                            dnaStore.getDoorPosHprFromBlockNumber(zoneIdBlock).getPos(),
-                            mapIndex=i,
-                            isSuitBlock=dnaStore.isSuitBlock(zoneIdBlock))
-                        continue
 
         for blockIndex in range(dnaStore.getNumBlockNumbers()):
             blockNumber = dnaStore.getBlockNumberAt(blockIndex)
@@ -261,7 +199,7 @@ class QuestMap(DirectFrame):
                     self.hide()
                     self.hoodId = hoodId
                     self.zoneId = zoneId
-                    self.updateQuestInfo()
+                    self.updateBuildingInfo()
                     self.updateCogInfo()
                     taskMgr.add(self.update, 'questMapUpdate')
                 else:
