@@ -21,8 +21,35 @@ class HintedItem:
                 self.item.location == other.item.location and
                 self.item.player == other.item.player)
 
+    def __validate_item(self) -> NetworkItem:
+        """
+        Returns a new NetworkItem that has valid item IDs that are safe to send over astron
+        """
+        item_id: int = self.__validate_number(self.item.item)
+        location_id: int = self.__validate_number(self.item.location)
+        return NetworkItem(item_id, location_id, self.item.player, self.item.flags)
+
     def to_struct(self):
-        return [self.destination, list(self.item), self.player_name, self.location_name, self.found]
+        return [self.destination, list(self.__validate_item()), self.player_name, self.location_name, self.found]
+
+    @staticmethod
+    def __validate_number(n: int) -> int:
+        """
+        Astron will get pissed if we give invalid numbers which some AP worlds seem to have the power to do....
+        Makes sure an integer is constrained between the minimum and maximum values of a signed long
+
+        Returns n back if it is valid, returns -1 if it is not
+        """
+        MAX_VALUE = (2 << 62) - 1
+        MIN_VALUE = -(2 << 62)
+
+        # Safe
+        if MIN_VALUE <= n <= MAX_VALUE:
+            return n
+
+        # Number is deemed unsafe
+        print(f"[SEVERE] HintedItem tried to send ID {n} over astron. This is unsafe so we are using -1 instead.")
+        return -1
 
     @classmethod
     def from_struct(cls, struct):
