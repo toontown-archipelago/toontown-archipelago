@@ -160,16 +160,10 @@ class PlayGame(StateData.StateData):
         if hasattr(self, 'dnaStore'):
             self.dnaStore.resetNodes()
             self.dnaStore.resetTextures()
+            self.dnaStore.resetSuitBlocks()
             del self.dnaStore
-            self.suitBlocks.clear()
             ModelPool.garbageCollect()
             TexturePool.garbageCollect()
-
-    def isSuitBlock(self, blockNumber):
-        return blockNumber in self.suitBlocks
-
-    def getSuitBlockTrack(self, blockNumber):
-        return self.suitBlocks.get(blockNumber)
 
     def unload(self):
         self.unloadDnaStore()

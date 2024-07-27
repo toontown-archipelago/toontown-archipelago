@@ -164,19 +164,26 @@ class QuestMap(DirectFrame):
 
         self.buildingMarkers = []
         self.questBlocks = []
+        zoneIdList = []
+        streetIdList = []
+        dnaStore = base.cr.playGame.dnaStore
 
-        for questIndex in list(self.av.questPage.quests.keys()):
-            questDesc = self.av.questPage.quests.get(questIndex)
-            if questDesc == None:
-                continue
-            mapIndex = questIndex + 1
-            questId, fromNpcId, toNpcId, rewardId, toonProgress = questDesc
-            quest = Quests.getQuest(questId)
-            questCompleted = quest.getCompletionStatus(self.av, questDesc) == Quests.COMPLETE
-            if not questCompleted:
+        for zoneId, streetId in ToontownGlobals.HoodHierarchy.items():
+            zoneIdList.append(zoneId)
+            streetIdList.append(streetId)
+
+        for (i, questDesc) in enumerate(self.av.quests):
+            i += 1
+            quest = Quests.getQuest(questDesc[0])
+            toNpcId = questDesc[2]
+            if quest is None:
+                return
+
+            completed = quest.getCompletionStatus(self.av, questDesc) == Quests.COMPLETE
+            if not completed:
                 if quest.getType() == Quests.RecoverItemQuest:
                     if quest.getHolder() == Quests.AnyFish:
-                        self.putBuildingMarker(self.fishingSpotInfo, mapIndex=mapIndex)
+                        self.putBuildingMarker(self.fishingSpotInfo, mapIndex=i)
                     continue
                 elif quest.getType() not in (
                     Quests.DeliverGagQuest, Quests.DeliverItemQuest,
@@ -184,33 +191,39 @@ class QuestMap(DirectFrame):
                     continue
 
             if toNpcId == Quests.ToonHQ:
-                self.putBuildingMarker(self.hqPosInfo, mapIndex=mapIndex)
+                self.putBuildingMarker(self.hqPosInfo, mapIndex=i)
 
             npcZoneId = NPCToons.getNPCZone(toNpcId)
             hoodId = ZoneUtil.getCanonicalHoodId(npcZoneId)
             branchId = ZoneUtil.getCanonicalBranchZone(npcZoneId)
 
             if self.hoodId == hoodId and self.zoneId == branchId:
-                for blockIndex in range(base.cr.playGame.dnaStore.getNumBlockNumbers()):
-                    blockNumber = base.cr.playGame.dnaStore.getBlockNumberAt(blockIndex)
-                    zoneId = base.cr.playGame.dnaStore.getZoneFromBlockNumber(blockNumber)
+                for blockIndex in range(dnaStore.getNumBlockNumbers()):
+                    blockNumber = dnaStore.getBlockNumberAt(blockIndex)
+                    zoneId = dnaStore.getZoneFromBlockNumber(blockNumber)
+                    zoneIdBlock = zoneId + blockNumber
                     interiorZoneId = (zoneId - (zoneId%100)) + 500 + blockNumber
                     if npcZoneId == interiorZoneId:
-                        self.questBlocks.append(blockNumber)
+                        self.questBlocks.append(zoneIdBlock)
                         self.putBuildingMarker(
-                            base.cr.playGame.dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(),
-                            mapIndex=mapIndex,
-                            isSuitBlock=base.cr.playGame.dnaStore.isSuitBlock(blockNumber))
+                            dnaStore.getDoorPosHprFromBlockNumber(zoneIdBlock).getPos(),
+                            mapIndex=i,
+                            isSuitBlock=dnaStore.isSuitBlock(zoneIdBlock))
                         continue
 
-        for blockIndex in range(base.cr.playGame.dnaStore.getNumBlockNumbers()):
-            blockNumber = base.cr.playGame.dnaStore.getBlockNumberAt(blockIndex)
-            if base.cr.playGame.isSuitBlock(blockNumber) and blockNumber not in self.questBlocks:
-                print(base.cr.playGame.getSuitBlockTrack(blockNumber))
+        for blockIndex in range(dnaStore.getNumBlockNumbers()):
+            blockNumber = dnaStore.getBlockNumberAt(blockIndex)
+            blockZoneId = dnaStore.getZoneFromBlockNumber(blockNumber)
+            streetId = ZoneUtil.getCanonicalBranchZone(self.av.getLocation()[1])
+            zoneIdBlock = blockZoneId + blockNumber
+            print(streetId)
+            if dnaStore.isSuitBlock(zoneIdBlock) and (zoneIdBlock in range(streetId, streetId+99)) and blockNumber not in self.questBlocks:
+                print(zoneIdBlock)
                 self.putSuitBuildingMarker(
-                    base.cr.playGame.dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(),
-                    blockNumber,
-                    base.cr.playGame.getSuitBlockTrack(blockNumber))
+                    dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(),
+                    zoneIdBlock,
+                    dnaStore.getSuitBlockTrack(zoneIdBlock))
+                continue
 
     def transformAvPos(self, pos):
         if self.cornerPosInfo is None:
@@ -231,7 +244,11 @@ class QuestMap(DirectFrame):
         for buildingMarker in self.buildingMarkers:
             i = self.buildingMarkers.index(buildingMarker)
             if not buildingMarker.isEmpty():
-                buildingMarker.setScale((math.sin(task.time * 16.0 + i * math.pi / 3.0) + 1) * 0.005 + 0.04)
+                buildingMarker.setScale((math.sin(task.time * 6.0 + i * math.pi / 3.0) + 1) * 0.005 + 0.04)
+        for buildingMarker in self.suitBuildingMarkers:
+            i = self.suitBuildingMarkers.index(buildingMarker)
+            if not buildingMarker.isEmpty():
+                buildingMarker.setScale((math.sin(task.time + i * math.pi / 3.0) + 1) * 0.005 + 0.04)
         return Task.cont
 
     def updateMap(self):
@@ -266,7 +283,6 @@ class QuestMap(DirectFrame):
         self.container.show()
         self.accept('questPageUpdated', self.updateMap)
         self.handleMarker()
-        self.updateMap()
 
     def initMarker(self, task):
         if self.av:
