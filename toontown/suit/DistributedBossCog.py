@@ -1178,6 +1178,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         ival = Sequence(ElevatorUtils.getRideElevatorInterval(self.elevatorType), ElevatorUtils.getRideElevatorInterval(self.elevatorType), self.openDoors, Func(camera.wrtReparentTo, render), Func(self.__doneElevator))
         intervalName = 'ElevatorMovie'
         ival.start()
+        ival.setPlayRate(3.0)
+
         self.storeInterval(ival, intervalName)
 
     def __doneElevator(self):
