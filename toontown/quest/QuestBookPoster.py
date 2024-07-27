@@ -34,12 +34,12 @@ class QuestBookPoster(QuestPoster):
             QuestPoster.__init__(self, relief=None)
             self.initialiseoptions(QuestBookPoster)
             self.headline.setPos(0, 0, 0.21)    
-            self.questInfo.setPos(0, 0, -0.035)
+            self.questInfo.setPos(0, 0, -0.063)
             self.rewardText.setPos(0, 0, -0.19)
             self.rewardText.show()
             self.questProgress.setPos(0, 0, -0.12)
             self.rewardText.setScale(1.33)
-            self.questProgress.setScale(0.3)
+            self.questProgress.setScale(0.28)
         else:
             optiondefs = (('relief', None, None),
              ('reverse', 0, None),
