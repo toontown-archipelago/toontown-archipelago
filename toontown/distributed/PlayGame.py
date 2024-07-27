@@ -149,7 +149,6 @@ class PlayGame(StateData.StateData):
     def loadDnaStore(self):
         if not hasattr(self, 'dnaStore'):
             self.dnaStore = DNAStorage()
-            self.suitBlocks = {}
             loader.loadDNAFile(self.dnaStore, 'phase_4/dna/storage.dna')
             self.dnaStore.storeFont('humanist', ToontownGlobals.getInterfaceFont())
             self.dnaStore.storeFont('mickey', ToontownGlobals.getSignFont())
