@@ -40,6 +40,7 @@ OptionToType = {
     'discord-rich-presence': OptionTypes.BUTTON,
     'archipelago-textsize': OptionTypes.SLIDER,
     'color-blind-mode': OptionTypes.BUTTON,
+    'want-legacy-models': OptionTypes.BUTTON,
 
     # Privacy
     "competitive-boss-scoring": OptionTypes.BUTTON,
@@ -142,6 +143,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'discord-rich-presence',
             'archipelago-textsize',
             'color-blind-mode',
+            'want-legacy-models',
 
         ],
         "Privacy": [
@@ -760,6 +762,8 @@ class OptionElement(DirectFrame):
             base.CAM_TOGGLE_LOCK = newSetting
         elif self.optionName == "color-blind-mode":
             base.colorBlindMode = newSetting
+        elif self.optionName = "want-legacy-models":
+            base.WANT_LEGACY_MODELS = newSetting
 
         # Update the button text with the new setting.
         self.optionModifier["text"] = self.formatSetting(newSetting)
