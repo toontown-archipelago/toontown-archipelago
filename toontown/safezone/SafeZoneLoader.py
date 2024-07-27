@@ -1,5 +1,6 @@
 from panda3d.core import *
 from toontown.toonbase.ToonBaseGlobal import *
+from toontown.toonbase import ToontownGlobals
 from toontown.distributed.ToontownMsgTypes import *
 from toontown.hood import ZoneUtil
 from direct.directnotify import DirectNotifyGlobal
@@ -8,7 +9,6 @@ from direct.showbase import DirectObject
 from direct.fsm import StateData
 from direct.fsm import ClassicFSM, State
 from direct.fsm import State
-from direct.stdpy.file import open as sopen
 from direct.task import Task
 from toontown.launcher import DownloadForceAcknowledge
 from toontown.toon import HealthForceAcknowledge
@@ -38,7 +38,8 @@ class SafeZoneLoader(StateData.StateData):
         self.playgroundClass = None
 
         self.townBattle = TownBattle('town-battle-done')
-        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         return
 
     def load(self):

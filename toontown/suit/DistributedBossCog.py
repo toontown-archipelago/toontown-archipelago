@@ -25,7 +25,6 @@ from toontown.friends import FriendsListManager
 from direct.controls.ControlManager import CollisionHandlerRayStart
 from direct.showbase import PythonUtil
 import random
-from direct.stdpy.file import open as sopen
 import json
 
 from ..coghq.CogBossScoreboard import CogBossScoreboard
@@ -72,7 +71,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.scoreboard = CogBossScoreboard()
         self.scoreboard.hide()
         self.cutsceneSpeed = 1.0
-        self.musicJson = json.load(sopen('resources/content_pack/music.json'))
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         return
 
     def announceGenerate(self):
@@ -1094,7 +1094,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         if ('boss-' + str(self.style.dept) + '-promotion') in self.musicJson['global_music']:
             self.promotionMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-promotion')])
         else:
-            self.promotionMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning_indoor.ogg')
+            self.promotionMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
         if ('boss-' + str(self.style.dept) + '-between') in self.musicJson['global_music']:
             self.betweenBattleMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-between')])
         else:
