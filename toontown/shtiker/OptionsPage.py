@@ -40,6 +40,7 @@ OptionToType = {
     'discord-rich-presence': OptionTypes.BUTTON,
     'archipelago-textsize': OptionTypes.SLIDER,
     'color-blind-mode': OptionTypes.BUTTON,
+    'want-legacy-models': OptionTypes.BUTTON,
 
     # Privacy
     "competitive-boss-scoring": OptionTypes.BUTTON,
@@ -142,6 +143,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'discord-rich-presence',
             'archipelago-textsize',
             'color-blind-mode',
+            'want-legacy-models',
 
         ],
         "Privacy": [
@@ -528,7 +530,7 @@ class OptionElement(DirectFrame):
         if self.optionType in (OptionTypes.BUTTON, OptionTypes.CONTROL, OptionTypes.BUTTON_SPEEDCHAT,
                                OptionTypes.DROPDOWN):
             self.optionModifier = DirectButton(
-                parent=self, relief=None, pos=(0.4, 0, z),
+                parent=self, relief=None, pos=(0.37, 0, z),
                 text=self.formatSetting(currSetting),
                 text_scale=0.052, image_pos=(0, 0, 0.02),
                 image=(
@@ -550,7 +552,7 @@ class OptionElement(DirectFrame):
         # the page.
         elif self.optionType == OptionTypes.SLIDER:
             self.optionModifier = DirectSlider(
-                parent=self, relief=DGG.SUNKEN, pos=(0.4, 0, z), thumb_relief=None,
+                parent=self, relief=DGG.SUNKEN, pos=(0.37, 0, z), thumb_relief=None,
                 thumb_image_scale=(0.3, 0.8, 0.8),
                 frameSize=(-0.25, 0.25, -0.1, 0.1),
                 image_pos=(0, 0, 0.02),
@@ -564,7 +566,7 @@ class OptionElement(DirectFrame):
             )
 
             self.sliderLabel = DirectLabel(
-                parent=self.optionModifier, relief=None, pos=(0.34, 0, 0),
+                parent=self.optionModifier, relief=None, pos=(0.3, 0, -0.01),
                 text=str(round(currSetting * 100)), text_scale=0.052,
             )
         else:
@@ -760,6 +762,8 @@ class OptionElement(DirectFrame):
             base.CAM_TOGGLE_LOCK = newSetting
         elif self.optionName == "color-blind-mode":
             base.colorBlindMode = newSetting
+        elif self.optionName == "want-legacy-models":
+            base.WANT_LEGACY_MODELS = newSetting
 
         # Update the button text with the new setting.
         self.optionModifier["text"] = self.formatSetting(newSetting)

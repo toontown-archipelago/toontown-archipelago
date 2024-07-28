@@ -223,6 +223,8 @@ class FishSpeciesWinCondition(WinCondition):
             toonsFishCollection = None 
             print(f'win_condition warning: fish collection not found in toon {self.toon.getDoId()}')
             return 0
+        if toonsFishCollection is None:
+            return 0
         toonsFishCollection = toonsFishCollection.getNetLists()
         toonsFishSpecies = toonsFishCollection[1] # 1 is fish species
         return len(toonsFishSpecies)
