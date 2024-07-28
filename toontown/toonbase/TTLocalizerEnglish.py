@@ -9950,6 +9950,7 @@ OptionNames = {
     'discord-rich-presence': 'Discord Rich Presence',
     "archipelago-textsize": "Archipelago Log Text Size",
     "color-blind-mode": "Colorblind Mode",
+    "want-legacy-models": "Toggle TTO Species Models*",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",
