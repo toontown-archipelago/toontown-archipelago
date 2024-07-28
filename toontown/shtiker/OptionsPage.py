@@ -762,7 +762,7 @@ class OptionElement(DirectFrame):
             base.CAM_TOGGLE_LOCK = newSetting
         elif self.optionName == "color-blind-mode":
             base.colorBlindMode = newSetting
-        elif self.optionName = "want-legacy-models":
+        elif self.optionName == "want-legacy-models":
             base.WANT_LEGACY_MODELS = newSetting
 
         # Update the button text with the new setting.
