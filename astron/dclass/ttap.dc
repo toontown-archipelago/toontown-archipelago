@@ -3527,7 +3527,7 @@ struct FriendEntry {
 struct OnlineToon {
   uint32 doId;
   string name;
-  string dna;
+  blob dna;
 }
 
 dclass OnlinePlayerManager : DistributedObject {
