@@ -223,7 +223,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.rewardHistory = []
         self.rewardTier = 0
         self.alreadyNotified = False
-        self.fishCollection = None
+        self.fishCollection = FishCollection.FishCollection()
+        # empty collection
+        self.setFishCollection([], [], [])
         return
 
     def disable(self):
