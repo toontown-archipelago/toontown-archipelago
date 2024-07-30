@@ -66,6 +66,7 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
 def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return True
 
+
 @rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
 @rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS)
 @rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS)
@@ -82,10 +83,13 @@ def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
 @rule(Rule.CashbotDisguise, ToontownItemName.CASHBOT_DISGUISE)
 @rule(Rule.LawbotDisguise,  ToontownItemName.LAWBOT_DISGUISE)
 @rule(Rule.BossbotDisguise, ToontownItemName.BOSSBOT_DISGUISE)
+@rule(Rule.Golfing,         ToontownItemName.GOLF_PUTTER)
+@rule(Rule.Racing,          ToontownItemName.RACING_DEPOSIT)
 def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     if len(argument) == 2:
         return state.has(argument[0].value, player, argument[1])
     return state.has(argument[0].value, player)
+
 
 @rule(Rule.HasTTCHQAccess,  ToontownItemName.TTC_ACCESS)
 @rule(Rule.HasDDHQAccess,   ToontownItemName.DD_ACCESS)
@@ -95,6 +99,7 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.HasDDLHQAccess,  ToontownItemName.DDL_ACCESS)
 def HasItemCountRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return state.count(argument[0].value, player) == 2
+
 
 @rule(Rule.CanBuyTTCDoodle, 0)
 @rule(Rule.CanBuyDDDoodle, 1)

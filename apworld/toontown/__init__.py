@@ -468,6 +468,14 @@ class ToontownWorld(World):
         for i in range(len(rev_locs) - cpb):
             forbidden_location_types.add(rev_locs[i])
 
+        racing = self.options.racing_logic.value
+        if not racing:
+            forbidden_location_types.add(ToontownLocationType.RACING)
+
+        golf = self.options.minigolf_logic.value
+        if not golf:
+            forbidden_location_types.add(ToontownLocationType.GOLF)
+
         return forbidden_location_types
 
     def _force_item_placement(self, location: ToontownLocationName, item: ToontownItemName) -> None:
