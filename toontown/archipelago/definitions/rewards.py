@@ -302,6 +302,32 @@ class GagTrainingMultiplierReward(APReward):
         av.b_setBaseGagSkillMultiplier(newMultiplier)
 
 
+class GolfPutterReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Get ready to go mini-golfing\nwith your new "),
+            MinimalJsonMessagePart("Golf Putter", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.addAccessKey(ToontownGlobals.PUTTER_KEY)
+
+
+class RacingDepositReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Gave you a go-kart deposit\nof"),
+            MinimalJsonMessagePart(" +100", color='cyan'),
+            MinimalJsonMessagePart(" tickets!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.b_setTickets(100)
+
+
 class FishingRodUpgradeReward(APReward):
 
     def formatted_header(self) -> str:
@@ -813,6 +839,8 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.TB_FISHING.value: FishingLicenseReward(FishingLicenseReward.THE_BRRRGH),
     ToontownItemName.DDL_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DREAMLAND),
     ToontownItemName.FISH.value: IgnoreReward(),
+    ToontownItemName.GOLF_PUTTER.value: GolfPutterReward(),
+    ToontownItemName.RACING_DEPOSIT.value: RacingDepositReward(),
     ToontownItemName.FRONT_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
     ToontownItemName.SIDE_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING),
     ToontownItemName.COIN_MINT_ACCESS.value: FacilityAccessReward(FADoorCodes.COIN_MINT_ACCESS_MISSING),

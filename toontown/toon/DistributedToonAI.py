@@ -4588,6 +4588,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setBankMoney(0)
         self.b_setMaxBankMoney(0)
 
+        # Activities
+        self.b_setTickets(0)
+        self.b_setKartBodyType(-1)
+
         # Fishing
         self.b_setFishCollection([], [], [])
         self.b_setFishingRod(0)

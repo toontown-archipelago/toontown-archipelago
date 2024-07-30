@@ -3170,6 +3170,8 @@ FADoorCodes_MM_FISHING_MISSING  = "The Fisherman gives you a stern look.\n\nIn o
 FADoorCodes_TB_FISHING_MISSING  = "The Fisherman gives you a stern look.\n\nIn order to fish here, you'll need The Brrrgh Fishing License."
 FADoorCodes_DDL_FISHING_MISSING = "The Fisherman gives you a stern look.\n\nIn order to fish here, you'll need a Donald's Dreamland Fishing License."
 
+FADoorCodes_GOLF_PUTTER_MISSING = "What are you going to do, kick the ball?\nTo play minigolf here, you'll need a Golf Putter."
+
 KnockKnockContestJokes = {2100: ['Wally', "Wally's not looking, hit him with a pie!"],
  2200: {28: ['Biscuit', 'Biscuit out of here the Cogs are coming!'],
         41: ['Dewey', 'Dewey want to go defeat some more Cogs?'],

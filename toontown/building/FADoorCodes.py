@@ -47,6 +47,8 @@ BACK_NINE_ACCESS_MISSING = 31
 # TB_FISHING_MISSING = 36   defined elsewhere
 # DDL_FISHING_MISSING = 37  defined elsewhere
 
+# PUTTER_KEY = 38  defined elsewhere
+
 ZONE_TO_ACCESS_CODE = {
     ToontownGlobals.ToontownCentral: TTC_ACCESS_MISSING,
     ToontownGlobals.DonaldsDock: DD_ACCESS_MISSING,
@@ -118,4 +120,6 @@ reasonDict = {
     fish.MM_FISHING_MISSING: TTLocalizer.FADoorCodes_MM_FISHING_MISSING,
     fish.TB_FISHING_MISSING: TTLocalizer.FADoorCodes_TB_FISHING_MISSING,
     fish.DDL_FISHING_MISSING: TTLocalizer.FADoorCodes_DDL_FISHING_MISSING,
+
+    ToontownGlobals.PUTTER_KEY: TTLocalizer.FADoorCodes_GOLF_PUTTER_MISSING,
 }

@@ -13,10 +13,13 @@ from toontown.distributed import DelayDelete
 from direct.task.Task import Task
 from direct.showbase import PythonUtil
 from toontown.toontowngui import TeaserPanel
+from toontown.building import FADoorCodes
+from toontown.toontowngui import TTDialog
+from toontown.distributed.DelayDeletable import DelayDeletable
 from toontown.toon import ToonDNA
 from toontown.hood import ZoneUtil
 
-class DistributedGolfKart(DistributedObject.DistributedObject):
+class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedGolfKart')
     SeatOffsets = ((0.5, -0.5, 0),
      (-0.5, -0.5, 0),
@@ -227,7 +230,47 @@ class DistributedGolfKart(DistributedObject.DistributedObject):
                 self.notify.warning('toon: ' + str(avId) + " doesn't exist, and" + ' cannot exit the trolley!')
 
     def rejectBoard(self, avId):
-        self.loader.place.trolley.handleRejectBoard()
+        # We're rejecting for a reason other than our putter, since we have out putter
+        if ToontownGlobals.PUTTER_KEY in base.localAvatar.getAccessKeys():
+            self.loader.place.trolley.handleRejectBoard()
+            return
+        message = FADoorCodes.reasonDict[ToontownGlobals.PUTTER_KEY]
+        self.__faRejectEnter(message)
+
+    ### DistributedDoor reject code ###
+    def __faRejectEnter(self, message):
+        self.cr.playGame.getPlace().setState('walk')
+        self.rejectDialog = TTDialog.TTGlobalDialog(message=message, doneEvent='doorRejectAck', style=TTDialog.Acknowledge)
+        self.rejectDialog.show()
+        self.rejectDialog.delayDelete = DelayDelete.DelayDelete(self, '__faRejectEnter')
+        event = 'clientCleanup'
+        self.acceptOnce(event, self.__handleClientCleanup)
+        base.cr.playGame.getPlace().setState('stopped')
+        self.acceptOnce('doorRejectAck', self.__handleRejectAck)
+        self.acceptOnce('stoppedAsleep', self.__handleFallAsleepDoor)
+
+    def __handleClientCleanup(self):
+        if hasattr(self, 'rejectDialog') and self.rejectDialog:
+            self.rejectDialog.doneStatus = 'ok'
+        self.__handleRejectAck()
+
+    def __handleFallAsleepDoor(self):
+        self.rejectDialog.doneStatus = 'ok'
+        self.__handleRejectAck()
+
+    def __handleRejectAck(self):
+        self.ignore('doorRejectAck')
+        self.ignore('stoppedAsleep')
+        self.ignore('clientCleanup')
+        doneStatus = self.rejectDialog.doneStatus
+        if doneStatus != 'ok':
+            self.notify.error('Unrecognized doneStatus: ' + str(doneStatus))
+        self.cr.playGame.getPlace().setState('walk')
+        self.rejectDialog.delayDelete.destroy()
+        self.rejectDialog.cleanup()
+        del self.rejectDialog
+
+        ### END DistributedDoor reject code
 
     def setMinigameZone(self, zoneId, minigameId):
         self.localToonOnBoard = 0
