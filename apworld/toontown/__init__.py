@@ -321,7 +321,7 @@ class ToontownWorld(World):
 
         # racing item logic
         if self.options.racing_logic.value:
-            item = self.create_item(ToontownItemName.RACING_DEPOSIT.value)
+            item = self.create_item(ToontownItemName.GO_KART.value)
             pool.append(item)
 
         # golfing item logic

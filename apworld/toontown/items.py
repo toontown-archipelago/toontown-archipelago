@@ -110,7 +110,7 @@ class ToontownItemName(enum.Enum):
 
     ### Activity Items ###
     GOLF_PUTTER = "Golf Putter"
-    RACING_DEPOSIT = "Racing Deposit"
+    GO_KART = "Go-Kart"
 
     ### Reward Bundles ###
     SOS_REWARD       = "Random SOS Card"
@@ -222,7 +222,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # endregion
     # region activities
     ToontownItemDefinition(ToontownItemName.GOLF_PUTTER, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.RACING_DEPOSIT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GO_KART, ItemClassification.progression),
     # endregion
     # region Filler Items
     # TODO - remember to account for the Fish filler when implementing weights here

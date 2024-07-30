@@ -84,7 +84,7 @@ def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
 @rule(Rule.LawbotDisguise,  ToontownItemName.LAWBOT_DISGUISE)
 @rule(Rule.BossbotDisguise, ToontownItemName.BOSSBOT_DISGUISE)
 @rule(Rule.Golfing,         ToontownItemName.GOLF_PUTTER)
-@rule(Rule.Racing,          ToontownItemName.RACING_DEPOSIT)
+@rule(Rule.Racing,          ToontownItemName.GO_KART)
 def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     if len(argument) == 2:
         return state.has(argument[0].value, player, argument[1])
