@@ -314,6 +314,24 @@ class FishProgression(Choice):
     default = 2
 
 
+class RacingOption(Toggle):
+    """
+    Enable to turn on the "DeathLink" mechanic in Archipelago.
+    """
+
+    display_name = "Racing Logic"
+    default = False
+
+
+class GolfingOption(Toggle):
+    """
+    Enable to turn on the "DeathLink" mechanic in Archipelago.
+    """
+
+    display_name = "Golfing Logic"
+    default = False
+
+
 class SeedGenerationTypeOption(Choice):
     """
     Type of seeding to use when RNG checks happen in game.
@@ -424,6 +442,8 @@ class ToontownOptions(PerGameCommonOptions):
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression
+    racing_logic: RacingOption
+    minigolf_logic: GolfingOption
     seed_generation_type: SeedGenerationTypeOption
     trap_percent: TrapPercentOption
     uber_trap_weight: UberWeightOption
