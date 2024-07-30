@@ -188,7 +188,7 @@ class GagTrainingFrameReward(APReward):
 
     def get_image_path(self) -> str:
         level = base.localAvatar.getTrackAccessLevel(self.track)
-        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(level, 7))
+        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(max(level, 1), 7))
         return f'phase_14/maps/gags/{ap_icon}.png'
 
     def apply(self, av: "DistributedToonAI"):
