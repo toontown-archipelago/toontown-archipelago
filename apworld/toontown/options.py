@@ -316,7 +316,7 @@ class FishProgression(Choice):
 
 class RacingOption(Toggle):
     """
-    Enable to turn on the "DeathLink" mechanic in Archipelago.
+    Enable to turn on racing checks.
     """
 
     display_name = "Racing Logic"
@@ -325,7 +325,7 @@ class RacingOption(Toggle):
 
 class GolfingOption(Toggle):
     """
-    Enable to turn on the "DeathLink" mechanic in Archipelago.
+    Enable to turn on the minigolf checks.
     """
 
     display_name = "Golfing Logic"
