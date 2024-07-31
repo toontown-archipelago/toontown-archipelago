@@ -65,7 +65,7 @@ class SafeZoneLoader(StateData.StateData):
         self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
         """
 
-        base.contentPackMusicManager.playMusic(self.activityMusicCode, looping=1, volume=0.9, interrupt=False)
+        base.contentPackMusicManager.playMusic(self.activityMusicCode, looping=1, volume=0.9)
         self.activityMusic = base.contentPackMusicManager.currentMusic[self.activityMusicCode]
         self.activityMusic.stop()
 
