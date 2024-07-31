@@ -230,7 +230,7 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
                 self.notify.warning('toon: ' + str(avId) + " doesn't exist, and" + ' cannot exit the trolley!')
 
     def rejectBoard(self, avId):
-        # We're rejecting for a reason other than our putter, since we have out putter
+        # We're rejecting for a reason other than our putter, since we have our putter
         if ToontownGlobals.PUTTER_KEY in base.localAvatar.getAccessKeys():
             self.loader.place.trolley.handleRejectBoard()
             return

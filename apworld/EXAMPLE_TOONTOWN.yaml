@@ -170,7 +170,7 @@ Toontown:
   ### Activity Settings ###
 
   # Determines if racing locations are enabled
-  # Also adds "Racing Deposit" to the item pool.
+  # Also adds "Go-Kart" to the item pool.
   racing_logic: 'false'
 
   # Determines if mini golf locations are enabled
