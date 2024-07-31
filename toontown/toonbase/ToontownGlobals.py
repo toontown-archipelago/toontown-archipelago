@@ -195,6 +195,13 @@ HoodHierarchy = {ToontownCentral: (SillyStreet, LoopyLane, PunchlinePlace),
  DaisyGardens: (ElmStreet, MapleStreet, OakStreet),
  DonaldsDreamland: (LullabyLane, PajamaPlace),
  GoofySpeedway: ()}
+HoodHierarchyMusicManager = {ToontownCentral: [SillyStreet, LoopyLane, PunchlinePlace],
+ DonaldsDock: [BarnacleBoulevard, SeaweedStreet, LighthouseLane],
+ TheBrrrgh: [WalrusWay, SleetStreet, PolarPlace],
+ MinniesMelodyland: [AltoAvenue, BaritoneBoulevard, TenorTerrace],
+ DaisyGardens: [ElmStreet, MapleStreet, OakStreet],
+ DonaldsDreamland: [LullabyLane, PajamaPlace],
+ GoofySpeedway: []}
 WelcomeValleyToken = 0
 BossbotHQ = 10000
 BossbotLobby = 10100

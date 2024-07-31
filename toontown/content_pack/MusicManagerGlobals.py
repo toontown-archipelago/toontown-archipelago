@@ -89,3 +89,41 @@ GLOBALS = {
         'battleMusic': 'back-three-battle',
     },
 }
+
+safeZones = [ToontownCentral,
+             DonaldsDock,
+             DaisyGardens,
+             MinniesMelodyland,
+             TheBrrrgh,
+             DonaldsDreamland,
+             GoofySpeedway,
+             GolfZone,
+             OutdoorZone]
+
+safeZonetoAlis = {
+    ToontownCentral: 'tt',
+    DonaldsDock: 'dd',
+    DaisyGardens: 'dg',
+    MinniesMelodyland: 'mm',
+    TheBrrrgh: 'br',
+    DonaldsDreamland: 'dl',
+    GoofySpeedway: 'gs',
+    OutdoorZone: 'oz',
+    GolfZone: 'gz',
+}
+
+for safeZone in safeZones:
+    GLOBALS[safeZone] = {
+        'music': safeZonetoAlis[safeZone] + '-sz',
+        'battleMusic': safeZonetoAlis[safeZone] + '-sz-battle',
+        'activityMusic': safeZonetoAlis[safeZone] + '-sz-activity'
+    }
+    if safeZone not in [GolfZone,
+                        OutdoorZone]:
+        safeHierarchy = HoodHierarchyMusicManager[safeZone]
+        for hood in safeHierarchy:
+            GLOBALS[safeZonetoAlis[safeZone] + '-' + str(hood)] = {
+                'music': safeZonetoAlis[safeZone] + '-' + str(hood),
+                'battleMusic': safeZonetoAlis[safeZone] + '-' + str(hood) + '-battle',
+                'activityMusic': safeZonetoAlis[safeZone] + '-' + str(hood) + '-activity'
+            }

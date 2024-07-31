@@ -4,6 +4,110 @@
       "none_battle": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
       "none_activity": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
 
+      "tt-sz": "phase_4/audio/bgm/TC_nbrhood.ogg",
+      "tt-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "tt-sz-activity": "phase_3.5/audio/bgm/TC_SZ_activity.ogg",
+
+      "tt-2100": "phase_3.5/audio/bgm/TC_SZ.ogg",
+      "tt-2100-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "tt-2100-activity": "phase_3.5/audio/bgm/TC_SZ_activity.ogg",
+
+      "tt-2200": "phase_3.5/audio/bgm/TC_SZ.ogg",
+      "tt-2200-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "tt-2200-activity": "phase_3.5/audio/bgm/TC_SZ_activity.ogg",
+
+      "tt-2300": "phase_3.5/audio/bgm/TC_SZ.ogg",
+      "tt-2300-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "tt-2300-activity": "phase_3.5/audio/bgm/TC_SZ_activity.ogg",
+
+      "dd-sz": "phase_6/audio/bgm/DD_SZ.ogg",
+      "dd-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dd-sz-activity": "phase_6/audio/bgm/DD_SZ_activity.ogg",
+
+      "dd-1100": "phase_6/audio/bgm/DD_SZ.ogg",
+      "dd-1100-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dd-1100-activity": "phase_6/audio/bgm/DD_SZ_activity.ogg",
+
+      "dd-1200": "phase_6/audio/bgm/DD_SZ.ogg",
+      "dd-1200-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dd-1200-activity": "phase_6/audio/bgm/DD_SZ_activity.ogg",
+
+      "dd-1300": "phase_6/audio/bgm/DD_SZ.ogg",
+      "dd-1300-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dd-1300-activity": "phase_6/audio/bgm/DD_SZ_activity.ogg",
+
+      "dg-sz": "phase_8/audio/bgm/DG_nbrhood.ogg",
+      "dg-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dg-sz-activity": "phase_8/audio/bgm/DG_SZ_activity.ogg",
+
+      "dg-5100": "phase_8/audio/bgm/DG_SZ.ogg",
+      "dg-5100-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dg-5100-activity": "phase_8/audio/bgm/DG_SZ_activity.ogg",
+
+      "dg-5200": "phase_8/audio/bgm/DG_SZ.ogg",
+      "dg-5200-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dg-5200-activity": "phase_8/audio/bgm/DG_SZ_activity.ogg",
+
+      "dg-5300": "phase_8/audio/bgm/DG_SZ.ogg",
+      "dg-5300-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dg-5300-activity": "phase_8/audio/bgm/DG_SZ_activity.ogg",
+
+      "mm-sz": "phase_6/audio/bgm/MM_nbrhood.ogg",
+      "mm-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "mm-sz-activity": "phase_6/audio/bgm/MM_SZ_activity.ogg",
+
+      "mm-4100": "phase_6/audio/bgm/MM_SZ.ogg",
+      "mm-4100-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "mm-4100-activity": "phase_6/audio/bgm/MM_SZ_activity.ogg",
+
+      "mm-4200": "phase_6/audio/bgm/MM_SZ.ogg",
+      "mm-4200-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "mm-4200-activity": "phase_6/audio/bgm/MM_SZ_activity.ogg",
+
+      "mm-4300": "phase_6/audio/bgm/MM_SZ.ogg",
+      "mm-4300-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "mm-4300-activity": "phase_6/audio/bgm/MM_SZ_activity.ogg",
+
+      "br-sz": "phase_8/audio/bgm/BR_nbrhood.ogg",
+      "br-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "br-sz-activity": "phase_8/audio/bgm/BR_SZ_activity.ogg",
+
+      "br-3100": "phase_8/audio/bgm/BR_SZ.ogg",
+      "br-3100-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "br-3100-activity": "phase_8/audio/bgm/BR_SZ_activity.ogg",
+
+      "br-3200": "phase_8/audio/bgm/BR_SZ.ogg",
+      "br-3200-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "br-3200-activity": "phase_8/audio/bgm/BR_SZ_activity.ogg",
+
+      "br-3300": "phase_8/audio/bgm/BR_SZ.ogg",
+      "br-3300-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "br-3300-activity": "phase_8/audio/bgm/BR_SZ_activity.ogg",
+
+      "dl-sz": "phase_8/audio/bgm/DL_nbrhood.ogg",
+      "dl-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dl-sz-activity": "phase_8/audio/bgm/DL_SZ_activity.ogg",
+
+      "dl-9100": "phase_8/audio/bgm/DL_SZ.ogg",
+      "dl-9100-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dl-9100-activity": "phase_8/audio/bgm/DL_SZ_activity.ogg",
+
+      "dl-9200": "phase_8/audio/bgm/DL_SZ.ogg",
+      "dl-9200-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dl-9200-activity": "phase_8/audio/bgm/DL_SZ_activity.ogg",
+
+      "dl-9300": "phase_8/audio/bgm/DL_SZ.ogg",
+      "dl-9300-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "dl-9300-activity": "phase_8/audio/bgm/DL_SZ_activity.ogg",
+
+      "oz-sz": "phase_6/audio/bgm/OZ_SZ.ogg",
+      "oz-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "oz-sz-activity": "phase_6/audio/bgm/OZ_SZ.ogg",
+      "gz-sz": "phase_6/audio/bgm/GZ_SZ.ogg",
+      "gz-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "gz-sz-activity": "phase_6/audio/bgm/GZ_SZ.ogg",
+
+
       "sellbot-courtyard": "phase_9/audio/bgm/encntr_suit_HQ_nbrhood.ogg",
       "sellbot-courtyard-battle": "phase_9/audio/bgm/encntr_suit_winning.ogg",
       "sellbot-factory-exterior": "phase_9/audio/bgm/encntr_suit_HQ_nbrhood.ogg",
