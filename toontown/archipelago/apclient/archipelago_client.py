@@ -18,7 +18,7 @@ from toontown.archipelago.util import net_utils, global_text_properties
 from toontown.archipelago.util.data_package import DataPackage
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart, get_raw_formatted_string
 from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
-from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color
+from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color, NetworkPlayer
 from toontown.archipelago.packets import packet_registry
 from toontown.archipelago.packets.archipelago_packet_base import ArchipelagoPacketBase
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
@@ -38,6 +38,8 @@ def get_ssl_context():
 
 # Class to handle sending and receiving packets through a socket estabilished via the archipelago server
 class ArchipelagoClient(DirectObject):
+
+    notify = directNotify.newCategory("ArchipelagoClient")
 
     def __init__(self, av, slot_name: str = '', password: str = ''):
 
@@ -69,6 +71,9 @@ class ArchipelagoClient(DirectObject):
         self.global_data_package: DataPackage = DataPackage()
         self.location_scouts_cache: LocationScoutsCache = LocationScoutsCache()
 
+    def has_slot_info(self, slot_id: int) -> bool:
+        return slot_id in self.slot_id_to_slot_name
+
     # Given a slot number (as string or int, doesn't matter but must be a number) return the NetworkSlot as cached
     def get_slot_info(self, slot: Union[str, int]) -> NetworkSlot:
         return self.slot_id_to_slot_name[int(slot)]
@@ -76,6 +81,14 @@ class ArchipelagoClient(DirectObject):
     # Returns the local slot ID (int) that this client belongs to
     def get_local_slot(self) -> int:
         return self.slot
+
+    # Retrieve the name of a player in this AP session
+    def get_player_name(self, slot_id: int) -> str:
+
+        if not self.has_slot_info(slot_id):
+            return f"??? (player {slot_id})"
+
+        return self.get_slot_info(slot_id).name
 
     # Given the ID of an item, find a display name for the item using our data package
     def get_item_name(self, item_id: Union[str, int]) -> str:
@@ -272,6 +285,7 @@ class ArchipelagoClient(DirectObject):
 
     def handle_message_from_server(self, message):
 
+        # self.notify.info(f"{message}")
         # Retrieve the type of packet receieved from the server
         packet_class = packet_registry.PACKET_CMD_TO_CLASS[message['cmd']]
         # Make sure we received a client packet

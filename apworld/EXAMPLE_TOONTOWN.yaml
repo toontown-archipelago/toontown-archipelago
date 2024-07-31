@@ -48,6 +48,14 @@ Toontown:
   # Range: 0 to 1000
   starting_money: 1000
 
+  # The starting amount of tasks you can carry when starting a new game.
+  # Range:  1 to 6
+  starting_task_capacity: 4
+
+  # The max amount of tasks you can carry in a run.
+  # Range: 1 to 6
+  max_task_capacity: 4
+  
   ### Boss Settings ###
 
   # How many checks you will receive from a cog boss upon completion.
@@ -60,6 +68,8 @@ Toontown:
   # - cog_bosses (default): Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
   # - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
   # - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+  # - total_gag_tracks: Player must max a certain amount of gag tracks to complete the game (determined by gag_tracks_required).
+  # - total_fish_species: Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
   win_condition: cog_bosses
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
@@ -75,6 +85,16 @@ Toontown:
   # Unused if win_condition is not hood_tasks.
   # Range: 0 to 12
   hood_tasks_required: 8
+  
+  # How many gag tracks must be maxxed before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not total_gag_tracks
+  # Range 0 to 7
+  gag_tracks_required: 5
+
+  # How many fish species must be caught before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not total_fish_species
+  # Range 0 to 70
+  fish_species_required: 70
 
   ### Sanity Settings ###
 
@@ -104,6 +124,16 @@ Toontown:
   # Determines the amount of tasks per playground that are in logic.
   # Range: 0 to 12
   logical_tasks_per_playground: 12
+
+  # Determines what the starting playground is for quests (includes TP access)
+  # - ttc: start with TTC access
+  # - dd: start with DD access
+  # - dg: start with DG access
+  # - mml: start with MML access
+  # - tb: start with TB access
+  # - ddl: start with DDL access
+  # - random: start with a random access
+  starting_task_playground: 'ttc'
 
   ### Cog Gallery Settings ###
 
@@ -146,8 +176,17 @@ Toontown:
   # wild: RNG elements are completely random and will shuffle upon relogging
   seed_generation_type: 'global'
 
+  ### Trap Settings ###
+
   # Percentage of junk items to be replaced with traps
   trap_percent: 20
+
+  # Weights for all of the various traps (0-100).
+  # At least 1 trap must have a value of >0 if trap_percent is >=1.
+  uber_trap_weight: 100
+  drip_trap_weight: 50
+  bean_tax_weight: 36
+  gag_shuffle_weight: 100
 
   ### General Gameplay Settings ###
 

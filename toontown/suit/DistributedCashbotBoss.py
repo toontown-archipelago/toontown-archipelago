@@ -29,6 +29,7 @@ from panda3d.direct import *
 from libotp import *
 import random
 import math
+import json
 
 # This pointer keeps track of the one DistributedCashbotBoss that
 # should appear within the avatar's current visibility zones.  If
@@ -68,9 +69,12 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.spectators = []
         self.endVault = None
         self.warningSfx = None
+        self.bossMaxDamage = self.ruleset.CFO_MAX_HP
         
         self.latency = 0.5 #default latency for updating object posHpr
         self.toonSpawnpointOrder = [i for i in range(8)]
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         return
 
     def setToonSpawnpoints(self, order):
@@ -176,7 +180,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.collNode.addSolid(tube2)
         
     def getBossMaxDamage(self):
-        return self.ruleset.CFO_MAX_HP
+        return self.bossMaxDamage
 
     def calculateHeat(self):
         bonusHeat = 0
@@ -917,7 +921,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.showHpText(-delta, scale=5)
         self.bossDamage = bossDamage
         self.updateHealthBar()
-        self.bossHealthBar.update(self.ruleset.CFO_MAX_HP - bossDamage, self.ruleset.CFO_MAX_HP)
+        self.bossHealthBar.update(self.bossMaxDamage - bossDamage, self.bossMaxDamage)
 
     def setCraneSpawn(self, want, spawn, toonId):
         self.wantCustomCraneSpawns = want
@@ -1173,6 +1177,9 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         # print( "Latency = %0.3f " % base.cr.timeManager.getLatency())
         # self.latency = min(base.cr.timeManager.getLatency() + 0.1, 0.5)
         # self.latency = 0.2
+        # Calculate the max hp of the boss
+        cfoMaxHp = self.ruleset.CFO_MAX_HP + self.ruleset.HP_PER_EXTRA * (len(self.involvedToons) - 1)
+        self.bossMaxDamage = min(self.ruleset.get_max_allowed_hp(), cfoMaxHp)
 
         if self.bossHealthBar:
             self.bossHealthBar.cleanup()
@@ -1212,7 +1219,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         taskMgr.add(self.__doPhysics, self.uniqueName('physics'), priority=25)
         
         # Display Health Bar
-        self.bossHealthBar.initialize(self.ruleset.CFO_MAX_HP - self.bossDamage, self.ruleset.CFO_MAX_HP)
+        self.bossHealthBar.initialize(self.bossMaxDamage - self.bossDamage, self.bossMaxDamage)
         
         # Display Boss Timer
         self.startTimer()

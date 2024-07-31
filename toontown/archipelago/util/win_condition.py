@@ -4,6 +4,7 @@ import typing
 
 from toontown.quest import Quests
 from toontown.toonbase import ToontownGlobals
+from toontown.toonbase import ToontownBattleGlobals
 
 if typing.TYPE_CHECKING:
     from toontown.toon.DistributedToon import DistributedToon
@@ -178,6 +179,66 @@ class HoodTaskWinCondition(WinCondition):
                 f'When you finish, come back and see me!{delimiter}'
                 f'Good luck!')
 
+class GagTrackWinCondition(WinCondition):
+    # gag tracks to consider for win condition
+    GAG_TRACKS = (ToontownBattleGlobals.HEAL_TRACK, ToontownBattleGlobals.TRAP_TRACK,
+                  ToontownBattleGlobals.LURE_TRACK, ToontownBattleGlobals.SOUND_TRACK,
+                  ToontownBattleGlobals.THROW_TRACK, ToontownBattleGlobals.SQUIRT_TRACK,
+                  ToontownBattleGlobals.DROP_TRACK)
+    
+    def __init__(self, toon: DistributedToon | DistributedToonAI, gag_tracks: int):
+        super().__init__(toon)
+        self.gag_tracks = gag_tracks # gag tracks needed to meet win condition
+    
+    # Calculate a dictionary that represents gags maxxed (have 20k exp at least)
+    def _get_gags_maxxed(self) -> dict[int, int]:
+        gags_maxxed = {track: 0 for track in self.GAG_TRACKS}
+        experience = self.toon.experience.getCurrentExperience()
+        for track in self.GAG_TRACKS:
+            if experience[track] >= 19999:
+                gags_maxxed[track] = 1
+        return gags_maxxed
+    
+    def satisfied(self) -> bool:
+        return sum(self._get_gags_maxxed().values()) >= self.gag_tracks
+    
+    def generate_npc_dialogue(self, delimiter='\x07') -> str:
+        gags_needed = self.gag_tracks - sum(self._get_gags_maxxed().values())
+        plural = 's' if gags_needed > 1 else ''
+        return (f'You still have not completed your goal!{delimiter}'
+                f'You still need to max out {gags_needed} gag track{plural}.{delimiter}'
+                f'When you finish, come back and see me!{delimiter}'
+                f'Good luck!')
+    
+class FishSpeciesWinCondition(WinCondition):
+    def __init__(self, toon: DistributedToon | DistributedToonAI, fish_species: int):
+        super().__init__(toon)
+        self.fish_species = fish_species # fish species needed to meet win condition
+    
+    # Calculate how many fish species the toon has caught
+    def _get_fish_species_caught(self) -> int:
+        if hasattr(self.toon, 'fishCollection'):
+            toonsFishCollection = self.toon.fishCollection
+        else:
+            toonsFishCollection = None 
+            print(f'win_condition warning: fish collection not found in toon {self.toon.getDoId()}')
+            return 0
+        if toonsFishCollection is None:
+            return 0
+        toonsFishCollection = toonsFishCollection.getNetLists()
+        toonsFishSpecies = toonsFishCollection[1] # 1 is fish species
+        return len(toonsFishSpecies)
+    
+    def satisfied(self) -> bool:
+        return self._get_fish_species_caught() >= self.fish_species
+    
+    def generate_npc_dialogue(self, delimiter='\x07') -> str:
+        fish_needed = self.fish_species - self._get_fish_species_caught()
+        plural = 's' if fish_needed > 1 else ''
+        return (f'You still have not completed your goal!{delimiter}'
+                f'You still need to catch {fish_needed} more fish species.{delimiter}'
+                f'When you finish, come back and see me!{delimiter}'
+                f'Good luck!')
 
 # Given a win condition ID (given to us via slot data from archipelago) generate and return the corresponding condition
 # When new win conditions are added, be sure to add them here
@@ -198,6 +259,14 @@ def generate_win_condition(condition_id: int, toon: DistributedToon | Distribute
     # Check for per playground task condition
     if condition_id == 2:
         return HoodTaskWinCondition(toon, toon.slotData.get('hood_tasks_required', 12))
+    
+    # Check for gag tracks condition
+    if condition_id == 3:
+        return GagTrackWinCondition(toon, toon.slotData.get('gag_tracks_required', 5))
+    
+    # check for fish species condition
+    if condition_id == 4:
+        return FishSpeciesWinCondition(toon, toon.slotData.get('fish_species_required', 70))
 
     # We don't have a valid win condition
     return InvalidWinCondition(toon)

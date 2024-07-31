@@ -207,6 +207,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.immortalMode = False
         self.unlimitedGags = False
         self.instaKill = False
+        self.hasPaidTaxes = False
         self.overheadLaffMeter = None
         self.baseGagSkillMultiplier = 1
         self.damageMultiplier = 100
@@ -221,6 +222,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.winCondition: WinCondition = win_condition.NoWinCondition(self)
         self.rewardHistory = []
         self.rewardTier = 0
+        self.alreadyNotified = False
+        self.fishCollection = FishCollection.FishCollection()
+        # empty collection
+        self.setFishCollection([], [], [])
         return
 
     def disable(self):
@@ -1456,6 +1461,12 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def getMoney(self):
         return self.money
+
+    def setHasPaidTaxes(self, paidTaxes):
+        self.hasPaidTaxes = paidTaxes
+
+    def getHasPaidTaxes(self):
+        return self.hasPaidTaxes
 
     def setMaxBankMoney(self, maxMoney):
         self.maxBankMoney = maxMoney
@@ -2893,10 +2904,13 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def checkWinCondition(self):
         if self.getWinCondition().satisfied():
-            if hasattr(self, 'displaySystemClickableWhisper'):
-                self.displaySystemClickableWhisper(0, TTLocalizer.WinConditionMet, whisperType=WhisperType.WTSystem)
-            else:
+            if not self.alreadyNotified:
                 self.setSystemMessage(0, TTLocalizer.WinConditionMet)
+                # play the golf victory sound so they dont miss it
+                 # check if its localtoon to potentially fix a bug with this playing for unknown reasons 
+                if self == base.localAvatar:
+                    base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
+                self.alreadyNotified = True
 
     def getWinCondition(self) -> WinCondition:
         return self.winCondition

@@ -44,6 +44,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
 
         self.frameworkFSM.enterInitialState()
         self.avIdList = []
+        self.toonsSkipped = []
         self.stateDict = {}
         self.scoreDict = {}
         self.difficultyOverride = None
@@ -394,6 +395,27 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
     def requestExit(self):
         self.notify.debug('BASE: requestExit: client has requested the game to end')
         self.setGameAbort()
+
+    def checkSkip(self):
+        self.notify.info("Checking skip")
+        if len(self.toonsSkipped) >= 1:
+            # exit minigame
+            self.notify.info('Skipping minigame')
+            self.requestExit()
+        # else:
+        #     # tell the client the amount of toons skipped
+        #     self.notify.info('Sending client skip amount')
+        #     self.sendUpdate('setSkipAmount', [len(self.toonsSkipped)])
+        return
+    
+    def requestSkip(self):
+        toon = self.air.getAvatarIdFromSender()
+        if (toon not in self.avIdList) or (toon in self.toonsSkipped):
+            self.notify.warning('Unable to request skip')
+            return
+        self.toonsSkipped.append(toon)
+        self.notify.info('toons Skipped appended')
+        self.checkSkip()
 
     def local2GameTime(self, timestamp):
         return timestamp - self.gameStartTime

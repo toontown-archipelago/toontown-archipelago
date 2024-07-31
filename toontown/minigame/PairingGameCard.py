@@ -1,6 +1,6 @@
 from .PlayingCard import PlayingCardNodePath
 from . import PlayingCardGlobals
-from panda3d.core import NodePath, Vec3
+from panda3d.core import NodePath, Vec3, RenderState, Texture
 from direct.interval.IntervalGlobal import LerpHprInterval, Parallel, SoundInterval
 
 class PairingGameCard(PlayingCardNodePath):
@@ -49,6 +49,11 @@ class PairingGameCard(PlayingCardNodePath):
         cardBack.setColorScale(0.12, 0.35, 0.5, 1.0)
         cardModel = loader.loadModel('phase_3.5/models/gui/playingCard')
         logo = cardModel.find('**/logo')
+        logo.setState(RenderState.makeEmpty())
+        cardTex = loader.loadTexture('phase_3/maps/toontown-logo.png')
+        cardTex.setMinfilter(Texture.FTLinearMipmapLinear)
+        cardTex.setMagfilter(Texture.FTLinear)
+        logo.setTexture(cardTex, 1)
         logo.reparentTo(self)
         logo.setScale(0.45)
         logo.setP(90)

@@ -14,14 +14,14 @@ NO_PET = 0
 class OnlineToon:
     avId: int  # Toon ID
     name: str  # Current Name
-    dna:  str  # DNA String
+    dna:  bytes  # DNA String
 
     def struct(self) -> List[int]:
         fields = dataclasses.asdict(self).values()
         return list(fields)
 
     def make_dna(self) -> ToonDNA:
-        return ToonDNA(str=self.dna)
+        return ToonDNA(dnastring=self.dna)
 
     # Constructs a FriendHandle instance from this instance to be used for the friends list.
     def handle(self) -> FriendHandle:

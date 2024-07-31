@@ -48,7 +48,18 @@ suitHeadTypes = [
     'ms',
     'tf',
     'm',
-    'mh'
+    'mh',
+    'trf',
+    'ski',
+    'def',
+    'bgh'
+]
+
+notMainTypes = [
+    'trf',
+    'ski',
+    'def',
+    'bgh'
 ]
 
 suitATypes = [
@@ -64,6 +75,7 @@ suitATypes = [
     'rb',
     'nd',
     'tf',
+    'trf',
     'm',
     'mh'
 ]
@@ -73,11 +85,13 @@ suitBTypes = [
     'ds',
     'b',
     'ac',
+    'def',
     'sd',
     'bc',
+    'ski',
     'ls',
     'tm',
-    'ms'
+    'ms',
 ]
 
 suitCTypes = [
@@ -89,7 +103,8 @@ suitCTypes = [
     'tw',
     'mb',
     'cc',
-    'gh'
+    'gh',
+    'bgh'
 ]
 
 suitDepts = [
@@ -98,6 +113,11 @@ suitDepts = [
     'm',
     's'
 ]
+
+suitDeptToPhase = {'s': 9,
+                   'm': 10,
+                   'l': 11,
+                   'c': 12}
 
 suitDeptFullnames = {
     'c': TTLocalizer.Bossbot,
@@ -447,15 +467,22 @@ class SuitVisual:
         # find if the head_type is a list or not
         if isinstance(self.head_type, list):
             for head in self.head_type:
-                headModel = loader.loadModel(self.headModelPath(suit.style.body))
+                headPath = self.headModelPath(suit.style.body)
+                if self.key in ['ds', 'def']:
+                    headPath = self.headModelPath(suit.style.body, 'phase_4/models/char/suitB-heads2')
+                elif self.key == 'trf':
+                    headPath = self.headModelPath(suit.style.body, 'phase_4/models/char/suitA-heads2')
+                headModel = loader.loadModel(headPath)
                 head = headModel.find('**/' + head)
                 head.reparentTo(suit.find(attachPoint))
+                head.setTwoSided(True)
                 suit.headParts.append(head)
                 headModel.removeNode()
         else:
             headModel = loader.loadModel(self.headModelPath(suit.style.body))
             head = headModel.find('**/' + self.head_type)
             head.reparentTo(suit.find(attachPoint))
+            head.setTwoSided(True)
             suit.headParts.append(head)
             headModel.removeNode()
     
@@ -478,7 +505,7 @@ GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
     SuitVisual('p',   3.35 / bSize,  corpPolyColor,                 None,                         None,                   'pencilpusher',        5.0),
     SuitVisual('ym',  4.125 / aSize, corpPolyColor,                 None,                         None,                   'yesman',              5.28),
     SuitVisual('mm',  2.5 / cSize,   corpPolyColor,                 None,                         None,                   'micromanager',        3.25),
-    SuitVisual('ds',  4.5 / bSize,   corpPolyColor,                 None,                         None,                   'beancounter',         6.08),
+    SuitVisual('ds',  4.5 / bSize,   corpPolyColor,                 None,                         None,                   ['downsizer', 'downsizer_hat'],         6.08),
     SuitVisual('hh',  6.5 / aSize,   corpPolyColor,                 None,                         None,                   'headhunter',          7.45),
     SuitVisual('cr',  6.75 / cSize,  VBase4(0.85, 0.55, 0.55, 1.0), None,                         'corporate-raider.jpg', 'flunky',              8.23),
     SuitVisual('tbc', 7.0 / aSize,   VBase4(0.75, 0.95, 0.75, 1.0), None,                         None,                   'bigcheese',           9.34),
@@ -498,14 +525,19 @@ GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
     SuitVisual('mb',  5.3 / cSize,   moneyPolyColor,                None,                         None,                   'moneybags',           6.97),
     SuitVisual('ls',  6.5 / bSize,   VBase4(0.5, 0.85, 0.75, 1.0),  None,                         None,                   'loanshark',           8.58),
     SuitVisual('rb',  7.0 / aSize,   moneyPolyColor,                None,                         'robber-baron.jpg',     'yesman',              8.95),
-    SuitVisual('cc',  3.5 / cSize,   VBase4(0.55, 0.65, 1.0, 1.0),  VBase4(0.25, 0.35, 1.0, 1.0), None,                   'coldcaller',          4.63),
+    SuitVisual('cc',  3.5 / cSize,   VBase4(0.55, 0.65, 1.0, 1.0),  None,                         'tutorial_suits_palette_3cmla_2.jpg',                   'coldcaller',          4.63),
     SuitVisual('tm',  3.75 / bSize,  salesPolyColor,                None,                         None,                   'telemarketer',        5.24),
     SuitVisual('nd',  4.35 / aSize,  salesPolyColor,                None,                         'name-dropper.jpg',     'numbercruncher',      5.98),
     SuitVisual('gh',  4.75 / cSize,  salesPolyColor,                None,                         None,                   'gladhander',          6.4),
     SuitVisual('ms',  4.75 / bSize,  salesPolyColor,                None,                         None,                   'movershaker',         6.7),
     SuitVisual('tf',  5.25 / aSize,  salesPolyColor,                None,                         None,                   'twoface',             6.95),
     SuitVisual('m',   5.75 / aSize,  salesPolyColor,                None,                         'mingler.jpg',          'twoface',             7.61),
-    SuitVisual('mh',  7.0 / aSize,   salesPolyColor,                None,                         None,                   'yesman',              8.95)
+    SuitVisual('mh',  7.0 / aSize,   salesPolyColor,                None,                         None,                   'yesman',              8.95),
+
+    SuitVisual('trf',  5.25 / aSize,  salesPolyColor,                None,                         None,                   ['flunky', 'hat'],             6.95),
+    SuitVisual('ski',  5.65 / bSize,  VBase4(0.5, 0.8, 0.75, 1.0),   None,                        'skinflint.jpg',      'telemarketer',        7.9),
+    SuitVisual('def',  4.4 / bSize,   moneyPolyColor,                None,                        'suit-heads_palette_3cmla_5.jpg',                   ['downsizer', 'downsizer_hat'],         5.95),
+    SuitVisual('bgh',   4.0 / cSize,   corpPolyColor,                 None,                         'bag_holder.jpg',                   'tightwad', 4.88),
 }
 
 SuitClotheParts = ['blazer', 'leg', 'sleeve']
@@ -541,6 +573,15 @@ def getNormalClotheTexture(dept):
         
     return SuitClothes['blazer'], SuitClothes['leg'], SuitClothes['sleeve']
 
+def getSuitNameContentPackClotheTexture(suit_name):
+    SuitClothes = {}
+
+    for partName in SuitClotheParts:
+        texName = "phase_3.5/maps/tt_t_ene_clothe_%s_%s.jpg" % (suit_name, partName)
+        SuitClothes[partName] = loader.loadTexture(texName)
+        
+    return SuitClothes['blazer'], SuitClothes['leg'], SuitClothes['sleeve']
+
 
 def getWaiterClotheTexture():
     SuitClothes = {}
@@ -554,6 +595,12 @@ def getWaiterClotheTexture():
 
 CUSTOM_SUIT_CLOTHES: Set[CustomSuitClothes] = set()
 
+customSuit2Dept = {
+    'trf': 's',
+    'ski': 'm',
+    'def': 'l',
+    'bgh': 'c'
+}
 
 def getSuitDept(name):
     index = suitHeadTypes.index(name)
@@ -565,6 +612,8 @@ def getSuitDept(name):
         return suitDepts[2]
     elif index < suitsPerDept * 4:
         return suitDepts[3]
+    elif name in customSuit2Dept:
+        return customSuit2Dept[name]
     else:
         print('Unknown dept for suit name: ', name)
         return None
@@ -695,6 +744,64 @@ class SuitDNA(AvatarDNA.AvatarDNA):
         bottom = _base + offset
         top = bottom + suitsPerLevel[level - 1]
         self.name = suitHeadTypes[random.choice(list(range(bottom, top)))]
+
+        self.body = getSuitBodyType(self.name)
+        return
+    
+    def newSuitRandomCustom(self, level = None, dept = None):
+        self.type = 's'
+        if level is None:
+            level = random.choice(list(range(1, len(suitsPerLevel))))
+        elif level < 0 or level > len(suitsPerLevel):
+            notify.error('Invalid suit level: %d' % level)
+        if dept is None:
+            dept = random.choice(suitDepts)
+        self.dept = dept
+        index = suitDepts.index(dept)
+        _base = index * suitsPerDept
+        offset = 0
+        if level > 1:
+            for i in range(1, level):
+                offset = offset + suitsPerLevel[i - 1]
+
+        bottom = _base + offset
+        top = bottom + suitsPerLevel[level - 1]
+        self.name = suitHeadTypes[random.choice(list(range(bottom, top)))]
+
+        # this is where we include some of the new suits
+
+         # we get it's parent suit
+        if self.name == 'f':
+            # we define it's rng
+            alternateSuitChance = 0.4
+            # if the rng is less than the chance, we set the suit to the alternate suit
+            if random.random() < alternateSuitChance:
+                self.name = 'bgh'
+
+        # we get it's parent suit
+        if self.name == 'ac':
+            # we define it's rng
+            alternateSuitChance = 0.4
+            # if the rng is less than the chance, we set the suit to the alternate suit
+            if random.random() < alternateSuitChance:
+                self.name = 'def'
+        
+        # we get it's parent suit
+        if self.name == 'mb':
+            # we define it's rng
+            alternateSuitChance = 0.4
+            # if the rng is less than the chance, we set the suit to the alternate suit
+            if random.random() < alternateSuitChance:
+                self.name = 'ski'
+        
+        # we get it's parent suit
+        if self.name == 'tf':
+            # we define it's rng
+            alternateSuitChance = 0.4
+            # if the rng is less than the chance, we set the suit to the alternate suit
+            if random.random() < alternateSuitChance:
+                self.name = 'trf'
+
         self.body = getSuitBodyType(self.name)
         return
 

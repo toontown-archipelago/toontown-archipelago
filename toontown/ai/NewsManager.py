@@ -347,6 +347,9 @@ class NewsManager(DistributedObject.DistributedObject):
     def setBingoStart(self):
         base.localAvatar.setSystemMessage(0, TTLocalizer.FishBingoStart)
 
+    def setToonShout(self, shout):
+        base.localAvatar.setSystemMessage(0, shout)
+
     def setBingoOngoing(self):
         base.localAvatar.setSystemMessage(0, TTLocalizer.FishBingoOngoing)
 

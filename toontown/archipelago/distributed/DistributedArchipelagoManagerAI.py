@@ -5,6 +5,7 @@ from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
+from toontown.archipelago.util.HintContainer import HintContainer, HintedItem
 from toontown.archipelago.util.archipelago_information import ArchipelagoInformation
 from toontown.toon.DistributedToonAI import DistributedToonAI
 
@@ -120,6 +121,42 @@ class DistributedArchipelagoManagerAI(DistributedObjectAI):
 
         # If the teams are not equal, they are enemies.
         return toon1Team != toon2Team
+
+
+    """
+    Code related to hint management
+    """
+    def requestHints(self):
+        """
+        Called via an astron update when a client requests their full hint container.
+        """
+
+        avId = self.air.getAvatarIdFromSender()
+
+        session: ArchipelagoSession = self.__getSession(avId)
+        if session is None:
+            return
+
+        self.d_setHints(avId, session.getHintContainer())
+
+    def d_setHints(self, avId, hint_container: HintContainer):
+        """
+        Send the full hint container to a certain client for sync purposes.
+        """
+        self.sendUpdateToAvatarId(avId, 'setHints', [hint_container.to_struct()])
+
+    def d_sendHint(self, avId, hint: HintedItem):
+        """
+        Send a singular hint to a player for them to additively cache it locally
+        """
+        self.sendUpdateToAvatarId(avId, 'addHint', [hint.to_struct()])
+
+    def d_sendHints(self, avId, hints: List[HintedItem]):
+        """
+        Send multiple hints to a player for them to additively cache them locally
+        """
+        self.sendUpdateToAvatarId(avId, 'addHints', [hint.to_struct() for hint in hints])
+
 
     """
     Boilerplate astron code throw up emoji

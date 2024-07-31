@@ -48,6 +48,7 @@ from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.definitions.rewards import EarnedAPReward
 from ..archipelago.definitions.util import get_zone_discovery_id
 from ..archipelago.util import win_condition
+from ..archipelago.util.HintContainer import HintedItem
 from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..archipelago.util.win_condition import WinCondition
 from ..shtiker import CogPageGlobals
@@ -221,6 +222,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.instaKill = False
         self.instantDelivery = False
         self.alwaysHitSuits = False
+        self.hasPaidTaxes = False
 
         # Archipelago Stuff
         self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
@@ -2394,6 +2396,19 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def getSpeedChatStyleIndex(self):
         return self.speedChatStyleIndex
 
+    def b_setHasPaidTaxes(self, paidTaxes):
+        self.d_setHasPaidTaxes(paidTaxes)
+        self.setHasPaidTaxes(paidTaxes)
+
+    def d_setHasPaidTaxes(self, paidTaxes):
+        self.sendUpdate('setHasPaidTaxes', [paidTaxes])
+
+    def setHasPaidTaxes(self, paidTaxes):
+        self.hasPaidTaxes = paidTaxes
+
+    def getHasPaidTaxes(self):
+        return self.hasPaidTaxes
+
     def b_setMaxMoney(self, maxMoney):
         self.d_setMaxMoney(maxMoney)
         self.setMaxMoney(maxMoney)
@@ -4490,6 +4505,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         self.sendUpdate('updateLocationScoutsCache', [cache.struct()])
 
+    def sendHint(self, hint: HintedItem):
+        self.air.archipelagoManager.d_sendHint(self.getDoId(), hint)
+
     def queueArchipelagoMessage(self, message: str):
         self.apMessageQueue.queue(message)
 
@@ -4574,6 +4592,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setFishCollection([], [], [])
         self.b_setFishingRod(0)
         self.b_setFishingTrophies([])
+        # empty bucket
+        self.b_setFishTank([], [], [])
 
         # TP access
         self.b_setHoodsVisited([])
@@ -4595,6 +4615,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         cogStatus = self.getCogStatus()
         cogCount = self.getCogCount()
         for suitIndex, suitCode in enumerate(SuitDNA.suitHeadTypes):
+            # Don't try to set cogs not in gallery to unseen
+            if suitCode in SuitDNA.notMainTypes:
+                continue
             cogStatus[suitIndex] = CogPageGlobals.COG_UNSEEN
             cogCount[suitIndex] = 0
         self.b_setCogStatus(cogStatus)

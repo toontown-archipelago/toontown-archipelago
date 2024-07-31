@@ -28,7 +28,7 @@ __all__ = ['enumerate', 'unique', 'indent', 'nonRepeatingRandomList',
 'FrameDelayedCall', 'SubframeCall', 'ArgumentEater', 'ClassTree', 'getBase',
 'HotkeyBreaker','logMethodCalls','GoldenRatio',
 'GoldenRectangle', 'pivotScalar', 'rad90', 'rad180', 'rad270', 'rad360',
-'nullGen', 'loopGen', 'makeFlywheelGen', 'flywheel', 'choice',
+'loopGen', 'makeFlywheelGen', 'flywheel', 'choice',
 'printStack', 'printReverseStack', 'listToIndex2item', 'listToItem2index',
 'pandaBreak','pandaTrace','formatTimeCompact','DestructiveScratchPad',
 'deeptype','getProfileResultString','StdoutCapture','StdoutPassthrough',
@@ -3608,12 +3608,6 @@ class HotkeyBreaker:
         if __dev__:
             return bool(self.breakKeys.pop(breakKey,None))
 
-def nullGen():
-    # generator that ends immediately
-    if False:
-        # yield that never runs but still exists, making this func a generator
-        yield None
-
 def loopGen(l):
     # generator that yields the items of an iterable object forever
     def _gen(l):
@@ -4359,7 +4353,6 @@ builtins.getBase = getBase
 builtins.getRepository = getRepository
 builtins.safeRepr = safeRepr
 builtins.fastRepr = fastRepr
-builtins.nullGen = nullGen
 builtins.flywheel = flywheel
 builtins.loopGen = loopGen
 builtins.StackTrace = StackTrace

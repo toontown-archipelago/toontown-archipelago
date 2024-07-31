@@ -1,5 +1,6 @@
 from panda3d.core import *
 from toontown.toonbase.ToonBaseGlobal import *
+from toontown.toonbase import ToontownGlobals
 from toontown.distributed.ToontownMsgTypes import *
 from toontown.hood import ZoneUtil
 from direct.directnotify import DirectNotifyGlobal
@@ -17,6 +18,7 @@ from toontown.tutorial import TutorialForceAcknowledge
 from toontown.toonbase.ToontownGlobals import *
 from toontown.building import ToonInterior
 from toontown.hood import QuietZoneState
+import json
 
 class SafeZoneLoader(StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('SafeZoneLoader')
@@ -36,6 +38,8 @@ class SafeZoneLoader(StateData.StateData):
         self.playgroundClass = None
 
         self.townBattle = TownBattle('town-battle-done')
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         return
 
     def load(self):
@@ -44,6 +48,13 @@ class SafeZoneLoader(StateData.StateData):
         self.createSafeZone(self.dnaFile)
         self.parentFSMState.addChild(self.fsm)
         self.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
+
+        if str(self.hood.id) in self.musicJson['global_music']:
+            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.hood.id)])
+            if (str(self.hood.id) + '_activity') in self.musicJson['global_music']:
+                self.activityMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.hood.id) + '_activity')])
+            if (str(self.hood.id) + '_battle') in self.musicJson['global_music']:
+                self.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.hood.id) + '_battle')])
 
     def unload(self):
         self.parentFSMState.removeChild(self.fsm)

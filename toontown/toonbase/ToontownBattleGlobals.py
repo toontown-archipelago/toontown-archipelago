@@ -64,7 +64,7 @@ regMaxSkill = 20000
 MaxSkill = 999999  # How high should we allow xp to go
 
 # Exp needed per % increase
-overflowRates = [600, 200, 500, 400, 200, 200, 200]
+overflowRates = [600, 300, 600, 500, 300, 300, 300]
 
 def getUberDamageBonus(experience, track, overflowMod=None) -> float:
     overflow = experience - regMaxSkill
@@ -268,13 +268,13 @@ AvPropDamage = (
         ((65, 100), (Levels[2][6], regMaxSkill))
     ),
     (   # Sound
-        ((2, 3), (Levels[3][0], Levels[3][1])),
-        ((5, 7), (Levels[3][1], Levels[3][2])),
-        ((9, 11), (Levels[3][2], Levels[3][3])),
-        ((14, 16), (Levels[3][3], Levels[3][4])),
-        ((20, 25), (Levels[3][4], Levels[3][5])),
-        ((35, 60), (Levels[3][5], Levels[3][6])),
-        ((70, 100), (Levels[3][6], regMaxSkill))
+        ((2, 4), (Levels[3][0], Levels[3][1])),
+        ((5, 8), (Levels[3][1], Levels[3][2])),
+        ((9, 12), (Levels[3][2], Levels[3][3])),
+        ((16, 20), (Levels[3][3], Levels[3][4])),
+        ((25, 30), (Levels[3][4], Levels[3][5])),
+        ((45, 75), (Levels[3][5], Levels[3][6])),
+        ((90, 110), (Levels[3][6], regMaxSkill))
     ),
     (   # Throw
         ((4, 6), (Levels[4][0], Levels[4][1])),
@@ -298,9 +298,9 @@ AvPropDamage = (
         ((8, 10), (Levels[6][0], Levels[6][1])),
         ((15, 18), (Levels[6][1], Levels[6][2])),
         ((25, 30), (Levels[6][2], Levels[6][3])),
-        ((42, 45), (Levels[6][3], Levels[6][4])),
-        ((56, 60), (Levels[6][4], Levels[6][5])),
-        ((85, 170), (Levels[6][5], Levels[6][6])),
+        ((42, 50), (Levels[6][3], Levels[6][4])),
+        ((60, 75), (Levels[6][4], Levels[6][5])),
+        ((90, 170), (Levels[6][5], Levels[6][6])),
         ((175, 210), (Levels[6][6], regMaxSkill))
     )
 )

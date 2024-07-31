@@ -297,6 +297,8 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
 
         track.append(Func(callback))
         track.start(ts)
+        track.setPlayRate(2.0)
+
         self.activeIntervals[name] = track
         return
 

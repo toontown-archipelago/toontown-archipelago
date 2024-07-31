@@ -13,6 +13,7 @@ from toontown.toonbase import TTLocalizer
 from libotp import *
 from direct.showbase import AppRunnerGlobal
 import string
+import json
 import os
 
 TutorialModelDict = ModelDict
@@ -156,6 +157,26 @@ class Suit(Avatar.Avatar):
         ToontownGlobals.CogImmuneGlowColor  # Immune
     )
 
+    healthColorsAccess = (
+        Vec4(0.42, 0.8, 0, 1),        # Green/full(ish) hp
+        Vec4(0.8, 0.8, 0.42, 1),        # Yellow (Halfish)
+        Vec4(0.8, 0.3, 0.23, 1),      # Orange (Low)
+        Vec4(0.8, 0.3, 0.3, 1),        # Red (Very low)
+        Vec4(0.3, 0.3, 0.3, 1),  # Blink slow, task will refer to red as well
+        Vec4(0.3, 0.3, 0.3, 1),  # Blink fast, task will refer to red as well
+        ToontownGlobals.CogImmuneColor  # Immune
+    )
+
+    healthGlowColorsAccess = (
+        Vec4(0.25, 0.6, 0.25, 0.5),  # Green/full(ish) hp
+        Vec4(0.8, 0.6, 0.25, 0.5),     # Yellow (Halfish)
+        Vec4(0.6, 0.5, 0.25, 0.5),   # Orange (Low)
+        Vec4(0.6, 0.25, 0.25, 0.5),  # Red (Very low)
+        Vec4(0.3, 0.3, 0.3, 0),    # Blink slow, task will refer to red as well
+        Vec4(0.3, 0.3, 0.3, 0),    # Blink fast, task will refer to red as well
+        ToontownGlobals.CogImmuneGlowColor  # Immune
+    )
+
     medallionColors = {
         'c': Vec4(0.863, 0.776, 0.769, 1.0),
         's': Vec4(0.843, 0.745, 0.745, 1.0),
@@ -185,6 +206,12 @@ class Suit(Avatar.Avatar):
         self.isWaiter = 0
         self.isRental = 0
         self.isImmune = 0
+        if not base.colorBlindMode:
+            self.healthBarColors = self.healthColors
+            self.healthBarGlowColors = self.healthGlowColors
+        else:
+            self.healthBarColors = self.healthColorsAccess
+            self.healthBarGlowColors = self.healthGlowColorsAccess
         self.setBlend(frameBlend=True)
         return
 
@@ -313,7 +340,13 @@ class Suit(Avatar.Avatar):
                 customClothesNeeeded = True
                 break
 
-        if customClothesNeeeded:
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        clothesJson = json.loads(fileSystem.readFile(ToontownGlobals.suitClothesJsonFilePath, True))
+        
+        if self.style.name in clothesJson['suit_clothes']:
+            if clothesJson['suit_clothes'][self.style.name] == True:
+                torsoTex, legTex, armTex = getSuitNameContentPackClotheTexture(self.style.name)
+        elif customClothesNeeeded:
             torsoTex, legTex, armTex = customClothesVisual.getClotheTexture(self)
         else:
             torsoTex, legTex, armTex = getNormalClotheTexture(self.style.dept)
@@ -424,7 +457,7 @@ class Suit(Avatar.Avatar):
         button = model.find('**/minnieCircle')
         button.setScale(3.0)
         button.setH(180.0)
-        button.setColor(self.healthColors[0])
+        button.setColor(self.healthBarColors[0])
         chestNull = self.find('**/joint_attachMeter')
         button.reparentTo(chestNull)
         self.healthBar = button
@@ -432,7 +465,7 @@ class Suit(Avatar.Avatar):
         glow.reparentTo(self.healthBar)
         glow.setScale(0.28)
         glow.setPos(-0.005, 0.01, 0.015)
-        glow.setColor(self.healthGlowColors[0])
+        glow.setColor(self.healthBarGlowColors[0])
         button.flattenLight()
         self.healthBarGlow = glow
         self.healthBar.hide()
@@ -450,7 +483,7 @@ class Suit(Avatar.Avatar):
         for thingIndex in range(0, actorCollection.getNumPaths()):
             thing = actorCollection[thingIndex]
             if thing.getName() not in ('joint_attachMeter', 'joint_nameTag', 'def_nameTag'):
-                thing.setColor(self.healthColors[condition])
+                thing.setColor(self.healthBarColors[condition])
                 thing.setAttrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd))
                 thing.setDepthWrite(False)
                 thing.setBin('fixed', 1)
@@ -502,14 +535,14 @@ class Suit(Avatar.Avatar):
                 return
 
             # Simply setting color
-            self.healthBar.setColor(self.healthColors[newCondition], 1)
-            self.healthBarGlow.setColor(self.healthGlowColors[newCondition], 1)
+            self.healthBar.setColor(self.healthBarColors[newCondition], 1)
+            self.healthBarGlow.setColor(self.healthBarGlowColors[newCondition], 1)
             if self.getVirtual():
                 self.virtualize(newCondition)
 
     def __blinkRed(self, task):
-        self.healthBar.setColor(self.healthColors[3], 1)
-        self.healthBarGlow.setColor(self.healthGlowColors[3], 1)
+        self.healthBar.setColor(self.healthBarColors[3], 1)
+        self.healthBarGlow.setColor(self.healthBarGlowColors[3], 1)
         if self.healthCondition == 5:
             self.healthBar.setScale(1.17)
         return Task.done
@@ -517,8 +550,8 @@ class Suit(Avatar.Avatar):
     def __blinkGray(self, task):
         if not self.healthBar:
             return
-        self.healthBar.setColor(self.healthColors[4], 1)
-        self.healthBarGlow.setColor(self.healthGlowColors[4], 1)
+        self.healthBar.setColor(self.healthBarColors[4], 1)
+        self.healthBarGlow.setColor(self.healthBarGlowColors[4], 1)
         if self.healthCondition == 5:
             self.healthBar.setScale(1.0)
         return Task.done
@@ -582,8 +615,8 @@ class Suit(Avatar.Avatar):
 
     def makeIntoImmune(self):
         self.isImmune = 1
-        self.healthBar.setColor(self.healthColors[6])
-        self.healthBarGlow.setColor(self.healthGlowColors[6])
+        self.healthBar.setColor(self.healthBarColors[6])
+        self.healthBarGlow.setColor(self.healthBarGlowColors[6])
         self.updateHealthBar(0)
 
     def removeImmune(self):

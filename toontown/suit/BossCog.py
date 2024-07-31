@@ -26,8 +26,6 @@ AnimList = ('Ff_speech', 'ltTurn2Wave', 'wave', 'Ff_lookRt', 'turn2Fb', 'Ff_neut
 
 class BossCog(Avatar.Avatar):
     notify = DirectNotifyGlobal.directNotify.newCategory('BossCog')
-    healthColors = Suit.Suit.healthColors
-    healthGlowColors = Suit.Suit.healthGlowColors
 
     def __init__(self):
         Avatar.Avatar.__init__(self)
@@ -35,6 +33,14 @@ class BossCog(Avatar.Avatar):
         self.setPlayerType(NametagGroup.CCSuit)
         self.setPickable(0)
         self.setBlend(frameBlend=True)
+
+        if not base.colorBlindMode:
+            self.healthColors = Suit.Suit.healthColors
+            self.healthGlowColors = Suit.Suit.healthGlowColors
+        else:
+            self.healthColors = Suit.Suit.healthColorsAccess
+            self.healthGlowColors = Suit.Suit.healthGlowColorsAccess
+
         self.doorA = None
         self.doorB = None
         self.bubbleL = None

@@ -54,7 +54,8 @@ class DiscordRPC(object):
         11000: ["https://static.wikia.nocookie.net/toontownrewritten/images/8/8a/Sellbot_Headquarters.jpg/", "At Sellbot HQ"],
         11100: ["https://static.wikia.nocookie.net/toontown/images/c/c0/SBHQ_lobby_1.jpg", "In The Sellbot HQ Lobby"],
         11200: ["https://static.wikia.nocookie.net/toontown/images/a/aa/Sellbot_Factory.png", "In The Sellbot HQ Factory Exterior"],
-        11500: ["https://static.wikia.nocookie.net/toontownrewritten/images/d/d4/Sellbot_Factory_Front_Entrance.png", "In The Sellbot Factory"],
+        11500: ["https://static.wikia.nocookie.net/toontown/images/a/aa/Sellbot_Factory.png", "In The Sellbot Front Factory"],
+        11600: ["https://static.wikia.nocookie.net/toontown/images/a/aa/Sellbot_Factory.png", "In The Sellbot Side Factory"],
 
         12000: ["https://static.wikia.nocookie.net/toontown/images/f/fe/Cashbot_Headquarters.png", "At Cashbot HQ"],
         12100: ["https://spikesrewrittenguide.com/images/cogs/cashbots/cbhq_vault.PNG", "In The Cashbot HQ Lobby"],

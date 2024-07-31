@@ -79,6 +79,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Set their starting money
         av.b_setMoney(self.slot_data.get('starting_money', 50))
 
+        # Set their starting task capacity
+
+        av.b_setQuestCarryLimit(self.slot_data.get('starting_task_capacity', 4))
+
         # Set their starting gag xp multiplier
         av.b_setBaseGagSkillMultiplier(self.slot_data.get('base_global_gag_xp', 2))
 
@@ -87,11 +91,6 @@ class ConnectedPacket(ClientBoundPacketBase):
         need_gold_rod = fish_progression in (FishProgression.Licenses, FishProgression.Nonne)
         if need_gold_rod:
             av.b_setFishingRod(FishGlobals.MaxRodId)
-
-        # Give them global TP access if set in yaml
-        global_tpsanity = self.slot_data.get('tpsanity', TPSanity.default) == TPSanity.option_none
-        if global_tpsanity:
-            av.b_setTeleportAccess(ToontownGlobals.HoodsForTeleportAll)
 
     # Given the option defined in the YAML for RNG generation and the seed of the AP playthrough
     # Return a new modified seed based on what option was chosen in the YAML
