@@ -71,8 +71,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.scoreboard = CogBossScoreboard()
         self.scoreboard.hide()
         self.cutsceneSpeed = 1.0
-        fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
+        self.music = None
+        self.currentMusicCode = None
         return
 
     def announceGenerate(self):
@@ -1082,55 +1082,26 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
             seq = Sequence(ParallelEndTogether(self.pelvis.hprInterval(1, VBase3(toToonH, 0, 0)), neutral1Anim), extraAnim, Parallel(Sequence(Wait(0.19), gearTrack, Func(gearRoot.detachNode), self.pelvis.hprInterval(0.2, VBase3(0, 0, 0))), Sequence(throwAnim, neutral2Anim)))
             self.doAnimate(seq, now=1, raised=1)
 
+    def playBossMusic(self, state):
+        stateCode = BossCogGlobals.BOSSDEPT_2_PACK_ALISIS[self.style.dept] + state
+        if self.music != None and self.currentMusicCode != None:
+            base.contentPackMusicManager.stopSpecificMusic(self.currentMusicCode)
+        base.contentPackMusicManager.playMusic(stateCode, looping=1, volume=0.8)
+        self.music = base.contentPackMusicManager.currentMusic[stateCode]
+        self.currentMusicCode = stateCode
+
     def announceAreaAttack(self):
         if not getattr(localAvatar.controlManager.currentControls, 'isAirborne', 0):
             self.zapLocalToon(ToontownGlobals.BossCogAreaAttack)
 
     def loadEnvironment(self):
-        if ('boss-' + str(self.style.dept) + '-elevator') in self.musicJson['global_music']:
-            self.elevatorMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-elevator')])
-        else:
-            self.elevatorMusic = base.loader.loadMusic('phase_7/audio/bgm/tt_elevator.ogg')
-        if ('boss-' + str(self.style.dept) + '-promotion') in self.musicJson['global_music']:
-            self.promotionMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-promotion')])
-        else:
-            self.promotionMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        if ('boss-' + str(self.style.dept) + '-between') in self.musicJson['global_music']:
-            self.betweenBattleMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-between')])
-        else:
-            self.betweenBattleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_toon_winning.ogg')
-        if ('boss-' + str(self.style.dept) + '-one') in self.musicJson['global_music']:
-            self.battleOneMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-one')])
-        else:
-            self.battleOneMusic = base.loader.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.ogg')
-        if ('boss-' + str(self.style.dept) + '-two') in self.musicJson['global_music']:
-            self.battleTwoMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-two')])
-        else:
-            self.battleTwoMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        if ('boss-' + str(self.style.dept) + '-sting') in self.musicJson['global_music']:
-            self.stingMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-sting')])
-        else:
-            self.stingMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        if ('boss-' + str(self.style.dept) + '-three') in self.musicJson['global_music']:
-            self.battleThreeMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-three')])
-        else:
-            self.battleThreeMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        if ('boss-' + str(self.style.dept) + '-four') in self.musicJson['global_music']:
-            self.battleFourMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-four')])
-        else:
-            self.battleFourMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
-        if ('boss-' + str(self.style.dept) + '-jury') in self.musicJson['global_music']:
-            self.juryMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-jury')])
-        else:
-            self.juryMusic = base.loader.loadMusic('phase_11/audio/bgm/LB_juryBG.ogg')
-        if ('boss-' + str(self.style.dept) + '-epilogue') in self.musicJson['global_music']:
-            self.epilogueMusic = base.loader.loadMusic(self.musicJson['global_music'][('boss-' + str(self.style.dept) + '-epilogue')])
-        else:
-            self.epilogueMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_hall_of_fame.ogg')
-        
+        # we add this as a fail safe :)
+        self.playBossMusic('elevator')
 
     def unloadEnvironment(self):
-        pass
+        if self.music != None:
+            base.contentPackMusicManager.stopSpecificMusic(self.currentMusicCode)
+            self.music = None
 
     def enterOff(self):
         self.cleanupIntervals()
@@ -1174,7 +1145,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.toMovieMode()
         camera.reparentTo(self.elevatorModel)
         camera.setPosHpr(0, 30, 8, 180, 0, 0)
-        base.playMusic(self.elevatorMusic, looping=1, volume=1.0)
+        self.playBossMusic('elevator')
         ival = Sequence(ElevatorUtils.getRideElevatorInterval(self.elevatorType), ElevatorUtils.getRideElevatorInterval(self.elevatorType), self.openDoors, Func(camera.wrtReparentTo, render), Func(self.__doneElevator))
         intervalName = 'ElevatorMovie'
         ival.start()
@@ -1186,7 +1157,6 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def exitElevator(self):
         intervalName = 'ElevatorMovie'
         self.clearInterval(intervalName)
-        self.elevatorMusic.stop()
         ElevatorUtils.closeDoors(self.leftDoor, self.rightDoor, self.elevatorType)
 
     def enterIntroduction(self):
@@ -1202,6 +1172,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         seq.start()
         seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
+        self.playBossMusic('introduction')
 
     def __beginBattleOne(self):
         intervalName = 'IntroductionMovie'
@@ -1225,11 +1196,10 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.toonsToBattlePosition(self.toonsA, self.battleANode)
         self.toonsToBattlePosition(self.toonsB, self.battleBNode)
         self.releaseToons()
-        base.playMusic(self.battleOneMusic, looping=1, volume=0.9)
+        self.playBossMusic('battle-one')
 
     def exitBattleOne(self):
         self.cleanupBattles()
-        self.battleOneMusic.stop()
 
     def enterBattleThree(self):
         self.cleanupIntervals()
@@ -1239,6 +1209,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.accept('avatarDetails', self.__handleAvatarDetails)
         NametagGlobals.setMasterArrowsOn(0)
         NametagGlobals.setMasterNametagsActive(1)
+        self.playBossMusic('battle-three')
 
     def exitBattleThree(self):
         self.ignore('clickedNameTag')
@@ -1287,6 +1258,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.accept('avatarDetails', self.__handleAvatarDetails)
         NametagGlobals.setMasterArrowsOn(0)
         NametagGlobals.setMasterNametagsActive(1)
+        self.playBossMusic('battle-four')
 
     def exitBattleFour(self):
         self.ignore('clickedNameTag')
