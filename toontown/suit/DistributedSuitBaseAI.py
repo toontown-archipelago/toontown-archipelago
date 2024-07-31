@@ -168,6 +168,12 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
 
     def d_setHP(self, hp):
         self.sendUpdate('setHP', [hp])
+    
+    def giveBossName(self):
+        self.maxHP *= 2
+        self.maxHP += 40
+        self.currHP = self.maxHP
+        self.sendUpdate('giveBossName', [self.maxHP])
 
     def releaseControl(self):
         return None

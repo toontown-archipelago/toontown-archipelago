@@ -602,6 +602,13 @@ customSuit2Dept = {
     'bgh': 'c'
 }
 
+customDeptToBossSuit = {
+    's': 'trf',
+    'm': 'ski',
+    'l': 'def',
+    'c': 'bgh'
+}
+
 def getSuitDept(name):
     index = suitHeadTypes.index(name)
     if index < suitsPerDept:

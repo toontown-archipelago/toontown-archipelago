@@ -1231,6 +1231,7 @@ dclass DistributedSuitBase : DistributedObject {
   setSkeleRevives(uint8) required broadcast ram;
   setImmuneStatus(uint8) required broadcast ram;
   setHP(int32) required broadcast ram;
+  giveBossName(int32) broadcast ram;
 };
 
 dclass DistributedSuit : DistributedSuitBase {

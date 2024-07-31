@@ -64,7 +64,13 @@ class DistributedSuitBase(DistributedAvatar.DistributedAvatar, Suit.Suit, SuitBa
 
     def getVirtual(self):
         return 0
-
+    
+    def giveBossName(self, newHP):
+        nameWLevel = TTLocalizer.BossBaseName % {'name': self._name, 'dept': self.getStyleDept()}
+        self.setDisplayName(nameWLevel)
+        self.maxHP = newHP
+        self.currHP = newHP
+        
     def setSkeleRevives(self, num):
         if num == None:
             num = 0

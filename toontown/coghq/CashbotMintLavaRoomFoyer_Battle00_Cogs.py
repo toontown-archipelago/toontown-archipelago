@@ -7,7 +7,7 @@ BattleCells = {BattleCellId: {'parentEntId': BattleParent,
                 'pos': Point3(0, 0, 0)}}
 CogData = [{'parentEntId': CogParent,
   'boss': 0,
-  'level': ToontownGlobals.CashbotMintSkelecogLevel,
+  'level': 8,
   'battleCell': BattleCellId,
   'pos': Point3(-6, 0, 0),
   'h': 180,

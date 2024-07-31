@@ -546,27 +546,27 @@ __THE_BIG_CHEESE: SuitAttributes = SuitAttributes(key='tbc', name=TTLocalizer.Su
 __registerSuitAttributes(__THE_BIG_CHEESE)
 
 # Begin defining suit attributes for every cog in the game.
-__BAG_HOLDER_ATTACKS = set()
-__BAG_HOLDER_ATTACKS.add(SuitAttackAttribute(
+__STOCK_HOLDER_ATTACKS = set()
+__STOCK_HOLDER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.CLIPON_TIE,
-    damage={1: 3, 2: 4, 3: 5, 4: 6, 5: 8},
+    damage={12: 18, 13: 21},
     accuracy=75,
     weight=50,
 ))
-__BAG_HOLDER_ATTACKS.add(SuitAttackAttribute(
+__STOCK_HOLDER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.SACKED,
-    damage={1: 3, 2: 5, 3: 7, 4: 9, 5: 11},
+    damage={12: 21, 13: 23},
     accuracy=50,
     weight=30,
 ))
-__BAG_HOLDER_ATTACKS.add(SuitAttackAttribute(
-    attack=SuitAttackType.SCHMOOZE,
-    damage={1: 2, 2: 3, 3: 4, 4: 5, 5: 6},
+__STOCK_HOLDER_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FIRED,
+    damage={12: 23, 13: 27},
     accuracy=75,
     weight=20,
 ))
-__BAG_HOLDER: SuitAttributes = T1SuitAttributes(key='bgh', name=TTLocalizer.SuitBagHolder, singular=TTLocalizer.SuitBagHolderS, plural=TTLocalizer.SuitBagHolderP, tier=0, attacks=__BAG_HOLDER_ATTACKS)
-__registerSuitAttributes(__BAG_HOLDER)
+__STOCK_HOLDER: SuitAttributes = T1SuitAttributes(key='bgh', name=TTLocalizer.SuitStockHolder, singular=TTLocalizer.SuitStockHolderS, plural=TTLocalizer.SuitStockHolderP, tier=11, attacks=__STOCK_HOLDER_ATTACKS)
+__registerSuitAttributes(__STOCK_HOLDER)
 
 __COLD_CALLER_ATTACKS = set()
 __COLD_CALLER_ATTACKS.add(SuitAttackAttribute(
@@ -789,29 +789,29 @@ __registerSuitAttributes(__MR_HOLLYWOOD)
 __TRAFFIC_MANAGER_ATTACKS = set()
 __TRAFFIC_MANAGER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.EVIL_EYE,
-    damage={6: 9, 7: 11, 8: 13, 9: 14, 10: 16},
+    damage={7: 8, 8: 11},
     accuracy=60,
     weight=30,
 ))
 __TRAFFIC_MANAGER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.POWER_TRIP,
-    damage={6: 7, 7: 9, 8: 11, 9: 14, 10: 17},
+    damage={7: 7, 8: 10},
     accuracy=50,
     weight=15,
 ))
 __TRAFFIC_MANAGER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.PLAY_HARDBALL,
-    damage={6: 11, 7: 13, 8: 15, 9: 18, 10: 21},
+    damage={7: 9, 8: 12},
     accuracy=60,
     weight=30,
 ))
 __TRAFFIC_MANAGER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.RED_TAPE,
-    damage={6: 8, 7: 10, 8: 11, 9: 13, 10: 15},
+    damage={7: 11, 8: 16},
     accuracy=60,
     weight=25,
 ))
-__TRAFFIC_MANAGER: SuitAttributes = SuitAttributes(key='trf', name=TTLocalizer.SuitTrafficManager, singular=TTLocalizer.SuitTrafficManagerS, plural=TTLocalizer.SuitTrafficManagerP, tier=5, attacks=__TRAFFIC_MANAGER_ATTACKS)
+__TRAFFIC_MANAGER: SuitAttributes = SuitAttributes(key='trf', name=TTLocalizer.SuitTrafficManager, singular=TTLocalizer.SuitTrafficManagerS, plural=TTLocalizer.SuitTrafficManagerP, tier=6, attacks=__TRAFFIC_MANAGER_ATTACKS)
 __registerSuitAttributes(__TRAFFIC_MANAGER)
 
 __SHORT_CHANGE_ATTACKS = set()
@@ -1029,23 +1029,23 @@ __registerSuitAttributes(__ROBBER_BARON)
 __SKIN_FLINT_ATTACKS = set()
 __SKIN_FLINT_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.PICK_POCKET,
-    damage={6: 11, 7: 13, 8: 15, 9: 17, 10: 19},
+    damage={9: 14, 10: 18},
     accuracy=60,
     weight=30,
 ))
 __SKIN_FLINT_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.FINGER_WAG,
-    damage={6: 8, 7: 10, 8: 12, 9: 14, 10: 16},
+    damage={9: 11, 10: 16},
     accuracy=60,
     weight=45,
 ))
 __SKIN_FLINT_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.POWER_TIE,
-    damage={6: 6, 7: 8, 8: 9, 9: 11, 10: 12},
+    damage={9: 9, 10: 13},
     accuracy=60,
     weight=25,
 ))
-__SKIN_FLINT: SuitAttributes = SuitAttributes(key='ski', name=TTLocalizer.SuitSkinflint, singular=TTLocalizer.SuitSkinflintS, plural=TTLocalizer.SuitSkinflintP, tier=5, attacks=__SKIN_FLINT_ATTACKS)
+__SKIN_FLINT: SuitAttributes = SuitAttributes(key='ski', name=TTLocalizer.SuitSkinflint, singular=TTLocalizer.SuitSkinflintS, plural=TTLocalizer.SuitSkinflintP, tier=8, attacks=__SKIN_FLINT_ATTACKS)
 __registerSuitAttributes(__SKIN_FLINT)
 
 __BOTTOM_FEEDER_ATTACKS = set()
@@ -1275,33 +1275,33 @@ __BIG_WIG_ATTACKS.add(SuitAttackAttribute(
 __BIG_WIG: SuitAttributes = SuitAttributes(key='bw', name=TTLocalizer.SuitBigWig, singular=TTLocalizer.SuitBigWigS, plural=TTLocalizer.SuitBigWigP, tier=7, attacks=__BIG_WIG_ATTACKS)
 __registerSuitAttributes(__BIG_WIG)
 
-__DEFENDENT_ATTACKS = set()
-__DEFENDENT_ATTACKS.add(SuitAttackAttribute(
+__HEAD_ATTORNEY_ATTACKS = set()
+__HEAD_ATTORNEY_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.MUMBO_JUMBO,
-    damage={4: 5, 5: 7, 6: 10, 7: 12, 8: 14},
+    damage={10: 14, 11: 17},
     accuracy=95,
     weight=20,
 ))
-__DEFENDENT_ATTACKS.add(SuitAttackAttribute(
+__HEAD_ATTORNEY_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.JARGON,
-    damage={4: 6, 5: 8, 6: 10, 7: 12, 8: 14},
+    damage={10: 13, 11: 16},
     accuracy=75,
     weight=25,
 ))
-__DEFENDENT_ATTACKS.add(SuitAttackAttribute(
+__HEAD_ATTORNEY_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.GUILT_TRIP,
-    damage={4: 5, 5: 7, 6: 8, 7: 11, 8: 13},
+    damage={10: 12, 11: 15},
     accuracy=75,
     weight=25,
 ))
-__DEFENDENT_ATTACKS.add(SuitAttackAttribute(
+__HEAD_ATTORNEY_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.LEGALESE,
-    damage={4: 8, 5: 10, 6: 12, 7: 15, 8: 17},
+    damage={4: 14, 8: 17},
     accuracy=95,
     weight=30,
 ))
-__DEFENDENT: SuitAttributes = SuitAttributes(key='def', name=TTLocalizer.SuitDefendent, singular=TTLocalizer.SuitDefendentS, plural=TTLocalizer.SuitDefendentP, tier=3, attacks=__DEFENDENT_ATTACKS)
-__registerSuitAttributes(__DEFENDENT)
+__HEAD_ATTORNEY: SuitAttributes = SuitAttributes(key='def', name=TTLocalizer.SuitHeadAttorney, singular=TTLocalizer.SuitHeadAttorneyS, plural=TTLocalizer.SuitHeadAttorneyP, tier=9, attacks=__HEAD_ATTORNEY_ATTACKS)
+__registerSuitAttributes(__HEAD_ATTORNEY)
 
 
 """
