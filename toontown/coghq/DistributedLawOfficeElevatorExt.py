@@ -49,7 +49,7 @@ class DistributedLawOfficeElevatorExt(DistributedElevatorExt.DistributedElevator
             self.cogDeptIconDifficultColorSequence.loop()
 
     def setupElevator(self):
-        self.elevatorModel = loader.loadModel('phase_10/models/cogHQ/mintElevator')
+        self.elevatorModel = loader.loadModel('phase_11/models/lawbotHQ/ttap_m_ara_lhq_elevatorDAOffices')
         self.elevatorModel.reparentTo(render)
         self.leftDoor = self.elevatorModel.find('**/left_door')
         self.rightDoor = self.elevatorModel.find('**/right_door')
