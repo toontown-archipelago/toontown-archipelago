@@ -15,7 +15,7 @@ from toontown.toonbase import ToontownBattleGlobals
 from toontown.coghq import DistributedCountryClub
 from toontown.building import Elevator
 import random
-import json
+from toontown.content_pack import MusicManagerGlobals
 
 class CountryClubInterior(BattlePlace.BattlePlace):
     notify = DirectNotifyGlobal.directNotify.newCategory('CountryClubInterior')
@@ -74,20 +74,20 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         self.parentFSM.getStateNamed('countryClubInterior').addChild(self.fsm)
         BattlePlace.BattlePlace.load(self)
         fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
 
-        if str(self.zoneId) in self.musicJson['global_music']:
-            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.zoneId)])
-            if (str(self.zoneId) + '_battle') in self.musicJson['global_music']:
-                self.loader.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.zoneId) + '_battle')])
-        else:
-            musicName = random.choice(['phase_12/audio/bgm/Bossbot_Factory_v1.ogg', 'phase_12/audio/bgm/Bossbot_Factory_v2.ogg', 'phase_12/audio/bgm/Bossbot_Factory_v3.ogg'])
-            self.music = base.loader.loadMusic(musicName)
+        self.loader.musicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
+        self.loader.battleMusicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
+
+        # we add in are area music here
+        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+        self.loader.music = base.contentPackMusicManager.currentMusic[self.loader.musicCode]
         
+        # we add in our battle music here
+        base.contentPackMusicManager.playMusic(self.loader.battleMusicCode, looping=1, volume=0.9, interrupt=False)
+        self.loader.battleMusic = base.contentPackMusicManager.currentMusic[self.loader.battleMusicCode]
 
     def unload(self):
         self.parentFSM.getStateNamed('countryClubInterior').removeChild(self.fsm)
-        del self.music
         del self.fsm
         del self.parentFSM
         BattlePlace.BattlePlace.unload(self)
@@ -102,7 +102,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.playMusic(self.music, looping=1, volume=0.8)
+            base.playMusic(self.loader.music, looping=1, volume=0.8)
             base.transitions.irisIn()
             CountryClub = bboard.get(DistributedCountryClub.DistributedCountryClub.ReadyPost)
             self.loader.hood.spawnTitleText(CountryClub.countryClubId, CountryClub.floorNum)
@@ -128,10 +128,8 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
         self.loader.music.stop()
-        self.music.stop()
         self.ignoreAll()
         del self.CountryClubReadyWatcher
-        self.loader.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
 
     def enterStopped(self):
         BattlePlace.BattlePlace.enterStopped(self)
@@ -161,10 +159,10 @@ class CountryClubInterior(BattlePlace.BattlePlace):
 
     def enterBattle(self, event):
         CountryClubInterior.notify.debug('enterBattle')
-        self.music.stop()
         BattlePlace.BattlePlace.enterBattle(self, event)
         self.ignore('teleportQuery')
         base.localAvatar.setTeleportAvailable(0)
+        self.loader.music.stop()
 
     def enterTownBattle(self, event):
         mult = ToontownBattleGlobals.getCountryClubCreditMultiplier(self.zoneId)
@@ -174,8 +172,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
     def exitBattle(self):
         CountryClubInterior.notify.debug('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
-        self.loader.music.stop()
-        base.playMusic(self.music, looping=1, volume=0.8)
+        self.loader.music.start()
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)

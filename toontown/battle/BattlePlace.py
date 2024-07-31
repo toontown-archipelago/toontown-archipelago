@@ -13,6 +13,14 @@ class BattlePlace(Place.Place):
         Place.Place.load(self)
         Toon.loadBattleAnims()
 
+        # we add in are area music here
+        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+        self.loader.music = base.contentPackMusicManager.currentMusic[self.loader.musicCode]
+        
+        # we add in our battle music here
+        base.contentPackMusicManager.playMusic(self.loader.battleMusicCode, looping=1, volume=0.9, interrupt=False)
+        self.loader.battleMusic = base.contentPackMusicManager.currentMusic[self.loader.battleMusicCode]
+
     def setState(self, state, battleEvent = None):
         if battleEvent:
             if not self.fsm.request(state, [battleEvent]):
@@ -37,7 +45,7 @@ class BattlePlace(Place.Place):
     def enterBattle(self, event):
         if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: COGBATTLE: Enter Battle')
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopSpecificMusic(self.loader.musicCode)
         base.playMusic(self.loader.battleMusic, looping=1, volume=0.9)
         self.enterTownBattle(event)
         self.enterFLM()
@@ -51,7 +59,7 @@ class BattlePlace(Place.Place):
 
     def exitBattle(self):
         self.loader.townBattle.exit()
-        self.loader.battleMusic.stop()
+        base.contentPackMusicManager.stopMusic()
         base.playMusic(self.loader.music, looping=1, volume=0.8)
         base.localAvatar.cantLeaveGame = 0
         base.localAvatar.setTeleportAvailable(0)
