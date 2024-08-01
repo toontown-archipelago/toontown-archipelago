@@ -8,6 +8,7 @@ from direct.interval.IntervalGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
+from toontown.suit import SuitDNA
 from ..battle.GagTrackBarGUI import GagTrackBarGUI
 from ..hood import ZoneUtil
 
@@ -257,6 +258,26 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
 
     def __handleBackToPlayground(self):
         messenger.send('inventory-back-to-playground')
+    
+    def getBossFightDamageBonus(self, battle):
+        if len(battle.activeToons) > 3:
+            return 100
+        elif len(battle.activeToons) == 3:
+            return 110
+        elif len(battle.activeToons) == 2:
+            return 120
+        elif len(battle.activeToons) == 1:
+            return 140
+
+    def getToonsDmgMultiplier(self, battle, toon):
+        base = toon.getDamageMultiplier()
+
+        for suit in battle.activeSuits:            
+            extraMult = self.getBossFightDamageBonus(battle)
+            if extraMult > base:
+                additionalNeeded = extraMult - base
+                base += additionalNeeded
+        return base
 
     def showDetail(self, track, level, event = None):
         self.totalLabel.hide()
@@ -268,6 +289,19 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
          'maxItems': self.getMax(track, level)})
         self.detailDataLabel.show()
         damage = getAvPropDamage(track, level, self.toon.experience, toonDamageMultiplier=self.toon.getDamageMultiplier(), overflowMod=self.toon.getOverflowMod())
+        
+        if self.toon.battleId != None:
+            battle = base.cr.doId2do.get(self.toon.battleId)
+            if battle != None:
+                for suit in battle.activeSuits:
+                    if suit.dna.name in SuitDNA.notMainTypes:
+                        damage = getAvPropDamage(track, level, self.toon.experience, toonDamageMultiplier=self.getToonsDmgMultiplier(battle, self.toon), overflowMod=self.toon.getOverflowMod())
+                
+        
+        
+
+
+
         # damage = int(damage)
         organicBonus = self.toon.checkGagBonus(track, level)
         propBonus = self.checkPropBonus(track)

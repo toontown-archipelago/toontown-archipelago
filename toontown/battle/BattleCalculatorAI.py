@@ -349,7 +349,7 @@ class BattleCalculatorAI:
                 toon = self.battle.getToon(attackerId)
                 organicBonus = toon.checkGagBonus(TRAP, trapLvl)
                 propBonus = self.__checkPropBonus(TRAP)
-                damage = getAvPropDamage(TRAP, trapLvl, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
+                damage = getAvPropDamage(TRAP, trapLvl, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=self.getToonsDmgMultiplier(toon), overflowMod=toon.getOverflowMod())
                 if self.itemIsCredit(TRAP, trapLvl):
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
@@ -378,7 +378,7 @@ class BattleCalculatorAI:
                 toon = self.battle.getToon(attackerId)
                 organicBonus = toon.checkGagBonus(TRAP, trapLvl)
                 propBonus = self.__checkPropBonus(TRAP)
-                damage = getAvPropDamage(TRAP, trapLvl, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
+                damage = getAvPropDamage(TRAP, trapLvl, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=self.getToonsDmgMultiplier(toon), overflowMod=toon.getOverflowMod())
                 if self.itemIsCredit(TRAP, trapLvl):
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
@@ -544,11 +544,7 @@ class BattleCalculatorAI:
                 else:
                     organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
                     propBonus = self.__checkPropBonus(attackTrack)
-                    attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
-                    for suit in self.battle.activeSuits:
-                        if suit.dna.name in SuitDNA.notMainTypes:
-                            multiplier = self.getBossFightDamageBonus()
-                            attackDamage = math.ceil(attackDamage * multiplier)
+                    attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=self.getToonsDmgMultiplier(toon), overflowMod=toon.getOverflowMod())
                 if not self.__combatantDead(targetId, toon=toonTarget):
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         self.notify.debug('not setting validTargetAvail, since drop on a lured suit')
@@ -754,18 +750,6 @@ class BattleCalculatorAI:
             return 1
         else:
             return 0
-    
-    def getBossFightDamageBonus(self):
-        if len(self.battle.activeToons) > 3:
-            return 1
-        elif len(self.battle.activeToons) == 3:
-            return 1.2
-        elif len(self.battle.activeToons) == 2:
-            return 1.5
-        elif len(self.battle.activeToons) == 1:
-            return 2.5
-        
-
 
     def __addAttackExp(self, attack, track = -1, level = -1, attackerId = -1):
         trk = -1
@@ -1655,9 +1639,9 @@ class BattleCalculatorAI:
             lureEff = suit.effectHandler.children['knockbackBonus']
             lureEff.children['timer'] = maxRounds
             if npc:
-                lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, npc=True, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
+                lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, npc=True, toonDamageMultiplier=self.getToonsDmgMultiplier(toon), overflowMod=toon.getOverflowMod())
             else:
-                lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
+                lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, toonDamageMultiplier=self.getToonsDmgMultiplier(toon), overflowMod=toon.getOverflowMod())
         self.notify.debug('__addLuredSuitInfo: currLuredSuits -> %s' % repr(self.currentlyLuredSuits))
         return availLureId
 
@@ -1773,3 +1757,24 @@ class BattleCalculatorAI:
             return (0, 0)
         else:
             return (1, 100)
+    
+    def getBossFightDamageBonus(self):
+        if len(self.battle.activeToons) > 3:
+            return 100
+        elif len(self.battle.activeToons) == 3:
+            return 110
+        elif len(self.battle.activeToons) == 2:
+            return 120
+        elif len(self.battle.activeToons) == 1:
+            return 140
+
+    def getToonsDmgMultiplier(self, toon):
+        base = toon.getDamageMultiplier()
+
+        for suit in self.battle.activeSuits:
+            if suit.dna.name in SuitDNA.notMainTypes:
+                extraMult = self.getBossFightDamageBonus()
+                if extraMult > base:
+                    additionalNeeded = extraMult - base
+                    base += additionalNeeded
+        return base

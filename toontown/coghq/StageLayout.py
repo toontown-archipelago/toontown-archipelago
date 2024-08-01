@@ -136,7 +136,7 @@ testLayout = [
 
 LawOfficeLayout2_0 = [
     (0, 10, 104, 3, 1),
-    (0, 3, 105, 12, 2)
+    (0, 3, 105, 12, 111)
 ]
 
 LawOfficeLayout2_1 = [
@@ -151,17 +151,17 @@ LawOfficeLayout2_2 = [
 
 LawOfficeLayout3_0 = [
     (0, 100, 3, 104, 1),
-    (0, 105, 10, 3, 120)
+    (0, 105, 10, 3, 111)
 ]
 
 LawOfficeLayout3_1 = [
     (0, 8, 3, 105, 1),
-    (0, 104, 12, 3, 120)
+    (0, 104, 12, 3, 2)
 ]
 
 LawOfficeLayout3_2 = [
     (0, 11, 104, 3, 1),
-    (0, 105, 3, 10, 120)
+    (0, 105, 3, 10, 111)
 ]
 
 LawOfficeLayout4_0 = [
