@@ -63,7 +63,6 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
 @rule(Rule.PajamaPlace)
 @rule(Rule.TierOneCogs)
 @rule(Rule.TierTwoCogs)
-@rule(Rule.HasTTCHQAccess)
 def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return True
 
@@ -88,6 +87,7 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
         return state.has(argument[0].value, player, argument[1])
     return state.has(argument[0].value, player)
 
+@rule(Rule.HasTTCHQAccess,  ToontownItemName.TTC_ACCESS)
 @rule(Rule.HasDDHQAccess,   ToontownItemName.DD_ACCESS)
 @rule(Rule.HasDGHQAccess,   ToontownItemName.DG_ACCESS)
 @rule(Rule.HasMMLHQAccess,  ToontownItemName.MML_ACCESS)

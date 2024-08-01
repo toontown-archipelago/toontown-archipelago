@@ -962,25 +962,15 @@ dclass DistributedAnimatedProp : DistributedObject {
 typedef int16 pair16[2];
 
 struct LocationScoutsCache {
-  uint32 locationId;
+  uint64 locationId;
   string rewardName;
 }
 
 struct APItem {
-  uint32 index;
-  uint32 id;
+  uint64 index;
+  uint64 id;
 }
 
-struct APHint {
-  string owner;
-  uint32 location;
-  uint8 wasObtained;
-}
-
-struct APItemHint {
-  uint32 itemId;
-  APHint hints[];
-}
 
 dclass DistributedToon : DistributedPlayer {
   setDNAString(blob) required broadcast ownrecv db;
@@ -1182,9 +1172,9 @@ dclass DistributedToon : DistributedPlayer {
   setOverflowMod(uint16=100) required ownrecv broadcast db;
   setAccessKeys(uint16[] = []) required ownrecv broadcast db;
   setReceivedItems(APItem[]) required ownrecv broadcast db;
-  setCheckedLocations(uint32[]=[]) required ownrecv broadcast db;
+  setCheckedLocations(int64[]=[]) required ownrecv broadcast db;
   sendArchipelagoMessages(string[]) ownrecv;
-  showReward(uint32, string, bool) ownrecv;
+  showReward(int64, string, bool) ownrecv;
   updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
   requestHintPoints() ownsend airecv;
   hintPointResp(uint16) ownrecv;
@@ -1193,8 +1183,6 @@ dclass DistributedToon : DistributedPlayer {
   setArchipelagoAuto(string, string) ownsend airecv;
   setDeathReason(string) airecv clsend;
   clientDied() airecv clsend;
-
-  setArchipelagoData(APItemHint[] = []) required ownrecv db;
 };
 
 dclass DistributedCCharBase : DistributedObject {
@@ -3960,8 +3948,27 @@ struct ArchipelagoInformation {
   int16 teamId;
 };
 
+struct ArchipelagoItem {
+    int64 item;
+    int64 location;
+    int32 player;
+    uint8 flags;
+};
+
+struct ArchipelagoHint {
+    int16 destination;
+    ArchipelagoItem item;
+    string player_name;
+    string location_name;
+    bool found;
+};
+
 dclass DistributedArchipelagoManager : DistributedObject {
   sync(ArchipelagoInformation[]) required broadcast ram;
+  requestHints() clsend airecv;
+  setHints(ArchipelagoHint[]);
+  addHint(ArchipelagoHint);
+  addHints(ArchipelagoHint[]);
 };
 
 dclass DistributedInGameNewsMgr : DistributedObjectGlobal {

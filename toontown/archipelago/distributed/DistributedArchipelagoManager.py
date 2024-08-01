@@ -5,6 +5,7 @@ from direct.distributed.DistributedObject import DistributedObject
 
 from toontown.archipelago.definitions import color_profile
 from toontown.archipelago.definitions.color_profile import ColorProfile
+from toontown.archipelago.util.HintContainer import HintContainer, HintedItem
 from toontown.archipelago.util.archipelago_information import ArchipelagoInformation
 from toontown.toon.DistributedToon import DistributedToon
 
@@ -99,6 +100,12 @@ class DistributedArchipelagoManager(DistributedObject):
     def getInformation(self, avId) -> Union[ArchipelagoInformation, None]:
         return self._ap_info_cache.get(avId, None)
 
+    def getLocalInformation(self) -> ArchipelagoInformation | None:
+        """
+        Returns the local toon's information. Returns None if local toon is not currently in an Archipelago session
+        """
+        return self.getInformation(base.localAvatar.getDoId())
+
     """
     Helper methods to be called throughout the client for game code
     
@@ -188,3 +195,44 @@ class DistributedArchipelagoManager(DistributedObject):
         # Extract the toon's team information and find the team's corresponding color.
         teamID = info.teamId
         return self.getTeamColorProfile(teamID)
+
+
+    """
+    Code related to hint management
+    """
+
+    def d_requestHints(self):
+        self.sendUpdate('requestHints')
+
+    def setHints(self, primitiveHintContainer):
+        """
+        Called from the AI, updates hint container stored locally
+        """
+        container = HintContainer.from_struct(base.localAvatar.getDoId(), primitiveHintContainer)
+        base.localAvatar.setHintContainer(container)
+        messenger.send('archipelago-hint-update')
+
+    def addHint(self, primitiveHint, silent=False) -> bool:
+        """
+        Called from the AI, contains a single hint to add to our container
+        returns true if the hint made a modification
+        """
+        hint: HintedItem = HintedItem.from_struct(primitiveHint)
+        newHint = base.localAvatar.getHintContainer().addHint(hint)
+        if not silent and newHint:
+            messenger.send('archipelago-hints-updated')
+        return newHint
+
+    def addHints(self, primitiveHintList, silent=False):
+        """
+        Called from the AI, contains a multiple hints to add to our container
+        """
+        foundNewHint = False
+        for hint in primitiveHintList:
+            new = self.addHint(hint, silent=True)
+            if new:
+                foundNewHint = True
+
+        if not silent and foundNewHint:
+            messenger.send('archipelago-hints-updated')
+
