@@ -1296,7 +1296,7 @@ __HEAD_ATTORNEY_ATTACKS.add(SuitAttackAttribute(
 ))
 __HEAD_ATTORNEY_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.LEGALESE,
-    damage={4: 14, 8: 17},
+    damage={10: 14, 11: 17},
     accuracy=95,
     weight=30,
 ))
