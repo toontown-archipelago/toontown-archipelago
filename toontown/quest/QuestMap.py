@@ -137,6 +137,8 @@ class QuestMap(DirectFrame):
     def updateBuildingInfo(self):
         for marker in self.buildingMarkers:
             marker.destroy()
+        for marker in self.suitBuildingMarkers:
+            marker.destroy()
 
         self.buildingMarkers = []
         dnaStore = base.cr.playGame.dnaStore
