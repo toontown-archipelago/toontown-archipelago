@@ -5,6 +5,7 @@ from direct.showbase import DirectObject
 from toontown.suit import SuitDNA
 from direct.directnotify import DirectNotifyGlobal
 from . import LevelBattleManagerAI
+from toontown.toonbase import ToontownGlobals
 import types
 import random
 
@@ -81,7 +82,10 @@ class LevelSuitPlannerAI(DirectObject.DirectObject):
         else:
             dna.newSuitRandom(level=SuitDNA.getRandomSuitType(suitDict['level']), dept=suitDict['track'])
         suit.dna = dna
-        suit.setLevel(suitDict['level'])
+        if suitDict['boss']:
+            suit.setLevel(self.getBossLevel(suitDict['track']))
+        else:
+            suit.setLevel(suitDict['level'])
         suit.setSkeleRevives(suitDict.get('revives'))
         if suitDict.get('immune'):
             suit.setImmuneStatus(1)
@@ -95,6 +99,34 @@ class LevelSuitPlannerAI(DirectObject.DirectObject):
         if suit.boss:
             suit.giveBossName()
         return suit
+    
+    def getBossLevel(self, track):
+        if track == 's':
+            if hasattr(self.level, 'factoryId'):
+                if self.level.factoryId == ToontownGlobals.SellbotFactoryInt:
+                    return 7
+                else:
+                    return 8
+        elif track == 'm':
+            if hasattr(self.level, 'mintId'):
+                if self.level.mintId == ToontownGlobals.CashbotMintIntC:
+                    return 9
+                else:
+                    return 8
+        elif track == 'l':
+            if hasattr(self.level, 'stageId'):
+                if self.level.stageId in [ToontownGlobals.LawbotStageIntC, ToontownGlobals.LawbotStageIntD]:
+                    return 11
+                else:
+                    return 10
+        elif track == 'c':
+            if hasattr(self.level, 'countryClubId'):
+                if self.level.countryClubId == ToontownGlobals.BossbotCountryClubIntC:
+                    return 13
+                else:
+                    return 12
+        else:
+            return 8
 
     def genSuits(self):
         suitHandles = {}

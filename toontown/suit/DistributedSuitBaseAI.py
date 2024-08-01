@@ -1,4 +1,4 @@
-import random
+import random, math
 
 from otp.ai.AIBaseGlobal import *
 from otp.avatar import DistributedAvatarAI
@@ -170,8 +170,10 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
         self.sendUpdate('setHP', [hp])
     
     def giveBossName(self):
-        self.maxHP *= 2
-        self.maxHP += 40
+        if SuitDNA.bossSuitLevel2Difficulty[self.dna.name][self.getActualLevel()] == 1:
+            self.maxHP = math.ceil(self.maxHP * 6)
+        else:
+            self.maxHP = math.ceil(self.maxHP * 3)
         self.currHP = self.maxHP
         self.sendUpdate('giveBossName', [self.maxHP])
 

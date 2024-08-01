@@ -4,6 +4,7 @@ from direct.task.Task import Task
 from direct.task.TaskManagerGlobal import taskMgr
 
 from toontown.battle import BattleProps
+from toontown.suit import SuitDNA
 from toontown.suit.Suit import Suit
 from toontown.suit.SuitAvatarPanel import SuitAvatarPanel
 from toontown.battle.SuitBattleGlobals import *
@@ -87,9 +88,12 @@ class TownBattleSuitPanel(DirectFrame):
                 'revives': SuitAvatarPanel.getRevives(self.cog) + 1
             }
         else:
-            self.healthText['text'] = TTLocalizer.TownBattleSuitLevel % {
-                'level': (self.cog.getActualLevel()),
-            }
+            if cog.dna.name in SuitDNA.notMainTypes:
+                self.healthText['text'] = TTLocalizer.TownBattleBossLevel
+            else:
+                self.healthText['text'] = TTLocalizer.TownBattleSuitLevel % {
+                    'level': (self.cog.getActualLevel()),
+                }
 
     def updateHealthBar(self):
 

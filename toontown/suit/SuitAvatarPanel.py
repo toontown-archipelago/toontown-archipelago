@@ -49,9 +49,13 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel, DirectObject.DirectObject):
         self.hpLabel = DirectLabel(parent=self.frame, pos=(0.0125, 0, -0.15), relief=None, text=TTLocalizer.AvatarPanelCogHP % (HP, maxHP), text_font=avatar.getFont(), text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale = 0.047, text_wordwrap = 7.5)
         dept = SuitDNA.getSuitDeptFullname(avatar.dna.name)
         if revives == 1:
-            self.levelLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.1), relief=None, text=TTLocalizer.AvatarPanelCogLevel % level, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
+            if self.avatr.dna.name in SuitDNA.notMainTypes:
+                self.levelLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.1), relief=None, text=TTLocalizer.AvatarPanelBossLevel, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.045, text_wordwrap=8.0)
+            else:
+                self.levelLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.1), relief=None, text=TTLocalizer.AvatarPanelCogLevel % level, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
         elif revives > 1:
             self.levelLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.1), relief=None, text=TTLocalizer.AvatarPanelCogLevel % level + TTLocalizer.AvatarPanelCogRevives % revives, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.045, text_wordwrap=8.0)
+        
         corpIcon = avatar.corpMedallion.copyTo(hidden)
         corpIcon.setPosHprScale(0, 0, 0, 0, 0, 0, 0, 0, 0)
         self.corpIcon = DirectLabel(parent=self.frame, geom=corpIcon, geom_scale=0.115, pos=(0, 0, -0.215), relief=None)

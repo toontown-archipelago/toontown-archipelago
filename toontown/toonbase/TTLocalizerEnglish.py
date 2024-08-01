@@ -1950,6 +1950,7 @@ AvatarPanelIgnoreCant = 'Okay'
 AvatarPanelStopIgnoring = 'Stop Ignoring'
 AvatarPanelReport = 'Report'
 AvatarPanelCogLevel = 'Level: %s'
+AvatarPanelBossLevel = 'Boss'
 AvatarPanelCogRevives = ' v%s.0'
 AvatarPanelCogHP = 'HP: %s' + '/%s'
 AvatarPanelCogDetailClose = lClose
@@ -5197,6 +5198,7 @@ TownBattleSOSPetInfoOK = lOK
 
 TownBattleSuitLevelAndRevive = "Level %(level)s v%(revives)s.0"
 TownBattleSuitLevel = "Level %(level)s"
+TownBattleBossLevel = "Boss"
 
 
 TrolleyHFAMessage = 'You may not board the trolley until your Laff meter is smiling.'

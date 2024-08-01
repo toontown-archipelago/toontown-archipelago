@@ -20,6 +20,7 @@ class DistributedFactoryAI(DistributedLevelAI.DistributedLevelAI, FactoryBase.Fa
         DistributedLevelAI.DistributedLevelAI.__init__(self, air, zoneId, entranceId, avIds)
         FactoryBase.FactoryBase.__init__(self)
         self.setFactoryId(factoryId)
+        self.factoryId = factoryId
 
     def createEntityCreator(self):
         return FactoryEntityCreatorAI.FactoryEntityCreatorAI(level=self)

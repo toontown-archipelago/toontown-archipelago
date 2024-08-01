@@ -1,6 +1,10 @@
 {
     "suit_clothes": {
-      "suit_name": true
+      "suit_name": true,
+      "trf": true,
+      "ski": true,
+      "def": true,
+      "bgh": true
     }
   }
   

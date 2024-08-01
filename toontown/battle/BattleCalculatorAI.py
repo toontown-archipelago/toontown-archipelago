@@ -2,7 +2,7 @@ from .BattleBase import *
 from .DistributedBattleAI import *
 from toontown.toonbase.ToontownBattleGlobals import *
 import random
-from toontown.suit import DistributedSuitBaseAI
+from toontown.suit import DistributedSuitBaseAI, SuitDNA
 from . import SuitBattleGlobals, BattleExperienceAI
 from toontown.toon import NPCToons
 from toontown.pets import PetTricks, DistributedPetProxyAI
@@ -545,6 +545,10 @@ class BattleCalculatorAI:
                     organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
                     propBonus = self.__checkPropBonus(attackTrack)
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
+                    for suit in self.battle.activeSuits:
+                        if suit.dna.name in SuitDNA.notMainTypes:
+                            multiplier = self.getBossFightDamageBonus()
+                            attackDamage = math.ceil(attackDamage * multiplier)
                 if not self.__combatantDead(targetId, toon=toonTarget):
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         self.notify.debug('not setting validTargetAvail, since drop on a lured suit')
@@ -750,6 +754,17 @@ class BattleCalculatorAI:
             return 1
         else:
             return 0
+    
+    def getBossFightDamageBonus(self):
+        if len(self.battle.activeToons) > 3:
+            return 1
+        elif len(self.battle.activeToons) == 3:
+            return 1.2
+        elif len(self.battle.activeToons) == 2:
+            return 1.5
+        elif len(self.battle.activeToons) == 1:
+            return 2.5
+        
 
 
     def __addAttackExp(self, attack, track = -1, level = -1, attackerId = -1):

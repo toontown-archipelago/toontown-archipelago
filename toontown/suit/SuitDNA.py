@@ -119,6 +119,13 @@ suitDeptToPhase = {'s': 9,
                    'l': 11,
                    'c': 12}
 
+bossSuitLevel2Difficulty = {
+    'trf': {7: 0, 8: 1},
+    'ski': {8: 0, 9: 1},
+    'def': {10: 0, 11: 1},
+    'bgh': {12: 0, 13: 1}
+}
+
 suitDeptFullnames = {
     'c': TTLocalizer.Bossbot,
     'l': TTLocalizer.Lawbot,
