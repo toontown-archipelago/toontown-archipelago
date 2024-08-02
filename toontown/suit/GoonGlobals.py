@@ -1,7 +1,7 @@
 from panda3d.core import Vec4
 PG_COLORS = [Vec4(0.95, 0.0, 0.0, 1.0), Vec4(0.75, 0.35, 0.1, 1.0), Vec4(0.44, 0.08, 0.56, 1.0)]
 SG_COLORS = [Vec4(0.0, 0.0, 0.95, 1.0), Vec4(0.35, 0.0, 0.75, 1.0), Vec4(0.75, 0.0, 0, 1.0)]
-GG_COLORS = [Vec4(0.95, 0.0, 0.0, 1.0), Vec4(0.75, 0.35, 0.1, 1.0), Vec4(0.95, 0.0, 0.0, 1.0)]
+GG_COLORS = [Vec4(0.0, 0.95, 0.0, 1.0), Vec4(0.75, 0.35, 0.1, 1.0), Vec4(0.95, 0.0, 0.0, 1.0)]
 GOON_FORWARD = 1
 GOON_REVERSE = -1
 GOON_MOVIE_WALK = 0

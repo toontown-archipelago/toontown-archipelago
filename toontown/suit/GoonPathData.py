@@ -10,7 +10,11 @@ ToontownGlobals.SellbotFactoryIntS: 'sellbotFactory',
  ToontownGlobals.LawbotStageIntA: 'lawOfficeStage',
  ToontownGlobals.LawbotStageIntB: 'lawOfficeStage',
  ToontownGlobals.LawbotStageIntC: 'lawOfficeStage',
- ToontownGlobals.LawbotStageIntD: 'lawOfficeStage'}
+ ToontownGlobals.LawbotStageIntD: 'lawOfficeStage',
+ ToontownGlobals.BossbotCountryClubIntA: 'countryClub',
+ ToontownGlobals.BossbotCountryClubIntB: 'countryClub',
+ ToontownGlobals.BossbotCountryClubIntC: 'countryClub'
+ }
 Paths = {'sellbotFactory': {0: [Vec3(10.0, 0.0, 0.0),
                         Vec3(10.0, 10.0, 0.0),
                         Vec3(-10.0, 10.0, 0.0),
@@ -226,4 +230,9 @@ Paths = {'sellbotFactory': {0: [Vec3(10.0, 0.0, 0.0),
                         Vec3(5.77, 10.0, 0.0),
                         Vec3(-5.77, -10.0, 0.0),
                         Vec3(5.77, -10.0, 0.0)],
-                    3: [Vec3(-10, 0, 0), Vec3(10, 0, 0)]}}
+                    3: [Vec3(-10, 0, 0), Vec3(10, 0, 0)]},
+  'countryClub': {2: [Vec3(-34.77, 10.0, 0.0),
+                     Vec3(34.77, 10.0, 0.0),
+                     Vec3(-27.77, -10.0, 0.0),
+                     Vec3(27.77, -10.0, 0.0)],
+                 3: [Vec3(-28, 0, 0), Vec3(28, 0, 0)]},}

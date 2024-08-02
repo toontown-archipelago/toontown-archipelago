@@ -157,7 +157,7 @@ suitsPerLevel = [
 ]
 
 suitsPerDept = 8
-goonTypes = ['pg', 'sg']
+goonTypes = ['pg', 'sg', 'gg']
 
 ModelDict = {
     'a': ('/models/char/suitA-', 4),
