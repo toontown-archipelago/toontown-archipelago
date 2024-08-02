@@ -118,6 +118,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
             self.confrontedBoss = 1
 
         self.acceptOnce('localToonConfrontedCountryClubBoss', handleConfrontedBoss)
+        self.loader.hood.setFog()
 
     def exit(self):
         NametagGlobals.setMasterArrowsOn(0)
@@ -132,6 +133,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         self.ignoreAll()
         del self.CountryClubReadyWatcher
         self.loader.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
+        self.loader.hood.setNoFog()
 
     def enterStopped(self):
         BattlePlace.BattlePlace.enterStopped(self)

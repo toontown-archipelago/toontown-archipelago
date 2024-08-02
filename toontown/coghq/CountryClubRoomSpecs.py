@@ -1,6 +1,7 @@
 from direct.showbase.PythonUtil import invertDict
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import BossbotCountryClubFairwayRoom_Battle00_Cogs
+from toontown.coghq import BossbotCountryClubFairwayRoom_Battle01_Cogs
 from toontown.coghq import BossbotCountryClubMazeRoom_Battle00_Cogs
 from toontown.coghq import BossbotCountryClubMazeRoom_Battle01_Cogs
 from toontown.coghq import BossbotCountryClubMazeRoom_Battle02_Cogs
@@ -12,6 +13,7 @@ from toontown.coghq import BossbotCountryClubPresidentRoom_Battle00_Cogs
 from toontown.coghq import BossbotCountryClubEntrance_Action00
 from toontown.coghq import BossbotCountryClubTeeOffRoom_Action00
 from toontown.coghq import BossbotCountryClubFairwayRoom_Battle00
+from toontown.coghq import BossbotCountryClubFairwayRoom_Battle01
 from toontown.coghq import BossbotCountryClubMazeRoom_Battle00
 from toontown.coghq import BossbotCountryClubMazeRoom_Battle01
 from toontown.coghq import BossbotCountryClubMazeRoom_Battle02
@@ -37,6 +39,7 @@ BossbotCountryClubSpecModules = {
     32: BossbotCountryClubTeeOffRoom_Action02,
     29: BossbotCountryClubGreenRoom_Action01,
     39: BossbotCountryClubGreenRoom_Action02,
+    40: BossbotCountryClubFairwayRoom_Battle01,
 }
 
 
@@ -63,7 +66,7 @@ def getNumBattles(roomId):
 BossbotCountryClubRoomName2RoomId = invertDict(BossbotCountryClubRoomId2RoomName)
 
 BossbotCountryClubEntranceIDs = (0,)
-BossbotCountryClubMiddleRoomIDs = (2, 5, 6)
+BossbotCountryClubMiddleRoomIDs = (2, 5, 6, 40)
 BossbotCountryClubFinalRoomIDs = (18,)
 BossbotCountryClubConnectorRooms = ('phase_12/models/bossbotHQ/Connector_Tunnel_A', 'phase_12/models/bossbotHQ/Connector_Tunnel_B')
 
@@ -72,7 +75,8 @@ CogSpecModules = {'BossbotCountryClubFairwayRoom_Battle00': BossbotCountryClubFa
  'BossbotCountryClubMazeRoom_Battle01': BossbotCountryClubMazeRoom_Battle01_Cogs,
  'BossbotCountryClubMazeRoom_Battle02': BossbotCountryClubMazeRoom_Battle02_Cogs,
  'BossbotCountryClubKartRoom_Battle00': BossbotCountryClubKartRoom_Battle00_Cogs,
- 'BossbotCountryClubPresidentRoom_Battle00': BossbotCountryClubPresidentRoom_Battle00_Cogs}
+ 'BossbotCountryClubPresidentRoom_Battle00': BossbotCountryClubPresidentRoom_Battle00_Cogs,
+ 'BossbotCountryClubFairwayRoom_Battle01': BossbotCountryClubFairwayRoom_Battle01_Cogs}
 roomId2numBattles = {}
 for roomName, roomId in BossbotCountryClubRoomName2RoomId.items():
     if roomName not in CogSpecModules:
