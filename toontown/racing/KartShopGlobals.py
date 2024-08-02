@@ -14,7 +14,7 @@ class KartShopGlobals:
 class KartGlobals:
     ENTER_MOVIE = 1
     EXIT_MOVIE = 2
-    COUNTDOWN_TIME = 30
+    COUNTDOWN_TIME = 10
     BOARDING_TIME = 10.0
     ENTER_RACE_TIME = 6.0
     ERROR_CODE = IntEnum('ERROR_CODE', ('success', 'eGeneric', 'eTickets', 'eBoardOver', 'eNoKart', 'eOccupied', 'eTrackClosed', 'eTooLate', 'eUnpaid'), start=0)

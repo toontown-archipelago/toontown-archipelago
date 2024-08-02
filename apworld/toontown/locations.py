@@ -220,6 +220,36 @@ class ToontownLocationName(Enum):
     FISHING_50_SPECIES =                        "(Fishing) 50 Species Caught Trophy"
     FISHING_60_SPECIES =                        "(Fishing) 60 Species Caught Trophy"
     FISHING_COMPLETE_ALBUM =                    "(Fishing) All 70 Species Caught Trophy"
+    EASY_GOLF_1 =                               "Walk in the Par (Hole 1)"
+    EASY_GOLF_2 =                               "Walk in the Par (Hole 2)"
+    EASY_GOLF_3 =                               "Walk in the Par (Hole 3)"
+    MED_GOLF_1 =                                "Hole Some Fun (Hole 1)"
+    MED_GOLF_2 =                                "Hole Some Fun (Hole 2)"
+    MED_GOLF_3 =                                "Hole Some Fun (Hole 3)"
+    MED_GOLF_4 =                                "Hole Some Fun (Hole 4)"
+    MED_GOLF_5 =                                "Hole Some Fun (Hole 5)"
+    MED_GOLF_6 =                                "Hole Some Fun (Hole 6)"
+    HARD_GOLF_1 =                               "The Hole Kit and Caboodle (Hole 1)"
+    HARD_GOLF_2 =                               "The Hole Kit and Caboodle (Hole 2)"
+    HARD_GOLF_3 =                               "The Hole Kit and Caboodle (Hole 3)"
+    HARD_GOLF_4 =                               "The Hole Kit and Caboodle (Hole 4)"
+    HARD_GOLF_5 =                               "The Hole Kit and Caboodle (Hole 5)"
+    HARD_GOLF_6 =                               "The Hole Kit and Caboodle (Hole 6)"
+    HARD_GOLF_7 =                               "The Hole Kit and Caboodle (Hole 7)"
+    HARD_GOLF_8 =                               "The Hole Kit and Caboodle (Hole 8)"
+    HARD_GOLF_9 =                               "The Hole Kit and Caboodle (Hole 9)"
+    SPEEDWAY_1_CLEAR =                          "Screwball Stadium Cleared"
+    SPEEDWAY_1_QUALIFY =                        "Screwball Stadium Qualified"
+    SPEEDWAY_2_CLEAR =                          "Corkscrew Coliseum Cleared"
+    SPEEDWAY_2_QUALIFY =                        "Corkscrew Coliseum Qualified"
+    RURAL_1_CLEAR =                             "Rustic Raceway Cleared"
+    RURAL_1_QUALIFY =                           "Rustic Raceway Qualified"
+    RURAL_2_CLEAR =                             "Airborne Acres Cleared"
+    RURAL_2_QUALIFY =                           "Airborne Acres Qualified"
+    URBAN_1_CLEAR =                             "City Circuit Cleared"
+    URBAN_1_QUALIFY =                           "City Circuit Qualified"
+    URBAN_2_CLEAR =                             "Blizzard Boulevard Clear"
+    URBAN_2_QUALIFY =                           "Blizzard Boulevard Qualified"
     TOONTOWN_CENTRAL_TASK_1 =                   "Toontown Central Task #1"
     TOONTOWN_CENTRAL_TASK_2 =                   "Toontown Central Task #2"
     TOONTOWN_CENTRAL_TASK_3 =                   "Toontown Central Task #3"
@@ -479,6 +509,8 @@ class ToontownLocationType(IntEnum):
     FISHING         = auto()  # Locations for fishing trophies
     FISHING_GENUS   = auto()  # Locations for catching unique genus
     FISHING_GALLERY = auto()  # Locations for fishing gallery
+    RACING          = auto()  # Locations for racing
+    GOLF            = auto()  # Location for golf
     PLAYGROUND_1    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_2    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_3    = auto()  # Locations for discovering playground treasures
@@ -486,13 +518,13 @@ class ToontownLocationType(IntEnum):
     PLAYGROUND_5    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_6    = auto()  # Locations for discovering playground treasures
     GAG_TRAINING    = auto()  # Locations for training gags
-    PET_SHOP     = auto()  # Locations for purchasing checks from pet shop clerks
-    TTC_TASKS    = auto()  # Locations for TTC tasks
-    DD_TASKS     = auto()  # Locations for DD tasks
-    DG_TASKS     = auto()  # Locations for DG tasks
-    MML_TASKS    = auto()  # Locations for MML tasks
-    TB_TASKS     = auto()  # Locations for TB tasks
-    DDL_TASKS    = auto()  # Locations for DDL tasks
+    PET_SHOP        = auto()  # Locations for purchasing checks from pet shop clerks
+    TTC_TASKS       = auto()  # Locations for TTC tasks
+    DD_TASKS        = auto()  # Locations for DD tasks
+    DG_TASKS        = auto()  # Locations for DG tasks
+    MML_TASKS       = auto()  # Locations for MML tasks
+    TB_TASKS        = auto()  # Locations for TB tasks
+    DDL_TASKS       = auto()  # Locations for DDL tasks
 
     MISC = auto()
 
@@ -758,6 +790,40 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.ROBBER_BARRON_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightCashbot]),
     ToontownLocationDefinition(ToontownLocationName.BIG_WIG_MAXED,              ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightLawbot]),
     ToontownLocationDefinition(ToontownLocationName.BIG_CHEESE_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightBossbot]),
+    # endregion
+    # region racing
+    ToontownLocationDefinition(ToontownLocationName.SPEEDWAY_1_CLEAR,           ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.SPEEDWAY_1_QUALIFY,         ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.SPEEDWAY_2_CLEAR,           ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.SPEEDWAY_2_QUALIFY,         ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.RURAL_1_CLEAR,              ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.RURAL_1_QUALIFY,            ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.RURAL_2_CLEAR,              ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.RURAL_2_QUALIFY,            ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.URBAN_1_CLEAR,              ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.URBAN_1_QUALIFY,            ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.URBAN_2_CLEAR,              ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    ToontownLocationDefinition(ToontownLocationName.URBAN_2_QUALIFY,            ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
+    # endregion
+    # region Minigolf
+    ToontownLocationDefinition(ToontownLocationName.EASY_GOLF_1,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.EASY_GOLF_2,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.EASY_GOLF_3,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.MED_GOLF_1,            ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.MED_GOLF_2,            ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.MED_GOLF_3,            ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.MED_GOLF_4,            ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.MED_GOLF_5,            ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.MED_GOLF_6,            ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.HARD_GOLF_1,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.HARD_GOLF_2,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.HARD_GOLF_3,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.HARD_GOLF_4,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.HARD_GOLF_5,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.HARD_GOLF_6,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.HARD_GOLF_7,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.HARD_GOLF_8,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
+    ToontownLocationDefinition(ToontownLocationName.HARD_GOLF_9,           ToontownLocationType.GOLF, ToontownRegionName.AA, [Rule.CanReachAA, Rule.Golfing]),
     # endregion
     # region Fishing
     ToontownLocationDefinition(ToontownLocationName.BALLOON_FISH_0,         ToontownLocationType.FISHING, ToontownRegionName.FISHING, [Rule.FishCatch]),
