@@ -1629,6 +1629,8 @@ hood2Coords = {
 musicJsonFilePath = Filename('/content_pack/music.json')
 suitClothesJsonFilePath = Filename('/content_pack/suit_clothes.json')
 
+PUTTER_KEY = 38
+
 # I hate these imports being here as much as you do, but putting them at the top crashes the AI on startup :)
 from ..archipelago.definitions import util
 from apworld.toontown import locations

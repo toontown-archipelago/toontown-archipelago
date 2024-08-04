@@ -167,6 +167,16 @@ Toontown:
   # - none: All fishing areas are available. The player starts with a Gold Rod.
   fish_progression: 'rods'
 
+  ### Activity Settings ###
+
+  # Determines if racing locations are enabled
+  # Also adds "Go-Kart" to the item pool.
+  racing_logic: 'false'
+
+  # Determines if mini golf locations are enabled
+  # Also adds "Golf Putter" to the item pool.
+  minigolf_logic: 'false'
+
   ### Seed Generation Settings ###
 
   # Type of seeding to use when RNG checks happen in game.

@@ -319,6 +319,16 @@ class ToontownWorld(World):
         for i in range(filler):
             pool.append(self.create_item(items.random_junk().value))
 
+        # racing item logic
+        if self.options.racing_logic.value:
+            item = self.create_item(ToontownItemName.GO_KART.value)
+            pool.append(item)
+
+        # golfing item logic
+        if self.options.minigolf_logic.value:
+            item = self.create_item(ToontownItemName.GOLF_PUTTER.value)
+            pool.append(item)
+
         # Finalize item pool.
         self.multiworld.itempool += pool
 
@@ -387,6 +397,8 @@ class ToontownWorld(World):
             "bean_tax_weight": self.options.bean_tax_weight.value,
             "gag_shuffle_weight": self.options.gag_shuffle_weight.value,
             "fish_progression": self.options.fish_progression.value,
+            "racing_logic": self.options.racing_logic.value,
+            "golfing_logic": self.options.minigolf_logic.value,
             "maxed_cog_gallery_quota": self.options.maxed_cog_gallery_quota.value,
             "death_link": self.options.death_link.value,
             "local_itempool": local_itempool,
@@ -455,6 +467,14 @@ class ToontownWorld(World):
         rev_locs = BOSS_LOCATION_TYPES[::-1]
         for i in range(len(rev_locs) - cpb):
             forbidden_location_types.add(rev_locs[i])
+
+        racing = self.options.racing_logic.value
+        if not racing:
+            forbidden_location_types.add(ToontownLocationType.RACING)
+
+        golf = self.options.minigolf_logic.value
+        if not golf:
+            forbidden_location_types.add(ToontownLocationType.GOLF)
 
         return forbidden_location_types
 

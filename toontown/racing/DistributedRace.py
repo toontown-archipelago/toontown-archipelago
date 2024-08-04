@@ -446,6 +446,7 @@ class DistributedRace(DistributedObject.DistributedObject):
         self.accept(self.rulesDoneEvent, self.handleRulesDone)
         self.rulesPanel = MinigameRulesPanel.MinigameRulesPanel('RacingRulesPanel', self.getTitle(), self.getInstructions(), self.rulesDoneEvent, 10)
         self.rulesPanel.load()
+        self.rulesPanel.skipButton.hide()
         self.rulesPanel.frame.setPos(0, 0, -0.6667)
         self.rulesPanel.enter()
 
