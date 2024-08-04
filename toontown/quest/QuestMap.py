@@ -277,7 +277,6 @@ class QuestMap(DirectFrame):
             marker.destroy()
 
         self.buildingMarkers = []
-        self.buildingMarkers = []
         self.container.hide()
         self.hide()
         self.obscureButton()
