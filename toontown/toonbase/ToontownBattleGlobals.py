@@ -357,6 +357,7 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
     if not npc:
         multiplier = experience.getUberDamageBonus(attackTrack, overflowMod=overflowMod)
         damage *= multiplier
+        damage *= toonDamageMultiplier / 100
 
     if propAndOrganicBonusStack:
         originalDamage = damage
@@ -367,13 +368,11 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
     elif organicBonus or propBonus:
         damage += getDamageBonus(damage)
 
-    damage *= toonDamageMultiplier / 100
-
-    return math.floor(damage)
+    return math.ceil(damage)
 
 
 def getDamageBonus(normal):
-    bonus = math.floor(normal * 0.1)
+    bonus = math.ceil(normal * 0.1)
     if bonus < 1 and normal > 0:
         bonus = 1
     return bonus
