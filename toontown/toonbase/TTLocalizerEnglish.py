@@ -5006,6 +5006,14 @@ MovieTutorialReward5 = 'Have fun!'
 BattleGlobalCogImmuneText = 'Immune'
 BattleGlobalCogImmuneRevertText = 'Vulnerable'
 BattleGlobalCogLuredText = 'Lured %s Rounds'
+BattleGlobalCogFiredText = 'Fired!!'
+BossWontLikeThis = {
+       's': 'The Vice President wont like this...',
+       'm': 'The C.F.O. wont like this...',
+       'l': 'The Chief Justice wont like this...',
+       'c': 'The C.E.O. wont like this...',
+}
+BossTenure = "I have tenure, Toon."
 BattleGlobalTracks = ['toon-up',
  'trap',
  'lure',

@@ -249,6 +249,7 @@ class Movie(DirectObject.DirectObject):
         ptrack.append(Func(callback))
         self._deleteTrack()
         self.track = Sequence(ptrack, name='movie-track-%d' % self.battle.doId)
+        
         if self.battle.localToonPendingOrActive():
             self.track = Parallel(self.track, Sequence(camtrack), name='movie-track-with-cam-%d' % self.battle.doId)
         if randomBattleTimestamp == 1:
@@ -848,11 +849,6 @@ class Movie(DirectObject.DirectObject):
             targetField = attack.get('target')
             if targetField is None:
                 continue
-        for scene in self.battleScenes:
-            if not scene[4]:
-                ival, camIval = BattleScenes.doScene(scene, self.battle)
-                track.append(ival)
-                camTrack.append(camIval)
 
         if len(track) == 0:
             return None, None

@@ -536,6 +536,88 @@ class DistributedSuitBase(DistributedAvatar.DistributedAvatar, Suit.Suit, SuitBa
                 self.hpText.setPos(0, 0, self.height / 2)
                 seq = Sequence(self.hpText.posInterval(1.0, Point3(0, 0, self.height + 1.5), blendType='easeOut'), Wait(0.85), self.hpText.colorInterval(0.1, Vec4(r, g, b, 0), 0.1), Func(self.hideHpText))
                 seq.start()
+    
+    def showHpTextString(self, number, bonus = 0, scale = 1, attackTrack = -1, immuneRevert=0):
+        if self.HpTextEnabled and not self.ghostMode:
+            if number != 0:
+                if self.hpText:
+                    self.hideHpText()
+                self.HpTextGenerator.setFont(OTPGlobals.getSignFont())
+                
+                self.HpTextGenerator.setText(number)
+                
+                self.HpTextGenerator.clearShadow()
+                self.HpTextGenerator.setAlign(TextNode.ACenter)
+                if immuneRevert == 1:
+                    r = ToontownGlobals.CogImmuneColor[0]
+                    g = ToontownGlobals.CogImmuneColor[1]
+                    b = ToontownGlobals.CogImmuneColor[2]
+                    a = ToontownGlobals.CogImmuneColor[3]
+                    self.HpTextGenerator.setText(TTLocalizer.BattleGlobalCogImmuneRevertText)
+                else:
+                    if self.isImmune != 1:
+                        if not base.colorBlindMode:
+                            if bonus == 1:
+                                r = 1.0
+                                g = 1.0
+                                b = 0
+                                a = 1
+                            elif bonus == 2:
+                                r = 1.0
+                                g = 0.5
+                                b = 0
+                                a = 1
+                            elif attackTrack == ToontownBattleGlobals.LURE_TRACK:
+                                r = 0.35
+                                g = 0.85
+                                b = 0.35
+                                a = 1
+                                self.HpTextGenerator.setText(TTLocalizer.BattleGlobalCogLuredText % number)
+                        else:
+                            if bonus == 1:
+                                r = 0.8
+                                g = 0.8
+                                b = 0.3
+                                a = 1
+                            elif bonus == 2:
+                                r = 0.8
+                                g = 0.4
+                                b = 0.22
+                                a = 1
+                            elif attackTrack == ToontownBattleGlobals.LURE_TRACK:
+                                r = 0.40
+                                g = 0.75
+                                b = 0.40
+                                a = 1
+                                self.HpTextGenerator.setText(TTLocalizer.BattleGlobalCogLuredText % number)
+                    elif self.isImmune == 1 and number <= 0:
+                        if bonus > 0:
+                            r = ToontownGlobals.CogImmuneColor[0]
+                            g = ToontownGlobals.CogImmuneColor[1]
+                            b = ToontownGlobals.CogImmuneColor[2]
+                            a = 0
+                        else:
+                            r = ToontownGlobals.CogImmuneColor[0]
+                            g = ToontownGlobals.CogImmuneColor[1]
+                            b = ToontownGlobals.CogImmuneColor[2]
+                            a = ToontownGlobals.CogImmuneColor[3]
+                            self.HpTextGenerator.setText(TTLocalizer.BattleGlobalCogImmuneText)
+                r = 1
+                g = 0.5
+                b = 0
+                a = 1
+                self.HpTextGenerator.setTextColor(r, g, b, a)
+                self.hpTextNode = self.HpTextGenerator.generate()
+                self.hpText = self.attachNewNode(self.hpTextNode)
+                self.hpText.setScale(scale)
+                self.hpText.setBillboardPointEye()
+                self.hpText.setBin('fixed', 100)
+                if self.sillySurgeText:
+                    self.nametag3d.setDepthTest(0)
+                    self.nametag3d.setBin('fixed', 99)
+                self.hpText.setPos(0, 0, self.height / 2)
+                seq = Sequence(self.hpText.posInterval(1.0, Point3(0, 0, self.height + 1.5), blendType='easeOut'), Wait(0.85), self.hpText.colorInterval(0.1, Vec4(r, g, b, 0), 0.1), Func(self.hideHpText))
+                seq.start()
 
     def hideHpText(self):
         DistributedAvatar.DistributedAvatar.hideHpText(self)

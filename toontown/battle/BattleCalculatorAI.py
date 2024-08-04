@@ -537,7 +537,10 @@ class BattleCalculatorAI:
                             print('Not enough PinkSlips to fire cog - print a warning here')
                         else:
                             suit.skeleRevives = 0
-                            attackDamage = suit.getHP()
+                            if suit.dna.name in SuitDNA.notMainTypes:
+                                attackDamage = 0
+                            else:
+                                attackDamage = suit.getHP()
                     else:
                         attackDamage = 0
                     bonus = 0
