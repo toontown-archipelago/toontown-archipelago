@@ -470,7 +470,12 @@ class Suit(Avatar.Avatar):
         self.healthBarGlow = glow
         self.healthBar.hide()
         self.healthCondition = 0 if not self.isImmune else 6
-        self.updateHealthBar(0, forceUpdate=True)
+        
+        # for start engine
+        try:
+            self.updateHealthBar(0, forceUpdate=True)
+        except:
+            pass
 
     def resetHealthBarForSkele(self):
         self.healthBar.setPos(0.0, 0.1, 0.0)

@@ -477,6 +477,8 @@ class SuitVisual:
                 headPath = self.headModelPath(suit.style.body)
                 if self.key in ['ds', 'def']:
                     headPath = self.headModelPath(suit.style.body, 'phase_4/models/char/suitB-heads2')
+                elif self.key == 'bgh':
+                    headPath = self.headModelPath(suit.style.body, 'phase_3.5/models/char/suitC-heads2')
                 elif self.key == 'trf':
                     headPath = self.headModelPath(suit.style.body, 'phase_4/models/char/suitA-heads2')
                 headModel = loader.loadModel(headPath)
@@ -544,7 +546,7 @@ GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
     SuitVisual('trf',  5.25 / aSize,  salesPolyColor,                None,                         None,                   ['flunky', 'hat'],             6.95),
     SuitVisual('ski',  5.65 / bSize,  VBase4(0.5, 0.8, 0.75, 1.0),   None,                        'skinflint.jpg',      'telemarketer',        7.9),
     SuitVisual('def',  4.4 / bSize,   moneyPolyColor,                None,                        'suit-heads_palette_3cmla_5.jpg',                   ['downsizer', 'downsizer_hat'],         5.95),
-    SuitVisual('bgh',   4.0 / cSize,   corpPolyColor,                 None,                         'bag_holder.jpg',                   'tightwad', 4.88),
+    SuitVisual('bgh',   4.0 / cSize,   corpPolyColor,                 None,                         None,                   ['stockholder',], 4.88),
 }
 
 SuitClotheParts = ['blazer', 'leg', 'sleeve']
