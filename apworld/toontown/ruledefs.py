@@ -444,21 +444,24 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     # - EXP required at level
 
     minimum_lure = state.has(ToontownItemName.LURE_FRAME.value, player, LUREMIN)
-    powerful_lure_knockback = any(
-        state.has(offensive_frame.value, player, LEVEL)
-        for offensive_frame in [
-            ToontownItemName.THROW_FRAME,
-            ToontownItemName.SQUIRT_FRAME,
-        ]
-    ) and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
-    powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, OVERLEVEL)
-    powerful_trap = state.has(ToontownItemName.TRAP_FRAME.value, player, OVERLEVEL) \
+    powerful_lure_knockback = state.has(ToontownItemName.THROW_FRAME.value, player, LEVEL) \
+                              and state.has(ToontownItemName.THROW_FRAME.value, player, LEVEL) \
+                              and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
+    powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, LEVEL)
+    powerful_trap = state.has(ToontownItemName.TRAP_FRAME.value, player, LEVEL) \
                     and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
     powerful_sound = state.has(ToontownItemName.SOUND_FRAME.value, player, OVERLEVEL)
+
+    def two_powerful_tracks():
+        powerful_tracks = 0
+        for track in (powerful_drop, powerful_trap, powerful_sound):
+            if track:
+                powerful_tracks += 1
+        return powerful_tracks >= 2
+
     sufficient_healing = state.has(ToontownItemName.TOONUP_FRAME.value, player, UNDERLEVEL)
     can_obtain_exp_required = has_collected_items_for_gag_level(state, player, options, LEVEL)
-
-    return (powerful_lure_knockback or powerful_sound or powerful_trap or powerful_drop) \
+    return (powerful_lure_knockback or two_powerful_tracks()) \
             and sufficient_healing and minimum_lure and can_obtain_exp_required
 
 
