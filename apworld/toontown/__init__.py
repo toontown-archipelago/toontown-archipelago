@@ -320,14 +320,18 @@ class ToontownWorld(World):
             pool.append(self.create_item(items.random_junk().value))
 
         # racing item logic
+        item = self.create_item(ToontownItemName.GO_KART.value)
         if self.options.racing_logic.value:
-            item = self.create_item(ToontownItemName.GO_KART.value)
             pool.append(item)
+        else:
+            self.multiworld.push_precollected(item)
 
         # golfing item logic
+        item = self.create_item(ToontownItemName.GOLF_PUTTER.value)
         if self.options.minigolf_logic.value:
-            item = self.create_item(ToontownItemName.GOLF_PUTTER.value)
             pool.append(item)
+        else:
+            self.multiworld.push_precollected(item)
 
         # Finalize item pool.
         self.multiworld.itempool += pool
