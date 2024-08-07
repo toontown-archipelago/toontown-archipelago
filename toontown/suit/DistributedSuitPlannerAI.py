@@ -105,7 +105,11 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         heights = [
          0, 0, 0, 0, 0]
         for level in levels:
-            minFloors, maxFloors = SuitBuildingGlobals.SuitBuildingInfo[level - 1][0]
+            try:
+                minFloors, maxFloors = SuitBuildingGlobals.SuitBuildingInfo[level - 1][0]
+            except IndexError:
+                minFloors = 1
+                maxFloors = 5
             for i in range(minFloors - 1, maxFloors):
                 heights[i] += 1
 

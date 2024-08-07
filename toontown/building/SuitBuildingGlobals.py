@@ -1,14 +1,39 @@
 from .ElevatorConstants import *
+
+# floor and suit information for all suit buildings, organized by each
+# level of suit that originally took over the building (minus 1), used
+# to determine how many and what level of suits to create for the suit
+# interiors
+#
+#    1  number of floors for this level building
+#    2  suit level range, excluding the boss
+#    3  boss level range
+#    4  base level pool for total suits on each floor of the building
+#    5  multipliers for item 4 for each floor of the building, generally
+#       each consecutive floor increases the base range of the level pool
+#    6 are they v2.0 cogs
+#
 SuitBuildingInfo = (
+ # building difficulty 0 (suit level 1)
  ((1, 1), (1, 3), (4, 4), (8, 10), (1,)),  # 0
+ # building difficulty 1 (suit level 2) 
  ((1, 2), (2, 4), (5, 5), (8, 10), (1, 1.2)),  # 1
+ # building difficulty 2 (suit level 3)
  ((1, 3), (3, 5), (6, 6), (8, 10), (1, 1.3, 1.6)),  # 2
+ # building difficulty 3 (suit level 4)
  ((2, 3), (4, 6), (7, 7), (8, 10), (1, 1.4, 1.8)),  # 3
+ # building difficulty 4 (suit level 5)
  ((2, 4), (5, 7), (8, 8), (8, 10), (1, 1.6, 1.8, 2)),  # 4
+ # building difficulty 5 (suit level 6)
  ((3, 4), (6, 8), (9, 9), (10, 12), (1, 1.6, 2, 2.4)),  # 5
+ # building difficulty 6 (suit level 7)
  ((3, 5), (7, 9), (10, 10), (10, 14), (1, 1.6, 1.8, 2.2, 2.4)),  # 6
+ # building difficulty 7 (suit level 8)
  ((4, 5), (8, 11), (12, 12), (12, 16), (1, 1.8, 2.4, 3, 3.2)),  # 7
- ((5, 5), (9, 12), (13, 13), (14, 20), (1.4, 1.8, 2.6, 3.4, 4)),  # 8
+ # building difficulty 8 (suit level 9)
+ ((5, 5), (9, 12), (13, 13), (14, 20), (1.4, 1.8, 2.6, 3.4, 4))  # 8
+)
+SuitBossInfo = (
  ((1, 1), (1, 8), (8, 8), (67, 67), (1, 1, 1, 1, 1)),  # 9 VP Round 1
  ((1, 1), (4, 8), (8, 8), (100, 100), (1, 1, 1, 1, 1)),  # 10 VP Round 2 Skelecogs
  ((1, 1), (1, 10), (10, 10), (100, 100), (1, 1, 1, 1, 1)),  # 11 CFO Round 1 NONSKELECOGS ONLY
