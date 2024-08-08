@@ -70,11 +70,8 @@ class SuitPlannerBase:
          0,
          0]
         for level in levels:
-            try:
-                minFloors, maxFloors = SuitBuildingGlobals.SuitBuildingInfo[level - 1][0]
-            except IndexError:
-                minFloors = 1
-                maxFloors = 5
+            floorInfo = max(0, min(level - 1, (len(SuitBuildingGlobals.SuitBuildingInfo) - 1)))
+            minFloors, maxFloors = SuitBuildingGlobals.SuitBuildingInfo[floorInfo][0]
             for i in range(minFloors - 1, maxFloors):
                 heights[i] += 1
 
