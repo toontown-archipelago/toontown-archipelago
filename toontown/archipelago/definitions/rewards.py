@@ -77,6 +77,7 @@ class LaffBoostReward(APReward):
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxHp(av.maxHp + self.amount)
         av.toonUp(self.amount)
+        av.checkWinCondition()
 
 
 class GagCapacityReward(APReward):

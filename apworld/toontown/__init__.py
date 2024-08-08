@@ -77,6 +77,11 @@ class ToontownWorld(World):
         item_def: ToontownItemDefinition = get_item_def_from_id(item_id)
         return ToontownItem(name, item_def.classification, item_id, self.player)
 
+    def create_progression_item(self, name: str) -> ToontownItem:
+        item_id: int = self.item_name_to_id[name]
+        item_def: ToontownItemDefinition = get_item_def_from_id(item_id)
+        return ToontownItem(name, ItemClassification.progression, item_id, self.player)
+
     def create_event(self, event: str) -> ToontownItem:
         return ToontownItem(event, ItemClassification.progression_skip_balancing, None, self.player)
 
@@ -243,34 +248,43 @@ class ToontownWorld(World):
                     self.multiworld.push_precollected(item)
 
         # Dynamically generate laff boosts.
-        LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
-        if LAFF_TO_GIVE < 0:
-            print(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
-                  f"WARNING: Too low max HP. Setting max HP to starting HP.")
-            LAFF_TO_GIVE = 0
-        FIVE_LAFF_BOOSTS = round(consts.FIVE_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
-        while FIVE_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 5:
-            FIVE_LAFF_BOOSTS -= 1
-            LAFF_TO_GIVE -= 5
-            pool.append(self.create_item(ToontownItemName.LAFF_BOOST_5.value))
-        FOUR_LAFF_BOOSTS = round(consts.FOUR_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
-        while FOUR_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 4:
-            FOUR_LAFF_BOOSTS -= 1
-            LAFF_TO_GIVE -= 4
-            pool.append(self.create_item(ToontownItemName.LAFF_BOOST_4.value))
-        THREE_LAFF_BOOSTS = round(consts.THREE_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
-        while THREE_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 3:
-            THREE_LAFF_BOOSTS -= 1
-            LAFF_TO_GIVE -= 3
-            pool.append(self.create_item(ToontownItemName.LAFF_BOOST_3.value))
-        TWO_LAFF_BOOSTS = round(consts.TWO_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
-        while TWO_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 2:
-            TWO_LAFF_BOOSTS -= 1
-            LAFF_TO_GIVE -= 2
-            pool.append(self.create_item(ToontownItemName.LAFF_BOOST_2.value))
+        if self.options.win_condition.value != 5:  # If our goal isn't laff-o-lypics, generate laff items normally
+            LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
+            if LAFF_TO_GIVE < 0:
+                print(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
+                      f"WARNING: Too low max HP. Setting max HP to starting HP.")
+                LAFF_TO_GIVE = 0
+            FIVE_LAFF_BOOSTS = round(consts.FIVE_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
+            while FIVE_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 5:
+                FIVE_LAFF_BOOSTS -= 1
+                LAFF_TO_GIVE -= 5
+                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_5.value))
+            FOUR_LAFF_BOOSTS = round(consts.FOUR_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
+            while FOUR_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 4:
+                FOUR_LAFF_BOOSTS -= 1
+                LAFF_TO_GIVE -= 4
+                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_4.value))
+            THREE_LAFF_BOOSTS = round(consts.THREE_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
+            while THREE_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 3:
+                THREE_LAFF_BOOSTS -= 1
+                LAFF_TO_GIVE -= 3
+                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_3.value))
+            TWO_LAFF_BOOSTS = round(consts.TWO_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
+            while TWO_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 2:
+                TWO_LAFF_BOOSTS -= 1
+                LAFF_TO_GIVE -= 2
+                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_2.value))
 
-        for _ in range(LAFF_TO_GIVE):
-            pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
+            for _ in range(LAFF_TO_GIVE):
+                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
+        else:  # Our goal is laff-o-lympics, only progressive +1 Boost items
+            # Lets make sure our goal isn't more than our max_laff
+            # If it is, make our max laff the same as our goal
+            LAFF_TO_GIVE = max(self.options.laff_points_required, self.options.max_laff.value) - self.options.starting_laff.value
+
+            for _ in range(LAFF_TO_GIVE):
+                pool.append(self.create_progression_item(ToontownItemName.LAFF_BOOST_1.value))
+
 
         # Dynamically generate training frames.
         for frame in items.GAG_TRAINING_FRAMES:
@@ -393,6 +407,7 @@ class ToontownWorld(World):
             "gag_tracks_required": self.options.gag_tracks_required.value,
             "starting_task_playground": self.options.starting_task_playground.value,
             "fish_species_required": self.options.fish_species_required.value,
+            "laff_points_required": self.options.laff_points_required.value,
             "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,

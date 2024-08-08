@@ -12,7 +12,7 @@ from toontown.suit import DistributedSuitAI
 class SuitPlannerInteriorAI:
     notify = DirectNotifyGlobal.directNotify.newCategory('SuitPlannerInteriorAI')
 
-    def __init__(self, numFloors, bldgLevel, bldgTrack, zone, respectInvasions=1, numToons=None):
+    def __init__(self, numFloors, bldgLevel, bldgTrack, zone, respectInvasions=1, numToons=None, isBoss=False):
         self.dbg_nSuits1stRound = config.GetBool('n-suits-1st-round', 0)
         self.dbg_4SuitsPerFloor = config.GetBool('4-suits-per-floor', 0)
         self.dbg_1SuitPerFloor = config.GetBool('1-suit-per-floor', 0)
@@ -28,7 +28,7 @@ class SuitPlannerInteriorAI:
         if isinstance(bldgLevel, bytes):
             self.notify.warning('bldgLevel is a string!')
             bldgLevel = int(bldgLevel)
-        self._genSuitInfos(numFloors, bldgLevel, bldgTrack, numToons)
+        self._genSuitInfos(numFloors, bldgLevel, bldgTrack, numToons, isBoss)
         return
 
     def __genJoinChances(self, num):
@@ -39,12 +39,12 @@ class SuitPlannerInteriorAI:
         joinChances.sort(key=functools.cmp_to_key(cmp))
         return joinChances
 
-    def _genSuitInfos(self, numFloors, bldgLevel, bldgTrack, numToons):
+    def _genSuitInfos(self, numFloors, bldgLevel, bldgTrack, numToons, isBoss):
         self.suitInfos = []
         self.notify.debug('\n\ngenerating suitsInfos with numFloors (' + str(numFloors) + ') bldgLevel (' + str(bldgLevel) + '+1) and bldgTrack (' + str(bldgTrack) + ')')
         for currFloor in range(numFloors):
             infoDict = {}
-            lvls = self.__genLevelList(bldgLevel, currFloor, numFloors, numToons)
+            lvls = self.__genLevelList(bldgLevel, currFloor, numFloors, numToons, isBoss)
             activeDicts = []
             maxActive = min(4, len(lvls))
             if self.dbg_nSuits1stRound:
@@ -60,7 +60,10 @@ class SuitPlannerInteriorAI:
                 tmp = lvls[newBossSpot]
                 lvls[newBossSpot] = lvls[origBossSpot]
                 lvls[origBossSpot] = tmp
-            bldgInfo = SuitBuildingGlobals.SuitBuildingInfo[bldgLevel]
+            if isBoss:
+                bldgInfo = SuitBuildingGlobals.SuitBossInfo[bldgLevel]
+            else:
+                bldgInfo = SuitBuildingGlobals.SuitBuildingInfo[bldgLevel]
             if len(bldgInfo) > SuitBuildingGlobals.SUIT_BLDG_INFO_REVIVES:
                 revives = bldgInfo[SuitBuildingGlobals.SUIT_BLDG_INFO_REVIVES][0]
             else:
@@ -103,8 +106,11 @@ class SuitPlannerInteriorAI:
             return self.dbg_defaultSuitType
         return SuitDNA.getRandomSuitType(lvl)
 
-    def __genLevelList(self, bldgLevel, currFloor, numFloors, numToons):
-        bldgInfo = SuitBuildingGlobals.SuitBuildingInfo[bldgLevel]
+    def __genLevelList(self, bldgLevel, currFloor, numFloors, numToons, isBoss):
+        if isBoss:
+            bldgInfo = SuitBuildingGlobals.SuitBossInfo[bldgLevel]
+        else:
+            bldgInfo = SuitBuildingGlobals.SuitBuildingInfo[bldgLevel]
         if self.dbg_1SuitPerFloor:
             return [1]
         else:
