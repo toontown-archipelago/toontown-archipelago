@@ -179,6 +179,7 @@ class HoodTaskWinCondition(WinCondition):
                 f'When you finish, come back and see me!{delimiter}'
                 f'Good luck!')
 
+
 class GagTrackWinCondition(WinCondition):
     # gag tracks to consider for win condition
     GAG_TRACKS = (ToontownBattleGlobals.HEAL_TRACK, ToontownBattleGlobals.TRAP_TRACK,
@@ -209,7 +210,8 @@ class GagTrackWinCondition(WinCondition):
                 f'You still need to max out {gags_needed} gag track{plural}.{delimiter}'
                 f'When you finish, come back and see me!{delimiter}'
                 f'Good luck!')
-    
+
+
 class FishSpeciesWinCondition(WinCondition):
     def __init__(self, toon: DistributedToon | DistributedToonAI, fish_species: int):
         super().__init__(toon)
@@ -240,6 +242,23 @@ class FishSpeciesWinCondition(WinCondition):
                 f'When you finish, come back and see me!{delimiter}'
                 f'Good luck!')
 
+
+class LaffOLympicsWinCondition(WinCondition):
+    def __init__(self, toon: DistributedToon | DistributedToonAI, laff_points: int):
+        super().__init__(toon)
+        self.laff_points = laff_points  # laff points needed to meet win condition
+
+    def satisfied(self) -> bool:
+        return self.toon.getMaxHp() >= self.laff_points
+
+    def generate_npc_dialogue(self, delimiter='\x07') -> str:
+        laff_needed = self.laff_points - self.toon.getMaxHp()
+        plural = 's' if laff_needed > 1 else ''
+        return (f'You still have not completed your goal!{delimiter}'
+                f'You still need gain {laff_needed} more Laff Point{plural}.{delimiter}'
+                f'When you finish, come back and see me!{delimiter}'
+                f'Good luck!')
+
 # Given a win condition ID (given to us via slot data from archipelago) generate and return the corresponding condition
 # When new win conditions are added, be sure to add them here
 def generate_win_condition(condition_id: int, toon: DistributedToon | DistributedToonAI) -> WinCondition:
@@ -267,6 +286,10 @@ def generate_win_condition(condition_id: int, toon: DistributedToon | Distribute
     # check for fish species condition
     if condition_id == 4:
         return FishSpeciesWinCondition(toon, toon.slotData.get('fish_species_required', 70))
+
+    # check for laff-o-lympics condition
+    if condition_id == 5:
+        return LaffOLympicsWinCondition(toon, toon.slotData.get('laff_points_required', 120))
 
     # We don't have a valid win condition
     return InvalidWinCondition(toon)
