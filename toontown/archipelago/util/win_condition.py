@@ -255,7 +255,7 @@ class LaffOLympicsWinCondition(WinCondition):
         laff_needed = self.laff_points - self.toon.getMaxHp()
         plural = 's' if laff_needed > 1 else ''
         return (f'You still have not completed your goal!{delimiter}'
-                f'You still need gain {laff_needed} more Laff Point{plural}.{delimiter}'
+                f'You still need to gain {laff_needed} more Laff Point{plural}.{delimiter}'
                 f'When you finish, come back and see me!{delimiter}'
                 f'Good luck!')
 
