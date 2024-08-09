@@ -1,6 +1,8 @@
 from typing import List
 
 from apworld.toontown.fish import can_av_fish_at_zone
+from apworld.toontown import locations
+from toontown.quest import Quests
 from . import ShtikerPage
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import PythonUtil
@@ -237,13 +239,15 @@ class MapPage(ShtikerPage.ShtikerPage):
                     questPoster.showLocked()
                 else:
                     # Get the reward IDs from this playground
-                    rewardIds = getRewardIdsFromHood(hoodId)
+                    rewardIds = Quests.getRewardIdsFromHood(hoodId)
 
                     # Filter out the rewards we can't get bc we already earned them
-                    tier, rewardHistory = base.localAvatar.getRewardHistory()
-                    for earnedReward in rewardHistory:
-                        if earnedReward in rewardIds:
-                            rewardIds.remove(earnedReward)
+                    for reward in rewardIds:
+                        loc = Quests.RewardDict.get(reward)[1]
+                        if loc is not None:
+                            if locations.LOCATION_NAME_TO_ID[loc] in base.localAvatar.checkedLocations:
+                                rewardIds.remove(reward)
+
 
                     # Now filter out the rewards we are working on
                     for quest in base.localAvatar.quests:
