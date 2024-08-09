@@ -428,6 +428,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         
 
     def enterBattleFour(self):
+        self.divideToons()
         self.battleFourTimeStarted = globalClock.getFrameTime()
         self.numToonsAtStart = len(self.involvedToons)
         # 500 + 100x where x is numtoons-1
