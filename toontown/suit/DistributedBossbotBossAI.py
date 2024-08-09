@@ -109,11 +109,11 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
              (2, 2),
              (1, 1),
              (1, 1, 1, 1, 1))
-            listVersion = list(SuitBuildingGlobals.SuitBuildingInfo)
+            listVersion = list(SuitBuildingGlobals.SuitBossInfo)
             if simbase.config.GetBool('bossbot-boss-cheat', 0):
                 listVersion[14] = weakenedValue
-                SuitBuildingGlobals.SuitBuildingInfo = tuple(listVersion)
-            retval = self.invokeSuitPlanner(14, 0, 0)
+                SuitBuildingGlobals.SuitBossInfo = tuple(listVersion)
+            retval = self.invokeSuitPlanner(5, 0, 0)
             return retval
         else:
             suits = self.generateDinerSuits()
