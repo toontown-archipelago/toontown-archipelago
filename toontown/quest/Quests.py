@@ -2341,7 +2341,7 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     18033: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'l'), 5039),
     18034: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'm'), 5039),
     18035: APQuestDefinition((CogTrackQuest, Anywhere, 5, 's'), 5039),
-    18036: APQuestDefinition((CogQuest, ToontownGlobals.SellbotHQ, 1, 'trf'), 5039),
+    #18036: APQuestDefinition((CogQuest, ToontownGlobals.SellbotHQ, 1, 'trf'), 5039),
 
     # Location Check #5 (MML) Defeat x amount of cogs in MML
     18040: APQuestDefinition((CogQuest, ToontownGlobals.MinniesMelodyland, 7, Any), 5040),
@@ -2382,7 +2382,7 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     18103: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'l'), 5046),
     18104: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'm'), 5046),
     18105: APQuestDefinition((CogTrackQuest, Anywhere, 6, 's'), 5046),
-    18106: APQuestDefinition((CogQuest, ToontownGlobals.SellbotHQ, 1, 'trf'), 5046),
+    #18106: APQuestDefinition((CogQuest, ToontownGlobals.SellbotHQ, 1, 'trf'), 5046),
 
     # Location Check #12 (MML) Defeat 25 cogs
     18110: APQuestDefinition((CogQuest, Anywhere, 25, Any), 5047),
@@ -2424,8 +2424,8 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     19063: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'l'), 5054),
     19064: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'm'), 5054),
     19065: APQuestDefinition((CogTrackQuest, Anywhere, 5, 's'), 5054),
-    19066: APQuestDefinition((CogQuest, ToontownGlobals.SellbotFactoryIntS, 1, 'trf'), 5054),
-    19067: APQuestDefinition((CogQuest, ToontownGlobals.CashbotHQ, 1, 'ski'), 5054),
+    #19066: APQuestDefinition((CogQuest, ToontownGlobals.SellbotFactoryIntS, 1, 'trf'), 5054),
+    #19067: APQuestDefinition((CogQuest, ToontownGlobals.CashbotHQ, 1, 'ski'), 5054),
 
     # Location Check #8 (TB) Defeat x cogs of type y on polar place
     19070: APQuestDefinition((CogQuest, ToontownGlobals.PolarPlace, 1, 'sd'), 5055),
@@ -2448,8 +2448,8 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     19103: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'l'), 5058),
     19104: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'm'), 5058),
     19105: APQuestDefinition((CogTrackQuest, Anywhere, 6, 's'), 5058),
-    19106: APQuestDefinition((CogQuest, ToontownGlobals.CashbotHQ, 1, 'ski'), 5058),
-    19107: APQuestDefinition((CogQuest, ToontownGlobals.LawbotHQ, 1, 'hat'), 5058),
+    #19106: APQuestDefinition((CogQuest, ToontownGlobals.CashbotHQ, 1, 'ski'), 5058),
+    #19107: APQuestDefinition((CogQuest, ToontownGlobals.LawbotHQ, 1, 'hat'), 5058),
 
     # Location Check #12 (TB) Defeat a 5 story building
     19110: APQuestDefinition((BuildingQuest, Anywhere, 1, Any, 5), 5059),
@@ -2461,8 +2461,8 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     20001: APQuestDefinition((CogQuest, Anywhere, 16, Any), 5060),
     20002: APQuestDefinition((CogQuest, Anywhere, 17, Any), 5060),
     20003: APQuestDefinition((CogQuest, Anywhere, 18, Any), 5060),
-    20004: APQuestDefinition((CogQuest, ToontownGlobals.LawbotHQ, 1, 'hat'), 5060),
-    20005: APQuestDefinition((CogQuest, ToontownGlobals.BossbotHQ, 1, 'skh'), 5060),
+    #20004: APQuestDefinition((CogQuest, ToontownGlobals.LawbotHQ, 1, 'hat'), 5060),
+    #20005: APQuestDefinition((CogQuest, ToontownGlobals.BossbotHQ, 1, 'skh'), 5060),
 
     # Location Check #2 (DDL) Defeat x amount of cogs at level y
     20010: APQuestDefinition((CogLevelQuest, Anywhere, 8, 7), 5061),
@@ -2500,8 +2500,8 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     20071: APQuestDefinition((CogQuest, Anywhere, 15, Any), 5067),
     20072: APQuestDefinition((CogQuest, Anywhere, 17, Any), 5067),
     20073: APQuestDefinition((CogQuest, Anywhere, 19, Any), 5067),
-    20074: APQuestDefinition((CogQuest, ToontownGlobals.CashbotMintIntC, 1, 'ski'), 5067),
-    20075: APQuestDefinition((CogQuest, ToontownGlobals.BossbotHQ, 1, 'skh'), 5067),
+    #20074: APQuestDefinition((CogQuest, ToontownGlobals.CashbotMintIntC, 1, 'ski'), 5067),
+    #20075: APQuestDefinition((CogQuest, ToontownGlobals.BossbotHQ, 1, 'skh'), 5067),
 
     # Location Check #9 (DDL) Defeat 4 level 11+ cogs or 7 level 10+
     20080: APQuestDefinition((CogLevelQuest, Anywhere, 4, 11), 5068),
