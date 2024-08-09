@@ -1,5 +1,5 @@
 import math
-from panda3d.core import CardMaker, TransparencyAttrib, TextNode
+from panda3d.core import CardMaker, TransparencyAttrib
 from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectButton, OnscreenImage, DGG
 from direct.task import Task
 from toontown.toon import NPCToons
