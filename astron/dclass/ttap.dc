@@ -962,13 +962,13 @@ dclass DistributedAnimatedProp : DistributedObject {
 typedef int16 pair16[2];
 
 struct LocationScoutsCache {
-  uint32 locationId;
+  uint64 locationId;
   string rewardName;
 }
 
 struct APItem {
-  uint32 index;
-  uint32 id;
+  uint64 index;
+  uint64 id;
 }
 
 
@@ -1172,9 +1172,9 @@ dclass DistributedToon : DistributedPlayer {
   setOverflowMod(uint16=100) required ownrecv broadcast db;
   setAccessKeys(uint16[] = []) required ownrecv broadcast db;
   setReceivedItems(APItem[]) required ownrecv broadcast db;
-  setCheckedLocations(uint32[]=[]) required ownrecv broadcast db;
+  setCheckedLocations(int64[]=[]) required ownrecv broadcast db;
   sendArchipelagoMessages(string[]) ownrecv;
-  showReward(uint32, string, bool) ownrecv;
+  showReward(int64, string, bool) ownrecv;
   updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
   requestHintPoints() ownsend airecv;
   hintPointResp(uint16) ownrecv;
@@ -3949,14 +3949,14 @@ struct ArchipelagoInformation {
 };
 
 struct ArchipelagoItem {
-    int32 item;
-    int32 location;
+    int64 item;
+    int64 location;
     int32 player;
     uint8 flags;
 };
 
 struct ArchipelagoHint {
-    int32 destination;
+    int16 destination;
     ArchipelagoItem item;
     string player_name;
     string location_name;

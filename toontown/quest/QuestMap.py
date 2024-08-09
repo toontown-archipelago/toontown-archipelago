@@ -1,12 +1,13 @@
 import math
-from panda3d.core import CardMaker, TextNode
-from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectButton
+from panda3d.core import CardMaker, TransparencyAttrib
+from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectButton, OnscreenImage
 from direct.task import Task
 from toontown.toon import NPCToons
 from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
 from toontown.quest import Quests
 from toontown.suit import SuitPlannerBase
+from toontown.suit import SuitDNA
 from . import QuestMapGlobals
 
 class QuestMap(DirectFrame):
@@ -28,6 +29,8 @@ class QuestMap(DirectFrame):
         self.cogInfoFrame['geom_scale'] = (6, 1, 2)
         self.cogInfoFrame.setScale(0.05)
         self.cogInfoFrame.setPos(0, 0, 0.6)
+        self.buildingMarkers = []
+        self.buildingMarkers = []
         self.av = av
         self.wantToggle = False
         if base.config.GetBool('want-toggle-quest-map', True):
@@ -100,6 +103,75 @@ class QuestMap(DirectFrame):
         del self.mapCloseButton
         DirectFrame.destroy(self)
 
+    def putBuildingMarker(self, pos, blockNumber = None, track = None, index = None):
+        if track and base.localAvatar.buildingRadar[SuitDNA.suitDepts.index(track)]:
+            marker = DirectLabel(parent = self.container, text = '', text_pos = (-0.05, -0.15), text_fg = (1, 1, 1, 1),  relief = None)
+            icon = self.getIcon(track)
+            iconNP = aspect2d.attachNewNode('buildingBlock-%s' % blockNumber)
+            icon.reparentTo(iconNP)
+            marker['image'] = iconNP
+            marker['image_scale'] = 1
+            marker.setScale(0.05)
+            relX, relY = self.transformAvPos(pos)
+            marker.setPos(relX, 0, relY)
+            self.buildingMarkers.append(marker)
+            iconNP.removeNode()
+        elif index == 'hq':
+            marker = DirectLabel(parent = self.container, text = '', text_pos = (-0.05, -0.15), text_fg = (1, 1, 1, 1),  relief = None)
+            icon = self.getIcon(index)
+            iconNP = aspect2d.attachNewNode('hq')
+            icon.reparentTo(iconNP)
+            marker['image'] = iconNP
+            marker['image_scale'] = 1
+            marker.setScale(0.05)
+            relX, relY = self.transformAvPos(pos)
+            marker.setPos(relX, 0, relY)
+            self.buildingMarkers.append(marker)
+            iconNP.removeNode()
+        else:
+            pass
+
+    def getIcon(self, index):
+        icons = loader.loadModel('phase_3/models/gui/cog_icons')
+        if index == 'c':
+            icon = icons.find('**/CorpIcon')
+        elif index == 's':
+            icon = icons.find('**/SalesIcon')
+        elif index == 'l':
+            icon = icons.find('**/LegalIcon')
+        elif index == 'm':
+            icon = icons.find('**/MoneyIcon')
+        elif index == 'hq':
+            image = OnscreenImage(image='phase_4/maps/Fire_hat.png', pos=(0, 0, 0))
+            image.setScale(0.75)
+            image.setTransparency(TransparencyAttrib.MAlpha)
+            icon = image
+        icons.removeNode()
+        return icon
+
+    def updateBuildingInfo(self):
+        for marker in self.buildingMarkers:
+            marker.destroy()
+        for marker in self.buildingMarkers:
+            marker.destroy()
+
+        self.buildingMarkers = []
+        dnaStore = base.cr.playGame.dnaStore
+
+        self.putBuildingMarker(self.hqPosInfo, index='hq')
+
+        for blockIndex in range(dnaStore.getNumBlockNumbers()):
+            blockNumber = dnaStore.getBlockNumberAt(blockIndex)
+            blockZoneId = dnaStore.getZoneFromBlockNumber(blockNumber)
+            streetId = ZoneUtil.getCanonicalBranchZone(self.av.getLocation()[1])
+            zoneIdBlock = blockZoneId + blockNumber
+            if dnaStore.isSuitBlock(zoneIdBlock) and (zoneIdBlock in range(streetId, streetId+99)):
+                self.putBuildingMarker(
+                    dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(),
+                    zoneIdBlock,
+                    track=dnaStore.getSuitBlockTrack(zoneIdBlock))
+                continue
+
     def transformAvPos(self, pos):
         if self.cornerPosInfo is None:
             return (0, 0)
@@ -110,15 +182,16 @@ class QuestMap(DirectFrame):
         return (relativeX, relativeY)
 
     def update(self, task):
+        if self.av:
+            if self.updateMarker:
+                relX, relY = self.transformAvPos(self.av.getPos())
+                self.marker.setPos(relX, 0, relY)
+                self.marker.setHpr(0, 0, -180 - self.av.getH())
 
-        if not self.av:
-            return Task.cont
-
-        if self.updateMarker:
-            relX, relY = self.transformAvPos(self.av.getPos())
-            self.marker.setPos(relX, 0, relY)
-            self.marker.setHpr(0, 0, -180 - self.av.getH())
-
+        for buildingMarker in self.buildingMarkers:
+            i = self.buildingMarkers.index(buildingMarker)
+            if not buildingMarker.isEmpty():
+                buildingMarker.setScale((math.sin(task.time + i * math.pi / 3.0) + 1) * 0.005 + 0.04)
         return Task.cont
 
     def updateMap(self):
@@ -139,6 +212,7 @@ class QuestMap(DirectFrame):
                     self.hide()
                     self.hoodId = hoodId
                     self.zoneId = zoneId
+                    self.updateBuildingInfo()
                     self.updateCogInfo()
                     taskMgr.add(self.update, 'questMapUpdate')
                 else:
@@ -146,12 +220,12 @@ class QuestMap(DirectFrame):
                 mapsGeom.removeNode()
             except:
                 self.stop()
+                raise
 
     def start(self):
         self.container.show()
         self.accept('questPageUpdated', self.updateMap)
         self.handleMarker()
-        self.updateMap()
 
     def initMarker(self, task):
         if self.av:
@@ -197,6 +271,12 @@ class QuestMap(DirectFrame):
     def stop(self):
         self.container['image'] = None
 
+        for marker in self.buildingMarkers:
+            marker.destroy()
+        for marker in self.buildingMarkers:
+            marker.destroy()
+
+        self.buildingMarkers = []
         self.container.hide()
         self.hide()
         self.obscureButton()
