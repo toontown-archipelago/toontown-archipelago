@@ -439,16 +439,17 @@ class Suit(Avatar.Avatar):
         icons = loader.loadModel('phase_3/models/gui/cog_icons')
         dept = self.style.dept
         chestNull = self.find('**/joint_attachMeter')
-        if dept == 'c':
-            self.corpMedallion = icons.find('**/CorpIcon').copyTo(chestNull)
-        elif dept == 's':
-            self.corpMedallion = icons.find('**/SalesIcon').copyTo(chestNull)
-        elif dept == 'l':
-            self.corpMedallion = icons.find('**/LegalIcon').copyTo(chestNull)
-        elif dept == 'm':
-            self.corpMedallion = icons.find('**/MoneyIcon').copyTo(chestNull)
-        self.corpMedallion.setPosHprScale(0.02, 0.05, 0.04, 180.0, 0.0, 0.0, 0.51, 0.51, 0.51)
-        self.corpMedallion.setColor(self.medallionColors[dept])
+        medallion_mapping = {
+            'c': 'CorpIcon',
+            's': 'SalesIcon',
+            'l': 'LegalIcon',
+            'm': 'MoneyIcon'
+        }
+        medallion_name = medallion_mapping.get(dept)
+        if medallion_name:
+            self.corpMedallion = icons.find(f'**/{medallion_name}').copyTo(chestNull)
+            self.corpMedallion.setPosHprScale(0.02, 0.05, 0.04, 180.0, 0.0, 0.0, 0.51, 0.51, 0.51)
+            self.corpMedallion.setColor(self.medallionColors[dept])
         icons.removeNode()
 
     def generateHealthBar(self):

@@ -565,7 +565,7 @@ __STOCK_HOLDER_ATTACKS.add(SuitAttackAttribute(
     accuracy=75,
     weight=20,
 ))
-__STOCK_HOLDER: SuitAttributes = T1SuitAttributes(key='bgh', name=TTLocalizer.SuitStockHolder, singular=TTLocalizer.SuitStockHolderS, plural=TTLocalizer.SuitStockHolderP, tier=11, attacks=__STOCK_HOLDER_ATTACKS)
+__STOCK_HOLDER: SuitAttributes = T1SuitAttributes(key='skh', name=TTLocalizer.SuitStockHolder, singular=TTLocalizer.SuitStockHolderS, plural=TTLocalizer.SuitStockHolderP, tier=11, attacks=__STOCK_HOLDER_ATTACKS)
 __registerSuitAttributes(__STOCK_HOLDER)
 
 __COLD_CALLER_ATTACKS = set()
@@ -1300,7 +1300,7 @@ __HEAD_ATTORNEY_ATTACKS.add(SuitAttackAttribute(
     accuracy=95,
     weight=30,
 ))
-__HEAD_ATTORNEY: SuitAttributes = SuitAttributes(key='def', name=TTLocalizer.SuitHeadAttorney, singular=TTLocalizer.SuitHeadAttorneyS, plural=TTLocalizer.SuitHeadAttorneyP, tier=9, attacks=__HEAD_ATTORNEY_ATTACKS)
+__HEAD_ATTORNEY: SuitAttributes = SuitAttributes(key='hat', name=TTLocalizer.SuitHeadAttorney, singular=TTLocalizer.SuitHeadAttorneyS, plural=TTLocalizer.SuitHeadAttorneyP, tier=9, attacks=__HEAD_ATTORNEY_ATTACKS)
 __registerSuitAttributes(__HEAD_ATTORNEY)
 
 

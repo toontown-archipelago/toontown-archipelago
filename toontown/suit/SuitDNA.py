@@ -17,113 +17,55 @@ if typing.TYPE_CHECKING:
 
 notify = directNotify.newCategory('SuitDNA')
 suitHeadTypes = [
-    'f',
-    'p',
-    'ym',
-    'mm',
-    'ds',
-    'hh',
-    'cr',
-    'tbc',
-    'bf',
-    'b',
-    'dt',
-    'ac',
-    'bs',
-    'sd',
-    'le',
-    'bw',
-    'sc',
-    'pp',
-    'tw',
-    'bc',
-    'nc',
-    'mb',
-    'ls',
-    'rb',
-    'cc',
-    'tm',
-    'nd',
-    'gh',
-    'ms',
-    'tf',
-    'm',
-    'mh',
-    'trf',
-    'ski',
-    'def',
-    'bgh'
+    'f', 'p', 'ym', 'mm', 'ds', 'hh', 'cr', 'tbc', # Bossbot
+    'bf', 'b', 'dt', 'ac', 'bs', 'sd', 'le', 'bw', # Lawbot
+    'sc', 'pp', 'tw', 'bc', 'nc', 'mb', 'ls', 'rb', # Cashbot
+    'cc', 'tm', 'nd', 'gh', 'ms', 'tf', 'm', 'mh', # Sellbot
+    'trf', 'ski', 'hat', 'skh' # Special Cogs
 ]
 
+# Traffic Manager, Skin Flint, Head Attorney, Stock Holder
 notMainTypes = [
-    'trf',
-    'ski',
-    'def',
-    'bgh'
+    'trf', 'ski', 'hat', 'skh'
 ]
 
-suitATypes = [
-    'ym',
-    'hh',
-    'tbc',
-    'dt',
-    'bs',
-    'le',
-    'bw',
-    'pp',
-    'nc',
-    'rb',
-    'nd',
-    'tf',
-    'trf',
-    'm',
-    'mh'
+suitATypes = ['ym','hh','tbc', # Bossbot
+              'dt', 'bs', 'le', 'bw', # Lawbot
+              'pp', 'nc', 'rb', # Cashbot
+              'nd', 'tf', 'm', 'mh', 'trf' # Sellbot
 ]
 
 suitBTypes = [
-    'p',
-    'ds',
-    'b',
-    'ac',
-    'def',
-    'sd',
-    'bc',
-    'ski',
-    'ls',
-    'tm',
-    'ms',
+    'p','ds', # Bossbot
+    'b', 'ac', 'sd', 'hat', # Lawbot
+    'bc', 'ls', 'ski', # Cashbot
+    'tm','ms', # Sellbot
 ]
 
 suitCTypes = [
-    'f',
-    'mm',
-    'cr',
-    'bf',
-    'sc',
-    'tw',
-    'mb',
-    'cc',
-    'gh',
-    'bgh'
+    'f', 'mm', 'cr', # Bossbot
+    'bf', # Lawbot
+    'sc', 'tw', 'mb', # Cashbot
+    'cc', 'gh', 'skh' # Sellbot
 ]
 
 suitDepts = [
-    'c',
-    'l',
-    'm',
-    's'
+    'c', # Bossbot
+    'l', # Lawbot
+    'm', # Cashbot
+    's' # Sellbot
 ]
 
-suitDeptToPhase = {'s': 9,
-                   'm': 10,
-                   'l': 11,
-                   'c': 12}
+suitDeptToPhase = {'s': 9, # Sellbot
+                   'm': 10, # Cashbot
+                   'l': 11, # Lawbot
+                   'c': 12} # Bossbot
 
 bossSuitLevel2Difficulty = {
-    'trf': {7: 0, 8: 1},
-    'ski': {8: 0, 9: 1},
-    'def': {10: 0, 11: 1},
-    'bgh': {12: 0, 13: 1}
+    'trf': {7: 0, 8: 1}, # Traffic Manager
+    'ski': {8: 0, 9: 1}, # Skin Flint
+    'hat': {10: 0, 11: 1}, # Head Attorney
+    'skh': {12: 0, 13: 1} # Stock Holder
 }
 
 suitDeptFullnames = {
@@ -475,9 +417,9 @@ class SuitVisual:
         if isinstance(self.head_type, list):
             for head in self.head_type:
                 headPath = self.headModelPath(suit.style.body)
-                if self.key in ['ds', 'def']:
+                if self.key in ['ds', 'hat']:
                     headPath = self.headModelPath(suit.style.body, 'phase_4/models/char/suitB-heads2')
-                elif self.key == 'bgh':
+                elif self.key == 'skh':
                     headPath = self.headModelPath(suit.style.body, 'phase_3.5/models/char/suitC-heads2')
                 elif self.key == 'trf':
                     headPath = self.headModelPath(suit.style.body, 'phase_4/models/char/suitA-heads2')
@@ -545,8 +487,8 @@ GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
 
     SuitVisual('trf',  5.25 / aSize,  salesPolyColor,                None,                         None,                   ['flunky', 'hat'],             6.95),
     SuitVisual('ski',  5.65 / bSize,  VBase4(0.5, 0.8, 0.75, 1.0),   None,                        'skinflint.jpg',      'telemarketer',        7.9),
-    SuitVisual('def',  4.4 / bSize,   moneyPolyColor,                None,                        'suit-heads_palette_3cmla_5.jpg',                   ['downsizer', 'downsizer_hat'],         5.95),
-    SuitVisual('bgh',   4.0 / cSize,   corpPolyColor,                 None,                         None,                   ['stockholder',], 4.88),
+    SuitVisual('hat',  4.4 / bSize,   moneyPolyColor,                None,                        'suit-heads_palette_3cmla_5.jpg',                   ['downsizer', 'downsizer_hat'],         5.95),
+    SuitVisual('skh',   4.0 / cSize,   corpPolyColor,                 None,                         None,                   ['stockholder',], 4.88),
 }
 
 SuitClotheParts = ['blazer', 'leg', 'sleeve']
@@ -607,15 +549,15 @@ CUSTOM_SUIT_CLOTHES: Set[CustomSuitClothes] = set()
 customSuit2Dept = {
     'trf': 's',
     'ski': 'm',
-    'def': 'l',
-    'bgh': 'c'
+    'hat': 'l',
+    'skh': 'c'
 }
 
 customDeptToBossSuit = {
     's': 'trf',
     'm': 'ski',
-    'l': 'def',
-    'c': 'bgh'
+    'l': 'hat',
+    'c': 'skh'
 }
 
 def getSuitDept(name):
@@ -792,7 +734,7 @@ class SuitDNA(AvatarDNA.AvatarDNA):
             alternateSuitChance = 0.4
             # if the rng is less than the chance, we set the suit to the alternate suit
             if random.random() < alternateSuitChance:
-                self.name = 'bgh'
+                self.name = 'skh'
 
         # we get it's parent suit
         if self.name == 'ac':
@@ -800,7 +742,7 @@ class SuitDNA(AvatarDNA.AvatarDNA):
             alternateSuitChance = 0.4
             # if the rng is less than the chance, we set the suit to the alternate suit
             if random.random() < alternateSuitChance:
-                self.name = 'def'
+                self.name = 'hat'
         
         # we get it's parent suit
         if self.name == 'mb':
