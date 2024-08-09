@@ -341,6 +341,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.ignoreBarrier(self.barrier)
 
     def enterBattleThree(self):
+        self.divideToons()
         self.battleThreeTimeStarted = globalClock.getFrameTime()
         self.resetBattles()
         self.setPieType()

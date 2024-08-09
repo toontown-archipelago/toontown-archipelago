@@ -508,6 +508,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.ignoreBarrier(self.barrier)
 
     def enterBattleThree(self):
+        self.divideToons()
         self.battleThreeTimeStarted = globalClock.getFrameTime()
         self.calcAndSetBattleDifficulty()
         if self.chairs != None:
