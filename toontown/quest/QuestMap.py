@@ -1,6 +1,6 @@
 import math
 from panda3d.core import CardMaker, TransparencyAttrib
-from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectButton, OnscreenImage
+from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectButton, OnscreenImage, DGG
 from direct.task import Task
 from toontown.toon import NPCToons
 from toontown.hood import ZoneUtil
@@ -102,9 +102,17 @@ class QuestMap(DirectFrame):
         del self.mapCloseButton
         DirectFrame.destroy(self)
 
+    def showNumFloors(self, marker, numFloors):
+        marker['text'] = f'{numFloors}'
+
+    def hideNumFloors(self, marker):
+        marker['text'] = ''
+        
     def putBuildingMarker(self, pos, blockNumber = None, track = None, index = None, floorNumber = None):
         if track and base.localAvatar.buildingRadar[SuitDNA.suitDepts.index(track)]:
-            marker = DirectLabel(parent = self.container, text = f'{floorNumber} floors', text_pos = (-0.05, -0.15), text_fg = (1, 1, 1, 1),  relief = None)
+            marker = DirectLabel(parent = self.container, text = f'{floorNumber}', text_pos = (-0.05, -0.65), text_fg = (1, 1, 1, 1), text_scale=0.50,  relief = None)
+            marker.bind(DGG.ENTER, self.showNumFloors, [marker, floorNumber])
+            marker.bind(DGG.EXIT, self.hideNumFloors, [marker])
             icon = self.getIcon(track)
             iconNP = aspect2d.attachNewNode('buildingBlock-%s' % blockNumber)
             icon.reparentTo(iconNP)
