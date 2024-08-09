@@ -30,7 +30,6 @@ class QuestMap(DirectFrame):
         self.cogInfoFrame.setScale(0.05)
         self.cogInfoFrame.setPos(0, 0, 0.6)
         self.buildingMarkers = []
-        self.buildingMarkers = []
         self.av = av
         self.wantToggle = False
         if base.config.GetBool('want-toggle-quest-map', True):
@@ -103,9 +102,9 @@ class QuestMap(DirectFrame):
         del self.mapCloseButton
         DirectFrame.destroy(self)
 
-    def putBuildingMarker(self, pos, blockNumber = None, track = None, index = None):
+    def putBuildingMarker(self, pos, blockNumber = None, track = None, index = None, floorNumber = None):
         if track and base.localAvatar.buildingRadar[SuitDNA.suitDepts.index(track)]:
-            marker = DirectLabel(parent = self.container, text = '', text_pos = (-0.05, -0.15), text_fg = (1, 1, 1, 1),  relief = None)
+            marker = DirectLabel(parent = self.container, text = f'{floorNumber} floors', text_pos = (-0.05, -0.15), text_fg = (1, 1, 1, 1),  relief = None)
             icon = self.getIcon(track)
             iconNP = aspect2d.attachNewNode('buildingBlock-%s' % blockNumber)
             icon.reparentTo(iconNP)
@@ -166,10 +165,14 @@ class QuestMap(DirectFrame):
             streetId = ZoneUtil.getCanonicalBranchZone(self.av.getLocation()[1])
             zoneIdBlock = blockZoneId + blockNumber
             if dnaStore.isSuitBlock(zoneIdBlock) and (zoneIdBlock in range(streetId, streetId+99)):
+                # grab the number of floors for the building
+                numFloors = dnaStore.getNumFloors(zoneIdBlock)
+                
                 self.putBuildingMarker(
                     dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(),
                     zoneIdBlock,
-                    track=dnaStore.getSuitBlockTrack(zoneIdBlock))
+                    track=dnaStore.getSuitBlockTrack(zoneIdBlock),
+                    floorNumber=numFloors)
                 continue
 
     def transformAvPos(self, pos):

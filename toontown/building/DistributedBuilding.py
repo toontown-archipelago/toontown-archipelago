@@ -70,6 +70,7 @@ class DistributedBuilding(DistributedObject.DistributedObject):
         self.cogWeakenSound = None
         self.toonGrowSound = None
         self.toonSettleSound = None
+        self.block = None
         return
 
     def generate(self):
@@ -311,7 +312,12 @@ class DistributedBuilding(DistributedObject.DistributedObject):
                     np.setColor(LIGHT_OFF_COLOR)
                 else:
                     np.hide()
-
+        # store the number of floors in the suit block
+        dnaStore = self.cr.playGame.dnaStore
+        zoneId = dnaStore.getZoneFromBlockNumber(self.block)
+        zoneId = ZoneUtil.getTrueZoneId(zoneId, self.interiorZoneId)
+        zoneIdBlock = zoneId + self.block
+        dnaStore.storeSuitBlockNumFloors(zoneIdBlock, self.numFloors)
         self.elevatorModel.reparentTo(self.elevatorNodePath)
         if self.mode == 'suit':
             self.cab = self.elevatorModel.find('**/elevator')
