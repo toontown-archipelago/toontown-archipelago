@@ -217,6 +217,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.receivedItemIDs: set[int] = set()
         self.checkedLocations: List[int] = []
         self.hintPoints = 0
+        self.hintCost = 0
 
         self.slotData = {}
         self.winCondition: WinCondition = win_condition.NoWinCondition(self)
@@ -2879,8 +2880,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def d_setDeathReason(self, reason: DeathReason):
         pass
 
-    def hintPointResp(self, pts):
+    def hintPointResp(self, pts, cost):
         self.hintPoints = pts
+        self.hintCost = cost
         if self.isLocal:
             base.localAvatar.checkPage.updateHintPointText()
 
