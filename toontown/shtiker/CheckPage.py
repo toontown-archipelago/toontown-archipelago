@@ -142,7 +142,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.itemFrameZorigin = 0.365
         self.buttonXstart = self.itemFrameXorigin + 0.425
         self.regenerateScrollList()
-        self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % 0,
+        self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % (0, 0),
                                             text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None,
                                             pos=(0, 0, 0.525))
         scrollTitle = DirectFrame(parent=self.scrollList, text=TTLocalizer.ShardPageScrollTitle, text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None, pos=(self.buttonXstart, 0, self.itemFrameZorigin + 0.127))
@@ -209,7 +209,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
         return
 
     def updateHintPointText(self):
-        self.hintPointsTitle['text'] = TTLocalizer.HintPointsTitle % base.localAvatar.hintPoints
+        self.hintPointsTitle['text'] = TTLocalizer.HintPointsTitle % (base.localAvatar.hintPoints, base.localAvatar.hintCost)
 
     def updateCheckButtons(self):
         # Cleanup buttons

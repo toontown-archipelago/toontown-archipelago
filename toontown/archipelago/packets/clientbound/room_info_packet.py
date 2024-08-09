@@ -80,5 +80,8 @@ class RoomInfoPacket(ClientBoundPacketBase):
         # We should check in with our data packages
         self.update_data_packages(client)
 
+        # Update the toon's hint cost
+        client.av.hintCostPercentage = self.hint_cost
+
         # When we are given this packet, we should attempt to connect this player to the room with their slot
         client.connect()
