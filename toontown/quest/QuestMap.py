@@ -1,5 +1,5 @@
 import math
-from panda3d.core import CardMaker, TransparencyAttrib
+from panda3d.core import CardMaker, TransparencyAttrib, TextNode
 from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectButton, OnscreenImage, DGG
 from direct.task import Task
 from toontown.toon import NPCToons
@@ -101,24 +101,27 @@ class QuestMap(DirectFrame):
         del self.mapOpenButton
         del self.mapCloseButton
         DirectFrame.destroy(self)
-
-    def showNumFloors(self, marker, numFloors):
-        marker['text'] = f'{numFloors}'
-
-    def hideNumFloors(self, marker):
-        marker['text'] = ''
         
     def putBuildingMarker(self, pos, blockNumber = None, track = None, index = None, floorNumber = None):
         if track and base.localAvatar.buildingRadar[SuitDNA.suitDepts.index(track)]:
-            marker = DirectLabel(parent = self.container, text = f'{floorNumber}', text_pos = (-0.05, -0.65), text_fg = (1, 1, 1, 1), text_scale=0.50,  relief = None)
-            marker.bind(DGG.ENTER, self.showNumFloors, [marker, floorNumber])
-            marker.bind(DGG.EXIT, self.hideNumFloors, [marker])
+            marker = DirectButton(parent = self.container, text=f'{floorNumber}', text_pos = (-0.05, -0.65), text_fg = (1, 1, 1, 1), text_scale=0.50,  relief = None, clickSound=None)
             icon = self.getIcon(track)
             iconNP = aspect2d.attachNewNode('buildingBlock-%s' % blockNumber)
             icon.reparentTo(iconNP)
             marker['image'] = iconNP
             marker['image_scale'] = 1
             marker.setScale(0.05)
+            # Calculate the bounds of the iconNP
+            bounds = iconNP.getTightBounds()
+            min_bound = bounds[0]
+            max_bound = bounds[1]
+            # Set the frameSize of the marker to match the bounds of the iconNP
+            marker['frameSize'] = (min_bound[0], max_bound[0], min_bound[2], max_bound[2])
+            markerText = marker.component('text0')
+            markerText.hide()
+            marker.bind(DGG.WITHIN, lambda x: markerText.show())
+            marker.bind(DGG.WITHOUT, lambda x: markerText.hide())
+            
             relX, relY = self.transformAvPos(pos)
             marker.setPos(relX, 0, relY)
             self.buildingMarkers.append(marker)
