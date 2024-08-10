@@ -11,6 +11,7 @@ from toontown.suit import DistributedFactorySuitAI
 from toontown.toonbase import ToontownGlobals, ToontownBattleGlobals
 from toontown.coghq import DistributedBattleFactoryAI
 from ..archipelago.definitions.util import get_facility_id
+import random
 
 
 class DistributedFactoryAI(DistributedLevelAI.DistributedLevelAI, FactoryBase.FactoryBase):
@@ -21,6 +22,7 @@ class DistributedFactoryAI(DistributedLevelAI.DistributedLevelAI, FactoryBase.Fa
         FactoryBase.FactoryBase.__init__(self)
         self.setFactoryId(factoryId)
         self.factoryId = factoryId
+        self.factorySector = random.randint(1, 3)
 
     def createEntityCreator(self):
         return FactoryEntityCreatorAI.FactoryEntityCreatorAI(level=self)
@@ -34,7 +36,7 @@ class DistributedFactoryAI(DistributedLevelAI.DistributedLevelAI, FactoryBase.Fa
         if __dev__:
             simbase.factory = self
         self.notify.info('loading spec')
-        specModule = FactorySpecs.getFactorySpecModule(self.factoryId)
+        specModule = FactorySpecs.getFactorySpecModule(self.factoryId, self.factorySector)
         factorySpec = LevelSpec.LevelSpec(specModule)
         if __dev__:
             self.notify.info('creating entity type registry')
@@ -43,7 +45,7 @@ class DistributedFactoryAI(DistributedLevelAI.DistributedLevelAI, FactoryBase.Fa
         self.notify.info('creating entities')
         DistributedLevelAI.DistributedLevelAI.generate(self, factorySpec)
         self.notify.info('creating cogs')
-        cogSpecModule = FactorySpecs.getCogSpecModule(self.factoryId)
+        cogSpecModule = FactorySpecs.getCogSpecModule(self.factoryId, self.factorySector)
         self.planner = LevelSuitPlannerAI.LevelSuitPlannerAI(self.air, self, DistributedFactorySuitAI.DistributedFactorySuitAI, DistributedBattleFactoryAI.DistributedBattleFactoryAI, cogSpecModule.CogData, cogSpecModule.ReserveCogData, cogSpecModule.BattleCells)
         suitHandles = self.planner.genSuits()
         messenger.send('plannerCreated-' + str(self.doId))
@@ -57,6 +59,7 @@ class DistributedFactoryAI(DistributedLevelAI.DistributedLevelAI, FactoryBase.Fa
          self.avIdList)
         for avId in self.avIdList:
             self.air.writeServerEvent('factoryEntered', avId, description)
+        self.sendUpdate('setFactorySector', [self.factorySector])
 
         self.notify.info('finish factory %s %s creation' % (self.factoryId, self.doId))
 

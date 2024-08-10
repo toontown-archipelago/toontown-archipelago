@@ -3,28 +3,36 @@ from . import SellbotLegFactorySpec
 from . import SellbotLegFactoryCogs
 from . import SellbotLegFactorySpecS
 from . import SellbotLegFactoryCogsS
+from . import SellbotLegFactoryCogsTwo
+from . import SellbotLegFactorySpecTwo
+from . import SellbotLegFactoryCogsThree
+from . import SellbotLegFactorySpecThree
+from . import SellbotLegFactoryCogsSTwo
+from . import SellbotLegFactorySpecSTwo
+from . import SellbotLegFactoryCogsSThree
+from . import SellbotLegFactorySpecSThree
 from . import LawbotLegFactorySpec
 from . import LawbotLegFactoryCogs
 
 
-def getFactorySpecModule(factoryId):
-    return FactorySpecModules[factoryId]
+def getFactorySpecModule(factoryId, sector):
+    return FactorySpecModules[factoryId][sector - 1]
 
 
-def getCogSpecModule(factoryId):
-    return CogSpecModules[factoryId]
+def getCogSpecModule(factoryId, sector):
+    return CogSpecModules[factoryId][sector - 1]
 
 
 FactorySpecModules = {
-    ToontownGlobals.SellbotFactoryInt: SellbotLegFactorySpec,
-    ToontownGlobals.SellbotFactoryIntS: SellbotLegFactorySpecS,
-    ToontownGlobals.LawbotOfficeInt: LawbotLegFactorySpec
+    ToontownGlobals.SellbotFactoryInt: [SellbotLegFactorySpec, SellbotLegFactorySpecTwo, SellbotLegFactorySpecThree],
+    ToontownGlobals.SellbotFactoryIntS: [SellbotLegFactorySpecS, SellbotLegFactorySpecSTwo, SellbotLegFactorySpecSThree],
+    ToontownGlobals.LawbotOfficeInt: [LawbotLegFactorySpec, LawbotLegFactorySpec, LawbotLegFactorySpec]
 }
 
 CogSpecModules = {
-    ToontownGlobals.SellbotFactoryInt: SellbotLegFactoryCogs,
-    ToontownGlobals.SellbotFactoryIntS: SellbotLegFactoryCogsS,
-    ToontownGlobals.LawbotOfficeInt: LawbotLegFactoryCogs
+    ToontownGlobals.SellbotFactoryInt: [SellbotLegFactoryCogs, SellbotLegFactoryCogsTwo, SellbotLegFactoryCogsThree],
+    ToontownGlobals.SellbotFactoryIntS: [SellbotLegFactoryCogsS, SellbotLegFactoryCogsSTwo, SellbotLegFactoryCogsSThree],
+    ToontownGlobals.LawbotOfficeInt: [LawbotLegFactoryCogs, LawbotLegFactoryCogs, LawbotLegFactoryCogs]
 }
 
 if __dev__:

@@ -29,6 +29,7 @@ class DistributedFactory(DistributedLevel.DistributedLevel, FactoryBase.FactoryB
         self.joiningReserves = []
         self.suitsInitialized = 0
         self.goonClipPlanes = {}
+        self.factorySector = 1
         base.localAvatar.physControls.setCollisionRayHeight(10.0)
 
     def createEntityCreator(self):
@@ -42,6 +43,9 @@ class DistributedFactory(DistributedLevel.DistributedLevel, FactoryBase.FactoryB
         if __dev__:
             bboard.post(EditorGlobals.EditTargetPostName, self)
         self.accept('SOSPanelEnter', self.handleSOSPanel)
+    
+    def setFactorySector(self, sector):
+        self.factorySector = sector
 
     def delete(self):
         DistributedLevel.DistributedLevel.delete(self)
@@ -73,7 +77,7 @@ class DistributedFactory(DistributedLevel.DistributedLevel, FactoryBase.FactoryB
     def levelAnnounceGenerate(self):
         self.notify.debug('levelAnnounceGenerate')
         DistributedLevel.DistributedLevel.levelAnnounceGenerate(self)
-        specModule = FactorySpecs.getFactorySpecModule(self.factoryId)
+        specModule = FactorySpecs.getFactorySpecModule(self.factoryId, self.factorySector)
         factorySpec = LevelSpec.LevelSpec(specModule)
         if __dev__:
             typeReg = self.getEntityTypeReg()
@@ -152,15 +156,15 @@ class DistributedFactory(DistributedLevel.DistributedLevel, FactoryBase.FactoryB
         pass
 
     def getCogSpec(self, cogId):
-        cogSpecModule = FactorySpecs.getCogSpecModule(self.factoryId)
+        cogSpecModule = FactorySpecs.getCogSpecModule(self.factoryId, self.factorySector)
         return cogSpecModule.CogData[cogId]
 
     def getReserveCogSpec(self, cogId):
-        cogSpecModule = FactorySpecs.getCogSpecModule(self.factoryId)
+        cogSpecModule = FactorySpecs.getCogSpecModule(self.factoryId, self.factorySector)
         return cogSpecModule.ReserveCogData[cogId]
 
     def getBattleCellSpec(self, battleCellId):
-        cogSpecModule = FactorySpecs.getCogSpecModule(self.factoryId)
+        cogSpecModule = FactorySpecs.getCogSpecModule(self.factoryId, self.factorySector)
         return cogSpecModule.BattleCells[battleCellId]
 
     def getFloorOuchLevel(self):

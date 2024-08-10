@@ -69,7 +69,7 @@ class DistributedLawOfficeFloor(DistributedLevel.DistributedLevel, LawOfficeBase
     def levelAnnounceGenerate(self):
         self.notify.debug('levelAnnounceGenerate')
         DistributedLevel.DistributedLevel.levelAnnounceGenerate(self)
-        specModule = FactorySpecs.getFactorySpecModule(self.lawOfficeId)
+        specModule = FactorySpecs.getFactorySpecModule(self.lawOfficeId, 1)
         factorySpec = LevelSpec.LevelSpec(specModule)
         if __dev__:
             typeReg = self.getEntityTypeReg()
@@ -151,15 +151,15 @@ class DistributedLawOfficeFloor(DistributedLevel.DistributedLevel, LawOfficeBase
         pass
 
     def getCogSpec(self, cogId):
-        cogSpecModule = FactorySpecs.getCogSpecModule(self.lawOfficeId)
+        cogSpecModule = FactorySpecs.getCogSpecModule(self.lawOfficeId, 1)
         return cogSpecModule.CogData[cogId]
 
     def getReserveCogSpec(self, cogId):
-        cogSpecModule = FactorySpecs.getCogSpecModule(self.lawOfficeId)
+        cogSpecModule = FactorySpecs.getCogSpecModule(self.lawOfficeId, 1)
         return cogSpecModule.ReserveCogData[cogId]
 
     def getBattleCellSpec(self, battleCellId):
-        cogSpecModule = FactorySpecs.getCogSpecModule(self.lawOfficeId)
+        cogSpecModule = FactorySpecs.getCogSpecModule(self.lawOfficeId, 1)
         return cogSpecModule.BattleCells[battleCellId]
 
     def getFloorOuchLevel(self):

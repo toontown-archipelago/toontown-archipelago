@@ -2842,6 +2842,7 @@ dclass DistributedFactory : DistributedLevel {
   setSuits(uint32[], uint32[]) broadcast ram;
   setForemanConfronted(uint32) broadcast ram;
   setDefeated() broadcast ram;
+  setFactorySector(int32) broadcast ram;
 };
 
 dclass DistributedLawOffice : DistributedObject {
