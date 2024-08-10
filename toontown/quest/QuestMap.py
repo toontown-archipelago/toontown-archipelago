@@ -15,6 +15,7 @@ class QuestMap(DirectFrame):
     def __init__(self, av, **kw):
         DirectFrame.__init__(self, relief=None, sortOrder=50)
         self.initialiseoptions(QuestMap)
+        self.setBin('fixed', 0)
         self.container = DirectFrame(parent=self, relief=None)
         self.marker = DirectFrame(parent=self.container, relief=None)
         self.cogInfoFrame = DirectFrame(parent=self.container, relief=None)
@@ -102,9 +103,17 @@ class QuestMap(DirectFrame):
         del self.mapCloseButton
         DirectFrame.destroy(self)
         
-    def putBuildingMarker(self, pos, blockNumber = None, track = None, index = None, floorNumber = None):
-        if track and base.localAvatar.buildingRadar[SuitDNA.suitDepts.index(track)]:
-            marker = DirectButton(parent = self.container, text=f'{floorNumber}', text_pos = (-0.05, -0.65), text_fg = (1, 1, 1, 1), text_scale=0.50,  relief = None, clickSound=None)
+    def putBuildingMarker(self, pos, blockNumber=None, track=None, index=None, floorNumber=None):
+        if track:
+            marker = DirectButton(parent=self.container, text_pos=(-0.05, -0.65), text_fg=(1, 1, 1, 1), text_scale=0.50, relief=None, clickSound=None, sortOrder=52)
+            cm = CardMaker('bg')
+            cm.setFrame(-0.05, 0.025, -0.05, 0.05)
+            bg = marker.attachNewNode(cm.generate())
+            bg.setTransparency(1)
+            bg.setColor(0.1, 0.1, 0.1, 0.7)
+            bg.setBin('fixed', 1)
+            marker.setBin('fixed', 2)
+            floorCounter = DirectLabel(parent=marker, relief=None, pos=(0.5, 0.5, -0.25), scale=(1, 1, 1), geom=bg, geom_pos=(0, 0, 0.23), geom_scale=(24.5, 1, 12), text=f'{floorNumber}', textMayChange=0, text_pos=(0.18, 0), text_fg=(1, 1, 1, 1), text_scale=0.75, sortOrder=51)
             icon = self.getIcon(track)
             iconNP = aspect2d.attachNewNode('buildingBlock-%s' % blockNumber)
             icon.reparentTo(iconNP)
@@ -117,17 +126,16 @@ class QuestMap(DirectFrame):
             max_bound = bounds[1]
             # Set the frameSize of the marker to match the bounds of the iconNP
             marker['frameSize'] = (min_bound[0], max_bound[0], min_bound[2], max_bound[2])
-            markerText = marker.component('text0')
-            markerText.hide()
-            marker.bind(DGG.WITHIN, lambda x: markerText.show())
-            marker.bind(DGG.WITHOUT, lambda x: markerText.hide())
+            floorCounter.hide()
+            marker.bind(DGG.WITHIN, lambda x: floorCounter.show())
+            marker.bind(DGG.WITHOUT, lambda x: floorCounter.hide())
             
             relX, relY = self.transformAvPos(pos)
             marker.setPos(relX, 0, relY)
             self.buildingMarkers.append(marker)
             iconNP.removeNode()
         elif index == 'hq':
-            marker = DirectLabel(parent = self.container, text = '', text_pos = (-0.05, -0.15), text_fg = (1, 1, 1, 1),  relief = None)
+            marker = DirectLabel(parent=self.container, text='', text_pos=(-0.05, -0.15), text_fg=(1, 1, 1, 1), relief=None)
             icon = self.getIcon(index)
             iconNP = aspect2d.attachNewNode('hq')
             icon.reparentTo(iconNP)
