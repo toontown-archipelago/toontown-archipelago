@@ -41,6 +41,7 @@ from toontown.toonbase import ToontownAccessAI
 from toontown.catalog import CatalogAccessoryItem
 from . import ModuleListAI
 
+from toontown.archipelago.definitions.util import ap_location_to_cog_code, ap_location_id_to_name
 from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
 from ..archipelago.apclient.distributed_toon_apmessage_queue import DistributedToonAPMessageQueue
 from ..archipelago.apclient.distributed_toon_reward_queue import DistributedToonRewardQueue
@@ -4485,6 +4486,32 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         if self.archipelago_session:
             self.archipelago_session.complete_checks(self.checkedLocations)
+
+    # Called when recieving locations from Archipelago.
+    def receiveCheckedLocations(self, locations: List[int]):
+        cogStatus = self.getCogStatus()
+        cogCount = self.getCogCount()
+        for i in locations:
+            # todo: uncomment this later, currently, check every check sent for testing.
+            # if i in self.checkedLocations:
+            #     continue
+            
+            
+            cog, expected_status = ap_location_to_cog_code(ap_location_id_to_name(i))
+            if cog != '':
+                index = SuitDNA.suitHeadTypes.index(cog)
+                if expected_status == CogPageGlobals.COG_COMPLETE1:
+                    expected_count = CogPageGlobals.get_min_cog_quota(self)
+                else: # COG_COMPLETE2
+                    expected_count = CogPageGlobals.get_max_cog_quota(self)
+                # Never decrease either of these here
+                cogCount[index] = max(cogCount[index], expected_count)
+                cogStatus[index] = max(cogStatus[index], expected_status)
+        self.b_setCogCount(cogCount)
+        self.b_setCogStatus(cogStatus)
+        self.addCheckedLocations(locations)
+
+
 
     # Called to announce to Archipelago that we need to know what this location ID is so we can receive
     # A LocationInfo packet and keep track of it

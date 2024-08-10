@@ -1,9 +1,8 @@
+from typing import Union
 from apworld.toontown import consts, ToontownLocationName, LOCATION_DEFINITIONS
 from apworld.toontown.locations import TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS, MML_TASK_LOCATIONS, \
     TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS, EVENT_DEFINITIONS
-
-from typing import Union
-
+from toontown.shtiker import CogPageGlobals
 from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
 
@@ -51,15 +50,60 @@ def cog_code_to_ap_location(cog_code: str) -> str:
 
     }.get(cog_code, '')
 
+# Given AP location name return the cog code
+# Correct this before committing, use `ToontownLocationName`s instead of the raw strings...
+def ap_location_to_cog_code(location: str) -> tuple[str, int]:
+    return {
+        ToontownLocationName.FLUNKY_DEFEATED.value: ('f', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.FLUNKY_MAXED.value: ('f', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.PENCIL_PUSHER_DEFEATED.value: ('p', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.PENCIL_PUSHER_MAXED.value: ('p', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.YESMAN_DEFEATED.value: ('ym', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.YESMAN_MAXED.value: ('ym', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.MICROMANAGER_DEFEATED.value: ('mm', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.MICROMANAGER_MAXED.value: ('mm', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.DOWNSIZER_DEFEATED.value: ('ds', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.DOWNSIZER_MAXED.value: ('ds', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.HEAD_HUNTER_DEFEATED.value: ('hh', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.HEAD_HUNTER_MAXED.value: ('hh', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.CORPORATE_RAIDER_DEFEATED.value: ('cr', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.CORPORATE_RAIDER_MAXED.value: ('cr', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.BIG_CHEESE_DEFEATED.value: ('tbc', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.BIG_CHEESE_MAXED.value: ('tbc', CogPageGlobals.COG_COMPLETE2),
+
+        ToontownLocationName.BOTTOM_FEEDER_DEFEATED.value: ('bf', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.BOTTOM_FEEDER_MAXED.value: ('bf', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.BLOODSUCKER_DEFEATED.value: ('b', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.BLOODSUCKER_MAXED.value: ('b', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.DOUBLE_TALKER_DEFEATED.value: ('dt', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.DOUBLE_TALKER_MAXED.value: ('dt', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.AMBULANCE_CHASER_DEFEATED.value: ('ac', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.AMBULANCE_CHASER_MAXED.value: ('ac', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.BACKSTABBER_DEFEATED.value: ('bs', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.BACKSTABBER_MAXED.value: ('bs', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.SPIN_DOCTOR_DEFEATED.value: ('sd', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.SPIN_DOCTOR_MAXED.value: ('sd', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.LEGAL_EAGLE_DEFEATED.value: ('le', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.LEGAL_EAGLE_MAXED.value: ('le', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.BIG_WIG_DEFEATED.value: ('bw', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.BIG_WIG_MAXED.value: ('bw', CogPageGlobals.COG_COMPLETE2),
+
+        ToontownLocationName.SHORT_CHANGE_DEFEATED.value: ('sc', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.SHORT_CHANGE_MAXED.value: ('sc', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.PENNY_PINCHER_DEFEATED.value: ('pp', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.PENNY_PINCHER_MAXED.value: ('pp', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.TIGHTWAD_DEFEATED.value: ('tw', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.TIGHTWAD_MAXED.value: ('tw', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.BEAN_COUNTER_DEFEATED.value: ('bc', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.BEAN_COUNTER_MAXED.value: ('bc', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.NUMBER_CRUNCHER_DEFEATED.value: ('nc', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.NUMBER_CRUNCHER_MAXED.value: ('nc', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.MONEY_BAGS_DEFEATED.value: ('mb', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.MONEY_BAGS_MAXED.value: ('mb', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.LOAN_SHARK_DEFEATED.value: ('ls', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.LOAN_SHARK_MAXED.value: ('ls', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.ROBBER_BARRON_DEFEATED.value: ('rb', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.ROBBER_BARRON_MAXED.value: ('rb', CogPageGlobals.COG_COMPLETE2),
+
+        ToontownLocationName.COLD_CALLER_DEFEATED.value: ('cc', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.COLD_CALLER_MAXED.value: ('cc', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.TELEMARKETER_DEFEATED.value: ('tm', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.TELEMARKETER_MAXED.value: ('tm', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.NAME_DROPPER_DEFEATED.value: ('nd', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.NAME_DROPPER_MAXED.value: ('nd', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.GLAD_HANDER_DEFEATED.value: ('gh', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.GLAD_HANDER_MAXED.value: ('gh', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.MOVER_AND_SHAKER_DEFEATED.value: ('ms', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.MOVER_AND_SHAKER_MAXED.value: ('ms', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.TWO_FACE_DEFEATED.value: ('tf', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.TWO_FACE_MAXED.value: ('tf', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.MINGLER_DEFEATED.value: ('m', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.MINGLER_MAXED.value: ('m', CogPageGlobals.COG_COMPLETE2),
+        ToontownLocationName.MR_HOLLYWOOD_DEFEATED.value: ('mh', CogPageGlobals.COG_COMPLETE1), ToontownLocationName.MR_HOLLYWOOD_MAXED.value: ('mh', CogPageGlobals.COG_COMPLETE2)
+    }.get(location, ('', 0))
 
 # Given the string representation of a location, retrieve the numeric ID
 def ap_location_name_to_id(location_name: Union[str, ToontownLocationName]) -> int:
     for location_definition in (LOCATION_DEFINITIONS + EVENT_DEFINITIONS):
-        if (type(location_name) is str and location_definition.name.value == location_name) or \
-           (type(location_name) is ToontownLocationName and location_definition.name == location_name):
+        if (isinstance(location_name, str) and location_definition.name.value == location_name) or \
+           (isinstance(location_name, ToontownLocationName) and location_definition.name == location_name):
             return location_definition.unique_id
     raise KeyError(f"AP location: {location_name}<type={type(location_name)}> is not defined in Location/Event definitions")
 
+def ap_location_id_to_name(location_id: int) -> str:
+    for location_definition in (LOCATION_DEFINITIONS + EVENT_DEFINITIONS):
+        if location_definition.unique_id == location_id:
+            return location_definition.name.value
+    raise KeyError(f"AP location: {location_id}<type={type(location_id)}> is not defined in Location/Event definitions")
 
 # Given a Zone ID, give the ID of an AP location award the player.
 # returns -1 if this isn't a zone we have to worry about

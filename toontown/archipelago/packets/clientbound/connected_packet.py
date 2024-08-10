@@ -158,7 +158,7 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Is this this specific toon's first slot? if so, reset this toon's stats and initialize from YAML. 
         if len(client.av.checkedLocations) == 0:
             self.handle_first_time_player(client.av)
-        
+
 
         self.debug(f"Detected slot data: {self.slot_data}")
         client.av.b_setSlotData(self.slot_data)
@@ -172,7 +172,7 @@ class ConnectedPacket(ClientBoundPacketBase):
             client.av.archipelago_session.sync()
 
         # Receive all checks that were collected from our slot while disconnected
-        client.av.addCheckedLocations(self.checked_locations)
+        client.av.receiveCheckedLocations(self.checked_locations)
 
         # Tell AP we are playing
         won_id = ap_location_name_to_id(locations.ToontownLocationName.SAVED_TOONTOWN.value)

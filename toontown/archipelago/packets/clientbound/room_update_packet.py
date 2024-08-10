@@ -41,7 +41,7 @@ class RoomUpdatePacket(RoomInfoPacket, ConnectedPacket):
         if self.checked_locations is None:
             return
         
-        av.addCheckedLocations(self.checked_locations)
+        av.receiveCheckedLocations(self.checked_locations)
 
     def handle(self, client):
 
