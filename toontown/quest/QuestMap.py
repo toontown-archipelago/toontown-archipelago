@@ -225,8 +225,8 @@ class QuestMap(DirectFrame):
                     mapsGeom = loader.loadModel('phase_4/models/questmap/%s_maps' % ToontownGlobals.dnaPGMap[hoodId])
                     mapImage = mapsGeom.find('**/%s_%s_english' % (ToontownGlobals.dnaMap[hoodId], zoneId))
                 else:
-                    mapsGeom = loader.loadModel('phase_4/models/questmap/%s_maps' % ToontownGlobals.dnaPGMap[ToontownGlobals.ToontownCentral])
-                    mapImage = mapsGeom.find('**/%s_%s_english' % (ToontownGlobals.dnaMap[ToontownGlobals.ToontownCentral], zoneId))
+                    self.stop()
+                    return
                 if not mapImage.isEmpty():
                     self.container['image'] = mapImage
                     self.resetFrameSize()
@@ -244,9 +244,9 @@ class QuestMap(DirectFrame):
                 else:
                     self.stop()
                 mapsGeom.removeNode()
-            except:
+            except OSError:
                 self.stop()
-                raise
+                return
 
     def start(self):
         self.container.show()
