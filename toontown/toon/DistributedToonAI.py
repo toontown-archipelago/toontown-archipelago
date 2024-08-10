@@ -18,8 +18,7 @@ from direct.task import Task
 from toontown.catalog import CatalogItemList
 from toontown.catalog import CatalogItem
 from direct.distributed.ClockDelta import *
-from toontown.fishing import FishCollection
-from toontown.fishing import FishTank
+from toontown.fishing import FishCollection, FishTank, FishGlobals, FishBase
 from .NPCToons import npcFriends, isZoneProtected
 from toontown.coghq import CogDisguiseGlobals
 import random
@@ -41,7 +40,9 @@ from toontown.toonbase import ToontownAccessAI
 from toontown.catalog import CatalogAccessoryItem
 from . import ModuleListAI
 
-from toontown.archipelago.definitions.util import ap_location_to_cog_code, ap_location_id_to_name
+from apworld.toontown.fish import LOCATION_TO_GENUS_SPECIES
+from apworld.toontown.locations import ToontownLocationType
+from toontown.archipelago.definitions.util import ap_location_to_cog_code, ap_location_to_definition
 from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
 from ..archipelago.apclient.distributed_toon_apmessage_queue import DistributedToonAPMessageQueue
 from ..archipelago.apclient.distributed_toon_reward_queue import DistributedToonRewardQueue
@@ -4489,26 +4490,65 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Called when recieving locations from Archipelago.
     def receiveCheckedLocations(self, locations: List[int]):
+        hasCogGalleryChanged = False
+        hasFishingCollectionChanged = False
         cogStatus = self.getCogStatus()
         cogCount = self.getCogCount()
-        for i in locations:
-            # todo: uncomment this later, currently, check every check sent for testing.
-            # if i in self.checkedLocations:
-            #     continue
-            
-            
-            cog, expected_status = ap_location_to_cog_code(ap_location_id_to_name(i))
-            if cog != '':
-                index = SuitDNA.suitHeadTypes.index(cog)
-                if expected_status == CogPageGlobals.COG_COMPLETE1:
-                    expected_count = CogPageGlobals.get_min_cog_quota(self)
-                else: # COG_COMPLETE2
-                    expected_count = CogPageGlobals.get_max_cog_quota(self)
-                # Never decrease either of these here
-                cogCount[index] = max(cogCount[index], expected_count)
-                cogStatus[index] = max(cogStatus[index], expected_status)
-        self.b_setCogCount(cogCount)
-        self.b_setCogStatus(cogStatus)
+        try:
+            for i in locations:
+                # todo: uncomment this later, once we're sure this won't crash randomly. currently, check every check sent for testing, catch crashes more often.
+                # if i in self.checkedLocations:
+                #     continue
+                location = ap_location_to_definition(i)
+
+                if location.type == ToontownLocationType.GALLERY:
+                    cog= ap_location_to_cog_code(location.name.value)
+                    if cog != '':
+                        index = SuitDNA.suitHeadTypes.index(cog)
+                        cogCount[index] = max(cogCount[index], CogPageGlobals.get_min_cog_quota(self))
+                        cogStatus[index] = max(cogStatus[index], CogPageGlobals.COG_COMPLETE1)
+                        hasCogGalleryChanged = True
+
+                if location.type == ToontownLocationType.GALLERY_MAX:
+                    cog= ap_location_to_cog_code(location.name.value)
+                    if cog != '':
+                        index = SuitDNA.suitHeadTypes.index(cog)
+                        cogCount[index] = max(cogCount[index], CogPageGlobals.get_max_cog_quota(self))
+                        cogStatus[index] = max(cogStatus[index], CogPageGlobals.COG_COMPLETE2)
+                        hasCogGalleryChanged = True
+
+
+                elif location.type == ToontownLocationType.FISHING: # each species
+                    try:
+                        genus, species = LOCATION_TO_GENUS_SPECIES.get(location.name)
+                    except TypeError: # can't unpack NoneType.
+                        self.notify.warning(f"Tried to retrieve location check {location.name.value} as a fish.")
+                        continue
+                    fish = FishBase.FishBase(genus, species, FishGlobals.getRandomWeight(genus, species, self.fishingRod))
+                    if self.fishCollection.getCollectResult(fish) == FishGlobals.COLLECT_NEW_ENTRY:
+                        self.notify.info(f"Adding {location.name.value} as a fish to {self.name}")
+                        self.fishCollection.collectFish(fish)
+                        hasFishingCollectionChanged = True
+
+                # elif location.type == ToontownLocationType.FISHING_GENUS: # each genus
+                #     # I have no idea how to sync this without just using Bounce packets on AP.
+                #     # it might just be the best way to that we have - just will send it on each catch
+                #     pass
+
+                # elif location.type == ToontownLocationType.FISHING_GALLERY: # each 10 fish
+                #     # I have no idea how to sync this without just using Bounce packets on AP.
+                #     # it might just be the best way to that we have - just will send it on each catch
+                #     pass
+
+
+            if hasFishingCollectionChanged:
+                collectionNetList = self.fishCollection.getNetLists()
+                self.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
+            if hasCogGalleryChanged:
+                self.b_setCogCount(cogCount)
+                self.b_setCogStatus(cogStatus)
+        except BaseException as e:
+            self.notify.error(f"Error raised while checking locations. current location was {i or 'Unknown'}.", e)
         self.addCheckedLocations(locations)
 
 

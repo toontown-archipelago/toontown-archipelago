@@ -1,7 +1,7 @@
 from typing import Union
 from apworld.toontown import consts, ToontownLocationName, LOCATION_DEFINITIONS
 from apworld.toontown.locations import TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS, MML_TASK_LOCATIONS, \
-    TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS, EVENT_DEFINITIONS
+    TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS, EVENT_DEFINITIONS, ToontownLocationDefinition, get_location_def_from_name
 from toontown.shtiker import CogPageGlobals
 from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
@@ -99,11 +99,24 @@ def ap_location_name_to_id(location_name: Union[str, ToontownLocationName]) -> i
             return location_definition.unique_id
     raise KeyError(f"AP location: {location_name}<type={type(location_name)}> is not defined in Location/Event definitions")
 
+# Given a numeric ID, return the string representation of a location
 def ap_location_id_to_name(location_id: int) -> str:
     for location_definition in (LOCATION_DEFINITIONS + EVENT_DEFINITIONS):
         if location_definition.unique_id == location_id:
             return location_definition.name.value
     raise KeyError(f"AP location: {location_id}<type={type(location_id)}> is not defined in Location/Event definitions")
+
+# Given an AP ID or NAME, return the definition.
+def ap_location_to_definition(location: Union[int, str]) -> ToontownLocationDefinition:
+    if isinstance(location, int):
+        for location_definition in (LOCATION_DEFINITIONS + EVENT_DEFINITIONS):
+            if location_definition.unique_id == location:
+                return location_definition
+    if isinstance(location, str):
+        for location_definition in (LOCATION_DEFINITIONS + EVENT_DEFINITIONS):
+            if location_definition.name.value == location:
+                return location_definition
+    raise KeyError(f"AP location: {location}<type={type(location)}> is not defined in Location/Event definitions")
 
 # Given a Zone ID, give the ID of an AP location award the player.
 # returns -1 if this isn't a zone we have to worry about
