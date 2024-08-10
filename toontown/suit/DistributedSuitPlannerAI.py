@@ -105,7 +105,8 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         heights = [
          0, 0, 0, 0, 0]
         for level in levels:
-            minFloors, maxFloors = SuitBuildingGlobals.SuitBuildingInfo[level - 1][0]
+            floorInfo = max(0, min(level - 1, (len(SuitBuildingGlobals.SuitBuildingInfo) - 1)))
+            minFloors, maxFloors = SuitBuildingGlobals.SuitBuildingInfo[floorInfo][0]
             for i in range(minFloors - 1, maxFloors):
                 heights[i] += 1
 
@@ -1035,7 +1036,8 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
     def chooseSuitLevel(self, possibleLevels, buildingHeight):
         choices = []
         for level in possibleLevels:
-            minFloors, maxFloors = SuitBuildingGlobals.SuitBuildingInfo[level - 1][0]
+            floorInfo = max(0, min(level - 1, (len(SuitBuildingGlobals.SuitBuildingInfo) - 1)))
+            minFloors, maxFloors = SuitBuildingGlobals.SuitBuildingInfo[floorInfo][0]
             if buildingHeight >= minFloors - 1 and buildingHeight <= maxFloors - 1:
                 choices.append(level)
 

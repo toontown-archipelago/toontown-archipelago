@@ -550,7 +550,7 @@ class LoadAvatarOperation(AvatarOperation):
 
         # Tell the friends manager that an avatar is coming online.
         name = self.avatar['setName'][0]
-        dna = self.avatar['setDNAString'][0].decode('utf-8')
+        dna = self.avatar['setDNAString'][0]
         self.gameServicesManager.air.onlinePlayerManager.comingOnline(self.avId, name, dna)
 
         # Now we'll assign a POST_REMOVE that will tell the friends manager

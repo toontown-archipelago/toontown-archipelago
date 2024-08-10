@@ -832,7 +832,7 @@ class KartViewer(DirectFrame):
             self.kartDisplayRegion.setBounds(*self.bounds)
             self.kartDisplayRegion.setColor(*self.colors)
         frame = self.kartDisplayRegion.load()
-        if self.dna:
+        if self.dna and self.dna[KartDNA.bodyType] > -1:
             self.kart = Kart()
             self.kart.setDNA(self.dna)
             self.kart.generateKart(forGui=1)

@@ -34,11 +34,7 @@ class DistributedRaceAI(DistributedObjectAI.DistributedObjectAI):
         self.raceDoneFunc = raceDoneFunc
         self.lapCount = laps
         self.raceType = raceType
-        if raceType == RaceGlobals.Practice:
-            self.gagList = []
-        else:
-            self.gagList = [
-             0] * len(RaceGlobals.TrackDict[trackId][4])
+        self.gagList = [0] * len(RaceGlobals.TrackDict[trackId][4])
         self.circuitLoop = circuitLoop
         self.qualTimes = qualTimes
         self.circuitTimeList = circuitTimeList

@@ -83,10 +83,12 @@ class DistributedGolfKartAI(DistributedObjectAI.DistributedObjectAI):
     def acceptingBoardersHandler(self, avId):
         self.notify.debug('acceptingBoardersHandler')
         seatIndex = self.findAvailableSeat()
-        if seatIndex == None:
-            self.rejectBoarder(avId)
-        else:
-            self.acceptBoarder(avId, seatIndex)
+        av = self.air.doId2do.get(avId)
+        if av:
+            if seatIndex == None or PUTTER_KEY not in av.getAccessKeys():
+                self.rejectBoarder(avId)
+            else:
+                self.acceptBoarder(avId, seatIndex)
         return
 
     def acceptBoarder(self, avId, seatIndex):

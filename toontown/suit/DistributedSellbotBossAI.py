@@ -240,14 +240,14 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def generateSuits(self, battleNumber):
         if self.nerfed:
             if battleNumber == 1:
-                return self.invokeSuitPlanner(15, 0)
+                return self.invokeSuitPlanner(6, 0)
             else:
-                return self.invokeSuitPlanner(16, 1)
+                return self.invokeSuitPlanner(7, 1)
         else:
             if battleNumber == 1:
-                return self.invokeSuitPlanner(9, 0)
+                return self.invokeSuitPlanner(0, 0)
             else:
-                return self.invokeSuitPlanner(10, 1)
+                return self.invokeSuitPlanner(1, 1)
 
     def removeToon(self, avId, died=False):
         toon = simbase.air.doId2do.get(avId)
@@ -341,6 +341,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.ignoreBarrier(self.barrier)
 
     def enterBattleThree(self):
+        self.divideToons()
         self.battleThreeTimeStarted = globalClock.getFrameTime()
         self.resetBattles()
         self.setPieType()
