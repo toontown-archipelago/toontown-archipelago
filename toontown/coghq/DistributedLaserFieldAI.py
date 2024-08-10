@@ -9,6 +9,7 @@ from direct.directnotify import DirectNotifyGlobal
 from toontown.coghq import BattleBlockerAI
 from toontown.coghq import LaserGameMineSweeper
 from toontown.coghq import LaserGameRoll
+from toontown.coghq import LaserGameRollHard
 from toontown.coghq import LaserGameAvoid
 from toontown.coghq import LaserGameDrag
 import random
@@ -48,6 +49,8 @@ class DistributedLaserFieldAI(BattleBlockerAI.BattleBlockerAI, NodePath, BasicEn
             self.game = LaserGameMineSweeper.LaserGameMineSweeper(self.trapDisable, self.trapFire, self.sendField, self.setGrid)
         elif gameName == 'Roll':
             self.game = LaserGameRoll.LaserGameRoll(self.trapDisable, self.trapFire, self.sendField, self.setGrid)
+        elif gameName == 'RollHard':
+            self.game = LaserGameRollHard.LaserGameRollHard(self.trapDisable, self.trapFire, self.sendField, self.setGrid)
         elif gameName == 'Avoid':
             self.game = LaserGameAvoid.LaserGameAvoid(self.trapDisable, self.trapFire, self.sendField, self.setGrid)
         else:
