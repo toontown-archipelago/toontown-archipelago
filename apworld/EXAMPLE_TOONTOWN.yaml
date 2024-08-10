@@ -49,7 +49,7 @@ Toontown:
   starting_money: 1000
 
   # The starting amount of tasks you can carry when starting a new game.
-  # Range:  1 to 6
+  # Range: 1 to 6
   starting_task_capacity: 4
 
   # The max amount of tasks you can carry in a run.
@@ -70,6 +70,8 @@ Toontown:
   # - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
   # - total_gag_tracks: Player must max a certain amount of gag tracks to complete the game (determined by gag_tracks_required).
   # - total_fish_species: Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
+  # - laff_o_lympics: Player must reach a certain amount of laff to complete the game (determined by laff_points_required).
+  # - - NOTE: laff_o_lympics replaces ALL laff boost items with only +1 Laff Boosts
   win_condition: cog_bosses
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
@@ -95,6 +97,12 @@ Toontown:
   # Unused if win_condition is not total_fish_species
   # Range 0 to 70
   fish_species_required: 70
+
+  # How many laff points we must have before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not laff_o_lympics
+  # Setting must be below or equal to max_laff setting
+  # Range 0 to 150
+  laff_points_required: 120
 
   ### Sanity Settings ###
 
@@ -166,6 +174,16 @@ Toontown:
   # - rods: Progressive fishing rod items are added to the pool.
   # - none: All fishing areas are available. The player starts with a Gold Rod.
   fish_progression: 'rods'
+
+  ### Activity Settings ###
+
+  # Determines if racing locations are enabled
+  # Also adds "Go-Kart" to the item pool.
+  racing_logic: 'false'
+
+  # Determines if mini golf locations are enabled
+  # Also adds "Golf Putter" to the item pool.
+  minigolf_logic: 'false'
 
   ### Seed Generation Settings ###
 

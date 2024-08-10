@@ -8,7 +8,7 @@ from toontown.hood import ZoneUtil
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.toonbase import TTLocalizer
-from .QuestsAvailablePoster import QuestsAvailablePoster, FishAvailablePoster, TreasureAvailablePoster, PetsAvailablePoster
+from .QuestsAvailablePoster import QuestsAvailablePoster, FishAvailablePoster, TreasureAvailablePoster, PetsAvailablePoster, CanRacePoster, CanGolfPoster
 from ..building import FADoorCodes
 from ..quest.Quests import getRewardIdsFromHood
 
@@ -75,6 +75,8 @@ class MapPage(ShtikerPage.ShtikerPage):
         self.fishAvailableIcons: List[FishAvailablePoster] = []
         self.treasureAvailableIcons: List[TreasureAvailablePoster] = []
         self.petsAvailableIcons: List[PetsAvailablePoster] = []
+        self.raceIcons: List[CanRacePoster] = []
+        self.golfIcons: List[CanGolfPoster] = []
 
         guiButton = loader.loadModel('phase_3/models/gui/quit_button')
         buttonLoc = (0.45, 0, - 0.74)
@@ -143,8 +145,10 @@ class MapPage(ShtikerPage.ShtikerPage):
             self.fishAvailableIcons.append(FishAvailablePoster(hood, parent=label, pos=(0.19, 0, 0.08), scale=.1, sortOrder=1))
             self.treasureAvailableIcons.append(TreasureAvailablePoster(hood, parent=label, pos=(-0.06, 0, 0.09), scale=.1, sortOrder=1))
             self.petsAvailableIcons.append(PetsAvailablePoster(hood, parent=label, pos=(-0.16, 0, 0.09), scale=.1, sortOrder=1))
+            self.raceIcons.append(CanRacePoster(hood, parent=label, pos=(0.06, 0, 0.09), scale=.1, sortOrder=1))
+            self.golfIcons.append(CanGolfPoster(hood, parent=label, pos=(0.06, 0, 0.09), scale=.1, sortOrder=1))
             label.bind(DGG.WITHIN, self.showTasksAvailableFrame, extraArgs=[hood, hoodIndex])
-            label.bind(DGG.WITHOUT, self.hideTasksAvailableFrame, extraArgs=[hood,hoodIndex])
+            label.bind(DGG.WITHOUT, self.hideTasksAvailableFrame, extraArgs=[hood, hoodIndex])
             self.labels.append(label)
             hoodClouds = []
             for cloudScale, cloudPos in zip(self.cloudScaleList[hoodIndex], self.cloudPosList[hoodIndex]):
@@ -167,10 +171,14 @@ class MapPage(ShtikerPage.ShtikerPage):
 
     def showTasksAvailableFrame(self, hood, hoodIndex, pos):
         self.__hoverCallback(1, hoodIndex, pos)
-        for questPoster, fishPoster, treasurePoster, petPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons):
+        for questPoster, fishPoster, treasurePoster, petPoster, racePoster, golfPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons, self.raceIcons, self.golfIcons):
             if hood == questPoster.getHoodId():
                 treasurePoster.show()
                 # Only show if we need to.
+                if hood == ToontownGlobals.OutdoorZone and base.localAvatar.slotData.get("golfing_logic"):
+                    golfPoster.show()
+                if hood == ToontownGlobals.GoofySpeedway and base.localAvatar.slotData.get("racing_logic"):
+                    racePoster.show()
                 if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
                     questPoster.show()
                     fishPoster.show()
@@ -180,10 +188,14 @@ class MapPage(ShtikerPage.ShtikerPage):
 
     def hideTasksAvailableFrame(self, hood, hoodIndex, pos):
         self.__hoverCallback(0, hoodIndex, pos)
-        for questPoster, fishPoster, treasurePoster, petPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons):
+        for questPoster, fishPoster, treasurePoster, petPoster, racePoster, golfPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons, self.raceIcons, self.golfIcons):
             if hood == questPoster.getHoodId():
                 treasurePoster.hide()
                 # Only hide if we need to.
+                if hood == ToontownGlobals.OutdoorZone and base.localAvatar.slotData.get("golfing_logic"):
+                    golfPoster.hide()
+                if hood == ToontownGlobals.GoofySpeedway and base.localAvatar.slotData.get("racing_logic"):
+                    racePoster.hide()
                 if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
                     questPoster.hide()
                     fishPoster.hide()
@@ -194,14 +206,18 @@ class MapPage(ShtikerPage.ShtikerPage):
     def updateTasksAvailableFrames(self):
 
         # Loop through all the posters
-        for questPoster, fishPoster, treasurePoster, petPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons):
+        for questPoster, fishPoster, treasurePoster, petPoster, racePoster, golfPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons, self.raceIcons, self.golfIcons):
             treasurePoster.hide()
             questPoster.hide()
             fishPoster.hide()
             petPoster.hide()
+            racePoster.hide()
+            golfPoster.hide()
             hoodId = questPoster.getHoodId()
 
             treasurePoster.update(base.localAvatar)
+            golfPoster.update(base.localAvatar)
+            racePoster.update(base.localAvatar)
 
             # Are there pets here?
             if petPoster.hoodId in ToontownGlobals.ZONE_TO_ID_TO_CHECK.keys():

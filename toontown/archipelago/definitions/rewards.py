@@ -77,6 +77,7 @@ class LaffBoostReward(APReward):
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxHp(av.maxHp + self.amount)
         av.toonUp(self.amount)
+        av.checkWinCondition()
 
 
 class GagCapacityReward(APReward):
@@ -188,7 +189,7 @@ class GagTrainingFrameReward(APReward):
 
     def get_image_path(self) -> str:
         level = base.localAvatar.getTrackAccessLevel(self.track)
-        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(level, 7))
+        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(max(level, 1), 7))
         return f'phase_14/maps/gags/{ap_icon}.png'
 
     def apply(self, av: "DistributedToonAI"):
@@ -300,6 +301,32 @@ class GagTrainingMultiplierReward(APReward):
         oldMultiplier = av.getBaseGagSkillMultiplier()
         newMultiplier = oldMultiplier + self.amount
         av.b_setBaseGagSkillMultiplier(newMultiplier)
+
+
+class GolfPutterReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Get ready to go mini-golfing\nwith your new "),
+            MinimalJsonMessagePart("Golf Putter", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.addAccessKey(ToontownGlobals.PUTTER_KEY)
+
+
+class GoKartReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Get ready to go racing\nwith your new "),
+            MinimalJsonMessagePart("Go-Kart", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.b_setKartBodyType(1)
 
 
 class FishingRodUpgradeReward(APReward):
@@ -813,6 +840,8 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.TB_FISHING.value: FishingLicenseReward(FishingLicenseReward.THE_BRRRGH),
     ToontownItemName.DDL_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DREAMLAND),
     ToontownItemName.FISH.value: IgnoreReward(),
+    ToontownItemName.GOLF_PUTTER.value: GolfPutterReward(),
+    ToontownItemName.GO_KART.value: GoKartReward(),
     ToontownItemName.FRONT_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
     ToontownItemName.SIDE_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING),
     ToontownItemName.COIN_MINT_ACCESS.value: FacilityAccessReward(FADoorCodes.COIN_MINT_ACCESS_MISSING),

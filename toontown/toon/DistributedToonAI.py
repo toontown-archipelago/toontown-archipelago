@@ -231,6 +231,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.receivedItems: List[Tuple[int, int]] = []  # List of AP items received so far, [(index, itemid), (index, itemid)]
         self.checkedLocations: List[int] = []  # List of AP checks we have completed
         self.hintPoints = 0  # How many hint points the player has
+        self.hintCostPercentage = 0 # How many points to hint an item, in % of checks.
+        self.totalChecks = 0 # How many checks are there in total, calculates exact cost for display for client.
         self.damageMultiplier = 100
         self.overflowMod = 100
         self.beingShuffled = False
@@ -4529,7 +4531,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Sent by client to request hint points from the arch session
     def requestHintPoints(self):
-        self.sendUpdate('hintPointResp', [self.hintPoints])
+        self.sendUpdate('hintPointResp', [self.hintPoints, self.hintCostPercentage * self.totalChecks // 100])
 
     def b_setSlotData(self, slotData: dict):
         slotData = AstronDict.fromDict(slotData)
@@ -4587,6 +4589,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setMoney(100)
         self.b_setBankMoney(0)
         self.b_setMaxBankMoney(0)
+
+        # Activities
+        self.b_setTickets(0)
+        self.b_setKartBodyType(-1)
 
         # Fishing
         self.b_setFishCollection([], [], [])
