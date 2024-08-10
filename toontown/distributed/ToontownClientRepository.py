@@ -1002,5 +1002,4 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         if self.archipelagoManager is not None:
             color = self.archipelagoManager.getToonColorProfile(offlineToon.avId)
 
-        color = self.archipelagoManager.getToonColorProfile(offlineToon.avId)
         base.localAvatar.displayWhisper(0, OTPLocalizer.WhisperFriendLoggedOut % offlineToon.name, WhisperType.WTSystem, colorProfileOverride=color)

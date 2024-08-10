@@ -14,6 +14,8 @@ from toontown.friends.OnlineToon import OnlineToon
 # It defines some globals that we need to work.
 from direct.distributed.MsgTypes import *
 
+import base64
+
 
 # Base class used for starting and managing operations that need to query the database.
 class FriendManagerOperation(FSM):
@@ -99,12 +101,12 @@ class OnlinePlayerManagerUD(DistributedObjectGlobalUD):
             ['setExperience', fields['setExperience'][0]],
             ['setTrackAccess', fields['setTrackAccess'][0]],
             ['setTrackBonusLevel', fields['setTrackBonusLevel'][0]],
-            ['setInventory', fields['setInventory'][0].decode('utf-8')],
+            ['setInventory', base64.b64encode(fields['setInventory'][0]).decode(encoding='ascii')],
             ['setHp', fields['setHp'][0]],
             ['setMaxHp', fields['setMaxHp'][0]],
             ['setDefaultShard', fields['setDefaultShard'][0]],
             ['setLastHood', fields['setLastHood'][0]],
-            ['setDNAString', fields['setDNAString'][0].decode('utf-8')],
+            ['setDNAString', base64.b64encode(fields['setDNAString'][0]).decode(encoding='ascii')],
             ['setHat', fields['setHat'][0], fields['setHat'][1], fields['setHat'][2]],
             ['setGlasses', fields['setGlasses'][0], fields['setGlasses'][1], fields['setGlasses'][2]],
             ['setBackpack', fields['setBackpack'][0], fields['setBackpack'][1], fields['setBackpack'][2]],
@@ -131,7 +133,7 @@ class OnlinePlayerManagerUD(DistributedObjectGlobalUD):
             return
 
         queriedName = fields['setName'][0]
-        queriedDNA = fields['setDNAString'][0].decode('utf-8')
+        queriedDNA = fields['setDNAString'][0]
         self.__cacheOnlineToon(OnlineToon(queriedAvId, queriedName, queriedDNA))
 
     # Given two avIds, make them both aware of each other's existence.
@@ -174,7 +176,7 @@ class OnlinePlayerManagerUD(DistributedObjectGlobalUD):
     """
 
     # Called from GameServicesManagerUD to inform us that a toon has just come online.
-    def comingOnline(self, avId, name, dnaString):
+    def comingOnline(self, avId, name, dnaString: bytes):
 
         # START AP CODE
         # Cache online toon then send an update to the client DOG
@@ -259,5 +261,5 @@ class OnlinePlayerManagerUD(DistributedObjectGlobalUD):
     # requesterAvId - The avId who requested the information.
     # requestingOfAvId - The avId's information that was requested.
     # jsonStr - A string representing a json dump of the detailed information to send to the client.
-    def d_avatarDetailsResp(self, requesterAvId: int, requestingOfAvId: int, jsonStr: str):
-        self.sendUpdateToAvatarId(requesterAvId, 'avatarDetailsResp', [requestingOfAvId, jsonStr])
+    def d_avatarDetailsResp(self, requesterAvId: int, requestingOfAvId: int, data: str):
+        self.sendUpdateToAvatarId(requesterAvId, 'avatarDetailsResp', [requestingOfAvId, data])

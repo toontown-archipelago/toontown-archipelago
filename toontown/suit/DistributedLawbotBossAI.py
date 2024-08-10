@@ -311,9 +311,9 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
 
     def generateSuits(self, battleNumber):
         if battleNumber == 1:
-            return self.invokeSuitPlanner(13, 0)
+            return self.invokeSuitPlanner(4, 0)
         else:
-            return self.invokeSuitPlanner(13, 1)
+            return self.invokeSuitPlanner(4, 1)
 
     def removeToon(self, avId, died=False):
         toon = simbase.air.doId2do.get(avId)
@@ -508,6 +508,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         self.ignoreBarrier(self.barrier)
 
     def enterBattleThree(self):
+        self.divideToons()
         self.battleThreeTimeStarted = globalClock.getFrameTime()
         self.calcAndSetBattleDifficulty()
         if self.chairs != None:

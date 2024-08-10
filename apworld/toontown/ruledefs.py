@@ -66,6 +66,7 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
 def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return True
 
+
 @rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
 @rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS)
 @rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS)
@@ -82,10 +83,13 @@ def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
 @rule(Rule.CashbotDisguise, ToontownItemName.CASHBOT_DISGUISE)
 @rule(Rule.LawbotDisguise,  ToontownItemName.LAWBOT_DISGUISE)
 @rule(Rule.BossbotDisguise, ToontownItemName.BOSSBOT_DISGUISE)
+@rule(Rule.Golfing,         ToontownItemName.GOLF_PUTTER)
+@rule(Rule.Racing,          ToontownItemName.GO_KART)
 def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     if len(argument) == 2:
         return state.has(argument[0].value, player, argument[1])
     return state.has(argument[0].value, player)
+
 
 @rule(Rule.HasTTCHQAccess,  ToontownItemName.TTC_ACCESS)
 @rule(Rule.HasDDHQAccess,   ToontownItemName.DD_ACCESS)
@@ -95,6 +99,7 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.HasDDLHQAccess,  ToontownItemName.DDL_ACCESS)
 def HasItemCountRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return state.count(argument[0].value, player) == 2
+
 
 @rule(Rule.CanBuyTTCDoodle, 0)
 @rule(Rule.CanBuyDDDoodle, 1)
@@ -439,22 +444,25 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     # - EXP required at level
 
     minimum_lure = state.has(ToontownItemName.LURE_FRAME.value, player, LUREMIN)
-    powerful_lure_knockback = any(
-        state.has(offensive_frame.value, player, LEVEL)
-        for offensive_frame in [
-            ToontownItemName.THROW_FRAME,
-            ToontownItemName.SQUIRT_FRAME,
-        ]
-    ) and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
-    powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, OVERLEVEL)
-    powerful_trap = state.has(ToontownItemName.TRAP_FRAME.value, player, OVERLEVEL) \
-                    and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
+    powerful_squirt_knockback = state.has(ToontownItemName.SQUIRT_FRAME, player, LEVEL) \
+                                and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
+    powerful_throw_knockback = state.has(ToontownItemName.THROW_FRAME.value, player, LEVEL) \
+                               and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
+    powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, LEVEL)
+    powerful_trap = state.has(ToontownItemName.TRAP_FRAME.value, player, LEVEL) \
+                    and state.has(ToontownItemName.LURE_FRAME.value, player, UNDERLEVEL)
     powerful_sound = state.has(ToontownItemName.SOUND_FRAME.value, player, OVERLEVEL)
+
+    def two_powerful_tracks():
+        powerful_tracks = 0
+        for track in (powerful_drop, powerful_trap, powerful_sound, powerful_throw_knockback, powerful_squirt_knockback):
+            if track:
+                powerful_tracks += 1
+        return powerful_tracks >= 2
+
     sufficient_healing = state.has(ToontownItemName.TOONUP_FRAME.value, player, UNDERLEVEL)
     can_obtain_exp_required = has_collected_items_for_gag_level(state, player, options, LEVEL)
-
-    return (powerful_lure_knockback or powerful_sound or powerful_trap or powerful_drop) \
-            and sufficient_healing and minimum_lure and can_obtain_exp_required
+    return two_powerful_tracks() and sufficient_healing and minimum_lure and can_obtain_exp_required
 
 
 @rule(Rule.CanFightVP)

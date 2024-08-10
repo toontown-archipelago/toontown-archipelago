@@ -183,7 +183,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.av.addCheckedLocation(new_game)
         client.av.addCheckedLocation(track_one_check)
         client.av.addCheckedLocation(track_two_check)
+
+        # Checks Page Variables
         client.av.hintPoints = self.hint_points
+        client.av.totalChecks = len(self.missing_locations) + len(self.checked_locations)
 
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)

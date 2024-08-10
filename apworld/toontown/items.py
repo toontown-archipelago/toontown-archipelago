@@ -108,6 +108,9 @@ class ToontownItemName(enum.Enum):
     XP_15 = "15% Gag XP Bundle"
     XP_20 = "20% Gag XP Bundle"
 
+    ### Activity Items ###
+    GOLF_PUTTER = "Golf Putter"
+    GO_KART = "Go-Kart"
 
     ### Reward Bundles ###
     SOS_REWARD       = "Random SOS Card"
@@ -216,6 +219,10 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.CASHBOT_DISGUISE, ItemClassification.progression, quantity=1),
     ToontownItemDefinition(ToontownItemName.LAWBOT_DISGUISE,  ItemClassification.progression, quantity=1),
     ToontownItemDefinition(ToontownItemName.BOSSBOT_DISGUISE, ItemClassification.progression, quantity=1),
+    # endregion
+    # region activities
+    ToontownItemDefinition(ToontownItemName.GOLF_PUTTER, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GO_KART, ItemClassification.progression),
     # endregion
     # region Filler Items
     # TODO - remember to account for the Fish filler when implementing weights here

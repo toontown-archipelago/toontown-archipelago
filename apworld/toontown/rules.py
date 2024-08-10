@@ -97,6 +97,11 @@ class Rule(Enum):
     MiddleTwoKey = auto()
     BackThreeKey = auto()
 
+    ### Activities ###
+
+    Racing  = auto()
+    Golfing = auto()
+
     ### Cog Disguises ###
 
     SellbotDisguise = auto()

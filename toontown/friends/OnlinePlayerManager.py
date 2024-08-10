@@ -1,3 +1,4 @@
+import base64
 import json
 from typing import Dict, List, Union
 
@@ -10,12 +11,6 @@ from toontown.friends.OnlineToon import OnlineToon
 
 class OnlinePlayerManager(DistributedObjectGlobal):
     notify = DirectNotifyGlobal.directNotify.newCategory('OnlinePlayerManager')
-
-    # Fields that are represented by py2 byte strings and need extra conversion.
-    TOON_DETAIL_BYTE_FIELDS = (
-        'setDNAString', 'setMailboxContents', 'setAwardMailboxContents', 'setGiftSchedule',
-        'setDeliverySchedule', 'setAwardSchedule', 'setInventory'
-    )
 
     def __init__(self, cr):
         super().__init__(cr)
@@ -104,15 +99,21 @@ class OnlinePlayerManager(DistributedObjectGlobal):
 
     def avatarDetailsResp(self, avId, details):
         fields = json.loads(details)
-        newName = None
+        newName = 'Unknown Toon'
         newDna = None
+
+        # The following fields were converted to a string to satisfy json.dumps() from UD and need conversion
+        BYTE_FIELDS = ('setDNAString', 'setInventory')
+
         for currentField in fields:
             fieldName: str = currentField[0]
+
+            # If we have an encoded byte field, go back to what it was
+            if fieldName in BYTE_FIELDS:
+                currentField[1] = base64.b64decode(currentField[1])
+
             value = currentField[1]
 
-            # Certain fields need to be converted back to bytes (Mostly DNA strings).
-            if fieldName in self.TOON_DETAIL_BYTE_FIELDS:
-                currentField[1] = bytes(value, 'utf-8')
 
             # See if we found our name or DNA to update
             if fieldName == 'setName':
