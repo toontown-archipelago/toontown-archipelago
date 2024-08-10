@@ -213,8 +213,12 @@ class QuestMap(DirectFrame):
             try:
                 hoodId = ZoneUtil.getCanonicalHoodId(self.av.getLocation()[1])
                 zoneId = ZoneUtil.getCanonicalBranchZone(self.av.getLocation()[1])
-                mapsGeom = loader.loadModel('phase_4/models/questmap/%s_maps' % ToontownGlobals.dnaMap[hoodId])
-                mapImage = mapsGeom.find('**/%s_%s_english' % (ToontownGlobals.dnaMap[hoodId], zoneId))
+                if hoodId in ToontownGlobals.dnaPGMap:
+                    mapsGeom = loader.loadModel('phase_4/models/questmap/%s_maps' % ToontownGlobals.dnaPGMap[hoodId])
+                    mapImage = mapsGeom.find('**/%s_%s_english' % (ToontownGlobals.dnaMap[hoodId], zoneId))
+                else:
+                    mapsGeom = loader.loadModel('phase_4/models/questmap/%s_maps' % ToontownGlobals.dnaPGMap[ToontownGlobals.ToontownCentral])
+                    mapImage = mapsGeom.find('**/%s_%s_english' % (ToontownGlobals.dnaMap[ToontownGlobals.ToontownCentral], zoneId))
                 if not mapImage.isEmpty():
                     self.container['image'] = mapImage
                     self.resetFrameSize()
