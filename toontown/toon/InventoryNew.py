@@ -294,7 +294,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             battle = base.cr.doId2do.get(self.toon.battleId)
             if battle != None:
                 for suit in battle.activeSuits:
-                    if suit.dna.name in SuitDNA.notMainTypes:
+                    if suit.dna.name in SuitDNA.MainBossTypes:
                         damage = getAvPropDamage(track, level, self.toon.experience, toonDamageMultiplier=self.getToonsDmgMultiplier(battle, self.toon), overflowMod=self.toon.getOverflowMod())
                 
         
