@@ -195,5 +195,8 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.av.hintPoints = self.hint_points
         client.av.totalChecks = len(self.missing_locations) + len(self.checked_locations)
 
+        # Request synced data and subscribe to changes.
+        client.av.request_default_ap_data()
+
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)

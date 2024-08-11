@@ -1,6 +1,6 @@
 import math
 import uuid
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Any
 
 from otp.ai.AIBaseGlobal import *
 from otp.otpbase import OTPGlobals
@@ -4492,61 +4492,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Called when recieving locations from Archipelago.
     def receiveCheckedLocations(self, locations: List[int]):
-        hasCogGalleryChanged = False
-        hasFishingCollectionChanged = False
-        RequiresFishingBounce = False
-        cogStatus = self.getCogStatus()
-        cogCount = self.getCogCount()
-        try:
-            for i in locations:
-                # todo: uncomment this later, once we're sure this won't crash randomly. currently, check every check sent for testing, catch crashes more often.
-                # if i in self.checkedLocations:
-                #     continue
-                location = ap_location_to_definition(i)
-
-                if location.type == ToontownLocationType.GALLERY:
-                    cog= ap_location_to_cog_code(location.name.value)
-                    if cog != '':
-                        index = SuitDNA.suitHeadTypes.index(cog)
-                        cogCount[index] = max(cogCount[index], CogPageGlobals.get_min_cog_quota(self))
-                        cogStatus[index] = max(cogStatus[index], CogPageGlobals.COG_COMPLETE1)
-                        hasCogGalleryChanged = True
-
-                if location.type == ToontownLocationType.GALLERY_MAX:
-                    cog= ap_location_to_cog_code(location.name.value)
-                    if cog != '':
-                        index = SuitDNA.suitHeadTypes.index(cog)
-                        cogCount[index] = max(cogCount[index], CogPageGlobals.get_max_cog_quota(self))
-                        cogStatus[index] = max(cogStatus[index], CogPageGlobals.COG_COMPLETE2)
-                        hasCogGalleryChanged = True
-
-
-                elif location.type == ToontownLocationType.FISHING: # each species
-                    try:
-                        genus, species = LOCATION_TO_GENUS_SPECIES.get(location.name)
-                    except TypeError: # can't unpack NoneType.
-                        self.notify.warning(f"Tried to retrieve location check {location.name.value} as a fish.")
-                        continue
-                    fish = (genus, species, FishGlobals.getRandomWeight(genus, species, self.fishingRod))
-                    if self.fishCollection.getCollectResult(fish) == FishGlobals.COLLECT_NEW_ENTRY:
-                        self.notify.debug(f"Adding {location.name.value} as a fish to {self.name}")
-                        self.fishCollection.collectFish(fish)
-                        hasFishingCollectionChanged = True
-                elif (location.type == ToontownLocationType.FISHING_GENUS # each genus
-                     or location.type == ToontownLocationType.FISHING_GALLERY): # each 10 fish
-                    RequiresFishingBounce = True
-
-            if hasFishingCollectionChanged:
-                collectionNetList = self.fishCollection.getNetLists()
-                self.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
-            if RequiresFishingBounce:
-                self.notify.debug("Sending Bounce packet for types: fishing, request")
-                self.archipelago_session.bounce_data(["fishing", "request"], list(zip(*self.fishCollection.getNetLists())))
-            if hasCogGalleryChanged:
-                self.b_setCogCount(cogCount)
-                self.b_setCogStatus(cogStatus)
-        except BaseException as e:
-            self.notify.error(f"Error raised while checking locations. current location was {i or 'Unknown'}.", e)
         self.addCheckedLocations(locations)
 
 
@@ -4754,7 +4699,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         return self.winCondition
     
     # UUID for use with archipelago, stored in the toon for use as an identifier.
-    def getUUID(self):
+    def getUUID(self) -> str:
         return str(self.__uuid)
 
     def setUUID(self, toonUUID: str) -> None:
@@ -4773,6 +4718,88 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def regenerateUUID(self) -> None:
         self.b_setUUID(uuid.uuid4())
+
+    # Set and get personal data from AP, actual key in storage will be prefixed with "slot{slot}:"
+    def set_ap_data(self, key, value) -> None:
+        self.archipelago_session.store_personal_data({key: value})
+
+    # Requests update and subscribes to changes of stored AP data.
+    def get_ap_data(self, keys) -> None:
+        if isinstance(keys, str):
+            keys = [keys]
+        self.archipelago_session.get_personal_data(keys)
+        self.archipelago_session.subscribe_personal_data(keys)
+    
+    def request_default_ap_data(self) -> None:
+        # keys = ["fish-collection", "toon-up", "trap", "lure", "sound", "throw", "squirt", "drop", "cog-gallery", "jellybeans", "tasks"]
+        keys = ["fish-collection", "cog-gallery"]
+        self.get_ap_data(keys)
+
+    # Set fish collection and send out to AP.
+    # there's a possible race condition with this where it will overwrite if another toon is fishing at the same time.
+    def ap_setFishCollection(self, genusList: list[int], speciesList: list[int], weightList: list[int]):
+        self.d_setFishCollection(genusList, speciesList, weightList)
+        self.notify.debug(f"setting AP fish-collection for {self.getDoId()} to: {[genusList, speciesList, weightList]}" )
+        self.set_ap_data("fish-collection", [genusList, speciesList, weightList])
+
+    def ap_setCogCount(self, cogCountList: List[int]):
+        self.b_setCogCount(cogCountList)
+        self.notify.debug(f"setting AP cog-gallery for {self.getDoId()} to: {cogCountList}" )
+        self.set_ap_data("cog-gallery", cogCountList)
+
+    def handle_ap_data_update(self, data: dict[str,Any]):
+    # AP data passed to this in format of a dict: {key: value}
+        for k,v in data.items():
+            if v is None:
+                self.notify.debug(f"Ignoring empty ap data for key {k} for toon {self.getDoId()}")
+                continue
+            self.notify.debug(f"Handling incoming ap data for key {k} for toon {self.getDoId()}")
+            match k:
+                case "fish-collection":
+                    if v == self.fishCollection.getNetLists():
+                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
+                        continue
+                    # Getting data from here assumes AP already tracked it.
+                    # The client that set the data should have gotten any location checks for it when it was sent.
+                    # Possiblity you might need to catch any fish to update it if you skip past a check, somehow.
+                    for i in zip(*v):
+                        self.fishCollection.collectFish(i)
+                    collectionNetList = self.fishCollection.getNetLists()
+                    self.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
+
+                case "toon-up" | "trap" | "lure" | "sound" | "throw" | "squirt" | "drop":
+                    self.notify.debug("unimplemented sync for gag xp.")
+
+                case "cog-gallery":
+                    if v == self.getCogCount():
+                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
+                        continue
+                    # Getting data from here assumes AP already tracked it.
+                    # Should be the case, this can"t add more cogs than any toon had individually.
+                    cogCount = self.getCogCount()
+                    cogStatus = self.getCogStatus()
+                    for suitIndex, count in enumerate(v):
+                        # Ensure we don't overwrite if any are already higher than what was sent to us.
+                        cogCount[suitIndex] = max(cogCount[suitIndex], count)
+                        if cogCount[suitIndex] >= 1: # Don't mark cogs with a count of 0 as defeated.
+                            cogStatus[suitIndex] = CogPageGlobals.COG_DEFEATED
+                            cogQuota = CogPageGlobals.get_min_cog_quota(self)
+                            cogMaxQuota = CogPageGlobals.get_max_cog_quota(self)
+                            if cogQuota <= cogCount[suitIndex] < cogMaxQuota:
+                                cogStatus[suitIndex] = CogPageGlobals.COG_COMPLETE1
+                            else:
+                                cogStatus[suitIndex] = CogPageGlobals.COG_COMPLETE2
+                    self.b_setCogStatus(cogStatus)
+                    self.b_setCogCount(cogCount)
+
+                case "jellybeans":
+                    self.notify.debug("unimplemented sync for jellybeans")
+
+                case "tasks":
+                    self.notify.debug("unimplemented sync for tasks")
+
+                case _:
+                    self.notify.debug(f"Recieved Unknown key: {k}")
 
     # Magic word stuff
     def setMagicDNA(self, dnaString):

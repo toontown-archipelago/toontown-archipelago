@@ -1,6 +1,6 @@
 # Represents a gameplay session attached to toon players, handles rewarding and sending items through the multiworld
 import os
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Any
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
@@ -11,6 +11,9 @@ from toontown.archipelago.packets.serverbound.location_checks_packet import Loca
 from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.archipelago.packets.serverbound.say_packet import SayPacket
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
+from toontown.archipelago.packets.serverbound.set_packet import SetPacket, DataStorageOperation
+from toontown.archipelago.packets.serverbound.get_packet import GetPacket
+from toontown.archipelago.packets.serverbound.set_notify_packet import SetNotifyPacket
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.HintContainer import HintContainer
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
@@ -166,6 +169,36 @@ class ArchipelagoSession:
     def bounce_data(self, datatype: List[str], data):
         packet = BouncePacket()
         packet.bounce_data(self.avatar, self.getSlotId(), datatype, data)
+        self.client.send_packet(packet)
+
+    # Store data using a key intended to prevent collisions with other slots
+    def store_personal_data(self, data: dict[str,Any]):
+        packets = []
+        for k,v in data.items():
+            if ':' in k:
+                raise ValueError(f"data key {k} must not contain any ':'")
+            packet = SetPacket()
+            packet.operations.append(DataStorageOperation(operation="replace", value=v))
+            packet.key= f"slot{str(self.client.slot)}:{k}"
+            packets.append(packet)
+        self.client.send_packets(packets)
+
+    # Get data using a key used by the above function.
+    def get_personal_data(self, keys: list[str]):
+        packet = GetPacket()
+        for i in keys:
+            if ':' in i:
+                raise ValueError(f"data key {i} must not contain any ':'")
+            packet.keys.append(f"slot{str(self.client.slot)}:{i}")
+        self.client.send_packet(packet)
+
+    # Request to be sent the stored data if it changes.
+    def subscribe_personal_data(self, keys: list[str]):
+        packet = SetNotifyPacket()
+        for i in keys:
+            if ':' in i:
+                raise ValueError(f"data key {i} must not contain any ':'")
+            packet.keys.append(f"slot{str(self.client.slot)}:{i}")
         self.client.send_packet(packet)
 
     """
