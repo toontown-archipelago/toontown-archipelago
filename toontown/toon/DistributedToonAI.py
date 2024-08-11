@@ -1,4 +1,5 @@
 import math
+import uuid
 from typing import List, Tuple, Union
 
 from otp.ai.AIBaseGlobal import *
@@ -227,6 +228,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.hasPaidTaxes = False
 
         # Archipelago Stuff
+        self.__uuid = None # UUID used to ensure we don't reply to our own packets.
         self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
         self.baseGagSkillMultiplier = 1  # Multiplicative stacking gag xp multiplier to consider
         self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
@@ -4698,6 +4700,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setCheckedLocations([])
         self.b_setReceivedItems([])
         self.b_setAccessKeys([])
+        
+        # Regenerate the toon's UUID used for archipelago connections.
+        self.regenerateUUID()
 
     def APVictory(self):
         if self.archipelago_session:
@@ -4747,6 +4752,27 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def getWinCondition(self) -> WinCondition:
         return self.winCondition
+    
+    # UUID for use with archipelago, stored in the toon for use as an identifier.
+    def getUUID(self):
+        return str(self.__uuid)
+
+    def setUUID(self, toonUUID: str) -> None:
+        if toonUUID == '':
+            self.notify.debug(f"toon with id {self.getDoId()} did not have a UUID defined in the database, defining one now to avoid errors.")
+            self.regenerateUUID()
+            return
+        self.__uuid = uuid.UUID(toonUUID)
+
+    def d_setUUID(self, toonUUID: str) -> None:
+        self.sendUpdate('setUUID', [toonUUID])
+
+    def b_setUUID(self, toonUUID) -> None:
+        self.d_setUUID(str(toonUUID))
+        self.setUUID(str(toonUUID))
+
+    def regenerateUUID(self) -> None:
+        self.b_setUUID(uuid.uuid4())
 
     # Magic word stuff
     def setMagicDNA(self, dnaString):

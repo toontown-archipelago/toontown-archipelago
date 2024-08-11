@@ -35,13 +35,14 @@ class BouncePacket(ServerBoundPacketBase):
         # I am assuming this is only to check if this was "us" that caused this so in order for this to work
         # the best i think we can just use toon ID (those sharing a slot will still both die)
         # If this ends up not being the case, this should be changed to either AP slot ID or toon name
-        self.data['source'] = str(toon.getDoId())
+        self.data['source'] = toon.getUUID()
 
     # Call to add arbitrary data to send within this packet
-    def bounce_data(self, slot: int, datatype: List[str], data):
+    def bounce_data(self, toon, slot: int, datatype: List[str], data):
         self.slots = [slot]
         self.data["types"] = datatype
         self.data["content"] = data
+        self.data["source"] = toon.getUUID()
 
     def build(self) -> Dict[str, Any]:
         # Return all attributes
