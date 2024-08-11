@@ -3,8 +3,9 @@
       "suit_name": true,
       "trf": true,
       "ski": true,
-      "def": true,
-      "bgh": true
+      "hat": true,
+      "skh": true,
+      "clp": true
     }
   }
   
