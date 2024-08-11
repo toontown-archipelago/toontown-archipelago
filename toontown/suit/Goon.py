@@ -157,9 +157,15 @@ class Goon(Avatar.Avatar):
         if self.strength >= 44:
             self.hat.setColorScale(colorList[2])
         elif self.strength >= 23:
-            self.hat.setColorScale(colorList[0])
+            if self.type == 'gg':
+                self.hat.setColorScale(colorList[2])
+            else:
+                self.hat.setColorScale(colorList[0])
         elif self.strength >= 17:
-            self.hat.setColorScale(colorList[1])
+            if self.type == 'gg':
+                self.hat.setColorScale(colorList[0])
+            else:
+                self.hat.setColorScale(colorList[1])
         else:
             if self.type == 'gg':
                 self.hat.setColorScale(colorList[0])

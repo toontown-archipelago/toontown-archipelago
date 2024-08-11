@@ -568,6 +568,28 @@ __STOCK_HOLDER_ATTACKS.add(SuitAttackAttribute(
 __STOCK_HOLDER: SuitAttributes = T1SuitAttributes(key='skh', name=TTLocalizer.SuitStockHolder, singular=TTLocalizer.SuitStockHolderS, plural=TTLocalizer.SuitStockHolderP, tier=11, attacks=__STOCK_HOLDER_ATTACKS)
 __registerSuitAttributes(__STOCK_HOLDER)
 
+__CLUB_PRESIDENT_ATTACKS = set()
+__CLUB_PRESIDENT_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.POWER_TRIP,
+    damage={4: 12, 5: 14},
+    accuracy=75,
+    weight=50,
+))
+__CLUB_PRESIDENT_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.FIRED,
+    damage={4: 14, 5: 16},
+    accuracy=50,
+    weight=30,
+))
+__CLUB_PRESIDENT_ATTACKS.add(SuitAttackAttribute(
+    attack=SuitAttackType.PINK_SLIP,
+    damage={4: 15, 5: 18},
+    accuracy=75,
+    weight=20,
+))
+__CLUB_PRESIDENT: SuitAttributes = T1SuitAttributes(key='clp', name=TTLocalizer.SuitClubPresident, singular=TTLocalizer.SuitClubPresidentS, plural=TTLocalizer.SuitClubPresidentP, tier=3, attacks=__CLUB_PRESIDENT_ATTACKS)
+__registerSuitAttributes(__CLUB_PRESIDENT)
+
 __COLD_CALLER_ATTACKS = set()
 __COLD_CALLER_ATTACKS.add(SuitAttackAttribute(
     attack=SuitAttackType.FREEZE_ASSETS,

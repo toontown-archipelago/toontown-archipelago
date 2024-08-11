@@ -1775,7 +1775,7 @@ class BattleCalculatorAI:
         base = toon.getDamageMultiplier()
 
         for suit in self.battle.activeSuits:
-            if suit.dna.name in SuitDNA.notMainTypes:
+            if suit.dna.name in SuitDNA.MainBossTypes:
                 extraMult = self.getBossFightDamageBonus()
                 if extraMult > base:
                     additionalNeeded = extraMult - base

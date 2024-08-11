@@ -21,11 +21,16 @@ suitHeadTypes = [
     'bf', 'b', 'dt', 'ac', 'bs', 'sd', 'le', 'bw', # Lawbot
     'sc', 'pp', 'tw', 'bc', 'nc', 'mb', 'ls', 'rb', # Cashbot
     'cc', 'tm', 'nd', 'gh', 'ms', 'tf', 'm', 'mh', # Sellbot
-    'trf', 'ski', 'hat', 'skh' # Special Cogs
+    'trf', 'ski', 'hat', 'skh', 'clp' # Special Cogs
+]
+
+# Traffic Manager, Skin Flint, Head Attorney, Stock Holder, Club President
+notMainTypes = [
+    'trf', 'ski', 'hat', 'skh', 'clp'
 ]
 
 # Traffic Manager, Skin Flint, Head Attorney, Stock Holder
-notMainTypes = [
+MainBossTypes = [
     'trf', 'ski', 'hat', 'skh'
 ]
 
@@ -43,7 +48,7 @@ suitBTypes = [
 ]
 
 suitCTypes = [
-    'f', 'mm', 'cr', # Bossbot
+    'f', 'mm', 'cr', 'clp', # Bossbot
     'bf', # Lawbot
     'sc', 'tw', 'mb', # Cashbot
     'cc', 'gh', 'skh' # Sellbot
@@ -65,7 +70,8 @@ bossSuitLevel2Difficulty = {
     'trf': {7: 0, 8: 1}, # Traffic Manager
     'ski': {8: 0, 9: 1}, # Skin Flint
     'hat': {10: 0, 11: 1}, # Head Attorney
-    'skh': {12: 0, 13: 1} # Stock Holder
+    'skh': {12: 0, 13: 1}, # Stock Holder
+    'clp': {4: 0, 5: 1} # Club President
 }
 
 suitDeptFullnames = {
@@ -489,6 +495,7 @@ GENERAL_SUIT_VISUALS: Set[SuitVisual] = {
     SuitVisual('ski',  5.65 / bSize,  VBase4(0.5, 0.8, 0.75, 1.0),   None,                        'skinflint.jpg',      'telemarketer',        7.9),
     SuitVisual('hat',  4.4 / bSize,   moneyPolyColor,                None,                        'suit-heads_palette_3cmla_5.jpg',                   ['downsizer', 'downsizer_hat'],         5.95),
     SuitVisual('skh',   4.0 / cSize,   corpPolyColor,                 None,                         None,                   ['stockholder',], 4.88),
+    SuitVisual('clp',  2.5 / cSize,   corpPolyColor,                 None,                         'club_president.jpg',                   'micromanager',        3.25),
 }
 
 SuitClotheParts = ['blazer', 'leg', 'sleeve']
@@ -550,7 +557,8 @@ customSuit2Dept = {
     'trf': 's',
     'ski': 'm',
     'hat': 'l',
-    'skh': 'c'
+    'skh': 'c',
+    'clp': 'c'
 }
 
 customDeptToBossSuit = {

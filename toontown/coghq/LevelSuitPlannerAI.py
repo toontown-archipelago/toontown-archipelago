@@ -80,7 +80,10 @@ class LevelSuitPlannerAI(DirectObject.DirectObject):
         if suitDict['boss']:
             dna.newSuit(SuitDNA.customDeptToBossSuit[suitDict['track']])
         else:
-            dna.newSuitRandom(level=SuitDNA.getRandomSuitType(suitDict['level']), dept=suitDict['track'])
+            if 'name' in suitDict:
+                dna.newSuit(suitDict['name'])
+            else:
+                dna.newSuitRandom(level=SuitDNA.getRandomSuitType(suitDict['level']), dept=suitDict['track'])
         suit.dna = dna
         if suitDict['boss']:
             suit.setLevel(self.getBossLevel(suitDict['track']))
@@ -97,6 +100,8 @@ class LevelSuitPlannerAI(DirectObject.DirectObject):
         suit.generateWithRequired(suitDict['zoneId'])
         suit.boss = suitDict['boss']
         if suit.boss:
+            suit.giveBossName()
+        if suit.dna.name == 'clp':
             suit.giveBossName()
         return suit
     
