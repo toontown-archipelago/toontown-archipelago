@@ -37,6 +37,12 @@ class BouncePacket(ServerBoundPacketBase):
         # If this ends up not being the case, this should be changed to either AP slot ID or toon name
         self.data['source'] = str(toon.getDoId())
 
+    # Call to add arbitrary data to send within this packet
+    def bounce_data(self, slot: int, datatype: List[str], data):
+        self.slots = [slot]
+        self.data["types"] = datatype
+        self.data["content"] = data
+
     def build(self) -> Dict[str, Any]:
         # Return all attributes
         return {

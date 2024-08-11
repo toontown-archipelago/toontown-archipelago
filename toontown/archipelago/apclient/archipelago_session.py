@@ -162,6 +162,12 @@ class ArchipelagoSession:
         ])
         self.avatar.d_sendArchipelagoMessage(msg)
 
+    # Called to bounce arbitrary data to our own slot.
+    def bounce_data(self, datatype: List[str], data):
+        packet = BouncePacket()
+        packet.bounce_data(self.getSlotId(), datatype, data)
+        self.client.send_packet(packet)
+
     """
     Methods to retrieve information about an Archipelago Session
     """

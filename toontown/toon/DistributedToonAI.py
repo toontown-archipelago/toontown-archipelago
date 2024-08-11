@@ -18,7 +18,7 @@ from direct.task import Task
 from toontown.catalog import CatalogItemList
 from toontown.catalog import CatalogItem
 from direct.distributed.ClockDelta import *
-from toontown.fishing import FishCollection, FishTank, FishGlobals, FishBase
+from toontown.fishing import FishCollection, FishTank, FishGlobals
 from .NPCToons import npcFriends, isZoneProtected
 from toontown.coghq import CogDisguiseGlobals
 import random
@@ -4492,6 +4492,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def receiveCheckedLocations(self, locations: List[int]):
         hasCogGalleryChanged = False
         hasFishingCollectionChanged = False
+        RequiresFishingBounce = False
         cogStatus = self.getCogStatus()
         cogCount = self.getCogCount()
         try:
@@ -4524,26 +4525,21 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                     except TypeError: # can't unpack NoneType.
                         self.notify.warning(f"Tried to retrieve location check {location.name.value} as a fish.")
                         continue
-                    fish = FishBase.FishBase(genus, species, FishGlobals.getRandomWeight(genus, species, self.fishingRod))
+                    fish = (genus, species, FishGlobals.getRandomWeight(genus, species, self.fishingRod))
                     if self.fishCollection.getCollectResult(fish) == FishGlobals.COLLECT_NEW_ENTRY:
-                        self.notify.info(f"Adding {location.name.value} as a fish to {self.name}")
+                        self.notify.debug(f"Adding {location.name.value} as a fish to {self.name}")
                         self.fishCollection.collectFish(fish)
                         hasFishingCollectionChanged = True
-
-                # elif location.type == ToontownLocationType.FISHING_GENUS: # each genus
-                #     # I have no idea how to sync this without just using Bounce packets on AP.
-                #     # it might just be the best way to that we have - just will send it on each catch
-                #     pass
-
-                # elif location.type == ToontownLocationType.FISHING_GALLERY: # each 10 fish
-                #     # I have no idea how to sync this without just using Bounce packets on AP.
-                #     # it might just be the best way to that we have - just will send it on each catch
-                #     pass
-
+                elif (location.type == ToontownLocationType.FISHING_GENUS # each genus
+                     or location.type == ToontownLocationType.FISHING_GALLERY): # each 10 fish
+                    RequiresFishingBounce = True
 
             if hasFishingCollectionChanged:
                 collectionNetList = self.fishCollection.getNetLists()
                 self.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
+            if RequiresFishingBounce:
+                self.notify.debug("Sending Bounce packet for types: fishing, request")
+                self.archipelago_session.bounce_data(["fishing", "request"], list(zip(*self.fishCollection.getNetLists())))
             if hasCogGalleryChanged:
                 self.b_setCogCount(cogCount)
                 self.b_setCogStatus(cogStatus)
