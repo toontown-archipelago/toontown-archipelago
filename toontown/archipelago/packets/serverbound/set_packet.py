@@ -5,7 +5,7 @@ from toontown.archipelago.packets.serverbound.serverbound_packet_base import Ser
 
 class DataStorageOperation(TypedDict):
     operation: str
-    value: int
+    value: Any
 
 
 # Used to write data to the server's data storage, that data can then be shared across worlds or just saved for later.
