@@ -19,6 +19,8 @@ from toontown.coghq import CashbotMintPipeRoom_Battle01_Cogs
 
 from toontown.coghq import CashbotMintEntrance_Action00
 from toontown.coghq import CashbotMintBoilerRoom_Action00
+from toontown.coghq import CashbotMintBoilerRoom_Action01
+from toontown.coghq import CashbotMintBoilerRoomDiff_Action01
 from toontown.coghq import CashbotMintBoilerRoomDiff_Action00
 from toontown.coghq import CashbotMintBoilerRoom_Battle00
 from toontown.coghq import CashbotMintDuctRoom_Action00
@@ -86,7 +88,9 @@ CashbotMintSpecModules = {
     24: CashbotMintPaintMixerReward_Battle00,
     25: CashbotMintPipeRoom_Battle01,
     26: CashbotMintBoilerRoomDiff_Action00,
-    27: CashbotMintPipeRoomDiff_Action00
+    27: CashbotMintPipeRoomDiff_Action00,
+    28: CashbotMintBoilerRoom_Action01,
+    29: CashbotMintBoilerRoomDiff_Action01
 }
 
 # Ok don't freak out. What we are doing here is grabbing the name of the module that we imported.
