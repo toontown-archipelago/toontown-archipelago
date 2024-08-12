@@ -27,10 +27,11 @@ def rule(rule: Union[Rule, ItemRule], *argument: Any):
 
 def has_collected_items_for_gag_level(state: CollectionState, player: int, options: ToontownOptions, level: int) -> bool:
     # Determines if a given player has collected a sufficient amount of the XP items in the run.
-    # always returns True if the player has 2 or less XP multis in the pool (aka, assumes they don't care)
+    # always returns True if the player has a difference of less than 5 mult between start and max (aka, assumes they don't care)
     xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
     max_xp = options.max_global_gag_xp.value
-    sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if max_xp > 2 else True
+    start_xp = options.base_global_gag_xp.value
+    sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if (max_xp - start_xp) >= 5 else True
 
     # Check collected gag capacity items too.
     cap = state.count(ToontownItemName.GAG_CAPACITY_5.value, player) + (
