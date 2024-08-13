@@ -526,18 +526,33 @@ def AllFishCaught(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
 @rule(Rule.TaskedAllHoods)
 def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, locentr, world, player, options)
-    hq_access_rules = [
-        Rule.HasTTCHQAccess, Rule.HasDDHQAccess, Rule.HasDGHQAccess, Rule.HasMMLHQAccess, Rule.HasTBHQAccess, Rule.HasDDLHQAccess
-    ]
+    hq_access_to_gag_rule = {
+        Rule.HasTTCHQAccess: Rule.HasLevelTwoOffenseGag,
+        Rule.HasDDHQAccess: Rule.HasLevelThreeOffenseGag,
+        Rule.HasDGHQAccess: Rule.HasLevelFourOffenseGag,
+        Rule.HasMMLHQAccess: Rule.HasLevelFiveOffenseGag,
+        Rule.HasTBHQAccess: Rule.HasLevelSixOffenseGag,
+        Rule.HasDDLHQAccess: Rule.HasLevelSevenOffenseGag
+    }
 
-    access_count = sum(passes_rule(rule, *args) for rule in hq_access_rules)
+    def CountAndGagRule():  # We're doing it this way so that we can grab the gag logic we want based on the highest task pg needed
+        rule_list = list(hq_access_to_gag_rule.keys())
+        access_count = 0
+        gag_rule = None
+        for rule in rule_list:
+            if passes_rule(rule, *args):
+                access_count += 1
+                gag_rule = hq_access_to_gag_rule[rule]
+        return access_count, gag_rule
+
+    access_count, gag_rule = CountAndGagRule()
     task_condition = options.win_condition.value
     if task_condition == 1:  # Complete enough total tasks
         hoods_required = math.ceil(options.total_tasks_required.value / 12)  # How many HQs we need minimum to win!
     elif task_condition == 2:  # Complete enough tasks in each hood
-        hoods_required = len(hq_access_rules)  # We need all of them to win!
+        hoods_required = len(list(hq_access_to_gag_rule.keys()))  # We need all of them to win!
     # Check if we have enough to win.
-    return access_count >= hoods_required and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
+    return access_count >= hoods_required and passes_rule(Rule.CanReachTTC, *args) and passes_rule(gag_rule, *args)  # TECHNICALLY TRUE!
 
 
 @rule(Rule.GainedEnoughLaff)
