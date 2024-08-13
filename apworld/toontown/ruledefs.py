@@ -538,7 +538,7 @@ def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
     def CountAndGagRule():  # We're doing it this way so that we can grab the gag logic we want based on the highest task pg needed
         rule_list = list(hq_access_to_gag_rule.keys())
         access_count = 0
-        gag_rule = None
+        gag_rule = Rule.HasLevelTwoOffenseGag
         for rule in rule_list:
             if passes_rule(rule, *args):
                 access_count += 1
