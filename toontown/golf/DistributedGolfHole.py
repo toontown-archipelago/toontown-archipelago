@@ -1175,7 +1175,10 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
                 return
         self.projLength = self.destFrame[0] - self.sourceFrame[0]
         self.projPen = self.destFrame[0] - self.playbackFrameNum
-        propSource = float(self.projPen) / float(self.projLength)
+        if self.projLength > 0:
+            propSource = float(self.projPen) / float(self.projLength)
+        else:
+            propSource = 0
         propDest = 1.0 - propSource
         projX = self.sourceFrame[1] * propSource + self.destFrame[1] * propDest
         projY = self.sourceFrame[2] * propSource + self.destFrame[2] * propDest
@@ -1192,7 +1195,10 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
                 newAV = Vec3(self.aVSourceFrame[1], self.aVSourceFrame[2], self.aVSourceFrame[3])
         self.projLength = self.aVDestFrame[0] - self.aVSourceFrame[0]
         self.projPen = self.aVDestFrame[0] - self.playbackFrameNum
-        propSource = float(self.projPen) / float(self.projLength)
+        if self.projLength > 0:
+            propSource = float(self.projPen) / float(self.projLength)
+        else:
+            propSource = 0
         propDest = 1.0 - propSource
         projX = self.aVSourceFrame[1] * propSource + self.aVDestFrame[1] * propDest
         projY = self.aVSourceFrame[2] * propSource + self.aVDestFrame[2] * propDest
