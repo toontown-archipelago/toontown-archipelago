@@ -198,7 +198,15 @@ class Rule(Enum):
     CanFightCJ  = auto()
     CanFightCEO = auto()
 
+    ### WIN CONDITION ###
+
     AllBossesDefeated = auto()
+    AllFishCaught = auto()
+    TaskedAllHoods = auto()
+    GainedEnoughLaff = auto()
+    MaxedAllGags = auto()
+
+    CanWinGame = auto()
 
 
 class ItemRule(Enum):
