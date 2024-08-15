@@ -2431,25 +2431,15 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def addMoney(self, deltaMoney):
         money = deltaMoney + self.money
         pocketMoney = min(money, self.maxMoney)
-        self.b_setMoney(pocketMoney)
-        overflowMoney = money - self.maxMoney
-        if overflowMoney > 0:
-            bankMoney = self.bankMoney + overflowMoney
-            self.b_setBankMoney(bankMoney)
+        self.ap_addMoney(deltaMoney)
 
-    def takeMoney(self, deltaMoney, bUseBank=True):
+    def takeMoney(self, deltaMoney, bUseBank=False):
         totalMoney = self.money
-        if bUseBank:
-            totalMoney += self.bankMoney
         if deltaMoney > totalMoney:
             self.notify.warning('Not enough money! AvId: %s Has:%s Charged:%s' % (self.doId, totalMoney, deltaMoney))
             return False
-        if bUseBank and deltaMoney > self.money:
-            self.b_setBankMoney(self.bankMoney - (deltaMoney - self.money))
-            self.b_setMoney(0)
-        else:
-            self.b_setMoney(self.money - deltaMoney)
-        return True
+        self.ap_takeMoney(deltaMoney)
+        self.b_setMoney(self.money - deltaMoney)
 
     def b_setMoney(self, money):
         if bboard.get('autoRich-%s' % self.doId, False):
@@ -2462,19 +2452,16 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def setMoney(self, money):
         if money < 0:
-            simbase.air.writeServerEvent('suspicious', self.doId, 'toon has invalid money %s, forcing to zero' % money)
             money = 0
-            commentStr = 'User %s has negative money %s' % (self.doId, money)
-            dislId = self.DISLid
-            if simbase.config.GetBool('want-ban-negative-money', False):
-                simbase.air.banManager.ban(self.doId, dislId, commentStr)
+        elif money > self.getMaxMoney():
+            money = self.getMaxMoney()
         self.money = money
 
     def getMoney(self):
         return self.money
 
     def getTotalMoney(self):
-        return self.money + self.bankMoney
+        return self.money # Bank is unused, leave it out of any purchase calculations.
 
     def b_setMaxBankMoney(self, maxMoney):
         self.d_setMaxBankMoney(maxMoney)
@@ -4720,32 +4707,55 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setUUID(uuid.uuid4())
 
     # Set and get personal data from AP, actual key in storage will be prefixed with "slot{slot}:"
-    def set_ap_data(self, key, value) -> None:
-        self.archipelago_session.store_personal_data({key: value})
+    def set_ap_data(self, key, value, private) -> None:
+        self.archipelago_session.store_data({key: value}, private)
+
+    def apply_to_ap_data(self, key, ops, private, *, default=0) -> None:
+        self.archipelago_session.apply_ops_on_data(key, ops, private, default=default)
 
     # Requests update and subscribes to changes of stored AP data.
-    def get_ap_data(self, keys) -> None:
+    def get_ap_data(self, keys, private) -> None:
         if isinstance(keys, str):
             keys = [keys]
-        self.archipelago_session.get_personal_data(keys)
-        self.archipelago_session.subscribe_personal_data(keys)
-    
-    def request_default_ap_data(self) -> None:
-        # keys = ["fish-collection", "toon-up", "trap", "lure", "sound", "throw", "squirt", "drop", "cog-gallery", "jellybeans", "tasks"]
-        keys = ["fish-collection", "cog-gallery"]
-        self.get_ap_data(keys)
+        self.archipelago_session.get_data(keys, private)
+        self.archipelago_session.subscribe_data(keys, private)
 
     # Set fish collection and send out to AP.
     # there's a possible race condition with this where it will overwrite if another toon is fishing at the same time.
     def ap_setFishCollection(self, genusList: list[int], speciesList: list[int], weightList: list[int]):
         self.d_setFishCollection(genusList, speciesList, weightList)
         self.notify.debug(f"setting AP fish-collection for {self.getDoId()} to: {[genusList, speciesList, weightList]}" )
-        self.set_ap_data("fish-collection", [genusList, speciesList, weightList])
+        self.set_ap_data("fish-collection", [genusList, speciesList, weightList], True)
 
     def ap_setCogCount(self, cogCountList: List[int]):
         self.b_setCogCount(cogCountList)
         self.notify.debug(f"setting AP cog-gallery for {self.getDoId()} to: {cogCountList}" )
-        self.set_ap_data("cog-gallery", cogCountList)
+        self.set_ap_data("cog-gallery", cogCountList, True)
+
+    # Avoid using this directly unless necessary:
+    # necessary here means the effects of AP rewards
+    def ap_setMoney(self, money):
+        money = min(max(money, 0), self.getMaxMoney()) # Ensure within bounds.
+        self.b_setMoney(money)
+        self.notify.debug(f"setting AP jellybeans for {self.getDoId()} to: {money}" )
+        self.set_ap_data("jellybeans", money, True)
+
+    # Generally called by addMoney
+    def ap_addMoney(self, money):
+        self.notify.debug(f"increasing AP jellybeans for {self.getDoId()} by: {money}" )
+        ops = [("add", money), ("min", self.getMaxMoney())] # Keep stored money below max.
+        self.apply_to_ap_data("jellybeans", ops, True, default=self.slotData.get('starting_money', 50))
+
+    # Generally called by takeMoney
+    def ap_takeMoney(self, money):
+        self.notify.debug(f"decreasing AP jellybeans for {self.getDoId()} by: {money}" )
+        ops = [("add", -money), ("max", 0)] # Keep stored money above 0
+        self.apply_to_ap_data("jellybeans", ops, True, default=self.slotData.get('starting_money', 50))
+
+    def request_default_ap_data(self) -> None:
+        # keys = ["fish-collection", "toon-up", "trap", "lure", "sound", "throw", "squirt", "drop", "cog-gallery", "jellybeans", "tasks"]
+        privateKeys = ["fish-collection", "cog-gallery", "jellybeans"]
+        self.get_ap_data(privateKeys, True)
 
     def handle_ap_data_update(self, data: dict[str,Any]):
     # AP data passed to this in format of a dict: {key: value}
@@ -4793,7 +4803,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                     self.b_setCogCount(cogCount)
 
                 case "jellybeans":
-                    self.notify.debug("unimplemented sync for jellybeans")
+                    if v == self.getMoney():
+                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
+                        continue
+                    self.notify.debug(f"setting local jellybeans to AP provided value: '{v}' for {self.getDoId()}")
+                    self.b_setMoney(v)
 
                 case "tasks":
                     self.notify.debug("unimplemented sync for tasks")

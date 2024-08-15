@@ -19,7 +19,7 @@ class RetrievedPacket(ClientBoundPacketBase):
 
         # Filter the dict for only our private keys specifically,
         # and pass them how the handler expects.
-        realKeys = {i.split(':')[1]:v 
-                    for i, v in self.keys.items() 
+        realKeys = {i.split(':')[1]:v
+                    for i, v in self.keys.items()
                     if i.startswith(f'slot{client.slot}:')}
         client.av.handle_ap_data_update(realKeys)

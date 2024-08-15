@@ -171,35 +171,46 @@ class ArchipelagoSession:
         packet.bounce_data(self.avatar, self.getSlotId(), datatype, data)
         self.client.send_packet(packet)
 
-    # Store data using a key intended to prevent collisions with other slots
-    def store_personal_data(self, data: dict[str,Any]):
+    # Store data - optionally specific to this slot.
+    def store_data(self, data: dict[str,Any], private=True):
+        if private:
+            data = {f"slot{str(self.client.slot)}:{k}":v for k,v in data.items()}
         packets = []
         for k,v in data.items():
-            if ':' in k:
-                raise ValueError(f"data key {k} must not contain any ':'")
             packet = SetPacket()
             packet.operations.append(DataStorageOperation(operation="replace", value=v))
             packet.key= f"slot{str(self.client.slot)}:{k}"
             packets.append(packet)
         self.client.send_packets(packets)
 
-    # Get data using a key used by the above function.
-    def get_personal_data(self, keys: list[str]):
+    # Get data - optionally specific to this slot
+    def get_data(self, keys: list[str], private=False):
+        if private:
+            keys = [f"slot{str(self.client.slot)}:{i}" for i in keys]
         packet = GetPacket()
-        for i in keys:
-            if ':' in i:
-                raise ValueError(f"data key {i} must not contain any ':'")
-            packet.keys.append(f"slot{str(self.client.slot)}:{i}")
+        packet.keys = keys
         self.client.send_packet(packet)
 
     # Request to be sent the stored data if it changes.
-    def subscribe_personal_data(self, keys: list[str]):
+    def subscribe_data(self, keys: list[str], private=False):
+        if private:
+            keys = [f"slot{str(self.client.slot)}:{i}" for i in keys]
         packet = SetNotifyPacket()
-        for i in keys:
-            if ':' in i:
-                raise ValueError(f"data key {i} must not contain any ':'")
-            packet.keys.append(f"slot{str(self.client.slot)}:{i}")
+        packet.keys = keys
         self.client.send_packet(packet)
+
+    # Apply multiple operations on stored archipelago data.
+    # Most useful for syncing jellybeans and gag xp.
+    def apply_ops_on_data(self, key: str, ops: list[tuple[str, Any]], private=False, *, default=0):
+        packet = SetPacket()
+        packet.key = key
+        if private:
+            packet.key = f"slot{str(self.client.slot)}:{key}"
+        for op, value in ops:
+            packet.operations.append(DataStorageOperation(operation=op, value=value))
+        packet.default=default
+        self.client.send_packet(packet)
+
 
     """
     Methods to retrieve information about an Archipelago Session
