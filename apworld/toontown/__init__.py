@@ -478,6 +478,9 @@ class ToontownWorld(World):
             forbidden_location_types.add(ToontownLocationType.FISHING_GALLERY)
 
         tpl = self.options.treasures_per_location.value
+        # If treasures are 0, but our tp sanity is treasures; let's make it one to avoid crashes on gen
+        if tpl == 0 and self.options.tpsanity.value == TPSanity.option_treasure:
+            tpl = 1
         rev_locs = TREASURE_LOCATION_TYPES[::-1]
         for i in range(len(rev_locs) - tpl):
             forbidden_location_types.add(rev_locs[i])

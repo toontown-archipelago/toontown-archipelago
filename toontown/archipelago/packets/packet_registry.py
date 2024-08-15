@@ -12,6 +12,7 @@ from toontown.archipelago.packets.clientbound.room_update_packet import RoomUpda
 from toontown.archipelago.packets.clientbound.set_reply_packet import SetReplyPacket
 from toontown.archipelago.packets.serverbound.bounce_packet import BouncePacket
 from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacket
+from toontown.archipelago.packets.serverbound.connect_update_packet import ConnectUpdatePacket
 from toontown.archipelago.packets.serverbound.get_data_package_packet import GetDataPackagePacket
 from toontown.archipelago.packets.serverbound.get_packet import GetPacket
 from toontown.archipelago.packets.serverbound.location_checks_packet import LocationChecksPacket
@@ -40,6 +41,7 @@ PACKET_CMD_TO_CLASS = {
 
     # Client -> Server packets
     'Connect': ConnectPacket,
+    'ConnectUpdate': ConnectUpdatePacket,
     'Sync': SyncPacket,
     'LocationChecks': LocationChecksPacket,
     'LocationScouts': LocationScoutsPacket,

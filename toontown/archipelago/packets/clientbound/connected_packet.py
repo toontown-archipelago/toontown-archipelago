@@ -7,6 +7,8 @@ from apworld.toontown.fish import FishProgression
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
+from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacket
+from toontown.archipelago.packets.serverbound.connect_update_packet import ConnectUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 from toontown.fishing import FishGlobals
@@ -139,6 +141,12 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Get overflow modifier
         overflowMod = self.slot_data.get('overflow_mod', 100)
         av.b_setOverflowMod(overflowMod)
+
+        # Update Deathlink Tag.
+        if self.slot_data.get('deathlink', False):
+            packet = ConnectUpdatePacket()
+            packet.tags = [ConnectPacket.TAG_DEATHLINK]
+            av.archipelago_session.client.send_packet(packet)
 
     def handle(self, client):
         self.debug(f"Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"

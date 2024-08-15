@@ -2707,7 +2707,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 self.toonUp(msgValue)
             self.notify.debug('Toon-up for ' + self.name)
         elif msgType == ResistanceChat.RESISTANCE_RESTOCK:
-            self.inventory.maxInventory(maxGagLevel=msgValue)
+            self.inventory.maxInventory(mode=InventoryBase.InventoryBase.FillMode.POWER, maxGagLevel=msgValue)
             self.d_setInventory(self.inventory.makeNetString())
             self.notify.debug('Restock for ' + self.name)
         elif msgType == ResistanceChat.RESISTANCE_MONEY:
