@@ -4766,8 +4766,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def request_default_ap_data(self) -> None:
         # keys currently unused = ["tasks"]
-        privateKeys = ["fish-collection", "cog-gallery", "jellybeans"]
-        privateKeys.extend(ToontownBattleGlobals.Tracks)
+        privateKeys = ["fish-collection", "cog-gallery"]
+        if self.slotData.get("slot_sync_jellybeans", True):
+            privateKeys.append("jellybeans")
+        if self.slotData.get("slot_sync_gag_experience", True): 
+            privateKeys.extend(ToontownBattleGlobals.Tracks)
         self.get_ap_data(privateKeys, True)
 
     # AP datastore updates passed to this in form of a dict.
