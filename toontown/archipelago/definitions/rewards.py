@@ -699,7 +699,7 @@ class GagExpBundleAward(APReward):
             currentCap = min(av.experience.getExperienceCapForTrack(index), ToontownBattleGlobals.regMaxSkill)
             exptoAdd = math.ceil(currentCap * (self.amount/100))
             av.experience.addExp(index, exptoAdd)
-        av.b_setExperience(av.experience.getCurrentExperience())
+        av.ap_setExperience(av.experience.getCurrentExperience())
         # now check for win condition since we have one for maxxed gags
         av.checkWinCondition()
 

@@ -4752,13 +4752,26 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         ops = [("add", -money), ("max", 0)] # Keep stored money above 0
         self.apply_to_ap_data("jellybeans", ops, True, default=self.slotData.get('starting_money', 50))
 
+    # Mirrors Experience.addExp
+    def ap_addExperience(self, track, amount):
+        self.experience.addExp(track, amount)
+        self.notify.debug(f"{self.getDoId()} is increasing {ToontownBattleGlobals.Tracks[track]} by: {amount}" )
+        self.apply_to_ap_data(ToontownBattleGlobals.Tracks[track], [("add", amount), ('min', self.experience.getExperienceCapForTrack(track))], True)
+
+    # Mirrors setExperience for syncing, avoid directly unless necessary, as with setMoney above.
+    def ap_setExperience(self, experience: list[int]):
+        self.b_setExperience(experience)
+        for i, track in enumerate(ToontownBattleGlobals.Tracks):
+            self.set_ap_data(track, self.experience.getExp(i), True)
+
     def request_default_ap_data(self) -> None:
-        # keys = ["fish-collection", "toon-up", "trap", "lure", "sound", "throw", "squirt", "drop", "cog-gallery", "jellybeans", "tasks"]
+        # keys currently unused = ["tasks"]
         privateKeys = ["fish-collection", "cog-gallery", "jellybeans"]
+        privateKeys.extend(ToontownBattleGlobals.Tracks)
         self.get_ap_data(privateKeys, True)
 
+    # AP datastore updates passed to this in form of a dict.
     def handle_ap_data_update(self, data: dict[str,Any]):
-    # AP data passed to this in format of a dict: {key: value}
         for k,v in data.items():
             if v is None:
                 self.notify.debug(f"Ignoring empty ap data for key {k} for toon {self.getDoId()}")
@@ -4777,8 +4790,13 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                     collectionNetList = self.fishCollection.getNetLists()
                     self.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
 
-                case "toon-up" | "trap" | "lure" | "sound" | "throw" | "squirt" | "drop":
-                    self.notify.debug("unimplemented sync for gag xp.")
+                case track if track in ToontownBattleGlobals.Tracks:
+                    trackIndex = ToontownBattleGlobals.Tracks.index(k)
+                    if v <= self.experience.getExp(trackIndex):
+                        self.notify.debug(f"value of {k} unchanged or decreased for {self.getDoId()}")
+                        continue
+                    self.experience.setExp(trackIndex, v)
+                    self.b_setExperience(self.experience.getCurrentExperience())
 
                 case "cog-gallery":
                     if v == self.getCogCount():
