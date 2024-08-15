@@ -59,19 +59,6 @@ class BouncedPacket(ClientBoundPacketBase):
         ])
         toon.d_sendArchipelagoMessage(msg)
 
-    # Handle a packet containing a fishing collection from a toon.
-    def handle_fishing_collection(self, client, request=False):
-        self.debug("recieved fishing packet.")
-        for i in self.data.get("content"):
-            client.av.fishCollection.collectFish(i)
-        collectionNetList = client.av.fishCollection.getNetLists()
-        client.av.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
-        if request:
-            self.debug("Sending reply fishing packet.")
-            packet = BouncePacket()
-            packet.bounce_data(client.av, client.slot, ["fishing"], list(zip(*collectionNetList)))
-            client.send_packet(packet)
-
 
     def handle(self, client):
         self.debug("Handling packet")
@@ -89,8 +76,3 @@ class BouncedPacket(ClientBoundPacketBase):
         if isinstance(self.tags, list) and ConnectPacket.TAG_DEATHLINK in self.tags:
             self.handle_deathlink(client)
             return
-
-        if isinstance(self.slots, List) and client.slot in self.slots: # likely to be a bounced packet from this slot.
-            datatypes = self.data.get("types", [])
-            if "fishing" in datatypes:
-                self.handle_fishing_collection(client, 'request' in datatypes)

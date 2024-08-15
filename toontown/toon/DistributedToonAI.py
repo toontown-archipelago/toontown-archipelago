@@ -41,9 +41,6 @@ from toontown.toonbase import ToontownAccessAI
 from toontown.catalog import CatalogAccessoryItem
 from . import ModuleListAI
 
-from apworld.toontown.fish import LOCATION_TO_GENUS_SPECIES
-from apworld.toontown.locations import ToontownLocationType
-from toontown.archipelago.definitions.util import ap_location_to_cog_code, ap_location_to_definition
 from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
 from ..archipelago.apclient.distributed_toon_apmessage_queue import DistributedToonAPMessageQueue
 from ..archipelago.apclient.distributed_toon_reward_queue import DistributedToonRewardQueue
@@ -2440,6 +2437,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             return False
         self.ap_takeMoney(deltaMoney)
         self.b_setMoney(self.money - deltaMoney)
+        return True
 
     def b_setMoney(self, money):
         if bboard.get('autoRich-%s' % self.doId, False):
