@@ -527,18 +527,18 @@ def AllFishCaught(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
 def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     hq_access_to_gag_rule = {
-        Rule.HasTTCHQAccess: Rule.HasLevelTwoOffenseGag,
-        Rule.HasDDHQAccess: Rule.HasLevelThreeOffenseGag,
-        Rule.HasDGHQAccess: Rule.HasLevelFourOffenseGag,
-        Rule.HasMMLHQAccess: Rule.HasLevelFiveOffenseGag,
-        Rule.HasTBHQAccess: Rule.HasLevelSixOffenseGag,
-        Rule.HasDDLHQAccess: Rule.HasLevelSevenOffenseGag
+        Rule.HasTTCHQAccess: Rule.HasLevelOneOffenseGag,
+        Rule.HasDDHQAccess: Rule.HasLevelTwoOffenseGag,
+        Rule.HasDGHQAccess: Rule.HasLevelThreeOffenseGag,
+        Rule.HasMMLHQAccess: Rule.HasLevelFourOffenseGag,
+        Rule.HasTBHQAccess: Rule.HasLevelFiveOffenseGag,
+        Rule.HasDDLHQAccess: Rule.HasLevelSixOffenseGag
     }
 
     def CountAndGagRule():  # We're doing it this way so that we can grab the gag logic we want based on the highest task pg needed
         rule_list = list(hq_access_to_gag_rule.keys())
         access_count = 0
-        gag_rule = Rule.HasLevelTwoOffenseGag
+        gag_rule = Rule.HasLevelOneOffenseGag
         for rule in rule_list:
             if passes_rule(rule, *args):
                 access_count += 1
