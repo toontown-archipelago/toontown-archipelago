@@ -3,7 +3,8 @@ import json
 from typing import Union, Any
 
 from direct.showbase.MessengerGlobal import messenger
-
+import os
+import sys
 # Valid types for a setting.
 ControlSetting = dict[str, str]
 Setting = Union[str, int, bool, list, float, ControlSetting]
@@ -67,8 +68,16 @@ class Settings:
         "archipelago-textsize": 0.5,
         "color-blind-mode": False,
     }
-
-    settingsFile = "settings.json"
+    # save the settings file to documents/Toontown Archipelago (windows is C:/Users/username/Documents/Toontown Archipelago, both mac and linux are ~/Documents
+    if sys.platform == 'darwin' or sys.platform.startswith('linux'):
+        settingsDir = os.path.expanduser("~/Documents/Toontown Archipelago")
+    elif sys.platform == 'win32':
+        settingsDir = os.path.join(os.environ['USERPROFILE'], 'Documents', 'Toontown Archipelago')
+    else:
+        settingsDir = os.getcwd()        
+    if not os.path.exists(settingsDir):
+        os.makedirs(settingsDir)
+    settingsFile = os.path.join(settingsDir, 'settings.json')
 
     def __init__(self) -> None:
         try:
