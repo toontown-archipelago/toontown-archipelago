@@ -1,10 +1,9 @@
 from dataclasses import asdict, dataclass
 import json
 from typing import Union, Any
+from pathlib import Path
 
 from direct.showbase.MessengerGlobal import messenger
-import os
-import sys
 # Valid types for a setting.
 ControlSetting = dict[str, str]
 Setting = Union[str, int, bool, list, float, ControlSetting]
@@ -68,22 +67,15 @@ class Settings:
         "archipelago-textsize": 0.5,
         "color-blind-mode": False,
     }
-    # save the settings file to documents/Toontown Archipelago (windows is C:/Users/username/Documents/Toontown Archipelago, both mac and linux are ~/Documents
-    if sys.platform == 'darwin' or sys.platform.startswith('linux'):
-        settingsDir = os.path.expanduser("~/Documents/Toontown Archipelago")
-    elif sys.platform == 'win32':
-        settingsDir = os.path.join(os.environ['USERPROFILE'], 'Documents', 'Toontown Archipelago')
-    else:
-        settingsDir = os.getcwd()        
-    if not os.path.exists(settingsDir):
-        os.makedirs(settingsDir)
-    settingsFile = os.path.join(settingsDir, 'settings.json')
+    settingsFile = Path.home() / "Documents" / "Toontown Archipelago" / "settings.json"
+
 
     def __init__(self) -> None:
         try:
-            with open(self.settingsFile) as f:
+            with self.settingsFile.open(encoding='utf-8') as f:
                 self._settings = json.load(f)
         except FileNotFoundError:
+            self.settingsFile.parent.mkdir(parents=True, exist_ok=True)
             self._settings = self.defaultSettings.copy()
         except Exception as e:
             raise e
@@ -119,7 +111,7 @@ class Settings:
         self.set("controls", asdict(self.controls))
 
     def write(self) -> None:
-        with open(self.settingsFile, "w") as _settings:
+        with self.settingsFile.open("w", encoding='utf-8') as _settings:
             # Clean the settings dictionary before saving it to the file.
             self.clean()
             json.dump(self._settings, _settings, sort_keys=True, indent=4)
