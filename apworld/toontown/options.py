@@ -352,8 +352,9 @@ class GolfingOption(Toggle):
 class SyncJellybeans(Toggle):
     """
     Enable to sync Jellybeans between toons on the same slot.
-    Even if you aren't using multiple toons in the same slot,
+    Even if you aren't using multiple toons,
     leaving this on will retain your jellybeans if you need to make a new toon to reconnect.
+    If this is 'false', the data will still be sent, but your toon will not sync with it.
     """
     display_name = "Sync Jellybeans"
     default = True
@@ -361,8 +362,9 @@ class SyncJellybeans(Toggle):
 class SyncGagExp(Toggle):
     """
     Enable to sync Gag Experience between toons on the same slot.
-    Even if you aren't using multiple toons in the same slot,
+    Even if you aren't using multiple toons,
     leaving this on will retain your gag experience if you need to make a new toon to reconnect.
+    If this is 'false', the data will still be sent, but your toon will not sync with it.
     """
     display_name = "Sync Gag Experience"
     default = True
