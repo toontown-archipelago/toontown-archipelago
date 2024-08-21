@@ -142,12 +142,6 @@ class ConnectedPacket(ClientBoundPacketBase):
         overflowMod = self.slot_data.get('overflow_mod', 100)
         av.b_setOverflowMod(overflowMod)
 
-        # Update Deathlink Tag.
-        if self.slot_data.get('deathlink', False):
-            packet = ConnectUpdatePacket()
-            packet.tags = [ConnectPacket.TAG_DEATHLINK]
-            av.archipelago_session.client.send_packet(packet)
-
     def handle(self, client):
         self.debug(f"Successfully connected to the Archipelago server as {self.get_slot_info(self.slot).name}"
               f" playing {self.get_slot_info(self.slot).game}")
@@ -195,6 +189,12 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Checks Page Variables
         client.av.hintPoints = self.hint_points
         client.av.totalChecks = len(self.missing_locations) + len(self.checked_locations)
+
+        # Update Deathlink Tag.
+        if self.slot_data.get('death_link', False):
+            update_packet = ConnectUpdatePacket()
+            update_packet.tags = [ConnectPacket.TAG_DEATHLINK]
+            client.send_packet(update_packet)
 
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)

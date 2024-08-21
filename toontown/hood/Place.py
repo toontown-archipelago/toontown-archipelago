@@ -589,6 +589,9 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
     def enterTunnelIn(self, requestStatus):
         self.notify.debug('enterTunnelIn(requestStatus=' + str(requestStatus) + ')')
         tunnelOrigin = base.render.find(requestStatus['tunnelName'])
+        if tunnelOrigin.isEmpty():
+            # start a task to try again in the future
+            taskMgr.doMethodLater(1.0, self.enterTunnelIn, 'retryTunnelIn', extraArgs=[requestStatus])
         self.accept('tunnelInMovieDone', self.__tunnelInMovieDone)
         base.localAvatar.reconsiderCheesyEffect()
         base.localAvatar.tunnelIn(tunnelOrigin)
