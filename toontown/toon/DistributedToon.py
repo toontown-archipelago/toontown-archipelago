@@ -823,10 +823,11 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def b_setTunnelIn(self, endX, tunnelOrigin):
         timestamp = globalClockDelta.getFrameNetworkTime()
-        pos = tunnelOrigin.getPos(render)
-        h = tunnelOrigin.getH(render)
-        self.setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
-        self.d_setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
+        if not tunnelOrigin.isEmpty():
+            pos = tunnelOrigin.getPos(render)
+            h = tunnelOrigin.getH(render)
+            self.setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
+            self.d_setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
 
     def d_setTunnelIn(self, timestamp, endX, x, y, z, h):
         self.sendUpdate('setTunnelIn', [timestamp,
