@@ -1,5 +1,6 @@
 import math
-from typing import List, Tuple, Union
+import uuid
+from typing import List, Tuple, Union, Any
 
 from otp.ai.AIBaseGlobal import *
 from otp.otpbase import OTPGlobals
@@ -18,8 +19,7 @@ from direct.task import Task
 from toontown.catalog import CatalogItemList
 from toontown.catalog import CatalogItem
 from direct.distributed.ClockDelta import *
-from toontown.fishing import FishCollection
-from toontown.fishing import FishTank
+from toontown.fishing import FishCollection, FishTank, FishGlobals
 from .NPCToons import npcFriends, isZoneProtected
 from toontown.coghq import CogDisguiseGlobals
 import random
@@ -225,6 +225,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.hasPaidTaxes = False
 
         # Archipelago Stuff
+        self.__uuid = None # UUID used to ensure we don't reply to our own packets.
         self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
         self.baseGagSkillMultiplier = 1  # Multiplicative stacking gag xp multiplier to consider
         self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
@@ -2427,24 +2428,15 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def addMoney(self, deltaMoney):
         money = deltaMoney + self.money
         pocketMoney = min(money, self.maxMoney)
-        self.b_setMoney(pocketMoney)
-        overflowMoney = money - self.maxMoney
-        if overflowMoney > 0:
-            bankMoney = self.bankMoney + overflowMoney
-            self.b_setBankMoney(bankMoney)
+        self.ap_addMoney(deltaMoney)
 
-    def takeMoney(self, deltaMoney, bUseBank=True):
+    def takeMoney(self, deltaMoney, bUseBank=False):
         totalMoney = self.money
-        if bUseBank:
-            totalMoney += self.bankMoney
         if deltaMoney > totalMoney:
             self.notify.warning('Not enough money! AvId: %s Has:%s Charged:%s' % (self.doId, totalMoney, deltaMoney))
             return False
-        if bUseBank and deltaMoney > self.money:
-            self.b_setBankMoney(self.bankMoney - (deltaMoney - self.money))
-            self.b_setMoney(0)
-        else:
-            self.b_setMoney(self.money - deltaMoney)
+        self.ap_takeMoney(deltaMoney)
+        self.b_setMoney(self.money - deltaMoney)
         return True
 
     def b_setMoney(self, money):
@@ -2458,19 +2450,16 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def setMoney(self, money):
         if money < 0:
-            simbase.air.writeServerEvent('suspicious', self.doId, 'toon has invalid money %s, forcing to zero' % money)
             money = 0
-            commentStr = 'User %s has negative money %s' % (self.doId, money)
-            dislId = self.DISLid
-            if simbase.config.GetBool('want-ban-negative-money', False):
-                simbase.air.banManager.ban(self.doId, dislId, commentStr)
+        elif money > self.getMaxMoney():
+            money = self.getMaxMoney()
         self.money = money
 
     def getMoney(self):
         return self.money
 
     def getTotalMoney(self):
-        return self.money + self.bankMoney
+        return self.money # Bank is unused, leave it out of any purchase calculations.
 
     def b_setMaxBankMoney(self, maxMoney):
         self.d_setMaxBankMoney(maxMoney)
@@ -4486,6 +4475,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if self.archipelago_session:
             self.archipelago_session.complete_checks(self.checkedLocations)
 
+    # Called when recieving locations from Archipelago.
+    def receiveCheckedLocations(self, locations: List[int]):
+        self.addCheckedLocations(locations)
+
+
+
     # Called to announce to Archipelago that we need to know what this location ID is so we can receive
     # A LocationInfo packet and keep track of it
     def scoutLocation(self, location: int):
@@ -4635,6 +4630,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setCheckedLocations([])
         self.b_setReceivedItems([])
         self.b_setAccessKeys([])
+        
+        # Regenerate the toon's UUID used for archipelago connections.
+        self.regenerateUUID()
 
     def APVictory(self):
         if self.archipelago_session:
@@ -4684,6 +4682,157 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def getWinCondition(self) -> WinCondition:
         return self.winCondition
+    
+    # UUID for use with archipelago, stored in the toon for use as an identifier.
+    def getUUID(self) -> str:
+        return str(self.__uuid)
+
+    def setUUID(self, toonUUID: str) -> None:
+        if toonUUID == '':
+            self.notify.debug(f"toon with id {self.getDoId()} did not have a UUID defined in the database, defining one now to avoid errors.")
+            self.regenerateUUID()
+            return
+        self.__uuid = uuid.UUID(toonUUID)
+
+    def d_setUUID(self, toonUUID: str) -> None:
+        self.sendUpdate('setUUID', [toonUUID])
+
+    def b_setUUID(self, toonUUID) -> None:
+        self.d_setUUID(str(toonUUID))
+        self.setUUID(str(toonUUID))
+
+    def regenerateUUID(self) -> None:
+        self.b_setUUID(uuid.uuid4())
+
+    # Set and get personal data from AP, actual key in storage will be prefixed with "slot{slot}:"
+    def set_ap_data(self, key, value, private) -> None:
+        self.archipelago_session.store_data({key: value}, private)
+
+    def apply_to_ap_data(self, key, ops, private, *, default=0) -> None:
+        self.archipelago_session.apply_ops_on_data(key, ops, private, default=default)
+
+    # Requests update and subscribes to changes of stored AP data.
+    def get_ap_data(self, keys, private) -> None:
+        if isinstance(keys, str):
+            keys = [keys]
+        self.archipelago_session.get_data(keys, private)
+        self.archipelago_session.subscribe_data(keys, private)
+
+    # Set fish collection and send out to AP.
+    # there's a possible race condition with this where it will overwrite if another toon is fishing at the same time.
+    def ap_setFishCollection(self, genusList: list[int], speciesList: list[int], weightList: list[int]):
+        self.d_setFishCollection(genusList, speciesList, weightList)
+        self.notify.debug(f"setting AP fish-collection for {self.getDoId()} to: {[genusList, speciesList, weightList]}" )
+        self.set_ap_data("fish-collection", [genusList, speciesList, weightList], True)
+
+    def ap_setCogCount(self, cogCountList: List[int]):
+        self.b_setCogCount(cogCountList)
+        self.notify.debug(f"setting AP cog-gallery for {self.getDoId()} to: {cogCountList}" )
+        self.set_ap_data("cog-gallery", cogCountList, True)
+
+    # Avoid using this directly unless necessary:
+    # necessary here means the effects of AP rewards
+    def ap_setMoney(self, money):
+        money = min(max(money, 0), self.getMaxMoney()) # Ensure within bounds.
+        self.b_setMoney(money)
+        self.notify.debug(f"setting AP jellybeans for {self.getDoId()} to: {money}" )
+        self.set_ap_data("jellybeans", money, True)
+
+    # Generally called by addMoney
+    def ap_addMoney(self, money):
+        self.notify.debug(f"increasing AP jellybeans for {self.getDoId()} by: {money}" )
+        ops = [("add", money), ("min", self.getMaxMoney())] # Keep stored money below max.
+        self.apply_to_ap_data("jellybeans", ops, True, default=self.slotData.get('starting_money', 50))
+
+    # Generally called by takeMoney
+    def ap_takeMoney(self, money):
+        self.notify.debug(f"decreasing AP jellybeans for {self.getDoId()} by: {money}" )
+        ops = [("add", -money), ("max", 0)] # Keep stored money above 0
+        self.apply_to_ap_data("jellybeans", ops, True, default=self.slotData.get('starting_money', 50))
+
+    # Mirrors Experience.addExp
+    def ap_addExperience(self, track, amount):
+        self.experience.addExp(track, amount)
+        self.notify.debug(f"{self.getDoId()} is increasing {ToontownBattleGlobals.Tracks[track]} by: {amount}" )
+        self.apply_to_ap_data(ToontownBattleGlobals.Tracks[track], [("add", amount), ('min', self.experience.getExperienceCapForTrack(track))], True)
+
+    # Mirrors setExperience for syncing, avoid directly unless necessary, as with setMoney above.
+    def ap_setExperience(self, experience: list[int]):
+        self.b_setExperience(experience)
+        for i, track in enumerate(ToontownBattleGlobals.Tracks):
+            self.set_ap_data(track, self.experience.getExp(i), True)
+
+    def request_default_ap_data(self) -> None:
+        # keys currently unused = ["tasks"]
+        privateKeys = ["fish-collection", "cog-gallery"]
+        if self.slotData.get("slot_sync_jellybeans", True):
+            privateKeys.append("jellybeans")
+        if self.slotData.get("slot_sync_gag_experience", True): 
+            privateKeys.extend(ToontownBattleGlobals.Tracks)
+        self.get_ap_data(privateKeys, True)
+
+    # AP datastore updates passed to this in form of a dict.
+    def handle_ap_data_update(self, data: dict[str,Any]):
+        for k,v in data.items():
+            if v is None:
+                self.notify.debug(f"Ignoring empty ap data for key {k} for toon {self.getDoId()}")
+                continue
+            self.notify.debug(f"Handling incoming ap data for key {k} for toon {self.getDoId()}")
+            match k:
+                case "fish-collection":
+                    if v == self.fishCollection.getNetLists():
+                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
+                        continue
+                    # Getting data from here assumes AP already tracked it.
+                    # The client that set the data should have gotten any location checks for it when it was sent.
+                    # Possiblity you might need to catch any fish to update it if you skip past a check, somehow.
+                    for i in zip(*v):
+                        self.fishCollection.collectFish(i)
+                    collectionNetList = self.fishCollection.getNetLists()
+                    self.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
+
+                case track if track in ToontownBattleGlobals.Tracks:
+                    trackIndex = ToontownBattleGlobals.Tracks.index(k)
+                    if v <= self.experience.getExp(trackIndex):
+                        self.notify.debug(f"value of {k} unchanged or decreased for {self.getDoId()}")
+                        continue
+                    self.experience.setExp(trackIndex, v)
+                    self.b_setExperience(self.experience.getCurrentExperience())
+
+                case "cog-gallery":
+                    if v == self.getCogCount():
+                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
+                        continue
+                    # Getting data from here assumes AP already tracked it.
+                    # Should be the case, this can"t add more cogs than any toon had individually.
+                    cogCount = self.getCogCount()
+                    cogStatus = self.getCogStatus()
+                    for suitIndex, count in enumerate(v):
+                        # Ensure we don't overwrite if any are already higher than what was sent to us.
+                        cogCount[suitIndex] = max(cogCount[suitIndex], count)
+                        if cogCount[suitIndex] >= 1: # Don't mark cogs with a count of 0 as defeated.
+                            cogStatus[suitIndex] = CogPageGlobals.COG_DEFEATED
+                            cogQuota = CogPageGlobals.get_min_cog_quota(self)
+                            cogMaxQuota = CogPageGlobals.get_max_cog_quota(self)
+                            if cogQuota <= cogCount[suitIndex] < cogMaxQuota:
+                                cogStatus[suitIndex] = CogPageGlobals.COG_COMPLETE1
+                            else:
+                                cogStatus[suitIndex] = CogPageGlobals.COG_COMPLETE2
+                    self.b_setCogStatus(cogStatus)
+                    self.b_setCogCount(cogCount)
+
+                case "jellybeans":
+                    if v == self.getMoney():
+                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
+                        continue
+                    self.notify.debug(f"setting local jellybeans to AP provided value: '{v}' for {self.getDoId()}")
+                    self.b_setMoney(v)
+
+                case "tasks":
+                    self.notify.debug("unimplemented sync for tasks")
+
+                case _:
+                    self.notify.debug(f"Recieved Unknown key: {k}")
 
     # Magic word stuff
     def setMagicDNA(self, dnaString):

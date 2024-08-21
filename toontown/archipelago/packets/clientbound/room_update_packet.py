@@ -36,9 +36,18 @@ class RoomUpdatePacket(RoomInfoPacket, ConnectedPacket):
         new_hint_points = self.hint_points
         av.hintPoints = new_hint_points
 
+    def handle_checked_locations_update(self, av):
+        # Packet did not contain checked locations, nothing to update.
+        if self.checked_locations is None:
+            return
+        
+        av.receiveCheckedLocations(self.checked_locations)
+
     def handle(self, client):
 
         self.debug("Handling packet")
 
         # Attempt to handle a hint point update if this packet contains one
         self.handle_hint_points_update(client.av)
+        self.handle_checked_locations_update(client.av)
+

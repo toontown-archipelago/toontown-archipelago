@@ -349,6 +349,25 @@ class GolfingOption(Toggle):
     default = False
 
 
+class SyncJellybeans(Toggle):
+    """
+    Enable to sync Jellybeans between toons on the same slot.
+    Even if you aren't using multiple toons in the same slot,
+    leaving this on will retain your jellybeans if you need to make a new toon to reconnect.
+    """
+    display_name = "Sync Jellybeans"
+    default = True
+
+class SyncGagExp(Toggle):
+    """
+    Enable to sync Gag Experience between toons on the same slot.
+    Even if you aren't using multiple toons in the same slot,
+    leaving this on will retain your gag experience if you need to make a new toon to reconnect.
+    """
+    display_name = "Sync Gag Experience"
+    default = True
+
+
 class SeedGenerationTypeOption(Choice):
     """
     Type of seeding to use when RNG checks happen in game.
@@ -460,6 +479,8 @@ class ToontownOptions(PerGameCommonOptions):
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression
+    slot_sync_jellybeans: SyncJellybeans
+    slot_sync_gag_experience: SyncGagExp
     racing_logic: RacingOption
     minigolf_logic: GolfingOption
     seed_generation_type: SeedGenerationTypeOption

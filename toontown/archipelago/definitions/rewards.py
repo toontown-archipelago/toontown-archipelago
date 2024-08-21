@@ -540,7 +540,7 @@ class JellybeanReward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.addMoney(self.amount)
+        av.ap_setMoney(av.getMoney() + self.amount)
 
 
 class UberTrapAward(APReward):
@@ -596,14 +596,14 @@ class BeanTaxTrapAward(APReward):
 
         if self.getPassed(avMoney):
             av.b_setHasPaidTaxes(True)
-            av.takeMoney(self.tax, bUseBank=False)
+            av.ap_setMoney(max(avMoney - self.tax, 0))
             av.playSound('phase_4/audio/sfx/tax_paid.ogg')
             av.d_broadcastHpString("TAXES PAID!", (.35, .7, .35))
             av.d_playEmote(EmoteFuncDict['Happy'], 1)
         else:
             av.b_setHasPaidTaxes(False)
             if av.getMoney() >= 100:
-                av.b_setMoney(100)
+                av.ap_setMoney(100)
             damage = av.getHp() - 1
             if av.getHp() > 0:
                 av.takeDamage(damage)
@@ -699,7 +699,7 @@ class GagExpBundleAward(APReward):
             currentCap = min(av.experience.getExperienceCapForTrack(index), ToontownBattleGlobals.regMaxSkill)
             exptoAdd = math.ceil(currentCap * (self.amount/100))
             av.experience.addExp(index, exptoAdd)
-        av.b_setExperience(av.experience.getCurrentExperience())
+        av.ap_setExperience(av.experience.getCurrentExperience())
         # now check for win condition since we have one for maxxed gags
         av.checkWinCondition()
 

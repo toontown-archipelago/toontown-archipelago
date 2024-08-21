@@ -103,7 +103,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 self.notify.warning('somebody called petAdopted on a non-existent pet! avId: %s' % avId)
                 return
             cost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
-            if cost > av.getTotalMoney():
+            if cost > av.getMoney():
                 self.air.writeServerEvent('suspicious', avId, "DistributedNPCPetshopAI.petAdopted and toon doesn't have enough money!")
                 self.notify.warning("somebody called petAdopted and didn't have enough money to adopt! avId: %s" % avId)
                 return
@@ -120,10 +120,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
             else:
                 self.transactionType = 'checked'
                 return
-            bankPrice = min(av.getBankMoney(), cost)
-            walletPrice = cost - bankPrice
-            av.b_setBankMoney(av.getBankMoney() - bankPrice)
-            av.b_setMoney(av.getMoney() - walletPrice)
+            av.takeMoney(cost)
 
     def getCheckName(self):
         zoneId = ZoneUtil.getCanonicalSafeZoneId(self.zoneId)

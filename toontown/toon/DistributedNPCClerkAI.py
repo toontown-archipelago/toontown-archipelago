@@ -78,10 +78,12 @@ class DistributedNPCClerkAI(DistributedNPCToonBaseAI):
             if laff:
                 av.toonUp(av.getMaxHp())
             if av.inventory.validatePurchase(newInventory, currentMoney, newMoney):
-                av.setMoney(newMoney)
+                # wontfix: due to removing the constantly updating currentMoney here,
+                # disconnecting while buying gags won't charge the toon. this is to prevent
+                # spamming archipelago with changing jellybeans by 1 repeatedly.
                 if done:
                     av.d_setInventory(av.inventory.makeNetString())
-                    av.d_setMoney(newMoney)
+                    av.takeMoney(currentMoney - newMoney)
             else:
                 self.air.writeServerEvent('suspicious', avId, 'DistributedNPCClerkAI.setInventory invalid purchase')
                 self.notify.warning('Avatar ' + str(avId) + ' attempted an invalid purchase.')
