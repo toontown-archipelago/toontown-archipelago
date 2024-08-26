@@ -22,3 +22,6 @@ class SetReplyPacket(ClientBoundPacketBase):
 
     def handle(self, client):
         self.debug("Handling packet")
+
+        if self.key.startswith(f'slot{client.slot}:'):
+            client.av.handle_ap_data_update({self.key.split(':')[1]: self.value})

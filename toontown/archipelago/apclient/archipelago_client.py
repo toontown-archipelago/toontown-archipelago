@@ -60,7 +60,7 @@ class ArchipelagoClient(DirectObject):
         self.av = av  # DistributedToonAI that owns this client
         self.slot: int = -1  # Our slot ID given when we connect
         self.team: int = 999
-        self.uuid: str = ''  # not sure how important this is atm but just generating something in udpate_id method
+        self.uuid: str = av.getUUID() # not sure how important this is atm but just generating something in update_id method
 
         # Actually defines correct values for variables above
         self.update_identification(slot_name, password)
@@ -267,7 +267,7 @@ class ArchipelagoClient(DirectObject):
         if len(password) > 0:
             self.password = password
 
-        self.uuid = f"toontown-player-{slot_name}"  # todo make sure this is correct
+        self.uuid = self.av.getUUID()  # todo make sure this is correct
 
     # Constructs a ConnectPacket to authenticate with the server
     def send_connect_packet(self):
@@ -279,7 +279,7 @@ class ArchipelagoClient(DirectObject):
         connect_packet.uuid = self.uuid
         connect_packet.version = net_utils.ARCHIPELAGO_CLIENT_VERSION
         connect_packet.items_handling = ConnectPacket.ITEMS_HANDLING_ALL_FLAGS
-        connect_packet.tags = [ConnectPacket.TAG_DEATHLINK]
+        connect_packet.tags = []
         connect_packet.slot_data = True
         self.send_packet(connect_packet)
 

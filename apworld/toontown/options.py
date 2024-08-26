@@ -112,6 +112,7 @@ class WinCondition(Choice):
     - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
     - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
     - total_fish_species:  Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
+    - laff_o_lympics: Player must reach a certain amount of laff to complete the game (determined by laff_points_required).
     """
     display_name = "Win Condition"
     option_cog_bosses = 0
@@ -119,6 +120,7 @@ class WinCondition(Choice):
     option_hood_tasks = 2
     option_total_gag_tracks = 3
     option_total_fish_species = 4
+    option_laff_o_lympics = 5
     default = 0
 
 
@@ -156,6 +158,7 @@ class HoodTasksRequired(Range):
     range_end = 12
     default = 8
 
+
 class GagTracksRequired(Range):
     """
     How many gag tracks must be maxxed before being able to talk to Flippy to complete the game.
@@ -167,6 +170,7 @@ class GagTracksRequired(Range):
     range_end = 7
     default = 5
 
+
 class FishSpeciesRequired(Range):
     """
     How many fish species must be caught before being able to talk to Flippy to complete the game.
@@ -177,6 +181,19 @@ class FishSpeciesRequired(Range):
     range_start = 0
     range_end = 70
     default = 70
+
+
+class LaffPointsRequired(Range):
+    """
+    How many laff points we must have before being able to talk to Flippy to complete the game.
+    Setting must be below or equal to max_laff setting
+    Unused if win_condition is not laff_o_lympics
+    """
+    display_name = "Laff Points Required"
+    range_start = 0
+    range_end = 150
+    default = 120
+
     
 class TPSanity(Choice):
     """
@@ -314,6 +331,45 @@ class FishProgression(Choice):
     default = 2
 
 
+class RacingOption(Toggle):
+    """
+    Enable to turn on racing checks.
+    """
+
+    display_name = "Racing Logic"
+    default = False
+
+
+class GolfingOption(Toggle):
+    """
+    Enable to turn on the minigolf checks.
+    """
+
+    display_name = "Golfing Logic"
+    default = False
+
+
+class SyncJellybeans(Toggle):
+    """
+    Enable to sync Jellybeans between toons on the same slot.
+    Even if you aren't using multiple toons,
+    leaving this on will retain your jellybeans if you need to make a new toon to reconnect.
+    If this is 'false', the data will still be sent, but your toon will not sync with it.
+    """
+    display_name = "Sync Jellybeans"
+    default = True
+
+class SyncGagExp(Toggle):
+    """
+    Enable to sync Gag Experience between toons on the same slot.
+    Even if you aren't using multiple toons,
+    leaving this on will retain your gag experience if you need to make a new toon to reconnect.
+    If this is 'false', the data will still be sent, but your toon will not sync with it.
+    """
+    display_name = "Sync Gag Experience"
+    default = True
+
+
 class SeedGenerationTypeOption(Choice):
     """
     Type of seeding to use when RNG checks happen in game.
@@ -413,6 +469,7 @@ class ToontownOptions(PerGameCommonOptions):
     hood_tasks_required: HoodTasksRequired
     gag_tracks_required: GagTracksRequired
     fish_species_required: FishSpeciesRequired
+    laff_points_required: LaffPointsRequired
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
     checks_per_boss: ChecksPerBoss
@@ -424,6 +481,10 @@ class ToontownOptions(PerGameCommonOptions):
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression
+    slot_sync_jellybeans: SyncJellybeans
+    slot_sync_gag_experience: SyncGagExp
+    racing_logic: RacingOption
+    minigolf_logic: GolfingOption
     seed_generation_type: SeedGenerationTypeOption
     trap_percent: TrapPercentOption
     uber_trap_weight: UberWeightOption

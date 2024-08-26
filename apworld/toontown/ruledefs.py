@@ -1,3 +1,4 @@
+import math
 from typing import Dict, Callable, Any, Tuple, Union
 
 from BaseClasses import CollectionState, MultiWorld
@@ -27,10 +28,11 @@ def rule(rule: Union[Rule, ItemRule], *argument: Any):
 
 def has_collected_items_for_gag_level(state: CollectionState, player: int, options: ToontownOptions, level: int) -> bool:
     # Determines if a given player has collected a sufficient amount of the XP items in the run.
-    # always returns True if the player has 2 or less XP multis in the pool (aka, assumes they don't care)
+    # always returns True if the player has a difference of less than 5 mult between start and max (aka, assumes they don't care)
     xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
     max_xp = options.max_global_gag_xp.value
-    sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if max_xp > 2 else True
+    start_xp = options.base_global_gag_xp.value
+    sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if (max_xp - start_xp) >= 5 else True
 
     # Check collected gag capacity items too.
     cap = state.count(ToontownItemName.GAG_CAPACITY_5.value, player) + (
@@ -66,6 +68,7 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
 def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return True
 
+
 @rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
 @rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS)
 @rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS)
@@ -82,10 +85,13 @@ def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
 @rule(Rule.CashbotDisguise, ToontownItemName.CASHBOT_DISGUISE)
 @rule(Rule.LawbotDisguise,  ToontownItemName.LAWBOT_DISGUISE)
 @rule(Rule.BossbotDisguise, ToontownItemName.BOSSBOT_DISGUISE)
+@rule(Rule.Golfing,         ToontownItemName.GOLF_PUTTER)
+@rule(Rule.Racing,          ToontownItemName.GO_KART)
 def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     if len(argument) == 2:
         return state.has(argument[0].value, player, argument[1])
     return state.has(argument[0].value, player)
+
 
 @rule(Rule.HasTTCHQAccess,  ToontownItemName.TTC_ACCESS)
 @rule(Rule.HasDDHQAccess,   ToontownItemName.DD_ACCESS)
@@ -95,6 +101,7 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.HasDDLHQAccess,  ToontownItemName.DDL_ACCESS)
 def HasItemCountRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
     return state.count(argument[0].value, player) == 2
+
 
 @rule(Rule.CanBuyTTCDoodle, 0)
 @rule(Rule.CanBuyDDDoodle, 1)
@@ -439,22 +446,25 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     # - EXP required at level
 
     minimum_lure = state.has(ToontownItemName.LURE_FRAME.value, player, LUREMIN)
-    powerful_lure_knockback = any(
-        state.has(offensive_frame.value, player, LEVEL)
-        for offensive_frame in [
-            ToontownItemName.THROW_FRAME,
-            ToontownItemName.SQUIRT_FRAME,
-        ]
-    ) and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
-    powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, OVERLEVEL)
-    powerful_trap = state.has(ToontownItemName.TRAP_FRAME.value, player, OVERLEVEL) \
-                    and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
+    powerful_squirt_knockback = state.has(ToontownItemName.SQUIRT_FRAME, player, LEVEL) \
+                                and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
+    powerful_throw_knockback = state.has(ToontownItemName.THROW_FRAME.value, player, LEVEL) \
+                               and state.has(ToontownItemName.LURE_FRAME.value, player, LEVEL)
+    powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, LEVEL)
+    powerful_trap = state.has(ToontownItemName.TRAP_FRAME.value, player, LEVEL) \
+                    and state.has(ToontownItemName.LURE_FRAME.value, player, UNDERLEVEL)
     powerful_sound = state.has(ToontownItemName.SOUND_FRAME.value, player, OVERLEVEL)
+
+    def two_powerful_tracks():
+        powerful_tracks = 0
+        for track in (powerful_drop, powerful_trap, powerful_sound, powerful_throw_knockback, powerful_squirt_knockback):
+            if track:
+                powerful_tracks += 1
+        return powerful_tracks >= 2
+
     sufficient_healing = state.has(ToontownItemName.TOONUP_FRAME.value, player, UNDERLEVEL)
     can_obtain_exp_required = has_collected_items_for_gag_level(state, player, options, LEVEL)
-
-    return (powerful_lure_knockback or powerful_sound or powerful_trap or powerful_drop) \
-            and sufficient_healing and minimum_lure and can_obtain_exp_required
+    return two_powerful_tracks() and sufficient_healing and minimum_lure and can_obtain_exp_required
 
 
 @rule(Rule.CanFightVP)
@@ -498,6 +508,97 @@ def AllBossesDefeated(state: CollectionState, locentr: LocEntrDef, world: MultiW
     ]
     bosses_defeated = sum(passes_rule(rule, *args) for rule in boss_rules)
     return bosses_defeated >= options.cog_bosses_required.value and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
+
+
+@rule(Rule.AllFishCaught)
+def AllFishCaught(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    args = (state, locentr, world, player, options)
+    # Count our fish!
+    fishCount = sum(
+        int(passes_rule(Rule.FishCatch, state, get_location_def_from_name(locationName), world, player, options))
+        for locationName in FISH_LOCATIONS
+    )
+
+    # Check if we have enough to win.
+    return fishCount >= options.fish_species_required.value and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
+
+
+@rule(Rule.TaskedAllHoods)
+def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    args = (state, locentr, world, player, options)
+    hq_access_to_gag_rule = {
+        Rule.HasTTCHQAccess: Rule.HasLevelOneOffenseGag,
+        Rule.HasDDHQAccess: Rule.HasLevelTwoOffenseGag,
+        Rule.HasDGHQAccess: Rule.HasLevelThreeOffenseGag,
+        Rule.HasMMLHQAccess: Rule.HasLevelFourOffenseGag,
+        Rule.HasTBHQAccess: Rule.HasLevelFiveOffenseGag,
+        Rule.HasDDLHQAccess: Rule.HasLevelSixOffenseGag
+    }
+
+    def CountAndGagRule():  # We're doing it this way so that we can grab the gag logic we want based on the highest task pg needed
+        rule_list = list(hq_access_to_gag_rule.keys())
+        access_count = 0
+        gag_rule = Rule.HasLevelOneOffenseGag
+        for rule in rule_list:
+            if passes_rule(rule, *args):
+                access_count += 1
+                gag_rule = hq_access_to_gag_rule[rule]
+        return access_count, gag_rule
+
+    access_count, gag_rule = CountAndGagRule()
+    task_condition = options.win_condition.value
+    if task_condition == 1:  # Complete enough total tasks
+        hoods_required = math.ceil(options.total_tasks_required.value / 12)  # How many HQs we need minimum to win!
+    elif task_condition == 2:  # Complete enough tasks in each hood
+        hoods_required = len(list(hq_access_to_gag_rule.keys()))  # We need all of them to win!
+    # Check if we have enough to win.
+    return access_count >= hoods_required and passes_rule(Rule.CanReachTTC, *args) and passes_rule(gag_rule, *args)  # TECHNICALLY TRUE!
+
+
+@rule(Rule.GainedEnoughLaff)
+def GainedEnoughLaff(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    args = (state, locentr, world, player, options)
+    starting_laff = options.starting_laff.value
+    goal_laff = options.laff_points_required.value
+    laff_needed = max(0, (goal_laff - starting_laff))
+
+    # Check if we have enough to win.
+    return state.count(ToontownItemName.LAFF_BOOST_1.value, player) >= laff_needed and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
+
+
+@rule(Rule.MaxedAllGags)
+def MaxedAllGags(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    args = (state, locentr, world, player, options)
+    gag_items = [
+        ToontownItemName.TOONUP_FRAME.value,
+        ToontownItemName.TRAP_FRAME.value,
+        ToontownItemName.LURE_FRAME.value,
+        ToontownItemName.SOUND_FRAME.value,
+        ToontownItemName.THROW_FRAME.value,
+        ToontownItemName.SQUIRT_FRAME.value,
+        ToontownItemName.DROP_FRAME.value
+    ]
+
+    def HasLevelSeven(gag):
+        return state.count(gag, player) >= 7
+
+    maxed_gags = sum(HasLevelSeven(gag) for gag in gag_items)
+    return maxed_gags >= options.gag_tracks_required.value and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
+
+
+@rule(Rule.CanWinGame)
+def CanWinGame(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options: ToontownOptions, argument: Tuple = None):
+    args = (state, locentr, world, player, options)
+    win_conditions = {
+        0: Rule.AllBossesDefeated,  # Cog Boss Goal
+        1: Rule.TaskedAllHoods,  # Total Tasks Goal
+        2: Rule.TaskedAllHoods,  # Hood Tasks Goal
+        3: Rule.MaxedAllGags,  # Max Gags Goal
+        4: Rule.AllFishCaught,  # Fish Species Goal
+        5: Rule.GainedEnoughLaff,  # Laff-O-Lympics Goal
+    }
+    # Return our goal rule, default to Bosses if invalid
+    return passes_rule(win_conditions.get(options.win_condition.value, 0), *args)
 
 
 @rule(ItemRule.RestrictDisguises)

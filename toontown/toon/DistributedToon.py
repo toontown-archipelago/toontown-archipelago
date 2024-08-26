@@ -217,6 +217,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.receivedItemIDs: set[int] = set()
         self.checkedLocations: List[int] = []
         self.hintPoints = 0
+        self.hintCost = 0
 
         self.slotData = {}
         self.winCondition: WinCondition = win_condition.NoWinCondition(self)
@@ -822,10 +823,11 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def b_setTunnelIn(self, endX, tunnelOrigin):
         timestamp = globalClockDelta.getFrameNetworkTime()
-        pos = tunnelOrigin.getPos(render)
-        h = tunnelOrigin.getH(render)
-        self.setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
-        self.d_setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
+        if not tunnelOrigin.isEmpty():
+            pos = tunnelOrigin.getPos(render)
+            h = tunnelOrigin.getH(render)
+            self.setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
+            self.d_setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
 
     def d_setTunnelIn(self, timestamp, endX, x, y, z, h):
         self.sendUpdate('setTunnelIn', [timestamp,
@@ -2879,8 +2881,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def d_setDeathReason(self, reason: DeathReason):
         pass
 
-    def hintPointResp(self, pts):
+    def hintPointResp(self, pts, cost):
         self.hintPoints = pts
+        self.hintCost = cost
         if self.isLocal:
             base.localAvatar.checkPage.updateHintPointText()
 

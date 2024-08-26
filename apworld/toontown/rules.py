@@ -97,6 +97,11 @@ class Rule(Enum):
     MiddleTwoKey = auto()
     BackThreeKey = auto()
 
+    ### Activities ###
+
+    Racing  = auto()
+    Golfing = auto()
+
     ### Cog Disguises ###
 
     SellbotDisguise = auto()
@@ -193,7 +198,15 @@ class Rule(Enum):
     CanFightCJ  = auto()
     CanFightCEO = auto()
 
+    ### WIN CONDITION ###
+
     AllBossesDefeated = auto()
+    AllFishCaught = auto()
+    TaskedAllHoods = auto()
+    GainedEnoughLaff = auto()
+    MaxedAllGags = auto()
+
+    CanWinGame = auto()
 
 
 class ItemRule(Enum):

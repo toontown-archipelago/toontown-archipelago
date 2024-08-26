@@ -66,7 +66,7 @@ class DistributedPhysicsWorld(DistributedObject.DistributedObject, PhysicsWorldB
                     base.sfxPlayer.setCutoffDistance(240)
                     self.notify.debug('nodePath = %s' % pandaNodePathGeom)
                     windmillSfx = loader.loadSfx('phase_6/audio/sfx/Golf_Windmill_Loop.ogg')
-                    windMillSoundInterval = SoundInterval(windmillSfx, node=pandaNodePathGeom, listenerNode=base.camera, seamlessLoop=True, volume=0.5)
+                    windMillSoundInterval = SoundInterval(windmillSfx, node=pandaNodePathGeom, listenerNode=base.camera, seamlessLoop=True, volume=0)
                     windMillSoundInterval.loop()
                     self.physicsSfxDict[index] = (windmillSfx, windMillSoundInterval)
                     break

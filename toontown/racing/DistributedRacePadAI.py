@@ -43,7 +43,7 @@ class DistributedRacePadAI(DistributedKartPadAI, FSM):
                 return
 
         if self.trackInfo[1] in (RaceGlobals.ToonBattle, RaceGlobals.Circuit):
-            if len(self.avIds) < 2:
+            if len(self.avIds) < 1:
                 for block in self.startingBlocks:
                     if block.avId != 0:
                         block.normalExit()

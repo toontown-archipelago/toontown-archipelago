@@ -401,9 +401,9 @@ class RaceEndPanel(DirectFrame):
         self.seq = Sequence(tSeq, wSeq)
         if self.race.raceType != RaceGlobals.Circuit:
             if self.seq.getDuration() < 5.0:
-                taskMgr.doMethodLater(5.0, showButton, 'showExitButton', extraArgs=[])
+                taskMgr.doMethodLater(1.0, showButton, 'showExitButton', extraArgs=[])
             else:
-                taskMgr.doMethodLater(self.seq.getDuration(), showButton, 'showExitButton', extraArgs=[])
+                taskMgr.doMethodLater(1.0, showButton, 'showExitButton', extraArgs=[])
         self.seq.start()
         return
 

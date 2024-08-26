@@ -648,7 +648,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def invokeSuitPlanner(self, buildingCode, skelecog, reviveChance=0):
         numToons = len(self.involvedToons)
-        planner = SuitPlannerInteriorAI.SuitPlannerInteriorAI(1, buildingCode, self.dna.dept, self.zoneId, numToons=numToons)
+        planner = SuitPlannerInteriorAI.SuitPlannerInteriorAI(1, buildingCode, self.dna.dept, self.zoneId, numToons=numToons, isBoss=True)
         planner.respectInvasions = 0
         suits = planner.genFloorSuits(0)
         if skelecog != 0:

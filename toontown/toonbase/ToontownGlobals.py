@@ -392,16 +392,16 @@ MinigameIDs = (
     RaceGameId,
     CannonGameId,
     TagGameId,
-    PatternGameId,
+    # PatternGameId,
     RingGameId,
     MazeGameId,
     TugOfWarGameId,
     CatchGameId,
     DivingGameId,
-    TargetGameId,
+    # TargetGameId,
     PairingGameId,
     VineGameId,
-    IceGameId,
+    # IceGameId,
     CogThiefGameId,
     TwoDGameId,
     PhotoGameId,
@@ -519,6 +519,14 @@ dnaMap = {Tutorial: 'toontown_central',
  CashbotHQ: 'cog_hq_cashbot',
  LawbotHQ: 'cog_hq_lawbot',
  GolfZone: 'golf_zone'}
+dnaPGMap = {Tutorial: 'toontown_central',
+ ToontownCentral: 'toontown_central',
+ DonaldsDock: 'donalds_dock',
+ MinniesMelodyland: 'minnies_melody_land',
+ TheBrrrgh: 'the_burrrgh',
+ DaisyGardens: 'daisys_garden',
+ FunnyFarm: 'not done yet',
+ DonaldsDreamland: 'donalds_dreamland'}
 hoodNameMap = {DonaldsDock: TTLocalizer.DonaldsDock,
  ToontownCentral: TTLocalizer.ToontownCentral,
  TheBrrrgh: TTLocalizer.TheBrrrgh,
@@ -1628,6 +1636,8 @@ hood2Coords = {
 
 musicJsonFilePath = Filename('/content_pack/music.json')
 suitClothesJsonFilePath = Filename('/content_pack/suit_clothes.json')
+
+PUTTER_KEY = 38
 
 # I hate these imports being here as much as you do, but putting them at the top crashes the AI on startup :)
 from ..archipelago.definitions import util

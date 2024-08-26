@@ -7,6 +7,8 @@ from apworld.toontown.fish import FishProgression
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
+from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacket
+from toontown.archipelago.packets.serverbound.connect_update_packet import ConnectUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 from toontown.fishing import FishGlobals
@@ -152,9 +154,13 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         client.av.b_setName(client.slot_name)
 
-        # Is this this toon's first time? If so reset the toon's stats and initialize their settings from their YAML
+        # Is this this slot's first toon? If so reset the toon's stats and initialize their settings from their YAML
         if len(self.checked_locations) == 0:
             self.handle_first_time_player(client.av)
+        # Is this this specific toon's first slot? if so, reset this toon's stats and initialize from YAML. 
+        if len(client.av.checkedLocations) == 0:
+            self.handle_first_time_player(client.av)
+
 
         self.debug(f"Detected slot data: {self.slot_data}")
         client.av.b_setSlotData(self.slot_data)
@@ -166,6 +172,9 @@ class ConnectedPacket(ClientBoundPacketBase):
         toonCheckedLocations = client.av.getCheckedLocations()
         if len(toonCheckedLocations) > 0:
             client.av.archipelago_session.sync()
+
+        # Receive all checks that were collected from our slot while disconnected
+        client.av.receiveCheckedLocations(self.checked_locations)
 
         # Tell AP we are playing
         won_id = ap_location_name_to_id(locations.ToontownLocationName.SAVED_TOONTOWN.value)
@@ -183,7 +192,18 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.av.addCheckedLocation(new_game)
         client.av.addCheckedLocation(track_one_check)
         client.av.addCheckedLocation(track_two_check)
+
+        # Checks Page Variables
         client.av.hintPoints = self.hint_points
+        client.av.totalChecks = len(self.missing_locations) + len(self.checked_locations)
+
+        # Request synced data and subscribe to changes.
+        client.av.request_default_ap_data()
+        # Update Deathlink Tag.
+        if self.slot_data.get('death_link', False):
+            update_packet = ConnectUpdatePacket()
+            update_packet.tags = [ConnectPacket.TAG_DEATHLINK]
+            client.send_packet(update_packet)
 
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)

@@ -2369,11 +2369,11 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     # Location Check #9 (MML) Defeat a level 9 cog
     18080: APQuestDefinition((CogLevelQuest, Anywhere, 1, 9), 5044),
 
-    # Location Check #10 (MML) Defeat x amount of level y cogs in MML
-    18090: APQuestDefinition((CogLevelQuest, ToontownGlobals.MinniesMelodyland, 5, 6), 5045),
-    18091: APQuestDefinition((CogLevelQuest, ToontownGlobals.MinniesMelodyland, 5, 5), 5045),
-    18092: APQuestDefinition((CogLevelQuest, ToontownGlobals.MinniesMelodyland, 6, 6), 5045),
-    18093: APQuestDefinition((CogLevelQuest, ToontownGlobals.MinniesMelodyland, 6, 5), 5045),
+    # Location Check #10 (MML) Defeat x amount of level y cogs anywhere
+    18090: APQuestDefinition((CogLevelQuest, Anywhere, 5, 6), 5045),
+    18091: APQuestDefinition((CogLevelQuest, Anywhere, 5, 5), 5045),
+    18092: APQuestDefinition((CogLevelQuest, Anywhere, 6, 6), 5045),
+    18093: APQuestDefinition((CogLevelQuest, Anywhere, 6, 5), 5045),
 
     # Location Check #11 (MML) Random Quests
     18100: APQuestDefinition((CogLevelQuest, Anywhere, 10, 3), 5046),

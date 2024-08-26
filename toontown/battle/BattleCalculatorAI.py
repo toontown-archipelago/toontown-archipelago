@@ -165,7 +165,9 @@ class BattleCalculatorAI:
             elif treebonus or propBonus:
                 self.notify.debug('using oragnic OR prop bonus lure accuracy')
                 propAcc = AvLureBonusAccuracy[atkLevel]
-        attackAcc = propAcc + trackExp + tgtDef
+        # Give toons soloing the equivalent of a stun every turn
+        soloAcc = 20 if len(self.battle.activeToons) == 1 else 0
+        attackAcc = propAcc + trackExp + tgtDef + soloAcc
         currAtk = self.toonAtkOrder.index(attackIndex)
         if currAtk > 0 and atkTrack != HEAL:
             prevAtkId = self.toonAtkOrder[currAtk - 1]

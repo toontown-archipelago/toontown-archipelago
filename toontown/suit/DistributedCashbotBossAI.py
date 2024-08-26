@@ -254,8 +254,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.initializeBattles(1, ToontownGlobals.CashbotBossBattleOnePosHpr)
 
     def generateSuits(self, battleNumber):
-        cogs = self.invokeSuitPlanner(11, 0)
-        skelecogs = self.invokeSuitPlanner(12, 1)
+        cogs = self.invokeSuitPlanner(2, 0)
+        skelecogs = self.invokeSuitPlanner(3, 1)
 
         # Now combine the lists of suits together, so that they all
         # come out mix-and-match.
@@ -966,6 +966,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     ##### BattleThree state #####
     def enterBattleThree(self):
+        self.divideToons()
         # Calculate the max hp of the boss
         cfoMaxHp = self.ruleset.CFO_MAX_HP + self.ruleset.HP_PER_EXTRA * (len(self.involvedToons) - 1)
         self.bossMaxDamage = min(self.ruleset.get_max_allowed_hp(), cfoMaxHp)

@@ -77,6 +77,7 @@ class LaffBoostReward(APReward):
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxHp(av.maxHp + self.amount)
         av.toonUp(self.amount)
+        av.checkWinCondition()
 
 
 class GagCapacityReward(APReward):
@@ -188,7 +189,7 @@ class GagTrainingFrameReward(APReward):
 
     def get_image_path(self) -> str:
         level = base.localAvatar.getTrackAccessLevel(self.track)
-        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(level, 7))
+        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(max(level, 1), 7))
         return f'phase_14/maps/gags/{ap_icon}.png'
 
     def apply(self, av: "DistributedToonAI"):
@@ -300,6 +301,32 @@ class GagTrainingMultiplierReward(APReward):
         oldMultiplier = av.getBaseGagSkillMultiplier()
         newMultiplier = oldMultiplier + self.amount
         av.b_setBaseGagSkillMultiplier(newMultiplier)
+
+
+class GolfPutterReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Get ready to go mini-golfing\nwith your new "),
+            MinimalJsonMessagePart("Golf Putter", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.addAccessKey(ToontownGlobals.PUTTER_KEY)
+
+
+class GoKartReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Get ready to go racing\nwith your new "),
+            MinimalJsonMessagePart("Go-Kart", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.b_setKartBodyType(1)
 
 
 class FishingRodUpgradeReward(APReward):
@@ -513,7 +540,7 @@ class JellybeanReward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.addMoney(self.amount)
+        av.ap_setMoney(av.getMoney() + self.amount)
 
 
 class UberTrapAward(APReward):
@@ -569,14 +596,14 @@ class BeanTaxTrapAward(APReward):
 
         if self.getPassed(avMoney):
             av.b_setHasPaidTaxes(True)
-            av.takeMoney(self.tax, bUseBank=False)
+            av.ap_setMoney(max(avMoney - self.tax, 0))
             av.playSound('phase_4/audio/sfx/tax_paid.ogg')
             av.d_broadcastHpString("TAXES PAID!", (.35, .7, .35))
             av.d_playEmote(EmoteFuncDict['Happy'], 1)
         else:
             av.b_setHasPaidTaxes(False)
             if av.getMoney() >= 100:
-                av.b_setMoney(100)
+                av.ap_setMoney(100)
             damage = av.getHp() - 1
             if av.getHp() > 0:
                 av.takeDamage(damage)
@@ -672,7 +699,7 @@ class GagExpBundleAward(APReward):
             currentCap = min(av.experience.getExperienceCapForTrack(index), ToontownBattleGlobals.regMaxSkill)
             exptoAdd = math.ceil(currentCap * (self.amount/100))
             av.experience.addExp(index, exptoAdd)
-        av.b_setExperience(av.experience.getCurrentExperience())
+        av.ap_setExperience(av.experience.getCurrentExperience())
         # now check for win condition since we have one for maxxed gags
         av.checkWinCondition()
 
@@ -813,6 +840,8 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.TB_FISHING.value: FishingLicenseReward(FishingLicenseReward.THE_BRRRGH),
     ToontownItemName.DDL_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DREAMLAND),
     ToontownItemName.FISH.value: IgnoreReward(),
+    ToontownItemName.GOLF_PUTTER.value: GolfPutterReward(),
+    ToontownItemName.GO_KART.value: GoKartReward(),
     ToontownItemName.FRONT_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
     ToontownItemName.SIDE_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING),
     ToontownItemName.COIN_MINT_ACCESS.value: FacilityAccessReward(FADoorCodes.COIN_MINT_ACCESS_MISSING),
