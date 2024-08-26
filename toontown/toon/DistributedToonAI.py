@@ -226,6 +226,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Archipelago Stuff
         self.__uuid = None # UUID used to ensure we don't reply to our own packets.
+        self._lastSeedName = "" # The previous room connected to, using ap's seed_name to validate. Might overlap if multiple rooms started from the same seed.
         self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
         self.baseGagSkillMultiplier = 1  # Multiplicative stacking gag xp multiplier to consider
         self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
@@ -4528,6 +4529,21 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def requestHintPoints(self):
         self.sendUpdate('hintPointResp', [self.hintPoints, self.hintCostPercentage * self.totalChecks // 100])
 
+    def setLastSeed(self, seedName: str):
+        self._lastSeedName = seedName
+
+    def d_setLastSeed(self, seedName: str):
+        self.sendUpdate('setLastSeed', [seedName])
+
+    def b_setLastSeed(self, seedName: str):
+        self.setLastSeed(seedName)
+        self.d_setLastSeed(seedName)
+    
+    # Passed seed_name from archipelago, ensure newToon or the same as previously connected room.
+    def checkLastSeed(self, seedName: str) -> bool:
+        return (seedName == self._lastSeedName or
+                self._lastSeedName == "")
+
     def b_setSlotData(self, slotData: dict):
         slotData = AstronDict.fromDict(slotData)
         self.setSlotData(slotData)
@@ -4627,6 +4643,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setBuildingRadar([0] * 4)
 
         # AP stuff
+        self.b_setLastSeed("")
         self.b_setCheckedLocations([])
         self.b_setReceivedItems([])
         self.b_setAccessKeys([])
