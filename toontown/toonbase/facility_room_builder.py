@@ -143,7 +143,11 @@ class MyApp(ShowBase):
                     model.setP(model.getP() + -90)
                 self.roomEntId2Model[entity] = model
             if self.room[entity]['type'] == 'model':
-                model = loader.loadModel(self.room[entity]['modelPath'])
+                modelName = self.room[entity]['modelPath']
+                if '.bam' not in self.room[entity]['modelPath']:
+                    modelName = self.room[entity]['modelPath'] + '.bam'
+
+                model = loader.loadModel(modelName)
                 if self.room[entity]['parentEntId'] != 0:
                     model.reparentTo(self.roomEntId2Model[self.room[entity]['parentEntId']])
                 else:
