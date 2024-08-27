@@ -12,7 +12,10 @@ class MintProduct(BasicEntities.NodePathEntity):
     def __init__(self, level, entId):
         BasicEntities.NodePathEntity.__init__(self, level, entId)
         self.model = None
-        self.mintId = self.level.mintId
+        try:
+            self.mintId = self.level.mintId
+        except:
+            self.mintId = self.level.stageId
         self.loadModel()
         return
 

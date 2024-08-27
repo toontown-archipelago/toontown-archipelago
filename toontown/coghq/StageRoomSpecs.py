@@ -42,6 +42,7 @@ from toontown.coghq import LawbotOfficeDuctRoom_Battle00
 from toontown.coghq import LawbotOfficeDuctRoom_Battle01
 from toontown.coghq import LawbotOfficeDuctRoom_Battle02
 from toontown.coghq import LawbotOfficeControlRoom_Battle00
+from toontown.coghq import LawbotOfficeStomperLobby_Action00
 
 
 LawbotStageSpecModules = {
@@ -70,7 +71,8 @@ LawbotStageSpecModules = {
     109: LawbotOfficeDiamondRoomDiff_Battle00,
     110: LawbotOfficeEntrance_Action01,
     111: LawbotOfficeControlRoom_Battle00,
-    120: LawbotOfficeDuctRoom_Battle02
+    120: LawbotOfficeDuctRoom_Battle02,
+    130: LawbotOfficeStomperLobby_Action00
 }
 
 # Ok don't freak out. What we are doing here is grabbing the name of the module that we imported.
