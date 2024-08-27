@@ -20,6 +20,7 @@ from toontown.building import ToonInterior
 from toontown.hood import QuietZoneState
 from toontown.hood import ZoneUtil
 from direct.interval.IntervalGlobal import *
+from toontown.content_pack import MusicManagerGlobals
 import json
 
 class TownLoader(StateData.StateData):
@@ -54,18 +55,26 @@ class TownLoader(StateData.StateData):
         self.loadBattleAnims()
         self.branchZone = ZoneUtil.getBranchZone(zoneId)
         self.canonicalBranchZone = ZoneUtil.getCanonicalBranchZone(zoneId)
-        self.music = base.loader.loadMusic(self.musicFile)
-        self.activityMusic = base.loader.loadMusic(self.activityMusicFile)
-        self.battleMusic = base.loader.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.ogg')
         self.townBattle = TownBattle.TownBattle(self.townBattleDoneEvent)
         self.townBattle.load()
+        
+        hoodAlisis = MusicManagerGlobals.safeZonetoAlis[self.hood.id] + '-'
+        self.musicCode = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['music']
+        self.battleMusicCode = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['battleMusic']
+        self.activityMusicCode = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['activityMusic']
 
-        if str(self.branchZone) in self.musicJson['global_music']:
-            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.branchZone)])
-            if (str(self.branchZone) + '_activity') in self.musicJson['global_music']:
-                self.activityMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.branchZone) + '_activity')])
-            if (str(self.branchZone) + '_battle') in self.musicJson['global_music']:
-                self.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.branchZone) + '_battle')])
+        """"
+        # we add in are area music here
+        base.contentPackMusicManager.playMusic(self.musicCode, looping=1, volume=0.8)
+        self.music = base.contentPackMusicManager.currentMusic[self.musicCode]
+        
+        # we add in our battle music here
+        base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=False)
+        self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
+        """
+
+        base.contentPackMusicManager.playMusic(self.activityMusicCode, looping=1, volume=0.9, interrupt=False)
+        self.activityMusic = base.contentPackMusicManager.currentMusic[self.activityMusicCode]
 
     def unload(self):
         self.unloadBattleAnims()

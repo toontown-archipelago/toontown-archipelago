@@ -13,6 +13,7 @@ from toontown.toonbase import TTLocalizer
 from toontown.toontowngui import TTDialog
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.coghq import DistributedMint
+from toontown.content_pack import MusicManagerGlobals
 import json
 
 class MintInterior(BattlePlace.BattlePlace):
@@ -68,18 +69,21 @@ class MintInterior(BattlePlace.BattlePlace):
     def load(self):
         self.parentFSM.getStateNamed('mintInterior').addChild(self.fsm)
         BattlePlace.BattlePlace.load(self)
-        fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
-        if str(self.zoneId) in self.musicJson['global_music']:
-            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.zoneId)])
-            if (str(self.zoneId) + '_battle') in self.musicJson['global_music']:
-                self.loader.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.zoneId) + '_battle')])
-        else:
-            self.music = base.loader.loadMusic('phase_9/audio/bgm/CHQ_FACT_bg.ogg')
+
+        self.loader.musicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
+        self.loader.battleMusicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
+
+        # we add in are area music here
+        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+        self.loader.music = base.contentPackMusicManager.currentMusic[self.loader.musicCode]
+        
+        # we add in our battle music here
+        base.contentPackMusicManager.playMusic(self.loader.battleMusicCode, looping=1, volume=0.9, interrupt=False)
+        self.loader.battleMusic = base.contentPackMusicManager.currentMusic[self.loader.battleMusicCode]
 
     def unload(self):
         self.parentFSM.getStateNamed('mintInterior').removeChild(self.fsm)
-        del self.music
+        del self.loader.music
         del self.fsm
         del self.parentFSM
         BattlePlace.BattlePlace.unload(self)
@@ -94,7 +98,7 @@ class MintInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.playMusic(self.music, looping=1, volume=0.8)
+            base.playMusic(self.loader.music, looping=1, volume=0.8)
             base.transitions.irisIn()
             mint = bboard.get(DistributedMint.DistributedMint.ReadyPost)
             self.loader.hood.spawnTitleText(mint.mintId, mint.floorNum)
@@ -120,10 +124,8 @@ class MintInterior(BattlePlace.BattlePlace):
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
         self.loader.music.stop()
-        self.music.stop()
         self.ignoreAll()
         del self.mintReadyWatcher
-        self.loader.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
 
     def enterWalk(self, teleportIn = 0):
         BattlePlace.BattlePlace.enterWalk(self, teleportIn)
@@ -148,7 +150,7 @@ class MintInterior(BattlePlace.BattlePlace):
 
     def enterBattle(self, event):
         MintInterior.notify.debug('enterBattle')
-        self.music.stop()
+        self.loader.music.stop()
         BattlePlace.BattlePlace.enterBattle(self, event)
         self.ignore('teleportQuery')
         base.localAvatar.setTeleportAvailable(0)
@@ -161,8 +163,7 @@ class MintInterior(BattlePlace.BattlePlace):
     def exitBattle(self):
         MintInterior.notify.debug('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
-        self.loader.music.stop()
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.playMusic(self.loader.music, looping=1, volume=0.8)
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)

@@ -22,6 +22,7 @@ from toontown.toonbase import ToontownAccess
 from toontown.toonbase import TTLocalizer
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.launcher import ToontownDownloadWatcher
+from toontown.content_pack import MusicManager
 import tempfile
 import atexit
 import shutil
@@ -47,6 +48,8 @@ class ToonBase(OTPBase.OTPBase):
 
         self.settings = Settings()
         self.setMultiThreading()
+
+        self.contentPackMusicManager = MusicManager.MusicManager()
 
         os.environ['WANT_ERROR_REPORTING'] = 'true' if self.settings.get('report-errors') else 'false'
 

@@ -8,6 +8,7 @@ from toontown.hood import ZoneUtil
 from toontown.town import TownBattle
 from toontown.suit import Suit
 from panda3d.core import *
+from toontown.content_pack import MusicManagerGlobals
 
 class CogHQLoader(StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('CogHQLoader')
@@ -18,6 +19,11 @@ class CogHQLoader(StateData.StateData):
         self.parentFSMState = parentFSMState
         self.placeDoneEvent = 'cogHQLoaderPlaceDone'
         self.townBattleDoneEvent = 'town-battle-done'
+
+        # fail safe
+        self.musicCode = 'sellbot-courtyard'
+        self.battleMusicCode = 'sellbot-courtyard-battle'
+
         self.fsm = ClassicFSM.ClassicFSM('CogHQLoader', [State.State('start', None, None, ['quietZone', 'cogHQExterior', 'factoryInterior', 'cogHQBossBattle']),
          State.State('cogHQExterior', self.enterCogHQExterior, self.exitCogHQExterior, ['quietZone', 'cogHQLobby']),
          State.State('cogHQLobby', self.enterCogHQLobby, self.exitCogHQLobby, ['quietZone', 'cogHQExterior', 'cogHQBossBattle']),
@@ -28,12 +34,18 @@ class CogHQLoader(StateData.StateData):
 
     def load(self, zoneId):
         self.parentFSMState.addChild(self.fsm)
-        self.music = base.loader.loadMusic(self.musicFile)
-        self.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
+        
         self.townBattle = TownBattle.TownBattle(self.townBattleDoneEvent)
         self.townBattle.load()
         Suit.loadSuits(3)
         self.loadPlaceGeom(zoneId)
+
+        # these will be defined in it's parent class later
+        #self.music = base.loader.loadMusic(self.musicFile)
+        #self.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
+        
+        self.musicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
+        self.battleMusicCode = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
 
     def loadPlaceGeom(self, zoneId):
         pass

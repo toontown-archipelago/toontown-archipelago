@@ -13,6 +13,7 @@ from toontown.toontowngui import TTDialog
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.building import Elevator
 from direct.stdpy.file import open as sopen
+from toontown.content_pack import MusicManagerGlobals
 import json
 
 class FactoryInterior(BattlePlace.BattlePlace):
@@ -71,20 +72,20 @@ class FactoryInterior(BattlePlace.BattlePlace):
         self.parentFSM.getStateNamed('factoryInterior').addChild(self.fsm)
         BattlePlace.BattlePlace.load(self)
 
-        fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
+        self.loader.musicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
+        self.loader.battleMusicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
 
-        if str(self.zoneId) in self.musicJson['global_music']:
-            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.zoneId)])
-            if (str(self.zoneId) + '_battle') in self.musicJson['global_music']:
-                self.loader.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.zoneId) + '_battle')])
-        else:
-            self.music = base.loader.loadMusic('phase_9/audio/bgm/CHQ_FACT_bg.ogg')
+        # we add in are area music here
+        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+        self.loader.music = base.contentPackMusicManager.currentMusic[self.loader.musicCode]
+        
+        # we add in our battle music here
+        base.contentPackMusicManager.playMusic(self.loader.battleMusicCode, looping=1, volume=0.9, interrupt=False)
+        self.loader.battleMusic = base.contentPackMusicManager.currentMusic[self.loader.battleMusicCode]
 
     def unload(self):
         self.parentFSM.getStateNamed('factoryInterior').removeChild(self.fsm)
         del self.fsm
-        del self.music
         BattlePlace.BattlePlace.unload(self)
 
     def enter(self, requestStatus):
@@ -96,7 +97,7 @@ class FactoryInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.playMusic(self.music, looping=1, volume=0.8)
+            base.playMusic(self.loader.music, looping=1, volume=0.8)
             base.transitions.irisIn()
 
         if hasattr(base, 'factoryReady'):
@@ -123,9 +124,7 @@ class FactoryInterior(BattlePlace.BattlePlace):
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
         self.loader.music.stop()
-        self.music.stop()
         self.ignoreAll()
-        self.loader.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
 
     def enterWalk(self, teleportIn = 0):
         BattlePlace.BattlePlace.enterWalk(self, teleportIn)
@@ -150,7 +149,7 @@ class FactoryInterior(BattlePlace.BattlePlace):
 
     def enterBattle(self, event):
         FactoryInterior.notify.info('enterBattle')
-        self.music.stop()
+        self.loader.music.stop()
         BattlePlace.BattlePlace.enterBattle(self, event)
         self.ignore('teleportQuery')
         base.localAvatar.setTeleportAvailable(0)
@@ -163,8 +162,7 @@ class FactoryInterior(BattlePlace.BattlePlace):
     def exitBattle(self):
         FactoryInterior.notify.info('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
-        self.loader.music.stop()
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.playMusic(self.loader.music, looping=1, volume=0.8)
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)
