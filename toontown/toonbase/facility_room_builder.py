@@ -412,6 +412,12 @@ class MyApp(ShowBase):
                     self.room[entity]['scale'] = self.roomEntId2Model[entity].getScale()
         
         self.room[1000]['type'] = 'levelMgr'
+        self.room[0]['visibility'] = []
+
+        # We dont want any objects reparented to 1000(lvlMgr), as it causes a crash.
+        for entity in self.room:
+            if self.room[entity]['parentEntId'] == 1001:
+                self.room[entity]['parentEntId'] = 0
 
         print(self.room)
     
