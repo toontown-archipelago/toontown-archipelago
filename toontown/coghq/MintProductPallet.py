@@ -5,10 +5,10 @@ class MintProductPallet(MintProduct.MintProduct):
     Models = {CashbotMintIntA: 'phase_10/models/cashbotHQ/DoubleCoinStack.bam',
      CashbotMintIntB: 'phase_10/models/cogHQ/DoubleMoneyStack.bam',
      CashbotMintIntC: 'phase_10/models/cashbotHQ/DoubleGoldStack.bam',
-     LawbotStageIntA: 'phase_11/models/lawbotHQ/LB_paper_stack_pallet.bam',
-     LawbotStageIntB: 'phase_11/models/lawbotHQ/LB_paper_stack_pallet.bam',
-     LawbotStageIntC: 'phase_11/models/lawbotHQ/LB_paper_stack_pallet.bam',
-     LawbotStageIntD: 'phase_11/models/lawbotHQ/LB_paper_stack_pallet.bam'}
+     LawbotStageIntA: 'phase_11/models/lawbotHQ/LB_paper_big_stacks3.bam',
+     LawbotStageIntB: 'phase_11/models/lawbotHQ/LB_paper_big_stacks3.bam',
+     LawbotStageIntC: 'phase_11/models/lawbotHQ/LB_paper_big_stacks3.bam',
+     LawbotStageIntD: 'phase_11/models/lawbotHQ/LB_paper_big_stacks3.bam'}
     Scales = {CashbotMintIntA: 1.0,
      CashbotMintIntB: 1.0,
      CashbotMintIntC: 1.0,
