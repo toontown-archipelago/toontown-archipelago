@@ -1950,7 +1950,7 @@ AvatarPanelIgnoreCant = 'Okay'
 AvatarPanelStopIgnoring = 'Stop Ignoring'
 AvatarPanelReport = 'Report'
 AvatarPanelCogLevel = 'Level: %s'
-AvatarPanelBossLevel = 'Boss'
+AvatarPanelBossLevel = 'Manager'
 AvatarPanelCogRevives = ' v%s.0'
 AvatarPanelCogHP = 'HP: %s' + '/%s'
 AvatarPanelCogDetailClose = lClose
@@ -4957,7 +4957,7 @@ EmoteAnnoyed = 'Annoyed'
 EmoteSleep = 'Sleepy'
 TIPPageTitle = 'TIP'
 SuitBaseNameWithLevel = '%(name)s\n%(dept)s\nLevel %(level)s'
-BossBaseName = '%(name)s\n%(dept)s\nBoss'
+BossBaseName = '%(name)s\n%(dept)s\nManager'
 HealthForceAcknowledgeMessage = 'You cannot leave the playground until your Laff meter is smiling!'
 InventoryTotalGags = 'Total gags\n%d / %d'
 InventroyPinkSlips = '%s Pink Slips'
@@ -5211,7 +5211,7 @@ TownBattleSOSPetInfoOK = lOK
 
 TownBattleSuitLevelAndRevive = "Level %(level)s v%(revives)s.0"
 TownBattleSuitLevel = "Level %(level)s"
-TownBattleBossLevel = "Boss"
+TownBattleBossLevel = "Manager"
 
 
 TrolleyHFAMessage = 'You may not board the trolley until your Laff meter is smiling.'
