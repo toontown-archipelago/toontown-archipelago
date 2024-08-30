@@ -423,7 +423,7 @@ ActorInterval(kapow, 'kapow'), Func(kapow.hide)), LerpPosInterval(suit, 3.0, Poi
         suitResponseTrack.append(sival)
         bonusTrack = Sequence(Wait(delay + tPieHitsSuit))
         suitResponseTrack = Parallel(suitResponseTrack, bonusTrack)
-    return Sequence(movieSlow, scaredSpeech, Wait(3), suitResponseTrack, movieFast)
+    return Sequence(movieSlow, scaredSpeech, Wait(3), suitResponseTrack, movieFast, Func(cannon.removeNode))
 
 def slowDownMovie(battle):
     battle.movie.track.setPlayRate(1)

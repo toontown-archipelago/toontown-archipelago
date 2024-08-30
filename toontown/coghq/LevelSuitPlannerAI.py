@@ -88,7 +88,10 @@ class LevelSuitPlannerAI(DirectObject.DirectObject):
         if suitDict['boss']:
             suit.setLevel(self.getBossLevel(suitDict['track']))
         else:
-            suit.setLevel(suitDict['level'])
+            if suit.dna.name == 'clp':
+                suit.setLevel(self.getSideBossLevel(suitDict['track']))
+            else:
+                suit.setLevel(suitDict['level'])
         suit.setSkeleRevives(suitDict.get('revives'))
         if suitDict.get('immune'):
             suit.setImmuneStatus(1)
@@ -130,6 +133,16 @@ class LevelSuitPlannerAI(DirectObject.DirectObject):
                     return 13
                 else:
                     return 12
+        else:
+            return 8
+
+    def getSideBossLevel(self, track):
+        if track == 'c':
+            if hasattr(self.level, 'countryClubId'):
+                if self.level.countryClubId == ToontownGlobals.BossbotCountryClubIntC:
+                    return 5
+                else:
+                    return 4
         else:
             return 8
 
