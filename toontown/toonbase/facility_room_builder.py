@@ -404,10 +404,15 @@ class MyApp(ShowBase):
             if 'pos' in self.room[entity]:
                 self.room[entity]['pos'] = self.roomEntId2Model[entity].getPos()
             if 'hpr' in self.room[entity]:
-                self.room[entity]['hpr'] = self.roomEntId2Model[entity].getHpr()
+                if self.room[entity]['type'] == 'stomper':
+                    self.room[entity]['hpr'] = Vec3(0, 0, 0)
+                else:
+                    self.room[entity]['hpr'] = self.roomEntId2Model[entity].getHpr()
             if 'scale' in self.room[entity]:
                 if self.room[entity]['type'] in ('gagBarrel', 'healBarrel', 'beanBarrel', 'apBarrel'):
                     self.room[entity]['scale'] = 1
+                elif self.room[entity]['type'] == 'goon':
+                    self.room[entity]['scale'] = self.roomEntId2Model[entity].getSx()
                 else:
                     self.room[entity]['scale'] = self.roomEntId2Model[entity].getScale()
         
