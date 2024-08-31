@@ -174,7 +174,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
     def exitBattle(self):
         CountryClubInterior.notify.debug('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
-        self.loader.music.start()
+        self.loader.music.play()
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)

@@ -1,7 +1,5 @@
 from direct.showbase.PythonUtil import invertDict
 from toontown.toonbase import ToontownGlobals
-from toontown.coghq import BossbotCountryClubFairwayRoom_Action00_Cogs
-from toontown.coghq import BossbotCountryClubFairwayRoom_Action01_Cogs
 from toontown.coghq import BossbotCountryClubFairwayRoom_Battle00_Cogs
 from toontown.coghq import BossbotCountryClubFairwayRoom_Battle01_Cogs
 from toontown.coghq import BossbotCountryClubMazeRoom_Battle00_Cogs
@@ -82,8 +80,6 @@ CogSpecModules = {'BossbotCountryClubFairwayRoom_Battle00': BossbotCountryClubFa
  'BossbotCountryClubMazeRoom_Battle02': BossbotCountryClubMazeRoom_Battle02_Cogs,
  'BossbotCountryClubKartRoom_Battle00': BossbotCountryClubKartRoom_Battle00_Cogs,
  'BossbotCountryClubPresidentRoom_Battle00': BossbotCountryClubPresidentRoom_Battle00_Cogs,
- 'BossbotCountryClubFairwayRoom_Action00': BossbotCountryClubFairwayRoom_Action00_Cogs,
- 'BossbotCountryClubFairwayRoom_Action01': BossbotCountryClubFairwayRoom_Action01_Cogs,
  'BossbotCountryClubFairwayRoom_Battle01': BossbotCountryClubFairwayRoom_Battle01_Cogs}
 roomId2numBattles = {}
 for roomName, roomId in BossbotCountryClubRoomName2RoomId.items():
