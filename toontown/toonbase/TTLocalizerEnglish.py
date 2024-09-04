@@ -4933,6 +4933,7 @@ KartShtikerDecal = 'Decal'
 KartShtikerDefault = 'Default %s'
 KartShtikerNo = 'No %s Accessory'
 CheckPageTitle = 'Items'
+LocationPageTitle = 'Tracker'
 CheckPageScrollTitle = 'Item            Status'
 HintPointsTitle = 'Hint Points: %s                    Cost: %s'
 QuestChoiceGuiCancel = lCancel

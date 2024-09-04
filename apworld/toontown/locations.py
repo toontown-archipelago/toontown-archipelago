@@ -1139,7 +1139,7 @@ LOCATION_NAME_TO_DEFINITION: dict[ToontownLocationName, ToontownLocationDefiniti
 }
 
 EVENT_DEFINITIONS: List[ToontownLocationDefinition] = [
-    ToontownLocationDefinition(ToontownLocationName.SAVED_TOONTOWN, ToontownLocationType.MISC,   ToontownRegionName.TTC, [Rule.CanWinGame]),
+    ToontownLocationDefinition(ToontownLocationName.SAVED_TOONTOWN, ToontownLocationType.MISC, ToontownRegionName.TTC, [Rule.CanWinGame]),
 ]
 
 
