@@ -1,6 +1,6 @@
 from . import ShtikerPage
 from apworld.toontown import ToontownLocationType, LOCATION_DEFINITIONS, FishChecks, \
-                             TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES, test_location, ToontownOptions
+                             TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES, test_location
 from BaseClasses import MultiWorld
 from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
