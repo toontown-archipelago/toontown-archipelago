@@ -651,12 +651,26 @@ TREASURE_LOCATION_TYPES: list[ToontownLocationType] = [
     ToontownLocationType.PLAYGROUND_6,
 ]
 
+REGION_TO_TREASURE_RULES: dict[ToontownRegionName, list[list]] = {
+    ToontownRegionName.TTC:  [[Rule.CanReachTTC], [Rule.CanReachTTC], [Rule.CanReachTTC], [Rule.CanReachTTC], [Rule.CanReachTTC], [Rule.CanReachTTC]],
+    ToontownRegionName.DD:   [[Rule.CanReachDD], [Rule.CanReachDD], [Rule.CanReachDD], [Rule.CanReachDD], [Rule.CanReachDD], [Rule.CanReachDD]],
+    ToontownRegionName.DG:   [[Rule.CanReachDG], [Rule.CanReachDG], [Rule.CanReachDG], [Rule.CanReachDG], [Rule.CanReachDG], [Rule.CanReachDG]],
+    ToontownRegionName.MML:  [[Rule.CanReachMML], [Rule.CanReachMML], [Rule.CanReachMML], [Rule.CanReachMML], [Rule.CanReachMML], [Rule.CanReachMML]],
+    ToontownRegionName.TB:   [[Rule.CanReachTB], [Rule.CanReachTB], [Rule.CanReachTB], [Rule.CanReachTB], [Rule.CanReachTB], [Rule.CanReachTB]],
+    ToontownRegionName.DDL:  [[Rule.CanReachDDL], [Rule.CanReachDDL], [Rule.CanReachDDL], [Rule.CanReachDDL], [Rule.CanReachDDL], [Rule.CanReachDDL]],
+    ToontownRegionName.GS:   [[Rule.CanReachGS], [Rule.CanReachGS], [Rule.CanReachGS], [Rule.CanReachGS], [Rule.CanReachGS], [Rule.CanReachGS]],
+    ToontownRegionName.AA:   [[Rule.CanReachAA], [Rule.CanReachAA], [Rule.CanReachAA], [Rule.CanReachAA], [Rule.CanReachAA], [Rule.CanReachAA]],
+    ToontownRegionName.SBHQ: [[Rule.CanReachSBHQ], [Rule.CanReachSBHQ], [Rule.CanReachSBHQ], [Rule.CanReachSBHQ], [Rule.CanReachSBHQ], [Rule.CanReachSBHQ]],
+    ToontownRegionName.CBHQ: [[Rule.CanReachCBHQ], [Rule.CanReachCBHQ], [Rule.CanReachCBHQ], [Rule.CanReachCBHQ], [Rule.CanReachCBHQ], [Rule.CanReachCBHQ]],
+    ToontownRegionName.LBHQ: [[Rule.CanReachLBHQ], [Rule.CanReachLBHQ], [Rule.CanReachLBHQ], [Rule.CanReachLBHQ], [Rule.CanReachLBHQ], [Rule.CanReachLBHQ]],
+    ToontownRegionName.BBHQ: [[Rule.CanReachBBHQ], [Rule.CanReachBBHQ], [Rule.CanReachBBHQ], [Rule.CanReachBBHQ], [Rule.CanReachBBHQ], [Rule.CanReachBBHQ]]
+}
 
 TREASURE_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
-    ToontownLocationDefinition(location_name,  location_type, region_name)
+    ToontownLocationDefinition(location_name,  location_type, region_name, rule_set)
     for region_name in REGION_TO_TREASURE_LOCATIONS.keys()
-    for location_name, location_type in zip(
-        REGION_TO_TREASURE_LOCATIONS.get(region_name), TREASURE_LOCATION_TYPES
+    for location_name, location_type, rule_set in zip(
+        REGION_TO_TREASURE_LOCATIONS.get(region_name), TREASURE_LOCATION_TYPES, REGION_TO_TREASURE_RULES.get(region_name)
     )
 ]
 # endregion

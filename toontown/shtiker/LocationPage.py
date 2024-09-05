@@ -1,6 +1,7 @@
 from . import ShtikerPage
 from apworld.toontown import ToontownLocationType, LOCATION_DEFINITIONS, FishChecks, \
-                             TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES
+                             TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES, test_location, ToontownOptions
+from BaseClasses import MultiWorld
 from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
 from panda3d.core import *
@@ -24,13 +25,13 @@ class LocationPage(ShtikerPage.ShtikerPage):
         self.title = DirectLabel(parent=self, relief=None, text=TTLocalizer.LocationPageTitle, text_scale=title_text_scale, textMayChange=0, pos=(0, 0, 0.6))
         self.gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
         self.listXorigin = 0.02
-        self.listFrameSizeX = 0.7
+        self.listFrameSizeX = 0.9
         self.listZorigin = -0.96
         self.listFrameSizeZ = 1.04
         self.arrowButtonScale = 1.3
         self.itemFrameXorigin = -0.237
         self.itemFrameZorigin = 0.365
-        self.buttonXstart = self.itemFrameXorigin + 0.425
+        self.buttonXstart = self.itemFrameXorigin + 0.475
         self.regenerateScrollList()
         return
 
@@ -53,6 +54,9 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 continue
             # Do we already have this location?
             if util.ap_location_name_to_id(location_data.name.value) in checkedLocationIds:
+                continue
+            # Is this location in logic?
+            if not test_location(LOCATION_DEFINITIONS[i], base.localAvatar, MultiWorld, 1, base.localAvatar.slotData):
                 continue
 
             missingLocations.append(location_data.name.value)
