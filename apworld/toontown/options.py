@@ -263,7 +263,7 @@ class StartingTaskOption(Choice):
     option_mml = 3
     option_tb = 4
     option_ddl = 5
-    option_random = 6
+    option_randomized = 6
     default = 0
 
 

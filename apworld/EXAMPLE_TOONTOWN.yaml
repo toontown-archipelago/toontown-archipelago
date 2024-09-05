@@ -140,7 +140,7 @@ Toontown:
   # - mml: start with MML access
   # - tb: start with TB access
   # - ddl: start with DDL access
-  # - random: start with a random access
+  # - randomized: start with a randomized task access
   starting_task_playground: 'ttc'
 
   ### Cog Gallery Settings ###
