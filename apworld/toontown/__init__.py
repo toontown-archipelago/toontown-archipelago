@@ -103,7 +103,7 @@ class ToontownWorld(World):
         }
         self.startingAccess = startingOptionToAccess.get(self.options.starting_task_playground.value, StartingTaskOption.option_ttc)
         # If our starting PG is random, figure out which one to use
-        if self.options.starting_task_playground.value == StartingTaskOption.option_random:
+        if self.options.starting_task_playground.value == StartingTaskOption.option_randomized:
             self.startingAccess = startingOptionToAccess.get(random.choice(list(startingOptionToAccess.keys())), StartingTaskOption.option_ttc)
 
     def create_regions(self) -> None:
@@ -424,6 +424,8 @@ class ToontownWorld(World):
             "tpsanity": self.options.tpsanity.value,
             "treasures_per_location": self.options.treasures_per_location.value,
             "checks_per_boss": self.options.checks_per_boss.value,
+            "start_gag_xp": self.options.base_global_gag_xp.value,
+            "max_gag_xp": self.options.max_global_gag_xp.value
         }
 
     def calculate_starting_tracks(self):

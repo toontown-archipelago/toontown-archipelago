@@ -69,6 +69,7 @@ from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.util import win_condition
 from ..archipelago.util.win_condition import WinCondition
 from ..util.astron.AstronDict import AstronDict
+from apworld.toontown import ToontownRegionName, ToontownItemName, get_item_def_from_id, ITEM_NAME_TO_ID
 
 
 if base.wantKarts:
@@ -2880,6 +2881,41 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # To be overriden in LocalToon, just here for safety
     def d_setDeathReason(self, reason: DeathReason):
         pass
+
+    def count(self, item, player):
+        count = 0
+        for receivedItem in self.getReceivedItems():
+            if ITEM_NAME_TO_ID[item] == receivedItem[1]:
+                count += 1
+        return count
+
+    def has(self, item, player, wantedCount=1):
+        count = 0
+        for receivedItem in self.getReceivedItems():
+            if ITEM_NAME_TO_ID[item] == receivedItem[1]:
+                count += 1
+        return count >= wantedCount
+
+    def can_reach(self, region, filler, player):
+        region_to_tp_item = {
+            ToontownRegionName.TTC.value: ToontownItemName.TTC_ACCESS,
+            ToontownRegionName.DD.value: ToontownItemName.DD_ACCESS,
+            ToontownRegionName.DG.value: ToontownItemName.DG_ACCESS,
+            ToontownRegionName.MML.value: ToontownItemName.MML_ACCESS,
+            ToontownRegionName.TB.value: ToontownItemName.TB_ACCESS,
+            ToontownRegionName.DDL.value: ToontownItemName.DDL_ACCESS,
+            ToontownRegionName.GS.value: ToontownItemName.GS_ACCESS,
+            ToontownRegionName.AA.value: ToontownItemName.AA_ACCESS,
+            ToontownRegionName.SBHQ.value: ToontownItemName.SBHQ_ACCESS,
+            ToontownRegionName.CBHQ.value: ToontownItemName.CBHQ_ACCESS,
+            ToontownRegionName.LBHQ.value: ToontownItemName.LBHQ_ACCESS,
+            ToontownRegionName.BBHQ.value: ToontownItemName.BBHQ_ACCESS,
+        }
+        for item in self.getReceivedItems():
+            if region_to_tp_item[region] == get_item_def_from_id(item[1]).name:
+                return True
+        return False
+
 
     def hintPointResp(self, pts, cost):
         self.hintPoints = pts

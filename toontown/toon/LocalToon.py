@@ -34,6 +34,7 @@ from toontown.shtiker import NPCFriendPage
 from toontown.shtiker import EventsPage
 from toontown.shtiker import TIPPage
 from toontown.shtiker import CheckPage
+from toontown.shtiker import LocationPage
 from toontown.quest import Quests
 from toontown.quest import QuestParser
 from toontown.toonbase.ToontownGlobals import *
@@ -356,6 +357,9 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.checkPage = CheckPage.CheckPage()
         self.checkPage.load()
         self.book.addPage(self.checkPage, pageName=TTLocalizer.CheckPageTitle)
+        self.locationPage = LocationPage.LocationPage()
+        self.locationPage.load()
+        self.book.addPage(self.locationPage, pageName=TTLocalizer.LocationPageTitle)
         self.mapPage = MapPage.MapPage()
         self.mapPage.load()
         self.book.addPage(self.mapPage, pageName=TTLocalizer.MapPageTitle)
