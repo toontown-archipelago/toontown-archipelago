@@ -220,6 +220,7 @@ class TreasuresPerLocation(Range):
     range_end = 6
     default = 4
 
+
 class ChecksPerBoss(Range):
     """
     How many checks you will receive from a cog boss upon completion.
@@ -228,6 +229,7 @@ class ChecksPerBoss(Range):
     range_start = 0
     range_end = 5
     default = 4
+
 
 class GagTrainingCheckBehavior(Choice):
     """
@@ -283,6 +285,20 @@ class MaxedCogGalleryQuota(Range):
     range_start = 0
     range_end = 10
     default = 3
+
+
+class FacilityLocking(Choice):
+    """
+    Determines how facilities are locked within a run.
+    - keys: Default, each facility has its own key.
+    - access: Adds a second area access key for each cog HQ to the pool that unlocks all facilities within.
+    - unlocked: Facilities are unlocked from the start of the run.
+    """
+    display_name = "Facility Locking"
+    option_keys = 0
+    option_access = 1
+    option_unlocked = 2
+    default = 0
 
 
 class FishLocations(Choice):
@@ -358,6 +374,7 @@ class SyncJellybeans(Toggle):
     """
     display_name = "Sync Jellybeans"
     default = True
+
 
 class SyncGagExp(Toggle):
     """
@@ -478,6 +495,7 @@ class ToontownOptions(PerGameCommonOptions):
     starting_task_playground: StartingTaskOption
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     maxed_cog_gallery_quota: MaxedCogGalleryQuota
+    facility_locking: FacilityLocking
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression

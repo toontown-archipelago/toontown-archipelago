@@ -69,7 +69,7 @@ from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.util import win_condition
 from ..archipelago.util.win_condition import WinCondition
 from ..util.astron.AstronDict import AstronDict
-from apworld.toontown import ToontownRegionName, ToontownItemName, get_item_def_from_id, ITEM_NAME_TO_ID
+from apworld.toontown import ToontownRegionName, ToontownItemName, get_item_def_from_id, ITEM_NAME_TO_ID, TPSanity
 
 
 if base.wantKarts:
@@ -2911,6 +2911,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             ToontownRegionName.LBHQ.value: ToontownItemName.LBHQ_ACCESS,
             ToontownRegionName.BBHQ.value: ToontownItemName.BBHQ_ACCESS,
         }
+        # The only time we actually need to check access is when the sanity is keys,
+        # since we can reach everywhere by default otherwise
+        if base.localAvatar.slotData.get("tpsanity", 0) != TPSanity.option_keys:
+            return True
         for item in self.getReceivedItems():
             if region_to_tp_item[region] == get_item_def_from_id(item[1]).name:
                 return True
