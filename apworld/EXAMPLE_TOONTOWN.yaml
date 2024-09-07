@@ -133,7 +133,7 @@ Toontown:
   # vanilla: unlocks the gag when you get the exp required.
   # unlock: unlocks the gag immediately, giving you the required exp directly.
   # trained: maxes your experience in the track immediately, effectively disabling exp entirely until overcapped.
-  gag_frame_item_behavior: 'trained'
+  gag_frame_item_behavior: 'vanilla'
 
   ### Task Settings ###
 
