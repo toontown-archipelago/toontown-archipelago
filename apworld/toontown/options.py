@@ -235,12 +235,29 @@ class GagTrainingCheckBehavior(Choice):
 
     unlock: When unlocking a new gag, you get its respective check.
     trained: When earning all available experience for a specific gag level, you get its respective check.
+    disabled: Does not give checks for gags. !! Might cause issues generating !!
     """
     option_unlock = 0
     option_trained = 1
+    option_disabled = 2
 
     display_name = "Gag Training Check Behavior"
 
+
+class GagTrainingFrameBehavior(Choice):
+    """
+    Behavior of how gag frame items are handled
+
+    vanilla: unlocks the gag when you get the exp required.
+    unlock: unlocks the gag immediately, giving you the required exp directly.
+    trained: maxes your experience in the track immediately, effectively disabling exp entirely until overcap.
+    """
+
+    option_vanilla = 0
+    option_unlock = 1
+    option_trained = 2
+
+    display_name = "Gag Frame Item Behavior"
 
 class LogicalTasksPerPlayground(Range):
     """
@@ -474,6 +491,7 @@ class ToontownOptions(PerGameCommonOptions):
     treasures_per_location: TreasuresPerLocation
     checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
+    gag_frame_item_behavior: GagTrainingFrameBehavior
     logical_tasks_per_playground: LogicalTasksPerPlayground
     starting_task_playground: StartingTaskOption
     logical_maxed_cog_gallery: LogicalMaxedCogGallery

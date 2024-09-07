@@ -498,6 +498,10 @@ class ToontownWorld(World):
         if not golf:
             forbidden_location_types.add(ToontownLocationType.GOLF)
 
+        gags = self.options.gag_training_check_behavior.value
+        if gags == ToontownOptions.gag_training_check_behavior.option_disabled:
+            forbidden_location_types.add(ToontownLocationType.GAG_TRAINING)
+
         return forbidden_location_types
 
     def _force_item_placement(self, location: ToontownLocationName, item: ToontownItemName) -> None:
