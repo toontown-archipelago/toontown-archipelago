@@ -125,7 +125,15 @@ Toontown:
 
   # unlock: When unlocking a new gag, you get its respective check.
   # trained: When earning all available experience for a specific gag level, you get its respective check.
+  # disabled: Does not give checks for gags.
   gag_training_check_behavior: 'trained'
+
+  # Behavior of how gag training frame items are handled.
+
+  # vanilla: unlocks the gag when you get the exp required.
+  # unlock: unlocks the gag immediately, giving you the required exp directly.
+  # trained: maxes your experience in the track immediately, effectively disabling exp entirely until overcapped.
+  gag_frame_item_behavior: 'trained'
 
   ### Task Settings ###
 

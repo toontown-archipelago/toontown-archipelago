@@ -235,11 +235,12 @@ class GagTrainingCheckBehavior(Choice):
 
     unlock: When unlocking a new gag, you get its respective check.
     trained: When earning all available experience for a specific gag level, you get its respective check.
-    disabled: Does not give checks for gags. !! Might cause issues generating !!
+    disabled: Does not give checks for gags.
     """
     option_unlock = 0
     option_trained = 1
     option_disabled = 2
+    default = 1
 
     display_name = "Gag Training Check Behavior"
 
@@ -250,12 +251,13 @@ class GagTrainingFrameBehavior(Choice):
 
     vanilla: unlocks the gag when you get the exp required.
     unlock: unlocks the gag immediately, giving you the required exp directly.
-    trained: maxes your experience in the track immediately, effectively disabling exp entirely until overcap.
+    trained: maxes your experience in the track immediately, effectively disabling exp entirely until overcapped.
     """
 
     option_vanilla = 0
     option_unlock = 1
     option_trained = 2
+    default = 0
 
     display_name = "Gag Frame Item Behavior"
 

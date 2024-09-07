@@ -230,12 +230,6 @@ class GagTrainingFrameReward(APReward):
             av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
             av.b_setInventory(av.inventory.makeNetString())
 
-
-        # Handle the setting for frame behavior.
-        
-        if behaviorMode == 1: # unlock gag when receiving frame
-            
-
 class GagUpgradeReward(APReward):
     TOONUP = 0
     TRAP = 1
