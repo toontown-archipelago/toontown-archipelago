@@ -74,6 +74,18 @@ Toontown:
   # - - NOTE: laff_o_lympics replaces ALL laff boost items with only +1 Laff Boosts
   win_condition: cog_bosses
 
+  # NOTE: This condition should NOT be the same as win_condition
+  # Determines a second condition before being able to talk to Flippy to complete the game.
+  # - none (default): Disables this option and only one condition is needed to complete the run.
+  # - cog_bosses: Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
+  # - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
+  # - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+  # - total_gag_tracks: Player must max a certain amount of gag tracks to complete the game (determined by gag_tracks_required).
+  # - total_fish_species: Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
+  # - laff_o_lympics: Player must reach a certain amount of laff to complete the game (determined by laff_points_required).
+  # - - NOTE: laff_o_lympics replaces ALL laff boost items with only +1 Laff Boosts
+  second_win_condition: none
+
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
   # Range: 0 to 4
   cog_bosses_required: 4
@@ -224,6 +236,16 @@ Toontown:
   # wild: RNG elements are completely random and will shuffle upon relogging
   seed_generation_type: 'global'
 
+  ### Junk Settings ###
+
+  # Weights for all of the various junk (0-100).
+  # At least 1 junk must have a value greater than 0.
+  bean_weight: 100
+  exp_weight: 100
+  sos_weight: 65
+  unite_weight: 65
+  fire_weight: 65
+
   ### Trap Settings ###
 
   # Percentage of junk items to be replaced with traps
@@ -233,7 +255,7 @@ Toontown:
   # At least 1 trap must have a value of >0 if trap_percent is >=1.
   uber_trap_weight: 100
   drip_trap_weight: 50
-  bean_tax_weight: 36
+  bean_tax_weight: 42
   gag_shuffle_weight: 100
 
   ### General Gameplay Settings ###

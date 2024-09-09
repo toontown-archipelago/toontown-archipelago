@@ -72,10 +72,12 @@ class BossDefeatWinCondition(WinCondition):
         return self.__get_bosses_needed() <= 0
 
     def generate_npc_dialogue(self, delimiter='\x07') -> str:
-        return (f'You still have not completed your goal!{delimiter}'
+        if self.satisfied():
+            return (f'It seems your bosses goal is completed!{delimiter}'
+                    f'When you finish your other goal, come back and see me!')
+        return (f'You still have not completed your bosses goal!{delimiter}'
                 f'You still must defeat {self.__get_bosses_needed()} unique bosses.{delimiter}'
-                f'When you finish, come back and see me!{delimiter}'
-                f'Good luck!')
+                f'When you finish, come back and see me!')
 
 
 class GlobalTaskWinCondition(WinCondition):
@@ -103,10 +105,12 @@ class GlobalTaskWinCondition(WinCondition):
         return self.__get_tasks_needed() <= 0
 
     def generate_npc_dialogue(self, delimiter='\x07') -> str:
-        return (f'You still have not completed your goal!{delimiter}'
+        if self.satisfied():
+            return (f'It seems your total ToonTasks goal is completed!{delimiter}'
+                    f'When you finish your other goal, come back and see me!')
+        return (f'You still have not completed your total ToonTasks goal!{delimiter}'
                 f'You still must complete {self.__get_tasks_needed()} more ToonTasks.{delimiter}'
-                f'When you finish, come back and see me!{delimiter}'
-                f'Good luck!')
+                f'When you finish, come back and see me!')
 
 
 class HoodTaskWinCondition(WinCondition):
@@ -151,6 +155,9 @@ class HoodTaskWinCondition(WinCondition):
         return self.__get_lowest_completion_amount() >= self.tasks_per_hood_needed
 
     def generate_npc_dialogue(self, delimiter='\x07') -> str:
+        if self.satisfied():
+            return (f'It seems your hood ToonTasks goal is completed!{delimiter}'
+                    f'When you finish your other goal, come back and see me!')
 
         from toontown.toonbase import TTLocalizer
         hood_id_to_name = {
@@ -173,11 +180,10 @@ class HoodTaskWinCondition(WinCondition):
             plural = 's' if tasks_needed > 1 else ''
             instructions += f'{tasks_needed} more ToonTask{plural} completed in {hood_id_to_name.get(hood_id, hood_id)}.{delimiter}'
 
-        return (f'You still have not completed your goal!{delimiter}'
+        return (f'You still have not completed your hood ToonTasks goal!{delimiter}'
                 f'You need to fulfil the following requirements still:{delimiter}'
                 f'{instructions}'
-                f'When you finish, come back and see me!{delimiter}'
-                f'Good luck!')
+                f'When you finish, come back and see me!')
 
 
 class GagTrackWinCondition(WinCondition):
@@ -204,18 +210,20 @@ class GagTrackWinCondition(WinCondition):
         return sum(self._get_gags_maxxed().values()) >= self.gag_tracks
     
     def generate_npc_dialogue(self, delimiter='\x07') -> str:
+        if self.satisfied():
+            return (f'It seems your max gags goal is completed!{delimiter}'
+                    f'When you finish your other goal, come back and see me!')
         gags_needed = self.gag_tracks - sum(self._get_gags_maxxed().values())
         plural = 's' if gags_needed > 1 else ''
-        return (f'You still have not completed your goal!{delimiter}'
+        return (f'You still have not completed your max gags goal!{delimiter}'
                 f'You still need to max out {gags_needed} gag track{plural}.{delimiter}'
-                f'When you finish, come back and see me!{delimiter}'
-                f'Good luck!')
+                f'When you finish, come back and see me!')
 
 
 class FishSpeciesWinCondition(WinCondition):
     def __init__(self, toon: DistributedToon | DistributedToonAI, fish_species: int):
         super().__init__(toon)
-        self.fish_species = fish_species # fish species needed to meet win condition
+        self.fish_species = fish_species  # fish species needed to meet win condition
     
     # Calculate how many fish species the toon has caught
     def _get_fish_species_caught(self) -> int:
@@ -235,12 +243,14 @@ class FishSpeciesWinCondition(WinCondition):
         return self._get_fish_species_caught() >= self.fish_species
     
     def generate_npc_dialogue(self, delimiter='\x07') -> str:
+        if self.satisfied():
+            return (f'It seems your fish species is completed!{delimiter}'
+                    f'When you finish your other goal, come back and see me!')
         fish_needed = self.fish_species - self._get_fish_species_caught()
         plural = 's' if fish_needed > 1 else ''
-        return (f'You still have not completed your goal!{delimiter}'
+        return (f'You still have not completed your fish species goal!{delimiter}'
                 f'You still need to catch {fish_needed} more fish species.{delimiter}'
-                f'When you finish, come back and see me!{delimiter}'
-                f'Good luck!')
+                f'When you finish, come back and see me!')
 
 
 class LaffOLympicsWinCondition(WinCondition):
@@ -252,12 +262,15 @@ class LaffOLympicsWinCondition(WinCondition):
         return self.toon.getMaxHp() >= self.laff_points
 
     def generate_npc_dialogue(self, delimiter='\x07') -> str:
+        if self.satisfied():
+            return (f'It seems your Laff-O-Lympics goal is completed!{delimiter}'
+                    f'When you finish your other goal, come back and see me!')
         laff_needed = self.laff_points - self.toon.getMaxHp()
         plural = 's' if laff_needed > 1 else ''
-        return (f'You still have not completed your goal!{delimiter}'
+        return (f'You still have not completed your Laff-O-Lympics goal!{delimiter}'
                 f'You still need to gain {laff_needed} more Laff Point{plural}.{delimiter}'
-                f'When you finish, come back and see me!{delimiter}'
-                f'Good luck!')
+                f'When you finish, come back and see me!')
+
 
 # Given a win condition ID (given to us via slot data from archipelago) generate and return the corresponding condition
 # When new win conditions are added, be sure to add them here

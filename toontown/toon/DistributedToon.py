@@ -70,6 +70,7 @@ from ..archipelago.util import win_condition
 from ..archipelago.util.win_condition import WinCondition
 from ..util.astron.AstronDict import AstronDict
 from apworld.toontown import ToontownRegionName, ToontownItemName, get_item_def_from_id, ITEM_NAME_TO_ID, TPSanity
+from apworld.toontown.options import SecondWinCondition
 
 
 if base.wantKarts:
@@ -221,7 +222,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintCost = 0
 
         self.slotData = {}
-        self.winCondition: WinCondition = win_condition.NoWinCondition(self)
+        self.winCondition = [win_condition.NoWinCondition(self)]
         self.rewardHistory = []
         self.rewardTier = 0
         self.alreadyNotified = False
@@ -2920,7 +2921,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 return True
         return False
 
-
     def hintPointResp(self, pts, cost):
         self.hintPoints = pts
         self.hintCost = cost
@@ -2939,20 +2939,25 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         return bool(self.slotData)
 
     def updateWinCondition(self) -> None:
-        condition = win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self)
+        condition = []
+        condition.append(win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self))
+        if self.getSlotData().get('second_win_condition', SecondWinCondition.option_none) != SecondWinCondition.option_none:
+            condition.append(win_condition.generate_win_condition(self.getSlotData().get('second_win_condition', -2), self))
         self.winCondition = condition
         # check if we have previously met the win condition on login
         # if we have, send a system message to the player that they can complete their run and talk to flippy
         self.checkWinCondition()
 
     def checkWinCondition(self):
-        if self.getWinCondition().satisfied():
-            if not self.alreadyNotified:
-                self.setSystemMessage(0, TTLocalizer.WinConditionMet)
-                # play the golf victory sound so they dont miss it
-                 # check if its localtoon to potentially fix a bug with this playing for unknown reasons 
-                if self == base.localAvatar:
-                    base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
+        for condition in self.getWinCondition():
+            if not condition.satisfied():
+                return  # We return here so notif only runs if all are complete
+        if not self.alreadyNotified:
+            self.setSystemMessage(0, TTLocalizer.WinConditionMet)
+            # play the golf victory sound so they dont miss it
+            # check if its localtoon to potentially fix a bug with this playing for unknown reasons
+            if self == base.localAvatar:
+                base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
                 self.alreadyNotified = True
 
     def getWinCondition(self) -> WinCondition:
