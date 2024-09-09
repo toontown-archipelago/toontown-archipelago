@@ -193,13 +193,17 @@ class GagTrainingFrameReward(APReward):
         return f'phase_14/maps/gags/{ap_icon}.png'
 
     def apply(self, av: "DistributedToonAI"):
+        
+        # Store option for behavior
+        behaviorMode = av.slotData.get("gag_frame_item_behavior", 0)
 
         # Increment track access level by 1
         oldLevel = av.getTrackAccessLevel(self.track)
         newLevel = oldLevel + 1
 
         # Before we do anything, we need to see if they were capped before this so we can award them gags later
-        wasCapped = av.experience.getExp(self.track) == av.experience.getExperienceCapForTrack(self.track)
+        curExp = av.experience.getExp(self.track)
+        wasCapped = curExp == av.experience.getExperienceCapForTrack(self.track)
         # Edge case, we were not technically capped if we are unlocking the "overflow xp" mechanic
         if newLevel >= 8:
             wasCapped = False
@@ -213,9 +217,16 @@ class GagTrainingFrameReward(APReward):
             av.b_setInventory(av.inventory.makeNetString())
         # Now consider the case where we were maxed previously and want to upgrade by giving 1 xp and giving new gags
         # This will also trigger the new gag check to unlock :3
-        elif wasCapped:
-            av.experience.addExp(track=self.track, amount=1)  # Give them enough xp to learn the gag :)
-            av.b_setExperience(av.experience.getCurrentExperience())
+        elif (wasCapped and behaviorMode == 0) or behaviorMode == 1:
+            toNext = av.experience.getNextExpValue(track=self.track, curSkill=curExp)
+            av.experience.addExp(track=self.track, amount=toNext)  # Give them enough xp to learn the gag :)
+            av.ap_setExperience(av.experience.getCurrentExperience())
+            av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
+            av.b_setInventory(av.inventory.makeNetString())
+        # Using an if here because this still should run to max level 1 gags.
+        if behaviorMode == 2 and newLevel < 8: # Train Gag when recieving frame.
+            av.experience.setExp(self.track, av.experience.getExperienceCapForTrack(track=self.track)) # max the gag exp.
+            av.ap_setExperience(av.experience.getCurrentExperience())
             av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
             av.b_setInventory(av.inventory.makeNetString())
 

@@ -4777,7 +4777,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def ap_setExperience(self, experience: list[int]):
         self.b_setExperience(experience)
         for i, track in enumerate(ToontownBattleGlobals.Tracks):
-            self.set_ap_data(track, self.experience.getExp(i), True)
+            self.apply_to_ap_data(track, [("max", self.experience.getExp(i))], True)
 
     def request_default_ap_data(self) -> None:
         # keys currently unused = ["tasks"]
