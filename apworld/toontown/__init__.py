@@ -331,7 +331,7 @@ class ToontownWorld(World):
         for i in range(trap):
             pool.append(self.create_item(self.make_random_trap()))
         for i in range(filler):
-            pool.append(self.create_item(items.random_junk().value))
+            pool.append(self.create_item(self.make_random_junk()))
 
         # racing item logic
         item = self.create_item(ToontownItemName.GO_KART.value)
@@ -361,6 +361,25 @@ class ToontownWorld(World):
         }
         trap_items = list(trap_weights.keys())
         return random.choices(trap_items, weights=[trap_weights[i] for i in trap_items])[0]
+
+    def make_random_junk(self):
+        junk_weights = {
+            ToontownItemName.MONEY_150.value: (self.options.bean_weight/4),
+            ToontownItemName.MONEY_400.value: (self.options.bean_weight/4),
+            ToontownItemName.MONEY_700.value: (self.options.bean_weight/4),
+            ToontownItemName.MONEY_1000.value: (self.options.bean_weight/4),
+            # money_weight = 100
+
+            ToontownItemName.XP_10.value: (self.options.exp_weight*0.47),
+            ToontownItemName.XP_15.value: (self.options.exp_weight*0.33),
+            ToontownItemName.XP_20.value: (self.options.exp_weight*0.2),
+
+            ToontownItemName.SOS_REWARD.value: self.options.sos_weight,
+            ToontownItemName.UNITE_REWARD.value: self.options.unite_weight,
+            ToontownItemName.PINK_SLIP_REWARD.value: self.options.fire_weight,
+        }
+        junk_items = list(junk_weights.keys())
+        return random.choices(junk_items, weights=[junk_weights[i] for i in junk_items])[0]
 
     def fill_slot_data(self) -> Dict[str, Any]:
         """
@@ -415,6 +434,11 @@ class ToontownWorld(World):
             "drip_trap_weight": self.options.drip_trap_weight.value,
             "bean_tax_weight": self.options.bean_tax_weight.value,
             "gag_shuffle_weight": self.options.gag_shuffle_weight.value,
+            "bean_weight": self.options.bean_weight.value,
+            "exp_weight": self.options.exp_weight.value,
+            "sos_weight": self.options.sos_weight.value,
+            "unite_weight": self.options.unite_weight.value,
+            "fire_weight": self.options.fire_weight.value,
             "fish_progression": self.options.fish_progression.value,
             "racing_logic": self.options.racing_logic.value,
             "golfing_logic": self.options.minigolf_logic.value,

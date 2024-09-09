@@ -442,6 +442,61 @@ class ShuffleWeightOption(Range):
     default = 100
 
 
+class BeanWeightOption(Range):
+    """
+    Weight of bean items in the junk pool.
+    """
+
+    display_name = "Bean Junk Weight"
+    range_start = 0
+    range_end = 100
+    default = 100
+
+
+class GagExpWeightOption(Range):
+    """
+    Weight of gag exp items in the junk pool.
+    """
+
+    display_name = "Exp Bundle Weight"
+    range_start = 0
+    range_end = 100
+    default = 100
+
+
+class SOSWeightOption(Range):
+    """
+    Weight of SOS card items in the junk pool.
+    """
+
+    display_name = "SOS Card Weight"
+    range_start = 0
+    range_end = 100
+    default = 65
+
+
+class UniteWeightOption(Range):
+    """
+    Weight of unite items in the junk pool.
+    """
+
+    display_name = "Unite Weight"
+    range_start = 0
+    range_end = 100
+    default = 65
+
+
+class FireWeightOption(Range):
+    """
+    Weight of Pink Slip items in the junk pool.
+    """
+
+    display_name = "Pink Slip Weight"
+    range_start = 0
+    range_end = 100
+    default = 65
+
+
 class DeathLinkOption(Toggle):
     """
     Enable to turn on the "DeathLink" mechanic in Archipelago.
@@ -491,4 +546,9 @@ class ToontownOptions(PerGameCommonOptions):
     drip_trap_weight: DripWeightOption
     bean_tax_weight: TaxWeightOption
     gag_shuffle_weight: ShuffleWeightOption
+    bean_weight: BeanWeightOption
+    exp_weight: GagExpWeightOption
+    sos_weight: SOSWeightOption
+    unite_weight: UniteWeightOption
+    fire_weight: FireWeightOption
     death_link: DeathLinkOption

@@ -208,6 +208,16 @@ Toontown:
   # wild: RNG elements are completely random and will shuffle upon relogging
   seed_generation_type: 'global'
 
+  ### Junk Settings ###
+
+  # Weights for all of the various junk (0-100).
+  # At least 1 junk must have a value greater than 0.
+  bean_weight: 100
+  exp_weight: 100
+  sos_weight: 65
+  unite_weight: 65
+  fire_weight: 65
+
   ### Trap Settings ###
 
   # Percentage of junk items to be replaced with traps
@@ -217,7 +227,7 @@ Toontown:
   # At least 1 trap must have a value of >0 if trap_percent is >=1.
   uber_trap_weight: 100
   drip_trap_weight: 50
-  bean_tax_weight: 36
+  bean_tax_weight: 42
   gag_shuffle_weight: 100
 
   ### General Gameplay Settings ###

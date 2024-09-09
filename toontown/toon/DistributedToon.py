@@ -2916,7 +2916,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 return True
         return False
 
-
     def hintPointResp(self, pts, cost):
         self.hintPoints = pts
         self.hintCost = cost
