@@ -438,6 +438,8 @@ class ToontownWorld(World):
             "maxed_cog_gallery_quota": self.options.maxed_cog_gallery_quota.value,
             "facility_locking": self.options.facility_locking.value,
             "death_link": self.options.death_link.value,
+            "slot_sync_jellybeans": self.options.slot_sync_jellybeans.value,
+            "slot_sync_gag_experience": self.options.slot_sync_gag_experience.value,
             "local_itempool": local_itempool,
             "tpsanity": self.options.tpsanity.value,
             "treasures_per_location": self.options.treasures_per_location.value,
