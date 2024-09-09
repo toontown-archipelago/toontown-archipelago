@@ -12,7 +12,7 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES
-from .options import ToontownOptions, TPSanity, StartingTaskOption
+from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
 from .fish import FishProgression, FishChecks
@@ -409,6 +409,7 @@ class ToontownWorld(World):
             "fish_species_required": self.options.fish_species_required.value,
             "laff_points_required": self.options.laff_points_required.value,
             "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
+            "gag_frame_item_behavior": self.options.gag_frame_item_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,
             "uber_trap_weight": self.options.uber_trap_weight.value,
@@ -499,6 +500,10 @@ class ToontownWorld(World):
         golf = self.options.minigolf_logic.value
         if not golf:
             forbidden_location_types.add(ToontownLocationType.GOLF)
+
+        gags = self.options.gag_training_check_behavior.value
+        if gags == GagTrainingCheckBehavior.option_disabled:
+            forbidden_location_types.add(ToontownLocationType.GAG_TRAINING)
 
         return forbidden_location_types
 
