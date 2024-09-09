@@ -242,6 +242,7 @@ class TreasuresPerLocation(Range):
     range_end = 6
     default = 4
 
+
 class ChecksPerBoss(Range):
     """
     How many checks you will receive from a cog boss upon completion.
@@ -251,18 +252,38 @@ class ChecksPerBoss(Range):
     range_end = 5
     default = 4
 
+
 class GagTrainingCheckBehavior(Choice):
     """
     Behavior of how gag experience check locations are handled.
 
     unlock: When unlocking a new gag, you get its respective check.
     trained: When earning all available experience for a specific gag level, you get its respective check.
+    disabled: Does not give checks for gags.
     """
     option_unlock = 0
     option_trained = 1
+    option_disabled = 2
+    default = 1
 
     display_name = "Gag Training Check Behavior"
 
+
+class GagTrainingFrameBehavior(Choice):
+    """
+    Behavior of how gag frame items are handled
+
+    vanilla: unlocks the gag when you get the exp required.
+    unlock: unlocks the gag immediately, giving you the required exp directly.
+    trained: maxes your experience in the track immediately, effectively disabling exp entirely until overcapped.
+    """
+
+    option_vanilla = 0
+    option_unlock = 1
+    option_trained = 2
+    default = 0
+
+    display_name = "Gag Frame Item Behavior"
 
 class LogicalTasksPerPlayground(Range):
     """
@@ -305,6 +326,20 @@ class MaxedCogGalleryQuota(Range):
     range_start = 0
     range_end = 10
     default = 3
+
+
+class FacilityLocking(Choice):
+    """
+    Determines how facilities are locked within a run.
+    - keys: Default, each facility has its own key.
+    - access: Adds a second area access key for each cog HQ to the pool that unlocks all facilities within.
+    - unlocked: Facilities are unlocked from the start of the run.
+    """
+    display_name = "Facility Locking"
+    option_keys = 0
+    option_access = 1
+    option_unlocked = 2
+    default = 0
 
 
 class FishLocations(Choice):
@@ -380,6 +415,7 @@ class SyncJellybeans(Toggle):
     """
     display_name = "Sync Jellybeans"
     default = True
+
 
 class SyncGagExp(Toggle):
     """
@@ -552,10 +588,12 @@ class ToontownOptions(PerGameCommonOptions):
     treasures_per_location: TreasuresPerLocation
     checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
+    gag_frame_item_behavior: GagTrainingFrameBehavior
     logical_tasks_per_playground: LogicalTasksPerPlayground
     starting_task_playground: StartingTaskOption
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     maxed_cog_gallery_quota: MaxedCogGalleryQuota
+    facility_locking: FacilityLocking
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression
