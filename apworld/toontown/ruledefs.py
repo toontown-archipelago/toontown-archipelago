@@ -6,7 +6,7 @@ from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVE
 from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, \
     LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION, PlaygroundFishZoneGroups
 from .items import ToontownItemName
-from .options import ToontownOptions, TPSanity
+from .options import ToontownOptions, TPSanity, SecondWinCondition
 from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID, FISH_LOCATIONS, \
     get_location_def_from_name
 from .regions import ToontownEntranceDefinition, ToontownRegionName
@@ -539,10 +539,12 @@ def AllFishCaught(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
 @rule(Rule.TaskedAllHoods)
 def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
-        task_condition = options.win_condition.value
+        task_condition_primary = options.win_condition.value
+        task_condition_secondary = options.second_win_condition.value
         tasks_required = options.total_tasks_required.value
     else:
-        task_condition = options.get("win_condition", 0)
+        task_condition_primary = options.get("win_condition", 0)
+        task_condition_secondary = options.get("second_win_condition", 0)
         tasks_required = options.get("total_tasks_required", 48)
     args = (state, locentr, world, player, options)
     hq_access_to_gag_rule = {
@@ -566,9 +568,9 @@ def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
 
     access_count, gag_rule = CountAndGagRule()
 
-    if task_condition == 1:  # Complete enough total tasks
+    if task_condition_primary == 1 or task_condition_secondary == 1:  # Complete enough total tasks
         hoods_required = math.ceil(tasks_required / 12)  # How many HQs we need minimum to win!
-    elif task_condition == 2:  # Complete enough tasks in each hood
+    elif task_condition_primary == 2 or task_condition_secondary == 2:  # Complete enough tasks in each hood
         hoods_required = len(list(hq_access_to_gag_rule.keys()))  # We need all of them to win!
     # Check if we have enough to win.
     return access_count >= hoods_required and passes_rule(Rule.CanReachTTC, *args) and passes_rule(gag_rule, *args)  # TECHNICALLY TRUE!
@@ -617,8 +619,10 @@ def MaxedAllGags(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
 def CanWinGame(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
         win_condition = options.win_condition.value
+        second_condition = options.second_win_condition.value
     else:
         win_condition = options.get("win_condition", 0)
+        second_condition = options.get("second_win_condition", SecondWinCondition.option_none)
     args = (state, locentr, world, player, options)
     win_conditions = {
         0: Rule.AllBossesDefeated,  # Cog Boss Goal
@@ -629,6 +633,8 @@ def CanWinGame(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, p
         5: Rule.GainedEnoughLaff,  # Laff-O-Lympics Goal
     }
     # Return our goal rule, default to Bosses if invalid
+    if second_condition != SecondWinCondition.option_none:
+        return passes_rule(win_conditions.get(win_condition, 0), *args) and passes_rule(win_conditions.get(second_condition, 0), *args)
     return passes_rule(win_conditions.get(win_condition, 0), *args)
 
 

@@ -248,7 +248,7 @@ class ToontownWorld(World):
                     self.multiworld.push_precollected(item)
 
         # Dynamically generate laff boosts.
-        if self.options.win_condition.value != 5:  # If our goal isn't laff-o-lypics, generate laff items normally
+        if self.options.win_condition.value != 5 and self.options.second_win_condition.value != 5:  # If our goal isn't laff-o-lypics, generate laff items normally
             LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
             if LAFF_TO_GIVE < 0:
                 print(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
@@ -420,6 +420,7 @@ class ToontownWorld(World):
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
             "win_condition": self.options.win_condition.value,
+            "second_win_condition": self.options.second_win_condition.value,
             "cog_bosses_required": self.options.cog_bosses_required.value,
             "total_tasks_required": self.options.total_tasks_required.value,
             "hood_tasks_required": self.options.hood_tasks_required.value,

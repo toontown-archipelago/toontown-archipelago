@@ -124,6 +124,28 @@ class WinCondition(Choice):
     default = 0
 
 
+class SecondWinCondition(Choice):
+    """
+    NOTE: This condition should NOT be the same as win_condition
+    Determines a second condition before being able to talk to Flippy to complete the game.
+    - none (default): Disables this option and only one condition is needed to complete the run.
+    - cog_bosses: Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
+    - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
+    - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+    - total_fish_species:  Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
+    - laff_o_lympics: Player must reach a certain amount of laff to complete the game (determined by laff_points_required).
+    """
+    display_name = "Second Win Condition"
+    option_cog_bosses = 0
+    option_total_tasks = 1
+    option_hood_tasks = 2
+    option_total_gag_tracks = 3
+    option_total_fish_species = 4
+    option_laff_o_lympics = 5
+    option_none = 6
+    default = 6
+
+
 class CogBossesRequired(Range):
     """
     How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
@@ -519,6 +541,7 @@ class ToontownOptions(PerGameCommonOptions):
     starting_task_capacity: StartingTaskCapacityOption
     max_task_capacity: MaxTaskCapacityOption
     win_condition: WinCondition
+    second_win_condition: SecondWinCondition
     cog_bosses_required: CogBossesRequired
     total_tasks_required: TotalTasksRequired
     hood_tasks_required: HoodTasksRequired
