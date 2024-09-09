@@ -403,6 +403,8 @@ class AccessKeyReward(APReward):
         GOOFY_SPEEDWAY: ToontownItemName.GS_ACCESS,
     }
 
+    COG_ZONES = (SELLBOT_HQ, CASHBOT_HQ,  LAWBOT_HQ, BOSSBOT_HQ)
+
     def __init__(self, playground: int):
         self.playground: int = playground
 
@@ -414,6 +416,12 @@ class AccessKeyReward(APReward):
             if get_item_def_from_id(item_id).name == self.ZONE_TO_ACCESS_ITEM.get(self.playground, ToontownGlobals.ToontownCentral):
                 accessCount += 1
         if accessCount >= 2:
+            if self.playground in self.COG_ZONES:
+                return global_text_properties.get_raw_formatted_string([
+                    MinimalJsonMessagePart("You may now infiltrate facilities\nin "),
+                    MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+                    MinimalJsonMessagePart("!"),
+                    ])
             return global_text_properties.get_raw_formatted_string([
                 MinimalJsonMessagePart("You may now complete ToonTasks\nin "),
                 MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
@@ -427,7 +435,7 @@ class AccessKeyReward(APReward):
             ])
 
     def apply(self, av: "DistributedToonAI"):
-        # Apply TP before HQ
+        # Apply TP before HQ or facilities
         if not av.hasTeleportAccess(self.playground):
             av.addTeleportAccess(self.playground)
             for pg in self.LINKED_PGS.get(self.playground, []):

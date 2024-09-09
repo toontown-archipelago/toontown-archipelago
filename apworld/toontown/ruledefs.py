@@ -6,7 +6,7 @@ from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVE
 from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, \
     LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION, PlaygroundFishZoneGroups
 from .items import ToontownItemName
-from .options import ToontownOptions, TPSanity
+from .options import ToontownOptions, TPSanity, FacilityLocking
 from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID, FISH_LOCATIONS, \
     get_location_def_from_name
 from .regions import ToontownEntranceDefinition, ToontownRegionName
@@ -73,18 +73,6 @@ def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
     return True
 
 
-@rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
-@rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS)
-@rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS)
-@rule(Rule.DollarMintKey,   ToontownItemName.DOLLAR_MINT_ACCESS)
-@rule(Rule.BullionMintKey,  ToontownItemName.BULLION_MINT_ACCESS)
-@rule(Rule.OfficeAKey,      ToontownItemName.A_OFFICE_ACCESS)
-@rule(Rule.OfficeBKey,      ToontownItemName.B_OFFICE_ACCESS)
-@rule(Rule.OfficeCKey,      ToontownItemName.C_OFFICE_ACCESS)
-@rule(Rule.OfficeDKey,      ToontownItemName.D_OFFICE_ACCESS)
-@rule(Rule.FrontOneKey,     ToontownItemName.FRONT_ONE_ACCESS)
-@rule(Rule.MiddleTwoKey,    ToontownItemName.MIDDLE_TWO_ACCESS)
-@rule(Rule.BackThreeKey,    ToontownItemName.BACK_THREE_ACCESS)
 @rule(Rule.SellbotDisguise, ToontownItemName.SELLBOT_DISGUISE)
 @rule(Rule.CashbotDisguise, ToontownItemName.CASHBOT_DISGUISE)
 @rule(Rule.LawbotDisguise,  ToontownItemName.LAWBOT_DISGUISE)
@@ -97,6 +85,48 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
     return state.has(argument[0].value, player)
 
 
+@rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
+@rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS)
+@rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS)
+@rule(Rule.DollarMintKey,   ToontownItemName.DOLLAR_MINT_ACCESS)
+@rule(Rule.BullionMintKey,  ToontownItemName.BULLION_MINT_ACCESS)
+@rule(Rule.OfficeAKey,      ToontownItemName.A_OFFICE_ACCESS)
+@rule(Rule.OfficeBKey,      ToontownItemName.B_OFFICE_ACCESS)
+@rule(Rule.OfficeCKey,      ToontownItemName.C_OFFICE_ACCESS)
+@rule(Rule.OfficeDKey,      ToontownItemName.D_OFFICE_ACCESS)
+@rule(Rule.FrontOneKey,     ToontownItemName.FRONT_ONE_ACCESS)
+@rule(Rule.MiddleTwoKey,    ToontownItemName.MIDDLE_TWO_ACCESS)
+@rule(Rule.BackThreeKey,    ToontownItemName.BACK_THREE_ACCESS)
+def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        locking_method = options.facility_locking.value
+    else:
+        locking_method = options.get("facility_locking", 0)
+    # Facilities have their own keys
+    if locking_method == FacilityLocking.option_keys:
+        return state.has(argument[0].value, player)
+    # Facilities are locked by a second access key
+    elif locking_method == FacilityLocking.option_access:
+        key_to_access = {
+            ToontownItemName.FRONT_FACTORY_ACCESS: ToontownItemName.SBHQ_ACCESS,
+            ToontownItemName.SIDE_FACTORY_ACCESS: ToontownItemName.SBHQ_ACCESS,
+            ToontownItemName.COIN_MINT_ACCESS: ToontownItemName.CBHQ_ACCESS,
+            ToontownItemName.DOLLAR_MINT_ACCESS: ToontownItemName.CBHQ_ACCESS,
+            ToontownItemName.BULLION_MINT_ACCESS: ToontownItemName.CBHQ_ACCESS,
+            ToontownItemName.A_OFFICE_ACCESS: ToontownItemName.LBHQ_ACCESS,
+            ToontownItemName.B_OFFICE_ACCESS: ToontownItemName.LBHQ_ACCESS,
+            ToontownItemName.C_OFFICE_ACCESS: ToontownItemName.LBHQ_ACCESS,
+            ToontownItemName.D_OFFICE_ACCESS: ToontownItemName.LBHQ_ACCESS,
+            ToontownItemName.FRONT_ONE_ACCESS: ToontownItemName.BBHQ_ACCESS,
+            ToontownItemName.MIDDLE_TWO_ACCESS: ToontownItemName.BBHQ_ACCESS,
+            ToontownItemName.BACK_THREE_ACCESS: ToontownItemName.BBHQ_ACCESS,
+        }
+        return state.count(key_to_access[argument[0]].value, player) >= 2
+    # Facilities must be set to unlocked, access is always true
+    else:
+        return True
+
+
 @rule(Rule.HasTTCHQAccess,  ToontownItemName.TTC_ACCESS)
 @rule(Rule.HasDDHQAccess,   ToontownItemName.DD_ACCESS)
 @rule(Rule.HasDGHQAccess,   ToontownItemName.DG_ACCESS)
@@ -104,7 +134,7 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.HasTBHQAccess,   ToontownItemName.TB_ACCESS)
 @rule(Rule.HasDDLHQAccess,  ToontownItemName.DDL_ACCESS)
 def HasItemCountRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
-    return state.count(argument[0].value, player) == 2
+    return state.count(argument[0].value, player) >= 2
 
 
 @rule(Rule.CanBuyTTCDoodle, 0)

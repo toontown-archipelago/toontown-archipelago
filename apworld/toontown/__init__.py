@@ -12,7 +12,7 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES
-from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior
+from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
 from .fish import FishProgression, FishChecks
@@ -216,7 +216,13 @@ class ToontownWorld(World):
                         for _ in range(2):
                             self.multiworld.push_precollected(item)
                 else:
-                    pool.append(item)
+                    # We have our facility keys set to access, make 2 of each of those
+                    if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS) \
+                                and self.options.facility_locking == FacilityLocking.option_access:
+                        for _ in range(2):
+                            pool.append(item)
+                    else:
+                        pool.append(item)
         # handle task carry capacity item generation.
         # the amount to give will be based on the starting capacity defined by the yaml
         item = self.create_item(ToontownItemName.TASK_CAPACITY.value)
@@ -236,6 +242,10 @@ class ToontownWorld(World):
                     for _ in range(2):
                         self.multiworld.push_precollected(item)
                 else:
+                    # We have our facility keys set to access, make an extra of each
+                    if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS) \
+                                and self.options.facility_locking == FacilityLocking.option_access:
+                        pool.append(item)
                     self.multiworld.push_precollected(item)
 
         # Automatically give both keys at the start for treasure TP sanity
@@ -246,6 +256,12 @@ class ToontownWorld(World):
             else:
                 for _ in range(2):
                     self.multiworld.push_precollected(item)
+            # We have our facility keys set to access, make an extra of each
+            if self.options.facility_locking == FacilityLocking.option_access:
+                for itemName in TELEPORT_ACCESS_ITEMS:
+                    item = self.create_item(itemName.value)
+                    if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS):
+                        pool.append(item)
 
         # Dynamically generate laff boosts.
         if self.options.win_condition.value != 5:  # If our goal isn't laff-o-lypics, generate laff items normally
@@ -420,6 +436,7 @@ class ToontownWorld(World):
             "racing_logic": self.options.racing_logic.value,
             "golfing_logic": self.options.minigolf_logic.value,
             "maxed_cog_gallery_quota": self.options.maxed_cog_gallery_quota.value,
+            "facility_locking": self.options.facility_locking.value,
             "death_link": self.options.death_link.value,
             "local_itempool": local_itempool,
             "tpsanity": self.options.tpsanity.value,
