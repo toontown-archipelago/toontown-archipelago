@@ -173,7 +173,7 @@ class ArchipelagoSession:
         for k,v in data.items():
             packet = SetPacket()
             packet.operations.append(DataStorageOperation(operation="replace", value=v))
-            packet.key= f"slot{str(self.client.slot)}:{k}"
+            packet.key= k
             packets.append(packet)
         self.client.send_packets(packets)
 
