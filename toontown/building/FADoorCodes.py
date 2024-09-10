@@ -67,6 +67,15 @@ ZONE_TO_ACCESS_CODE = {
     ToontownGlobals.BossbotHQ: BOSSBOT_FACILTIES_MISSING
 }
 
+PLAYGROUND_ZONES = (
+    ToontownGlobals.ToontownCentral,
+    ToontownGlobals.DonaldsDock,
+    ToontownGlobals.DaisyGardens,
+    ToontownGlobals.MinniesMelodyland,
+    ToontownGlobals.TheBrrrgh,
+    ToontownGlobals.DonaldsDreamland
+)
+
 FACILITY_TO_ACCESS_CODE = {
     ToontownGlobals.SellbotFactoryInt: FRONT_FACTORY_ACCESS_MISSING,
     ToontownGlobals.SellbotFactoryIntS: SIDE_FACTORY_ACCESS_MISSING,

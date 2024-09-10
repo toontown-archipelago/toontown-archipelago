@@ -181,7 +181,7 @@ class MapPage(ShtikerPage.ShtikerPage):
                     golfPoster.show()
                 if hood == ToontownGlobals.GoofySpeedway and base.localAvatar.slotData.get("racing_logic"):
                     racePoster.show()
-                if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
+                if hood in FADoorCodes.PLAYGROUND_ZONES:
                     questPoster.show()
                     fishPoster.show()
                     petPoster.show()
@@ -198,7 +198,7 @@ class MapPage(ShtikerPage.ShtikerPage):
                     golfPoster.hide()
                 if hood == ToontownGlobals.GoofySpeedway and base.localAvatar.slotData.get("racing_logic"):
                     racePoster.hide()
-                if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
+                if hood in FADoorCodes.PLAYGROUND_ZONES:
                     questPoster.hide()
                     fishPoster.hide()
                     petPoster.hide()
@@ -234,7 +234,7 @@ class MapPage(ShtikerPage.ShtikerPage):
                 fishPoster.update(base.localAvatar)
 
             # Do we not have access to this hood?
-            if hoodId in FADoorCodes.ZONE_TO_ACCESS_CODE:
+            if hoodId in FADoorCodes.PLAYGROUND_ZONES:
                 if FADoorCodes.ZONE_TO_ACCESS_CODE[hoodId] not in base.localAvatar.getAccessKeys():
                     questPoster.showLocked()
                 else:
