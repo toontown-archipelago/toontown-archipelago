@@ -12,7 +12,7 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES
-from .options import ToontownOptions, TPSanity, StartingTaskOption
+from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
 from .fish import FishProgression, FishChecks
@@ -103,7 +103,7 @@ class ToontownWorld(World):
         }
         self.startingAccess = startingOptionToAccess.get(self.options.starting_task_playground.value, StartingTaskOption.option_ttc)
         # If our starting PG is random, figure out which one to use
-        if self.options.starting_task_playground.value == StartingTaskOption.option_random:
+        if self.options.starting_task_playground.value == StartingTaskOption.option_randomized:
             self.startingAccess = startingOptionToAccess.get(random.choice(list(startingOptionToAccess.keys())), StartingTaskOption.option_ttc)
 
     def create_regions(self) -> None:
@@ -216,7 +216,13 @@ class ToontownWorld(World):
                         for _ in range(2):
                             self.multiworld.push_precollected(item)
                 else:
-                    pool.append(item)
+                    # We have our facility keys set to access, make 2 of each of those
+                    if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS) \
+                                and self.options.facility_locking == FacilityLocking.option_access:
+                        for _ in range(2):
+                            pool.append(item)
+                    else:
+                        pool.append(item)
         # handle task carry capacity item generation.
         # the amount to give will be based on the starting capacity defined by the yaml
         item = self.create_item(ToontownItemName.TASK_CAPACITY.value)
@@ -236,6 +242,10 @@ class ToontownWorld(World):
                     for _ in range(2):
                         self.multiworld.push_precollected(item)
                 else:
+                    # We have our facility keys set to access, make an extra of each
+                    if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS) \
+                                and self.options.facility_locking == FacilityLocking.option_access:
+                        pool.append(item)
                     self.multiworld.push_precollected(item)
 
         # Automatically give both keys at the start for treasure TP sanity
@@ -246,9 +256,15 @@ class ToontownWorld(World):
             else:
                 for _ in range(2):
                     self.multiworld.push_precollected(item)
+            # We have our facility keys set to access, make an extra of each
+            if self.options.facility_locking == FacilityLocking.option_access:
+                for itemName in TELEPORT_ACCESS_ITEMS:
+                    item = self.create_item(itemName.value)
+                    if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS):
+                        pool.append(item)
 
         # Dynamically generate laff boosts.
-        if self.options.win_condition.value != 5:  # If our goal isn't laff-o-lypics, generate laff items normally
+        if self.options.win_condition.value != 5 and self.options.second_win_condition.value != 5:  # If our goal isn't laff-o-lypics, generate laff items normally
             LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
             if LAFF_TO_GIVE < 0:
                 print(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
@@ -331,7 +347,7 @@ class ToontownWorld(World):
         for i in range(trap):
             pool.append(self.create_item(self.make_random_trap()))
         for i in range(filler):
-            pool.append(self.create_item(items.random_junk().value))
+            pool.append(self.create_item(self.make_random_junk()))
 
         # racing item logic
         item = self.create_item(ToontownItemName.GO_KART.value)
@@ -361,6 +377,25 @@ class ToontownWorld(World):
         }
         trap_items = list(trap_weights.keys())
         return random.choices(trap_items, weights=[trap_weights[i] for i in trap_items])[0]
+
+    def make_random_junk(self):
+        junk_weights = {
+            ToontownItemName.MONEY_150.value: (self.options.bean_weight/4),
+            ToontownItemName.MONEY_400.value: (self.options.bean_weight/4),
+            ToontownItemName.MONEY_700.value: (self.options.bean_weight/4),
+            ToontownItemName.MONEY_1000.value: (self.options.bean_weight/4),
+            # money_weight = 100
+
+            ToontownItemName.XP_10.value: (self.options.exp_weight*0.47),
+            ToontownItemName.XP_15.value: (self.options.exp_weight*0.33),
+            ToontownItemName.XP_20.value: (self.options.exp_weight*0.2),
+
+            ToontownItemName.SOS_REWARD.value: self.options.sos_weight,
+            ToontownItemName.UNITE_REWARD.value: self.options.unite_weight,
+            ToontownItemName.PINK_SLIP_REWARD.value: self.options.fire_weight,
+        }
+        junk_items = list(junk_weights.keys())
+        return random.choices(junk_items, weights=[junk_weights[i] for i in junk_items])[0]
 
     def fill_slot_data(self) -> Dict[str, Any]:
         """
@@ -401,6 +436,7 @@ class ToontownWorld(World):
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
             "win_condition": self.options.win_condition.value,
+            "second_win_condition": self.options.second_win_condition.value,
             "cog_bosses_required": self.options.cog_bosses_required.value,
             "total_tasks_required": self.options.total_tasks_required.value,
             "hood_tasks_required": self.options.hood_tasks_required.value,
@@ -409,21 +445,32 @@ class ToontownWorld(World):
             "fish_species_required": self.options.fish_species_required.value,
             "laff_points_required": self.options.laff_points_required.value,
             "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
+            "gag_frame_item_behavior": self.options.gag_frame_item_behavior.value,
             "fish_locations": self.options.fish_locations.value,
             "fish_checks": self.options.fish_checks.value,
             "uber_trap_weight": self.options.uber_trap_weight.value,
             "drip_trap_weight": self.options.drip_trap_weight.value,
             "bean_tax_weight": self.options.bean_tax_weight.value,
             "gag_shuffle_weight": self.options.gag_shuffle_weight.value,
+            "bean_weight": self.options.bean_weight.value,
+            "exp_weight": self.options.exp_weight.value,
+            "sos_weight": self.options.sos_weight.value,
+            "unite_weight": self.options.unite_weight.value,
+            "fire_weight": self.options.fire_weight.value,
             "fish_progression": self.options.fish_progression.value,
             "racing_logic": self.options.racing_logic.value,
             "golfing_logic": self.options.minigolf_logic.value,
             "maxed_cog_gallery_quota": self.options.maxed_cog_gallery_quota.value,
+            "facility_locking": self.options.facility_locking.value,
             "death_link": self.options.death_link.value,
+            "slot_sync_jellybeans": self.options.slot_sync_jellybeans.value,
+            "slot_sync_gag_experience": self.options.slot_sync_gag_experience.value,
             "local_itempool": local_itempool,
             "tpsanity": self.options.tpsanity.value,
             "treasures_per_location": self.options.treasures_per_location.value,
             "checks_per_boss": self.options.checks_per_boss.value,
+            "start_gag_xp": self.options.base_global_gag_xp.value,
+            "max_gag_xp": self.options.max_global_gag_xp.value
         }
 
     def calculate_starting_tracks(self):
@@ -497,6 +544,10 @@ class ToontownWorld(World):
         golf = self.options.minigolf_logic.value
         if not golf:
             forbidden_location_types.add(ToontownLocationType.GOLF)
+
+        gags = self.options.gag_training_check_behavior.value
+        if gags == GagTrainingCheckBehavior.option_disabled:
+            forbidden_location_types.add(ToontownLocationType.GAG_TRAINING)
 
         return forbidden_location_types
 

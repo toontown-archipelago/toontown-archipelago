@@ -73,9 +73,14 @@ class DistributedNPCFlippyInToonHall(DistributedNPCToon):
         super().setMovie(mode, npcId, avId, quests, timestamp)
 
     def doVictoryConditionNotMetMovie(self, toon: DistributedToon.DistributedToon):
-
         isLocalToon = toon.doId == base.localAvatar.doId
-        npcDialogue = toon.getWinCondition().generate_npc_dialogue(delimiter='\x07')
+        npcDialogue = ''
+        conditions = toon.getWinCondition()
+        for condition in conditions:
+            npcDialogue = npcDialogue + condition.generate_npc_dialogue(delimiter='\x07')
+            npcDialogue = npcDialogue + (f'\x07')
+            if conditions.index(condition) == (len(conditions) - 1):
+                npcDialogue = npcDialogue + (f'Good luck!')
 
         if isLocalToon:
             self.setupCamera(None)

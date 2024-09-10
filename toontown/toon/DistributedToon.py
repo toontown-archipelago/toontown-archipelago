@@ -69,6 +69,8 @@ from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.util import win_condition
 from ..archipelago.util.win_condition import WinCondition
 from ..util.astron.AstronDict import AstronDict
+from apworld.toontown import ToontownRegionName, ToontownItemName, get_item_def_from_id, ITEM_NAME_TO_ID, TPSanity
+from apworld.toontown.options import SecondWinCondition
 
 
 if base.wantKarts:
@@ -220,7 +222,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintCost = 0
 
         self.slotData = {}
-        self.winCondition: WinCondition = win_condition.NoWinCondition(self)
+        self.winCondition = [win_condition.NoWinCondition(self)]
         self.rewardHistory = []
         self.rewardTier = 0
         self.alreadyNotified = False
@@ -2881,6 +2883,44 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def d_setDeathReason(self, reason: DeathReason):
         pass
 
+    def count(self, item, player):
+        count = 0
+        for receivedItem in self.getReceivedItems():
+            if ITEM_NAME_TO_ID[item] == receivedItem[1]:
+                count += 1
+        return count
+
+    def has(self, item, player, wantedCount=1):
+        count = 0
+        for receivedItem in self.getReceivedItems():
+            if ITEM_NAME_TO_ID[item] == receivedItem[1]:
+                count += 1
+        return count >= wantedCount
+
+    def can_reach(self, region, filler, player):
+        region_to_tp_item = {
+            ToontownRegionName.TTC.value: ToontownItemName.TTC_ACCESS,
+            ToontownRegionName.DD.value: ToontownItemName.DD_ACCESS,
+            ToontownRegionName.DG.value: ToontownItemName.DG_ACCESS,
+            ToontownRegionName.MML.value: ToontownItemName.MML_ACCESS,
+            ToontownRegionName.TB.value: ToontownItemName.TB_ACCESS,
+            ToontownRegionName.DDL.value: ToontownItemName.DDL_ACCESS,
+            ToontownRegionName.GS.value: ToontownItemName.GS_ACCESS,
+            ToontownRegionName.AA.value: ToontownItemName.AA_ACCESS,
+            ToontownRegionName.SBHQ.value: ToontownItemName.SBHQ_ACCESS,
+            ToontownRegionName.CBHQ.value: ToontownItemName.CBHQ_ACCESS,
+            ToontownRegionName.LBHQ.value: ToontownItemName.LBHQ_ACCESS,
+            ToontownRegionName.BBHQ.value: ToontownItemName.BBHQ_ACCESS,
+        }
+        # The only time we actually need to check access is when the sanity is keys,
+        # since we can reach everywhere by default otherwise
+        if base.localAvatar.slotData.get("tpsanity", 0) != TPSanity.option_keys:
+            return True
+        for item in self.getReceivedItems():
+            if region_to_tp_item[region] == get_item_def_from_id(item[1]).name:
+                return True
+        return False
+
     def hintPointResp(self, pts, cost):
         self.hintPoints = pts
         self.hintCost = cost
@@ -2899,20 +2939,25 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         return bool(self.slotData)
 
     def updateWinCondition(self) -> None:
-        condition = win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self)
+        condition = []
+        condition.append(win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self))
+        if self.getSlotData().get('second_win_condition', SecondWinCondition.option_none) != SecondWinCondition.option_none:
+            condition.append(win_condition.generate_win_condition(self.getSlotData().get('second_win_condition', -2), self))
         self.winCondition = condition
         # check if we have previously met the win condition on login
         # if we have, send a system message to the player that they can complete their run and talk to flippy
         self.checkWinCondition()
 
     def checkWinCondition(self):
-        if self.getWinCondition().satisfied():
-            if not self.alreadyNotified:
-                self.setSystemMessage(0, TTLocalizer.WinConditionMet)
-                # play the golf victory sound so they dont miss it
-                 # check if its localtoon to potentially fix a bug with this playing for unknown reasons 
-                if self == base.localAvatar:
-                    base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
+        for condition in self.getWinCondition():
+            if not condition.satisfied():
+                return  # We return here so notif only runs if all are complete
+        if not self.alreadyNotified:
+            self.setSystemMessage(0, TTLocalizer.WinConditionMet)
+            # play the golf victory sound so they dont miss it
+            # check if its localtoon to potentially fix a bug with this playing for unknown reasons
+            if self == base.localAvatar:
+                base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
                 self.alreadyNotified = True
 
     def getWinCondition(self) -> WinCondition:

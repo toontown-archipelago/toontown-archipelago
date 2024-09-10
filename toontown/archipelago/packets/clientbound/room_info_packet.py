@@ -83,5 +83,17 @@ class RoomInfoPacket(ClientBoundPacketBase):
         # Update the toon's hint cost
         client.av.hintCostPercentage = self.hint_cost
 
-        # When we are given this packet, we should attempt to connect this player to the room with their slot
-        client.connect()
+
+        print(self.seed_name)
+        print(type(self.seed_name))
+        # Check if this is the last session we connected to.
+        if client.av.checkLastSeed(self.seed_name):
+            client.av.b_setLastSeed(self.seed_name)
+            # When we are given this packet, we should attempt to connect this player to the room with their slot
+            client.connect()
+        else:
+            client.av.d_sendArchipelagoMessage("[AP Client Thread] Attempting to connect to a new seed!")
+            client.av.d_setSystemMessage(0, "Attempting to connect to a new seed!")
+            client.av.d_sendArchipelagoMessage("[AP Client Thread] Please run `~ap reset` before attepting to connect again!")
+            client.av.d_setSystemMessage(0, "Please run `~ap reset` before attepting to connect again!")
+            client.stop()

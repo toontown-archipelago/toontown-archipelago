@@ -124,6 +124,28 @@ class WinCondition(Choice):
     default = 0
 
 
+class SecondWinCondition(Choice):
+    """
+    NOTE: This condition should NOT be the same as win_condition
+    Determines a second condition before being able to talk to Flippy to complete the game.
+    - none (default): Disables this option and only one condition is needed to complete the run.
+    - cog_bosses: Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
+    - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
+    - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+    - total_fish_species:  Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
+    - laff_o_lympics: Player must reach a certain amount of laff to complete the game (determined by laff_points_required).
+    """
+    display_name = "Second Win Condition"
+    option_cog_bosses = 0
+    option_total_tasks = 1
+    option_hood_tasks = 2
+    option_total_gag_tracks = 3
+    option_total_fish_species = 4
+    option_laff_o_lympics = 5
+    option_none = 6
+    default = 6
+
+
 class CogBossesRequired(Range):
     """
     How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
@@ -220,6 +242,7 @@ class TreasuresPerLocation(Range):
     range_end = 6
     default = 4
 
+
 class ChecksPerBoss(Range):
     """
     How many checks you will receive from a cog boss upon completion.
@@ -229,18 +252,38 @@ class ChecksPerBoss(Range):
     range_end = 5
     default = 4
 
+
 class GagTrainingCheckBehavior(Choice):
     """
     Behavior of how gag experience check locations are handled.
 
     unlock: When unlocking a new gag, you get its respective check.
     trained: When earning all available experience for a specific gag level, you get its respective check.
+    disabled: Does not give checks for gags.
     """
     option_unlock = 0
     option_trained = 1
+    option_disabled = 2
+    default = 1
 
     display_name = "Gag Training Check Behavior"
 
+
+class GagTrainingFrameBehavior(Choice):
+    """
+    Behavior of how gag frame items are handled
+
+    vanilla: unlocks the gag when you get the exp required.
+    unlock: unlocks the gag immediately, giving you the required exp directly.
+    trained: maxes your experience in the track immediately, effectively disabling exp entirely until overcapped.
+    """
+
+    option_vanilla = 0
+    option_unlock = 1
+    option_trained = 2
+    default = 0
+
+    display_name = "Gag Frame Item Behavior"
 
 class LogicalTasksPerPlayground(Range):
     """
@@ -263,7 +306,7 @@ class StartingTaskOption(Choice):
     option_mml = 3
     option_tb = 4
     option_ddl = 5
-    option_random = 6
+    option_randomized = 6
     default = 0
 
 
@@ -283,6 +326,20 @@ class MaxedCogGalleryQuota(Range):
     range_start = 0
     range_end = 10
     default = 3
+
+
+class FacilityLocking(Choice):
+    """
+    Determines how facilities are locked within a run.
+    - keys: Default, each facility has its own key.
+    - access: Adds a second area access key for each cog HQ to the pool that unlocks all facilities within.
+    - unlocked: Facilities are unlocked from the start of the run.
+    """
+    display_name = "Facility Locking"
+    option_keys = 0
+    option_access = 1
+    option_unlocked = 2
+    default = 0
 
 
 class FishLocations(Choice):
@@ -347,6 +404,28 @@ class GolfingOption(Toggle):
 
     display_name = "Golfing Logic"
     default = False
+
+
+class SyncJellybeans(Toggle):
+    """
+    Enable to sync Jellybeans between toons on the same slot.
+    Even if you aren't using multiple toons,
+    leaving this on will retain your jellybeans if you need to make a new toon to reconnect.
+    If this is 'false', the data will still be sent, but your toon will not sync with it.
+    """
+    display_name = "Sync Jellybeans"
+    default = True
+
+
+class SyncGagExp(Toggle):
+    """
+    Enable to sync Gag Experience between toons on the same slot.
+    Even if you aren't using multiple toons,
+    leaving this on will retain your gag experience if you need to make a new toon to reconnect.
+    If this is 'false', the data will still be sent, but your toon will not sync with it.
+    """
+    display_name = "Sync Gag Experience"
+    default = True
 
 
 class SeedGenerationTypeOption(Choice):
@@ -421,6 +500,61 @@ class ShuffleWeightOption(Range):
     default = 100
 
 
+class BeanWeightOption(Range):
+    """
+    Weight of bean items in the junk pool.
+    """
+
+    display_name = "Bean Junk Weight"
+    range_start = 0
+    range_end = 100
+    default = 100
+
+
+class GagExpWeightOption(Range):
+    """
+    Weight of gag exp items in the junk pool.
+    """
+
+    display_name = "Exp Bundle Weight"
+    range_start = 0
+    range_end = 100
+    default = 100
+
+
+class SOSWeightOption(Range):
+    """
+    Weight of SOS card items in the junk pool.
+    """
+
+    display_name = "SOS Card Weight"
+    range_start = 0
+    range_end = 100
+    default = 65
+
+
+class UniteWeightOption(Range):
+    """
+    Weight of unite items in the junk pool.
+    """
+
+    display_name = "Unite Weight"
+    range_start = 0
+    range_end = 100
+    default = 65
+
+
+class FireWeightOption(Range):
+    """
+    Weight of Pink Slip items in the junk pool.
+    """
+
+    display_name = "Pink Slip Weight"
+    range_start = 0
+    range_end = 100
+    default = 65
+
+
 class DeathLinkOption(Toggle):
     """
     Enable to turn on the "DeathLink" mechanic in Archipelago.
@@ -443,6 +577,7 @@ class ToontownOptions(PerGameCommonOptions):
     starting_task_capacity: StartingTaskCapacityOption
     max_task_capacity: MaxTaskCapacityOption
     win_condition: WinCondition
+    second_win_condition: SecondWinCondition
     cog_bosses_required: CogBossesRequired
     total_tasks_required: TotalTasksRequired
     hood_tasks_required: HoodTasksRequired
@@ -453,13 +588,17 @@ class ToontownOptions(PerGameCommonOptions):
     treasures_per_location: TreasuresPerLocation
     checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
+    gag_frame_item_behavior: GagTrainingFrameBehavior
     logical_tasks_per_playground: LogicalTasksPerPlayground
     starting_task_playground: StartingTaskOption
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     maxed_cog_gallery_quota: MaxedCogGalleryQuota
+    facility_locking: FacilityLocking
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression
+    slot_sync_jellybeans: SyncJellybeans
+    slot_sync_gag_experience: SyncGagExp
     racing_logic: RacingOption
     minigolf_logic: GolfingOption
     seed_generation_type: SeedGenerationTypeOption
@@ -468,4 +607,9 @@ class ToontownOptions(PerGameCommonOptions):
     drip_trap_weight: DripWeightOption
     bean_tax_weight: TaxWeightOption
     gag_shuffle_weight: ShuffleWeightOption
+    bean_weight: BeanWeightOption
+    exp_weight: GagExpWeightOption
+    sos_weight: SOSWeightOption
+    unite_weight: UniteWeightOption
+    fire_weight: FireWeightOption
     death_link: DeathLinkOption

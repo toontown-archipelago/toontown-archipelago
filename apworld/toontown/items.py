@@ -320,32 +320,11 @@ def hood_to_tp_item_name(hoodId: int) -> ToontownItemName:
     }.get(hoodId)
 
 
-JUNK_WEIGHTS = {
-    ToontownItemName.MONEY_150:        0.5,
-    ToontownItemName.MONEY_400:        0.5,
-    ToontownItemName.MONEY_700:        0.5,
-    ToontownItemName.MONEY_1000:        0.5,
-
-    ToontownItemName.XP_10:            0.7,
-    ToontownItemName.XP_15:            0.5,
-    ToontownItemName.XP_20:            0.3,
-
-    ToontownItemName.SOS_REWARD:       0.65,
-    ToontownItemName.UNITE_REWARD:     0.65,
-    ToontownItemName.PINK_SLIP_REWARD: 0.65,
-}
-
-
 def get_item_def_from_id(_id: int) -> Optional[ToontownItemDefinition]:
     index = _id - consts.BASE_ID
     if 0 <= index < len(ITEM_DEFINITIONS):
         return ITEM_DEFINITIONS[index]
     return None
-
-
-def random_junk() -> ToontownItemName:
-    JUNK_ITEMS = list(JUNK_WEIGHTS.keys())
-    return random.choices(JUNK_ITEMS, weights=[JUNK_WEIGHTS[i] for i in JUNK_ITEMS])[0]
 
 
 ITEM_NAME_TO_ID = {item.name.value: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}
