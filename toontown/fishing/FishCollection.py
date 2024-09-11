@@ -1,4 +1,4 @@
-from . import FishBase
+from .FishBase import FishBase
 from . import FishGlobals
 
 class FishCollection:
@@ -15,7 +15,7 @@ class FishCollection:
     def makeFromNetLists(self, genusList, speciesList, weightList):
         self.fishList = []
         for genus, species, weight in zip(genusList, speciesList, weightList):
-            self.fishList.append(FishBase.FishBase(genus, species, weight))
+            self.fishList.append(FishBase(genus, species, weight))
 
     def getNetLists(self):
         genusList = []
@@ -43,6 +43,8 @@ class FishCollection:
         return 0
 
     def __collect(self, newFish, updateCollection):
+        if not isinstance(newFish, FishBase):
+            newFish = FishBase(newFish[0], newFish[1], newFish[2])
         for fish in self.fishList:
             if fish.getGenus() == newFish.getGenus() and fish.getSpecies() == newFish.getSpecies():
                 if fish.getWeight() < newFish.getWeight():

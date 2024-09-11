@@ -74,6 +74,18 @@ Toontown:
   # - - NOTE: laff_o_lympics replaces ALL laff boost items with only +1 Laff Boosts
   win_condition: cog_bosses
 
+  # NOTE: This condition should NOT be the same as win_condition
+  # Determines a second condition before being able to talk to Flippy to complete the game.
+  # - none (default): Disables this option and only one condition is needed to complete the run.
+  # - cog_bosses: Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
+  # - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
+  # - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+  # - total_gag_tracks: Player must max a certain amount of gag tracks to complete the game (determined by gag_tracks_required).
+  # - total_fish_species: Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
+  # - laff_o_lympics: Player must reach a certain amount of laff to complete the game (determined by laff_points_required).
+  # - - NOTE: laff_o_lympics replaces ALL laff boost items with only +1 Laff Boosts
+  second_win_condition: none
+
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
   # Range: 0 to 4
   cog_bosses_required: 4
@@ -125,7 +137,15 @@ Toontown:
 
   # unlock: When unlocking a new gag, you get its respective check.
   # trained: When earning all available experience for a specific gag level, you get its respective check.
+  # disabled: Does not give checks for gags.
   gag_training_check_behavior: 'trained'
+
+  # Behavior of how gag training frame items are handled.
+
+  # vanilla: unlocks the gag when you get the exp required.
+  # unlock: unlocks the gag immediately, giving you the required exp directly.
+  # trained: maxes your experience in the track immediately, effectively disabling exp entirely until overcapped.
+  gag_frame_item_behavior: 'vanilla'
 
   ### Task Settings ###
 
@@ -140,7 +160,7 @@ Toontown:
   # - mml: start with MML access
   # - tb: start with TB access
   # - ddl: start with DDL access
-  # - random: start with a random access
+  # - randomized: start with a randomized task access
   starting_task_playground: 'ttc'
 
   ### Cog Gallery Settings ###
@@ -152,6 +172,14 @@ Toontown:
   # The amount of Cogs required to reach its maxed Cog Gallery.
   # Range: 0 to 10
   maxed_cog_gallery_quota: 3
+
+  ### Facility Settings ###
+
+  # Determines how facilities are locked within a run.
+  # - keys: Default, each facility has its own key.
+  # - access: Adds a second area access key for each cog HQ to the pool that unlocks all facilities within.
+  # - unlocked: Facilities are unlocked from the start of the run.
+  facility_locking: 'keys'
 
   ### Fish Settings ###
 
@@ -175,6 +203,20 @@ Toontown:
   # - none: All fishing areas are available. The player starts with a Gold Rod.
   fish_progression: 'rods'
 
+  ### Data Sync Settings ###
+
+  # Enable to sync Jellybeans between toons on the same slot.
+  # Even if you aren't using multiple toons,
+  # leaving this on will retain your jellybeans if you need to make a new toon to reconnect.
+  # If this is 'false', the data will still be sent, but your toon will not sync with it.
+  slot_sync_jellybeans: 'true'
+
+  # Enable to sync Gag Experience between toons on the same slot.
+  # Even if you aren't using multiple toons,
+  # leaving this on will retain your gag experience if you need to make a new toon to reconnect.
+  # If this is 'false', the data will still be sent, but your toon will not sync with it.
+  slot_sync_gag_experience: 'true'
+
   ### Activity Settings ###
 
   # Determines if racing locations are enabled
@@ -194,6 +236,16 @@ Toontown:
   # wild: RNG elements are completely random and will shuffle upon relogging
   seed_generation_type: 'global'
 
+  ### Junk Settings ###
+
+  # Weights for all of the various junk (0-100).
+  # At least 1 junk must have a value greater than 0.
+  bean_weight: 100
+  exp_weight: 100
+  sos_weight: 65
+  unite_weight: 65
+  fire_weight: 65
+
   ### Trap Settings ###
 
   # Percentage of junk items to be replaced with traps
@@ -203,7 +255,7 @@ Toontown:
   # At least 1 trap must have a value of >0 if trap_percent is >=1.
   uber_trap_weight: 100
   drip_trap_weight: 50
-  bean_tax_weight: 36
+  bean_tax_weight: 42
   gag_shuffle_weight: 100
 
   ### General Gameplay Settings ###

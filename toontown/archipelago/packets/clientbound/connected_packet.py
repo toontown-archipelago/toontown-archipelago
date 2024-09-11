@@ -154,9 +154,13 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         client.av.b_setName(client.slot_name)
 
-        # Is this this toon's first time? If so reset the toon's stats and initialize their settings from their YAML
+        # Is this this slot's first toon? If so reset the toon's stats and initialize their settings from their YAML
         if len(self.checked_locations) == 0:
             self.handle_first_time_player(client.av)
+        # Is this this specific toon's first slot? if so, reset this toon's stats and initialize from YAML. 
+        if len(client.av.checkedLocations) == 0:
+            self.handle_first_time_player(client.av)
+
 
         self.debug(f"Detected slot data: {self.slot_data}")
         client.av.b_setSlotData(self.slot_data)
@@ -169,10 +173,19 @@ class ConnectedPacket(ClientBoundPacketBase):
         if len(toonCheckedLocations) > 0:
             client.av.archipelago_session.sync()
 
+        # Receive all checks that were collected from our slot while disconnected
+        client.av.receiveCheckedLocations(self.checked_locations)
+
         # Tell AP we are playing
         won_id = ap_location_name_to_id(locations.ToontownLocationName.SAVED_TOONTOWN.value)
         status_packet = StatusUpdatePacket()
-        status_packet.status = ClientStatus.CLIENT_GOAL if (client.av.getWinCondition().satisfied() and client.av.hasCheckedLocation(won_id)) else ClientStatus.CLIENT_PLAYING
+        conditions = client.av.getWinCondition()
+        won_game = True
+        for condition in conditions:
+            if not condition.satisfied():
+                won_game = False
+                break
+        status_packet.status = ClientStatus.CLIENT_GOAL if (won_game and client.av.hasCheckedLocation(won_id)) else ClientStatus.CLIENT_PLAYING
         client.send_packet(status_packet)
 
         # Scout some locations that we need to display
@@ -190,6 +203,8 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.av.hintPoints = self.hint_points
         client.av.totalChecks = len(self.missing_locations) + len(self.checked_locations)
 
+        # Request synced data and subscribe to changes.
+        client.av.request_default_ap_data()
         # Update Deathlink Tag.
         if self.slot_data.get('death_link', False):
             update_packet = ConnectUpdatePacket()

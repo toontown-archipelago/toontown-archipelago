@@ -32,10 +32,8 @@ class BouncePacket(ServerBoundPacketBase):
             self.data['cause'] = toon.getDeathReason().format(toon)
 
         # Documentation specifices this to either be slot name or name from a mp game.
-        # I am assuming this is only to check if this was "us" that caused this so in order for this to work
-        # the best i think we can just use toon ID (those sharing a slot will still both die)
-        # If this ends up not being the case, this should be changed to either AP slot ID or toon name
-        self.data['source'] = str(toon.getDoId())
+        # Checking the AP discord confirms that in implementation, this is only used to verify if it was yourself.
+        self.data['source'] = toon.getUUID()
 
     def build(self) -> Dict[str, Any]:
         # Return all attributes

@@ -164,7 +164,7 @@ class FishManagerAI:
             av.addCheckedLocation(ap_location_name_to_id(genusLocationName.value))
 
             collectionNetList = av.fishCollection.getNetLists()
-            av.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
+            av.ap_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
             av.fishTank.addFish(fish)
             tankNetList = av.fishTank.getNetLists()
             av.d_setFishTank(tankNetList[0], tankNetList[1], tankNetList[2])
