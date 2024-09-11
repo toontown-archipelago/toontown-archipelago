@@ -12,7 +12,6 @@ from panda3d.core import *
 from toontown.toonbase import TTLocalizer
 from .QuestsAvailablePoster import QuestsAvailablePoster, FishAvailablePoster, TreasureAvailablePoster, PetsAvailablePoster, CanRacePoster, CanGolfPoster
 from ..building import FADoorCodes
-from ..quest.Quests import getRewardIdsFromHood
 
 
 class MapPage(ShtikerPage.ShtikerPage):
@@ -240,23 +239,23 @@ class MapPage(ShtikerPage.ShtikerPage):
                 else:
                     # Get the reward IDs from this playground
                     rewardIds = Quests.getRewardIdsFromHood(hoodId)
+                    rewardIdCopy = rewardIds.copy()
 
                     # Filter out the rewards we can't get bc we already earned them
                     for reward in rewardIds:
-                        loc = Quests.RewardDict.get(reward)[1]
-                        if loc is not None:
-                            if locations.LOCATION_NAME_TO_ID[loc] in base.localAvatar.checkedLocations:
-                                rewardIds.remove(reward)
-
+                        apLocation = Quests.RewardDict.get(reward)[1]
+                        if apLocation is not None:
+                            if locations.LOCATION_NAME_TO_ID[apLocation] in base.localAvatar.getCheckedLocations():
+                                rewardIdCopy.remove(reward)
 
                     # Now filter out the rewards we are working on
                     for quest in base.localAvatar.quests:
                         questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
-                        if rewardId in rewardIds:
-                            rewardIds.remove(rewardId)
+                        if rewardId in rewardIdCopy:
+                            rewardIdCopy.remove(rewardId)
 
                     # Now we have a number that tells us how many quests this person can learn here
-                    questPoster.showNumAvailable(len(rewardIds))
+                    questPoster.showNumAvailable(len(rewardIdCopy))
 
     def unload(self):
         for labelButton in self.labels:
