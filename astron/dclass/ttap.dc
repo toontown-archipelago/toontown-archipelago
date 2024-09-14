@@ -544,7 +544,8 @@ dclass DistributedPlayer : DistributedAvatar {
   WishNameState(string = "LOCKED") db ram;
   setPreviousAccess(uint8 = 0) required db airecv;
   setAccess(uint8 = 2) broadcast ownrecv required ram airecv;
-  setAccessLevel(uint16 = 0) ownrecv required airecv;
+  setAccessLevel(int16 = 0) ownrecv required airecv;
+  bSetAccessLevel(int16 = 0) ownrecv;
   setAsGM(bool = 0) required ram broadcast ownrecv airecv;
 };
 

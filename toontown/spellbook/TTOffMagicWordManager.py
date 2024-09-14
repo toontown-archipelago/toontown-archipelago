@@ -48,8 +48,8 @@ class TTOffMagicWordManager(DistributedObject.DistributedObject):
         if not magicWord.startswith(self.chatPrefix):
             return
 
-        if base.localAvatar.getAccessLevel() < AccessLevelName2Int.get('USER'):
-            self.generateResponse(responseType = "NoAccess")
+        if base.localAvatar.getAccessLevel() < AccessLevelName2Int.get('NO_ACCESS'):
+            self.generateResponse(responseType="NoAccess")
             return
 
         self.handleMagicWord(magicWord)

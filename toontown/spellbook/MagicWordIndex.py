@@ -183,6 +183,7 @@ class SetHP(MagicWord):
     desc = "Sets the target's current laff."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("hp", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         hp = args[0]
@@ -203,6 +204,7 @@ class SetMaxHP(MagicWord):
     desc = "Sets the target's max laff."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("maxhp", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         maxhp = args[0]
@@ -221,6 +223,7 @@ class StartHoliday(MagicWord):
     desc = "Starts a specified holiday ID."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, True)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         id = args[0]
@@ -232,10 +235,11 @@ class StartHoliday(MagicWord):
 
 
 class Shout(MagicWord):
-    aliases = ["shout", "yell", "s"]
+    aliases = ["shout", "yell", "s", "scream"]
     desc = "Sends a direct message to every toon on the server."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("shout", str, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         shout = args[0]
@@ -252,6 +256,7 @@ class EndHoliday(MagicWord):
     desc = "Ends a specified holiday ID."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, True)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         id = args[0]
@@ -266,6 +271,7 @@ class ToggleOobe(MagicWord):
     aliases = ["oobe"]
     desc = "Toggles the out of body experience mode, which lets you move the camera freely."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         base.oobe()
@@ -276,6 +282,7 @@ class ToggleRun(MagicWord):
     aliases = ["run"]
     desc = "Toggles run mode, which gives you a faster running speed."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         toon.d_setRun()
@@ -287,6 +294,7 @@ class SetSpeed(MagicWord):
     desc = "Sets your running speed."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
     arguments = [("speed", float, False, OTPGlobals.ToonForwardSpeed)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         speed = args[0]
@@ -314,6 +322,7 @@ class MaxToon(MagicWord):
     desc = "Maxes out the target's stats. You can provide a gag track to exclude from the target's unlocked tracks."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("missingTrack", str, False, '')]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         missingTrack = args[0]
@@ -399,6 +408,7 @@ class UnlockEmotes(MagicWord):
     aliases = ["emotes"]
     desc = "Unlock all of the target's emotes."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         emoteAccess = list(toon.getEmoteAccess())
@@ -421,6 +431,7 @@ class SetBeans(MagicWord):
     desc = "Sets the target's jellybean count."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("beans", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         beans = args[0]
@@ -438,6 +449,7 @@ class SetMaxBeans(MagicWord):
     desc = "Sets the target's jellybean jar size."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("maxBeans", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         maxBeans = args[0]
@@ -456,6 +468,7 @@ class SetEmblems(MagicWord):
     desc = "Gives the target a specified amount of silver and gold emblems, respectively."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("silver", int, True), ("gold", int, True)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         emblems = (args[0], args[1])
@@ -467,6 +480,7 @@ class ToggleImmortal(MagicWord):
     aliases = ["immortal"]
     desc = "Makes the target immortal."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         toon.b_setImmortalMode(not toon.getImmortalMode())
@@ -477,6 +491,7 @@ class ToggleUnlimitedGags(MagicWord):
     aliases = ["unlimitedgags"]
     desc = "Toggles unlimited gags for the target."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
 
@@ -495,6 +510,7 @@ class ToggleInstaKill(MagicWord):
     aliases = ["instakill"]
     desc = "Lets the target instantly kill Cogs with any amount of damage."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         toon.b_setInstaKill(not toon.getInstaKill())
@@ -504,6 +520,7 @@ class ToggleInstaKill(MagicWord):
 class SkipMovie(MagicWord):
     desc = "Skips the current round of animations in a Cog battle."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         battleId = toon.getBattleId()
@@ -520,6 +537,7 @@ class ToggleGod(MagicWord):
     aliases = ["god", 'godmode']
     desc = "Makes the target fast, immortal, all-powerful, and omnipotent."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         isGod = not toon.getImmortalMode()
@@ -534,6 +552,7 @@ class ToggleCollisionsOff(MagicWord):
     aliases = ['collisionsoff', 'noclip']
     desc = "Disables collisions for the target."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         return "This command is not supported. If you need to noclip, please use ~ghost."
@@ -542,6 +561,7 @@ class ToggleCollisionsOff(MagicWord):
 class GetPos(MagicWord):
     desc = "Get the current position of your toon."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         if not base.localAvatar:
@@ -553,6 +573,7 @@ class SetPos(MagicWord):
     desc = "Set the current position of your Toon."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
     arguments = [("x", float, True), ("y", float, True), ("z", float, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         toonX = args[0]
@@ -569,6 +590,7 @@ class SetPos(MagicWord):
 class GetHpr(MagicWord):
     desc = "Returns the rotation value of your Toon."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         if not base.localAvatar:
@@ -580,6 +602,7 @@ class SetHpr(MagicWord):
     desc = "Set the rotation value of your Toon."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
     arguments = [("h", int, True), ("p", int, True), ("r", int, True), ("part", str, False, '')]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         toonH = args[0]
@@ -600,6 +623,7 @@ class PrintPosHpr(MagicWord):
     aliases = ['pph']
     desc = "Print Pos Hpr"
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         count = 0
@@ -621,6 +645,7 @@ class Camera(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
     arguments = [("command", str, True), ("x", float, False, 0), ("y", float, False, 0), ("z", float, False, 0),
                  ("h", float, False, 0), ("p", float, False, 0), ("r", float, False, 0), ("duration", float, False, 1)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         command = args[0]
@@ -686,6 +711,7 @@ class PrintCamera(MagicWord):
     aliases = ['pc']
     desc = "Prints the coordinates of the current camera position."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         print(f"current camera pos:          {base.camera}")
@@ -697,6 +723,7 @@ class ToggleCollisionsOn(MagicWord):
     aliases = ['collisionson', 'clip', 'yesclip']
     desc = "Enables collisions for the target."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         return "This command is not supported. If you need to noclip, please use ~ghost."
@@ -706,6 +733,7 @@ class GlobalTP(MagicWord):
     aliases = ["alltp"]
     desc = "Allows you to teleport anywhere."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         hoodsVisited = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000]
@@ -718,6 +746,7 @@ class Help(MagicWord):
     administrative = True
     desc = "Tells you to come here for more info... but you're already here!"
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         try:
@@ -739,6 +768,7 @@ class ToggleSleeping(MagicWord):
     aliases = ["sleep", "sleeping"]
     desc = "Enables or disables sleeping for your current session. This does not affect other Toons."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         if not base.localAvatar.neverSleep:
@@ -754,6 +784,7 @@ class Teleport(MagicWord):
     desc = "Teleports the target to a specified location."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("hood", str, False, '')]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         hood = args[0]
@@ -778,6 +809,7 @@ class SetTrackAccess(MagicWord):
     desc = "Set the tracks a toon has."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("wantTrack", int, True)] * 7
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         # args = toonup, trap, lure, sound, throw, squirt, drop
@@ -799,6 +831,7 @@ class SetTracks(MagicWord):
     desc = "Grants all the gag tracks, with the option of leaving one out."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("leftOutTrack", str, False, '')]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         leftOutTrack = args[0]
@@ -820,6 +853,7 @@ class SetTracks(MagicWord):
 class Catalog(MagicWord):
     desc = "Gives the toon a new catalog."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         simbase.air.catalogManager.deliverCatalogFor(toon)
@@ -830,7 +864,7 @@ class GetAccId(MagicWord):
     aliases = ["accId", "accountId"]
     desc = "Get the accountId from the target player."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         accountId = toon.DISLid
@@ -842,7 +876,7 @@ class GetAvId(MagicWord):
     aliases = ["avId", "avatarId"]
     desc = "Get the avId from the target player."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         return "%s has the avId of %d" % (toon.getName(), toon.getDoId())
@@ -853,6 +887,7 @@ class SetGravity(MagicWord):
     desc = "Set your gravity value."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
     arguments = [("gravity", float, False, ToontownGlobals.GravityValue * 2.0), ("override", bool, False, False)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         gravityValue = args[0]
@@ -876,6 +911,7 @@ class TrueFriend(MagicWord):
     desc = "Automatically add a Toon as a true friend."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("avIdShort", int, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         avIdShort = args[0]
@@ -899,6 +935,7 @@ class ToggleOobeCull(MagicWord):
     aliases = ["oobecull"]
     desc = "Toggle 'out of body experience' view, with culling debugging."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         base.oobeCull()
@@ -908,6 +945,7 @@ class ToggleWire(MagicWord):
     aliases = ["wire", "wireframe"]
     desc = "Toggle wireframe view."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         base.toggleWireframe()
@@ -917,6 +955,7 @@ class ToggleTextures(MagicWord):
     aliases = ["textures"]
     desc = "Toggle textures."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         base.toggleTexture()
@@ -926,6 +965,7 @@ class ToggleFPS(MagicWord):
     aliases = ["fps", "showfps"]
     desc = "Toggle frame rate meter."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         base.setFrameRateMeter(not base.frameRateMeter)
@@ -934,7 +974,7 @@ class ToggleFPS(MagicWord):
 class GetAccess(MagicWord):
     desc = "Get the access level of a target."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         return "Access level: " + str(toon.getAccessLevel())
@@ -944,6 +984,7 @@ class Aspect2D(MagicWord):
     aliases = ["a2d"]
     desc = "Toggles Aspect2d."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         if aspect2d.isHidden():
@@ -955,6 +996,7 @@ class Aspect2D(MagicWord):
 class InvasionStatus(MagicWord):
     desc = "Returns the number of cogs remaining in an invasion."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         invasionMgr = simbase.air.suitInvasionManager
@@ -970,6 +1012,7 @@ class InvasionStatus(MagicWord):
 class RevealMap(MagicWord):
     desc = "Reveals map in the Sellbot Field Office maze game."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         mazeGame = None
@@ -991,6 +1034,7 @@ class RevealMap(MagicWord):
 class EndMaze(MagicWord):
     desc = "Ends the maze game in a Sellbot Field Office."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         mazeGame = None
@@ -1013,6 +1057,7 @@ class SpawnBuilding(MagicWord):
     desc = "Spawns a Cog Building with the given suit index."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("suitName", str, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         suitName = args[0]
@@ -1033,6 +1078,7 @@ class SpawnFO(MagicWord):
     desc = "Spawns a Field Office with the given type and difficulty."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("type", str, True), ("difficulty", int, False, 0)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.building import SuitBuildingGlobals
@@ -1063,6 +1109,7 @@ class SetCEIndex(MagicWord):
     desc = "Set Cheesy Effect of the target."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("index", int, True), ("zoneId", int, False, 0), ("duration", int, False, 0)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         """Set Cheesy Effect of the target."""
@@ -1085,6 +1132,7 @@ class SetFishingRod(MagicWord):
     desc = "Set target's fishing rod value."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("rodVal", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         rodVal = args[0]
@@ -1099,7 +1147,7 @@ class SetFishingBucket(MagicWord):
     desc = "Set target's max fish tank value."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("tankVal", int, True)]
-
+    accessLevel = 'USER'
     def handleWord(self, invoker, avId, toon, *args):
         tankVal = args[0]
         if not 20 <= tankVal <= 99:
@@ -1112,6 +1160,7 @@ class ClearFishCollection(MagicWord):
     aliases = ["clearfishcollection"]
     desc = "Clears target's fish collection."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         toon.b_setFishCollection([], [], [])
@@ -1123,6 +1172,7 @@ class SetPlayRate(MagicWord):
     desc = "Set target's play rate."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("playRate", float, False, 1.0)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         rate = args[0]
@@ -1136,6 +1186,7 @@ class SetName(MagicWord):
     desc = "Set target's name."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("name", str, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         nameStr = args[0]
@@ -1155,6 +1206,7 @@ class SetColor(MagicWord):
     desc = "Set shirt color of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("partName", str, True), ("colorId", int, False, 0)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
@@ -1185,6 +1237,7 @@ class SetTop(MagicWord):
     desc = "Set shirt of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("textureId", int, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
@@ -1203,6 +1256,7 @@ class SetTopColor(MagicWord):
     desc = "Set shirt color of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("colorId", int, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
@@ -1221,6 +1275,7 @@ class SetSleeves(MagicWord):
     desc = "Set sleeves of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("textureId", int, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
@@ -1239,6 +1294,7 @@ class SetSleevesColor(MagicWord):
     desc = "Set sleeves color of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("colorId", int, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
@@ -1257,6 +1313,7 @@ class SetBottoms(MagicWord):
     desc = "Set bottoms of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("textureId", int, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
@@ -1282,6 +1339,7 @@ class SetBottomsColor(MagicWord):
     desc = "Set bottoms color of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("colorId", int, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
@@ -1300,6 +1358,7 @@ class SetHat(MagicWord):
     desc = "Set hat of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, True), ("textureId", int, False, 0)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         hatId = args[0]
@@ -1319,6 +1378,7 @@ class SetGlasses(MagicWord):
     desc = "Set glasses of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, True), ("textureId", int, False, 0)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         glassesId = args[0]
@@ -1336,6 +1396,7 @@ class SetBackpack(MagicWord):
     desc = "Set backpack of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, True), ("textureId", int, False, 0)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         bpId = args[0]
@@ -1353,6 +1414,7 @@ class SetShoes(MagicWord):
     desc = "Set shoes of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, True), ("textureId", int, False, 0)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         shoesId = args[0]
@@ -1369,6 +1431,7 @@ class ClearAccessories(MagicWord):
     aliases = ["removeallaccessories", "removeaccessories"]
     desc = "Clear's all the accessories of the target."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         toon.b_setHat(0, 0, 0)
@@ -1383,6 +1446,7 @@ class SetInventory(MagicWord):
     desc = "Modify gag inventory. Can reset (clear) inventory or restock."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("command", str, True), ("level", int, False, 5), ("track", int, False, -1)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         type = args[0]
@@ -1439,6 +1503,7 @@ class SetInventory(MagicWord):
 class ToggleGM(MagicWord):
     desc = "Toggle the target's GM icon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         access = invoker.getAccessLevel()
@@ -1467,7 +1532,7 @@ class ToggleGhost(MagicWord):
     aliases = ["ghost"]
     desc = "Set toon to invisible."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = 'MODERATOR'
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         if invoker.ghostMode == 0:
@@ -1482,7 +1547,7 @@ class SetGM(MagicWord):
     desc = "Set the target's GM Icon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, True), ("name", bool, False, False)]
-    accessLevel = 'MODERATOR'
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         gmId = args[0]
@@ -1520,6 +1585,7 @@ class SetTickets(MagicWord):
     desc = "Set the target's racing ticket's value."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("val", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         tixVal = args[0]
@@ -1532,6 +1598,7 @@ class SetTickets(MagicWord):
 class GrowFlowers(MagicWord):
     desc = "Grow a target's flowers."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         estate = toon.air.estateMgr._lookupEstate(toon)
@@ -1559,6 +1626,7 @@ class PickAllFlowers(MagicWord):
     aliases = ["pickflowers"]
     desc = "Picks all of the target's flowers."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         estate = toon.air.estateMgr._lookupEstate(toon)
@@ -1584,6 +1652,7 @@ class GrowTrees(MagicWord):
     desc = "Grows the target's trees."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("track", str, True), ("index", int, True), ("amount", int, False, 21)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         track = args[0]
@@ -1625,6 +1694,7 @@ class PickTrees(MagicWord):
     desc = "Picks the target's trees."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("track", str, True), ("index", int, True)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         track = args[0]
@@ -1665,6 +1735,7 @@ class FlowerAll(MagicWord):
     desc = "Flowers the target's flowers."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("species", int, False, 49), ("variety", int, False, 0)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         species = args[0]
@@ -1697,6 +1768,7 @@ class FlowerAll(MagicWord):
 class RestockFlowerSpecials(MagicWord):
     desc = "Give special flowers."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         toon.gardenSpecials = []
@@ -1707,6 +1779,7 @@ class RestockFlowerSpecials(MagicWord):
 class MaxDoodle(MagicWord):
     desc = "Maxes the target's doodle."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         petId = invoker.getPetId()
@@ -1721,6 +1794,7 @@ class MaxDoodle(MagicWord):
 class LeaveRace(MagicWord):
     desc = "Leave the current race you are in."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         messenger.send('leaveRace')
@@ -1731,7 +1805,7 @@ class RestartPieRound(MagicWord):
     desc = "Restarts the pie round"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         battle = args[0]
@@ -1754,7 +1828,7 @@ class SkipCFO(MagicWord):
     desc = "Skips to the indicated round of the CFO."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         battle = args[0]
@@ -1794,7 +1868,7 @@ class HitCFO(MagicWord):
     desc = "Hits the CFO."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("damage", int, False, 0)]
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         dmg = args[0]
@@ -1816,7 +1890,7 @@ class RestartCraneRound(MagicWord):
     desc = "Restarts the crane round"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         battle = args[0]
@@ -1846,7 +1920,7 @@ class SetCFOModifiers(MagicWord):
     aliases = ['cfomodifiers', 'cfomods']
     desc = "Dynamically tweak modifiers mid CFO"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
     VALID_SUBCOMMANDS = ['debug', 'amount', 'random', 'clear', 'add', 'remove', 'on', 'off']
     arguments = [
         ('subcommand', str, False, 'debug'),  # subcommand
@@ -1977,6 +2051,7 @@ class SetCFOModifiers(MagicWord):
 class DisableGoons(MagicWord):
     desc = "Stuns all of the goons in an area."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.suit.DistributedGoonAI import DistributedGoonAI
@@ -1989,7 +2064,7 @@ class SkipCJ(MagicWord):
     desc = "Skips to the indicated round of the CJ."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         battle = args[0]
@@ -2040,7 +2115,7 @@ class SkipCJ(MagicWord):
 class StunLawyers(MagicWord):
     desc = "Stuns all the lawyers in the CJ Evidence round."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         boss = None
@@ -2065,7 +2140,7 @@ class RestartScaleRound(MagicWord):
     desc = "Restarts the scale round"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         battle = args[0]
@@ -2090,7 +2165,7 @@ class StartCannonRound(MagicWord):
     desc = "Enters the cannon round"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         battle = args[0]
@@ -2114,7 +2189,7 @@ class StartCannonRound(MagicWord):
 class FillJury(MagicWord):
     desc = "Fills all of the chairs in the CJ's Jury Round."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         boss = None
@@ -2139,7 +2214,7 @@ class RestartSeltzerRound(MagicWord):
     desc = "Restarts the seltzer round"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         battle = args[0]
@@ -2162,7 +2237,7 @@ class SkipVP(MagicWord):
     desc = "Skips to the indicated round of the VP."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         battle = args[0]
@@ -2209,7 +2284,7 @@ class SkipVP(MagicWord):
 class StunVP(MagicWord):
     desc = "Stuns the VP in the final round of his battle."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.suit.DistributedSellbotBossAI import DistributedSellbotBossAI
@@ -2232,7 +2307,7 @@ class SkipCEO(MagicWord):
     desc = "Skips to the indicated round of the CEO."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("round", str, False, "next")]
-    accessLevel = "MODERATOR"
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         battle = args[0]
@@ -2296,6 +2371,7 @@ class SkipCEO(MagicWord):
 class FeedDiners(MagicWord):
     desc = "Feed the diners in the CEO battle."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         boss = None
@@ -2324,6 +2400,7 @@ class AbortGame(MagicWord):
     aliases = ["abortminigame", "leaveminigame"]
     desc = "Abort any minigame you are currently in."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         messenger.send('minigameAbort')
@@ -2334,6 +2411,7 @@ class RequestMinigame(MagicWord):
     desc = "Request a specific minigame for the trolley."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [('game', str, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
 
@@ -2351,6 +2429,7 @@ class ToggleSuitPaths(MagicWord):
     aliases = ['suitpaths']
     desc = "Toggles visualization of suit paths if they exist in your current zone."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
 
@@ -2379,6 +2458,7 @@ class SpawnCog(MagicWord):
     desc = "Spawns a cog with the defined level"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("suit", str, True), ("level", int, False, 1), ("specialSuit", int, False, 0)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         name = args[0]
@@ -2407,6 +2487,7 @@ class SpawnInvasion(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("command", str, True), ("suit", str, False, "f"), ("amount", int, False, 1000),
                  ("skelecog", bool, False, False)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         cmd = args[0]
@@ -2439,6 +2520,7 @@ class SetTrophyScore(MagicWord):
     desc = "Set the trophy score of target."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("val", int, True)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         amt = args[0]
@@ -2453,6 +2535,7 @@ class GivePies(MagicWord):
     desc = "Gives the target pies to throw."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("type", int, True), ("amount", int, False, -1)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         pieType = args[0]
@@ -2477,6 +2560,7 @@ class SetQP(MagicWord):
     desc = "Get and set the targets quest progress."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, False, 0), ("progress", int, False, 0)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         questId = args[0]
@@ -2494,6 +2578,7 @@ class CompleteQuests(MagicWord):
     aliases = ["cq", "completequest"]
     desc = "Completes all quests on the target."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
 
@@ -2508,6 +2593,7 @@ class SetUnites(MagicWord):
     desc = "Restocks the target's unites. The default amount is 999."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("amount", int, False, 999)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         amt = args[0]
@@ -2521,6 +2607,7 @@ class UnlockTricks(MagicWord):
     aliases = ["tricks"]
     desc = "Unlock all the target's pet trick phrases."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         invoker.b_setPetTrickPhrases(list(range(7)))
@@ -2531,6 +2618,7 @@ class RestockSummons(MagicWord):
     desc = "Restock all of the target's CJ summons."
     aliases = ["summons"]
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         # Make sure we have every cog in our Cog Page.
@@ -2549,6 +2637,7 @@ class SetPinkSlips(MagicWord):
     desc = "Sets the target's pink slips. The default amount is 255."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("amount", int, False, 255)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         amt = args[0]
@@ -2565,6 +2654,7 @@ class QuestTier(MagicWord):
     desc = "Sets the target's quest tier to specified value."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("tier", int, True)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         tier = args[0]
@@ -2582,6 +2672,7 @@ class SetExp(MagicWord):
     desc = "Sets the target's experience for the specified gag track. The default amount is 0."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("track", str, True), ("amount", int, False, 0)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         track = args[0]
@@ -2613,6 +2704,7 @@ class TrackBonus(MagicWord):
     desc = "Modify the invoker's track bonus level. "
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("track", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         track = args[0]
@@ -2642,6 +2734,7 @@ class SetCogSuit(MagicWord):
     desc = "Set disguise type and level."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("corp", str, True), ("type", str, True), ("level", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         corp = args[0]
@@ -2727,6 +2820,7 @@ class Merits(MagicWord):
     desc = "Set the target's merits to the value specified."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("corp", str, True), ("amount", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         corp = args[0]
@@ -2745,6 +2839,7 @@ class Pouch(MagicWord):
     desc = "Set the target's max gag limit."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("amount", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         amt = args[0]
@@ -2761,6 +2856,7 @@ class SetNametagStyle(MagicWord):
     desc = "Set the style of the target's nametag to the specified ID."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("style", str, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         styleName = args[0]
@@ -2786,6 +2882,7 @@ class SetNametagType(MagicWord):
     desc = "Set the style of the target's nametag to the specified ID."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("type", int, False, 0)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         type = args[0]
@@ -2803,6 +2900,7 @@ class Phrase(MagicWord):
     desc = "Unlocks a new phrase and adds it to target's list of 'My Phrases'."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         phraseId = args[0]
@@ -2830,6 +2928,7 @@ class SetSos(MagicWord):
     desc = "Sets the target's SOS cards. The default is 1 Flippy card."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("amount", int, False, 1), ("name", str, False, 'Flippy')]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         amt = args[0]
@@ -2856,6 +2955,7 @@ class SetSos(MagicWord):
 class FreeBldg(MagicWord):
     desc = "Closest cog building gets freed."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
 
@@ -2870,6 +2970,7 @@ class FreeBldg(MagicWord):
 class MaxGarden(MagicWord):
     desc = "Maxes your garden."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         invoker.b_setShovel(3)
@@ -2885,6 +2986,7 @@ class InstaDelivery(MagicWord):
     aliases = ["fastdel"]
     desc = "Instant delivery of an item."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         invoker.instantDelivery = not invoker.instantDelivery
@@ -2898,6 +3000,7 @@ class SetMuzzle(MagicWord):
     desc = "Modify the targets muzzle."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, False, 0)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         muzzle = args[0]
@@ -2914,6 +3017,7 @@ class SetEyes(MagicWord):
     desc = "Modify the targets eyes."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("id", int, False, 0)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         type = args[0]
@@ -2930,6 +3034,7 @@ class SetTaskCarryLimit(MagicWord):
     desc = "Set the amount of tasks a toon can carry."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("limit", int, False, 1)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         amt = args[0]
@@ -2947,6 +3052,7 @@ class SetAlwaysHitCogs(MagicWord):
     aliases = ["alwayshitcogs", "hitcogs"]
     desc = "Enable/Disable always hitting cogs."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         if not toon:
@@ -2963,6 +3069,7 @@ class SetAlwaysHitCogs(MagicWord):
 class EndFlying(MagicWord):
     desc = "Ends the flying game in a Lawbot Field Office."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.cogdominium.DistCogdoFlyingGameAI import DistCogdoFlyingGameAI
@@ -2983,6 +3090,7 @@ class EndFlying(MagicWord):
 class Ping(MagicWord):
     desc = "Pong!"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         return "Pong!"
@@ -2992,6 +3100,7 @@ class GardenGame(MagicWord):
     aliases = ["gardendrop"]
     desc = "Start the garden drop mini-game."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.estate import GardenDropGame
@@ -3002,6 +3111,7 @@ class WinGame(MagicWord):
     aliases = ["winminigame"]
     desc = "Win the trolley game you are in."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         messenger.send("minigameVictory")
@@ -3012,18 +3122,19 @@ class GetZone(MagicWord):
     aliases = ["getzoneid"]
     desc = "Returns the target's zone ID."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         return "{}'s zone ID is {}.".format(toon.getName(), str(toon.zoneId))
 
 
 class SetAccessLevel(MagicWord):
-    administrative = True
     aliases = ["accesslevel", "access", "setaccess"]
     desc = "Sets the target's access level."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("rank", int, False, 100)]
     affectRange = [MagicWordConfig.AFFECT_OTHER]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         rank = args[0]
@@ -3039,11 +3150,58 @@ class SetAccessLevel(MagicWord):
         return "Set {0}'s Access Level to {1}.".format(toon.getName(), rank)
 
 
+class RestrictAccess(MagicWord):
+    aliases = ["restrict", "remove", "block", "remove"]
+    desc = "Restricts the target's access for the rest of the session."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    affectRange = [MagicWordConfig.AFFECT_OTHER]
+    accessLevel = 'TTOFF_DEVELOPER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        if invoker == toon:
+            return "You can't restrict access for yourself!"
+        toon.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('RESTRICTED'))
+        return "Restricted {0}'s access for the rest of their session.".format(toon.getName())
+
+
+class ToggleCheats(MagicWord):
+    aliases = ["cheat", "cheats", "command", "commands"]
+    desc = "Toggles cheats on and off for the Toon."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'NO_ACCESS'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        if invoker != toon:
+            return "You can only toggle cheats for yourself!"
+        if toon.getAccessLevel() >= OTPGlobals.AccessLevelName2Int.get('USER'):
+            toon.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('NO_ACCESS'))
+            return "Toggled cheats OFF."
+        toon.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('USER'))
+        return "Toggled cheats ON."
+
+
+class ToggleAdmin(MagicWord):
+    aliases = ["admin", "setAdmin"]
+    desc = "Toggles admin on and off for the toon."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        if invoker != toon:
+            return "You can only toggle admin for yourself!"
+        if toon.getAccessLevel() >= OTPGlobals.AccessLevelName2Int.get('TTOFF_DEVELOPER'):
+            toon.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('USER'))
+            return "Toggled admin OFF."
+        toon.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('TTOFF_DEVELOPER'))
+        return "Toggled admin ON."
+
+
 class PrintChildren(MagicWord):
     aliases = ["children"]
     desc = "Prints all of render's children to the client log."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
     arguments = [("type", int, False, 0), ("mode", int, False, 0)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         type = args[0]
@@ -3087,7 +3245,7 @@ class StartBoss(MagicWord):
     aliases = ['startvp', 'startcfo', 'startcj', 'startceo']
     desc = 'Starts a boss battle.'
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = 'DEVELOPER'
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
 
@@ -3130,6 +3288,7 @@ class SetDNA(MagicWord):
     desc = 'Modify a DNA part on the invoker'
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("part", str, True), ("value", str, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
@@ -3329,6 +3488,7 @@ class ShowScoreboard(MagicWord):
     aliases = ['scoreboard']
     desc = 'make scoreboard appear'
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def getNearbyToons(self):
         from toontown.toon.Toon import Toon
@@ -3371,6 +3531,7 @@ class ShowActivityLog(MagicWord):
     aliases = ['log', 'activitylog']
     desc = 'make debug log appear'
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'NO_ACCESS'
 
     CHOICES = [
         'ye',
@@ -3397,6 +3558,7 @@ class SetGagSkillMultiplier(MagicWord):
     desc = "Sets toon's base gag experience multiplier"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("multiplier", int, True)]
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         toon.b_setBaseGagSkillMultiplier(args[0])
@@ -3408,6 +3570,7 @@ class SetAccessKeys(MagicWord):
     desc = "Modifies a toons access to HQs and Cog Facilities"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("operation", str, False, 'list'), ('key', int, False, 0)]
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         operation = args[0].lower()
@@ -3439,6 +3602,7 @@ class Archipelago(MagicWord):
     desc = "Commands to force certain behavior with an AP session, does not work unless an active AP session is active"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [('operation', str, True)]
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         operation = args[0].lower()
@@ -3494,6 +3658,7 @@ class FreeLocalToon(MagicWord):
     aliases = ['free', 'unstuck', 'freeme', 'unstick', 'imstuck', 'stuck']
     desc = "Forces your toon to be set in the 'walk' state where you can regain control of your toon and walk around freely. Use at your own risk."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
+    accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
 
@@ -3511,6 +3676,7 @@ class SandboxBattle(MagicWord):
     aliases = ['sandbox', 'custombattle']
     desc = 'Starts a sandbox turn based battle. Used for testing battle mechanics and gives control of a dynamic suit planner.'
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         from ..battle.DistributedBattleSandboxAI import DistributedBattleSandboxAI

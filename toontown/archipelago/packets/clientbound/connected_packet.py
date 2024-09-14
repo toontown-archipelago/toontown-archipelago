@@ -12,6 +12,7 @@ from toontown.archipelago.packets.serverbound.connect_update_packet import Conne
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 from toontown.fishing import FishGlobals
+from otp.otpbase import OTPGlobals
 from toontown.toonbase import ToontownGlobals
 
 
@@ -175,6 +176,10 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Receive all checks that were collected from our slot while disconnected
         client.av.receiveCheckedLocations(self.checked_locations)
+
+        # Reset cheat access (also check if restricted and keep that value)
+        if client.av.getAccessLevel() != OTPGlobals.AccessLevelName2Int.get('RESTRICTED', 0):
+            client.av.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('NO_ACCESS', 0))
 
         # Tell AP we are playing
         won_id = ap_location_name_to_id(locations.ToontownLocationName.SAVED_TOONTOWN.value)
