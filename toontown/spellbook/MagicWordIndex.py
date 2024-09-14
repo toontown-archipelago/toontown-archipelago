@@ -3177,7 +3177,7 @@ class ToggleCheats(MagicWord):
             toon.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('NO_ACCESS'))
             return "Toggled cheats OFF."
         toon.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('USER'))
-        return "Toggled cheats ON."
+        return "Toggled cheats ON. WARNING: Some commands may be unstable and cause bugs/crashes!"
 
 
 class ToggleAdmin(MagicWord):
@@ -3193,7 +3193,7 @@ class ToggleAdmin(MagicWord):
             toon.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('USER'))
             return "Toggled admin OFF."
         toon.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('TTOFF_DEVELOPER'))
-        return "Toggled admin ON."
+        return "Toggled admin ON. WARNING: Some commands may be unstable and cause bugs/crashes!"
 
 
 class PrintChildren(MagicWord):
