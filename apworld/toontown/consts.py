@@ -1,6 +1,7 @@
 """
 Constants for Archipelago generation.
 """
+from enum import IntFlag, auto
 from BaseClasses import Item, Location
 
 BASE_ID = 0x501100
@@ -44,3 +45,30 @@ class ToontownItem(Item):
 
 class ToontownLocation(Location):
     game: str = "Toontown"
+
+
+class ToontownWinCondition(IntFlag):
+    cog_bosses = auto()
+    total_tasks = auto()
+    hood_tasks = auto()
+    gag_tracks = auto()
+    fish_species = auto()
+    laff_o_lympics = auto()
+
+    @staticmethod
+    def buildFromOptions(options):
+        """expects archipelago world options."""
+        win_conditions = ToontownWinCondition(0)
+        if options.win_condition_cog_bosses.value:
+            win_conditions = win_conditions | ToontownWinCondition.cog_bosses
+        if options.win_condition_total_tasks.value:
+            win_conditions = win_conditions | ToontownWinCondition.total_tasks
+        if options.win_condition_hood_tasks.value:
+            win_conditions = win_conditions | ToontownWinCondition.hood_tasks
+        if options.win_condition_gag_tracks.value:
+            win_conditions = win_conditions | ToontownWinCondition.gag_tracks
+        if options.win_condition_fish_species.value:
+            win_conditions = win_conditions | ToontownWinCondition.fish_species
+        if options.win_condition_laff_o_lympics.value:
+            win_conditions = win_conditions | ToontownWinCondition.laff_o_lympics
+        return win_conditions

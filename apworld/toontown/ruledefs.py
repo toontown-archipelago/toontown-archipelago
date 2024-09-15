@@ -2,7 +2,7 @@ import math
 from typing import Dict, Callable, Any, Tuple, Union
 
 from BaseClasses import CollectionState, MultiWorld
-from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVEL
+from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVEL, ToontownWinCondition
 from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, \
     LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION, PlaygroundFishZoneGroups
 from .items import ToontownItemName
@@ -569,12 +569,12 @@ def AllFishCaught(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
 @rule(Rule.TaskedAllHoods)
 def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
-        task_condition_primary = options.win_condition.value
-        task_condition_secondary = options.second_win_condition.value
+        total_tasks = options.win_condition_total_tasks
+        hood_tasks = options.win_condition_hood_tasks
         tasks_required = options.total_tasks_required.value
     else:
-        task_condition_primary = options.get("win_condition", 0)
-        task_condition_secondary = options.get("second_win_condition", 0)
+        total_tasks = options.get("win_condition", 0) & ToontownWinCondition.total_tasks
+        hood_tasks = options.get("win_condition", 0) & ToontownWinCondition.hood_tasks
         tasks_required = options.get("total_tasks_required", 48)
     args = (state, locentr, world, player, options)
     hq_access_to_gag_rule = {
@@ -598,10 +598,10 @@ def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
 
     access_count, gag_rule = CountAndGagRule()
 
-    if task_condition_primary == 1 or task_condition_secondary == 1:  # Complete enough total tasks
-        hoods_required = math.ceil(tasks_required / 12)  # How many HQs we need minimum to win!
-    elif task_condition_primary == 2 or task_condition_secondary == 2:  # Complete enough tasks in each hood
+    if hood_tasks:  # Complete enough tasks in each hood
         hoods_required = len(list(hq_access_to_gag_rule.keys()))  # We need all of them to win!
+    elif total_tasks:  # Complete enough total tasks
+        hoods_required = math.ceil(tasks_required / 12)  # How many HQs we need minimum to win!
     # Check if we have enough to win.
     return access_count >= hoods_required and passes_rule(Rule.CanReachTTC, *args) and passes_rule(gag_rule, *args)  # TECHNICALLY TRUE!
 
@@ -648,24 +648,20 @@ def MaxedAllGags(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
 @rule(Rule.CanWinGame)
 def CanWinGame(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
-        win_condition = options.win_condition.value
-        second_condition = options.second_win_condition.value
+        win_condition = ToontownWinCondition.buildFromOptions(options)
     else:
-        win_condition = options.get("win_condition", 0)
-        second_condition = options.get("second_win_condition", SecondWinCondition.option_none)
+        win_condition = ToontownWinCondition(options.get("win_condition", 0))
     args = (state, locentr, world, player, options)
     win_conditions = {
-        0: Rule.AllBossesDefeated,  # Cog Boss Goal
-        1: Rule.TaskedAllHoods,  # Total Tasks Goal
-        2: Rule.TaskedAllHoods,  # Hood Tasks Goal
-        3: Rule.MaxedAllGags,  # Max Gags Goal
-        4: Rule.AllFishCaught,  # Fish Species Goal
-        5: Rule.GainedEnoughLaff,  # Laff-O-Lympics Goal
+        ToontownWinCondition.cog_bosses: Rule.AllBossesDefeated,  # Cog Boss Goal
+        ToontownWinCondition.total_tasks: Rule.TaskedAllHoods,  # Total Tasks Goal
+        ToontownWinCondition.hood_tasks: Rule.TaskedAllHoods,  # Hood Tasks Goal
+        ToontownWinCondition.gag_tracks: Rule.MaxedAllGags,  # Max Gags Goal
+        ToontownWinCondition.fish_species: Rule.AllFishCaught,  # Fish Species Goal
+        ToontownWinCondition.laff_o_lympics: Rule.GainedEnoughLaff,  # Laff-O-Lympics Goal
     }
-    # Return our goal rule, default to Bosses if invalid
-    if second_condition != SecondWinCondition.option_none:
-        return passes_rule(win_conditions.get(win_condition, 0), *args) and passes_rule(win_conditions.get(second_condition, 0), *args)
-    return passes_rule(win_conditions.get(win_condition, 0), *args)
+    # Return our goal rule, default to None if invalid
+    return all(passes_rule(win_conditions.get(f), *args) for f in win_condition)
 
 
 @rule(ItemRule.RestrictDisguises)
