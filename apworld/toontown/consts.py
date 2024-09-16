@@ -55,10 +55,10 @@ class ToontownWinCondition(IntFlag):
     fish_species = auto()
     laff_o_lympics = auto()
 
-    @staticmethod
-    def buildFromOptions(options):
+    @classmethod
+    def from_options(cls, options):
         """expects archipelago world options."""
-        win_conditions = ToontownWinCondition(0)
+        win_conditions = cls(0)
         if options.win_condition_cog_bosses.value:
             win_conditions = win_conditions | ToontownWinCondition.cog_bosses
         if options.win_condition_total_tasks.value:

@@ -6,7 +6,7 @@ from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVE
 from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, \
     LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION, PlaygroundFishZoneGroups
 from .items import ToontownItemName
-from .options import ToontownOptions, TPSanity, FacilityLocking, SecondWinCondition
+from .options import ToontownOptions, TPSanity, FacilityLocking
 from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID, FISH_LOCATIONS, \
     get_location_def_from_name
 from .regions import ToontownEntranceDefinition, ToontownRegionName
@@ -648,7 +648,7 @@ def MaxedAllGags(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
 @rule(Rule.CanWinGame)
 def CanWinGame(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
-        win_condition = ToontownWinCondition.buildFromOptions(options)
+        win_condition = ToontownWinCondition.from_options(options)
     else:
         win_condition = ToontownWinCondition(options.get("win_condition", 0))
     args = (state, locentr, world, player, options)

@@ -114,7 +114,7 @@ class CogBossesRequired(Range):
     How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
     Unused if win_condition is not cog_bosses.
     """
-    display_name = "Cog Bosses Required"
+    display_name = "Bosses Required"
     range_start = 0
     range_end = 4
     default = 4
@@ -130,7 +130,7 @@ class TotalTasksRequired(Range):
     Must be less than total tasks in game (6 zones times logical_tasks_per_playground tasks).
     Unused if win_condition is not total_tasks.
     """
-    display_name = "Total Tasks Required"
+    display_name = "Tasks Required"
     range_start = 0
     range_end = 72
     default = 48
@@ -146,7 +146,7 @@ class HoodTasksRequired(Range):
     Must be less than logical_tasks_per_playground.
     Unused if win_condition is not hood_tasks.
     """
-    display_name = "Hood Tasks Required"
+    display_name = "Hood Tasks Count"
     range_start = 0
     range_end = 12
     default = 8
@@ -162,7 +162,7 @@ class GagTracksRequired(Range):
     Must be less than or equal to total number of gag tracks a toon can obtain.
     Unused if win_condition is not total_gag_tracks
     """
-    display_name = "Gag Tracks Required"
+    display_name = "Tracks Required"
     range_start = 0
     range_end = 7
     default = 5
@@ -178,7 +178,7 @@ class FishSpeciesRequired(Range):
     Must be less than or equal to total number of fish species a toon can obtain.
     Unused if win_condition is not total_fish_species
     """
-    display_name = "Fish Species Required"
+    display_name = "Fish Required"
     range_start = 0
     range_end = 70
     default = 70
@@ -194,7 +194,7 @@ class LaffPointsRequired(Range):
     Setting must be below or equal to max_laff setting
     Unused if win_condition is not laff_o_lympics
     """
-    display_name = "Laff Points Required"
+    display_name = "Laff Required"
     range_start = 0
     range_end = 150
     default = 120
@@ -406,7 +406,7 @@ class SyncGagExp(Toggle):
     leaving this on will retain your gag experience if you need to make a new toon to reconnect.
     If this is 'false', the data will still be sent, but your toon will not sync with it.
     """
-    display_name = "Sync Gag Experience"
+    display_name = "Sync Gag Exp"
     default = True
 
 
@@ -624,6 +624,7 @@ toontown_option_groups: list[OptionGroup] = [
         FishProgression, RacingOption, GolfingOption, SeedGenerationTypeOption
     ], False),
     OptionGroup("Weights", [
-        TrapPercentOption, UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption
+        TrapPercentOption, UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption,
+        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption
     ], True)
 ]

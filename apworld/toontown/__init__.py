@@ -12,7 +12,7 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES
-from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups, WinCondition
+from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
 from .fish import FishProgression, FishChecks
@@ -409,7 +409,7 @@ class ToontownWorld(World):
             if location.address and location.item and location.item.code and location.item.player == self.player
         ]
 
-        win_condition = ToontownWinCondition.buildFromOptions(self.options)
+        win_condition = ToontownWinCondition.from_options(self.options)
 
         # TODO: if actually removing tasks becomes implemented,
         #       check if there are still enough tasks to complete
