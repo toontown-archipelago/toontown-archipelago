@@ -8,7 +8,7 @@ from worlds.generic.Rules import set_rule
 from . import regions, consts
 from .consts import ToontownItem, ToontownLocation
 from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, \
-    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS
+    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES
@@ -203,6 +203,12 @@ class ToontownWorld(World):
                 if item.name == self.startingAccess:
                     continue
                 pool.append(self.create_item(item.name.value))
+
+        # Handle facility key generation
+        if self.options.facility_locking == FacilityLocking.option_keys:
+            for itemName in FACILITY_KEY_ITEMS:
+                item = self.create_item(itemName.value)
+                pool.append(item)
 
         # Handle teleport access item generation.
         if self.options.tpsanity.value in (TPSanity.option_keys, TPSanity.option_shuffle):
