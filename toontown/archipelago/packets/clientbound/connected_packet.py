@@ -179,13 +179,7 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Tell AP we are playing
         won_id = ap_location_name_to_id(locations.ToontownLocationName.SAVED_TOONTOWN.value)
         status_packet = StatusUpdatePacket()
-        conditions = client.av.getWinCondition()
-        won_game = True
-        for condition in conditions:
-            if not condition.satisfied():
-                won_game = False
-                break
-        status_packet.status = ClientStatus.CLIENT_GOAL if (won_game and client.av.hasCheckedLocation(won_id)) else ClientStatus.CLIENT_PLAYING
+        status_packet.status = ClientStatus.CLIENT_GOAL if (client.av.hasCheckedLocation(won_id)) else ClientStatus.CLIENT_PLAYING
         client.send_packet(status_packet)
 
         # Scout some locations that we need to display
