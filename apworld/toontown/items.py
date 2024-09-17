@@ -137,11 +137,11 @@ class ToontownItemDefinition:
 
 ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # region Laff Boosts
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_1, ItemClassification.useful),
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_2, ItemClassification.useful),
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_3, ItemClassification.useful),
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_4, ItemClassification.useful),
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.useful),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_1, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_2, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_3, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_4, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.progression),
     # endregion
     # region Gag Capacity
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.progression, quantity=12),  # NOTE: update values in has_collected_items_for_gag_level to match quantity

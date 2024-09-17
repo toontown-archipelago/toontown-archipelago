@@ -97,6 +97,13 @@ class Rule(Enum):
     MiddleTwoKey = auto()
     BackThreeKey = auto()
 
+    ### Laff Logic ###
+
+    Has20PercentMax = auto()
+    Has40PercentMax = auto()
+    Has60PercentMax = auto()
+    Has80PercentMax = auto()
+
     ### Activities ###
 
     Racing  = auto()

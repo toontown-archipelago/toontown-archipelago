@@ -85,18 +85,18 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
     return state.has(argument[0].value, player)
 
 
-@rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
-@rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS)
-@rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS)
-@rule(Rule.DollarMintKey,   ToontownItemName.DOLLAR_MINT_ACCESS)
-@rule(Rule.BullionMintKey,  ToontownItemName.BULLION_MINT_ACCESS)
-@rule(Rule.OfficeAKey,      ToontownItemName.A_OFFICE_ACCESS)
-@rule(Rule.OfficeBKey,      ToontownItemName.B_OFFICE_ACCESS)
-@rule(Rule.OfficeCKey,      ToontownItemName.C_OFFICE_ACCESS)
-@rule(Rule.OfficeDKey,      ToontownItemName.D_OFFICE_ACCESS)
-@rule(Rule.FrontOneKey,     ToontownItemName.FRONT_ONE_ACCESS)
-@rule(Rule.MiddleTwoKey,    ToontownItemName.MIDDLE_TWO_ACCESS)
-@rule(Rule.BackThreeKey,    ToontownItemName.BACK_THREE_ACCESS)
+@rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS, Rule.Has40PercentMax)
+@rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS, Rule.Has40PercentMax)
+@rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS, Rule.Has40PercentMax)
+@rule(Rule.DollarMintKey,   ToontownItemName.DOLLAR_MINT_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.BullionMintKey,  ToontownItemName.BULLION_MINT_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeAKey,      ToontownItemName.A_OFFICE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeBKey,      ToontownItemName.B_OFFICE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeCKey,      ToontownItemName.C_OFFICE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeDKey,      ToontownItemName.D_OFFICE_ACCESS, Rule.Has80PercentMax)
+@rule(Rule.FrontOneKey,     ToontownItemName.FRONT_ONE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.MiddleTwoKey,    ToontownItemName.MIDDLE_TWO_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.BackThreeKey,    ToontownItemName.BACK_THREE_ACCESS, Rule.Has80PercentMax)
 def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     itemToHQAccessRule = {
@@ -119,7 +119,9 @@ def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWo
         locking_method = options.get("facility_locking", 0)
     # Facilities have their own keys
     if locking_method == FacilityLocking.option_keys:
-        return state.has(argument[0].value, player) and passes_rule(itemToHQAccessRule[argument[0]], *args)
+        return state.has(argument[0].value, player) \
+               and passes_rule(itemToHQAccessRule[argument[0]], *args) \
+               and passes_rule(argument[1], *args)
     # Facilities are locked by a second access key
     elif locking_method == FacilityLocking.option_access:
         key_to_access = {
@@ -136,10 +138,51 @@ def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWo
             ToontownItemName.MIDDLE_TWO_ACCESS: ToontownItemName.BBHQ_ACCESS,
             ToontownItemName.BACK_THREE_ACCESS: ToontownItemName.BBHQ_ACCESS,
         }
-        return state.count(key_to_access[argument[0]].value, player) >= 2 and passes_rule(itemToHQAccessRule[argument[0]], *args)
+        return state.count(key_to_access[argument[0]].value, player) >= 2 \
+               and passes_rule(itemToHQAccessRule[argument[0]], *args) \
+               and passes_rule(argument[1], *args)
     # Facilities must be set to unlocked, access is true as long as we can reach the HQ
     else:
-        return passes_rule(itemToHQAccessRule[argument[0]], *args)
+        return passes_rule(itemToHQAccessRule[argument[0]], *args) \
+               and passes_rule(itemToHQAccessRule[argument[0]], *args) \
+               and passes_rule(argument[1], *args)
+
+
+@rule(Rule.Has20PercentMax, 0.2)
+@rule(Rule.Has40PercentMax, 0.4)
+@rule(Rule.Has60PercentMax, 0.6)
+@rule(Rule.Has80PercentMax, 0.8)
+def HasEnoughLaff(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        base_hp = options.starting_laff.value
+        max_hp = options.max_laff.value
+        goal_laff = options.laff_points_required.value
+        laff_o = options.win_condition_laff_o_lympics
+        if laff_o:
+            max_hp = max(max_hp, goal_laff)
+    else:
+        base_hp = options.get("starting_laff", 20)
+        max_hp = options.get("max_laff", 150)
+        goal_laff = options.get("laff_points_required", 120)
+        laff_o = options.get("win_condition", 0) & ToontownWinCondition.laff_o_lympics
+        if laff_o:
+            max_hp = max(max_hp, goal_laff)
+    hp_diff = max_hp - base_hp
+    # Our difference in base and max HP is too low, always true
+    if hp_diff < 10:
+        return True
+
+    # We need this so archipelago itself can calculate our current laff
+    def calcLaff():
+        laff = base_hp
+        laff += state.count(ToontownItemName.LAFF_BOOST_1.value, player)
+        laff += (2 * state.count(ToontownItemName.LAFF_BOOST_2.value, player))
+        laff += (3 * state.count(ToontownItemName.LAFF_BOOST_3.value, player))
+        laff += (4 * state.count(ToontownItemName.LAFF_BOOST_4.value, player))
+        laff += (5 * state.count(ToontownItemName.LAFF_BOOST_5.value, player))
+        return laff
+
+    return calcLaff() >= round(max_hp*argument[0])
 
 
 @rule(Rule.HasTTCHQAccess,  ToontownItemName.TTC_ACCESS)
@@ -435,7 +478,8 @@ def TierEightCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
     if argument:
         pgs.append(argument[0])
     return any(state.can_reach(pg.value, None, player) for pg in pgs) \
-           and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options)
+           and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
+           and passes_rule(Rule.Has20PercentMax, state, locentr, world, player, options)
 
 
 @rule(Rule.OneStory, 1)
@@ -444,17 +488,20 @@ def TierEightCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
 @rule(Rule.FourStory, 4)
 @rule(Rule.FiveStory, 5)
 def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    args = (state, locentr, world, player, options)
     if argument[0] == 1:
         pgs = [
             ToontownRegionName.TTC,
             ToontownRegionName.DD,
         ]
+        laff_rule = Rule.Has20PercentMax
     elif argument[0] == 2:
         pgs = [
             ToontownRegionName.TTC,
             ToontownRegionName.DD,
             ToontownRegionName.DG,
         ]
+        laff_rule = Rule.Has20PercentMax
     elif argument[0] == 3:
         pgs = [
             ToontownRegionName.TTC,
@@ -464,6 +511,7 @@ def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
             ToontownRegionName.TB,
             ToontownRegionName.DDL
         ]
+        laff_rule = Rule.Has40PercentMax
     elif argument[0] == 4:
         pgs = [
             ToontownRegionName.DG,
@@ -471,13 +519,15 @@ def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
             ToontownRegionName.TB,
             ToontownRegionName.DDL,
         ]
+        laff_rule = Rule.Has60PercentMax
     elif argument[0] == 5:
         pgs = [
             ToontownRegionName.MML,
             ToontownRegionName.TB,
             ToontownRegionName.DDL,
         ]
-    return any(state.can_reach(pg.value, None, player) for pg in pgs)
+        laff_rule = Rule.Has60PercentMax
+    return any(state.can_reach(pg.value, None, player) for pg in pgs) and passes_rule(laff_rule, *args)
 
 
 @rule(Rule.HasLevelOneOffenseGag,   1)
@@ -529,14 +579,14 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
 def CanFightVP(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachSBHQ, *args) and passes_rule(Rule.SellbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelFiveOffenseGag, *args)
+            and passes_rule(Rule.HasLevelFiveOffenseGag, *args) and passes_rule(Rule.Has40PercentMax, *args)
 
 
 @rule(Rule.CanFightCFO)
 def CanFightCFO(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachCBHQ, *args) and passes_rule(Rule.CashbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSixOffenseGag, *args)
+            and passes_rule(Rule.HasLevelSixOffenseGag, *args) and passes_rule(Rule.Has60PercentMax, *args)
 
 
 @rule(Rule.CanFightCJ)
@@ -544,7 +594,7 @@ def CanFightCJ(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, p
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachLBHQ, *args) and passes_rule(Rule.LawbotDisguise, *args) \
             and passes_rule(Rule.HasLevelSevenOffenseGag, *args) and passes_rule(Rule.CanFightVP, *args) \
-            and passes_rule(Rule.CanFightCFO, *args)
+            and passes_rule(Rule.CanFightCFO, *args) and passes_rule(Rule.Has60PercentMax, *args)
 
 
 @rule(Rule.CanFightCEO)
@@ -552,7 +602,7 @@ def CanFightCEO(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachBBHQ, *args) and passes_rule(Rule.BossbotDisguise, *args) \
             and passes_rule(Rule.HasLevelEightOffenseGag, *args) and passes_rule(Rule.CanFightVP, *args) \
-            and passes_rule(Rule.CanFightCFO, *args)
+            and passes_rule(Rule.CanFightCFO, *args) and passes_rule(Rule.Has80PercentMax, *args)
 
 
 @rule(Rule.AllBossesDefeated)

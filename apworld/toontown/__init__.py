@@ -277,7 +277,7 @@ class ToontownWorld(World):
             LAFF_TO_GIVE = max(self.options.laff_points_required, self.options.max_laff.value) - self.options.starting_laff.value
 
             for _ in range(LAFF_TO_GIVE):
-                pool.append(self.create_progression_item(ToontownItemName.LAFF_BOOST_1.value))
+                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
         else:  # If our goal isn't laff-o-lypics, generate laff items normally
             LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
             if LAFF_TO_GIVE < 0:
@@ -307,7 +307,6 @@ class ToontownWorld(World):
 
             for _ in range(LAFF_TO_GIVE):
                 pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
-
 
         # Dynamically generate training frames.
         for frame in items.GAG_TRAINING_FRAMES:
@@ -436,6 +435,7 @@ class ToontownWorld(World):
             "team": self.options.team.value,
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
+            "max_laff": self.options.max_laff.value,
             "starting_money": self.options.starting_money.value,
             "starting_task_capacity": self.options.starting_task_capacity.value,
             "max_task_capacity": self.options.max_task_capacity.value,
