@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-
-from Options import PerGameCommonOptions, StartInventoryPool, Range, Choice, Toggle
+from Options import PerGameCommonOptions, Range, Choice, Toggle, OptionGroup, ProgressionBalancing, Accessibility
 
 
 class TeamOption(Range):
@@ -104,58 +103,26 @@ class MaxTaskCapacityOption(Range):
     range_start = 1
     range_end = 6
     default = 4
-    
-class WinCondition(Choice):
-    """
-    Determines the condition before being able to talk to Flippy to complete the game.
-    - cog_bosses (default): Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
-    - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
-    - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
-    - total_fish_species:  Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
-    - laff_o_lympics: Player must reach a certain amount of laff to complete the game (determined by laff_points_required).
-    """
-    display_name = "Win Condition"
-    option_cog_bosses = 0
-    option_total_tasks = 1
-    option_hood_tasks = 2
-    option_total_gag_tracks = 3
-    option_total_fish_species = 4
-    option_laff_o_lympics = 5
-    default = 0
 
-
-class SecondWinCondition(Choice):
-    """
-    NOTE: This condition should NOT be the same as win_condition
-    Determines a second condition before being able to talk to Flippy to complete the game.
-    - none (default): Disables this option and only one condition is needed to complete the run.
-    - cog_bosses: Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
-    - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
-    - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
-    - total_fish_species:  Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
-    - laff_o_lympics: Player must reach a certain amount of laff to complete the game (determined by laff_points_required).
-    """
-    display_name = "Second Win Condition"
-    option_cog_bosses = 0
-    option_total_tasks = 1
-    option_hood_tasks = 2
-    option_total_gag_tracks = 3
-    option_total_fish_species = 4
-    option_laff_o_lympics = 5
-    option_none = 6
-    default = 6
-
+class WinConditionCogBosses(Toggle):
+    """Defeat a number of cog bosses to complete the game (determined by cog_bosses_required)."""
+    display_name = "Cog Bosses"
+    default = True
 
 class CogBossesRequired(Range):
     """
     How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
     Unused if win_condition is not cog_bosses.
     """
-    display_name = "Cog Bosses Required"
+    display_name = "Bosses Required"
     range_start = 0
     range_end = 4
     default = 4
 
+class WinConditionTotalTasks(Toggle):
+    """Complete a total number of tasks to complete the game (determined by total_tasks_required)."""
+    display_name = "Total Tasks"
+    default = False
 
 class TotalTasksRequired(Range):
     """
@@ -163,11 +130,15 @@ class TotalTasksRequired(Range):
     Must be less than total tasks in game (6 zones times logical_tasks_per_playground tasks).
     Unused if win_condition is not total_tasks.
     """
-    display_name = "Total Tasks Required"
+    display_name = "Tasks Required"
     range_start = 0
     range_end = 72
     default = 48
 
+class WinConditionHoodTasks(Toggle):
+    """Complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required)."""
+    display_name = "Hood Tasks"
+    default = False
 
 class HoodTasksRequired(Range):
     """
@@ -175,11 +146,15 @@ class HoodTasksRequired(Range):
     Must be less than logical_tasks_per_playground.
     Unused if win_condition is not hood_tasks.
     """
-    display_name = "Hood Tasks Required"
+    display_name = "Hood Tasks Count"
     range_start = 0
     range_end = 12
     default = 8
 
+class WinConditionTotalGagTracks(Toggle):
+    """Max a certain number of gag tracks to complete the game (determined by gag_tracks_required)."""
+    display_name = "Gag Tracks Maxed"
+    default = False
 
 class GagTracksRequired(Range):
     """
@@ -187,11 +162,15 @@ class GagTracksRequired(Range):
     Must be less than or equal to total number of gag tracks a toon can obtain.
     Unused if win_condition is not total_gag_tracks
     """
-    display_name = "Gag Tracks Required"
+    display_name = "Tracks Required"
     range_start = 0
     range_end = 7
     default = 5
 
+class WinConditionFishSpecies(Toggle):
+    """Catch a certain amount of fish species to complete the game (determined by fish_species_required)."""
+    display_name = "Fish Species"
+    default = False
 
 class FishSpeciesRequired(Range):
     """
@@ -199,11 +178,15 @@ class FishSpeciesRequired(Range):
     Must be less than or equal to total number of fish species a toon can obtain.
     Unused if win_condition is not total_fish_species
     """
-    display_name = "Fish Species Required"
+    display_name = "Fish Required"
     range_start = 0
     range_end = 70
     default = 70
 
+class WinConditionLaffOLympics(Toggle):
+    """Reach a certain amount of laff to complete the game (determined by laff_points_required)."""
+    display_name = "Laff o lympics"
+    default = False
 
 class LaffPointsRequired(Range):
     """
@@ -211,12 +194,11 @@ class LaffPointsRequired(Range):
     Setting must be below or equal to max_laff setting
     Unused if win_condition is not laff_o_lympics
     """
-    display_name = "Laff Points Required"
+    display_name = "Laff Required"
     range_start = 0
     range_end = 150
     default = 120
 
-    
 class TPSanity(Choice):
     """
     Determines how Teleport Access is shuffled in the Item Pool for all Playgrounds/HQs.
@@ -237,7 +219,7 @@ class TreasuresPerLocation(Range):
     """
     The amount of archipelago treasures that'll have items in each location
     """
-    display_name = "AP Treasures Per Location"
+    display_name = "Treasures Per Location"
     range_start = 0
     range_end = 6
     default = 4
@@ -266,7 +248,7 @@ class GagTrainingCheckBehavior(Choice):
     option_disabled = 2
     default = 1
 
-    display_name = "Gag Training Check Behavior"
+    display_name = "Gag Training Behavior"
 
 
 class GagTrainingFrameBehavior(Choice):
@@ -283,7 +265,7 @@ class GagTrainingFrameBehavior(Choice):
     option_trained = 2
     default = 0
 
-    display_name = "Gag Frame Item Behavior"
+    display_name = "Gag Frame Behavior"
 
 class LogicalTasksPerPlayground(Range):
     """
@@ -349,7 +331,7 @@ class FishLocations(Choice):
     - vanilla: Fish spawn in their vanilla locations. Street-exclusive fish remain in their vanilla locations.
     - global: Fish can spawn anywhere.
     """
-    display_name = "fish_locations"
+    display_name = "Fish Locations"
     option_playgrounds = 0
     option_vanilla = 1
     option_global = 2
@@ -364,7 +346,7 @@ class FishChecks(Choice):
     - all_gallery: Every 10 species will have an item.
     - none: There are no items in fishing.
     """
-    display_name = "fish_checks"
+    display_name = "Fish Checks"
     option_all_species = 0
     option_all_gallery_and_genus = 1
     option_all_gallery = 2
@@ -380,7 +362,7 @@ class FishProgression(Choice):
     - rods: Progressive fishing rod items are added to the pool.
     - none: All fishing areas are available. The player starts with a Gold Rod.
     """
-    display_name = "fish_progression"
+    display_name = "Fish Progression"
     option_licenses_and_rods = 0
     option_licenses = 1
     option_rods = 2
@@ -424,7 +406,7 @@ class SyncGagExp(Toggle):
     leaving this on will retain your gag experience if you need to make a new toon to reconnect.
     If this is 'false', the data will still be sent, but your toon will not sync with it.
     """
-    display_name = "Sync Gag Experience"
+    display_name = "Sync Gag Exp"
     default = True
 
 
@@ -563,7 +545,6 @@ class DeathLinkOption(Toggle):
     display_name = "Death Link"
     default = False
 
-
 @dataclass
 class ToontownOptions(PerGameCommonOptions):
     team: TeamOption
@@ -576,8 +557,12 @@ class ToontownOptions(PerGameCommonOptions):
     starting_money: StartMoneyOption
     starting_task_capacity: StartingTaskCapacityOption
     max_task_capacity: MaxTaskCapacityOption
-    win_condition: WinCondition
-    second_win_condition: SecondWinCondition
+    win_condition_cog_bosses: WinConditionCogBosses
+    win_condition_total_tasks: WinConditionTotalTasks
+    win_condition_hood_tasks: WinConditionHoodTasks
+    win_condition_gag_tracks: WinConditionTotalGagTracks
+    win_condition_fish_species: WinConditionFishSpecies
+    win_condition_laff_o_lympics: WinConditionLaffOLympics
     cog_bosses_required: CogBossesRequired
     total_tasks_required: TotalTasksRequired
     hood_tasks_required: HoodTasksRequired
@@ -613,3 +598,33 @@ class ToontownOptions(PerGameCommonOptions):
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
     death_link: DeathLinkOption
+
+toontown_option_groups: list[OptionGroup] = [
+    OptionGroup("Archipelago Settings", [
+        ProgressionBalancing, Accessibility, SyncJellybeans, SyncGagExp
+    ]),
+    OptionGroup("Toon Settings", [
+        TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
+        BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageMultiplierRange,
+        OverflowModRange, StartMoneyOption, StartingTaskCapacityOption,
+        MaxTaskCapacityOption, DeathLinkOption
+    ]),
+    OptionGroup("Win Condition", [
+        WinConditionCogBosses, CogBossesRequired,
+        WinConditionTotalTasks, TotalTasksRequired,
+        WinConditionHoodTasks, HoodTasksRequired,
+        WinConditionTotalGagTracks, GagTracksRequired,
+        WinConditionFishSpecies, FishSpeciesRequired,
+        WinConditionLaffOLympics, LaffPointsRequired
+        ], False),
+    OptionGroup("Check/Item Behavior", [
+        TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
+        GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
+        MaxedCogGalleryQuota, FacilityLocking, FishChecks, FishLocations,
+        FishProgression, RacingOption, GolfingOption, SeedGenerationTypeOption
+    ], False),
+    OptionGroup("Weights", [
+        TrapPercentOption, UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption,
+        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption
+    ], True)
+]
