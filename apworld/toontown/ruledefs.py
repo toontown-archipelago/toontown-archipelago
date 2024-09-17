@@ -98,13 +98,28 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.MiddleTwoKey,    ToontownItemName.MIDDLE_TWO_ACCESS)
 @rule(Rule.BackThreeKey,    ToontownItemName.BACK_THREE_ACCESS)
 def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    args = (state, locentr, world, player, options)
+    itemToHQAccessRule = {
+        ToontownItemName.FRONT_FACTORY_ACCESS: Rule.CanReachSBHQ,
+        ToontownItemName.SIDE_FACTORY_ACCESS: Rule.CanReachSBHQ,
+        ToontownItemName.COIN_MINT_ACCESS: Rule.CanReachCBHQ,
+        ToontownItemName.DOLLAR_MINT_ACCESS: Rule.CanReachCBHQ,
+        ToontownItemName.BULLION_MINT_ACCESS: Rule.CanReachCBHQ,
+        ToontownItemName.A_OFFICE_ACCESS: Rule.CanReachLBHQ,
+        ToontownItemName.B_OFFICE_ACCESS: Rule.CanReachLBHQ,
+        ToontownItemName.C_OFFICE_ACCESS: Rule.CanReachLBHQ,
+        ToontownItemName.D_OFFICE_ACCESS: Rule.CanReachLBHQ,
+        ToontownItemName.FRONT_ONE_ACCESS: Rule.CanReachBBHQ,
+        ToontownItemName.MIDDLE_TWO_ACCESS: Rule.CanReachBBHQ,
+        ToontownItemName.BACK_THREE_ACCESS: Rule.CanReachBBHQ,
+    }
     if isinstance(options, ToontownOptions):
         locking_method = options.facility_locking.value
     else:
         locking_method = options.get("facility_locking", 0)
     # Facilities have their own keys
     if locking_method == FacilityLocking.option_keys:
-        return state.has(argument[0].value, player)
+        return state.has(argument[0].value, player) and passes_rule(itemToHQAccessRule[argument[0]], *args)
     # Facilities are locked by a second access key
     elif locking_method == FacilityLocking.option_access:
         key_to_access = {
@@ -121,10 +136,10 @@ def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWo
             ToontownItemName.MIDDLE_TWO_ACCESS: ToontownItemName.BBHQ_ACCESS,
             ToontownItemName.BACK_THREE_ACCESS: ToontownItemName.BBHQ_ACCESS,
         }
-        return state.count(key_to_access[argument[0]].value, player) >= 2
-    # Facilities must be set to unlocked, access is always true
+        return state.count(key_to_access[argument[0]].value, player) >= 2 and passes_rule(itemToHQAccessRule[argument[0]], *args)
+    # Facilities must be set to unlocked, access is true as long as we can reach the HQ
     else:
-        return True
+        return passes_rule(itemToHQAccessRule[argument[0]], *args)
 
 
 @rule(Rule.HasTTCHQAccess,  ToontownItemName.TTC_ACCESS)
