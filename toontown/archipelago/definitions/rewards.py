@@ -212,8 +212,14 @@ class GagTrainingFrameReward(APReward):
         # Otherwise increment the gag level allowed
         av.setTrackAccessLevel(self.track, newLevel)
 
+        # Max the gag and give the new gag if the behavior mode is to max gags 
+        if behaviorMode == GagTrainingFrameBehavior.option_trained and newLevel < 8:
+            av.experience.setExp(self.track, av.experience.getExperienceCapForTrack(track=self.track)) # max the gag exp.
+            av.ap_setExperience(av.experience.getCurrentExperience())
+            av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
+            av.b_setInventory(av.inventory.makeNetString())
         # Consider the case where we just learned a new gag track, we should give them as many of them as possible
-        if newLevel == 1:
+        elif newLevel == 1:
             av.inventory.addItemsWithListMax([(self.track, 0)])
             av.b_setInventory(av.inventory.makeNetString())
         # Now consider the case where we were maxed previously and want to upgrade by giving 1 xp and giving new gags
@@ -222,12 +228,6 @@ class GagTrainingFrameReward(APReward):
             or behaviorMode == GagTrainingFrameBehavior.option_unlock and newLevel < 8):
             toNext = av.experience.getNextExpValue(track=self.track, curSkill=curExp)
             av.experience.setExp(track=self.track, exp=toNext)  # Give them enough xp to learn the gag :)
-            av.ap_setExperience(av.experience.getCurrentExperience())
-            av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
-            av.b_setInventory(av.inventory.makeNetString())
-        # Using an if here because this still should run to max level 1 gags.
-        if behaviorMode == GagTrainingFrameBehavior.option_trained and newLevel < 8:
-            av.experience.setExp(self.track, av.experience.getExperienceCapForTrack(track=self.track)) # max the gag exp.
             av.ap_setExperience(av.experience.getCurrentExperience())
             av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
             av.b_setInventory(av.inventory.makeNetString())
