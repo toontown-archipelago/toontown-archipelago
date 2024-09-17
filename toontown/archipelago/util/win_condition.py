@@ -82,8 +82,7 @@ class BossDefeatWinCondition(WinCondition):
 
     def generate_npc_dialogue(self, delimiter='\x07') -> str:
         if self.satisfied():
-            return delimiter.join(['It seems your bosses goal is completed!',
-                    'When you finish your other goal, come back and see me!'])
+            return 'It seems your bosses goal is completed!'
         return delimiter.join(['You still have not completed your bosses goal!',
                 f'You still must defeat {self.__get_bosses_needed()} unique bosses.'])
 
