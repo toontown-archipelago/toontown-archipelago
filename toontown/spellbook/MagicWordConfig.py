@@ -17,6 +17,7 @@ MAGIC_WORD_RESPONSES = {
     "NoAccessToTarget": "You don't have a high enough access level to target them!",
     "NoTarget": 'Unable to find a target!',
     "NoAccess": 'Your Toon does not have enough power to use this Magic Word!',
+    "NoCheatAccess": 'Your Toon does not have cheats enabled!',
     "NotEnoughArgs": 'This command takes at least {}!',
     "TooManyArgs": 'This command takes at most {}!',
     "BadArgs": 'These arguments are of the wrong type!',
