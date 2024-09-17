@@ -205,15 +205,16 @@ class GagTrainingFrameReward(APReward):
         # Before we do anything, we need to see if they were capped before this so we can award them gags later
         curExp = av.experience.getExp(self.track)
         wasCapped = curExp == av.experience.getExperienceCapForTrack(self.track)
-        # Edge case, we were not technically capped if we are unlocking the "overflow xp" mechanic
-        if newLevel >= 8:
-            wasCapped = False
 
         # Otherwise increment the gag level allowed
         av.setTrackAccessLevel(self.track, newLevel)
 
+        # Edge case, nothing else should happen if we are unlocking the "overflow xp" mechanic
+        if newLevel >= 8:
+            return
+
         # Max the gag and give the new gag if the behavior mode is to max gags 
-        if behaviorMode == GagTrainingFrameBehavior.option_trained and newLevel < 8:
+        elif behaviorMode == GagTrainingFrameBehavior.option_trained:
             av.experience.setExp(self.track, av.experience.getExperienceCapForTrack(track=self.track)) # max the gag exp.
             av.ap_setExperience(av.experience.getCurrentExperience())
             av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
@@ -225,7 +226,7 @@ class GagTrainingFrameReward(APReward):
         # Now consider the case where we were maxed previously and want to upgrade by giving 1 xp and giving new gags
         # This will also trigger the new gag check to unlock :3
         elif (wasCapped and behaviorMode == GagTrainingFrameBehavior.option_vanilla
-            or behaviorMode == GagTrainingFrameBehavior.option_unlock and newLevel < 8):
+            or behaviorMode == GagTrainingFrameBehavior.option_unlock):
             toNext = av.experience.getNextExpValue(track=self.track, curSkill=curExp)
             av.experience.setExp(track=self.track, exp=toNext)  # Give them enough xp to learn the gag :)
             av.ap_setExperience(av.experience.getCurrentExperience())
