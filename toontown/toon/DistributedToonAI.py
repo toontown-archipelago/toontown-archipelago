@@ -50,10 +50,8 @@ from ..archipelago.definitions.util import get_zone_discovery_id
 from ..archipelago.util import win_condition
 from ..archipelago.util.HintContainer import HintedItem
 from ..archipelago.util.location_scouts_cache import LocationScoutsCache
-from ..archipelago.util.win_condition import WinCondition
 from ..shtiker import CogPageGlobals
 from ..util.astron.AstronDict import AstronDict
-from apworld.toontown.options import SecondWinCondition
 
 if simbase.wantPets:
     from toontown.pets import PetLookerAI, PetObserve
@@ -245,7 +243,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.apMessageQueue: DistributedToonAPMessageQueue = DistributedToonAPMessageQueue(self)
         self.deathReason: DeathReason = DeathReason.UNKNOWN
         self.slotData = {}  # set in connected_packet.py
-        self.winCondition = [win_condition.NoWinCondition(self)]
+        self.winCondition = win_condition.NoWinCondition(self)
 
     def generate(self):
         DistributedPlayerAI.DistributedPlayerAI.generate(self)
@@ -4648,7 +4646,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setCheckedLocations([])
         self.b_setReceivedItems([])
         self.b_setAccessKeys([])
-        
+
         # Regenerate the toon's UUID used for archipelago connections.
         self.regenerateUUID()
 
@@ -4695,13 +4693,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.archipelago_session.toon_died()
 
     def updateWinCondition(self) -> None:
-        condition = []
-        condition.append(win_condition.generate_win_condition(self.slotData.get('win_condition', -2), self))
-        if self.slotData.get('second_win_condition', SecondWinCondition.option_none) != SecondWinCondition.option_none:
-            condition.append(win_condition.generate_win_condition(self.slotData.get('second_win_condition', -2), self))
-        self.winCondition = condition
+        self.winCondition = win_condition.generate_win_condition(self.slotData.get('win_condition', -2), self)
 
-    def getWinCondition(self) -> WinCondition:
+    def getWinCondition(self) -> win_condition.WinCondition:
         return self.winCondition
     
     # UUID for use with archipelago, stored in the toon for use as an identifier.

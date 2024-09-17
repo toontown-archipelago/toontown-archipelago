@@ -53,6 +53,7 @@ from toontown.parties.PartyReplyInfo import PartyReplyInfoBase
 from toontown.parties.SimpleMailBase import SimpleMailBase
 from toontown.parties import PartyGlobals
 from toontown.friends import FriendHandle
+from toontown.archipelago.util import win_condition
 import time
 import operator
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, SoundInterval
@@ -67,10 +68,8 @@ from ..archipelago.definitions import color_profile
 from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.util import win_condition
-from ..archipelago.util.win_condition import WinCondition
 from ..util.astron.AstronDict import AstronDict
 from apworld.toontown import ToontownRegionName, ToontownItemName, get_item_def_from_id, ITEM_NAME_TO_ID, TPSanity
-from apworld.toontown.options import SecondWinCondition
 
 
 if base.wantKarts:
@@ -222,7 +221,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintCost = 0
 
         self.slotData = {}
-        self.winCondition = [win_condition.NoWinCondition(self)]
+        self.winCondition = win_condition.NoWinCondition(self)
+        self.ConfirmedWinConditionError = False
         self.rewardHistory = []
         self.rewardTier = 0
         self.alreadyNotified = False
@@ -2939,33 +2939,26 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         return bool(self.slotData)
 
     def updateWinCondition(self) -> None:
-        condition = []
-        condition.append(win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self))
-        if self.getSlotData().get('second_win_condition', SecondWinCondition.option_none) != SecondWinCondition.option_none:
-            condition.append(win_condition.generate_win_condition(self.getSlotData().get('second_win_condition', -2), self))
-        self.winCondition = condition
+        self.winCondition = win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self)
         # check if we have previously met the win condition on login
         # if we have, send a system message to the player that they can complete their run and talk to flippy
         self.checkWinCondition()
 
     def checkWinCondition(self):
-        for condition in self.getWinCondition():
-            if not condition.satisfied():
-                return  # We return here so notif only runs if all are complete
-        if not self.alreadyNotified:
+        if (self == base.localAvatar  # Ensure local toon, prevents a bug (Audio plays for other toons' goals)
+            and not self.alreadyNotified # Only alert the toon once.
+            and self.getWinCondition().satisfied()):
             self.setSystemMessage(0, TTLocalizer.WinConditionMet)
             # play the golf victory sound so they dont miss it
-            # check if its localtoon to potentially fix a bug with this playing for unknown reasons
-            if self == base.localAvatar:
-                base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
-                self.alreadyNotified = True
+            base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
+            self.alreadyNotified = True
 
-    def getWinCondition(self) -> WinCondition:
+    def getWinCondition(self) -> win_condition.WinCondition:
         return self.winCondition
-                
-    """
-    Methods for managing Color Profiles and Nametags.
-    """
+
+    ###
+    ### Methods for managing Color Profiles and Nametags.
+    ###
 
     # Removes the custom color functionality for this toon's nametags.
     # Reverts the behavior of deciding colors back to vanilla libotp.

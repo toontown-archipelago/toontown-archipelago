@@ -29,5 +29,13 @@ class Toggle(Option):
     pass
 
 
+#Used by the APWorld for supporting OptionGroups for display on the website. 
+class OptionGroup():
+    def __init__(*args, **kwargs):
+        pass
 
+class ProgressionBalancing(Option):
+    pass
 
+class Accessibility(Option):
+    pass
