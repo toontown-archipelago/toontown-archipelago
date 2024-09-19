@@ -184,21 +184,21 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.MML_FISHING, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.TB_FISHING,  ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.DDL_FISHING, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.FISH, ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.FISH,        ItemClassification.filler),
     # endregion
     # region Teleport Access
-    ToontownItemDefinition(ToontownItemName.TTC_ACCESS, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.DD_ACCESS, ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DG_ACCESS, ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.MML_ACCESS, ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.TB_ACCESS, ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DDL_ACCESS, ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.TTC_ACCESS,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DD_ACCESS,   ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.DG_ACCESS,   ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.MML_ACCESS,  ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.TB_ACCESS,   ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.DDL_ACCESS,  ItemClassification.progression, quantity=1),
     ToontownItemDefinition(ToontownItemName.SBHQ_ACCESS, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.CBHQ_ACCESS, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.LBHQ_ACCESS, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.BBHQ_ACCESS, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.AA_ACCESS, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.GS_ACCESS, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.AA_ACCESS,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GS_ACCESS,   ItemClassification.progression),
     # endregion
     # region Facility Access
     ToontownItemDefinition(ToontownItemName.FRONT_FACTORY_ACCESS, ItemClassification.progression),
@@ -210,8 +210,8 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.B_OFFICE_ACCESS,      ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.C_OFFICE_ACCESS,      ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.D_OFFICE_ACCESS,      ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.FRONT_ONE_ACCESS,   ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.MIDDLE_TWO_ACCESS,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.FRONT_ONE_ACCESS,     ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.MIDDLE_TWO_ACCESS,    ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.BACK_THREE_ACCESS,    ItemClassification.progression),
     # endregion
     # region Boss Disguises
@@ -228,22 +228,22 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # TODO - remember to account for the Fish filler when implementing weights here
     ToontownItemDefinition(ToontownItemName.MONEY_150,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_400,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_700,       ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_700,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_10,           ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_15,          ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_20,          ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_10,            ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_15,            ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_20,            ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.SOS_REWARD,       ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.UNITE_REWARD,     ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD, ItemClassification.filler),
     # endregion
     # region Traps
-    ToontownItemDefinition(ToontownItemName.UBER_TRAP,        ItemClassification.trap),
-    ToontownItemDefinition(ToontownItemName.BEAN_TAX_TRAP_750,    ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.UBER_TRAP,             ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.BEAN_TAX_TRAP_750,     ItemClassification.trap),
     ToontownItemDefinition(ToontownItemName.BEAN_TAX_TRAP_1000,    ItemClassification.trap),
     ToontownItemDefinition(ToontownItemName.BEAN_TAX_TRAP_1250,    ItemClassification.trap),
-    ToontownItemDefinition(ToontownItemName.DRIP_TRAP,        ItemClassification.trap),
-    ToontownItemDefinition(ToontownItemName.GAG_SHUFFLE_TRAP, ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.DRIP_TRAP,             ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.GAG_SHUFFLE_TRAP,      ItemClassification.trap),
     # endregion
 ]
 
