@@ -137,11 +137,11 @@ class ToontownItemDefinition:
 
 ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # region Laff Boosts
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_1, ItemClassification.useful),
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_2, ItemClassification.useful),
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_3, ItemClassification.useful),
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_4, ItemClassification.useful),
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.useful),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_1, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_2, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_3, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_4, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.progression),
     # endregion
     # region Gag Capacity
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.progression, quantity=12),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
@@ -201,18 +201,18 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.GS_ACCESS, ItemClassification.progression),
     # endregion
     # region Facility Access
-    ToontownItemDefinition(ToontownItemName.FRONT_FACTORY_ACCESS, ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.SIDE_FACTORY_ACCESS,  ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.COIN_MINT_ACCESS,     ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.DOLLAR_MINT_ACCESS,   ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.BULLION_MINT_ACCESS,  ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.A_OFFICE_ACCESS,      ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.B_OFFICE_ACCESS,      ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.C_OFFICE_ACCESS,      ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.D_OFFICE_ACCESS,      ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.FRONT_ONE_ACCESS,   ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.MIDDLE_TWO_ACCESS,  ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.BACK_THREE_ACCESS,    ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.FRONT_FACTORY_ACCESS, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.SIDE_FACTORY_ACCESS,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.COIN_MINT_ACCESS,     ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DOLLAR_MINT_ACCESS,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.BULLION_MINT_ACCESS,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.A_OFFICE_ACCESS,      ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.B_OFFICE_ACCESS,      ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.C_OFFICE_ACCESS,      ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.D_OFFICE_ACCESS,      ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.FRONT_ONE_ACCESS,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.MIDDLE_TWO_ACCESS,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.BACK_THREE_ACCESS,    ItemClassification.progression),
     # endregion
     # region Boss Disguises
     ToontownItemDefinition(ToontownItemName.SELLBOT_DISGUISE, ItemClassification.progression, quantity=1),
@@ -299,6 +299,21 @@ TELEPORT_ACCESS_ITEMS = (
     ToontownItemName.BBHQ_ACCESS,
     ToontownItemName.AA_ACCESS,
     ToontownItemName.GS_ACCESS,
+)
+
+FACILITY_KEY_ITEMS = (
+    ToontownItemName.FRONT_FACTORY_ACCESS,
+    ToontownItemName.SIDE_FACTORY_ACCESS,
+    ToontownItemName.COIN_MINT_ACCESS,
+    ToontownItemName.DOLLAR_MINT_ACCESS,
+    ToontownItemName.BULLION_MINT_ACCESS,
+    ToontownItemName.A_OFFICE_ACCESS,
+    ToontownItemName.B_OFFICE_ACCESS,
+    ToontownItemName.C_OFFICE_ACCESS,
+    ToontownItemName.D_OFFICE_ACCESS,
+    ToontownItemName.FRONT_ONE_ACCESS,
+    ToontownItemName.MIDDLE_TWO_ACCESS,
+    ToontownItemName.BACK_THREE_ACCESS,
 )
 
 

@@ -6,13 +6,13 @@ import random
 from worlds.generic.Rules import set_rule
 
 from . import regions, consts
-from .consts import ToontownItem, ToontownLocation
+from .consts import ToontownItem, ToontownLocation, ToontownWinCondition
 from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, \
-    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS
+    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES
-from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking
+from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
 from .fish import FishProgression, FishChecks
@@ -30,6 +30,7 @@ class ToontownWeb(WebWorld):
         ["DevvyDont"]
     )]
     theme = "partyTime"
+    option_groups = toontown_option_groups
 
 
 class ToontownWorld(World):
@@ -204,6 +205,12 @@ class ToontownWorld(World):
                     continue
                 pool.append(self.create_item(item.name.value))
 
+        # Handle facility key generation
+        if self.options.facility_locking == FacilityLocking.option_keys:
+            for itemName in FACILITY_KEY_ITEMS:
+                item = self.create_item(itemName.value)
+                pool.append(item)
+
         # Handle teleport access item generation.
         if self.options.tpsanity.value in (TPSanity.option_keys, TPSanity.option_shuffle):
             for itemName in TELEPORT_ACCESS_ITEMS:
@@ -264,7 +271,14 @@ class ToontownWorld(World):
                         pool.append(item)
 
         # Dynamically generate laff boosts.
-        if self.options.win_condition.value != 5 and self.options.second_win_condition.value != 5:  # If our goal isn't laff-o-lypics, generate laff items normally
+        if self.options.win_condition_laff_o_lympics:  # Our goal is laff-o-lympics, only progressive +1 Boost items
+            # Lets make sure our goal isn't more than our max_laff
+            # If it is, make our max laff the same as our goal
+            LAFF_TO_GIVE = max(self.options.laff_points_required, self.options.max_laff.value) - self.options.starting_laff.value
+
+            for _ in range(LAFF_TO_GIVE):
+                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
+        else:  # If our goal isn't laff-o-lypics, generate laff items normally
             LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
             if LAFF_TO_GIVE < 0:
                 print(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
@@ -293,14 +307,6 @@ class ToontownWorld(World):
 
             for _ in range(LAFF_TO_GIVE):
                 pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
-        else:  # Our goal is laff-o-lympics, only progressive +1 Boost items
-            # Lets make sure our goal isn't more than our max_laff
-            # If it is, make our max laff the same as our goal
-            LAFF_TO_GIVE = max(self.options.laff_points_required, self.options.max_laff.value) - self.options.starting_laff.value
-
-            for _ in range(LAFF_TO_GIVE):
-                pool.append(self.create_progression_item(ToontownItemName.LAFF_BOOST_1.value))
-
 
         # Dynamically generate training frames.
         for frame in items.GAG_TRAINING_FRAMES:
@@ -408,16 +414,18 @@ class ToontownWorld(World):
             if location.address and location.item and location.item.code and location.item.player == self.player
         ]
 
+        win_condition = ToontownWinCondition.from_options(self.options)
+
         # TODO: if actually removing tasks becomes implemented,
         #       check if there are still enough tasks to complete
 
         # If win condition is total_tasks, make sure that the player can actually complete them.
-        # if self.options.win_condition.value == 1 and self.options.total_tasks_required.value > 6*self.options.logical_tasks_per_playground.value:
+        # if self.options.win_condition_total_tasks.value and self.options.total_tasks_required.value > 6*self.options.logical_tasks_per_playground.value:
         #     raise Exception(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
         #                     f"Too many total tasks required (max is 6*logical_tasks: {6*self.options.logical_tasks_per_playground.value}), please tweak settings.")
 
         # If win condition is hood_tasks, make sure that the player can actually complete them.
-        # if self.options.win_condition.value == 2 and self.options.hood_tasks_required.value > self.options.logical_tasks_per_playground.value:
+        # if self.options.win_condition_hood_tasks.value and self.options.hood_tasks_required.value > self.options.logical_tasks_per_playground.value:
         #     raise Exception(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
         #                     f"Too many hood tasks required (max is logical_tasks: {self.options.logical_tasks_per_playground.value}), please tweak settings.")
 
@@ -427,6 +435,7 @@ class ToontownWorld(World):
             "team": self.options.team.value,
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
+            "max_laff": self.options.max_laff.value,
             "starting_money": self.options.starting_money.value,
             "starting_task_capacity": self.options.starting_task_capacity.value,
             "max_task_capacity": self.options.max_task_capacity.value,
@@ -435,8 +444,7 @@ class ToontownWorld(World):
             "overflow_mod": self.options.overflow_mod.value,
             "first_track": self.first_track.value,
             "second_track": self.second_track.value,
-            "win_condition": self.options.win_condition.value,
-            "second_win_condition": self.options.second_win_condition.value,
+            "win_condition": int(win_condition),
             "cog_bosses_required": self.options.cog_bosses_required.value,
             "total_tasks_required": self.options.total_tasks_required.value,
             "hood_tasks_required": self.options.hood_tasks_required.value,

@@ -84,8 +84,6 @@ class RoomInfoPacket(ClientBoundPacketBase):
         client.av.hintCostPercentage = self.hint_cost
 
 
-        print(self.seed_name)
-        print(type(self.seed_name))
         # Check if this is the last session we connected to.
         if client.av.checkLastSeed(self.seed_name):
             client.av.b_setLastSeed(self.seed_name)
