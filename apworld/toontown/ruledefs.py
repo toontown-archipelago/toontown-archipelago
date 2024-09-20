@@ -390,8 +390,13 @@ def FishGallery(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.DropSix,         ToontownItemName.DROP_FRAME, 6)
 @rule(Rule.DropSeven,       ToontownItemName.DROP_FRAME, 7)
 def GagTraining(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    # We need lure to be able to train trap :3
+    if argument[0] == ToontownItemName.TRAP_FRAME:
+        return state.has(argument[0].value, player, argument[1]) \
+               and has_collected_items_for_gag_level(state, player, options, argument[1]) \
+               and state.has(ToontownItemName.LURE_FRAME.value, player)
     return state.has(argument[0].value, player, argument[1]) \
-            and has_collected_items_for_gag_level(state, player, options, argument[1])
+           and has_collected_items_for_gag_level(state, player, options, argument[1])
 
 
 @rule(Rule.CanReachTTC,  ToontownRegionName.TTC)
