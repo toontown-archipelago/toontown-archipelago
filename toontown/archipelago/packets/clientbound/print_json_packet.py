@@ -41,7 +41,7 @@ class PrintJSONPacket(ClientBoundPacketBase):
         Reads this packet when we know for sure it is a hint packet. Will cause errors if this packet is not a hint
         packet, use self.is_hint_packet() before calling this
         """
-        location_name = client.get_location_name(self.item.location)
+        location_name = client.get_location_name(self.item.location, self.item.player)
         player_name = client.get_player_name(self.item.player)
         return HintedItem(self.receiving, self.item, player_name, location_name, self.found)
 
