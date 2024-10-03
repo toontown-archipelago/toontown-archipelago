@@ -57,13 +57,10 @@ class RoomInfoPacket(ClientBoundPacketBase):
                 package = DataPackage.from_cache(checksum)
 
                 # Otherwise, we can add this to the client
-                client.data_packages[game_name] = package
-                client.global_data_package.merge(package)
+                client.global_data_package.add_datapackage(package)
                 self.debug(f"Loaded DataPackage for {game_name} from cache!")
-            except:
-                self.debug(f"Missing DataPackage for {game_name}")
-
-            if not package:
+            except OSError:
+                self.debug(f"Failed opening DataPackage for {game_name} from cache.")
                 missing_games.append(game_name)
 
         # Send the packets if we need to get some game info
@@ -84,7 +81,7 @@ class RoomInfoPacket(ClientBoundPacketBase):
         client.av.hintCostPercentage = self.hint_cost
 
 
-        # Check if this is the last session we connected to.
+        # # Check if this is the last session we connected to.
         if client.av.checkLastSeed(self.seed_name):
             client.av.b_setLastSeed(self.seed_name)
             # When we are given this packet, we should attempt to connect this player to the room with their slot
