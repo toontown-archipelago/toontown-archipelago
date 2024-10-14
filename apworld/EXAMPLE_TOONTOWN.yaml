@@ -261,10 +261,7 @@ Toontown:
 
   # Starting hints for Cog Disguises
   start_hints:
-    - Sellbot Disguise
-    - Cashbot Disguise
-    - Lawbot Disguise
-    - Bossbot Disguise
+    - Cog Disguises
 
 game: Toontown
 requires:

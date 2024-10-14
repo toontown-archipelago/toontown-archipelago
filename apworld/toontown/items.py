@@ -278,6 +278,12 @@ GAG_UPGRADES = (
     ToontownItemName.DROP_UPGRADE
 )
 
+GAG_CAPACITY = (
+    ToontownItemName.GAG_CAPACITY_5,
+    ToontownItemName.GAG_CAPACITY_10,
+    ToontownItemName.GAG_CAPACITY_15
+)
+
 FISHING_LICENSES = (
     ToontownItemName.TTC_FISHING,
     ToontownItemName.DD_FISHING,
@@ -285,6 +291,7 @@ FISHING_LICENSES = (
     ToontownItemName.MML_FISHING,
     ToontownItemName.TB_FISHING,
     ToontownItemName.DDL_FISHING,
+    # ToontownItemName.FISHING_ROD_UPGRADE
 )
 TELEPORT_ACCESS_ITEMS = (
     ToontownItemName.TTC_ACCESS,
@@ -316,6 +323,66 @@ FACILITY_KEY_ITEMS = (
     ToontownItemName.BACK_THREE_ACCESS,
 )
 
+LAFF_BOOSTS = (
+    ToontownItemName.LAFF_BOOST_1,
+    ToontownItemName.LAFF_BOOST_2,
+    ToontownItemName.LAFF_BOOST_3,
+    ToontownItemName.LAFF_BOOST_4,
+    ToontownItemName.LAFF_BOOST_5
+)
+
+TRAINING_BOOSTS = (
+    ToontownItemName.GAG_MULTIPLIER_1,
+    ToontownItemName.GAG_MULTIPLIER_2
+)
+
+ACTIVITY_KEYS = (
+    ToontownItemName.GOLF_PUTTER,
+    ToontownItemName.GO_KART
+)
+
+REWARD_BUNDLES = (
+    ToontownItemName.SOS_REWARD,
+    ToontownItemName.UNITE_REWARD,
+    ToontownItemName.PINK_SLIP_REWARD
+)
+
+TRAPS = (
+    ToontownItemName.DRIP_TRAP,
+    ToontownItemName.UBER_TRAP,
+    ToontownItemName.BEAN_TAX_TRAP_1000,
+    ToontownItemName.BEAN_TAX_TRAP_1250,
+    ToontownItemName.BEAN_TAX_TRAP_750,
+    ToontownItemName.GAG_SHUFFLE_TRAP
+)
+
+COG_DISGUISES = (
+    ToontownItemName.SELLBOT_DISGUISE,
+    ToontownItemName.CASHBOT_DISGUISE,
+    ToontownItemName.LAWBOT_DISGUISE,
+    ToontownItemName.BOSSBOT_DISGUISE
+)
+
+GAG_EXP = (
+    ToontownItemName.XP_10,
+    ToontownItemName.XP_15,
+    ToontownItemName.XP_20
+)
+
+JELLYBEANS = (
+    ToontownItemName.MONEY_150,
+    ToontownItemName.MONEY_400,
+    ToontownItemName.MONEY_700,
+    ToontownItemName.MONEY_1000
+)
+
+JELLYBEAN_CAPACITY = (
+    ToontownItemName.MONEY_CAP_1000,
+)
+
+TASK_CAPACITY = (
+    ToontownItemName.TASK_CAPACITY,
+)
 
 def hood_to_tp_item_name(hoodId: int) -> ToontownItemName:
     return {
@@ -343,3 +410,25 @@ def get_item_def_from_id(_id: int) -> Optional[ToontownItemDefinition]:
 
 
 ITEM_NAME_TO_ID = {item.name.value: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}
+
+
+ITEM_NAME_GROUPS_OBJECT = {
+    "Cog Disguises": COG_DISGUISES,
+    "Facility Keys": FACILITY_KEY_ITEMS,
+    "Access Keys": TELEPORT_ACCESS_ITEMS,
+    "Gag Training Frames": GAG_TRAINING_FRAMES,
+    "Gag Capacity Increase": GAG_CAPACITY,
+    "Gag Training Boosts": TRAINING_BOOSTS,
+    "Gag Upgrades": GAG_UPGRADES,
+    "Fishing Licenses": FISHING_LICENSES,
+    "Jellybean Capacity": JELLYBEAN_CAPACITY,
+    "Side Activity Keys": ACTIVITY_KEYS,
+    "Task Capacity": TASK_CAPACITY,
+    "Laff Boosts": LAFF_BOOSTS,
+    "Reward Bundles": REWARD_BUNDLES,
+    "Jellybeans": JELLYBEANS,
+    "Gag Exp Reward": GAG_EXP,
+    "Traps": TRAPS,
+}
+
+ITEM_NAME_GROUPS = {k:[i.value for i in v] for k,v in ITEM_NAME_GROUPS_OBJECT.items()}
