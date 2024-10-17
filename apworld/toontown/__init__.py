@@ -8,10 +8,10 @@ from worlds.generic.Rules import set_rule
 from . import regions, consts
 from .consts import ToontownItem, ToontownLocation, ToontownWinCondition
 from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, \
-    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS, ITEM_NAME_GROUPS
+    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS, get_item_groups
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
-    TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES
+    TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES, get_location_groups
 from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
@@ -50,8 +50,9 @@ class ToontownWorld(World):
     location_name_to_id = LOCATION_NAME_TO_ID
 
     location_descriptions = LOCATION_DESCRIPTIONS
+    location_name_groups = get_location_groups()
     item_descriptions = ITEM_DESCRIPTIONS
-    item_name_groups = ITEM_NAME_GROUPS
+    item_name_groups = get_item_groups()
 
     def __init__(self, world, player):
         super(ToontownWorld, self).__init__(world, player)
