@@ -130,7 +130,9 @@ class HoodTaskWinCondition(WinCondition):
         locations = set(self.toon.getCheckedLocations())
 
         # Then construct a mapping of how many quests were completed per hood
-        completion_per_hood: dict[int, int] = {hood_id: locations.intersection(task.unique_id for task in tasks)
+        completion_per_hood: dict[int, int] = {hood_id: len(locations.intersection(
+                                                   task.unique_id for task in LOCATION_DEFINITIONS 
+                                                   if task.name in tasks))
                                                for hood_id, tasks in self.TASKING_HOODS.items()}
 
         return completion_per_hood
