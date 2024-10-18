@@ -5,6 +5,7 @@ import typing
 from abc import ABC, abstractmethod
 from apworld.toontown.consts import ToontownWinCondition
 from apworld.toontown import locations
+
 from toontown.quest import Quests
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals, TTLocalizer
