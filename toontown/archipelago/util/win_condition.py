@@ -3,6 +3,7 @@ from __future__ import annotations
 import typing
 from abc import ABC, abstractmethod
 from apworld.toontown.consts import ToontownWinCondition
+from apworld.toontown import locations
 
 from toontown.quest import Quests
 from toontown.toonbase import ToontownGlobals
@@ -95,8 +96,13 @@ class GlobalTaskWinCondition(WinCondition):
 
     # Calculate the intersection of all AP rewards and earned AP rewards and see how many were earned
     def __get_tasks_completed(self) -> int:
-        _, reward_history = self.toon.getRewardHistory()
-        earned_ap_rewards: set[int] = set(reward_history) & Quests.getAllAPRewardIds()
+        earned_ap_rewards = []
+        for reward in Quests.getAllAPRewardIds():
+            apLocation = Quests.RewardDict.get(reward)[1]
+            if apLocation is not None:
+                if locations.LOCATION_NAME_TO_ID[apLocation] in self.toon.getCheckedLocations():
+                    earned_ap_rewards.append(reward)
+
         # remove the "earned rewards" that are currently in our held quests
         for quest in self.toon.quests:
             questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
@@ -133,8 +139,12 @@ class HoodTaskWinCondition(WinCondition):
     def __get_tasks_completed(self) -> dict[int, int]:
 
         # First, filter out AP reward IDs specifically
-        _, reward_history = self.toon.getRewardHistory()
-        earned_ap_rewards: set[int] = set(reward_history) & Quests.getAllAPRewardIds()
+        earned_ap_rewards = []
+        for reward in Quests.getAllAPRewardIds():
+            apLocation = Quests.RewardDict.get(reward)[1]
+            if apLocation is not None:
+                if locations.LOCATION_NAME_TO_ID[apLocation] in self.toon.getCheckedLocations():
+                    earned_ap_rewards.append(reward)
 
         # remove the "earned rewards" that are currently in our held quests
         for quest in self.toon.quests:
