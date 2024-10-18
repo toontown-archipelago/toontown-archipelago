@@ -258,31 +258,31 @@ ITEM_DESCRIPTIONS = {
 for i in range(len(ITEM_DEFINITIONS)):
     ITEM_DEFINITIONS[i].unique_id = i + consts.BASE_ID
 
-GAG_TRAINING_FRAMES = (
-    ToontownItemName.TOONUP_FRAME,
-    ToontownItemName.TRAP_FRAME,
-    ToontownItemName.LURE_FRAME,
-    ToontownItemName.SOUND_FRAME,
-    ToontownItemName.THROW_FRAME,
-    ToontownItemName.SQUIRT_FRAME,
-    ToontownItemName.DROP_FRAME
-)
+def hood_to_tp_item_name(hoodId: int) -> ToontownItemName:
+    return {
+        2000: ToontownItemName.TTC_ACCESS,
+        1000: ToontownItemName.DD_ACCESS,
+        5000: ToontownItemName.DG_ACCESS,
+        4000: ToontownItemName.MML_ACCESS,
+        3000: ToontownItemName.TB_ACCESS,
+        9000: ToontownItemName.DDL_ACCESS,
+        11000: ToontownItemName.SBHQ_ACCESS,
+        12000: ToontownItemName.CBHQ_ACCESS,
+        13000: ToontownItemName.LBHQ_ACCESS,
+        10000: ToontownItemName.BBHQ_ACCESS,
+        6000: ToontownItemName.AA_ACCESS,
+        17000: ToontownItemName.AA_ACCESS,
+        8000: ToontownItemName.GS_ACCESS,
+    }.get(hoodId)
 
-GAG_UPGRADES = (
-    ToontownItemName.TOONUP_UPGRADE,
-    ToontownItemName.TRAP_UPGRADE,
-    ToontownItemName.LURE_UPGRADE,
-    ToontownItemName.SOUND_UPGRADE,
-    ToontownItemName.THROW_UPGRADE,
-    ToontownItemName.SQUIRT_UPGRADE,
-    ToontownItemName.DROP_UPGRADE
-)
 
-GAG_CAPACITY = (
-    ToontownItemName.GAG_CAPACITY_5,
-    ToontownItemName.GAG_CAPACITY_10,
-    ToontownItemName.GAG_CAPACITY_15
-)
+def get_item_def_from_id(_id: int) -> Optional[ToontownItemDefinition]:
+    index = _id - consts.BASE_ID
+    if 0 <= index < len(ITEM_DEFINITIONS):
+        return ITEM_DEFINITIONS[index]
+    return None
+
+ITEM_NAME_TO_ID = {item.name.value: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}
 
 FISHING_LICENSES = (
     ToontownItemName.TTC_FISHING,
@@ -323,112 +323,113 @@ FACILITY_KEY_ITEMS = (
     ToontownItemName.BACK_THREE_ACCESS,
 )
 
-LAFF_BOOSTS = (
-    ToontownItemName.LAFF_BOOST_1,
-    ToontownItemName.LAFF_BOOST_2,
-    ToontownItemName.LAFF_BOOST_3,
-    ToontownItemName.LAFF_BOOST_4,
-    ToontownItemName.LAFF_BOOST_5
+GAG_TRAINING_FRAMES = (
+    ToontownItemName.TOONUP_FRAME,
+    ToontownItemName.TRAP_FRAME,
+    ToontownItemName.LURE_FRAME,
+    ToontownItemName.SOUND_FRAME,
+    ToontownItemName.THROW_FRAME,
+    ToontownItemName.SQUIRT_FRAME,
+    ToontownItemName.DROP_FRAME
 )
-
-TRAINING_BOOSTS = (
-    ToontownItemName.GAG_MULTIPLIER_1,
-    ToontownItemName.GAG_MULTIPLIER_2
+GAG_UPGRADES = (
+    ToontownItemName.TOONUP_UPGRADE,
+    ToontownItemName.TRAP_UPGRADE,
+    ToontownItemName.LURE_UPGRADE,
+    ToontownItemName.SOUND_UPGRADE,
+    ToontownItemName.THROW_UPGRADE,
+    ToontownItemName.SQUIRT_UPGRADE,
+    ToontownItemName.DROP_UPGRADE
 )
-
-ACTIVITY_KEYS = (
-    ToontownItemName.GOLF_PUTTER,
-    ToontownItemName.GO_KART
-)
-
-REWARD_BUNDLES = (
-    ToontownItemName.SOS_REWARD,
-    ToontownItemName.UNITE_REWARD,
-    ToontownItemName.PINK_SLIP_REWARD
-)
-
-TRAPS = (
-    ToontownItemName.DRIP_TRAP,
-    ToontownItemName.UBER_TRAP,
-    ToontownItemName.BEAN_TAX_TRAP_1000,
-    ToontownItemName.BEAN_TAX_TRAP_1250,
-    ToontownItemName.BEAN_TAX_TRAP_750,
-    ToontownItemName.GAG_SHUFFLE_TRAP
-)
-
-COG_DISGUISES = (
-    ToontownItemName.SELLBOT_DISGUISE,
-    ToontownItemName.CASHBOT_DISGUISE,
-    ToontownItemName.LAWBOT_DISGUISE,
-    ToontownItemName.BOSSBOT_DISGUISE
-)
-
-GAG_EXP = (
-    ToontownItemName.XP_10,
-    ToontownItemName.XP_15,
-    ToontownItemName.XP_20
-)
-
-JELLYBEANS = (
-    ToontownItemName.MONEY_150,
-    ToontownItemName.MONEY_400,
-    ToontownItemName.MONEY_700,
-    ToontownItemName.MONEY_1000
-)
-
-JELLYBEAN_CAPACITY = (
-    ToontownItemName.MONEY_CAP_1000,
-)
-
-TASK_CAPACITY = (
-    ToontownItemName.TASK_CAPACITY,
-)
-
-def hood_to_tp_item_name(hoodId: int) -> ToontownItemName:
-    return {
-        2000: ToontownItemName.TTC_ACCESS,
-        1000: ToontownItemName.DD_ACCESS,
-        5000: ToontownItemName.DG_ACCESS,
-        4000: ToontownItemName.MML_ACCESS,
-        3000: ToontownItemName.TB_ACCESS,
-        9000: ToontownItemName.DDL_ACCESS,
-        11000: ToontownItemName.SBHQ_ACCESS,
-        12000: ToontownItemName.CBHQ_ACCESS,
-        13000: ToontownItemName.LBHQ_ACCESS,
-        10000: ToontownItemName.BBHQ_ACCESS,
-        6000: ToontownItemName.AA_ACCESS,
-        17000: ToontownItemName.AA_ACCESS,
-        8000: ToontownItemName.GS_ACCESS,
-    }.get(hoodId)
+def get_item_groups():
 
 
-def get_item_def_from_id(_id: int) -> Optional[ToontownItemDefinition]:
-    index = _id - consts.BASE_ID
-    if 0 <= index < len(ITEM_DEFINITIONS):
-        return ITEM_DEFINITIONS[index]
-    return None
+    
 
+    GAG_CAPACITY = (
+        ToontownItemName.GAG_CAPACITY_5,
+        ToontownItemName.GAG_CAPACITY_10,
+        ToontownItemName.GAG_CAPACITY_15
+    )
+    
+    LAFF_BOOSTS = (
+        ToontownItemName.LAFF_BOOST_1,
+        ToontownItemName.LAFF_BOOST_2,
+        ToontownItemName.LAFF_BOOST_3,
+        ToontownItemName.LAFF_BOOST_4,
+        ToontownItemName.LAFF_BOOST_5
+    )
 
-ITEM_NAME_TO_ID = {item.name.value: i + consts.BASE_ID for i, item in enumerate(ITEM_DEFINITIONS)}
+    TRAINING_BOOSTS = (
+        ToontownItemName.GAG_MULTIPLIER_1,
+        ToontownItemName.GAG_MULTIPLIER_2
+    )
 
+    ACTIVITY_KEYS = (
+        ToontownItemName.GOLF_PUTTER,
+        ToontownItemName.GO_KART
+    )
 
-ITEM_NAME_GROUPS_OBJECT = {
-    "Cog Disguises": COG_DISGUISES,
-    "Facility Keys": FACILITY_KEY_ITEMS,
-    "Access Keys": TELEPORT_ACCESS_ITEMS,
-    "Gag Training Frames": GAG_TRAINING_FRAMES,
-    "Gag Capacity Increase": GAG_CAPACITY,
-    "Gag Training Boosts": TRAINING_BOOSTS,
-    "Gag Upgrades": GAG_UPGRADES,
-    "Fishing Licenses": FISHING_LICENSES,
-    "Jellybean Capacity": JELLYBEAN_CAPACITY,
-    "Side Activity Keys": ACTIVITY_KEYS,
-    "Task Capacity": TASK_CAPACITY,
-    "Laff Boosts": LAFF_BOOSTS,
-    "Reward Bundles": REWARD_BUNDLES,
-    "Jellybeans": JELLYBEANS,
-    "Gag Exp Reward": GAG_EXP,
-    "Traps": TRAPS,
-}
+    REWARD_BUNDLES = (
+        ToontownItemName.SOS_REWARD,
+        ToontownItemName.UNITE_REWARD,
+        ToontownItemName.PINK_SLIP_REWARD
+    )
 
-ITEM_NAME_GROUPS = {k:[i.value for i in v] for k,v in ITEM_NAME_GROUPS_OBJECT.items()}
+    TRAPS = (
+        ToontownItemName.DRIP_TRAP,
+        ToontownItemName.UBER_TRAP,
+        ToontownItemName.BEAN_TAX_TRAP_1000,
+        ToontownItemName.BEAN_TAX_TRAP_1250,
+        ToontownItemName.BEAN_TAX_TRAP_750,
+        ToontownItemName.GAG_SHUFFLE_TRAP
+    )
+
+    COG_DISGUISES = (
+        ToontownItemName.SELLBOT_DISGUISE,
+        ToontownItemName.CASHBOT_DISGUISE,
+        ToontownItemName.LAWBOT_DISGUISE,
+        ToontownItemName.BOSSBOT_DISGUISE
+    )
+
+    GAG_EXP = (
+        ToontownItemName.XP_10,
+        ToontownItemName.XP_15,
+        ToontownItemName.XP_20
+    )
+
+    JELLYBEANS = (
+        ToontownItemName.MONEY_150,
+        ToontownItemName.MONEY_400,
+        ToontownItemName.MONEY_700,
+        ToontownItemName.MONEY_1000
+    )
+
+    JELLYBEAN_CAPACITY = (
+        ToontownItemName.MONEY_CAP_1000,
+    )
+
+    TASK_CAPACITY = (
+        ToontownItemName.TASK_CAPACITY,
+    )
+
+    ITEM_NAME_GROUPS_OBJECT = {
+        "Cog Disguises": COG_DISGUISES,
+        "Facility Keys": FACILITY_KEY_ITEMS,
+        "Access Keys": TELEPORT_ACCESS_ITEMS,
+        "Gag Training Frames": GAG_TRAINING_FRAMES,
+        "Gag Capacity Increase": GAG_CAPACITY,
+        "Gag Training Boosts": TRAINING_BOOSTS,
+        "Gag Upgrades": GAG_UPGRADES,
+        "Fishing Licenses": FISHING_LICENSES,
+        "Jellybean Capacity": JELLYBEAN_CAPACITY,
+        "Side Activity Keys": ACTIVITY_KEYS,
+        "Task Capacity": TASK_CAPACITY,
+        "Laff Boosts": LAFF_BOOSTS,
+        "Reward Bundles": REWARD_BUNDLES,
+        "Jellybeans": JELLYBEANS,
+        "Gag Exp Reward": GAG_EXP,
+        "Traps": TRAPS,
+    }
+
+    return {k:[i.value for i in v] for k,v in ITEM_NAME_GROUPS_OBJECT.items()}
