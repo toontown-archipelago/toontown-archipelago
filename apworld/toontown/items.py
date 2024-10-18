@@ -323,27 +323,28 @@ FACILITY_KEY_ITEMS = (
     ToontownItemName.BACK_THREE_ACCESS,
 )
 
-
+GAG_TRAINING_FRAMES = (
+    ToontownItemName.TOONUP_FRAME,
+    ToontownItemName.TRAP_FRAME,
+    ToontownItemName.LURE_FRAME,
+    ToontownItemName.SOUND_FRAME,
+    ToontownItemName.THROW_FRAME,
+    ToontownItemName.SQUIRT_FRAME,
+    ToontownItemName.DROP_FRAME
+)
+GAG_UPGRADES = (
+    ToontownItemName.TOONUP_UPGRADE,
+    ToontownItemName.TRAP_UPGRADE,
+    ToontownItemName.LURE_UPGRADE,
+    ToontownItemName.SOUND_UPGRADE,
+    ToontownItemName.THROW_UPGRADE,
+    ToontownItemName.SQUIRT_UPGRADE,
+    ToontownItemName.DROP_UPGRADE
+)
 def get_item_groups():
-    GAG_TRAINING_FRAMES = (
-        ToontownItemName.TOONUP_FRAME,
-        ToontownItemName.TRAP_FRAME,
-        ToontownItemName.LURE_FRAME,
-        ToontownItemName.SOUND_FRAME,
-        ToontownItemName.THROW_FRAME,
-        ToontownItemName.SQUIRT_FRAME,
-        ToontownItemName.DROP_FRAME
-    )
 
-    GAG_UPGRADES = (
-        ToontownItemName.TOONUP_UPGRADE,
-        ToontownItemName.TRAP_UPGRADE,
-        ToontownItemName.LURE_UPGRADE,
-        ToontownItemName.SOUND_UPGRADE,
-        ToontownItemName.THROW_UPGRADE,
-        ToontownItemName.SQUIRT_UPGRADE,
-        ToontownItemName.DROP_UPGRADE
-    )
+
+    
 
     GAG_CAPACITY = (
         ToontownItemName.GAG_CAPACITY_5,
