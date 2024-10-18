@@ -35,7 +35,7 @@ class ReceivedItemsPacket(ClientBoundPacketBase):
 
             # If we need to apply it go ahead and keep track on the toon that we applied this specific reward
             if not_applied_yet:
-                itemName = client.get_item_info(item.item)
+                itemName = client.get_item_name(item.item, client.get_local_slot())
                 fromName = client.get_slot_info(item.player).name
                 ap_reward_definition: APReward = get_ap_reward_from_id(item.item)
                 reward: EarnedAPReward = EarnedAPReward(client.av, ap_reward_definition, reward_index, item.item, fromName, item.player == client.slot)

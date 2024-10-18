@@ -250,7 +250,7 @@ def FishCatch(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, pl
 
     # Get our rod tier.
     hasMaxRod = fishProgression not in (FishProgression.Rods, FishProgression.LicensesAndRods)
-    rodTier = 4 if hasMaxRod else state.count(ToontownItemName.FISHING_ROD_UPGRADE.value, player)
+    rodTier = 4 if hasMaxRod else min(state.count(ToontownItemName.FISHING_ROD_UPGRADE.value, player), 4)
     needsLicense = fishProgression in (FishProgression.Licenses, FishProgression.LicensesAndRods)
     hasAnyLicense = True
 

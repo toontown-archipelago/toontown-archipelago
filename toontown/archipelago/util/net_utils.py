@@ -246,21 +246,22 @@ class JSONPartFormatter:
             part_type = part['type'] if 'type' in part else 'default'
 
             # Switch statement basically on how we should handle the types of parts
-            if part_type in ('player_id', 'player_name'):
-                self.handle_player_part(new_part)
-            elif part_type in ('item_id', 'item_name'):
-                self.handle_item_part(new_part)
-            elif part_type in ('location_id', 'location_name'):
-                self.handle_location_part(new_part)
-            elif part_type == 'entrance_name':
-                self.handle_entrance_part(new_part)
-            elif part_type in ('default', 'text'):
-                self.handle_default_part(new_part)
-            elif part_type == 'color':  # No need to do anything, color is already defined
-                pass
-            else:
-                print(f"Unknown JSONMessagePart type: {part_type}, reverting to default part behavior")
-                self.handle_default_part(new_part)
+            match part_type:
+                case 'player_id' | 'player_name':
+                    self.handle_player_part(new_part)
+                case 'item_id' | 'item_name':
+                    self.handle_item_part(new_part)
+                case 'location_id' | 'location_name':
+                    self.handle_location_part(new_part)
+                case 'entrance_name':
+                    self.handle_entrance_part(new_part)
+                case 'default' | 'text':
+                    self.handle_default_part(new_part)
+                case 'color':  # No need to do anything, color is already defined
+                    pass
+                case _:
+                    print(f"Unknown JSONMessagePart type: {part_type}, reverting to default part behavior")
+                    self.handle_default_part(new_part)
 
             new_parts.append(new_part)
 
@@ -292,7 +293,7 @@ class JSONPartFormatter:
 
         # If we were given the ID, override the text
         if part['type'] == 'item_id':
-            part['text'] = self.client.get_item_name(item)
+            part['text'] = self.client.get_item_name(item, part['player'])
 
         # If we were given name, instead of ID, do same thing basically
         elif part['type'] == 'item_name':
@@ -308,7 +309,7 @@ class JSONPartFormatter:
 
         # If we were given the ID, override the text
         if part['type'] == 'location_id':
-            part['text'] = self.client.get_location_name(location)
+            part['text'] = self.client.get_location_name(location, part['player'])
 
         # If we were given name, instead of ID, do same thing basically
         elif part['type'] == 'location_name':
@@ -388,7 +389,7 @@ class JSONtoTextParser(metaclass=HandlerMeta):
 
     def _handle_item_id(self, node: JSONMessagePart):
         item_id = int(node["text"])
-        node["text"] = self.client.get_item_name(item_id)
+        node["text"] = self.client.get_item_name(item_id, node['player'])
         return self._handle_item_name(node)
 
     def _handle_location_name(self, node: JSONMessagePart):
@@ -397,7 +398,7 @@ class JSONtoTextParser(metaclass=HandlerMeta):
 
     def _handle_location_id(self, node: JSONMessagePart):
         item_id = int(node["text"])
-        node["text"] = self.client.get_location_name(item_id)
+        node["text"] = self.client.get_location_name(item_id, node['player'])
         return self._handle_location_name(node)
 
     def _handle_entrance_name(self, node: JSONMessagePart):

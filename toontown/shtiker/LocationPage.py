@@ -1,6 +1,6 @@
 from . import ShtikerPage
 from apworld.toontown import ToontownLocationType, LOCATION_DEFINITIONS, FishChecks, \
-                             TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES, test_location
+                             TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES, test_location, GagTrainingCheckBehavior
 from BaseClasses import MultiWorld
 from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
@@ -100,6 +100,10 @@ class LocationPage(ShtikerPage.ShtikerPage):
         golf = base.localAvatar.slotData.get('golfing_logic', False)
         if not golf:
             forbidden_location_types.add(ToontownLocationType.GOLF)
+
+        gags = base.localAvatar.slotData.get('gag_training_check_behavior', 1)
+        if gags == GagTrainingCheckBehavior.option_disabled:
+            forbidden_location_types.add(ToontownLocationType.GAG_TRAINING)
 
         return forbidden_location_types
 

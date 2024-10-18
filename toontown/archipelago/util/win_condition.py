@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from collections import Counter
 import typing
 from abc import ABC, abstractmethod
 from apworld.toontown.consts import ToontownWinCondition
+from apworld.toontown import locations
 
 from toontown.quest import Quests
 from toontown.toonbase import ToontownGlobals
@@ -61,7 +63,7 @@ class InvalidWinCondition(WinCondition):
 
 # Represents the win condition on defeating a certain number of bosses
 class BossDefeatWinCondition(WinCondition):
-
+    # TODO: change this to check AP boss rewards
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.bosses_required: int = toon.slotData.get('cog_bosses_required', 4)
@@ -88,21 +90,15 @@ class BossDefeatWinCondition(WinCondition):
 
 
 class GlobalTaskWinCondition(WinCondition):
-
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.tasks_required: int = toon.slotData.get('total_tasks_required', 72)
 
-    # Calculate the intersection of all AP rewards and earned AP rewards and see how many were earned
     def __get_tasks_completed(self) -> int:
-        _, reward_history = self.toon.getRewardHistory()
-        earned_ap_rewards: set[int] = set(reward_history) & Quests.getAllAPRewardIds()
-        # remove the "earned rewards" that are currently in our held quests
-        for quest in self.toon.quests:
-            questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
-            if rewardId in earned_ap_rewards:
-                earned_ap_rewards.remove(rewardId)
-        return len(earned_ap_rewards)
+        # Convert our checked locations into AP names
+        checked = set(locations.LOCATION_ID_TO_NAME.get(loc_id) for loc_id in self.toon.getCheckedLocations())
+        # Return the length of our checks filtered by all tasks.
+        return len(checked.intersection(loc_name.value for loc_name in locations.ALL_TASK_LOCATIONS))
 
     # Calculate how many tasks are needed to satisfy the win condition
     def __get_tasks_needed(self) -> int:
@@ -119,11 +115,6 @@ class GlobalTaskWinCondition(WinCondition):
 
 
 class HoodTaskWinCondition(WinCondition):
-
-    # Hoods to consider for win condition
-    TASKING_HOODS = (ToontownGlobals.ToontownCentral, ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens,
-                     ToontownGlobals.MinniesMelodyland, ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland)
-
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.tasks_per_hood_needed: int = toon.slotData.get('hood_tasks_required', 12)
@@ -131,30 +122,17 @@ class HoodTaskWinCondition(WinCondition):
     # Calculate a dictionary that represents tasks completed per hood
     # It will always be populated with every hood where tasks may be completed even if no tasks have been completed
     def __get_tasks_completed(self) -> dict[int, int]:
-
-        # First, filter out AP reward IDs specifically
-        _, reward_history = self.toon.getRewardHistory()
-        earned_ap_rewards: set[int] = set(reward_history) & Quests.getAllAPRewardIds()
-
-        # remove the "earned rewards" that are currently in our held quests
-        for quest in self.toon.quests:
-            questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
-            if rewardId in earned_ap_rewards:
-                earned_ap_rewards.remove(rewardId)
-
-        # Then construct a mapping of how many quests were completed per hood
-        completion_per_hood: dict[int, int] = {hood_id: 0 for hood_id in self.TASKING_HOODS}
-        for ap_reward_id in earned_ap_rewards:
-            hood_id = Quests.getHoodFromRewardId(ap_reward_id)
-            if hood_id in completion_per_hood:
-                completion_per_hood[hood_id] += 1
-
-        return completion_per_hood
+        # Convert our checked locations into AP names
+        checked = set(locations.LOCATION_ID_TO_NAME.get(loc_id) for loc_id in self.toon.getCheckedLocations())
+        # Filter that to only tasks.
+        checked.intersection_update(loc_name.value for loc_name in locations.ALL_TASK_LOCATIONS)
+        # Then construct a mapping of how many quests were completed per hood.
+        return Counter(Quests.getHoodFromRewardId(Quests.getRewardIdFromAPLocationName(task)) for task in checked)
 
     # Returns the # of tasks completed based on hood with least amount of task progress based on quests completed
     # If all playgrounds have 5 tasks completed except for one which only has 3, we return 3.
     def __get_lowest_completion_amount(self) -> int:
-        return min(self.__get_tasks_completed().values())
+        return min(self.__get_tasks_completed().values(), default=0)
 
     def satisfied(self) -> bool:
         return self.__get_lowest_completion_amount() >= self.tasks_per_hood_needed
@@ -164,18 +142,18 @@ class HoodTaskWinCondition(WinCondition):
             return 'It seems your hood ToonTasks goal is completed!'
 
         hood_id_to_name = {
-            ToontownGlobals.TheBrrrgh: TTLocalizer.lTheBrrrgh,
-            ToontownGlobals.DaisyGardens: TTLocalizer.lDaisyGardens,
-            ToontownGlobals.DonaldsDock: TTLocalizer.lDonaldsDock,
-            ToontownGlobals.DonaldsDreamland: TTLocalizer.lDonaldsDreamland,
-            ToontownGlobals.MinniesMelodyland: TTLocalizer.lMinniesMelodyland,
             ToontownGlobals.ToontownCentral: TTLocalizer.lToontownCentral,
+            ToontownGlobals.DonaldsDock: TTLocalizer.lDonaldsDock,
+            ToontownGlobals.DaisyGardens: TTLocalizer.lDaisyGardens,
+            ToontownGlobals.MinniesMelodyland: TTLocalizer.lMinniesMelodyland,
+            ToontownGlobals.TheBrrrgh: TTLocalizer.lTheBrrrgh,
+            ToontownGlobals.DonaldsDreamland: TTLocalizer.lDonaldsDreamland,
         }
 
         # Generate instructions per playground that still needs task completions
         task_completion = self.__get_tasks_completed()
         instructions = []
-        for hood_id in self.TASKING_HOODS:
+        for hood_id in hood_id_to_name:
             tasks_needed = self.tasks_per_hood_needed - task_completion.get(hood_id, 0)
             if tasks_needed <= 0:
                 continue
