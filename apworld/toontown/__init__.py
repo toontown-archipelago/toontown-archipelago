@@ -344,19 +344,6 @@ class ToontownWorld(World):
             for _ in range(4):
                 pool.append(self.create_item(ToontownItemName.FISHING_ROD_UPGRADE.value))
 
-        # Fill the rest of the room with junk.
-        junk: int = len(self.multiworld.get_unfilled_locations(self.player)) - len(pool)
-        if junk < 0:
-            raise Exception(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
-                            f"Generated with too many items ({-junk}). Please tweak settings.")
-
-        trap: int = round(junk * (self.options.trap_percent / 100))
-        filler: int = junk - trap
-        for i in range(trap):
-            pool.append(self.create_item(self.make_random_trap()))
-        for i in range(filler):
-            pool.append(self.create_item(self.make_random_junk()))
-
         # racing item logic
         item = self.create_item(ToontownItemName.GO_KART.value)
         if self.options.racing_logic.value:
@@ -371,10 +358,24 @@ class ToontownWorld(World):
         else:
             self.multiworld.push_precollected(item)
 
+
+        # Fill the rest of the room with junk.
+        junk: int = len(self.multiworld.get_unfilled_locations(self.player)) - len(pool)
+        if junk < 0:
+            raise Exception(f"[Toontown - {self.multiworld.get_player_name(self.player)}] "
+                            f"Generated with too many items ({-junk}). Please tweak settings.")
+
+        trap: int = round(junk * (self.options.trap_percent / 100))
+        filler: int = junk - trap
+        for i in range(trap):
+            pool.append(self.create_item(self.get_trap_item_name()))
+        for i in range(filler):
+            pool.append(self.create_item(self.get_filler_item_name()))
+
         # Finalize item pool.
         self.multiworld.itempool += pool
 
-    def make_random_trap(self):
+    def get_trap_item_name(self):
         trap_weights = {
             ToontownItemName.UBER_TRAP.value: self.options.uber_trap_weight,
             ToontownItemName.DRIP_TRAP.value: self.options.drip_trap_weight,
@@ -386,7 +387,7 @@ class ToontownWorld(World):
         trap_items = list(trap_weights.keys())
         return random.choices(trap_items, weights=[trap_weights[i] for i in trap_items])[0]
 
-    def make_random_junk(self):
+    def get_filler_item_name(self):
         junk_weights = {
             ToontownItemName.MONEY_150.value: (self.options.bean_weight/4),
             ToontownItemName.MONEY_400.value: (self.options.bean_weight/4),

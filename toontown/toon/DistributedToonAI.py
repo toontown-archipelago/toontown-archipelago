@@ -4756,13 +4756,13 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Generally called by addMoney
     def ap_addMoney(self, money):
         self.notify.debug(f"increasing AP jellybeans for {self.getDoId()} by: {money}" )
-        ops = [("add", money), ("min", self.getMaxMoney())] # Keep stored money below max.
+        ops = [("default", True), ("add", money), ("min", self.getMaxMoney())] # Keep stored money below max.
         self.apply_to_ap_data("jellybeans", ops, True, default=self.slotData.get('starting_money', 50))
 
     # Generally called by takeMoney
     def ap_takeMoney(self, money):
         self.notify.debug(f"decreasing AP jellybeans for {self.getDoId()} by: {money}" )
-        ops = [("add", -money), ("max", 0)] # Keep stored money above 0
+        ops = [("default", True), ("add", -money), ("max", 0)] # Keep stored money above 0
         self.apply_to_ap_data("jellybeans", ops, True, default=self.slotData.get('starting_money', 50))
 
     # Mirrors Experience.addExp

@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 from abc import ABC, abstractmethod
 from apworld.toontown.consts import ToontownWinCondition
-
+from apworld.toontown.locations import LOCATION_DEFINITIONS, ALL_TASK_LOCATIONS, TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS, MML_TASK_LOCATIONS, TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS
 from toontown.quest import Quests
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import ToontownBattleGlobals, TTLocalizer
@@ -61,7 +61,8 @@ class InvalidWinCondition(WinCondition):
 
 # Represents the win condition on defeating a certain number of bosses
 class BossDefeatWinCondition(WinCondition):
-
+    # TODO: change this to check AP boss rewards - or sync getCogLevels() to AP data.
+    # First might break when people !collect, second is just adding more set and get calls around.
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.bosses_required: int = toon.slotData.get('cog_bosses_required', 4)
@@ -93,16 +94,10 @@ class GlobalTaskWinCondition(WinCondition):
         super().__init__(toon)
         self.tasks_required: int = toon.slotData.get('total_tasks_required', 72)
 
-    # Calculate the intersection of all AP rewards and earned AP rewards and see how many were earned
     def __get_tasks_completed(self) -> int:
-        _, reward_history = self.toon.getRewardHistory()
-        earned_ap_rewards: set[int] = set(reward_history) & Quests.getAllAPRewardIds()
-        # remove the "earned rewards" that are currently in our held quests
-        for quest in self.toon.quests:
-            questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
-            if rewardId in earned_ap_rewards:
-                earned_ap_rewards.remove(rewardId)
-        return len(earned_ap_rewards)
+        locations = set(self.toon.getCheckedLocations())
+        # intersection of checked locations and all task locations
+        return len(locations.intersection(task.unique_id for task in LOCATION_DEFINITIONS if task.name in ALL_TASK_LOCATIONS))
 
     # Calculate how many tasks are needed to satisfy the win condition
     def __get_tasks_needed(self) -> int:
@@ -121,8 +116,9 @@ class GlobalTaskWinCondition(WinCondition):
 class HoodTaskWinCondition(WinCondition):
 
     # Hoods to consider for win condition
-    TASKING_HOODS = (ToontownGlobals.ToontownCentral, ToontownGlobals.DonaldsDock, ToontownGlobals.DaisyGardens,
-                     ToontownGlobals.MinniesMelodyland, ToontownGlobals.TheBrrrgh, ToontownGlobals.DonaldsDreamland)
+    TASKING_HOODS = {ToontownGlobals.ToontownCentral: TTC_TASK_LOCATIONS, ToontownGlobals.DonaldsDock: DD_TASK_LOCATIONS, 
+                     ToontownGlobals.DaisyGardens: DG_TASK_LOCATIONS, ToontownGlobals.MinniesMelodyland: MML_TASK_LOCATIONS, 
+                     ToontownGlobals.TheBrrrgh: TB_TASK_LOCATIONS, ToontownGlobals.DonaldsDreamland: DDL_TASK_LOCATIONS}
 
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
@@ -131,23 +127,11 @@ class HoodTaskWinCondition(WinCondition):
     # Calculate a dictionary that represents tasks completed per hood
     # It will always be populated with every hood where tasks may be completed even if no tasks have been completed
     def __get_tasks_completed(self) -> dict[int, int]:
-
-        # First, filter out AP reward IDs specifically
-        _, reward_history = self.toon.getRewardHistory()
-        earned_ap_rewards: set[int] = set(reward_history) & Quests.getAllAPRewardIds()
-
-        # remove the "earned rewards" that are currently in our held quests
-        for quest in self.toon.quests:
-            questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
-            if rewardId in earned_ap_rewards:
-                earned_ap_rewards.remove(rewardId)
+        locations = set(self.toon.getCheckedLocations())
 
         # Then construct a mapping of how many quests were completed per hood
-        completion_per_hood: dict[int, int] = {hood_id: 0 for hood_id in self.TASKING_HOODS}
-        for ap_reward_id in earned_ap_rewards:
-            hood_id = Quests.getHoodFromRewardId(ap_reward_id)
-            if hood_id in completion_per_hood:
-                completion_per_hood[hood_id] += 1
+        completion_per_hood: dict[int, int] = {hood_id: locations.intersection(task.unique_id for task in tasks)
+                                               for hood_id, tasks in self.TASKING_HOODS.items()}
 
         return completion_per_hood
 
