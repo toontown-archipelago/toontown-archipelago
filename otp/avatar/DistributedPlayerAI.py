@@ -123,6 +123,10 @@ class DistributedPlayerAI(DistributedAvatarAI.DistributedAvatarAI, PlayerBase.Pl
     def setAccessLevel(self, accessLevel):
         self.accessLevel = accessLevel
 
+    def b_setAccessLevel(self, accessLevel):
+        self.setAccessLevel(accessLevel)
+        self.sendUpdate('bSetAccessLevel', [accessLevel])
+
     def getAccessLevel(self):
         return self.accessLevel
 

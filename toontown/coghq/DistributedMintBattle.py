@@ -39,7 +39,11 @@ class DistributedMintBattle(DistributedLevelBattle.DistributedLevelBattle):
         if self.hasLocalToon():
             self.d_rewardDone(base.localAvatar.doId)
         self.movie.resetReward()
-        self.fsm.request('Resume')
+        try:
+            self.fsm.request('Resume')
+        except AssertionError:
+            if self.hasLocalToon():
+                self.removeLocalToon()
 
     def exitMintReward(self):
         self.notify.debug('exitMintReward()')

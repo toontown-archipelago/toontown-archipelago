@@ -50,18 +50,6 @@ class DataPackagePacket(ClientBoundPacketBase):
             game_name: str
             game_data: GameData
 
-            # Construct an actual game_data packet
-            package = DataPackage()
-            package.game = game_name
-            package.checksum = game_data['checksum']
-
-            # Our datapackage is stored in reverse order for our location/item keys
-            package.id_to_item_name = {int(v): k for k, v in game_data['item_name_to_id'].items()}
-            package.id_to_location_name = {int(v): k for k, v in game_data['location_name_to_id'].items()}
-
-            # Cache this package, and have our client store it
-            package.cache()
-            client.data_packages[game_name] = package
-            client.global_data_package.merge(package)
-
-
+            # Construct an actual game_data package and store it for use
+            package = DataPackage.load(game_name, game_data)
+            client.global_data_package.add_datapackage(package)
