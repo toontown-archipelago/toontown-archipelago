@@ -410,6 +410,20 @@ class SyncGagExp(Toggle):
     default = True
 
 
+class AutoHintTasksOption(Toggle):
+    """
+    Auto Hints Tasks for the archipelago session when you check a specific npc.
+    """
+    display_name = "Auto Hint"
+    default = False
+
+class AutoHintPetsOption(Toggle):
+    """
+    Auto Hints Pets for the archipelago session when you check a specific npc.
+    """
+    display_name = "Auto Hint"
+    default = False
+
 class SeedGenerationTypeOption(Choice):
     """
     Type of seeding to use when RNG checks happen in game.
@@ -598,10 +612,13 @@ class ToontownOptions(PerGameCommonOptions):
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
     death_link: DeathLinkOption
+    auto_hint_pets: AutoHintPetsOption
+    auto_hint_tasks: AutoHintTasksOption
 
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
-        ProgressionBalancing, Accessibility, SyncJellybeans, SyncGagExp
+        ProgressionBalancing, Accessibility, SyncJellybeans, 
+        SyncGagExp, AutoHintPetsOption, AutoHintTasksOption
     ]),
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,

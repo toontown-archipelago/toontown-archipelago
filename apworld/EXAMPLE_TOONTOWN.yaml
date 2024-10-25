@@ -211,6 +211,12 @@ Toontown:
   # If this is 'false', the data will still be sent, but your toon will not sync with it.
   slot_sync_gag_experience: 'true'
 
+  # Auto Hints Tasks / pets for the archipelago session when you talk to the specific NPC.
+  # Primarily helpful to prevent people spending points hinting for things that you already know are in your tasks.
+  # Defaults to false.
+  auto_hint_pets: 'false'
+  auto_hint_tasks: 'false'
+
   ### Activity Settings ###
 
   # Determines if racing locations are enabled
