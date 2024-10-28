@@ -410,19 +410,36 @@ class SyncGagExp(Toggle):
     default = True
 
 
-class AutoHintTasksOption(Toggle):
+class RewardDisplayOption(Choice):
     """
-    Auto Hints Tasks for the archipelago session when you check a specific npc.
+    Controls display of rewards from something. intended to be subclassed.
+    "Hidden": hides what a multiworld reward will be, instead it'll name the check as the reward.
+    "Shown" (default): Tells you what the reward will be when you're looking at the check.
+    "Auto Hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
     """
-    display_name = "Auto Hint"
-    default = False
+    option_hidden = 0
+    option_shown = 1
+    option_auto_hint = 2
+    default = 1
 
-class AutoHintPetsOption(Toggle):
+class TaskRewardDisplayOption(RewardDisplayOption):
     """
-    Auto Hints Pets for the archipelago session when you check a specific npc.
+    Controls Display of ToonTask rewards.
+    "Hidden": hides what a multiworld reward will be, instead it'll name the check as the reward.
+    "Shown" (default): Tells you what the reward will be when you're looking at the check.
+    "Auto Hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
     """
-    display_name = "Auto Hint"
-    default = False
+    display_name = "Task Rewards"
+    
+
+class PetShopRewardDisplayOption(RewardDisplayOption):
+    """
+    Controls Display of Pet Shop Rewards.
+    "Hidden": hides what a multiworld reward will be, instead it'll name the check as the reward.
+    "Shown" (default): Tells you what the reward will be when you're looking at the check.
+    "Auto Hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    """
+    display_name = "Pet Shop Rewards"
 
 class SeedGenerationTypeOption(Choice):
     """
@@ -612,13 +629,13 @@ class ToontownOptions(PerGameCommonOptions):
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
     death_link: DeathLinkOption
-    auto_hint_pets: AutoHintPetsOption
-    auto_hint_tasks: AutoHintTasksOption
+    pet_shop_display: PetShopRewardDisplayOption
+    task_reward_display: TaskRewardDisplayOption
 
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
         ProgressionBalancing, Accessibility, SyncJellybeans, 
-        SyncGagExp, AutoHintPetsOption, AutoHintTasksOption
+        SyncGagExp, PetShopRewardDisplayOption, TaskRewardDisplayOption
     ]),
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,

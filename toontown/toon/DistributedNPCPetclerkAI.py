@@ -5,6 +5,7 @@ from toontown.toonbase import TTLocalizer
 from direct.task import Task
 from toontown.fishing import FishGlobals
 from toontown.pets import PetUtil, PetDNA, PetConstants
+from apworld.toontown.options import RewardDisplayOption
 from toontown.archipelago.definitions import util
 from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.hood import ZoneUtil
@@ -43,7 +44,8 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
         flag = NPCToons.SELL_MOVIE_START
         self.d_setMovie(avId, flag)
         taskMgr.doMethodLater(PetConstants.PETCLERK_TIMER, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
-        if av.slotData.get("auto_hint_pets", False):
+        #is auto hint turned on?
+        if av.slotData.get("pet_shop_display", 1) == RewardDisplayOption.option_auto_hint:
             packet = LocationScoutsPacket()
             packet.create_as_hint = 2 # only announce new hints
             packet.locations = [util.ap_location_name_to_id(self.getCheckName())]
