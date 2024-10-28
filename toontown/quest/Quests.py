@@ -2670,7 +2670,7 @@ def chooseBestQuests(currentNpc, av, excludeRewards: List[int], seed=None):
     locationsWeOffer = allHoodTaskLocationNames[taskLocationOffset:taskLocationEnd]
 
     # Optionally, Hint the locally available tasks
-    if av.slotData.get("task_reward_display", 1) == RewardDisplayOption.option_auto_hint:
+    if av.slotData.get("task_reward_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint:
         packet = LocationScoutsPacket()
         packet.create_as_hint = 2 # only announce new hints
         packet.locations = [util.ap_location_name_to_id(loc) for loc in locationsWeOffer]
@@ -3296,10 +3296,6 @@ class APLocationReward(Reward):
             av = base.localAvatar
         # This is the AI, just use the check name
         except AttributeError:
-            return self.getCheckName()
-        
-        #Do we have rewards hidden?
-        if av.slotData.get("task_reward_display", 1) == RewardDisplayOption.option_hidden:
             return self.getCheckName()
 
         # Do we have it cached?

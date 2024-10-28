@@ -18,7 +18,6 @@ from toontown.pets import PetDetail
 from toontown.pets import PetTraits
 from toontown.pets import PetNameGenerator
 from toontown.hood import ZoneUtil
-from apworld.toontown.options import RewardDisplayOption
 import string
 import random
 Dialog_MainMenu = 0
@@ -378,10 +377,6 @@ class PetshopGUI(DirectObject):
                 av = base.localAvatar
             # This is the AI, just use the check name
             except AttributeError:
-                return self.getCheckName()
-            
-            #Do we have rewards hidden?
-            if av.slotData.get("pet_shop_display", 1) == RewardDisplayOption.option_hidden:
                 return self.getCheckName()
 
             # Do we have it cached?

@@ -188,13 +188,7 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.send_packet(status_packet)
 
         # Scout some locations that we need to display
-        scout_locations = []
-        if self.slot_data.get("auto_hint_pets", 1) > 0:
-            scout_locations.extend(locations.SHOP_LOCATIONS)
-        if self.slot_data.get("auto_hint_tasks", 1) > 0:
-            scout_locations.extend(locations.ALL_TASK_LOCATIONS)
-        if len(scout_locations) > 0:
-            client.av.scoutLocations(locations.SCOUTING_REQUIRED_LOCATIONS)
+        client.av.scoutLocations(locations.SCOUTING_REQUIRED_LOCATIONS)
 
         # Login location rewarding
         new_game = ap_location_name_to_id(locations.ToontownLocationName.STARTING_NEW_GAME.value)

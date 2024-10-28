@@ -45,7 +45,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
         self.d_setMovie(avId, flag)
         taskMgr.doMethodLater(PetConstants.PETCLERK_TIMER, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
         #is auto hint turned on?
-        if av.slotData.get("pet_shop_display", 1) == RewardDisplayOption.option_auto_hint:
+        if av.slotData.get("pet_shop_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint:
             packet = LocationScoutsPacket()
             packet.create_as_hint = 2 # only announce new hints
             packet.locations = [util.ap_location_name_to_id(self.getCheckName())]
