@@ -2511,7 +2511,7 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     20102: APQuestDefinition((CogQuest, ToontownGlobals.DonaldsDreamland, 3, 'bc'), 5070),
 
     # Location Check #12 (DDL) Recover Hard Pillows from level 9s in DDL (very low drop chance)
-    20110: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 2, 7006, VeryHard, 9, "level"), 5071),
+    20110: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 2, 7006, Hard, 9, "level"), 5071),
     20111: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 4, 7006, Medium, 9, "level"), 5071),
 
 }
