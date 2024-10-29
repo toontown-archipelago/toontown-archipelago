@@ -5,7 +5,7 @@ from __future__ import annotations
 import typing
 import enum
 from copy import deepcopy
-
+from BaseClasses import ItemClassification as IC
 from json import JSONEncoder, JSONDecoder
 
 from toontown.archipelago.util.utils import Version, ByValue
@@ -183,19 +183,31 @@ class JSONTypes(str, enum.Enum):
 
 
 # A class that parses a list of JSONMessagePart instances and modifies them to have colors defined and IDs replaced
-def item_flag_to_color(flag: int):
+def item_flag_to_color(flag: int | IC):
     # 0b001 = logical advancement, 0b010 = useful, 0b100 = trap
-    if flag & 0b001:
+    if IC.progression & flag:
         return 'plum'
 
-    if flag & 0b010:
+    if IC.useful & flag:
         return 'slateblue'
 
-    if flag & 0b100:
+    if IC.trap & flag:
         return 'salmon'
 
     return 'cyan'
 
+def item_flag_to_string(flag: int | IC):
+    
+    if IC.progression & flag:
+        return 'Progression Item'
+
+    if IC.useful & flag:
+        return 'Useful Item'
+
+    if IC.trap & flag:
+        return 'Trap'
+    
+    return 'Filler'
 
 class JSONPartFormatter:
 

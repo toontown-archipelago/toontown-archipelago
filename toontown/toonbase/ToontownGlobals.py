@@ -403,7 +403,7 @@ MinigameIDs = (
     VineGameId,
     # IceGameId,
     CogThiefGameId,
-    TwoDGameId,
+    # TwoDGameId,
     PhotoGameId,
     TravelGameId
 )
