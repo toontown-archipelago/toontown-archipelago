@@ -410,6 +410,45 @@ class SyncGagExp(Toggle):
     default = True
 
 
+class RewardDisplayOption(Choice):
+    """
+    Controls display of rewards from something. intended to be subclassed.
+    "hidden": hides what a multiworld reward will be, instead it'll name the check as the reward.
+    "owner": hides what the item is, but shows who it's for.
+    "class": hides what the item is, but shows who it's for, and what classification it has.
+    "shown": (default) Tells you what the reward will be when you're looking at the check.
+    "auto_hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    """
+    option_hidden = 0
+    option_owner = 1
+    option_class = 2
+    option_shown = 3
+    option_auto_hint = 4
+    default = 3
+
+class TaskRewardDisplayOption(RewardDisplayOption):
+    """
+    Controls Display of ToonTask rewards.
+    "hidden": hides what a multiworld reward will be, instead it'll name the check as the reward.
+    "owner": hides what the item is, but shows who it's for.
+    "class": hides what the item is, but shows who it's for, and what classification it has.
+    "shown": (default) Tells you what the reward will be when you're looking at the check.
+    "auto hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    """
+    display_name = "Task Rewards"
+    
+
+class PetShopRewardDisplayOption(RewardDisplayOption):
+    """
+    Controls Display of Pet Shop Rewards.
+    "hidden": hides what a multiworld reward will be, instead it'll name the check as the reward.
+    "owner": hides what the item is, but shows who it's for.
+    "class": hides what the item is, but shows who it's for, and what classification it has.
+    "shown": (default) Tells you what the reward will be when you're looking at the check.
+    "auto hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    """
+    display_name = "Pet Shop Rewards"
+
 class SeedGenerationTypeOption(Choice):
     """
     Type of seeding to use when RNG checks happen in game.
@@ -598,10 +637,13 @@ class ToontownOptions(PerGameCommonOptions):
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
     death_link: DeathLinkOption
+    pet_shop_display: PetShopRewardDisplayOption
+    task_reward_display: TaskRewardDisplayOption
 
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
-        ProgressionBalancing, Accessibility, SyncJellybeans, SyncGagExp
+        ProgressionBalancing, Accessibility, SyncJellybeans, 
+        SyncGagExp, PetShopRewardDisplayOption, TaskRewardDisplayOption
     ]),
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,

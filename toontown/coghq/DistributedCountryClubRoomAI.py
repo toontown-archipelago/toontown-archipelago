@@ -83,10 +83,10 @@ class DistributedCountryClubRoomAI(DistributedLevelAI.DistributedLevelAI, Countr
 
     def getCogLevel(self):
         levelAdjustment = 0
-        if self.countryClubId == ToontownGlobals.BossbotCountryClubIntA:
-            levelAdjustment -= 2
-        elif self.countryClubId == ToontownGlobals.BossbotCountryClubIntB:
-            levelAdjustment -= 1
+        if self.countryClubId == ToontownGlobals.BossbotCountryClubIntB:
+            levelAdjustment += 1
+        elif self.countryClubId == ToontownGlobals.BossbotCountryClubIntC:
+            levelAdjustment += 3
 
         if 1 < self.numPlayers < 4:
             levelAdjustment += 1

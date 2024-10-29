@@ -1,3 +1,5 @@
+import random
+
 from otp.level import DistributedLevelAI
 from direct.directnotify import DirectNotifyGlobal
 from . import LevelSuitPlannerAI
@@ -127,7 +129,7 @@ class DistributedFactoryAI(DistributedLevelAI.DistributedLevelAI, FactoryBase.Fa
     def getCogLevel(self):
         levelAdjustment = 0
         if self.factoryId == ToontownGlobals.SellbotFactoryIntS:
-            levelAdjustment += 1
+            levelAdjustment += 2
 
         if 1 < self.numPlayers < 4:
             levelAdjustment += 1
