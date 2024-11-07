@@ -395,6 +395,11 @@ def GagTraining(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
         return state.has(argument[0].value, player, argument[1]) \
                and has_collected_items_for_gag_level(state, player, options, argument[1]) \
                and state.has(ToontownItemName.LURE_FRAME.value, player)
+    # We need a way to trigger an unlure for exp :3
+    if argument[0] == ToontownItemName.LURE_FRAME:
+        return state.has(argument[0].value, player, argument[1]) \
+               and has_collected_items_for_gag_level(state, player, options, argument[1]) \
+               and (state.has(ToontownItemName.TRAP_FRAME.value, player) or state.has(ToontownItemName.SQUIRT_FRAME.value, player) or state.has(ToontownItemName.THROW_FRAME.value, player))
     return state.has(argument[0].value, player, argument[1]) \
            and has_collected_items_for_gag_level(state, player, options, argument[1])
 
