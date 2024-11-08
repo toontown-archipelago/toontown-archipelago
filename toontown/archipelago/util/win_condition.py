@@ -63,18 +63,16 @@ class InvalidWinCondition(WinCondition):
 
 # Represents the win condition on defeating a certain number of bosses
 class BossDefeatWinCondition(WinCondition):
-    # TODO: change this to check AP boss rewards
+    boss_locations = {locations.LOCATION_NAME_TO_ID.get(loc.name.value) 
+            for loc in locations.BOSS_LOCATION_DEFINITIONS 
+            if loc.name.value.endswith("1")}
+    
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.bosses_required: int = toon.slotData.get('cog_bosses_required', 4)
 
     def __get_bosses_defeated(self) -> int:
-        bosses = 0
-        for level in self.toon.getCogLevels():
-            if level > 0:
-                bosses += 1
-
-        return bosses
+        return len(self.boss_locations.intersection(self.toon.getCheckedLocations()))
 
     def __get_bosses_needed(self) -> int:
         return max(0, self.bosses_required - self.__get_bosses_defeated())
