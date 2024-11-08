@@ -63,10 +63,12 @@ class InvalidWinCondition(WinCondition):
 
 # Represents the win condition on defeating a certain number of bosses
 class BossDefeatWinCondition(WinCondition):
-    boss_locations = {locations.LOCATION_NAME_TO_ID.get(loc.name.value) 
-            for loc in locations.BOSS_LOCATION_DEFINITIONS 
+    # Specifically fetch only the first check of each boss, this does mean someone using !collect can cause a victory
+    # without actually completing all the bosses, but this is more stable over syncing the toon's cog suit level.
+    boss_locations = {locations.LOCATION_NAME_TO_ID.get(loc.name.value)
+            for loc in locations.BOSS_LOCATION_DEFINITIONS
             if loc.name.value.endswith("1")}
-    
+
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.bosses_required: int = toon.slotData.get('cog_bosses_required', 4)
@@ -88,7 +90,7 @@ class BossDefeatWinCondition(WinCondition):
 
 
 class GlobalTaskWinCondition(WinCondition):
-    task_locations = {locations.LOCATION_NAME_TO_ID.get(loc.name.value) for loc in locations.ALL_TASK_LOCATIONS}
+    task_locations = {locations.LOCATION_NAME_TO_ID.get(loc.value) for loc in locations.ALL_TASK_LOCATIONS}
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.tasks_required: int = toon.slotData.get('total_tasks_required', 72)
@@ -112,7 +114,7 @@ class GlobalTaskWinCondition(WinCondition):
 
 
 class HoodTaskWinCondition(WinCondition):
-    task_locations = {locations.LOCATION_NAME_TO_ID.get(loc.name.value) for loc in locations.ALL_TASK_LOCATIONS}
+    task_locations = {locations.LOCATION_NAME_TO_ID.get(loc.value) for loc in locations.ALL_TASK_LOCATIONS}
     hood_id_to_name = {
         ToontownGlobals.ToontownCentral: TTLocalizer.lToontownCentral,
         ToontownGlobals.DonaldsDock: TTLocalizer.lDonaldsDock,
@@ -120,6 +122,9 @@ class HoodTaskWinCondition(WinCondition):
         ToontownGlobals.MinniesMelodyland: TTLocalizer.lMinniesMelodyland,
         ToontownGlobals.TheBrrrgh: TTLocalizer.lTheBrrrgh,
         ToontownGlobals.DonaldsDreamland: TTLocalizer.lDonaldsDreamland,
+    }
+    base_dict = {
+        hood_id:0 for hood_id in hood_id_to_name
     }
 
     def __init__(self, toon: DistributedToon | DistributedToonAI):
@@ -131,15 +136,17 @@ class HoodTaskWinCondition(WinCondition):
     def __get_tasks_completed(self) -> dict[int, int]:
         # Convert our checked locations into AP names
         checked = self.toon.getCheckedLocations()
-        # Filter that to only tasks.
-        checked = self.task_locations.intersection(checked)
-        # Then construct a mapping of how many quests were completed per hood.
-        return Counter(Quests.getHoodFromRewardId(Quests.getRewardIdFromAPLocationName(locations.LOCATION_ID_TO_NAME.get(task))) for task in checked)
+        tasks_checked = self.task_locations.intersection(checked)
+        reward_IDs_checked = (Quests.getRewardIdFromAPLocationName(locations.LOCATION_ID_TO_NAME.get(task)) for task in tasks_checked)
+        # Then return a mapping of how many quests were completed per hood.
+        completed = self.base_dict.copy()
+        completed.update(Counter(Quests.getHoodFromRewardId(reward) for reward in reward_IDs_checked))
+        return completed
 
     # Returns the # of tasks completed based on hood with least amount of task progress based on quests completed
     # If all playgrounds have 5 tasks completed except for one which only has 3, we return 3.
     def __get_lowest_completion_amount(self) -> int:
-        return min(self.__get_tasks_completed().get(hood, 0) for hood in self.hood_id_to_name)
+        return min(self.__get_tasks_completed().values())
 
     def satisfied(self) -> bool:
         return self.__get_lowest_completion_amount() >= self.tasks_per_hood_needed
