@@ -88,15 +88,14 @@ class BossDefeatWinCondition(WinCondition):
 
 
 class GlobalTaskWinCondition(WinCondition):
+    task_locations = {locations.LOCATION_NAME_TO_ID.get(loc.name.value) for loc in locations.ALL_TASK_LOCATIONS}
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.tasks_required: int = toon.slotData.get('total_tasks_required', 72)
 
     def __get_tasks_completed(self) -> int:
-        # Convert our checked locations into AP names
-        checked = set(locations.LOCATION_ID_TO_NAME.get(loc_id) for loc_id in self.toon.getCheckedLocations())
         # Return the length of our checks filtered by all tasks.
-        return len(checked.intersection(loc_name.value for loc_name in locations.ALL_TASK_LOCATIONS))
+        return len(self.task_locations.intersection(self.toon.getCheckedLocations()))
 
     # Calculate how many tasks are needed to satisfy the win condition
     def __get_tasks_needed(self) -> int:
@@ -113,6 +112,7 @@ class GlobalTaskWinCondition(WinCondition):
 
 
 class HoodTaskWinCondition(WinCondition):
+    task_locations = {locations.LOCATION_NAME_TO_ID.get(loc.name.value) for loc in locations.ALL_TASK_LOCATIONS}
     hood_id_to_name = {
         ToontownGlobals.ToontownCentral: TTLocalizer.lToontownCentral,
         ToontownGlobals.DonaldsDock: TTLocalizer.lDonaldsDock,
@@ -130,11 +130,11 @@ class HoodTaskWinCondition(WinCondition):
     # It will always be populated with every hood where tasks may be completed even if no tasks have been completed
     def __get_tasks_completed(self) -> dict[int, int]:
         # Convert our checked locations into AP names
-        checked = set(locations.LOCATION_ID_TO_NAME.get(loc_id) for loc_id in self.toon.getCheckedLocations())
+        checked = self.toon.getCheckedLocations()
         # Filter that to only tasks.
-        checked.intersection_update(loc_name.value for loc_name in locations.ALL_TASK_LOCATIONS)
+        checked = self.task_locations.intersection(checked)
         # Then construct a mapping of how many quests were completed per hood.
-        return Counter(Quests.getHoodFromRewardId(Quests.getRewardIdFromAPLocationName(task)) for task in checked)
+        return Counter(Quests.getHoodFromRewardId(Quests.getRewardIdFromAPLocationName(locations.LOCATION_ID_TO_NAME.get(task))) for task in checked)
 
     # Returns the # of tasks completed based on hood with least amount of task progress based on quests completed
     # If all playgrounds have 5 tasks completed except for one which only has 3, we return 3.
