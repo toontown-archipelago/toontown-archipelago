@@ -123,13 +123,12 @@ class HoodTaskWinCondition(WinCondition):
         ToontownGlobals.TheBrrrgh: TTLocalizer.lTheBrrrgh,
         ToontownGlobals.DonaldsDreamland: TTLocalizer.lDonaldsDreamland,
     }
-    base_dict = {
-        hood_id:0 for hood_id in hood_id_to_name
-    }
+    
 
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
-        self.tasks_per_hood_needed: int = toon.slotData.get('hood_tasks_required', 12)
+        self.tasks_per_hood_needed: int = toon.slotData.get('hood_tasks_required', 12) 
+        self.checked_per_hood = {hood_id:0 for hood_id in self.hood_id_to_name}
 
     # Calculate a dictionary that represents tasks completed per hood
     # It will always be populated with every hood where tasks may be completed even if no tasks have been completed
@@ -138,10 +137,9 @@ class HoodTaskWinCondition(WinCondition):
         checked = self.toon.getCheckedLocations()
         tasks_checked = self.task_locations.intersection(checked)
         reward_IDs_checked = (Quests.getRewardIdFromAPLocationName(locations.LOCATION_ID_TO_NAME.get(task)) for task in tasks_checked)
-        # Then return a mapping of how many quests were completed per hood.
-        completed = self.base_dict.copy()
-        completed.update(Counter(Quests.getHoodFromRewardId(reward) for reward in reward_IDs_checked))
-        return completed
+        # update and return the mapping of how many quests were completed per hood.
+        self.checked_per_hood.update(Counter(Quests.getHoodFromRewardId(reward) for reward in reward_IDs_checked))
+        return self.checked_per_hood
 
     # Returns the # of tasks completed based on hood with least amount of task progress based on quests completed
     # If all playgrounds have 5 tasks completed except for one which only has 3, we return 3.
