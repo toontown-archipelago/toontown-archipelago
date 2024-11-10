@@ -75,12 +75,10 @@ class DistributedMintRoomAI(DistributedLevelAI.DistributedLevelAI, MintRoomBase.
 
     def getCogLevel(self):
         levelAdjustment = 0
-        if self.mintId == ToontownGlobals.CashbotMintIntA:
-            levelAdjustment -= 4
-        elif self.mintId == ToontownGlobals.CashbotMintIntB:
-            levelAdjustment -= 3
-        else:
-            levelAdjustment -= 2
+        if self.mintId == ToontownGlobals.CashbotMintIntB:
+            levelAdjustment += 2
+        elif self.mintId == ToontownGlobals.CashbotMintIntC:
+            levelAdjustment += 4
 
         if 1 < self.numPlayers < 4:
             levelAdjustment += 1

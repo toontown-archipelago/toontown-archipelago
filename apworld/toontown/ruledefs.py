@@ -550,13 +550,10 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     LUREMIN = max(0, argument[0] - 2)
 
     # To pass the check, we must have:
-    # - A way to kill enemies (OR):
-    #   - Throw or Squirt at-level and Lure at level
-    #   - Drop level + 1
-    #   - Trap level + 1 and Lure at level
-    #   - Sound level + 1
-    # - Sufficient healing (Toon-up level - 1)
-    # - EXP required at level
+    # - Two of the following methods of damage
+    # - + Sufficient healing (Toon-up @ level - 1)
+    # - + Sufficient Lure (Lure @ level - 2)
+    # - + EXP + Capacity required at level
 
     minimum_lure = state.has(ToontownItemName.LURE_FRAME.value, player, LUREMIN)
     powerful_squirt_knockback = state.has(ToontownItemName.SQUIRT_FRAME.value, player, LEVEL) \

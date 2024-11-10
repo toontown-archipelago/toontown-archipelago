@@ -14,18 +14,24 @@ import certifi
 from websockets import ConnectionClosed, InvalidURI, InvalidMessage
 from websockets.sync.client import connect, ClientConnection
 
+from apworld.toontown import locations
+from apworld.toontown.options import RewardDisplayOption
+
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.util import net_utils, global_text_properties
 from toontown.archipelago.util.data_package import DataPackage, GlobalDataPackage
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart, get_raw_formatted_string
 from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
-from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color, NetworkPlayer
+from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color, item_flag_to_string, NetworkPlayer
 from toontown.archipelago.packets import packet_registry
 from toontown.archipelago.packets.archipelago_packet_base import ArchipelagoPacketBase
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacket
 from toontown.archipelago.packets.serverbound.serverbound_packet_base import ServerBoundPacketBase
 from toontown.archipelago.util.utils import cache_argsless
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from toontown.toon.DistributedToonAI import DistributedToonAI
 
 # TODO find dynamic way to do this
 DEFAULT_ARCHIPELAGO_SERVER_ADDRESS = "localhost"
@@ -58,7 +64,7 @@ class ArchipelagoClient(DirectObject):
         self.socket: ClientConnection = None
 
         # Store some identification
-        self.av = av  # DistributedToonAI that owns this client
+        self.av: "DistributedToonAI" = av  # DistributedToonAI that owns this client
         self.slot: int = -1  # Our slot ID given when we connect
         self.team: int = 999
         self.uuid: str = av.getUUID() # not sure how important this is atm but just generating something in update_id method
@@ -373,12 +379,43 @@ class ArchipelagoClient(DirectObject):
         # owning_player_id: The ID of the player that owns the item stored at the location
         # item_id: The ID of the item
         """
+        # We don't need to do this if it's already in our cache. it shouldn't have changed.
+        if self.location_scouts_cache.get(our_location_id) is not None:
+            return
+
         # Stolen from the JSON parser
 
         someone_elses = owning_player_id != self.slot
 
         owner_name = self.get_slot_info(owning_player_id).name + "'s " if someone_elses else "Your "
         item_name = self.get_item_name(item_id, owning_player_id)
+
+        # Handle settings for displaying location rewards.
+        # Task Reward Locations.
+        if self.get_location_name(our_location_id, self.slot) in [loc.value for loc in locations.ALL_TASK_LOCATIONS]:
+            display_option = self.av.slotData.get("task_reward_display")
+            if display_option == RewardDisplayOption.option_class:
+                item_name = item_flag_to_string(item_flag)
+            elif display_option == RewardDisplayOption.option_owner:
+                item_name = "Item"
+                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+            elif display_option == RewardDisplayOption.option_hidden:
+                owner_name = "" # hide owner name.
+                item_name = self.get_location_name(our_location_id, self.slot)
+                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+        # Pet Shop Locations.
+        elif self.get_location_name(our_location_id, self.slot) in [loc.value for loc in locations.SHOP_LOCATIONS]:
+            display_option = self.av.slotData.get("pet_shop_display")
+            if display_option == RewardDisplayOption.option_class:
+                item_name = item_flag_to_string(item_flag)
+            elif display_option == RewardDisplayOption.option_owner:
+                item_name = "Item"
+                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+            elif display_option == RewardDisplayOption.option_hidden:
+                owner_name = "" # hide owner name.
+                item_name = self.get_location_name(our_location_id, self.slot)
+                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+
 
         # Let's make the string pretty
         name_color = 'green' if someone_elses else 'magenta'

@@ -476,6 +476,8 @@ class ToontownWorld(World):
             "death_link": self.options.death_link.value,
             "slot_sync_jellybeans": self.options.slot_sync_jellybeans.value,
             "slot_sync_gag_experience": self.options.slot_sync_gag_experience.value,
+            "pet_shop_display": self.options.pet_shop_display.value,
+            "task_reward_display": self.options.task_reward_display.value,
             "local_itempool": local_itempool,
             "tpsanity": self.options.tpsanity.value,
             "treasures_per_location": self.options.treasures_per_location.value,
