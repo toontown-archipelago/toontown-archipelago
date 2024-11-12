@@ -153,6 +153,10 @@ class ToontownWorld(World):
                 if location_data.type == ToontownLocationType.GALLERY_MAX:
                     location.progress_type = LocationProgressType.EXCLUDED
 
+            if self.options.cog_bosses_required.value and self.options.checks_per_boss.value < 1:
+                if location_data.type in locations.BOSS_LOCATION_TYPES:
+                    location.progress_type = LocationProgressType.EXCLUDED
+
         for i, location_data in enumerate(EVENT_DEFINITIONS):
             region = regions[location_data.region]
             location = ToontownLocation(player, location_data.name.value, None, region)
@@ -547,6 +551,8 @@ class ToontownWorld(World):
 
         cpb = self.options.checks_per_boss.value
         rev_locs = BOSS_LOCATION_TYPES[::-1]
+        if self.options.cog_bosses_required.value and cpb < 1:
+            cpb = 1
         for i in range(len(rev_locs) - cpb):
             forbidden_location_types.add(rev_locs[i])
 
