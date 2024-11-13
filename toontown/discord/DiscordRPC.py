@@ -135,8 +135,8 @@ class DiscordRPC(object):
             except (PipeClosed, BrokenPipeError) :
                 # schedule a task to try to reconnect to the discord
                 self.discordRPC = None
-                self.notify.warning('Discord RPC connection lost, trying to reconnect in 5 seconds.')
-                taskMgr.doMethodLater(5, self.reconnectDiscord, 'DiscordTask')
+                self.notify.warning('Discord RPC connection lost, trying to reconnect in 30 seconds.')
+                taskMgr.doMethodLater(30, self.reconnectDiscord, 'DiscordTask')
             
     def reconnectDiscord(self, task):
         self.enable()
@@ -229,10 +229,10 @@ class DiscordRPC(object):
                     self.notify.warning(f"Failed to connect to Discord RPC: {e}")
                     self.discordRPC = None
                 except ConnectionError:
-                    self.notify.warning("Failed to connect to Discord RPC: Connection Error, trying to reconnect in 5 seconds.")
+                    self.notify.debug("Failed to connect to Discord RPC: Connection Error, trying to reconnect in 30 seconds.")
                     self.discordRPC = None
                     # schedule a task to try again later
-                    taskMgr.doMethodLater(5, self.reconnectDiscord, 'DiscordTask')
+                    taskMgr.doMethodLater(30, self.reconnectDiscord, 'DiscordTask')
                     
         except PyPresenceException:
             self.notify.warning("Discord not found for this client.")
