@@ -2,9 +2,10 @@ import time
 from ctypes import *
 from direct.task import Task 
 from pypresence import Presence
+from pypresence.exceptions import PipeClosed
 from pypresence.exceptions import PyPresenceException
 from direct.directnotify import DirectNotifyGlobal
-
+from direct.task import Task
 clientId  = "1255381622128377998"
 LOGO = "https://avatars.githubusercontent.com/u/164748629"
 
@@ -129,8 +130,18 @@ class DiscordRPC(object):
         party = self.partySize
         maxSize = self.maxParty
         if self.discordRPC is not None:
-            self.discordRPC.update(state=state,details=details , large_image=image, large_text=imageTxt, small_text=smallTxt, party_size=[party, maxSize])
-    
+            try:
+                self.discordRPC.update(state=state,details=details , large_image=image, large_text=imageTxt, small_text=smallTxt, party_size=[party, maxSize])
+            except (PipeClosed, BrokenPipeError) :
+                # schedule a task to try to reconnect to the discord
+                self.discordRPC = None
+                self.notify.warning('Discord RPC connection lost, trying to reconnect in 5 seconds.')
+                taskMgr.doMethodLater(5, self.reconnectDiscord, 'DiscordTask')
+            
+    def reconnectDiscord(self, task):
+        self.enable()
+        return task.done
+
     def setLaff(self, hp, maxHp):
         if not base.wantRichPresence:
             return
@@ -217,6 +228,12 @@ class DiscordRPC(object):
                 except PermissionError as e:
                     self.notify.warning(f"Failed to connect to Discord RPC: {e}")
                     self.discordRPC = None
+                except ConnectionError:
+                    self.notify.warning("Failed to connect to Discord RPC: Connection Error, trying to reconnect in 5 seconds.")
+                    self.discordRPC = None
+                    # schedule a task to try again later
+                    taskMgr.doMethodLater(5, self.reconnectDiscord, 'DiscordTask')
+                    
         except PyPresenceException:
             self.notify.warning("Discord not found for this client.")
             self.discordRPC = None
