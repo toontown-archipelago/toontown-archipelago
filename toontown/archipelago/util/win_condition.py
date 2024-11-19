@@ -63,11 +63,10 @@ class InvalidWinCondition(WinCondition):
 
 # Represents the win condition on defeating a certain number of bosses
 class BossDefeatWinCondition(WinCondition):
-    # Specifically fetch only the first check of each boss, this does mean someone using !collect can cause a victory
-    # without actually completing all the bosses, but this is more stable over syncing the toon's cog suit level.
-    boss_locations = {locations.LOCATION_NAME_TO_ID.get(loc.name.value)
-            for loc in locations.BOSS_LOCATION_DEFINITIONS
-            if loc.name.value.endswith("1")}
+    boss_locations = {
+        locations.LOCATION_NAME_TO_ID.get(loc.name.value)
+        for loc in locations.BOSS_EVENT_DEFINITIONS
+    }
 
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
@@ -91,6 +90,7 @@ class BossDefeatWinCondition(WinCondition):
 
 class GlobalTaskWinCondition(WinCondition):
     task_locations = {locations.LOCATION_NAME_TO_ID.get(loc.value) for loc in locations.ALL_TASK_LOCATIONS}
+
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.tasks_required: int = toon.slotData.get('total_tasks_required', 72)
