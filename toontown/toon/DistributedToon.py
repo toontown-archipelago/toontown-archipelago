@@ -2853,9 +2853,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
         self.receivedItems = receivedItems
         self.receivedItemIDs = set(x[1] for x in receivedItems)
-        if self.isLocal():
-            if hasattr(base.localAvatar, 'checkPage'):
-                base.localAvatar.checkPage.regenerateScrollList()
 
     # Get a list of item IDs this toon has received via AP
     def getReceivedItems(self) -> List[Tuple[int, int]]:
