@@ -242,11 +242,13 @@ class CheckPage(ShtikerPage.ShtikerPage):
             if itemDef is None:
                 print("ALERT I DON'T KNOW WHAT %s IS -- ENRAGE AT MICA" % item_id)
                 continue
+            itemName = itemDef.name.value
+            if itemName.startswith("Defeated "):
+                continue 
             playgroundKeys = [ToontownItemName.TTC_ACCESS.value, ToontownItemName.DD_ACCESS.value,
                               ToontownItemName.DG_ACCESS.value,  ToontownItemName.MML_ACCESS.value,
                               ToontownItemName.TB_ACCESS.value,  ToontownItemName.DDL_ACCESS.value]
             button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
-            itemName = itemDef.name.value
             if itemName in playgroundKeys:
                 quantity = 2
             if "Key" in itemName or "Disguise" in itemName:
@@ -262,7 +264,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
                 usefulItems.append(button[0])
             else:
                 junkItems.append(button[0])
-            # self.checkButtonsById.update({itemDef.unique_id: button})
         model.removeNode()
         del model
         self.checkButtons = keyItems + progressionItems + usefulItems + junkItems

@@ -560,6 +560,9 @@ class ToontownWorld(World):
         rev_locs = BOSS_LOCATION_TYPES[::-1]
         for i in range(len(rev_locs) - cpb):
             forbidden_location_types.add(rev_locs[i])
+        wcb = self.options.win_condition_cog_bosses.value
+        if cpb <= 0 and not wcb:
+            forbidden_location_types.add(ToontownLocationType.BOSS_META)
 
         racing = self.options.racing_logic.value
         if not racing:

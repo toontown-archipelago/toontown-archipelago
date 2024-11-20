@@ -1,6 +1,6 @@
+from collections import Counter
 from . import ShtikerPage
-from apworld.toontown import ToontownLocationType, LOCATION_DEFINITIONS, FishChecks, \
-                             TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES, test_location, GagTrainingCheckBehavior
+from apworld.toontown import locations, options, fish, test_location, ToontownWinCondition
 from BaseClasses import MultiWorld
 from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
@@ -45,10 +45,14 @@ class LocationPage(ShtikerPage.ShtikerPage):
         checkedLocationIds = base.localAvatar.getCheckedLocations()
         # Get our remaining locations
         missingLocations = []
+        # Remaining locations that should be combined
+        missingLocationsCounter = Counter()
+        # Locations to force to the top of the list.
+        priorityMissingLocations = []
         # Determine forbidden location types.
-        forbidden_location_types: set[ToontownLocationType] = self.get_disabled_location_types()
+        forbidden_location_types: set[locations.ToontownLocationType] = self.get_disabled_location_types()
 
-        for i, location_data in enumerate(LOCATION_DEFINITIONS):
+        for location_data in locations.LOCATION_DEFINITIONS:
             # Do we need to track this location based on settings?
             if location_data.type in forbidden_location_types:
                 continue
@@ -56,54 +60,77 @@ class LocationPage(ShtikerPage.ShtikerPage):
             if util.ap_location_name_to_id(location_data.name.value) in checkedLocationIds:
                 continue
             # Is this location in logic?
-            if not test_location(LOCATION_DEFINITIONS[i], base.localAvatar, MultiWorld, 1, base.localAvatar.slotData):
+            if not test_location(location_data, base.localAvatar, MultiWorld, 1, base.localAvatar.slotData):
                 continue
 
+            # Boss checks, combine the rewards into this location for the tracker.
+            if location_data.type == locations.ToontownLocationType.BOSS_META:
+                priorityMissingLocations.append(location_data.name.value + f" ({base.localAvatar.slotData.get('checks_per_boss', 4)}x)")
+                continue
+            # Locations that are identical with only a number appended.
+            if location_data.type in locations.TREASURE_LOCATION_TYPES + locations.TASK_LOCATION_TYPES:
+                without_number = location_data.name.value.rsplit(" ", 1)[0]
+                missingLocationsCounter.update([without_number])
+                continue
+            #Other locations to combine.
+            if location_data.region == locations.ToontownRegionName.GALLERY:
+                missingLocationsCounter.update(['Cog ' + location_data.type.name.replace('_', ' ').title()])
+                continue
+            if location_data.region == locations.ToontownRegionName.FISHING:
+                missingLocationsCounter.update([location_data.type.name.title()])
+                continue
+            if location_data.type == locations.ToontownLocationType.PET_SHOP:
+                missingLocationsCounter.update([location_data.region.name + " Pet Shop"])
+                continue
             missingLocations.append(location_data.name.value)
+        
+        countedMissingLocations = [location +f" ({count}x)" for location, count in missingLocationsCounter.items()]
 
-        self.locationsPossible = missingLocations
+        self.locationsPossible =  priorityMissingLocations + countedMissingLocations + missingLocations
 
-    def get_disabled_location_types(self) -> set[ToontownLocationType]:
+    def get_disabled_location_types(self) -> set[locations.ToontownLocationType]:
         """
         Returns a set of disabled location types.
         These location types are removed from logic generation.
         """
-        forbidden_location_types: set[ToontownLocationType] = set()
-        fish_checks = FishChecks(base.localAvatar.slotData.get('fish_checks', 0))
-        if fish_checks == FishChecks.AllSpecies:
-            forbidden_location_types.add(ToontownLocationType.FISHING_GENUS)
-            forbidden_location_types.add(ToontownLocationType.FISHING_GALLERY)
-        elif fish_checks == FishChecks.AllGalleryAndGenus:
-            forbidden_location_types.add(ToontownLocationType.FISHING)
-        elif fish_checks == FishChecks.AllGallery:
-            forbidden_location_types.add(ToontownLocationType.FISHING)
-            forbidden_location_types.add(ToontownLocationType.FISHING_GENUS)
-        elif fish_checks == FishChecks.Nonne:
-            forbidden_location_types.add(ToontownLocationType.FISHING)
-            forbidden_location_types.add(ToontownLocationType.FISHING_GENUS)
-            forbidden_location_types.add(ToontownLocationType.FISHING_GALLERY)
+        forbidden_location_types: set[locations.ToontownLocationType] = set()
+        fish_checks = fish.FishChecks(base.localAvatar.slotData.get('fish_checks', 0))
+        if fish_checks == fish.FishChecks.AllSpecies:
+            forbidden_location_types.add(locations.ToontownLocationType.FISHING_GENUS)
+            forbidden_location_types.add(locations.ToontownLocationType.FISHING_GALLERY)
+        elif fish_checks == fish.FishChecks.AllGalleryAndGenus:
+            forbidden_location_types.add(locations.ToontownLocationType.FISHING)
+        elif fish_checks == fish.FishChecks.AllGallery:
+            forbidden_location_types.add(locations.ToontownLocationType.FISHING)
+            forbidden_location_types.add(locations.ToontownLocationType.FISHING_GENUS)
+        elif fish_checks == fish.FishChecks.Nonne:
+            forbidden_location_types.add(locations.ToontownLocationType.FISHING)
+            forbidden_location_types.add(locations.ToontownLocationType.FISHING_GENUS)
+            forbidden_location_types.add(locations.ToontownLocationType.FISHING_GALLERY)
 
         tpl = base.localAvatar.slotData.get('treasures_per_location', 4)
-        rev_locs = TREASURE_LOCATION_TYPES[::-1]
+        rev_locs = locations.TREASURE_LOCATION_TYPES[::-1]
         for i in range(len(rev_locs) - tpl):
             forbidden_location_types.add(rev_locs[i])
 
+        # Differs from the apworld for special implementation here.
+        forbidden_location_types.update(locations.BOSS_LOCATION_TYPES)
+        wc = base.localAvatar.slotData.get('win_condition', ToontownWinCondition.cog_bosses)
         cpb = base.localAvatar.slotData.get('checks_per_boss', 4)
-        rev_locs = BOSS_LOCATION_TYPES[::-1]
-        for i in range(len(rev_locs) - cpb):
-            forbidden_location_types.add(rev_locs[i])
+        if not ToontownWinCondition.cog_bosses in ToontownWinCondition(wc) and cpb <= 0:
+            forbidden_location_types.add(locations.ToontownLocationType.BOSS_META)
 
         racing = base.localAvatar.slotData.get('racing_logic', False)
         if not racing:
-            forbidden_location_types.add(ToontownLocationType.RACING)
+            forbidden_location_types.add(locations.ToontownLocationType.RACING)
 
         golf = base.localAvatar.slotData.get('golfing_logic', False)
         if not golf:
-            forbidden_location_types.add(ToontownLocationType.GOLF)
+            forbidden_location_types.add(locations.ToontownLocationType.GOLF)
 
         gags = base.localAvatar.slotData.get('gag_training_check_behavior', 1)
-        if gags == GagTrainingCheckBehavior.option_disabled:
-            forbidden_location_types.add(ToontownLocationType.GAG_TRAINING)
+        if gags == options.GagTrainingCheckBehavior.option_disabled:
+            forbidden_location_types.add(locations.ToontownLocationType.GAG_TRAINING)
 
         return forbidden_location_types
 
@@ -162,7 +189,4 @@ class LocationPage(ShtikerPage.ShtikerPage):
         locationName = location
         locationButtonParent = DirectFrame()
         locationButton = DirectButton(parent=locationButtonParent, relief=None, text=locationName, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0)
-        model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
-        model.removeNode()
-        del model
         return (locationButtonParent, locationButton)

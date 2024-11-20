@@ -506,6 +506,7 @@ class ToontownLocationType(IntEnum):
     GALLERY_MAX     = auto()  # Locations for maxing cogs in the gallery
     FACILITIES      = auto()  # Locations for clearing facilities
     BUILDINGS       = auto()  # Locations for clearing cog buildings
+    BOSS_META       = auto()  # Locations for clearing bosses
     BOSSES_1        = auto()  # Locations for clearing bosses
     BOSSES_2        = auto()  # Locations for clearing bosses
     BOSSES_3        = auto()  # Locations for clearing bosses
@@ -530,6 +531,7 @@ class ToontownLocationType(IntEnum):
     MML_TASKS       = auto()  # Locations for MML tasks
     TB_TASKS        = auto()  # Locations for TB tasks
     DDL_TASKS       = auto()  # Locations for DDL tasks
+
 
     MISC = auto()
 
@@ -743,7 +745,7 @@ BOSS_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
 ]
 
 BOSS_EVENT_DEFINITIONS: List[ToontownLocationDefinition] = [
-    ToontownLocationDefinition(location_name,  ToontownLocationType.MISC, region_name, REGION_TO_BOSS_RULES.get(region_name), [ItemRule.RestrictDisguises])
+    ToontownLocationDefinition(location_name,  ToontownLocationType.BOSS_META, region_name, REGION_TO_BOSS_RULES.get(region_name), [ItemRule.RestrictDisguises])
     for region_name, location_name in REGION_TO_BOSS_EVENTS.items()
 ]
 # endregion
@@ -1197,6 +1199,10 @@ ALL_TASK_LOCATIONS = (
     TTC_TASK_LOCATIONS + DD_TASK_LOCATIONS + DG_TASK_LOCATIONS
     + MML_TASK_LOCATIONS + TB_TASK_LOCATIONS + DDL_TASK_LOCATIONS
 )
+TASK_LOCATION_TYPES = [
+    ToontownLocationType.TTC_TASKS, ToontownLocationType.DD_TASKS, ToontownLocationType.DG_TASKS,
+    ToontownLocationType.MML_TASKS, ToontownLocationType.TB_TASKS, ToontownLocationType.DDL_TASKS
+]
 
 SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy() + SHOP_LOCATIONS.copy()
 
