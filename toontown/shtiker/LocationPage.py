@@ -73,9 +73,9 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 missingLocationsCounter.update([without_number])
                 continue
             #Other locations to combine.
-            if location_data.region == locations.ToontownRegionName.GALLERY:
-                missingLocationsCounter.update(['Cog ' + location_data.type.name.replace('_', ' ').title()])
-                continue
+            # if location_data.region == locations.ToontownRegionName.GALLERY:
+            #     missingLocationsCounter.update(['Cog ' + location_data.type.name.replace('_', ' ').title()])
+            #     continue
             if location_data.region == locations.ToontownRegionName.FISHING:
                 missingLocationsCounter.update([location_data.type.name.title()])
                 continue
