@@ -1,4 +1,4 @@
-from collections import Counter
+import re
 from . import ShtikerPage
 from apworld.toontown import locations, options, fish, test_location, ToontownWinCondition
 from BaseClasses import MultiWorld
@@ -8,24 +8,90 @@ from panda3d.core import *
 from toontown.archipelago.definitions import util
 from ..util.ui import make_dsl_scrollable
 
+class LocationNode(DirectFrame):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.locationNodes = []
+
+    def __createDisplay(self, text, yOffset, total) -> DirectLabel:
+        if yOffset == 25 and total > 26:
+            text=f"and {total - yOffset} more..."
+        elif yOffset > 25:
+            text=""
+        return DirectLabel(
+            parent=self, relief=None, image_scale=(1.25, 1.25, 1.25),
+            pos=(-0.36, 0, -0.06 - 0.044 * yOffset), text=text, text_scale=0.035,
+            text_align=TextNode.ALeft, text_pos=(0.03, -0.0125), text_fg=Vec4(0, 0, 0, 1),
+            text_wordwrap=24
+        )
+
+
+    def updateDisplays(self, originals: list[str]):
+
+        # Clear the old lines
+        for h in self.locationNodes:
+            h.destroy()
+        self.locationNodes.clear()
+
+        total = len(originals)
+        for index, label in enumerate(originals):
+            node = self.__createDisplay(label, index, total)
+            self.locationNodes.append(node)
+
+class LocationCategory():
+    def __init__(self, name: str, location: list[str] | str | None = None):
+        self.name = name
+        if location is None:
+            self.locations = set()
+        elif isinstance(location, str):
+            self.locations = {location}
+        else:
+            self.locations = set(location)
+
+    def add_location(self, location: str):
+        self.locations.update([location])
+
+    def get_count(self):
+        return len(self.locations)
+
+    def get_locations(self):
+        return sorted(self.locations, key=locations.LOCATION_NAME_TO_ID.get)
+    
+    def get_raw_name(self):
+        return self.name
+    
+    def get_display_name(self):
+        if self.get_count() != 1:
+            return self.name + f' ({self.get_count()}x)'
+        return self.name
+
+    def __str__(self):
+        return self.get_raw_name()
+
+
 
 class LocationPage(ShtikerPage.ShtikerPage):
 
     def __init__(self):
         ShtikerPage.ShtikerPage.__init__(self)
-        self.locationsPossible = []
+        self.locationsPossible: dict[str,LocationCategory] = {}
         self.scrollList = None
         self.textRolloverColor = Vec4(1, 1, 0, 1)
         self.textDownColor = Vec4(0.5, 0.9, 1, 1)
-        self.textDisabledColor = Vec4(0.4, 0.8, 0.4, 1)
+        self.textDisabledColor = Vec4(0.6, 0.5, 1, 1) # marks selected.
         self.locationButtons = []
+        self.LocationNode = LocationNode(self)
+        self.LocationNode.setPos(0.42, 0, 0.5)
+        self.LocationNode.hide()
+        self.selectedLocation: int | None = None
+
 
     def load(self):
         title_text_scale = 0.12
         self.title = DirectLabel(parent=self, relief=None, text=TTLocalizer.LocationPageTitle, text_scale=title_text_scale, textMayChange=0, pos=(0, 0, 0.6))
         self.gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
         self.listXorigin = 0.02
-        self.listFrameSizeX = 0.9
+        self.listFrameSizeX = 0.86
         self.listZorigin = -0.96
         self.listFrameSizeZ = 1.04
         self.arrowButtonScale = 1.3
@@ -39,16 +105,16 @@ class LocationPage(ShtikerPage.ShtikerPage):
         ShtikerPage.ShtikerPage.enter(self)
         self.getLocations()
         self.regenerateScrollList()
+        self.LocationNode.hide()
+        self.selectedLocation = None
 
     def getLocations(self):
         # Get our checked locations
         checkedLocationIds = base.localAvatar.getCheckedLocations()
         # Get our remaining locations
-        missingLocations = []
-        # Remaining locations that should be combined
-        missingLocationsCounter = Counter()
+        missingLocations: dict[str,LocationCategory] = {}
         # Locations to force to the top of the list.
-        priorityMissingLocations = []
+        priorityMissingLocations: dict[str,LocationCategory] = {}
         # Determine forbidden location types.
         forbidden_location_types: set[locations.ToontownLocationType] = self.get_disabled_location_types()
 
@@ -65,28 +131,59 @@ class LocationPage(ShtikerPage.ShtikerPage):
 
             # Boss checks, combine the rewards into this location for the tracker.
             if location_data.type == locations.ToontownLocationType.BOSS_META:
-                priorityMissingLocations.append(location_data.name.value + f" ({base.localAvatar.slotData.get('checks_per_boss', 4)}x)")
+                obj = LocationCategory(location_data.name.value, 
+                                     [x.value for x in locations.REGION_TO_BOSS_LOCATIONS.get(location_data.region)])
+                priorityMissingLocations.update({location_data.name.value:obj})
                 continue
             # Locations that are identical with only a number appended.
             if location_data.type in locations.TREASURE_LOCATION_TYPES + locations.TASK_LOCATION_TYPES:
-                without_number = location_data.name.value.rsplit(" ", 1)[0]
-                missingLocationsCounter.update([without_number])
-                continue
-            #Other locations to combine.
-            # if location_data.region == locations.ToontownRegionName.GALLERY:
-            #     missingLocationsCounter.update(['Cog ' + location_data.type.name.replace('_', ' ').title()])
-            #     continue
-            if location_data.region == locations.ToontownRegionName.FISHING:
-                missingLocationsCounter.update([location_data.type.name.title()])
-                continue
-            if location_data.type == locations.ToontownLocationType.PET_SHOP:
-                missingLocationsCounter.update([location_data.region.name + " Pet Shop"])
-                continue
-            missingLocations.append(location_data.name.value)
-        
-        countedMissingLocations = [location +f" ({count}x)" for location, count in missingLocationsCounter.items()]
+                name = location_data.name.value.rsplit(" ", 1)[0]
+                obj = missingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
 
-        self.locationsPossible =  priorityMissingLocations + countedMissingLocations + missingLocations
+            elif location_data.region == locations.ToontownRegionName.GALLERY:
+                name = location_data.name.value.split('(')[0].rstrip()
+                obj = missingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+
+            elif location_data.region in [locations.ToontownRegionName.FISHING]:
+                name = location_data.type.name.title()
+                obj = missingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+
+            elif location_data.type == locations.ToontownLocationType.PET_SHOP:
+                name=location_data.region.name + " Pet Shop"
+                obj = missingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+
+            elif location_data.type == locations.ToontownLocationType.GAG_TRAINING:
+                name = location_data.rules[0].name
+                name = re.sub(r'(?<=\B)([A-Z])', r' \1', name).rsplit(" ", 1)[0] + " Training"
+                obj = missingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+
+            elif location_data.type == locations.ToontownLocationType.FACILITIES:
+                name = location_data.rules[0].name
+                name = re.sub(r'(?<=\B)([A-Z])', r' \1', name).rsplit(" ", 1)[0]
+                obj = missingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+
+            elif location_data.type == locations.ToontownLocationType.BUILDINGS:
+                name = "Building Clear"
+                obj = missingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+
+            elif location_data.type in [locations.ToontownLocationType.RACING, locations.ToontownLocationType.GOLF]:
+                name = location_data.type.name.title()
+                obj = missingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+
+            else:
+                name = location_data.name.value
+                obj = LocationCategory(name, name)
+            missingLocations.update({name:obj})
+
+        self.locationsPossible = {**priorityMissingLocations, **missingLocations}
 
     def get_disabled_location_types(self) -> set[locations.ToontownLocationType]:
         """
@@ -134,9 +231,6 @@ class LocationPage(ShtikerPage.ShtikerPage):
 
         return forbidden_location_types
 
-    def exit(self):
-        super().exit()
-
     def regenerateScrollList(self):
         selectedIndex = 0
         if self.scrollList:
@@ -167,7 +261,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
             self.listXorigin + self.listFrameSizeX,
             self.listZorigin,
             self.listZorigin + self.listFrameSizeZ), itemFrame_frameColor=(0.85, 0.95, 1, 1),
-            itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=15, forceHeight=0.065, items=self.locationButtons
+            itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=15, forceHeight=0.065, items=self.locationButtons #Frames
         )
         make_dsl_scrollable(self.scrollList)
         self.scrollList.scrollTo(selectedIndex)
@@ -178,15 +272,25 @@ class LocationPage(ShtikerPage.ShtikerPage):
         for button in self.locationButtons:
             button.detachNode()
             del button
+        self.selectedLocation = False
         self.locationButtons = []
 
         # Generate new buttons
-        for location in self.locationsPossible:
-            button = self.makeLocationButton(location)
-            self.locationButtons.append(button[0])
+        for index, location in enumerate(self.locationsPossible.values()):
+            button = self.makeLocationButton(index, location)
+            self.locationButtons.append(button)
 
-    def makeLocationButton(self, location):
-        locationName = location
-        locationButtonParent = DirectFrame()
-        locationButton = DirectButton(parent=locationButtonParent, relief=None, text=locationName, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0)
-        return (locationButtonParent, locationButton)
+
+    def makeLocationButton(self, index: int, location: LocationCategory):
+        locationName = location.get_display_name()
+        command = lambda: self.setLocations(index, location)
+        locationButton = DirectButton(relief=None, text=locationName, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_bg=self.textDisabledColor, textMayChange=0, command=command)
+        return locationButton
+
+    def setLocations(self, index, location: LocationCategory):
+        self.LocationNode.show()
+        self.LocationNode.updateDisplays(location.get_locations())
+        self.locationButtons[index]['state'] = DGG.DISABLED
+        if not self.selectedLocation is None:
+            self.locationButtons[self.selectedLocation]['state'] = DGG.NORMAL
+        self.selectedLocation = index
