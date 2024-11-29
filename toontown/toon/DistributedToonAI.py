@@ -4454,7 +4454,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         return location in self.checkedLocations
 
     def addCheckedLocation(self, location: int):
-
         if self.hasCheckedLocation(location):
             return
 
@@ -4465,7 +4464,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             self.archipelago_session.complete_check(location)
 
     def addCheckedLocations(self, locations: List[int]):
-
         self.checkedLocations.extend(locations)
         unique = set(self.checkedLocations)
         self.checkedLocations = list(unique)
@@ -4473,11 +4471,15 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setCheckedLocations(self.checkedLocations)
 
         if self.archipelago_session:
-            self.archipelago_session.complete_checks(self.checkedLocations)
+            self.archipelago_session.complete_checks(list(locations))
 
     # Called when recieving locations from Archipelago.
     def receiveCheckedLocations(self, locations: List[int]):
-        self.addCheckedLocations(locations)
+        self.checkedLocations.extend(locations)
+        unique = set(self.checkedLocations)
+        self.checkedLocations = list(unique)
+
+        self.b_setCheckedLocations(self.checkedLocations)
 
 
 

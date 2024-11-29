@@ -236,18 +236,19 @@ class CheckPage(ShtikerPage.ShtikerPage):
         usefulItems = []
         junkItems = []
         # Generate new buttons
+        model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         for item_id, quantity in allItems.items():
             itemDef = get_item_def_from_id(item_id)
             if itemDef is None:
                 print("ALERT I DON'T KNOW WHAT %s IS -- ENRAGE AT MICA" % item_id)
                 continue
+            itemName = itemDef.name.value
+            if itemName.startswith("Defeated "):
+                continue 
             playgroundKeys = [ToontownItemName.TTC_ACCESS.value, ToontownItemName.DD_ACCESS.value,
                               ToontownItemName.DG_ACCESS.value,  ToontownItemName.MML_ACCESS.value,
                               ToontownItemName.TB_ACCESS.value,  ToontownItemName.DDL_ACCESS.value]
-
-            button = self.makeCheckButton(itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
-            itemName = itemDef.name.value
-            # A little hack to get around the visual funny with giving the keys on start
+            button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
             if itemName in playgroundKeys:
                 quantity = 2
             if "Key" in itemName or "Disguise" in itemName:
@@ -263,14 +264,18 @@ class CheckPage(ShtikerPage.ShtikerPage):
                 usefulItems.append(button[0])
             else:
                 junkItems.append(button[0])
+        model.removeNode()
+        del model
         self.checkButtons = keyItems + progressionItems + usefulItems + junkItems
 
-    def makeCheckButton(self, itemDef, checkCount, checkMax):
+    def _makeCheckButton(self, model, itemDef, checkCount, checkMax):
+        """
+        model: loader.loadModel(loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI') # avoiding loading this many times.
+        """
         checkName = itemDef.name
         command = lambda: self.setHint(checkName, itemDef, checkMax)
         checkButtonParent = DirectFrame()
         checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=checkName.value, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
-        model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         check = model.find('**/checkmark')
         x = model.find('**/x')
         hinted = model.find('**/questionMark')
@@ -279,7 +284,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         isHinted = False
         if base.cr.archipelagoManager is not None and (localToonInformation := base.cr.archipelagoManager.getLocalInformation()) is not None:
             isHinted = any(hint.found for hint in base.localAvatar.getHintContainer().getHintsForItemAndSlot(itemDef.unique_id, localToonInformation.slotId))
-
         if checkCount >= checkMax:
             geomToUse = check
         elif isHinted:
@@ -289,8 +293,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         checkButtonR = DirectButton(parent=checkButtonParent, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text=str(checkCount) + '/' + str(checkMax), text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
         # checkButtonR.bind(DirectGuiGlobals.ENTER, lambda t: self.setHint(checkName, itemDef, checkMax, hintLocations))
         # checkButtonR.bind(DirectGuiGlobals.EXIT, lambda t: self.clearHintIf(checkName))
-        model.removeNode()
-        del model
         del check
         del hinted
         del x

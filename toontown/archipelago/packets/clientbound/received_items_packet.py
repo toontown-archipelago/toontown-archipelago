@@ -19,11 +19,8 @@ class ReceivedItemsPacket(ClientBoundPacketBase):
 
     def handle(self, client):
 
-        av_indeces_already_received = []
-        items_received: List[Tuple[int, int]] = client.av.getReceivedItems().copy()
-        for item in items_received:
-            index_received, item_id = item
-            av_indeces_already_received.append(index_received)
+        items_received: List[Tuple[int, int]] = client.av.getReceivedItems()
+        av_indeces_already_received = set(item[0] for item in items_received)
 
         new_items: List[Tuple[int, int]] = []
 

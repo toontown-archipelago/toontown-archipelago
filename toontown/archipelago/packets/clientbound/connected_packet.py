@@ -194,9 +194,7 @@ class ConnectedPacket(ClientBoundPacketBase):
         new_game = ap_location_name_to_id(locations.ToontownLocationName.STARTING_NEW_GAME.value)
         track_one_check = ap_location_name_to_id(locations.ToontownLocationName.STARTING_TRACK_ONE.value)
         track_two_check = ap_location_name_to_id(locations.ToontownLocationName.STARTING_TRACK_TWO.value)
-        client.av.addCheckedLocation(new_game)
-        client.av.addCheckedLocation(track_one_check)
-        client.av.addCheckedLocation(track_two_check)
+        client.av.addCheckedLocations([new_game, track_one_check, track_two_check])
 
         # Checks Page Variables
         client.av.hintPoints = self.hint_points

@@ -4,7 +4,7 @@ name: Colorful Toon
 
 Toontown:
   progression_balancing: 50
-  accessibility: locations
+  accessibility: full
 
   ### Team Settings ###
 
@@ -274,5 +274,5 @@ Toontown:
 
 game: Toontown
 requires:
-  version: 0.4.4
+  version: 0.5.1
 description: 'Default Toontown Template'
