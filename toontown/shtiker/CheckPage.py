@@ -17,13 +17,13 @@ class HintNode(DirectFrame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.title = DirectLabel(parent=self, scale=0.07, pos=(0, 0, -0.08), text="Target goes here", textMayChange=True, relief=None)
+        self.title = DirectLabel(parent=self, scale=0.07, pos=(0, 0, -0.08), text="Select an Item", textMayChange=True, relief=None)
 
         gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
         quitHover = gui.find('**/QuitBtn_UP')
 
         self.hintButton = DirectButton(
-            text=('Give me a hint', 'Give me a hint', 'Give me a hint', ''),
+            text=('Give me a hint', 'Give me a hint', 'Give me a hint', 'Select an Item'),
             command=self.askForHint,
             text_scale=0.05,
             parent=self,
@@ -33,6 +33,7 @@ class HintNode(DirectFrame):
             image_scale=0.85,
             text_pos=(0, -0.015),
         )
+        self.hintButton['state'] = DGG.DISABLED
 
         gui.removeNode()
 
@@ -55,9 +56,7 @@ class HintNode(DirectFrame):
             text_wordwrap=24
         )
 
-
     def updateHintDisplays(self, checkDef, checkMax):
-
         # Clear the old hint lines
         for h in self.hintNodes:
             h.destroy()
@@ -110,6 +109,26 @@ class HintNode(DirectFrame):
 
         model.removeNode()
 
+    def __createDefaultDisplay(self, text, yOffset) -> DirectLabel:
+        return DirectLabel(
+            parent=self, relief=None, image_scale=(1.25, 1.25, 1.25),
+            pos=(-0.36, 0, -0.25 - 0.05 * yOffset), text=text, text_scale=0.032,
+            text_align=TextNode.ALeft, text_pos=(0.03, -0.0125), text_fg=Vec4(0, 0, 0, 1),
+            text_wordwrap=24
+        )
+
+    def showDefaultDisplay(self):
+        # Clear the old lines (needed for re-entering the page)
+        for h in self.hintNodes:
+            h.destroy()
+        self.hintNodes.clear()
+
+        label = "Select an item to view hints for it."
+        self.title["text"] = 'Select an Item'
+        self.hintButton['state'] = DGG.DISABLED
+        defaultNode = self.__createDefaultDisplay(label, 0)
+        self.hintNodes.append(defaultNode)
+
 
 class CheckPage(ShtikerPage.ShtikerPage):
 
@@ -155,6 +174,9 @@ class CheckPage(ShtikerPage.ShtikerPage):
         base.cr.archipelagoManager.d_requestHints()
         self.regenerateScrollList()
         base.localAvatar.sendUpdate('requestHintPoints')
+
+        self.hintNode.show()
+        self.hintNode.showDefaultDisplay()
 
         self.accept('archipelago-hints-updated', self.__handleHintsUpdated)
         self.viewingHint = False
@@ -301,5 +323,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
     def setHint(self, checkName, checkDef, checkMax):
         self.viewingHint = (checkName, checkDef, checkMax)
         self.hintNode.hintName = checkName
+        self.hintNode.hintButton['state'] = DGG.NORMAL
         self.hintNode.show()
         self.hintNode.updateHintDisplays(checkDef, checkMax)

@@ -25,9 +25,7 @@ class LocationNode(DirectFrame):
             text_wordwrap=24
         )
 
-
     def updateDisplays(self, originals: list[str]):
-
         # Clear the old lines
         for h in self.locationNodes:
             h.destroy()
@@ -37,6 +35,16 @@ class LocationNode(DirectFrame):
         for index, label in enumerate(originals):
             node = self.__createDisplay(label, index, total)
             self.locationNodes.append(node)
+
+    def showDefaultDisplay(self):
+        # Clear the old lines (needed for re-entering the page)
+        for h in self.locationNodes:
+            h.destroy()
+        self.locationNodes.clear()
+
+        label = "Select a location group to view all accessible\nlocations within."
+        defaultNode = self.__createDisplay(label, 0, 1)
+        self.locationNodes.append(defaultNode)
 
 class LocationCategory():
     def __init__(self, name: str, location: list[str] | str | None = None):
@@ -105,7 +113,8 @@ class LocationPage(ShtikerPage.ShtikerPage):
         ShtikerPage.ShtikerPage.enter(self)
         self.getLocations()
         self.regenerateScrollList()
-        self.LocationNode.hide()
+        self.LocationNode.show()
+        self.LocationNode.showDefaultDisplay()
         self.selectedLocation = None
 
     def getLocations(self):
@@ -288,7 +297,6 @@ class LocationPage(ShtikerPage.ShtikerPage):
         return locationButton
 
     def setLocations(self, index, location: LocationCategory):
-        self.LocationNode.show()
         self.LocationNode.updateDisplays(location.get_locations())
         self.locationButtons[index]['state'] = DGG.DISABLED
         if not self.selectedLocation is None:
