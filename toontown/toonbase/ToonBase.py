@@ -197,6 +197,8 @@ class ToonBase(OTPBase.OTPBase):
         self.WANT_LEGACY_MODELS = self.settings.get('want-legacy-models')
         self.wantRichPresence = self.settings.get('discord-rich-presence')
         self.colorBlindMode = self.settings.get('color-blind-mode')
+        # do they want laff meter on or off?
+        self.laffMeterDisplay = self.settings.get('laff-meter-display')
         self.discord = DiscordRPC()
         self.discord.launching()
         self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {version}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)

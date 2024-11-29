@@ -9959,6 +9959,7 @@ OptionNames = {
     "archipelago-textsize": "Archipelago Log Text Size",
     "color-blind-mode": "Colorblind Mode",
     "want-legacy-models": "Toggle TTO Species Models*",
+    'laff-display': "Toggle Laff Meter Overhead Display",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",

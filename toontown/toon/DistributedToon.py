@@ -305,20 +305,26 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             self.setColorProfile(colorProfile)
 
     def setHp(self, hitPoints):
-        if not self.overheadLaffMeter:
+        if not self.overheadLaffMeter and base.laffMeterDisplay:
             self.makeOverheadLaffMeter()
+        # we do have one but we don't have the display enabled, destroy it.
+        elif self.overheadLaffMeter and not base.laffMeterDisplay:
+            self.destroyOverheadLaffMeter()
         super().setHp(hitPoints)
 
     def setMaxHp(self, hitPoints):
-        if not self.overheadLaffMeter:
+        if not self.overheadLaffMeter and base.laffMeterDisplay:
             self.makeOverheadLaffMeter()
+        # we do have one but we don't have the display enabled, destroy it.
+        elif self.overheadLaffMeter and not base.laffMeterDisplay:
+            self.destroyOverheadLaffMeter()
         super().setMaxHp(hitPoints)
 
     def makeOverheadLaffMeter(self):
 
         self.destroyOverheadLaffMeter()
 
-        if self.maxHp and self.hp:
+        if self.maxHp and self.hp and base.laffMeterDisplay:
             self.overheadLaffMeter = LaffMeter(self.style, self.hp, self.maxHp)
             self.overheadLaffMeter.setAvatar(self)
             self.overheadLaffMeter.reparentTo(self.nametag.getNameIcon())

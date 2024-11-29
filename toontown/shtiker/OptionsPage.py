@@ -41,6 +41,7 @@ OptionToType = {
     'archipelago-textsize': OptionTypes.SLIDER,
     'color-blind-mode': OptionTypes.BUTTON,
     'want-legacy-models': OptionTypes.BUTTON,
+    'laff-display': OptionTypes.BUTTON,
 
     # Privacy
     "competitive-boss-scoring": OptionTypes.BUTTON,
@@ -144,6 +145,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'archipelago-textsize',
             'color-blind-mode',
             'want-legacy-models',
+            'laff-display'
 
         ],
         "Privacy": [
@@ -764,6 +766,8 @@ class OptionElement(DirectFrame):
             base.colorBlindMode = newSetting
         elif self.optionName == "want-legacy-models":
             base.WANT_LEGACY_MODELS = newSetting
+        elif self.optionName == "laff-display":
+            base.laffMeterDisplay = newSetting
 
         # Update the button text with the new setting.
         self.optionModifier["text"] = self.formatSetting(newSetting)
