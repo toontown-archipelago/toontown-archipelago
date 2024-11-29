@@ -305,20 +305,26 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             self.setColorProfile(colorProfile)
 
     def setHp(self, hitPoints):
-        if not self.overheadLaffMeter:
+        if not self.overheadLaffMeter and base.laffMeterDisplay:
             self.makeOverheadLaffMeter()
+        # we do have one but we don't have the display enabled, destroy it.
+        elif self.overheadLaffMeter and not base.laffMeterDisplay:
+            self.destroyOverheadLaffMeter()
         super().setHp(hitPoints)
 
     def setMaxHp(self, hitPoints):
-        if not self.overheadLaffMeter:
+        if not self.overheadLaffMeter and base.laffMeterDisplay:
             self.makeOverheadLaffMeter()
+        # we do have one but we don't have the display enabled, destroy it.
+        elif self.overheadLaffMeter and not base.laffMeterDisplay:
+            self.destroyOverheadLaffMeter()
         super().setMaxHp(hitPoints)
 
     def makeOverheadLaffMeter(self):
 
         self.destroyOverheadLaffMeter()
 
-        if self.maxHp and self.hp:
+        if self.maxHp and self.hp and base.laffMeterDisplay:
             self.overheadLaffMeter = LaffMeter(self.style, self.hp, self.maxHp)
             self.overheadLaffMeter.setAvatar(self)
             self.overheadLaffMeter.reparentTo(self.nametag.getNameIcon())
@@ -2853,9 +2859,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
         self.receivedItems = receivedItems
         self.receivedItemIDs = set(x[1] for x in receivedItems)
-        if self.isLocal():
-            if hasattr(base.localAvatar, 'checkPage'):
-                base.localAvatar.checkPage.regenerateScrollList()
 
     # Get a list of item IDs this toon has received via AP
     def getReceivedItems(self) -> List[Tuple[int, int]]:

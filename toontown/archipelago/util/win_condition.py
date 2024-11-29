@@ -63,18 +63,17 @@ class InvalidWinCondition(WinCondition):
 
 # Represents the win condition on defeating a certain number of bosses
 class BossDefeatWinCondition(WinCondition):
-    # TODO: change this to check AP boss rewards
+    boss_locations = {
+        locations.LOCATION_NAME_TO_ID.get(loc.name.value)
+        for loc in locations.BOSS_EVENT_DEFINITIONS
+    }
+
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.bosses_required: int = toon.slotData.get('cog_bosses_required', 4)
 
     def __get_bosses_defeated(self) -> int:
-        bosses = 0
-        for level in self.toon.getCogLevels():
-            if level > 0:
-                bosses += 1
-
-        return bosses
+        return len(self.boss_locations.intersection(self.toon.getCheckedLocations()))
 
     def __get_bosses_needed(self) -> int:
         return max(0, self.bosses_required - self.__get_bosses_defeated())
@@ -90,15 +89,15 @@ class BossDefeatWinCondition(WinCondition):
 
 
 class GlobalTaskWinCondition(WinCondition):
+    task_locations = {locations.LOCATION_NAME_TO_ID.get(loc.value) for loc in locations.ALL_TASK_LOCATIONS}
+
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
         self.tasks_required: int = toon.slotData.get('total_tasks_required', 72)
 
     def __get_tasks_completed(self) -> int:
-        # Convert our checked locations into AP names
-        checked = set(locations.LOCATION_ID_TO_NAME.get(loc_id) for loc_id in self.toon.getCheckedLocations())
         # Return the length of our checks filtered by all tasks.
-        return len(checked.intersection(loc_name.value for loc_name in locations.ALL_TASK_LOCATIONS))
+        return len(self.task_locations.intersection(self.toon.getCheckedLocations()))
 
     # Calculate how many tasks are needed to satisfy the win condition
     def __get_tasks_needed(self) -> int:
@@ -115,24 +114,37 @@ class GlobalTaskWinCondition(WinCondition):
 
 
 class HoodTaskWinCondition(WinCondition):
+    task_locations = {locations.LOCATION_NAME_TO_ID.get(loc.value) for loc in locations.ALL_TASK_LOCATIONS}
+    hood_id_to_name = {
+        ToontownGlobals.ToontownCentral: TTLocalizer.lToontownCentral,
+        ToontownGlobals.DonaldsDock: TTLocalizer.lDonaldsDock,
+        ToontownGlobals.DaisyGardens: TTLocalizer.lDaisyGardens,
+        ToontownGlobals.MinniesMelodyland: TTLocalizer.lMinniesMelodyland,
+        ToontownGlobals.TheBrrrgh: TTLocalizer.lTheBrrrgh,
+        ToontownGlobals.DonaldsDreamland: TTLocalizer.lDonaldsDreamland,
+    }
+    
+
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
-        self.tasks_per_hood_needed: int = toon.slotData.get('hood_tasks_required', 12)
+        self.tasks_per_hood_needed: int = toon.slotData.get('hood_tasks_required', 12) 
+        self.checked_per_hood = {hood_id:0 for hood_id in self.hood_id_to_name}
 
     # Calculate a dictionary that represents tasks completed per hood
     # It will always be populated with every hood where tasks may be completed even if no tasks have been completed
     def __get_tasks_completed(self) -> dict[int, int]:
         # Convert our checked locations into AP names
-        checked = set(locations.LOCATION_ID_TO_NAME.get(loc_id) for loc_id in self.toon.getCheckedLocations())
-        # Filter that to only tasks.
-        checked.intersection_update(loc_name.value for loc_name in locations.ALL_TASK_LOCATIONS)
-        # Then construct a mapping of how many quests were completed per hood.
-        return Counter(Quests.getHoodFromRewardId(Quests.getRewardIdFromAPLocationName(task)) for task in checked)
+        checked = self.toon.getCheckedLocations()
+        tasks_checked = self.task_locations.intersection(checked)
+        reward_IDs_checked = (Quests.getRewardIdFromAPLocationName(locations.LOCATION_ID_TO_NAME.get(task)) for task in tasks_checked)
+        # update and return the mapping of how many quests were completed per hood.
+        self.checked_per_hood.update(Counter(Quests.getHoodFromRewardId(reward) for reward in reward_IDs_checked))
+        return self.checked_per_hood
 
     # Returns the # of tasks completed based on hood with least amount of task progress based on quests completed
     # If all playgrounds have 5 tasks completed except for one which only has 3, we return 3.
     def __get_lowest_completion_amount(self) -> int:
-        return min(self.__get_tasks_completed().values(), default=0)
+        return min(self.__get_tasks_completed().values())
 
     def satisfied(self) -> bool:
         return self.__get_lowest_completion_amount() >= self.tasks_per_hood_needed
@@ -141,24 +153,15 @@ class HoodTaskWinCondition(WinCondition):
         if self.satisfied():
             return 'It seems your hood ToonTasks goal is completed!'
 
-        hood_id_to_name = {
-            ToontownGlobals.ToontownCentral: TTLocalizer.lToontownCentral,
-            ToontownGlobals.DonaldsDock: TTLocalizer.lDonaldsDock,
-            ToontownGlobals.DaisyGardens: TTLocalizer.lDaisyGardens,
-            ToontownGlobals.MinniesMelodyland: TTLocalizer.lMinniesMelodyland,
-            ToontownGlobals.TheBrrrgh: TTLocalizer.lTheBrrrgh,
-            ToontownGlobals.DonaldsDreamland: TTLocalizer.lDonaldsDreamland,
-        }
-
         # Generate instructions per playground that still needs task completions
         task_completion = self.__get_tasks_completed()
         instructions = []
-        for hood_id in hood_id_to_name:
+        for hood_id in self.hood_id_to_name:
             tasks_needed = self.tasks_per_hood_needed - task_completion.get(hood_id, 0)
             if tasks_needed <= 0:
                 continue
             plural = 's' if tasks_needed > 1 else ''
-            instructions.append(f'{tasks_needed} more ToonTask{plural} completed in {hood_id_to_name.get(hood_id, hood_id)}.')
+            instructions.append(f'{tasks_needed} more ToonTask{plural} completed in {self.hood_id_to_name.get(hood_id, hood_id)}.')
 
         return delimiter.join(['You still have not completed your hood ToonTasks goal!',
                 'You need to fulfil the following requirements still:'] + instructions)

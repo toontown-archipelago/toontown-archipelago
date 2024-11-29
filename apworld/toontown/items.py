@@ -125,6 +125,12 @@ class ToontownItemName(enum.Enum):
     DRIP_TRAP = "Drip Trap"
     GAG_SHUFFLE_TRAP = "Gag Shuffle Trap"
 
+    ### META ###
+    VP = "Defeated Sellbot VP"
+    CFO = "Defeated Cashbot CFO"
+    CJ = "Defeated Lawbot CJ"
+    CEO =  "Defeated Bossbot CEO"
+
 
 @dataclass
 class ToontownItemDefinition:
@@ -245,6 +251,12 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.DRIP_TRAP,             ItemClassification.trap),
     ToontownItemDefinition(ToontownItemName.GAG_SHUFFLE_TRAP,      ItemClassification.trap),
     # endregion
+    # region BossDefeatItems
+    ToontownItemDefinition(ToontownItemName.VP,                   ItemClassification.progression_skip_balancing),
+    ToontownItemDefinition(ToontownItemName.CFO,                   ItemClassification.progression_skip_balancing),
+    ToontownItemDefinition(ToontownItemName.CJ,                   ItemClassification.progression_skip_balancing),
+    ToontownItemDefinition(ToontownItemName.CEO,                   ItemClassification.progression_skip_balancing),
+    # endregion
 ]
 
 ITEM_DESCRIPTIONS = {
@@ -252,6 +264,10 @@ ITEM_DESCRIPTIONS = {
     ToontownItemName.CASHBOT_DISGUISE.value: "Grants access to fight the Cashbot CFO",
     ToontownItemName.LAWBOT_DISGUISE.value:  "Grants access to fight the Lawbot CJ",
     ToontownItemName.BOSSBOT_DISGUISE.value: "Grants access to fight the Bossbot CEO",
+    ToontownItemName.VP: "Rewarded for defeating the Sellbot VP", 
+    ToontownItemName.CFO: "Rewarded for defeating the Cashbot CFO",
+    ToontownItemName.CJ: "Rewarded for defeating the Lawbot CJ", 
+    ToontownItemName.CEO: "Rewarded for defeating the Bossbot CEO",
 }
 
 
