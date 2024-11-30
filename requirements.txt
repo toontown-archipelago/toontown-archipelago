@@ -1,5 +1,5 @@
-pytz
-websockets
-certifi
-sentry-sdk
-pypresence
+pytz==2024.1
+websockets==13.1
+certifi==2024.8.30
+sentry-sdk==2.13.0
+pypresence==4.3.0
