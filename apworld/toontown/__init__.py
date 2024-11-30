@@ -11,7 +11,7 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
     ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS, get_item_groups
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
-    TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES, get_location_groups
+    TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES, BOSS_EVENT_DEFINITIONS, get_location_groups
 from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
@@ -130,6 +130,7 @@ class ToontownWorld(World):
         # Determine forbidden location types.
         forbidden_location_types: set[ToontownLocationType] = self.get_disabled_location_types()
 
+
         # Now create locations.
         for i, location_data in enumerate(LOCATION_DEFINITIONS):
             # Do we skip this location generation?
@@ -153,7 +154,7 @@ class ToontownWorld(World):
                 if location_data.type == ToontownLocationType.GALLERY_MAX:
                     location.progress_type = LocationProgressType.EXCLUDED
 
-        for i, location_data in enumerate(EVENT_DEFINITIONS):
+        for location_data in EVENT_DEFINITIONS:
             region = regions[location_data.region]
             location = ToontownLocation(player, location_data.name.value, None, region)
             region.locations.append(location)
@@ -165,10 +166,20 @@ class ToontownWorld(World):
             else:
                 location.place_locked_item(self.create_event(location_data.name.value))
 
+
+
         # Force various item placements.
         self._force_item_placement(ToontownLocationName.STARTING_NEW_GAME,  ToontownItemName.TTC_ACCESS)
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.first_track)
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.second_track)
+
+        # only populate these locations if there's a reason to go there.
+        if self.options.checks_per_boss.value > 0 or self.options.win_condition_cog_bosses.value:
+            self._force_item_placement(ToontownLocationName.FIGHT_VP,  ToontownItemName.VP)
+            self._force_item_placement(ToontownLocationName.FIGHT_CFO,  ToontownItemName.CFO)
+            self._force_item_placement(ToontownLocationName.FIGHT_CJ,  ToontownItemName.CJ)
+            self._force_item_placement(ToontownLocationName.FIGHT_CEO,  ToontownItemName.CEO)
+
 
         # Do we have force teleport access? if so place our tps
         if self.options.tpsanity.value == TPSanity.option_treasure:
@@ -549,6 +560,9 @@ class ToontownWorld(World):
         rev_locs = BOSS_LOCATION_TYPES[::-1]
         for i in range(len(rev_locs) - cpb):
             forbidden_location_types.add(rev_locs[i])
+        wcb = self.options.win_condition_cog_bosses.value
+        if cpb <= 0 and not wcb:
+            forbidden_location_types.add(ToontownLocationType.BOSS_META)
 
         racing = self.options.racing_logic.value
         if not racing:

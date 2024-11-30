@@ -705,15 +705,14 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                bundleCount = toon.slotData.get('checks_per_boss', 4)
-                bundle = [locations.ToontownLocationName.LAWBOT_PROOF_1.value,
-                          locations.ToontownLocationName.LAWBOT_PROOF_2.value,
-                          locations.ToontownLocationName.LAWBOT_PROOF_3.value,
-                          locations.ToontownLocationName.LAWBOT_PROOF_4.value,
-                          locations.ToontownLocationName.LAWBOT_PROOF_5.value]
-                if bundleCount:
-                    for checkNum in range(bundleCount):
-                        toon.addCheckedLocation(ap_location_name_to_id(bundle[checkNum]))
+                toon.addCheckedLocations([ap_location_name_to_id(location) for location in [
+                    locations.ToontownLocationName.LAWBOT_PROOF_1.value,
+                    locations.ToontownLocationName.LAWBOT_PROOF_2.value,
+                    locations.ToontownLocationName.LAWBOT_PROOF_3.value,
+                    locations.ToontownLocationName.LAWBOT_PROOF_4.value,
+                    locations.ToontownLocationName.LAWBOT_PROOF_5.value,
+                    locations.ToontownLocationName.FIGHT_CJ.value
+                ]])
                 for reward in range(numRewards):
                     preferredDept = random.randrange(len(SuitDNA.suitDepts))
                     typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3

@@ -17,13 +17,13 @@ class HintNode(DirectFrame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.title = DirectLabel(parent=self, scale=0.07, pos=(0, 0, -0.08), text="Target goes here", textMayChange=True, relief=None)
+        self.title = DirectLabel(parent=self, scale=0.07, pos=(0, 0, -0.08), text="Select an Item", textMayChange=True, relief=None)
 
         gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
         quitHover = gui.find('**/QuitBtn_UP')
 
         self.hintButton = DirectButton(
-            text=('Give me a hint', 'Give me a hint', 'Give me a hint', ''),
+            text=('Give me a hint', 'Give me a hint', 'Give me a hint', 'Select an Item'),
             command=self.askForHint,
             text_scale=0.05,
             parent=self,
@@ -33,6 +33,7 @@ class HintNode(DirectFrame):
             image_scale=0.85,
             text_pos=(0, -0.015),
         )
+        self.hintButton['state'] = DGG.DISABLED
 
         gui.removeNode()
 
@@ -55,9 +56,7 @@ class HintNode(DirectFrame):
             text_wordwrap=24
         )
 
-
     def updateHintDisplays(self, checkDef, checkMax):
-
         # Clear the old hint lines
         for h in self.hintNodes:
             h.destroy()
@@ -110,6 +109,26 @@ class HintNode(DirectFrame):
 
         model.removeNode()
 
+    def __createDefaultDisplay(self, text, yOffset) -> DirectLabel:
+        return DirectLabel(
+            parent=self, relief=None, image_scale=(1.25, 1.25, 1.25),
+            pos=(-0.36, 0, -0.25 - 0.05 * yOffset), text=text, text_scale=0.032,
+            text_align=TextNode.ALeft, text_pos=(0.03, -0.0125), text_fg=Vec4(0, 0, 0, 1),
+            text_wordwrap=24
+        )
+
+    def showDefaultDisplay(self):
+        # Clear the old lines (needed for re-entering the page)
+        for h in self.hintNodes:
+            h.destroy()
+        self.hintNodes.clear()
+
+        label = "Select an item to view hints for it."
+        self.title["text"] = 'Select an Item'
+        self.hintButton['state'] = DGG.DISABLED
+        defaultNode = self.__createDefaultDisplay(label, 0)
+        self.hintNodes.append(defaultNode)
+
 
 class CheckPage(ShtikerPage.ShtikerPage):
 
@@ -155,6 +174,9 @@ class CheckPage(ShtikerPage.ShtikerPage):
         base.cr.archipelagoManager.d_requestHints()
         self.regenerateScrollList()
         base.localAvatar.sendUpdate('requestHintPoints')
+
+        self.hintNode.show()
+        self.hintNode.showDefaultDisplay()
 
         self.accept('archipelago-hints-updated', self.__handleHintsUpdated)
         self.viewingHint = False
@@ -236,18 +258,19 @@ class CheckPage(ShtikerPage.ShtikerPage):
         usefulItems = []
         junkItems = []
         # Generate new buttons
+        model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         for item_id, quantity in allItems.items():
             itemDef = get_item_def_from_id(item_id)
             if itemDef is None:
                 print("ALERT I DON'T KNOW WHAT %s IS -- ENRAGE AT MICA" % item_id)
                 continue
+            itemName = itemDef.name.value
+            if itemName.startswith("Defeated "):
+                continue 
             playgroundKeys = [ToontownItemName.TTC_ACCESS.value, ToontownItemName.DD_ACCESS.value,
                               ToontownItemName.DG_ACCESS.value,  ToontownItemName.MML_ACCESS.value,
                               ToontownItemName.TB_ACCESS.value,  ToontownItemName.DDL_ACCESS.value]
-
-            button = self.makeCheckButton(itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
-            itemName = itemDef.name.value
-            # A little hack to get around the visual funny with giving the keys on start
+            button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
             if itemName in playgroundKeys:
                 quantity = 2
             if "Key" in itemName or "Disguise" in itemName:
@@ -263,14 +286,18 @@ class CheckPage(ShtikerPage.ShtikerPage):
                 usefulItems.append(button[0])
             else:
                 junkItems.append(button[0])
+        model.removeNode()
+        del model
         self.checkButtons = keyItems + progressionItems + usefulItems + junkItems
 
-    def makeCheckButton(self, itemDef, checkCount, checkMax):
+    def _makeCheckButton(self, model, itemDef, checkCount, checkMax):
+        """
+        model: loader.loadModel(loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI') # avoiding loading this many times.
+        """
         checkName = itemDef.name
         command = lambda: self.setHint(checkName, itemDef, checkMax)
         checkButtonParent = DirectFrame()
         checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=checkName.value, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
-        model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         check = model.find('**/checkmark')
         x = model.find('**/x')
         hinted = model.find('**/questionMark')
@@ -279,7 +306,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         isHinted = False
         if base.cr.archipelagoManager is not None and (localToonInformation := base.cr.archipelagoManager.getLocalInformation()) is not None:
             isHinted = any(hint.found for hint in base.localAvatar.getHintContainer().getHintsForItemAndSlot(itemDef.unique_id, localToonInformation.slotId))
-
         if checkCount >= checkMax:
             geomToUse = check
         elif isHinted:
@@ -289,8 +315,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         checkButtonR = DirectButton(parent=checkButtonParent, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text=str(checkCount) + '/' + str(checkMax), text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
         # checkButtonR.bind(DirectGuiGlobals.ENTER, lambda t: self.setHint(checkName, itemDef, checkMax, hintLocations))
         # checkButtonR.bind(DirectGuiGlobals.EXIT, lambda t: self.clearHintIf(checkName))
-        model.removeNode()
-        del model
         del check
         del hinted
         del x
@@ -299,5 +323,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
     def setHint(self, checkName, checkDef, checkMax):
         self.viewingHint = (checkName, checkDef, checkMax)
         self.hintNode.hintName = checkName
+        self.hintNode.hintButton['state'] = DGG.NORMAL
         self.hintNode.show()
         self.hintNode.updateHintDisplays(checkDef, checkMax)
