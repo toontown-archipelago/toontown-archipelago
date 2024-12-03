@@ -2192,11 +2192,18 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.ignore(controls.SECONDARY_ACTION)
         self.ignore('time-' + controls.ACTION_BUTTON)
         self.ignore('time-' + controls.ACTION_BUTTON + '-up')
+
     def resetPieKeys(self) -> None:
         controls = base.controls
         self.accept(controls.SECONDARY_ACTION, self.__zeroPowerToss)
         self.accept('time-' + controls.ACTION_BUTTON, self.__beginTossPie)
         self.accept('time-' + controls.ACTION_BUTTON + '-up', self.__endTossPie)
+
+    def updateOverhead(self) -> None:
+        if base.laffMeterDisplay:
+            self.makeOverheadLaffMeter()
+        else:
+            self.destroyOverheadLaffMeter()
 
     def getHintContainer(self) -> HintContainer:
         return self.hintContainer
