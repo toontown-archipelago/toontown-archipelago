@@ -760,27 +760,20 @@ class BossRewardAward(APReward):
 
 
 class ProofReward(APReward):
-    class ProofType(IntEnum):
-        SellbotBossFirstTime = 0
-        CashbotBossFirstTime = 1
-        LawbotBossFirstTime = 2
-        BossbotBossFirstTime = 3
+    numToBoss = {
+        0: "VP",
+        1: "CFO",
+        2: "CJ",
+        3: "CEO"
+    }
 
-        def to_display(self):
-            return {
-                self.SellbotBossFirstTime: "First VP Defeated",
-                self.CashbotBossFirstTime: "First CFO Defeated",
-                self.LawbotBossFirstTime: "First CJ Defeated",
-                self.BossbotBossFirstTime: "First CEO Defeated"
-            }.get(self, f"Unknown Proof ({self.value})")
-
-    def __init__(self, proofType: ProofType):
-        self.proofType: ProofReward.ProofType = proofType
+    def __init__(self, proof: int):
+        self.proof = proof
 
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("Proof Obtained!\n", color='green'),
-            MinimalJsonMessagePart(f"{self.proofType.to_display()}"),
+            MinimalJsonMessagePart(f"Proof of the {self.numToBoss[self.proof]}'s defeat!"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
@@ -896,6 +889,10 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.BEAN_TAX_TRAP_1250.value: BeanTaxTrapAward(1250),
     ToontownItemName.DRIP_TRAP.value: DripTrapAward(),
     ToontownItemName.GAG_SHUFFLE_TRAP.value: GagShuffleAward(),
+    ToontownItemName.VP.value: ProofReward(0),
+    ToontownItemName.CFO.value: ProofReward(1),
+    ToontownItemName.CJ.value: ProofReward(2),
+    ToontownItemName.CEO.value: ProofReward(3),
 }
 
 

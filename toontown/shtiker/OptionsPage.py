@@ -259,6 +259,7 @@ class OptionsTabPage(DirectFrame, FSM):
         # Write the settings to the local JSON file.
         base.settings.write()
         base.localAvatar.resetPieKeys()
+        base.localAvatar.updateOverhead()
 
     def updateTabs(self) -> None:
         messenger.send("wakeup")
