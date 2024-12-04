@@ -388,7 +388,7 @@ class ArchipelagoClient(DirectObject):
         someone_elses = owning_player_id != self.slot
 
         owner_name = self.get_slot_info(owning_player_id).name + "'s " if someone_elses else "Your "
-        item_name = self.get_item_name(item_id, owning_player_id)
+        item_name = self.get_item_name(item_id, owning_player_id).encode(encoding="ascii",errors="xmlcharrefreplace")
 
         # Handle settings for displaying location rewards.
         # Task Reward Locations.
