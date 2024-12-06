@@ -309,7 +309,7 @@ class JSONPartFormatter:
 
         # If we were given name, instead of ID, do same thing basically
         elif part['type'] == 'item_name':
-            pass  # Do nothing
+            part['text'] = part['text'].encode("ascii", "replace").decode()
 
         else:
             print(f"Unknown JSONMessagePart type for item part: {part['type']}")
@@ -325,7 +325,7 @@ class JSONPartFormatter:
 
         # If we were given name, instead of ID, do same thing basically
         elif part['type'] == 'location_name':
-            pass  # Do nothing
+            part['text'] = part['text'].encode("ascii", "replace").decode()
 
         else:
             print(f"Unknown JSONMessagePart type for location part: {part['type']}")

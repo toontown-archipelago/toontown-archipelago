@@ -122,7 +122,7 @@ class ArchipelagoClient(DirectObject):
             return self.global_data_package.get_location(self.get_slot_info(slot).game, location_id)
         except (KeyError, TypeError): # no slot info for the given slot, or slot was None.
             warn("Invalid slot for fetching location name.", UserWarning, 2) # print to log with where we were called.
-            return f'Unknown Item[{location_id}]'
+            return f'Unknown Location[{location_id}]'
 
     def __get_packet_handle_event_name(self):
         return self.av.uniqueName(f'incoming-ap-packet')
@@ -388,7 +388,7 @@ class ArchipelagoClient(DirectObject):
         someone_elses = owning_player_id != self.slot
 
         owner_name = self.get_slot_info(owning_player_id).name + "'s " if someone_elses else "Your "
-        item_name = self.get_item_name(item_id, owning_player_id).encode(encoding="ascii",errors="xmlcharrefreplace")
+        item_name = self.get_item_name(item_id, owning_player_id)
 
         # Handle settings for displaying location rewards.
         # Task Reward Locations.
