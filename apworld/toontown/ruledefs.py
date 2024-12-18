@@ -85,18 +85,18 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
     return state.has(argument[0].value, player)
 
 
-@rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
-@rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS)
-@rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS)
-@rule(Rule.DollarMintKey,   ToontownItemName.DOLLAR_MINT_ACCESS)
-@rule(Rule.BullionMintKey,  ToontownItemName.BULLION_MINT_ACCESS)
-@rule(Rule.OfficeAKey,      ToontownItemName.A_OFFICE_ACCESS)
-@rule(Rule.OfficeBKey,      ToontownItemName.B_OFFICE_ACCESS)
-@rule(Rule.OfficeCKey,      ToontownItemName.C_OFFICE_ACCESS)
-@rule(Rule.OfficeDKey,      ToontownItemName.D_OFFICE_ACCESS)
-@rule(Rule.FrontOneKey,     ToontownItemName.FRONT_ONE_ACCESS)
-@rule(Rule.MiddleTwoKey,    ToontownItemName.MIDDLE_TWO_ACCESS)
-@rule(Rule.BackThreeKey,    ToontownItemName.BACK_THREE_ACCESS)
+@rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS, Rule.Has40PercentMax)
+@rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS, Rule.Has40PercentMax)
+@rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS, Rule.Has40PercentMax)
+@rule(Rule.DollarMintKey,   ToontownItemName.DOLLAR_MINT_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.BullionMintKey,  ToontownItemName.BULLION_MINT_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeAKey,      ToontownItemName.A_OFFICE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeBKey,      ToontownItemName.B_OFFICE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeCKey,      ToontownItemName.C_OFFICE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeDKey,      ToontownItemName.D_OFFICE_ACCESS, Rule.Has80PercentMax)
+@rule(Rule.FrontOneKey,     ToontownItemName.FRONT_ONE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.MiddleTwoKey,    ToontownItemName.MIDDLE_TWO_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.BackThreeKey,    ToontownItemName.BACK_THREE_ACCESS, Rule.Has80PercentMax)
 def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     itemToHQAccessRule = {
@@ -120,7 +120,8 @@ def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWo
     # Facilities have their own keys
     if locking_method == FacilityLocking.option_keys:
         return state.has(argument[0].value, player) \
-               and passes_rule(itemToHQAccessRule[argument[0]], *args)
+               and passes_rule(itemToHQAccessRule[argument[0]], *args) \
+               and passes_rule(argument[1], *args)
     # Facilities are locked by a second access key
     elif locking_method == FacilityLocking.option_access:
         key_to_access = {
@@ -138,11 +139,13 @@ def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWo
             ToontownItemName.BACK_THREE_ACCESS: ToontownItemName.BBHQ_ACCESS,
         }
         return state.count(key_to_access[argument[0]].value, player) >= 2 \
-               and passes_rule(itemToHQAccessRule[argument[0]], *args)
+               and passes_rule(itemToHQAccessRule[argument[0]], *args) \
+               and passes_rule(argument[1], *args)
     # Facilities must be set to unlocked, access is true as long as we can reach the HQ
     else:
         return passes_rule(itemToHQAccessRule[argument[0]], *args) \
-               and passes_rule(itemToHQAccessRule[argument[0]], *args)
+               and passes_rule(itemToHQAccessRule[argument[0]], *args) \
+               and passes_rule(argument[1], *args)
 
 
 @rule(Rule.Has20PercentMax, 0.2)
