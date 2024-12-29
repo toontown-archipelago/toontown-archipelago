@@ -1361,22 +1361,30 @@ struct ScaleLeagueRuleset {
 };
 
 dclass DistributedCashbotBoss : DistributedBossCog {
+  addToActivityLog(uint32, string) broadcast;
+  updateSpectators(uint32[]) broadcast ram;
   setRawRuleset(CraneLeagueRuleset) required broadcast ram;
   setModifiers(CraneLeagueModifier[]) broadcast ram;
   setToonSpawnpoints(uint8[]) broadcast ram;
   setState(string) broadcast ram;
-  setBossDamage(uint32) broadcast ram;
+  setBossDamage(uint32, uint32, uint32, bool) broadcast ram;
   setCraneSpawn(bool, uint8, uint32) broadcast ram;
   setRewardId(uint16) broadcast ram;
   applyReward() airecv clsend;
   killingBlowDealt(uint32 avId) broadcast ram;
+  updateDamageDealt(uint32 avId, uint32) broadcast ram;
+  updateStunCount(uint32 avId, uint32) broadcast ram;
   updateGoonsStomped(uint32 avId) broadcast ram;
   updateSafePoints(uint32 avId, int32) broadcast ram;
   updateMaxImpactHits(uint32 avId) broadcast ram;
   updateLowImpactHits(uint32 avId) broadcast ram;
+  updateCombo(uint32 avId, uint8) broadcast ram;
+  awardCombo(uint32 avId, uint8, int32) broadcast ram;
   announceCraneRestart() broadcast ram;
+  revivedToon(uint32 avId) broadcast ram;
   goonKilledBySafe(uint32 avId) broadcast ram;
   updateUnstun(uint32 avId) broadcast ram;
+  setAttackCode(uint8, uint32, uint32) broadcast;
 };
 
 struct LinkPosition {
@@ -1401,7 +1409,7 @@ dclass DistributedCashbotBossSideCrane : DistributedCashbotBossCrane {
 dclass DistributedCashbotBossHeavyCrane : DistributedCashbotBossCrane {
 };
 
-dclass DistributedCashbotBossObject : DistributedObject {
+dclass DistributedCashbotBossObject : DistributedSmoothNode {
   setBossCogId(uint32) required broadcast ram;
   setObjectState(char, uint32, uint32) broadcast ram;
   resetSpeedCaching() broadcast ram;
@@ -3300,7 +3308,11 @@ dclass DistributedLawbotBoss : DistributedBossCog {
   enteredBonusState() broadcast;
   setBattleDifficulty(uint8) broadcast ram;
   setRawRuleset(ScaleLeagueRuleset) required broadcast ram;
+  damageDealt(uint32, uint32) broadcast;
+  updateCombo(uint32 avId, uint8) broadcast ram;
+  awardCombo(uint32 avId, uint8, int32) broadcast ram;
   lawyerDisabled(uint32 avid) broadcast;
+  stunBonus(uint32 avId, uint32) broadcast;
 };
 
 dclass DistributedLawbotBossSuit : DistributedSuitBase {
