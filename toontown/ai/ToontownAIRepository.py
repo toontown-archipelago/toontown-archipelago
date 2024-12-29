@@ -161,7 +161,7 @@ class ToontownAIRepository(ToontownInternalRepository):
         # Make our district available, and we're done.
         self.notify.info('Making district available...')
         self.district.b_setAvailable(1)
-        self.notify.info('District is now ready. Have fun in Toontown: Archipelago!')
+        self.notify.info('District is now ready. Have fun in Toontown Ranked!')
 
     def createLocals(self):
         """

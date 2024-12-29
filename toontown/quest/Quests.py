@@ -1,22 +1,15 @@
 from typing import Dict, NamedTuple, List
 
-from otp.otpbase import OTPGlobals
-from apworld.toontown import locations
-from toontown.archipelago.definitions import util
-from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.toonbase import ToontownGlobals
 from toontown.battle import SuitBattleGlobals
 from toontown.coghq import CogDisguiseGlobals
-import random
 from toontown.toon import NPCToons
-import copy, string
+import copy
 from toontown.hood import ZoneUtil
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import TTLocalizer
-from direct.showbase import PythonUtil
-from apworld.toontown.options import RewardDisplayOption
-import time, types, random
+import time, random
 notify = DirectNotifyGlobal.directNotify.newCategory('Quests')
 ItemDict = TTLocalizer.QuestsItemDict
 CompleteString = TTLocalizer.QuestsCompleteString
@@ -2649,90 +2642,7 @@ def transformReward(baseRewardId):
 # Pass in the NPC, the toon to give quests for, and a list of reward IDs to ignore
 def chooseBestQuests(currentNpc, av, excludeRewards: List[int], seed=None):
 
-    # If this is not an HQ npc, ignore them
-    if not currentNpc.getHq():
-        return []
-
-    # Get the hood ID this HQ officer is residing in and use it to find the locations this playground offers
-    hoodId = ZoneUtil.getHoodId(currentNpc.zoneId)
-
-    # What AP locations can this hood offer for us?
-    allHoodTaskLocationNames = util.hood_to_task_locations(hoodId)
-
-    # Use the index of this NPC to choose ideal quests
-    npcHQIndex = currentNpc.getPositionIndex()
-
-    # Quests in each playground are 12 quests each, meaning we should have gotten a list of 12 location names
-    # This NPC will offer 3 of those. Find some offset and offer that subsection of all the tasks
-    taskLocationOffset = npcHQIndex * 3
-    taskLocationEnd = taskLocationOffset + 3
-    # Splice the list to choose 3 tasks we want, this should splice like so: 0-2, 3-5, 6-8, 9-11
-    locationsWeOffer = allHoodTaskLocationNames[taskLocationOffset:taskLocationEnd]
-
-    # Optionally, Hint the locally available tasks
-    if av.slotData.get("task_reward_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint:
-        packet = LocationScoutsPacket()
-        packet.create_as_hint = 2 # only announce new hints
-        packet.locations = [util.ap_location_name_to_id(loc) for loc in locationsWeOffer]
-        av.archipelago_session.client.send_packet(packet)
-
-    # Now convert these AP locations into base Toontown quest reward items
-    rewardsFromLocation = []
-    for location in locationsWeOffer:
-
-        # If the player has already checked the location via AP, they do not need to do this quest
-        locationID = util.ap_location_name_to_id(location)
-        if av.hasCheckedLocation(locationID):
-            continue
-
-        convertedRewardID = getRewardIdFromAPLocationName(location)
-
-        # If we want to exclude this reward ID for whatever reason, do not include it
-        if convertedRewardID in excludeRewards:
-            continue
-
-        # This quest will be valid for our player to grab
-        rewardsFromLocation.append(convertedRewardID)
-
-    # Now that we have the rewards these quests choices should give, let's generate some options
-    # These need to be formatted like so for the QuestMgr to process them correctly:
-    # Return a list of Quests like so:
-    # We only need a questID and a rewardID essentially
-    # [
-    #   [bestQuestId, rewardId, ToonHQ],
-    #   [bestQuestId, rewardId, ToonHQ],
-    #   [bestQuestId, rewardId, ToonHQ],
-    # ]
-
-    # RNG seeding
-    rng = random.Random()
-    if seed is not None:
-        rng.seed(seed)
-
-    # Define our pool of quests per reward ID
-    questPool: Dict[int, List[int]] = {}  # Reward ID -> List of Quest IDs with reward
-    for rewardID in rewardsFromLocation:
-        questPool[rewardID] = []
-
-    # Loop through every quest in the game and find quests that have a reward we are interested in
-    for questId, questInformation in QuestDict.items():
-        thisQuestReward = questInformation[QuestDictRewardIndex]
-        # Does the reward match one of the ones we have?
-        if thisQuestReward in questPool:
-            questPool[thisQuestReward].append(questId)
-
-    bestQuests = []
-
-    # Now randomly choose a quest per reward ID that we want to show
-    for rewardID, questIdChoices in questPool.items():
-        randomQuest = rng.choice(questIdChoices)
-        bestQuests.append([randomQuest, rewardID, ToonHQ])
-
-    # Reverse the list bc it looks better for the client lol
-    bestQuests.reverse()
-
-    return bestQuests
-
+    return []
 
 def getQuest(id):
     questEntry = QuestDict.get(id)
@@ -3272,41 +3182,14 @@ class CogSuitPartReward(Reward):
 
 class APLocationReward(Reward):
 
-    # Location string given is the Donald's Dock Task #4 etc
-    def getCheckName(self) -> str:
-        return self.reward[0]
-
-    def getCheckId(self) -> int:
-        return util.ap_location_name_to_id(self.getCheckName())
-
     def sendRewardAI(self, av):
-        checkID = self.getCheckId()
-
-        if checkID < 0:
-            raise Exception(f"Invalid location name for AP Location reward!: {self.getCheckName()}")
-
-        av.addCheckedLocation(self.getCheckId())
+        pass
 
     def getRewardName(self):
-
-
-        # First try to find out if we are running this locally or on the ai
-        av = None
-        try:
-            av = base.localAvatar
-        # This is the AI, just use the check name
-        except AttributeError:
-            return self.getCheckName()
-
-        # Do we have it cached?
-        if not av.hasCachedLocationReward(self.getCheckId()):
-            return self.getCheckName()
-
-        # Send
-        return av.getCachedLocationReward(self.getCheckId())
+        return "delete"
 
     def getString(self):
-        return f"You have completed {self.getCheckName()}"
+        return f"completed"
 
     def getPosterString(self):
         return self.getRewardName()
@@ -3624,82 +3507,6 @@ RewardDict = {
     4214: (CogSuitPartReward, 'c', CogDisguiseGlobals.rightArmUpper),
     4215: (CogSuitPartReward, 'c', CogDisguiseGlobals.rightArmLower),
     4216: (CogSuitPartReward, 'c', CogDisguiseGlobals.rightArmHand),
-
-    # Start AP Rewards, these essentially are just maps to the location checks for AP
-    5000: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_1.value),
-    5001: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_2.value),
-    5002: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_3.value),
-    5003: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_4.value),
-    5004: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_5.value),
-    5005: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_6.value),
-    5006: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_7.value),
-    5007: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_8.value),
-    5008: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_9.value),
-    5009: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_10.value),
-    5010: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_11.value),
-    5011: (APLocationReward, locations.ToontownLocationName.TOONTOWN_CENTRAL_TASK_12.value),
-    5012: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_1.value),
-    5013: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_2.value),
-    5014: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_3.value),
-    5015: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_4.value),
-    5016: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_5.value),
-    5017: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_6.value),
-    5018: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_7.value),
-    5019: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_8.value),
-    5020: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_9.value),
-    5021: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_10.value),
-    5022: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_11.value),
-    5023: (APLocationReward, locations.ToontownLocationName.DONALDS_DOCK_TASK_12.value),
-    5024: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_1.value),
-    5025: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_2.value),
-    5026: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_3.value),
-    5027: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_4.value),
-    5028: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_5.value),
-    5029: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_6.value),
-    5030: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_7.value),
-    5031: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_8.value),
-    5032: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_9.value),
-    5033: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_10.value),
-    5034: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_11.value),
-    5035: (APLocationReward, locations.ToontownLocationName.DAISYS_GARDENS_TASK_12.value),
-    5036: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_1.value),
-    5037: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_2.value),
-    5038: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_3.value),
-    5039: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_4.value),
-    5040: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_5.value),
-    5041: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_6.value),
-    5042: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_7.value),
-    5043: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_8.value),
-    5044: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_9.value),
-    5045: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_10.value),
-    5046: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_11.value),
-    5047: (APLocationReward, locations.ToontownLocationName.MINNIES_MELODYLAND_TASK_12.value),
-    5048: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_1.value),
-    5049: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_2.value),
-    5050: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_3.value),
-    5051: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_4.value),
-    5052: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_5.value),
-    5053: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_6.value),
-    5054: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_7.value),
-    5055: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_8.value),
-    5056: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_9.value),
-    5057: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_10.value),
-    5058: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_11.value),
-    5059: (APLocationReward, locations.ToontownLocationName.THE_BRRRGH_TASK_12.value),
-    5060: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_1.value),
-    5061: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_2.value),
-    5062: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_3.value),
-    5063: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_4.value),
-    5064: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_5.value),
-    5065: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_6.value),
-    5066: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_7.value),
-    5067: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_8.value),
-    5068: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_9.value),
-    5069: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_10.value),
-    5070: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_11.value),
-    5071: (APLocationReward, locations.ToontownLocationName.DONALDS_DREAMLAND_TASK_12.value),
-
-
 }
 
 # Maps AP location strings to the Quest Reward IDs defined in RewardDict
@@ -3722,13 +3529,7 @@ def getRewardIdFromAPLocationName(location_name: str) -> int:
 # Given a hood ID, return a list of reward IDs that this hood will have
 def getRewardIdsFromHood(hoodId) -> List[int]:
     # Loop through all the AP location names for this hood and find the reward id from it
-    rewards = []
-    for apLocationName in util.hood_to_task_locations(hoodId):
-        rewardId = getRewardIdFromAPLocationName(apLocationName)
-        rewards.append(rewardId)
-
-    return rewards
-
+    return []
 
 # Given an AP Reward ID, return the first playground that is able to give a task that contains this reward
 def getHoodFromRewardId(rewardId) -> int:

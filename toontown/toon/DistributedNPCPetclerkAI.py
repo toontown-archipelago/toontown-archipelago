@@ -4,10 +4,7 @@ from .DistributedNPCToonBaseAI import *
 from toontown.toonbase import TTLocalizer
 from direct.task import Task
 from toontown.fishing import FishGlobals
-from toontown.pets import PetUtil, PetDNA, PetConstants
-from apworld.toontown.options import RewardDisplayOption
-from toontown.archipelago.definitions import util
-from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
+from toontown.pets import PetDNA, PetConstants
 from toontown.hood import ZoneUtil
 
 class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
@@ -44,12 +41,6 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
         flag = NPCToons.SELL_MOVIE_START
         self.d_setMovie(avId, flag)
         taskMgr.doMethodLater(PetConstants.PETCLERK_TIMER, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
-        #is auto hint turned on?
-        if av.slotData.get("pet_shop_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint:
-            packet = LocationScoutsPacket()
-            packet.create_as_hint = 2 # only announce new hints
-            packet.locations = [util.ap_location_name_to_id(self.getCheckName())]
-            av.archipelago_session.client.send_packet(packet)
         DistributedNPCToonBaseAI.avatarEnter(self)
 
     def rejectAvatar(self, avId):
@@ -117,22 +108,12 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 return
             if av.petId != 0:
                 simbase.air.petMgr.deleteToonsPet(avId)
-            gender = petNum % len(PetDNA.PetGenders)
             if nameIndex not in range(0, TTLocalizer.PetNameIndexMAX):
                 self.air.writeServerEvent('avoid_crash', avId, "DistributedNPCPetclerkAI.petAdopted and didn't have valid nameIndex!")
                 self.notify.warning("somebody called petAdopted and didn't have valid nameIndex to adopt! avId: %s" % avId)
                 return
-            if not av.hasCheckedLocation(util.ap_location_name_to_id(self.getCheckName())):
-                av.addCheckedLocation(util.ap_location_name_to_id(self.getCheckName()))
-                self.transactionType = 'adopt'
-            else:
-                self.transactionType = 'checked'
-                return
+            self.transactionType = 'adopt'
             av.takeMoney(cost)
-
-    def getCheckName(self):
-        zoneId = ZoneUtil.getCanonicalSafeZoneId(self.zoneId)
-        return ToontownGlobals.ZONE_TO_ID_TO_CHECK[zoneId][self.subId]
 
     def petReturned(self):
         avId = self.air.getAvatarIdFromSender()

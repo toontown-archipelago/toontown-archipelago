@@ -6,7 +6,7 @@ import argparse
 
 from toontown.toonbase.ErrorTrackingService import SentryErrorTrackingService, ServiceType
 
-parser = argparse.ArgumentParser(description="Toontown: Archipelago - UberDOG Server")
+parser = argparse.ArgumentParser(description="Toontown Ranked - UberDOG Server")
 parser.add_argument(
     '--base-channel',
     default=os.environ.get('BASE_CHANNEL'),

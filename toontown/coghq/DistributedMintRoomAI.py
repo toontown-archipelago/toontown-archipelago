@@ -1,8 +1,6 @@
-from otp.level import DistributedLevelAI, LevelSpec
+from otp.level import DistributedLevelAI
 from direct.directnotify import DirectNotifyGlobal
-from direct.task import Task
 from otp.level import LevelSpec
-from toontown.archipelago.definitions.util import get_facility_id
 from toontown.toonbase import ToontownGlobals, ToontownBattleGlobals
 from toontown.coghq import FactoryEntityCreatorAI, MintRoomSpecs
 from toontown.coghq import MintRoomBase, LevelSuitPlannerAI
@@ -124,9 +122,6 @@ class DistributedMintRoomAI(DistributedLevelAI.DistributedLevelAI, MintRoomBase.
             self.air.writeServerEvent('mintDefeated', avId, description)
 
         for toon in activeVictors:
-            ap_check_id = get_facility_id(self.mintId)
-            if ap_check_id >= 0:
-                toon.addCheckedLocation(ap_check_id)
             simbase.air.questManager.toonDefeatedMint(toon, self.mintId, activeVictors)
 
         return

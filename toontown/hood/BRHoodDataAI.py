@@ -5,9 +5,6 @@ from . import HoodDataAI
 from toontown.toonbase import ToontownGlobals
 from toontown.safezone import DistributedTrolleyAI
 from toontown.safezone import BRTreasurePlannerAI
-from toontown.toon import DistributedNPCFishermanAI
-from toontown.safezone import ArchipelagoTreasurePlannerAI
-from toontown.safezone import DistributedArchiTreasureAI
 
 class BRHoodDataAI(HoodDataAI.HoodDataAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('BRHoodDataAI')
@@ -25,9 +22,9 @@ class BRHoodDataAI(HoodDataAI.HoodDataAI):
         trolley.generateWithRequired(self.zoneId)
         trolley.start()
         self.addDistObj(trolley)
-        self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
+        self.treasurePlanner = [
                                 BRTreasurePlannerAI.BRTreasurePlannerAI(self.zoneId)
-                                ]
+        ]
         for planner in self.treasurePlanner:
             planner.start()
 

@@ -1,11 +1,7 @@
 from direct.gui.DirectGui import *
 from panda3d.core import *
 
-from apworld.toontown.fish import FishLocation, get_catchable_fish_no_rarity, FishProgression
-from apworld.toontown import ToontownItemName, get_item_def_from_id
 from toontown.toonbase import ToontownGlobals
-from toontown.archipelago.definitions import util
-
 
 class QuestsAvailablePoster(DirectFrame):
     def __init__(self, hoodId, **kw):
@@ -155,7 +151,7 @@ class PetsAvailablePoster(QuestsAvailablePoster):
         return 'phase_3.5/maps/doodle_silouette.png'
 
     def getLocationFromZone(self, hood, index):
-        return util.ap_location_name_to_id(ToontownGlobals.ZONE_TO_ID_TO_CHECK[hood][index])
+        return None
 
     def update(self, av):
         petsRemaining = 0

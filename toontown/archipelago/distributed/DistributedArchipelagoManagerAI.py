@@ -3,11 +3,8 @@ from typing import Union, List
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
-from toontown.archipelago.apclient.ap_client_enums import APClientEnums
-from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
 from toontown.archipelago.util.HintContainer import HintContainer, HintedItem
 from toontown.archipelago.util.archipelago_information import ArchipelagoInformation
-from toontown.toon.DistributedToonAI import DistributedToonAI
 
 
 class DistributedArchipelagoManagerAI(DistributedObjectAI):
@@ -27,41 +24,16 @@ class DistributedArchipelagoManagerAI(DistributedObjectAI):
     Internal methods to make management easier
     """
 
-    def __getToon(self, avId) -> Union[DistributedToonAI, None]:
+    def __getToon(self, avId) -> None:
         return self.air.doId2do.get(avId)
 
-    def __getSession(self, avId) -> Union[ArchipelagoSession, None]:
-        toon = self.__getToon(avId)
-        if toon is None:
-            return None
-
-        # Is there a session defined?
-        session = toon.archipelago_session
-        if session is None:
-            return None
-
-        # If the toon is not connected to an AP server, then this should also be none.
-        if session.client.state != APClientEnums.CONNECTED:
-            return None
-
-        return toon.archipelago_session
+    def __getSession(self, avId) -> None:
+        return None
 
     # Returns a list of all Archipelago Sessions that are defined on any DistributedToonAI instances.
-    def __getAllArchipelagoSessions(self) -> List[ArchipelagoSession]:
-        sessions: List[ArchipelagoSession] = []
+    def __getAllArchipelagoSessions(self):
+        return []
 
-        # Loop through all online toons and extract the AP session if it exists.
-        for toon in self.air.doFindAllInstances(DistributedToonAI):
-
-            # Skip NPCs :3
-            if not toon.isPlayerControlled():
-                continue
-
-            # If the toon has an AP session and it is connected add it
-            if toon.archipelago_session is not None and toon.archipelago_session.client.state == APClientEnums.CONNECTED:
-                sessions.append(toon.archipelago_session)
-
-        return sessions
 
     """
     Public methods to be called for logic throughout the game's codebase
@@ -74,7 +46,7 @@ class DistributedArchipelagoManagerAI(DistributedObjectAI):
         infoToSend: List[ArchipelagoInformation] = []
         allApSessions = self.__getAllArchipelagoSessions()
         for session in allApSessions:
-            infoToSend.append(ArchipelagoInformation(session.avatar.doId, session.getSlotId(), session.getTeamId()))
+            infoToSend.append(ArchipelagoInformation(session.avatar.doId, 0, 0))
 
         self.d_sync(infoToSend)
 
@@ -83,17 +55,7 @@ class DistributedArchipelagoManagerAI(DistributedObjectAI):
     def getToonTeam(self, avId) -> Union[int, None]:
 
         # See if we have a session
-        session = self.__getSession(avId)
-        if session is None:
-            return None
-
-        # See if we are on a valid team
-        teamId = session.getTeamId()
-        if teamId < 0:
-            return None
-
-        # We have a team!
-        return teamId
+        return None
 
     # Given two toon IDs, return whether or not they are on the same team.
     # This case is ONLY True when both toons are connected to archipelago and have a similar team slot.
@@ -131,31 +93,25 @@ class DistributedArchipelagoManagerAI(DistributedObjectAI):
         Called via an astron update when a client requests their full hint container.
         """
 
-        avId = self.air.getAvatarIdFromSender()
-
-        session: ArchipelagoSession = self.__getSession(avId)
-        if session is None:
-            return
-
-        self.d_setHints(avId, session.getHintContainer())
+        pass
 
     def d_setHints(self, avId, hint_container: HintContainer):
         """
         Send the full hint container to a certain client for sync purposes.
         """
-        self.sendUpdateToAvatarId(avId, 'setHints', [hint_container.to_struct()])
+        pass
 
     def d_sendHint(self, avId, hint: HintedItem):
         """
         Send a singular hint to a player for them to additively cache it locally
         """
-        self.sendUpdateToAvatarId(avId, 'addHint', [hint.to_struct()])
+        pass
 
     def d_sendHints(self, avId, hints: List[HintedItem]):
         """
         Send multiple hints to a player for them to additively cache them locally
         """
-        self.sendUpdateToAvatarId(avId, 'addHints', [hint.to_struct() for hint in hints])
+        pass
 
 
     """

@@ -100,7 +100,6 @@ from toontown.safezone import DistributedMMTreasure/AI
 from toontown.safezone import DistributedOZTreasure/AI
 from toontown.safezone import DistributedETreasure/AI
 from toontown.safezone import DistributedEFlyingTreasure/AI
-from toontown.safezone import DistributedArchiTreasure/AI
 from toontown.minigame import DistributedTagTreasure/AI
 from toontown.coghq import DistributedCashbotBossTreasure/AI
 from toontown.building import DistributedTrophyMgr/AI
@@ -183,7 +182,6 @@ from toontown.coghq import DistributedBarrelBase/AI
 from toontown.coghq import DistributedGagBarrel/AI
 from toontown.coghq import DistributedBeanBarrel/AI
 from toontown.coghq import DistributedHealBarrel/AI
-from toontown.coghq import DistributedAPCheckBarrel/AI
 from toontown.coghq import DistributedGrid/AI
 from toontown.coghq import ActiveCell/AI
 from toontown.coghq import DirectionalCell/AI
@@ -1069,7 +1067,6 @@ dclass DistributedToon : DistributedPlayer {
   setCheesyEffect(int16 = 0, uint32 = 0, uint32 = 0) required broadcast ownrecv db;
   setGhostMode(uint8) broadcast ownrecv ram;
   playSound(char [0-1024]) ownrecv;
-  checkWinCondition() ownrecv;
   setPosIndex(uint8 = 0) required ownrecv db;
   setFishCollection(uint8[] = [], uint8[] = [], uint16[] = []) required ownrecv db;
   setMaxFishTank(uint8 = 100) required ownrecv db;
@@ -1171,21 +1168,9 @@ dclass DistributedToon : DistributedPlayer {
   setBaseGagSkillMultiplier(uint16=1) required ownrecv broadcast db;
   setDamageMultiplier(uint16=100) required ownrecv broadcast db;
   setOverflowMod(uint16=100) required ownrecv broadcast db;
-  setAccessKeys(uint16[] = []) required ownrecv broadcast db;
-  setReceivedItems(APItem[]) required ownrecv broadcast db;
-  setCheckedLocations(int64[]=[]) required ownrecv broadcast db;
   sendArchipelagoMessages(string[]) ownrecv;
   showReward(int64, string, bool) ownrecv;
-  updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
-  requestHintPoints() ownsend airecv;
-  hintPointResp(uint16, uint16) ownrecv;
-  setUUID(string) required airecv db;
-
-  setSlotData(AstronDict) required ownrecv broadcast;
-  setLastSeed(string = "") required airecv db;
-  setArchipelagoAuto(string, string) ownsend airecv;
   setDeathReason(string) airecv clsend;
-  clientDied() airecv clsend;
 };
 
 dclass DistributedCCharBase : DistributedObject {
@@ -2196,9 +2181,6 @@ dclass DistributedEFlyingTreasure : DistributedTreasure {
 dclass DistributedTagTreasure : DistributedTreasure {
 };
 
-dclass DistributedArchiTreasure : DistributedTreasure {
-};
-
 dclass DistributedCashbotBossTreasure : DistributedTreasure {
   setGoonId(uint32) required broadcast ram;
   setFinalPosition(int16/10, int16/10, int16/10) required broadcast ram;
@@ -2960,10 +2942,6 @@ dclass DistributedBeanBarrel : DistributedBarrelBase {
 };
 
 dclass DistributedHealBarrel : DistributedBarrelBase {
-};
-
-dclass DistributedAPCheckBarrel : DistributedBarrelBase {
-  setLocationCheckId(uint32) required broadcast ram;
 };
 
 dclass DistributedGrid : DistributedEntity {

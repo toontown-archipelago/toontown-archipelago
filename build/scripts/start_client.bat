@@ -1,5 +1,5 @@
 @echo off
-title Toontown Archipelago - Client
+title Toontown Ranked - Client
 set SERVICE_TO_RUN=CLIENT
 cd game
 

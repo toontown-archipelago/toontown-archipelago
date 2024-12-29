@@ -5,7 +5,6 @@ from typing import List, Dict
 
 from direct.interval.IntervalGlobal import *
 
-from apworld.toontown.locations import ToontownLocationDefinition
 from libotp import NametagGroup
 
 from otp.otpbase import OTPLocalizer
@@ -35,10 +34,7 @@ import time
 import random
 import json
 
-from apworld.toontown import locations, items
-from toontown.archipelago.definitions import rewards
 from ..archipelago.definitions.death_reason import DeathReason
-from ..archipelago.packets.clientbound.bounced_packet import BouncedPacket
 
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
@@ -398,8 +394,6 @@ class MaxToon(MagicWord):
         toon.b_setTickets(99999)
 
         toon.b_setGolfHistory([600] * (GolfGlobals.MaxHistoryIndex * 2))
-
-        toon.b_setAccessKeys([_ for _ in range(100)])
 
         return "Maxed out {}'s stats.".format(toon.getName())
 
@@ -3563,91 +3557,6 @@ class SetGagSkillMultiplier(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         toon.b_setBaseGagSkillMultiplier(args[0])
         return f"Set {toon.getName()}'s base gag xp multiplier to {args[0]}!"
-
-
-class SetAccessKeys(MagicWord):
-    aliases = ['keys', 'access']
-    desc = "Modifies a toons access to HQs and Cog Facilities"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("operation", str, False, 'list'), ('key', int, False, 0)]
-    accessLevel = 'TTOFF_DEVELOPER'
-
-    def handleWord(self, invoker, avId, toon, *args):
-        operation = args[0].lower()
-        key = args[1]
-
-        if operation not in ('add', 'remove', 'clear', 'all', 'list'):
-            return f"Invalid operation: {operation}, must be add, remove, clear, or list"
-
-        if operation == 'add':
-            toon.addAccessKey(key)
-            return f"Added {key} to {toon.getName()}'s list of keys!"
-
-        if operation == 'remove':
-            toon.removeAccessKey(key)
-            return f"Removed {key} from {toon.getName()}'s list of keys!"
-
-        if operation == 'clear':
-            toon.clearAccessKeys()
-            return f"Removed all keys from {toon.getName()}!"
-
-        if operation == 'all':
-            toon.b_setAccessKeys([_ for _ in range(100)])  # Kinda hacky but meh i don't think im adding 75 more locks lol
-
-        return f"{toon.getName()}'s keys: {toon.getAccessKeys()}"
-
-
-class Archipelago(MagicWord):
-    aliases = ['ap', 'archi']
-    desc = "Commands to force certain behavior with an AP session, does not work unless an active AP session is active"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [('operation', str, True)]
-    accessLevel = 'NO_ACCESS'
-
-    def handleWord(self, invoker, avId, toon, *args):
-        operation = args[0].lower()
-
-        if not toon.archipelago_session:
-            return f"Toon {toon.getName()} does not have an active AP session!"
-
-        # Add a random location check
-        if operation in ('check', 'addcheck'):
-            check: ToontownLocationDefinition = random.choice(locations.LOCATION_DEFINITIONS)
-            toon.addCheckedLocation(check.unique_id)
-            return f"Gave {toon.getName()} the {check.name} check!"
-
-        if operation in ('wipe', 'reset', 'clear'):
-            toon.newToon()
-            return f"Wiped {toon.getName()}'s progress!"
-
-        if operation in ('reward', 'gift'):
-            # Get a random reward, apply it and show it just like the packet does
-            for _ in range(random.randint(1, 20)):
-                item_def = random.choice(items.ITEM_DEFINITIONS)
-                reward = rewards.get_ap_reward_from_id(item_def.unique_id)
-                reward.apply(toon)
-                toon.d_showReward(item_def.unique_id, "The Spellbook", False)
-            return f"Gave {toon.getName()} a few random AP rewards"
-
-        if operation in ('deathlink'):
-            # Simulate a deathlink packet.
-
-            # Hack in a fake "AP client"
-            class FakeAPClient:
-                pass
-            client = FakeAPClient()
-            client.av = toon
-            # Create a deathlink packet
-            deathlink_packet = BouncedPacket({'cmd': "Bounced"})
-            deathlink_packet.data = {
-                'time': globalClock.getRealTime(),
-                'source': 'The Spellbook',
-                'cause': 'the spellbook decided it was your time to go.',
-            }
-            deathlink_packet.handle_deathlink(client)
-            return f"Simulating deathlink packet for {toon.getName()}"
-
-        return f"Invalid argument, valid arguments are: check"
 
 
 # Command that forces your state to the 'Walk' state.

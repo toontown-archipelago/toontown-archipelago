@@ -33,7 +33,7 @@ logErr = LogAndOutput(sys.__stderr__, log)
 sys.stdout = logOut
 sys.stderr = logErr
 
-print('\n\nStarting Toontown: Archipelago...')
+print('\n\nStarting Toontown Ranked...')
 
 print('Current time: ' + time.asctime(time.localtime(time.time())) + ' ' + time.tzname[0])
 print('sys.path = ', sys.path)

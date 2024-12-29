@@ -68,7 +68,7 @@ class Settings:
         "color-blind-mode": False,
         'laff-display': True,
     }
-    settingsFile = Path.home() / "Documents" / "Toontown Archipelago" / "settings.json"
+    settingsFile = Path.home() / "Documents" / "Toontown-Ranked" / "settings.json"
 
 
     def __init__(self) -> None:

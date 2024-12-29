@@ -46,7 +46,7 @@ services:
       STATESERVER: 4002
       ASTRON_IP: astron:7199
       EVENTLOGGER_IP: astron:7197
-      DISTRICT_NAME: "Archipelago Avenue"
+      DISTRICT_NAME: "Ranked Realms"
       WANT_ERROR_REPORTING: true  # Reports errors to the sentry service for TT:AP
       ARCHIPELAGO_IP: 172.17.0.1  # by default assume that archipelago is running on the same machine
     volumes:

@@ -1,5 +1,5 @@
 @echo off
-title Toontown Archipelago: UD Launcher
+title Toontown Ranked: UD Launcher
 set /P PPYTHON_PATH=<PPYTHON_PATH
 set SERVICE_TO_RUN=UD
 cd ..\..

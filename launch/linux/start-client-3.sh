@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Toontown Archipelago: Client 3 Launcher"
+echo "Toontown Ranked: Client 3 Launcher"
 echo
 export PPYTHON_PATH=$(cat PPYTHON_PATH)
 export SERVICE_TO_RUN=CLIENT

@@ -51,7 +51,7 @@ uberdogs:
 roles:
     - type: clientagent
       bind: 0.0.0.0:7198
-      version: "tt-ap-edition"
+      version: "tt-ranked-edition"
       client:
           relocate: true
           add_interest: enabled

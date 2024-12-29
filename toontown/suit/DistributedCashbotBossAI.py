@@ -18,10 +18,7 @@ from . import DistributedBossCogAI
 import random
 import math
 
-from apworld.toontown import locations
 from ..archipelago.definitions.death_reason import DeathReason
-
-from ..archipelago.definitions.util import ap_location_name_to_id
 
 # How many unites do we award on victory
 NUM_RESISTANCE_REWARDS = 6
@@ -1125,14 +1122,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                toon.addCheckedLocations([ap_location_name_to_id(location) for location in [
-                    locations.ToontownLocationName.CASHBOT_PROOF_1.value,
-                    locations.ToontownLocationName.CASHBOT_PROOF_2.value,
-                    locations.ToontownLocationName.CASHBOT_PROOF_3.value,
-                    locations.ToontownLocationName.CASHBOT_PROOF_4.value,
-                    locations.ToontownLocationName.CASHBOT_PROOF_5.value,
-                    locations.ToontownLocationName.FIGHT_CFO.value
-                ]])
                 toon.b_promote(self.deptIndex)
 
                 for rewardId in rewards:

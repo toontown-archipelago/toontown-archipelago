@@ -1379,7 +1379,6 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
     ##### Epilogue state #####
     def enterEpilogue(self):
         assert self.notify.debug('enterEpilogue()')
-        base.localAvatar.checkWinCondition()
         # No more intervals should be playing.
         self.cleanupIntervals()
         self.clearChat()

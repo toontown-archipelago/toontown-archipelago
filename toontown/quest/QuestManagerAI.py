@@ -159,7 +159,6 @@ class QuestManagerAI:
                 npc.completeQuest(avId, questId, rewardId)
                 self.completeQuest(av, questId)
                 self.giveReward(av, rewardId)
-                av.checkWinCondition()
                 return
 
             # There is another part to this quest, complete this one and assign the next

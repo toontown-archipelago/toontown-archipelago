@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Toontown Archipelago: Astron Launcher"
+echo "Toontown Ranked: Astron Launcher"
 echo
 cd ../../astron
 # if architecture is arm64
