@@ -24,3 +24,6 @@ class DistributedCashbotBossHeavyCrane(DistributedCashbotBossCrane.DistributedCa
 
     def getName(self):
         return 'HeavyCrane-%s' % self.index
+
+    def getDamageMultiplier(self):
+        return self.boss.ruleset.HEAVY_CRANE_DAMAGE_MULTIPLIER

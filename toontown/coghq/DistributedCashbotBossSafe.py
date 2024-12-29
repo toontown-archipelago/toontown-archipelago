@@ -45,6 +45,9 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         self.name = 'safe'
         return
 
+    def _doDebug(self, _=None):
+        self.boss.safeStatesDebug(doId=self.doId, content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
+
     def announceGenerate(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.announceGenerate(self)
         self.name = 'safe-%s' % self.doId
@@ -70,19 +73,8 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
             
         self.boss.safes[self.index] = self
         
-        #print(self)
-        #self.setH(CraneLeagueGlobals.SAFE_H[self.index])
-        #print(self.getH())
-        
-        #self.setH(180)
         self.setupPhysics('safe')
-        #print("Safe: %s, Node: %s" % (self.getH(), self.collisionNodePath.getH()))
         self.resetToInitialPosition()
-        #print("AFTER RESET: Safe: %s, Node: %s" % (self.getH(), self.collisionNodePath.getH()))
-        
-        #print(self.getH())
-        #print(self.physicsObject.getOrientation())
-        #print("")
 
     def disable(self):
         del self.boss.safes[self.index]
@@ -106,17 +98,10 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         NodePath.assign(self, anp)
         
         self.physicsObject = an.getPhysicsObject()
-        #self.copy.physicsObject = an.getPhysicsObject()
-        #print(self.copy.physicsObject.getOrientation())
-        #print(self.copy.physicsObject.getOrientation().getAngle())
-        #self.physicsObject.setOriented(False)
         self.setTag('object', str(self.doId))
        
         self.collisionNodePath.reparentTo(self)
-        #self.collisionNodePath.setH(180)
         self.handler = PhysicsCollisionHandler()
-        #self.copy = copy.copy(self)
-        #print(self.copy)
         self.handler.addCollider(self.collisionNodePath, self)
 
         # Set up a collision event so we know when the object hits the

@@ -126,9 +126,22 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.craneMoveSfx = base.loader.loadSfx('phase_9/audio/sfx/CHQ_FACT_elevator_up_down.ogg')
         
         self.fadeTrack = None
+
+        self.locallyExited = False
         
         self.setBroadcastStateChanges(True)
+        self.accept(self.getStateChangeEvent(), self._doDebug)
 
+        self.pendingControl = False
+        self.pendingFree = False
+
+    def _doDebug(self, _=None):
+
+        if not self.boss:
+            return
+        
+        self.boss.craneStatesDebug(doId=self.doId,
+                              content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
 
     def getName(self):
         return 'NormalCrane-%s' % self.index
@@ -394,7 +407,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         # (we're initially deactivated).
         anchor = self.topLink
         for linkNum in range(self.numLinks):
-            anchor = self.__makeLink(anchor, linkNum)
+            anchor = self.makeLink(anchor, linkNum)
 
         # Make the magnet swing naturally on the end of the cable.
         self.collisions.stash()
@@ -402,7 +415,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.middleLink = self.links[-2][0]
         self.magnet = self.bottomLink.attachNewNode('magnet')
         self.wiggleMagnet = self.magnet.attachNewNode('wiggleMagnet')
-        taskMgr.add(self.__rotateMagnet, self.rotateLinkName)
+        taskMgr.add(self.rotateMagnet, self.rotateLinkName)
         
         magnetModel = self.boss.magnet.copyTo(self.wiggleMagnet)
         magnetModel.setHpr(90, 45, 90)
@@ -522,7 +535,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         
         return Task.cont
 
-    def __makeLink(self, anchor, linkNum):
+    def makeLink(self, anchor, linkNum):
         an = ActorNode('link%s' % linkNum)
         anp = NodePath(an)
         
@@ -559,7 +572,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         
         return anp
 
-    def __rotateMagnet(self, task):
+    def rotateMagnet(self, task):
         # Rotate the magnet to the penultimate link, so that the
         # magnet seems to swing realistically (instead of always
         # hanging straight down).
@@ -573,9 +586,9 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.closeButton = DirectButton(image=(gui.find('**/CloseBtn_UP'),
          gui.find('**/CloseBtn_DN'),
          gui.find('**/CloseBtn_Rllvr'),
-         gui.find('**/CloseBtn_UP')), relief=None, scale=2, text=TTLocalizer.CashbotCraneLeave, text_scale=0.04, text_pos=(0, -0.07), text_fg=VBase4(1, 1, 1, 1), pos=(1.05, 0, -0.82), command=self.__exitCrane)
+         gui.find('**/CloseBtn_UP')), relief=None, scale=2, text=TTLocalizer.CashbotCraneLeave, text_scale=0.04, text_pos=(0, -0.07), text_fg=VBase4(1, 1, 1, 1), pos=(1.05, 0, -0.82), command=self.__leaveCrane)
         
-        self.accept('escape', self.__exitCrane)
+        self.accept('escape', self.__leaveCrane)
         
         self.accept(base.controls.CRANE_GRAB_KEY, self.__controlPressed)
         self.accept(base.controls.CRANE_GRAB_KEY + '-up', self.__controlReleased)
@@ -664,6 +677,16 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.closeButton = DirectLabel(relief=None, text=TTLocalizer.CashbotCraneLeaving, pos=(1.05, 0, -0.88), text_pos=(0, 0), text_scale=0.06, text_fg=VBase4(1, 1, 1, 1))
         self.__cleanupCraneAdvice()
         self.__cleanupMagnetAdvice()
+        self.d_requestFree()
+        return
+
+    def __leaveCrane(self):
+        if self.closeButton:
+            self.closeButton.destroy()
+            self.closeButton = DirectLabel(relief=None, text=TTLocalizer.CashbotCraneLeaving, pos=(1.05, 0, -0.88), text_pos=(0, 0), text_scale=0.06, text_fg=VBase4(1, 1, 1, 1))
+        self.__cleanupCraneAdvice()
+        self.__cleanupMagnetAdvice()
+        self.demand('LocalFree')
         self.d_requestFree()
         return
 
@@ -841,10 +864,13 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             return
         
         if obj and obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
+            self.boss.craneStatesDebug(doId=self.doId, content='Sniffed something, held obj %s' % (
+                self.heldObject.getName() if self.heldObject else "Nothing"))
+            
+            self.considerObjectState(obj)
             obj.d_requestGrab()
             # See if we should do anything with this object when sniffing it
             obj.demand('LocalGrabbed', localAvatar.doId, self.doId)
-            self.considerObjectState(obj)
 
     def considerObjectState(self, obj):
 
@@ -858,6 +884,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
     def grabObject(self, obj):
         # This is only called by DistributedCashbotBossObject.enterGrabbed().
+        self.boss.craneStatesDebug(doId=self.doId, content='pre-Grabbing object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
         if self.state == 'Off':
             return
 
@@ -886,10 +913,15 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         if self.avId == localAvatar.doId and not self.magnetOn:
             # We got a late grab.  Grab it, then immediately drop it.
             self.releaseObject()
-
+            
+        self.boss.craneStatesDebug(doId=self.doId,
+                                   content='post-Grabbing object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
 
     def dropObject(self, obj):
         # This is only called by DistributedCashbotBossObject.exitGrabbed().
+        
+        self.boss.craneStatesDebug(doId=self.doId,
+                                   content='pre-Dropping object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
         if obj.lerpInterval:
             obj.lerpInterval.finish()
             
@@ -899,19 +931,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         
         p1 = self.bottomLink.node().getPhysicsObject()
         v = render.getRelativeVector(self.bottomLink, p1.getVelocity())
-        #o = obj.physicsObject.getOrientation()
-        #mult = LQuaternionf(-1, -1, -1, -1)
-        #o.multiply(mult)
-        #obj.setH(180)
-        #if isinstance(obj, DistributedCashbotBossSafe.DistributedCashbotBossSafe):
-        #obj.copy.setH(180)
         obj.physicsObject.setVelocity(v * 1.5)
-        #obj.physicsObject.setOrientation(LOrientationf(1, 0, 0, 0))
-        
-        #print("Pre-collision:")
-        #print(obj.getH())
-        #print(obj.physicsObject.getOrientation())
-        #print("")
         
         # This condition is just for sake of the publish, in case we
         # have gotten into some screwy state.  In the dev environment,
@@ -922,7 +942,8 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.handler.setDynamicFrictionCoef(self.emptyFrictionCoef)
             self.slideSpeed = self.emptySlideSpeed
             self.rotateSpeed = self.emptyRotateSpeed
-
+        self.boss.craneStatesDebug(doId=self.doId,
+                                   content='post-Dropping object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
 
     def releaseObject(self):
         # Don't confuse this method with dropObject.  That method
@@ -932,10 +953,14 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         # to drop itself, so that the object will set its state
         # appropriately.  A side-effect of this call will be an
         # eventual call to dropObject() by the newly-released object.
+        if self.boss:
+            self.boss.craneStatesDebug(doId=self.doId,
+                                   content='pre-Releasing object, currently holding: %s' % (self.heldObject.getName() if self.heldObject else "Nothing"))
+        
         if self.heldObject:
             obj = self.heldObject
             obj.d_requestDrop()
-            if (obj.state == 'Grabbed'):
+            if (obj.state == 'Grabbed' or obj.state == 'LocalGrabbed'):
                 # Go ahead and move the local object instance into the
                 # 'LocalDropped' state--presumably the AI will grant our
                 # request shortly anyway, and we can avoid a hitch by
@@ -946,7 +971,12 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
                 # owner.
                 obj.demand('LocalDropped', localAvatar.doId, self.doId)
 
+        if self.boss:
+            self.boss.craneStatesDebug(doId=self.doId,
+                                   content='post-Releasing object, currently holding: %s' % (self.heldObject.getName() if self.heldObject else "Nothing"))
+
     def __hitTrigger(self, event):
+        self.demand('LocalControlled', base.localAvatar.doId)
         self.d_requestControl()
 
     
@@ -976,9 +1006,11 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
     def d_requestControl(self):
         self.sendUpdate('requestControl')
+        self.pendingControl = True
 
     def d_requestFree(self):
         self.sendUpdate('requestFree')
+        self.pendingFree = True
 
     ### Handle smoothing of distributed updates.  This is similar to
     ### code in DistributedSmoothNode, but streamlined for our
@@ -1158,7 +1190,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.setupCable()
         self.root.reparentTo(render)
 
-    def enterControlled(self, avId):
+    def enterLocalControlled(self, avId):
         self.avId = avId
         toon = base.cr.doId2do.get(avId)
         if not toon:
@@ -1181,11 +1213,9 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.tube.stash()
             
             localAvatar.setPosHpr(self.controls, 0, 0, 0, 0, 0, 0)
-            localAvatar.sendCurrentPosition()
             
             self.__activatePhysics()
             self.__enableControlInterface()
-            self.startPosHprBroadcast()
             self.startShadow()
             
             # If we get a message from the Place that we exited Crane
@@ -1199,7 +1229,104 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.grabTrack.start()
         messenger.send('crane-enter-exit-%s' % self.avId, [self.avId, self])
 
+    def exitLocalControlled(self):
+        if self.newState == 'LocalFree':
+            self.ignore('exitCrane')
+            
+            self.grabTrack.finish()
+            del self.grabTrack
+            
+            if self.toon and not self.toon.isDisabled():
+                self.toon.loop('neutral')
+                self.toon.startSmooth()
+            self.stopWatchJoystick()
+            
+            self.stopPosHprBroadcast()
+            self.stopShadow()
+            self.stopSmooth()
+            
+            if self.avId == localAvatar.doId:
+                # The local toon is no longer in control of the crane.
+                self.__disableControlInterface()
+                self.__deactivatePhysics()
+                self.tube.unstash()
+                
+                localAvatar.orbitalCamera.start()
+                
+                # This is a bit hacky.  Go back to finalBattle mode, but
+                # only if we're still in crane mode.  (We might have been
+                # zapped to 'ouch' mode by a hit.)
+                if self.cr:
+                    place = self.cr.playGame.getPlace()
+                    if place and hasattr(place, 'fsm'):
+                        if place.fsm.getCurrentState().getName() == 'crane':
+                            place.setState('finalBattle')
+                            
+                self.boss.toFinalBattleMode()
+
+                # Go back to the defined setting for FOV effects
+                base.WANT_FOV_EFFECTS = base.settings.get('fovEffects')
+                
+            self.__straightenCable()
+            self.locallyExited = True
+        pass
+
+    def enterControlled(self, avId):
+        if avId != localAvatar.doId:
+            if self.oldState == 'LocalControlled':
+                # The local toon is no longer in control of the crane.
+                if self.grabTrack:
+                    self.grabTrack.finish()
+                    del self.grabTrack
+
+                if self.toon and not self.toon.isDisabled():
+                    self.toon.loop('neutral')
+                    self.toon.startSmooth()
+                self.stopWatchJoystick()
+
+                self.__disableControlInterface()
+                self.__deactivatePhysics()
+                self.tube.unstash()
+
+                self.stopShadow()
+                self.stopSmooth()
+                
+                localAvatar.orbitalCamera.start()
+                
+                # This is a bit hacky.  Go back to finalBattle mode, but
+                # only if we're still in crane mode.  (We might have been
+                # zapped to 'ouch' mode by a hit.)
+                if self.cr:
+                    place = self.cr.playGame.getPlace()
+                    if place and hasattr(place, 'fsm'):
+                        if place.fsm.getCurrentState().getName() == 'crane':
+                            place.setState('finalBattle')
+                            
+                self.boss.toFinalBattleMode()
+
+                # Go back to the defined setting for FOV effects
+                base.WANT_FOV_EFFECTS = base.settings.get('fovEffects')
+            
+            self.avId = avId
+            toon = base.cr.doId2do.get(avId)
+            if not toon:
+                return
+            
+            self.grabTrack = self.makeToonGrabInterval(toon)
+            self.startSmooth()
+            toon.stopSmooth()
+            self.grabTrack = Sequence(self.grabTrack, Func(toon.startSmooth))
+            self.grabTrack.start()
+            messenger.send('crane-enter-exit-%s' % self.avId, [self.avId, self])
+        elif avId == localAvatar.doId and self.pendingControl:
+            localAvatar.sendCurrentPosition()
+            self.startPosHprBroadcast()
+
     def exitControlled(self):
+        if self.locallyExited and self.avId == localAvatar.doId:
+            self.locallyExited = False
+            return
+        
         self.ignore('exitCrane')
         
         self.grabTrack.finish()
@@ -1238,7 +1365,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             
         self.__straightenCable()
 
-    def enterFree(self):
+    def enterLocalFree(self):
         if self.fadeTrack:
             self.fadeTrack.finish()
             self.fadeTrack = None
@@ -1248,24 +1375,83 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         # timeout).
         self.restoreScaleTrack = Sequence(Wait(6), self.getRestoreScaleInterval())
         self.restoreScaleTrack.start()
-        
-        if self.avId == localAvatar.doId:
+
+        # Five second timeout on grabbing the same crane again.  Go
+        # get a different crane!
+        self.controlModel.setAlphaScale(0.3)
+        self.controlModel.setTransparency(1)
+        taskMgr.doMethodLater(5, self.__allowDetect, self.triggerName)
+            
+        self.fadeTrack = Sequence(Func(self.controlModel.setTransparency, 1), self.controlModel.colorScaleInterval(0.2, VBase4(1, 1, 1, 0.3)))
+        self.fadeTrack.start()
+            
+        avLeaving = self.avId
+        messenger.send('crane-enter-exit-%s' % avLeaving, [base.cr.doId2do.get(avLeaving), None])
+        self.pendingControl = False
+        return
+    
+    def exitLocalFree(self):
+        if self.newState == 'Controlled':
+            # Cancel the restore scale track
+            if hasattr(self, 'restoreScaleTrack'):
+                self.restoreScaleTrack.finish()
+                self.restoreScaleTrack = None
+                
+            # Remove the detection delay task
+            taskMgr.remove(self.triggerName)
+            
+            # Cancel the fade effect
+            if self.fadeTrack:
+                self.fadeTrack.finish()
+                self.fadeTrack = None
+                
+            # Reset the control model's appearance
+            self.controlModel.clearColorScale()
+            self.controlModel.clearTransparency()
+
+    def enterFree(self):
+        print(self.avId, localAvatar.doId)
+        if self.avId != localAvatar.doId:
+            if self.fadeTrack:
+                self.fadeTrack.finish()
+                self.fadeTrack = None
+
+            # Wait a few seconds before neutralizing the scale; maybe the
+            # same avatar wants to come right back (after his 5-second
+            # timeout).
+            self.restoreScaleTrack = Sequence(Wait(6), self.getRestoreScaleInterval())
+            self.restoreScaleTrack.start()
+            
+            # Other players can grab this crane immediately.
+            self.trigger.unstash()
+            self.accept(self.triggerEvent, self.__hitTrigger)
+                
+            avLeaving = self.avId
+            self.avId = 0
+            messenger.send('crane-enter-exit-%s' % avLeaving, [base.cr.doId2do.get(avLeaving), None])
+        elif self.avId == localAvatar.doId and not self.locallyExited:
+            if self.fadeTrack:
+                self.fadeTrack.finish()
+                self.fadeTrack = None
+
+            # Wait a few seconds before neutralizing the scale; maybe the
+            # same avatar wants to come right back (after his 5-second
+            # timeout).
+            self.restoreScaleTrack = Sequence(Wait(6), self.getRestoreScaleInterval())
+            self.restoreScaleTrack.start()
+
             # Five second timeout on grabbing the same crane again.  Go
             # get a different crane!
             self.controlModel.setAlphaScale(0.3)
             self.controlModel.setTransparency(1)
             taskMgr.doMethodLater(5, self.__allowDetect, self.triggerName)
-            
+                
             self.fadeTrack = Sequence(Func(self.controlModel.setTransparency, 1), self.controlModel.colorScaleInterval(0.2, VBase4(1, 1, 1, 0.3)))
             self.fadeTrack.start()
-        else:
-            # Other players can grab this crane immediately.
-            self.trigger.unstash()
-            self.accept(self.triggerEvent, self.__hitTrigger)
             
-        avLeaving = self.avId
-        self.avId = 0
-        messenger.send('crane-enter-exit-%s' % avLeaving, [base.cr.doId2do.get(avLeaving), None])
+            avLeaving = self.avId
+            self.avId = 0
+            messenger.send('crane-enter-exit-%s' % avLeaving, [base.cr.doId2do.get(avLeaving), None])
         return
 
     def __allowDetect(self, task):
@@ -1277,12 +1463,14 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.accept(self.triggerEvent, self.__hitTrigger)
 
     def exitFree(self):
+        print("exitFree")
         if self.fadeTrack:
             self.fadeTrack.finish()
             self.fadeTrack = None
-            
-        self.restoreScaleTrack.pause() # We just pause, to leave it where it is.
-        del self.restoreScaleTrack
+        
+        if hasattr(self, 'restoreScaleTrack'):
+            self.restoreScaleTrack.pause() # We just pause, to leave it where it is.
+            del self.restoreScaleTrack
         
         taskMgr.remove(self.triggerName)
         self.controlModel.clearColorScale()
@@ -1303,3 +1491,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
     def exitMovie(self):
         self.__deactivatePhysics()
         self.__straightenCable()
+
+    def getDamageMultiplier(self):
+        return 1.0

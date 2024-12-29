@@ -47,7 +47,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         return
 
     def _doDebug(self, _=None):
-        pass
+        self.boss.goonStatesDebug(doId=self.doId, content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
 
     def generate(self):
         DistributedCashbotBossObject.DistributedCashbotBossObject.generate(self)
@@ -204,7 +204,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     ##### Messages To/From The Server #####
 
     def setObjectState(self, state, avId, craneId):
-        self.crane = self.cr.doId2do.get(craneId)
+        #self.crane = self.cr.doId2do.get(craneId)
         if state == 'W':
             self.demand('Walk')
         elif state == 'B':

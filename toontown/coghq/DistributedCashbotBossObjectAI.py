@@ -35,6 +35,10 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         self.isHelmet = False
         
         self.setBroadcastStateChanges(True)
+        self.accept(self.getStateChangeEvent(), self._doDebug)
+
+    def _doDebug(self, _=None):
+        pass
 
     def cleanup(self):
         self.detachNode()
@@ -91,7 +95,7 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         if self.state != 'Grabbed' and self.state != 'Off':
             # Also make sure the client is controlling some crane and
             # hasn't grabbed some other object already.
-            craneId, objectId = self.__getCraneAndObject(avId)
+            craneId, objectId = self.getCraneAndObject(avId)
             if craneId != 0 and objectId == 0:
                 self.demand('Grabbed', avId, craneId)
                 return
@@ -104,8 +108,8 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         # (but is still controlling its free-fall).
         avId = self.air.getAvatarIdFromSender()
         
-        if avId == self.avId and self.state == 'Grabbed':
-            craneId, objectId = self.__getCraneAndObject(avId)
+        if avId == self.avId and self.state == 'Grabbed' and self.state != 'Off':
+            craneId, objectId = self.getCraneAndObject(avId)
             if craneId != 0 and objectId == self.doId:
                 self.demand('Dropped', avId, craneId)
 
@@ -136,7 +140,7 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
             self.doFree(None)
         return
 
-    def __getCraneAndObject(self, avId):
+    def getCraneAndObject(self, avId):
         # Returns the pair (craneId, objectId) representing the crane
         # that the indicated avatar is controlling, or 0 if none, and
         # the object currently held by that crane's magnet, or 0 if

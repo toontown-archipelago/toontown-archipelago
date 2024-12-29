@@ -1,3 +1,4 @@
+from enum import IntEnum
 from panda3d.core import *
 from panda3d.physics import *
 from direct.interval.IntervalGlobal import *
@@ -8,9 +9,16 @@ from toontown.toonbase import ToontownGlobals
 from otp.otpbase import OTPGlobals
 from direct.fsm import FSM
 from direct.task import Task
+from direct.task.TaskManagerGlobal import taskMgr
 import math
 import copy
 smileyDoId = 1
+
+class DummyTaskClass:
+    def setDelay(self, blah):
+        pass
+
+DummyTask = DummyTaskClass()
 
 class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, FSM.FSM):
 
@@ -63,6 +71,13 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.lerpInterval = None
         
         self.setBroadcastStateChanges(True)
+        self.accept(self.getStateChangeEvent(), self._doDebug)
+        
+        self.__broadcastPeriod = None
+        self.broadcasting = False
+
+    def _doDebug(self, _=None):
+        pass
 
     def disable(self):
         self.cleanup()
@@ -200,10 +215,52 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.doHitBoss(impact, self.craneId)
             self.resetSpeedCaching()
 
+    def showTempHitEffect(self, impact, craneId):
+
+        if not hasattr(self.boss, 'attackCode'):
+            return
+
+        if self.boss.heldObject or self.boss.attackCode != ToontownGlobals.BossCogDizzy:
+            return
+        
+        timeUntilStunEnd = self.boss.stunEndTime - globalClock.getFrameTime()
+        if timeUntilStunEnd < 1.5:
+            return
+
+        # Get the crane to check its damage multiplier 
+        crane = self.cr.doId2do.get(craneId)
+        if not crane:
+            return
+
+        damage = int(impact * 50)
+        damage *= crane.getDamageMultiplier()
+        damage *= self.boss.ruleset.SAFE_CFO_DAMAGE_MULTIPLIER
+            
+        damage = math.ceil(damage)
+
+        if damage <= 0:
+            return
+
+        if self.boss.processingHp:
+            curHp = self.boss.tempHp
+        else:
+            curHp = self.boss.ruleset.CFO_MAX_HP - self.boss.bossDamage
+        
+        self.boss.tempHp = curHp - damage
+
+        if damage < curHp:
+            self.boss.myHits.append(self.doId)
+            self.boss.processingHp = True
+            self.boss.flashRed()
+            if self.boss.ruleset.CFO_FLINCHES_ON_HIT:
+                self.boss.doAnimate('hit', now=1)
+            self.boss.showHpText(-damage, scale=5)
+
     def doHitBoss(self, impact, craneId):
         # Derived classes can override this to do something specific
         # when we successfully hit the boss.
         self.d_hitBoss(impact, craneId)
+        self.showTempHitEffect(impact, craneId)
 
     def __hitDropPlane(self, entry):
         self.notify.info('%s fell out of the world.' % self.doId)
@@ -257,26 +314,29 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
     def setObjectState(self, state, avId, craneId):
 
+        if self.state == 'Off':
+            return
+
         if state == 'G':
-            self.demand('Grabbed', avId, craneId)
+            if self.state in ['SlidingFloor']:
+                if avId == localAvatar.doId:
+                    return
+            if self.state != 'LocalDropped':
+                self.demand('Grabbed', avId, craneId)
         elif state == 'D':
-            if self.state != 'Dropped':
-                self.demand('Dropped', avId, craneId)
+            if self.state in ['SlidingFloor']:
+                if avId == localAvatar.doId:
+                    return
+            self.demand('Dropped', avId, craneId)
         elif state == 's':
             if self.state != 'SlidingFloor':
                 self.demand('SlidingFloor', avId)
         elif state == 'F':
+            if self.state in ['LocalGrabbed', 'LocalDropped']:
+                return
             self.demand('Free')
         else:
             self.notify.error('Invalid state from AI: %s' % state)
-            
-    def __getCraneAndObject(self, avId):
-        if self.boss and self.boss.cranes != None:
-            for crane in self.boss.cranes.values():
-                if crane.avId == avId:
-                    return (crane.doId, self.doId)
-
-        return (0, 0)
 
     def d_requestGrab(self):
         self.sendUpdate('requestGrab')
@@ -336,7 +396,6 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
         # We're not allowed to drop the object directly from this
         # state.
-        
         self.avId = avId
         self.craneId = craneId
 
@@ -344,6 +403,12 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
         self.hideShadows()
         self.prepareGrab()
+
+        # Add this to establish local control and
+        # stop receiving incoming position updates
+        # from other players:
+        self.stopSmooth()
+        self.localControl = True 
         self.crane.grabObject(self)
 
     def exitLocalGrabbed(self):
@@ -352,11 +417,15 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
                 self.crane.dropObject(self)
             self.prepareRelease()
             del self.crane
+
             self.showShadows()
 
     def enterGrabbed(self, avId, craneId):
         # Grabbed by a crane, or by the boss for a helmet.  craneId is
         # the doId of the crane or the doId of the boss himself.
+
+        if avId != base.localAvatar.doId:
+            self.localControl = False
 
         if self.oldState == 'LocalGrabbed':
             if craneId == self.craneId:
@@ -384,11 +453,13 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.crane.grabObject(self)
 
     def exitGrabbed(self):
-        if self.crane:
-            self.crane.dropObject(self)
+        if hasattr(self, 'crane'):
+            if self.crane:
+                self.crane.dropObject(self)
         self.prepareRelease()
         self.showShadows()
-        del self.crane
+        if hasattr(self, 'crane'):
+            del self.crane
 
     def enterLocalDropped(self, avId, craneId):
         # As in LocalGrabbed, above, this state is entered locally
@@ -401,7 +472,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.crane = self.cr.doId2do.get(craneId)
         
         self.activatePhysics()
-        self.startPosHprBroadcast()
+        self.startPosHprBroadcast(avId=self.avId, period=.05)
         self.hideShadows()
 
         # Set slippery physics so it will slide off the boss.
@@ -416,34 +487,44 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.showShadows()
 
     def enterDropped(self, avId, craneId):
-        # Dropped (or flung) from a player's crane, or from the boss's
-        # head.  In this case, craneId is the crane we were dropped
-        # from (or the boss doId).
+        
         self.avId = avId
         self.craneId = craneId
 
         self.crane = self.cr.doId2do.get(craneId)
-
+        
+        # If I'm the one who dropped it
+        # Then I should be the one to broadcast
+        # the position updates
         if self.avId == base.localAvatar.doId:
             self.activatePhysics()
-            self.startPosHprBroadcast(period=.05)
-
-            # Set slippery physics so it will slide off the boss.
+            self.startPosHprBroadcast(avId=self.avId, period=.05)
             self.handler.setStaticFrictionCoef(0)
             self.handler.setDynamicFrictionCoef(0)
+        # Otherwise, I'm the one receiving the
+        # position updates
         else:
+            if self.broadcasting:
+                self.deactivatePhysics()
+                self.stopPosHprBroadcast()
             self.startSmooth()
         self.hideShadows()
 
     def exitDropped(self):
+        # If I'm the one who dropped it
+        # Then I should stop broadcasting
+        # the position updates
         if self.avId == base.localAvatar.doId:
             if self.newState != 'SlidingFloor':
                 self.deactivatePhysics()
                 self.stopPosHprBroadcast()
+        # Otherwise, I'm the one receiving the
+        # position updates so I should stop
         else:
             self.stopSmooth()
 
-        del self.crane
+        if hasattr(self, 'crane'):
+            del self.crane
         self.showShadows()
 
     def enterSlidingFloor(self, avId):
@@ -459,7 +540,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             
         if self.avId == base.localAvatar.doId:
             self.activatePhysics()
-            self.startPosHprBroadcast(period=.05)
+            self.startPosHprBroadcast(avId=self.avId, period=.05)
             
             self.handler.setStaticFrictionCoef(0.9)
             self.handler.setDynamicFrictionCoef(0.5)
@@ -469,6 +550,9 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             if self.wantsWatchDrift:
                 taskMgr.add(self.__watchDrift, self.watchDriftName)
         else:
+            if self.broadcasting:
+                self.deactivatePhysics()
+                self.stopPosHprBroadcast()
             self.startSmooth()
             
         self.hitFloorSoundInterval.start()
@@ -482,9 +566,83 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.stopSmooth()
 
     def enterFree(self):
+        self.localControl = False
         self.resetSpeedCaching()
         self.avId = 0
         self.craneId = 0
 
     def exitFree(self):
         pass
+
+    class BroadcastTypes(IntEnum):
+        FULL = 0
+        XYH = 1
+        XY = 2
+
+    def _posHprBroadcast(self, task=DummyTask):
+        # TODO: we explicitly stagger the initial task timing in
+        # startPosHprBroadcast; we should at least make an effort to keep
+        # this task accurately aligned with its period and starting time.
+        if base.localAvatar.doId == self.avId:
+            self.d_broadcastPosHpr()
+            task.setDelay(self.__broadcastPeriod)
+            return Task.again
+        else:
+            return Task.done
+
+    def setPosHprBroadcastPeriod(self, period):
+        # call this at any time to change the delay between broadcasts
+        self.__broadcastPeriod = period
+
+    def getPosHprBroadcastPeriod(self):
+        # query the current delay between broadcasts
+        return self.__broadcastPeriod
+    
+    def startPosHprBroadcast(self, avId=None, period=.2, stagger=0, type=None):
+        if self.cnode is None:
+            self.initializeCnode()
+
+        BT = self.BroadcastTypes
+        if type is None:
+            type = BT.FULL
+        # set the broadcast type
+        self.broadcastType = type
+
+        broadcastFuncs = {
+            BT.FULL: self.cnode.broadcastPosHprFull,
+            BT.XYH:  self.cnode.broadcastPosHprXyh,
+            BT.XY:  self.cnode.broadcastPosHprXy,
+            }
+        # this comment is here so it will show up in a grep for 'def d_broadcastPosHpr'
+        self.d_broadcastPosHpr = broadcastFuncs[self.broadcastType]
+
+        # Set stagger to non-zero to randomly delay the initial task execution
+        # over 'period' seconds, to spread out task processing over time
+        # when a large number of SmoothNodes are created simultaneously.
+        taskName = self.getPosHprBroadcastTaskName() + '-%s' % avId
+
+        # Set up telemetry optimization variables
+        self.cnode.initialize(self, self.dclass, self.doId)
+
+        self.setPosHprBroadcastPeriod(period)
+        # Broadcast our initial position
+        self.b_clearSmoothing()
+        self.cnode.sendEverything()
+
+        # remove any old tasks
+        taskMgr.remove(taskName)
+        # spawn the new task
+        delay = 0.
+        if stagger:
+            delay = randFloat(period)
+        if self.wantSmoothPosBroadcastTask():
+            taskMgr.doMethodLater(self.__broadcastPeriod + delay,
+                                  self._posHprBroadcast, taskName)
+        
+        self.broadcasting = True
+            
+    def stopPosHprBroadcast(self):
+        taskMgr.remove(self.getPosHprBroadcastTaskName() + '-%s' % base.localAvatar.doId)
+        # Delete this callback because it maintains a reference to self
+        self.d_broadcastPosHpr = None
+        self.broadcasting = False
