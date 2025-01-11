@@ -1,4 +1,6 @@
-from panda3d.core import Quat
+from direct.showbase.EventManagerGlobal import eventMgr
+from direct.task.TaskManagerGlobal import taskMgr
+from panda3d.core import Quat, NodePath
 from panda3d.ode import OdeWorld, OdeSimpleSpace, OdeJointGroup, OdeUtil
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.ClockDelta import globalClockDelta

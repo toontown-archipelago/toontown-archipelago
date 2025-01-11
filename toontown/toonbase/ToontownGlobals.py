@@ -366,27 +366,31 @@ IceGameId = 13
 CogThiefGameId = 14
 TwoDGameId = 15
 PhotoGameId = 16
+CrashBallGameId = 17
 TravelGameId = 100
-MinigameNames = {'race': RaceGameId,
- 'cannon': CannonGameId,
- 'tag': TagGameId,
- 'pattern': PatternGameId,
- 'minnie': PatternGameId,
- 'match': PatternGameId,
- 'matching': PatternGameId,
- 'ring': RingGameId,
- 'maze': MazeGameId,
- 'tug': TugOfWarGameId,
- 'catch': CatchGameId,
- 'diving': DivingGameId,
- 'target': TargetGameId,
- 'pairing': PairingGameId,
- 'vine': VineGameId,
- 'ice': IceGameId,
- 'thief': CogThiefGameId,
- '2d': TwoDGameId,
- 'photo': PhotoGameId,
- 'travel': TravelGameId}
+MinigameNames = {
+    'race': RaceGameId,
+    'cannon': CannonGameId,
+    'tag': TagGameId,
+    'pattern': PatternGameId,
+    'minnie': PatternGameId,
+    'match': PatternGameId,
+    'matching': PatternGameId,
+    'ring': RingGameId,
+    'maze': MazeGameId,
+    'tug': TugOfWarGameId,
+    'catch': CatchGameId,
+    'diving': DivingGameId,
+    'target': TargetGameId,
+    'pairing': PairingGameId,
+    'vine': VineGameId,
+    'ice': IceGameId,
+    'thief': CogThiefGameId,
+    '2d': TwoDGameId,
+    'photo': PhotoGameId,
+    'travel': TravelGameId,
+    'crashball': CrashBallGameId
+}
 MinigameTemplateId = -1
 MinigameIDs = (
     RaceGameId,
@@ -405,7 +409,8 @@ MinigameIDs = (
     CogThiefGameId,
     # TwoDGameId,
     PhotoGameId,
-    TravelGameId
+    TravelGameId,
+    CrashBallGameId
 )
 
 MultiplayerMinigames = (
@@ -413,7 +418,8 @@ MultiplayerMinigames = (
     TagGameId,
     IceGameId,
     RaceGameId,
-    TravelGameId
+    TravelGameId,
+    CrashBallGameId
 )
 
 MinigamePlayerMatrix = {1: (CannonGameId,

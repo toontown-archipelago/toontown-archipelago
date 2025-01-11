@@ -9679,6 +9679,11 @@ IceGameWaitingForPlayersToFinishMove = 'Waiting for other players...'
 IceGameWaitingForAISync = 'Waiting for other players...'
 IceGameInfo = 'Match %(curMatch)d/%(numMatch)d, Round %(curRound)d/%(numRound)d'
 IceGameControlKeyWarning = 'Remember to press the Ctrl key!'
+
+# DistributedCrashBallGame.py
+CrashBallGameTitle = "Crash Ball"
+CrashBallGameInstructions = "Defend the golf balls from entering your goal. Use the movement keys to move left & right, hold Ctrl to increase movement speed, and press Delete for an extra kick."
+
 PicnicTableJoinButton = 'Join'
 PicnicTableObserveButton = 'Observe'
 PicnicTableCancelButton = 'Cancel'

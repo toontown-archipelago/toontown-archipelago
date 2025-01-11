@@ -22,6 +22,7 @@ from . import DistributedCogThiefGameAI
 from . import DistributedTwoDGameAI
 from . import DistributedTravelGameAI
 from . import TravelGameGlobals
+from toontown.minigame.crashball.DistributedCrashBallGameAI import DistributedCrashBallGameAI
 from .DistributedMinigameAI import DistributedMinigameAI
 
 
@@ -35,25 +36,26 @@ class GeneratedMinigame:
 class MinigameCreatorAI:
 
     MINIGAME_ID_TO_CLASS = {
-            ToontownGlobals.RaceGameId: DistributedRaceGameAI.DistributedRaceGameAI,
-            ToontownGlobals.CannonGameId: DistributedCannonGameAI.DistributedCannonGameAI,
-            ToontownGlobals.TagGameId: DistributedTagGameAI.DistributedTagGameAI,
-            ToontownGlobals.PatternGameId: DistributedPatternGameAI.DistributedPatternGameAI,
-            ToontownGlobals.RingGameId: DistributedRingGameAI.DistributedRingGameAI,
-            ToontownGlobals.MazeGameId: DistributedMazeGameAI.DistributedMazeGameAI,
-            ToontownGlobals.TugOfWarGameId: DistributedTugOfWarGameAI.DistributedTugOfWarGameAI,
-            ToontownGlobals.CatchGameId: DistributedCatchGameAI.DistributedCatchGameAI,
-            ToontownGlobals.DivingGameId: DistributedDivingGameAI.DistributedDivingGameAI,
-            ToontownGlobals.TargetGameId: DistributedTargetGameAI.DistributedTargetGameAI,
-            ToontownGlobals.MinigameTemplateId: DistributedMinigameTemplateAI.DistributedMinigameTemplateAI,
-            ToontownGlobals.PairingGameId: DistributedPairingGameAI.DistributedPairingGameAI,
-            ToontownGlobals.VineGameId: DistributedVineGameAI.DistributedVineGameAI,
-            ToontownGlobals.IceGameId: DistributedIceGameAI.DistributedIceGameAI,
-            ToontownGlobals.CogThiefGameId: DistributedCogThiefGameAI.DistributedCogThiefGameAI,
-            ToontownGlobals.TwoDGameId: DistributedTwoDGameAI.DistributedTwoDGameAI,
-            ToontownGlobals.TravelGameId: DistributedTravelGameAI.DistributedTravelGameAI,
-            ToontownGlobals.PhotoGameId: DistributedPhotoGameAI.DistributedPhotoGameAI
-        }
+        ToontownGlobals.RaceGameId: DistributedRaceGameAI.DistributedRaceGameAI,
+        ToontownGlobals.CannonGameId: DistributedCannonGameAI.DistributedCannonGameAI,
+        ToontownGlobals.TagGameId: DistributedTagGameAI.DistributedTagGameAI,
+        ToontownGlobals.PatternGameId: DistributedPatternGameAI.DistributedPatternGameAI,
+        ToontownGlobals.RingGameId: DistributedRingGameAI.DistributedRingGameAI,
+        ToontownGlobals.MazeGameId: DistributedMazeGameAI.DistributedMazeGameAI,
+        ToontownGlobals.TugOfWarGameId: DistributedTugOfWarGameAI.DistributedTugOfWarGameAI,
+        ToontownGlobals.CatchGameId: DistributedCatchGameAI.DistributedCatchGameAI,
+        ToontownGlobals.DivingGameId: DistributedDivingGameAI.DistributedDivingGameAI,
+        ToontownGlobals.TargetGameId: DistributedTargetGameAI.DistributedTargetGameAI,
+        ToontownGlobals.MinigameTemplateId: DistributedMinigameTemplateAI.DistributedMinigameTemplateAI,
+        ToontownGlobals.PairingGameId: DistributedPairingGameAI.DistributedPairingGameAI,
+        ToontownGlobals.VineGameId: DistributedVineGameAI.DistributedVineGameAI,
+        ToontownGlobals.IceGameId: DistributedIceGameAI.DistributedIceGameAI,
+        ToontownGlobals.CogThiefGameId: DistributedCogThiefGameAI.DistributedCogThiefGameAI,
+        ToontownGlobals.TwoDGameId: DistributedTwoDGameAI.DistributedTwoDGameAI,
+        ToontownGlobals.TravelGameId: DistributedTravelGameAI.DistributedTravelGameAI,
+        ToontownGlobals.PhotoGameId: DistributedPhotoGameAI.DistributedPhotoGameAI,
+        ToontownGlobals.CrashBallGameId: DistributedCrashBallGameAI
+    }
 
     def __init__(self, air):
         self.air = air
