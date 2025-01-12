@@ -68,7 +68,6 @@ class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTrea
                     return
 
                 boss = goon.boss
-                boss.toonHealedFromTreasure(avId, self.responsibleAv, hp)
                 # Are we deducting points?
                 if boss.ruleset.TREASURE_POINT_PENALTY:
 
@@ -85,5 +84,3 @@ class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTrea
                     self.sendUpdate('deductScoreboardPoints', [avId, -amount])
 
                 av.toonUp(self.healAmount)
-
-

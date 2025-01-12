@@ -59,7 +59,7 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
             return
 
         av = self.air.doId2do[avId]
-        if av.getHp() > 0 and avId in self.boss.involvedToons and self.avId == 0:
+        if av.getHp() > 0 and avId in self.boss.avIdList and self.avId == 0:
             # Also make sure the client isn't controlling some other
             # crane.
             craneId = self.__getCraneId(avId)

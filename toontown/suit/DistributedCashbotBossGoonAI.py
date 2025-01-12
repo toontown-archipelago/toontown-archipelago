@@ -330,7 +330,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         av = self.air.doId2do[avId]
         if av.getHp() <= 0:
             return
-        if avId not in self.boss.involvedToons:
+        if avId not in self.boss.avIdList:
             return
         if self.state == 'Stunned' or self.state == 'Grabbed':
             # Already stunned, or just picked up by a magnet; don't
@@ -361,7 +361,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
     def hitBoss(self, impact, craneId):
         avId = self.air.getAvatarIdFromSender()
         self.validate(avId, 1.0 >= impact >= 0, 'invalid hitBoss impact %s' % impact)
-        if avId not in self.boss.involvedToons:
+        if avId not in self.boss.avIdList:
             return
 
         self.boss.debug(doId=avId, content='Goon hit with impact=%.2f' % impact)
@@ -373,7 +373,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         avatar = self.air.doId2do.get(avId)
         if self.state == 'Dropped' or self.state == 'Grabbed':
             # A goon can only hurt the boss when he's got a helmet on.
-            if not self.boss.heldObject:
+            if not self.boss.getBoss().heldObject:
                 damage = int(impact * 25 * self.scale * 0.8)
                 crane = simbase.air.doId2do.get(craneId)
                 # Apply a multiplier if needed (heavy cranes)
@@ -445,7 +445,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         
         h = 0
         dist = 15
-        pos = self.boss.getPos()
+        pos = self.boss.getBoss().getPos()
         walkTime = dist / self.velocity
         
         self.setPosHpr(pos[0], pos[1], pos[2], h, 0, 0)
@@ -483,7 +483,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         
         h = 180
         dist = 15
-        pos = self.boss.getPos()
+        pos = self.boss.getBoss().getPos()
         walkTime = dist / self.velocity
         
         self.setPosHpr(pos[0], pos[1], pos[2], h, 0, 0)

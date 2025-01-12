@@ -217,10 +217,10 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
 
     def showTempHitEffect(self, impact, craneId):
 
-        if not hasattr(self.boss, 'attackCode'):
+        if not hasattr(self.boss.getBoss(), 'attackCode'):
             return
 
-        if self.boss.heldObject or self.boss.attackCode != ToontownGlobals.BossCogDizzy:
+        if self.boss.getBoss().heldObject or self.boss.getBoss().attackCode != ToontownGlobals.BossCogDizzy:
             return
         
         timeUntilStunEnd = self.boss.stunEndTime - globalClock.getFrameTime()

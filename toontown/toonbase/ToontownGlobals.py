@@ -367,6 +367,7 @@ CogThiefGameId = 14
 TwoDGameId = 15
 PhotoGameId = 16
 CrashBallGameId = 17
+CraneGameId = 18
 TravelGameId = 100
 MinigameNames = {
     'race': RaceGameId,
@@ -389,7 +390,8 @@ MinigameNames = {
     '2d': TwoDGameId,
     'photo': PhotoGameId,
     'travel': TravelGameId,
-    'crashball': CrashBallGameId
+    'crashball': CrashBallGameId,
+    'crane': CraneGameId
 }
 MinigameTemplateId = -1
 MinigameIDs = (
@@ -410,7 +412,8 @@ MinigameIDs = (
     # TwoDGameId,
     PhotoGameId,
     TravelGameId,
-    CrashBallGameId
+    CrashBallGameId,
+    CraneGameId
 )
 
 MultiplayerMinigames = (
@@ -419,7 +422,8 @@ MultiplayerMinigames = (
     IceGameId,
     RaceGameId,
     TravelGameId,
-    CrashBallGameId
+    CrashBallGameId,
+    CraneGameId
 )
 
 MinigamePlayerMatrix = {1: (CannonGameId,

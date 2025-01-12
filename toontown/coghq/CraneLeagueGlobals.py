@@ -187,9 +187,9 @@ class CFORuleset:
         self.update_lists()
 
         # TOON SETTINGS
-        self.FORCE_MAX_LAFF = False  # Should we force a laff limit for this crane round?
+        self.FORCE_MAX_LAFF = True  # Should we force a laff limit for this crane round?
         self.FORCE_MAX_LAFF_AMOUNT = 100  # The laff that we are going to force all toons participating to have
-        self.HEAL_TOONS_ON_START = False  # Should we set all toons to full laff when starting the round?
+        self.HEAL_TOONS_ON_START = True  # Should we set all toons to full laff when starting the round?
         self.RANDOM_SPAWN_POSITIONS = False  # Should spawn positions be completely random?
 
         self.WANT_LOW_LAFF_BONUS = True  # Should we award toons with low laff bonus points?

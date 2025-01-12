@@ -44,7 +44,6 @@ OptionToType = {
     'laff-display': OptionTypes.BUTTON,
 
     # Privacy
-    "competitive-boss-scoring": OptionTypes.BUTTON,
     "report-errors": OptionTypes.BUTTON,
 
     # Video
@@ -149,7 +148,6 @@ class OptionsTabPage(DirectFrame, FSM):
 
         ],
         "Privacy": [
-            "competitive-boss-scoring",
             "report-errors"
         ],
         "Controls": [*list(base.settings.getControls())],
@@ -746,8 +744,6 @@ class OptionElement(DirectFrame):
             base.enableSoundEffects(newSetting)
         elif self.optionName == "toon-chat-sounds":
             base.toonChatSounds = newSetting
-        elif self.optionName == 'competitive-boss-scoring':
-            base.localAvatar.wantCompetitiveBossScoring = newSetting
         elif self.optionName == 'report-errors':
             os.environ['WANT_ERROR_REPORTING'] = 'true' if newSetting else 'false'
         elif self.optionName in ("borderless", "vertical-sync"):

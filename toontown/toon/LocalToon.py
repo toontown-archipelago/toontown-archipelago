@@ -187,7 +187,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.archipelagoRewardDisplay: ArchipelagoRewardDisplay = None
             self.locationScoutsCache: LocationScoutsCache = LocationScoutsCache()
             self.currentlyInHQ = False
-            self.wantCompetitiveBossScoring = base.settings.get('competitive-boss-scoring')
             self.hintContainer: HintContainer = HintContainer(0)
 
             self.accept("disableControls", self.disableControls)

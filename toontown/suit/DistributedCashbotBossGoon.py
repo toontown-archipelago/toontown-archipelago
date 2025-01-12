@@ -172,7 +172,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.b_destroyGoon()
 
     def handleToonDetect(self, collEntry = None):
-        if self.boss.localToonIsSafe:
+        if self.boss.getBoss().localToonIsSafe:
             return
         DistributedGoon.DistributedGoon.handleToonDetect(self, collEntry)
 
@@ -276,14 +276,14 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.undead()
         self.reparentTo(render)
         self.stopToonDetect()
-        self.boss.doorA.request('open')
+        self.boss.getBoss().doorA.request('open')
         self.radar.hide()
         self.__startWalk()
         self.loop('walk', 0)
 
     def exitEmergeA(self):
-        if self.boss.doorA:
-            self.boss.doorA.request('close')
+        if self.boss.getBoss().doorA:
+            self.boss.getBoss().doorA.request('close')
         self.radar.show()
         self.__stopWalk()
 
@@ -292,14 +292,14 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
         self.undead()
         self.reparentTo(render)
         self.stopToonDetect()
-        self.boss.doorB.request('open')
+        self.boss.getBoss().doorB.request('open')
         self.radar.hide()
         self.__startWalk()
         self.loop('walk', 0)
 
     def exitEmergeB(self):
-        if self.boss.doorB:
-            self.boss.doorB.request('close')
+        if self.boss.getBoss().doorB:
+            self.boss.getBoss().doorB.request('close')
         self.radar.show()
         self.__stopWalk()
 

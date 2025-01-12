@@ -43,7 +43,6 @@ class Settings:
         "resolution": [1280, 720],
         "music-volume": 0.4,
         "sfx-volume": 0.4,
-        "competitive-boss-scoring": True,
         "report-errors": True,
         "anti-aliasing": 0,
         "anisotropic-filter": 8,

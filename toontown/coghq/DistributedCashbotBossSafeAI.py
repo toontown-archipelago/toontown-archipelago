@@ -64,7 +64,7 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         return self.index
 
     def getMinImpact(self):
-        if self.boss.heldObject:
+        if self.boss.getBoss().heldObject:
             return self.boss.ruleset.MIN_DEHELMET_IMPACT
         else:
             return self.boss.ruleset.MIN_SAFE_IMPACT
@@ -74,13 +74,13 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         
         self.validate(avId, 1.0 >= impact >= 0, 'invalid hitBoss impact %s' % impact)
         
-        if avId not in self.boss.involvedToons:
+        if avId not in self.boss.avIdList:
             return
             
         if self.state != 'Dropped' and self.state != 'Grabbed':
             return
             
-        if self.avoidHelmet or self == self.boss.heldObject:
+        if self.avoidHelmet or self == self.boss.getBoss().heldObject:
             # Ignore the helmet we just knocked off.
             return
 
@@ -92,8 +92,8 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
 
         # The client reports successfully striking the boss in the
         # head with this object.
-        if self.boss.heldObject == None:
-            if self.boss.attackCode == ToontownGlobals.BossCogDizzy:
+        if self.boss.getBoss().heldObject == None:
+            if self.boss.getBoss().attackCode == ToontownGlobals.BossCogDizzy:
                 # While the boss is dizzy, a safe hitting him in the
                 # head does lots of damage.
                 damage = int(impact * 50)
@@ -105,24 +105,25 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
                 damage = math.ceil(damage)
                 
                 self.boss.recordHit(max(damage, 2), impact, craneId, objId=self.doId)
-                
-            elif self.boss.acceptHelmetFrom(avId):
+            else:
                 # If he's not dizzy, he grabs the safe and makes a
                 # helmet out of it only if he is allowed to safe helmet.
                 if self.boss.ruleset.DISABLE_SAFE_HELMETS:
                     return
 
-                self.demand('Grabbed', self.boss.doId, self.boss.doId)
-                self.boss.heldObject = self
+                self.demand('Grabbed', self.boss.getBoss().doId, self.boss.getBoss().doId)
+                self.boss.getBoss().heldObject = self
                 self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_PENALTY_SAFEHEAD)
                 
         elif impact >= ToontownGlobals.CashbotBossSafeKnockImpact:
             self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_DESAFE)
-            self.boss.heldObject.demand('Dropped', avId, self.boss.doId)
-            self.boss.heldObject.avoidHelmet = 1
-            self.boss.heldObject = None
+
+            boss = self.boss.getBoss()
+            boss.heldObject.demand('Dropped', avId, self.boss.doId)
+            boss.heldObject.avoidHelmet = 1
+            boss.heldObject = None
             self.avoidHelmet = 1
-            self.boss.waitForNextHelmet()
+            boss.waitForNextHelmet()
         return
 
     def requestInitial(self):

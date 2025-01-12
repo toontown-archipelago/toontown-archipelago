@@ -1,5 +1,6 @@
 import sys
 from direct.showbase import DirectObject
+from direct.showbase.MessengerGlobal import messenger
 from direct.showbase.PythonUtil import traceFunctionCall
 from otp.otpbase import OTPGlobals
 from otp.otpbase import OTPLocalizer
@@ -131,6 +132,7 @@ class ToontownChatManager(ChatManager.ChatManager):
         return
 
     def enterMainMenu(self):
+        messenger.send("ChatMgr-enterMainMenu")
         self.chatInputNormal.setPos(self.normalPos)
         self.chatInputWhiteList.reparentTo(base.a2dTopLeft)
         if self.chatInputWhiteList.isActive():

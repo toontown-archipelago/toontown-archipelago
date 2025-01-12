@@ -42,6 +42,10 @@ from toontown.suit import DistributedMintSuit/AI
 from toontown.suit import DistributedStageSuit/AI
 from toontown.suit import DistributedSellbotBoss/AI
 from toontown.suit import DistributedCashbotBoss/AI
+
+from toontown.suit import DistributedBossCogStripped/AI
+from toontown.suit import DistributedCashbotBossStripped/AI
+
 from toontown.coghq import DistributedCashbotBossSafe/AI
 from toontown.coghq import DistributedCashbotBossCrane/AI
 from toontown.coghq import DistributedCashbotBossSideCrane/AI
@@ -297,6 +301,8 @@ from toontown.minigame import DistributedTwoDGame/AI
 
 from toontown.minigame.crashball import DistributedCrashBallGame/AI
 from toontown.minigame.crashball import DistributedCrashBallVehicle/AI
+
+from toontown.minigame.craning import DistributedCraneGame/AI
 
 from toontown.safezone import DistributedPicnicTable/AI
 from toontown.safezone import DistributedChineseCheckers/AI
@@ -1268,6 +1274,20 @@ dclass DistributedMintSuit : DistributedFactorySuit {
 };
 
 dclass DistributedStageSuit : DistributedFactorySuit {
+};
+
+dclass DistributedBossCogStripped: DistributedNode {
+  setDNAString(blob) required broadcast db;
+  avatarNearEnter() airecv clsend;
+  avatarNearExit() airecv clsend;
+  zapToon(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, int8/100, int8/100, uint8, int16) airecv clsend;
+  showZapToon(uint32, int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, uint8, int16) broadcast;
+  setAttackCode(uint8, uint32) broadcast;
+};
+
+dclass DistributedCashbotBossStripped: DistributedBossCogStripped {
+  setBossDamage(uint32, uint32, uint32, bool) broadcast ram;
+  setAttackCode(uint8, uint32, uint32) broadcast;
 };
 
 dclass DistributedBossCog : DistributedNode {
@@ -3829,6 +3849,30 @@ dclass DistributedCrashBallVehicle: DistributedObject {
   clearSmoothing(int8 bogus) broadcast clsend;
   setVehicleX(int16/100 x, int16 timestamp) broadcast clsend airecv;
   sendVehicleX(int16/100 x, int16 timestamp) broadcast;
+};
+
+dclass DistributedCraneGame: DistributedMinigame {
+  setBossCogId(uint32 doId) broadcast;
+  addToActivityLog(uint32, string) broadcast;
+  setRawRuleset(CraneLeagueRuleset) required broadcast ram;
+  setModifiers(CraneLeagueModifier[]) broadcast ram;
+  setToonSpawnpoints(uint8[]) broadcast ram;
+  setCraneSpawn(bool, uint8, uint32) broadcast ram;
+  killingBlowDealt(uint32 avId) broadcast ram;
+  updateDamageDealt(uint32 avId, uint32) broadcast ram;
+  updateStunCount(uint32 avId, uint32) broadcast ram;
+  updateGoonsStomped(uint32 avId) broadcast ram;
+  updateSafePoints(uint32 avId, int32) broadcast ram;
+  updateMaxImpactHits(uint32 avId) broadcast ram;
+  updateLowImpactHits(uint32 avId) broadcast ram;
+  updateCombo(uint32 avId, uint8) broadcast ram;
+  awardCombo(uint32 avId, uint8, int32) broadcast ram;
+  goonKilledBySafe(uint32 avId) broadcast ram;
+  updateUnstun(uint32 avId) broadcast ram;
+  declareVictor(uint32 avId) broadcast;
+  updateTimer(uint32/255) broadcast ram;
+  toonDied(uint32) broadcast;
+  revivedToon(uint32 avId) broadcast;
 };
 
 dclass DistributedPicnicTable : DistributedNode {

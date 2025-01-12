@@ -117,7 +117,7 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         # This method returns the minimum impact, in feet per second,
         # with which the object should hit the boss before we bother
         # to tell the server.
-        if self.boss.heldObject:
+        if self.boss.getBoss().heldObject:
             return self.boss.ruleset.MIN_DEHELMET_IMPACT
         else:
             return self.boss.ruleset.MIN_SAFE_IMPACT
