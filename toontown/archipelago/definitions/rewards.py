@@ -790,7 +790,7 @@ class BountyReward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        pass
+        av.checkWinCondition()
 
 
 class VictoryReward(APReward):
