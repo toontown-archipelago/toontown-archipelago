@@ -4,7 +4,7 @@ from collections import Counter
 import typing
 from abc import ABC, abstractmethod
 from apworld.toontown.consts import ToontownWinCondition
-from apworld.toontown import locations
+from apworld.toontown import locations, get_item_def_from_id, ToontownItemName
 
 from toontown.quest import Quests
 from toontown.toonbase import ToontownGlobals
@@ -245,6 +245,40 @@ class LaffOLympicsWinCondition(WinCondition):
         return delimiter.join(['You still have not completed your Laff-O-Lympics goal!',
                 f'You still need to gain {laff_needed} more Laff Point{plural}.'])
 
+
+class BountyWinCondition(WinCondition):
+    bounty_locations = {
+        locations.LOCATION_NAME_TO_ID.get(loc.name.value)
+        for loc in locations.BOUNTY_LOCATIONS
+    }
+
+    def __init__(self, toon: DistributedToon | DistributedToonAI):
+        super().__init__(toon)
+        required_bounties = min(toon.slotData.get('bounties_required', 10), toon.slotData.get('total_bounties', 20))
+        bounty_pool = 0
+        for item_id in sorted(toon.slotData.get("local_itempool", [])):
+            itemDef = get_item_def_from_id(item_id)
+            itemName = itemDef.name.value
+            if itemName == ToontownItemName.BOUNTY.value:
+                bounty_pool += 1
+        self.bounties_required = min(required_bounties, bounty_pool)
+
+    def __get_bounties_acquired(self) -> int:
+        return len(self.bounty_locations.intersection(self.toon.getCheckedLocations()))
+
+    def __get_bounties_needed(self) -> int:
+        return max(0, self.bounties_required - self.__get_bounties_acquired())
+
+    def satisfied(self) -> bool:
+        return self.__get_bounties_needed() <= 0
+
+    def generate_npc_dialogue(self, delimiter='\x07') -> str:
+        if self.satisfied():
+            return 'It seems your bounties goal is completed!'
+        return delimiter.join(['You still have not completed your bounties goal!',
+                f'You still must acquire {self.__get_bounties_needed()} more bounties.'])
+
+
 class MultiWinCondition(WinCondition):
     def __init__(self, condition: ToontownWinCondition, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
@@ -284,6 +318,7 @@ def generate_win_condition(condition_id: int, toon: DistributedToon | Distribute
         ToontownWinCondition.gag_tracks: GagTrackWinCondition,
         ToontownWinCondition.fish_species: FishSpeciesWinCondition,
         ToontownWinCondition.laff_o_lympics: LaffOLympicsWinCondition,
+        ToontownWinCondition.bounty: BountyWinCondition,
     }
 
     # Return either a simple win condition matching the settings if only one is enabled,

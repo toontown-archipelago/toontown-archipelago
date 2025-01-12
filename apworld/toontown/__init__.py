@@ -130,7 +130,6 @@ class ToontownWorld(World):
         # Determine forbidden location types.
         forbidden_location_types: set[ToontownLocationType] = self.get_disabled_location_types()
 
-
         # Now create locations.
         for i, location_data in enumerate(LOCATION_DEFINITIONS):
             # Do we skip this location generation?
@@ -166,12 +165,37 @@ class ToontownWorld(World):
             else:
                 location.place_locked_item(self.create_event(location_data.name.value))
 
-
-
         # Force various item placements.
         self._force_item_placement(ToontownLocationName.STARTING_NEW_GAME,  ToontownItemName.TTC_ACCESS)
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.first_track)
         self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.second_track)
+
+        # Force bounty placements
+        if self.options.win_condition_bounty.value:
+            location_names = {}
+            for location in self.created_locations:
+                location_names[location.name.value] = location.progress_type
+
+            valid_bounties = []
+            # Go through our locations and ensure they are in our multiworld
+            for bounty in locations.BOUNTY_LOCATIONS:
+                bounty_name = bounty.value
+                if bounty_name in location_names.keys():
+                    if location_names[bounty_name] != LocationProgressType.EXCLUDED:
+                        valid_bounties.append(bounty)
+
+            # Make sure we make the right amount of bounties based on our settings
+            total_bounties = self.options.total_bounties.value
+            if total_bounties < self.options.bounties_required.value:
+                total_bounties = max(1, self.options.bounties_required.value)
+            if len(valid_bounties) < total_bounties:
+                total_bounties = max(1, len(valid_bounties))
+
+            # Finally place our bounties
+            for created_bounty in range(total_bounties):
+                bounty_choice = random.choice(valid_bounties)
+                self._force_item_placement(bounty_choice, ToontownItemName.BOUNTY)
+                valid_bounties.remove(bounty_choice)
 
         # only populate these locations if there's a reason to go there.
         if self.options.checks_per_boss.value > 0 or self.options.win_condition_cog_bosses.value:
@@ -466,6 +490,9 @@ class ToontownWorld(World):
             "starting_task_playground": self.options.starting_task_playground.value,
             "fish_species_required": self.options.fish_species_required.value,
             "laff_points_required": self.options.laff_points_required.value,
+            "bounties_required": self.options.bounties_required.value,
+            "total_bounties": self.options.total_bounties.value,
+            "hint_bounties": self.options.hint_bounties.value,
             "gag_training_check_behavior": self.options.gag_training_check_behavior.value,
             "gag_frame_item_behavior": self.options.gag_frame_item_behavior.value,
             "fish_locations": self.options.fish_locations.value,
