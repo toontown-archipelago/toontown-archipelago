@@ -248,7 +248,7 @@ class LaffOLympicsWinCondition(WinCondition):
 
 class BountyWinCondition(WinCondition):
     bounty_locations = {
-        locations.LOCATION_NAME_TO_ID.get(loc.name.value)
+        locations.LOCATION_NAME_TO_ID.get(loc)
         for loc in locations.BOUNTY_LOCATIONS
     }
 
