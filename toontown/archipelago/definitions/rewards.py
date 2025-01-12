@@ -789,6 +789,9 @@ class BountyReward(APReward):
             MinimalJsonMessagePart(f"Proof of a difficult task completed!"),
         ])
 
+    def get_image_path(self) -> str:
+        return f'phase_14/maps/bounty.png'
+
     def apply(self, av: "DistributedToonAI"):
         av.checkWinCondition()
 
