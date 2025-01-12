@@ -253,6 +253,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
             allItems[item_id] += 1
 
         # Container Lists for Item Classes
+        bounties = []
         keyItems = []
         progressionItems = []
         usefulItems = []
@@ -273,6 +274,8 @@ class CheckPage(ShtikerPage.ShtikerPage):
             button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
             if itemName in playgroundKeys:
                 quantity = 2
+            if itemName == "Bounty":
+                bounties.append(button[0])
             if "Key" in itemName or "Disguise" in itemName:
                 if "Access" in itemName:
                     progressionItems.append(button[0])
@@ -288,7 +291,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
                 junkItems.append(button[0])
         model.removeNode()
         del model
-        self.checkButtons = keyItems + progressionItems + usefulItems + junkItems
+        self.checkButtons = bounties + keyItems + progressionItems + usefulItems + junkItems
 
     def _makeCheckButton(self, model, itemDef, checkCount, checkMax):
         """
