@@ -172,30 +172,27 @@ class ToontownWorld(World):
 
         # Force bounty placements
         if self.options.win_condition_bounty.value:
-            location_names = {}
-            for location in self.created_locations:
-                location_names[location.name.value] = location.progress_type
-
+            total_bounties = self.options.total_bounties.value
+            required_bounties = self.options.bounties_required.value
             valid_bounties = []
-            # Go through our locations and ensure they are in our multiworld
-            for bounty in locations.BOUNTY_LOCATIONS:
-                bounty_name = bounty.value
-                if bounty_name in location_names.keys():
-                    if location_names[bounty_name] != LocationProgressType.EXCLUDED:
-                        valid_bounties.append(bounty)
+            for location in self.created_locations:
+                if location.name in locations.BOUNTY_LOCATIONS and location.progress_type != LocationProgressType.EXCLUDED:
+                    valid_bounties.append(location.name)
+            gen_bounties = len(valid_bounties)
+            # If we want more bounties than our settings allow, stop gen and let player know
+            if total_bounties > gen_bounties:
+                raise Exception(f"[Toontown Slot - {self.multiworld.get_player_name(self.player)} Invalid] "
+                                f"Too many bounties wanted based on settings (wanted total: {total_bounties}).\n"
+                                f"Current settings only allow for ({gen_bounties}) bounty locations, please tweak settings.")
 
             # Make sure we make the right amount of bounties based on our settings
-            total_bounties = self.options.total_bounties.value
-            if total_bounties < self.options.bounties_required.value:
-                total_bounties = max(1, self.options.bounties_required.value)
-            if len(valid_bounties) < total_bounties:
-                total_bounties = max(1, len(valid_bounties))
+            true_bounty = max(1, min(total_bounties, required_bounties))
 
             # Finally place our bounties
-            for created_bounty in range(total_bounties):
+            for created_bounty in range(true_bounty):
                 bounty_choice = random.choice(valid_bounties)
-                self._force_item_placement(bounty_choice, ToontownItemName.BOUNTY)
                 valid_bounties.remove(bounty_choice)
+                self._force_item_placement(bounty_choice, ToontownItemName.BOUNTY)
 
         # only populate these locations if there's a reason to go there.
         if self.options.checks_per_boss.value > 0 or self.options.win_condition_cog_bosses.value:

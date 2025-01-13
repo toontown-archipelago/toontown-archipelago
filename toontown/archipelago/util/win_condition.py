@@ -254,14 +254,7 @@ class BountyWinCondition(WinCondition):
 
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
-        required_bounties = min(toon.slotData.get('bounties_required', 10), toon.slotData.get('total_bounties', 20))
-        bounty_pool = 0
-        for item_id in sorted(toon.slotData.get("local_itempool", [])):
-            itemDef = get_item_def_from_id(item_id)
-            itemName = itemDef.name.value
-            if itemName == ToontownItemName.BOUNTY.value:
-                bounty_pool += 1
-        self.bounties_required = min(required_bounties, bounty_pool)
+        self.bounties_required = min(toon.slotData.get('bounties_required', 10), toon.slotData.get('total_bounties', 20))
 
     def __get_bounties_acquired(self) -> int:
         return len(self.bounty_locations.intersection(self.toon.getCheckedLocations()))
