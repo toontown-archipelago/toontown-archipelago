@@ -31,10 +31,10 @@ SAFE_POSHPR = [
     (133.9, -359.1, 0, 0, 0, 0),  # 2L
     (165.5, -302.4, 0, 90, 0, 0),  # 4L
     (77.2, -329.3, 0, -90, 0, 0),  # 3L
-    (102.957,  -301.296,  0, 45, 0, 0),  # C1
-    (138.467,  -301.042,  0, -45, 0, 0),  # C2
-    (138.457,  -330.047,  0, -135, 0, 0),  # C3
-    (102.675,  -328.630,  0, 135, 0, 0),  # C4
+    # (102.957,  -301.296,  0, 45, 0, 0),  # C1
+    # (138.467,  -301.042,  0, -45, 0, 0),  # C2
+    # (138.457,  -330.047,  0, -135, 0, 0),  # C3
+    # (102.675,  -328.630,  0, 135, 0, 0),  # C4
 ]
 
 SAFE_POSHPR_NEW = [
@@ -117,20 +117,19 @@ class CFORuleset:
         self.TIMER_MODE = False  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
         self.TIMER_MODE_TIME_LIMIT = 15 * 60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
 
-        self.CFO_MAX_HP = 400  # How much HP should the CFO have?
-        self.HP_PER_EXTRA = 150  # How much HP should the CFO increase by per toon?
-        self.CFO_STUN_THRESHOLD = 15  # How much damage should a goon do to stun?
+        self.CFO_MAX_HP = 1500  # How much HP should the CFO have?
+        self.CFO_STUN_THRESHOLD = 24  # How much damage should a goon do to stun?
         self.SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 
         self.WANT_BACKWALL = False
         self.WANT_SIDECRANES = True
-        self.WANT_HEAVY_CRANES = False
+        self.WANT_HEAVY_CRANES = True
 
-        self.HEAVY_CRANE_DAMAGE_MULTIPLIER = 1.5
+        self.HEAVY_CRANE_DAMAGE_MULTIPLIER = 1.25
 
         self.MIN_GOON_IMPACT = 0.1  # How much impact should a goon hit need to register?
         self.MIN_SAFE_IMPACT = 0.0  # How much impact should a safe hit need to register?
-        self.MIN_DEHELMET_IMPACT = 0.25  # How much impact should a safe hit need to desafe the CFO?
+        self.MIN_DEHELMET_IMPACT = 0.5  # How much impact should a safe hit need to desafe the CFO?
 
         self.GOON_CFO_DAMAGE_MULTIPLIER = 1.0
         self.SAFE_CFO_DAMAGE_MULTIPLIER = 1.0
@@ -147,7 +146,7 @@ class CFORuleset:
             ToontownGlobals.BossCogElectricFence: 1,  # The actual bump
             ToontownGlobals.BossCogSwatLeft: 5,  # Swats from bumping
             ToontownGlobals.BossCogSwatRight: 5,
-            ToontownGlobals.BossCogSlowDirectedAttack: 10,  # Gear throw
+            ToontownGlobals.BossCogSlowDirectedAttack: 15,  # Gear throw
             ToontownGlobals.BossCogAreaAttack: 20,  # Jump
         }
 
@@ -157,8 +156,8 @@ class CFORuleset:
         self.CFO_ATTACKS_MULTIPLIER_INTERPOLATE = True
 
         # GOON/TREASURE SETTINGS
-        self.MIN_GOON_DAMAGE = 3  # What is the lowest amount of damage a goon should do? (beginning of CFO)
-        self.MAX_GOON_DAMAGE = 20  # What is the highest amount of damage a goon should do? (end of CFO)
+        self.MIN_GOON_DAMAGE = 5  # What is the lowest amount of damage a goon should do? (beginning of CFO)
+        self.MAX_GOON_DAMAGE = 35  # What is the highest amount of damage a goon should do? (end of CFO)
         self.GOON_SPEED_MULTIPLIER = 1.0  # How fast should goons move?
 
         # How many goons should we allow to spawn? This will scale up towards the end of the fight to the 2nd var
@@ -173,15 +172,15 @@ class CFORuleset:
         self.GOONS_ALWAYS_WAKE_WHEN_GRABBED = False
 
         # How many treasures should we allow to spawn?
-        self.MAX_TREASURE_AMOUNT = 30
+        self.MAX_TREASURE_AMOUNT = 15
 
         # Should we have a drop chance?
         self.GOON_TREASURE_DROP_CHANCE = 1.0
 
-        self.REALLY_WEAK_TREASURE_HEAL_AMOUNT = 5  # How much should the treasures from very small goons heal?
-        self.WEAK_TREASURE_HEAL_AMOUNT = 7  # How much should the treasures from small goons heal?
-        self.AVERAGE_TREASURE_HEAL_AMOUNT = 10  # How much should the treasures from med goons heal?
-        self.STRONG_TREASURE_HEAL_AMOUNT = 12  # How much should the treasures from the big goons heal?
+        self.REALLY_WEAK_TREASURE_HEAL_AMOUNT = 3  # How much should the treasures from very small goons heal?
+        self.WEAK_TREASURE_HEAL_AMOUNT = 5  # How much should the treasures from small goons heal?
+        self.AVERAGE_TREASURE_HEAL_AMOUNT = 7  # How much should the treasures from med goons heal?
+        self.STRONG_TREASURE_HEAL_AMOUNT = 10  # How much should the treasures from the big goons heal?
 
         # Applies treasure heal amounts
         self.update_lists()
@@ -198,8 +197,8 @@ class CFORuleset:
         self.LOW_LAFF_BONUS_INCLUDE_PENALTIES = False  # Should penalties also be increased when low on laff?
 
         # note: When REVIVE_TOONS_UPON_DEATH is True, the only fail condition is if we run out of time
-        self.RESTART_CRANE_ROUND_ON_FAIL = False  # Should we restart the crane round if all toons die?
-        self.REVIVE_TOONS_UPON_DEATH = False  # Should we revive a toon that dies after a certain amount of time? (essentially a stun)
+        self.RESTART_CRANE_ROUND_ON_FAIL = True  # Should we restart the crane round if all toons die?
+        self.REVIVE_TOONS_UPON_DEATH = True  # Should we revive a toon that dies after a certain amount of time? (essentially a stun)
         self.REVIVE_TOONS_TIME = 10  # Time in seconds to revive a toon after death
         self.REVIVE_TOONS_LAFF_PERCENTAGE = 0.50  # How much laff should we give back to the toon when revived?
 
@@ -220,12 +219,12 @@ class CFORuleset:
         self.POINTS_PENALTY_SANDBAG = -5  # Point deduction for hitting a very low impact hit
         self.POINTS_PENALTY_UNSTUN = -25
 
-        self.TREASURE_POINT_PENALTY = False  # Should we deduct points for picking up treasures?
+        self.TREASURE_POINT_PENALTY = True  # Should we deduct points for picking up treasures?
         self.TREASURE_POINT_PENALTY_FLAT_RATE = 1  # How much should we deduct? set to 0 or less to make it 1 to 1 with laff gained
 
         # COMBO SETTINGS
         self.COMBO_DURATION = 2.0  # How long should combos last?
-        self.TREASURE_GRAB_RESETS_COMBO = False  # Should picking up a treasure reset a toon's combo?
+        self.TREASURE_GRAB_RESETS_COMBO = True  # Should picking up a treasure reset a toon's combo?
 
         self.MODIFIER_TIER_RANGE = (1, 3)  # todo Perhaps refactor this into the modifier class
 
