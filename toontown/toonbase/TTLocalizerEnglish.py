@@ -9684,6 +9684,10 @@ IceGameControlKeyWarning = 'Remember to press the Ctrl key!'
 CrashBallGameTitle = "Crash Ball"
 CrashBallGameInstructions = "Defend the golf balls from entering your goal. Use the movement keys to move left & right, hold Ctrl to increase movement speed, and press Delete for an extra kick."
 
+# DistributedPieGame.py
+PieGameTitle = "Pie Round"
+PieGameInstructions = "Touch the cage to get some pies. Stun the VP by hitting the inside of his carriage while it's open, and use the pies to push him back while he's stunned. The player with the most points upon the VP's defeat wins."
+
 # DistributedCraneGame.py
 CraneGameTitle = "Crane Round"
 CraneGameInstructions = "Use the cranes to pick up goons to deal damage to the CFO. When the CFO is stunned, you may also use safes as damage. The player with the most points upon the CFO's defeat wins."

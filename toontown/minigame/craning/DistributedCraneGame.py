@@ -124,12 +124,7 @@ class DistributedCraneGame(DistributedMinigame):
         self.winSting = base.loader.loadSfx("phase_4/audio/sfx/MG_win.ogg")
         self.loseSting = base.loader.loadSfx("phase_4/audio/sfx/MG_lose.ogg")
 
-        self.bossSpeedrunTimer = BossSpeedrunTimedTimer(
-            time_limit=self.ruleset.TIMER_MODE_TIME_LIMIT) if self.ruleset.TIMER_MODE else BossSpeedrunTimer()
-        self.bossSpeedrunTimer.hide()
         base.cr.forbidCheesyEffects(1)
-
-        self.bossDamage = 0
 
         self.loadEnvironment()
 
@@ -385,7 +380,6 @@ class DistributedCraneGame(DistributedMinigame):
         # Enable the special CFO chat menu.
         localAvatar.chatMgr.chatInputSpeedChat.addCFOMenu()
 
-        myPos = self.avIdList.index(self.localAvId)
         for i in range(self.numPlayers):
             avId = self.avIdList[i]
             avatar = self.getAvatar(avId)
@@ -614,11 +608,6 @@ class DistributedCraneGame(DistributedMinigame):
         if avId == base.localAvatar.doId:
             self.boss.localToonIsSafe = False
             base.localAvatar.stunToon()
-
-    def startTimer(self):
-        self.bossSpeedrunTimer.reset()
-        self.bossSpeedrunTimer.start_updating()
-        self.bossSpeedrunTimer.show()
 
     def debug(self, doId='system', content='null'):
         if self.ruleset.GENERAL_DEBUG:

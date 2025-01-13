@@ -368,6 +368,7 @@ TwoDGameId = 15
 PhotoGameId = 16
 CrashBallGameId = 17
 CraneGameId = 18
+PieGameId = 19
 TravelGameId = 100
 MinigameNames = {
     'race': RaceGameId,
@@ -391,7 +392,8 @@ MinigameNames = {
     'photo': PhotoGameId,
     'travel': TravelGameId,
     'crashball': CrashBallGameId,
-    'crane': CraneGameId
+    'crane': CraneGameId,
+    'pie': PieGameId
 }
 MinigameTemplateId = -1
 MinigameIDs = (
@@ -413,7 +415,8 @@ MinigameIDs = (
     PhotoGameId,
     TravelGameId,
     CrashBallGameId,
-    CraneGameId
+    CraneGameId,
+    PieGameId
 )
 
 MultiplayerMinigames = (
@@ -423,7 +426,8 @@ MultiplayerMinigames = (
     RaceGameId,
     TravelGameId,
     CrashBallGameId,
-    CraneGameId
+    CraneGameId,
+    PieGameId
 )
 
 MinigamePlayerMatrix = {1: (CannonGameId,
@@ -716,7 +720,7 @@ BossCogBattleBPosHpr = (0,
  180,
  0,
  0)
-SellbotBossMaxDamage = 500
+SellbotBossMaxDamage = 100
 SellbotBossMinMaxDamage = 250
 SellbotBossMaxDamageNerfed = 150
 SellbotBossBattleOnePosHpr = (0,

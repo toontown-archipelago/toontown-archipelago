@@ -53,8 +53,6 @@ class DistributedBossCogStripped(DistributedAvatar.DistributedAvatar, BossCog.Bo
         self.cutsceneSpeed = 1.0
         fileSystem = VirtualFileSystem.getGlobalPtr()
         self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
-        self.localToonIsSafe = 0
-        return
 
     def announceGenerate(self):
         DistributedAvatar.DistributedAvatar.announceGenerate(self)
@@ -480,8 +478,7 @@ class DistributedBossCogStripped(DistributedAvatar.DistributedAvatar, BossCog.Bo
                                     bp2d[1],
                                     attackCode,
                                     timestamp])
-        if attackCode == ToontownGlobals.BossCogSlowDirectedAttack:
-            toon.stunToon()
+        toon.stunToon()
         self.doZapToon(toon, fling=fling, shake=shake)
         return
 

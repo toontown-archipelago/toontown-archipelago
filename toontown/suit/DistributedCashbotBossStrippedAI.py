@@ -16,7 +16,7 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossAI')
 
     def __init__(self, air, game):
-        DistributedBossCogStrippedAI.__init__(self, air, 'm')
+        DistributedBossCogStrippedAI.__init__(self, air, game, 'm')
         FSM.FSM.__init__(self, 'DistributedCashbotBossAI')
 
         self.game = game
@@ -286,26 +286,6 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
 
         self.oldMaxLaffs = {}
         self.toonDmgMultipliers = {}
-
-        taskMgr.remove(self.uniqueName('failedCraneRound'))
-
-        for comboTracker in self.comboTrackers.values():
-            comboTracker.cleanup()
-
-        # heal all toons and setup a combo tracker for them
-        for avId in self.getInvolvedToonsNotSpectating():
-            if avId in self.air.doId2do:
-                self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
-                av = self.air.doId2do[avId]
-
-                if self.ruleset.FORCE_MAX_LAFF:
-                    self.oldMaxLaffs[avId] = av.getMaxHp()
-                    av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
-                    self.debug(content='Forcing max laff to %s' % self.ruleset.FORCE_MAX_LAFF_AMOUNT)
-
-                if self.ruleset.HEAL_TOONS_ON_START:
-                    av.b_setHp(av.getMaxHp())
-                    self.debug(content='Healing all toons')
 
         self.toonsWon = False
 

@@ -41,6 +41,7 @@ class CraneWalk(Walk):
         base.localAvatar.enableAvatarControls()
         base.localAvatar.startTrackAnimToSpeed()
         base.localAvatar.setWalkSpeedNormal()
+        base.localAvatar.beginAllowPies()
 
     def exitWalking(self):
         self.ignore(base.controls.JUMP)
@@ -53,6 +54,7 @@ class CraneWalk(Walk):
         base.localAvatar.collisionsOff()
         base.localAvatar.controlManager.placeOnFloor()
         base.localAvatar.stopTrackAnimToSpeed()
+        base.localAvatar.endAllowPies()
 
     def enterSlowWalking(self):
         self.accept(base.localAvatar.uniqueName('positiveHP'), self.__handlePositiveHP)

@@ -9,7 +9,6 @@ from direct.task.TaskManagerGlobal import taskMgr
 from panda3d.core import CollisionInvSphere, CollisionNode, CollisionSphere, NodePath, Vec3, Point3
 
 from toontown.coghq import CraneLeagueGlobals
-from toontown.coghq.BossComboTrackerAI import BossComboTrackerAI
 from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
 from toontown.coghq.DistributedCashbotBossCraneAI import DistributedCashbotBossCraneAI
 from toontown.coghq.DistributedCashbotBossHeavyCraneAI import DistributedCashbotBossHeavyCraneAI
@@ -27,12 +26,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
     battleThreeDuration = 1800
 
     def __init__(self, air, minigameId):
-        try:
-            self.DistributedMinigameTemplateAI_initialized
-            return
-        except:
-            self.DistributedMinigameTemplateAI_initialized = 1
-
         DistributedMinigameAI.__init__(self, air, minigameId)
 
         self.ruleset = CraneLeagueGlobals.CFORuleset()
@@ -404,7 +397,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.cleanupComboTrackers()
         for avId in self.avIdList:
             if avId in self.air.doId2do:
-                self.comboTrackers[avId] = BossComboTrackerAI(self, avId)
+                self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
 
     def incrementCombo(self, avId, amount):
         tracker = self.comboTrackers.get(avId)
@@ -821,15 +814,11 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.oldMaxLaffs = {}
         self.toonDmgMultipliers = {}
 
-        taskMgr.remove(self.uniqueName('failedCraneRound'))
-
-        for comboTracker in self.comboTrackers.values():
-            comboTracker.cleanup()
+        self.initializeComboTrackers()
 
         # heal all toons and setup a combo tracker for them
         for avId in self.avIdList:
             if avId in self.air.doId2do:
-                self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
                 av = self.air.doId2do[avId]
 
                 if self.ruleset.FORCE_MAX_LAFF:

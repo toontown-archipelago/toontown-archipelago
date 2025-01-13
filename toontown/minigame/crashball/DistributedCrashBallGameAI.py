@@ -21,12 +21,6 @@ class DistributedCrashBallGameAI(DistributedMinigameAI, CrashBallGamePhysicsWorl
     BallDataUpdateRate = 0.05
 
     def __init__(self, air, minigameId):
-        try:
-            self.DistributedMinigameTemplateAI_initialized
-            return
-        except:
-            self.DistributedMinigameTemplateAI_initialized = 1
-
         DistributedMinigameAI.__init__(self, air, minigameId)
         CrashBallGamePhysicsWorld.__init__(self, canRender=False)
 

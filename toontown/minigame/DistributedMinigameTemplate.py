@@ -1,30 +1,29 @@
 """DistributedMinigameTemplate module: contains the DistributedMinigameTemplate class"""
+from direct.fsm.ClassicFSM import ClassicFSM
+from direct.fsm.State import State
 
-from panda3d.core import *
-from toontown.toonbase.ToonBaseGlobal import *
-from .DistributedMinigame import *
-from direct.fsm import ClassicFSM, State
-from direct.fsm import State
+from toontown.minigame.DistributedMinigame import DistributedMinigame
 from toontown.toonbase import TTLocalizer
+
 
 class DistributedMinigameTemplate(DistributedMinigame):
 
     # define constants that you won't want to tweak here
 
     def __init__(self, cr):
-        DistributedMinigame.__init__(self, cr)
+        super().__init__(cr)
 
-        self.gameFSM = ClassicFSM.ClassicFSM('DistributedMinigameTemplate',
+        self.gameFSM = ClassicFSM('DistributedMinigameTemplate',
                                [
-                                State.State('off',
+                                State('off',
                                             self.enterOff,
                                             self.exitOff,
                                             ['play']),
-                                State.State('play',
+                                State('play',
                                             self.enterPlay,
                                             self.exitPlay,
                                             ['cleanup']),
-                                State.State('cleanup',
+                                State('cleanup',
                                             self.enterCleanup,
                                             self.exitCleanup,
                                             []),
@@ -56,12 +55,12 @@ class DistributedMinigameTemplate(DistributedMinigame):
 
     def load(self):
         self.notify.debug("load")
-        DistributedMinigame.load(self)
+        super().load()
         # load resources and create objects here
 
     def unload(self):
         self.notify.debug("unload")
-        DistributedMinigame.unload(self)
+        super().unload()
         # unload resources and delete objects from load() here
         # remove our game ClassicFSM from the framework ClassicFSM
         self.removeChildGameFSM(self.gameFSM)
@@ -69,7 +68,7 @@ class DistributedMinigameTemplate(DistributedMinigame):
 
     def onstage(self):
         self.notify.debug("onstage")
-        DistributedMinigame.onstage(self)
+        super().onstage()
         # start up the minigame; parent things to render, start playing
         # music...
         # at this point we cannot yet show the remote players' toons
@@ -81,7 +80,7 @@ class DistributedMinigameTemplate(DistributedMinigame):
 
         # the base class parents the toons to hidden, so consider
         # calling it last
-        DistributedMinigame.offstage(self)
+        super().offstage()
 
     def handleDisabledAvatar(self, avId):
         """This will be called if an avatar exits unexpectedly"""
@@ -90,12 +89,12 @@ class DistributedMinigameTemplate(DistributedMinigame):
         # clean up any references to the disabled avatar before he disappears
 
         # then call the base class
-        DistributedMinigame.handleDisabledAvatar(self, avId)
+        super().handleDisabledAvatar(avId)
 
     def setGameReady(self):
         if not self.hasLocalToon: return
         self.notify.debug("setGameReady")
-        if DistributedMinigame.setGameReady(self):
+        if super().setGameReady():
             return
         # all of the remote toons have joined the game;
         # it's safe to show them now.
@@ -104,7 +103,7 @@ class DistributedMinigameTemplate(DistributedMinigame):
         if not self.hasLocalToon: return
         self.notify.debug("setGameStart")
         # base class will cause gameFSM to enter initial state
-        DistributedMinigame.setGameStart(self, timestamp)
+        super().setGameStart(timestamp)
         # all players have finished reading the rules,
         # and are ready to start playing.
         # transition to the appropriate state

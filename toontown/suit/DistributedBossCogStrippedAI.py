@@ -1,21 +1,17 @@
-from typing import Dict
-
 from direct.directnotify import DirectNotifyGlobal
 from direct.task.TaskManagerGlobal import taskMgr
 
 from otp.avatar import DistributedAvatarAI
-from toontown.coghq.BossComboTrackerAI import BossComboTrackerAI
 from toontown.suit import SuitDNA
 from toontown.toonbase import ToontownGlobals
-
-AllBossCogs = []
 
 
 class DistributedBossCogStrippedAI(DistributedAvatarAI.DistributedAvatarAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBossCogAI')
 
-    def __init__(self, air, dept):
+    def __init__(self, air, game, dept):
         DistributedAvatarAI.DistributedAvatarAI.__init__(self, air)
+        self.game = game
         self.dept = dept
         self.dna = SuitDNA.SuitDNA()
         self.dna.newBossCog(self.dept)
@@ -40,17 +36,13 @@ class DistributedBossCogStrippedAI(DistributedAvatarAI.DistributedAvatarAI):
         self.hitCount = 0
         self.hardmode = 0
         self.nerfed = False
-        self.comboTrackers: Dict[int, BossComboTrackerAI] = {}
-        AllBossCogs.append(self)
         self.canSkip = True
         self.toonsSkipped = []
         return
 
     def delete(self):
         self.ignoreAll()
-        if self in AllBossCogs:
-            i = AllBossCogs.index(self)
-            del AllBossCogs[i]
+        del self.game
         return DistributedAvatarAI.DistributedAvatarAI.delete(self)
 
     def getDNAString(self):
@@ -122,7 +114,6 @@ class DistributedBossCogStrippedAI(DistributedAvatarAI.DistributedAvatarAI):
                 damage = 5
             damage *= self.getDamageMultiplier()
             damage = max(int(damage), 1)
-            toon.setDeathReason(self.getDeathReasonFromAttackCode(attackCode))
             self.game.damageToon(toon, damage)
             if attackCode == ToontownGlobals.BossCogElectricFence:
                 if bpy < 0 and abs(bpx / bpy) > 0.5:
@@ -142,12 +133,12 @@ class DistributedBossCogStrippedAI(DistributedAvatarAI.DistributedAvatarAI):
         self.attackCode = attackCode
         self.attackAvId = avId
         if attackCode == ToontownGlobals.BossCogDizzy or attackCode == ToontownGlobals.BossCogDizzyNow:
-            delayTime = self.progressValue(20, 5)
+            delayTime = self.game.progressValue(20, 5)
             self.hitCount = 0
         else:
             if attackCode == ToontownGlobals.BossCogSlowDirectedAttack:
                 delayTime = ToontownGlobals.BossCogAttackTimes.get(attackCode)
-                delayTime += self.progressValue(10, 0)
+                delayTime += self.game.progressValue(10, 0)
             else:
                 delayTime = ToontownGlobals.BossCogAttackTimes.get(attackCode)
                 if delayTime == None:

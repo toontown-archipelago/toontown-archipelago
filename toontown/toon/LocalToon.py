@@ -912,8 +912,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         wantButton = 0
         if self.allowPies and self.numPies > 0:
             wantButton = 1
-        if not launcher.getPhaseComplete(5):
-            wantButton = 0
         haveButton = self.__pieButton != None
         if not haveButton and not wantButton:
             return
