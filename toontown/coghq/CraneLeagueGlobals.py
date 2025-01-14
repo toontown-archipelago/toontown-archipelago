@@ -123,7 +123,7 @@ class CFORuleset:
 
         self.WANT_BACKWALL = False
         self.WANT_SIDECRANES = True
-        self.WANT_HEAVY_CRANES = True
+        self.WANT_HEAVY_CRANES = False
 
         self.HEAVY_CRANE_DAMAGE_MULTIPLIER = 1.25
 
