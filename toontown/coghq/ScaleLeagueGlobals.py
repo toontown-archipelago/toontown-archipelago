@@ -19,6 +19,13 @@ class CJRuleset:
 
         self.CJ_MAX_HP = 2700  # How much HP should the CJ have?
 
+        # Difficulty settings
+        self.AMMO_COUNT = 22
+        self.NUM_GAVELS = 8
+        self.NUM_LAWYERS = 10
+        self.HEAL_AMOUNT = 4
+        self.JURORS_SEATED = 12
+
         # TOON SETTINGS
         self.FORCE_MAX_LAFF = False  # Should we force a laff limit for this scale round?
         self.FORCE_MAX_LAFF_AMOUNT = 100  # The laff that we are going to force all toons participating to have

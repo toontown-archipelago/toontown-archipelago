@@ -525,6 +525,7 @@ class DistributedCraneGame(DistributedMinigame):
 
     def setBossCogId(self, bossCogId: int) -> None:
         self.boss = base.cr.getDo(bossCogId)
+        self.boss.game = self
         self.boss.prepareBossForBattle()
 
     def killingBlowDealt(self, avId):

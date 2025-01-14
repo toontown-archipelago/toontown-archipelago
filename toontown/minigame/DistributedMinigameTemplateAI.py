@@ -10,7 +10,7 @@ class DistributedMinigameTemplateAI(DistributedMinigameAI):
     def __init__(self, air, minigameId):
         super().__init__(air, minigameId)
 
-        self.gameFSM = ClassicFSM('DistributedMinigameTemplateAI',
+        self.gameFSM = ClassicFSM(self.__class__.__name__,
                                   [
                                       State('inactive',
                                             self.enterInactive,

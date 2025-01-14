@@ -74,7 +74,7 @@ class DistributedLawbotBossSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
     def _logDeath(self, toonId):
         pass
 
-    def doNextAttack(self, lawbotBoss):
+    def doNextAttack(self):
         if self.stunned:
             return
         chanceToDoAttack = ToontownGlobals.LawbotBossLawyerChanceToAttack
@@ -82,10 +82,10 @@ class DistributedLawbotBossSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
         if action > chanceToDoAttack:
             self.doProsecute()
         else:
-            if not lawbotBoss.involvedToons:
+            if not self.boss.avIdList:
                 return
 
-            availTargets = list(lawbotBoss.involvedToons)
+            availTargets = list(self.boss.avIdList)
             for id in availTargets[:]:
                 t = self.air.doId2do.get(id)
                 if not t:

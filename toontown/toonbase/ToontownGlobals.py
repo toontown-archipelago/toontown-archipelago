@@ -369,6 +369,7 @@ PhotoGameId = 16
 CrashBallGameId = 17
 CraneGameId = 18
 PieGameId = 19
+ScaleGameId = 20
 TravelGameId = 100
 MinigameNames = {
     'race': RaceGameId,
@@ -393,7 +394,8 @@ MinigameNames = {
     'travel': TravelGameId,
     'crashball': CrashBallGameId,
     'crane': CraneGameId,
-    'pie': PieGameId
+    'pie': PieGameId,
+    'scale': ScaleGameId
 }
 MinigameTemplateId = -1
 MinigameIDs = (
@@ -416,7 +418,8 @@ MinigameIDs = (
     TravelGameId,
     CrashBallGameId,
     CraneGameId,
-    PieGameId
+    PieGameId,
+    ScaleGameId
 )
 
 MultiplayerMinigames = (
@@ -427,7 +430,8 @@ MultiplayerMinigames = (
     TravelGameId,
     CrashBallGameId,
     CraneGameId,
-    PieGameId
+    PieGameId,
+    ScaleGameId
 )
 
 MinigamePlayerMatrix = {1: (CannonGameId,
@@ -929,7 +933,7 @@ LawbotBossBattleOnePosHpr = (-2.798,
  0)
 LawbotBossBattleTwoPosHpr = (-2.798,
  89,
- 19.145,
+ 21,
  0,
  0,
  0)

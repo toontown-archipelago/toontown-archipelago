@@ -13,7 +13,7 @@ class DistributedMinigameTemplate(DistributedMinigame):
     def __init__(self, cr):
         super().__init__(cr)
 
-        self.gameFSM = ClassicFSM('DistributedMinigameTemplate',
+        self.gameFSM = ClassicFSM(self.__class__.__name__,
                                [
                                 State('off',
                                             self.enterOff,

@@ -390,7 +390,7 @@ class DistributedPieGame(DistributedMinigame):
         self.walkStateData.exit()
 
         self.__clearOnscreenMessage()
-        self.ignore('begin-pie')
+        self.ignoreAll()
         localAvatar.setCameraFov(ToontownGlobals.CogHQCameraFov)
 
     def enterVictory(self):
@@ -443,6 +443,7 @@ class DistributedPieGame(DistributedMinigame):
 
     def setBossCogId(self, bossCogId: int) -> None:
         self.boss = base.cr.getDo(bossCogId)
+        self.boss.game = self
         self.boss.prepareBossForBattle()
 
     def cagedToonBattleThree(self, index, avId):

@@ -46,6 +46,7 @@ from toontown.suit import DistributedCashbotBoss/AI
 from toontown.suit import DistributedBossCogStripped/AI
 from toontown.suit import DistributedSellbotBossStripped/AI
 from toontown.suit import DistributedCashbotBossStripped/AI
+from toontown.suit import DistributedLawbotBossStripped/AI
 
 from toontown.coghq import DistributedCashbotBossSafe/AI
 from toontown.coghq import DistributedCashbotBossCrane/AI
@@ -305,6 +306,7 @@ from toontown.minigame.crashball import DistributedCrashBallVehicle/AI
 
 from toontown.minigame.pie import DistributedPieGame/AI
 from toontown.minigame.craning import DistributedCraneGame/AI
+from toontown.minigame.scale import DistributedScaleGame/AI
 
 from toontown.safezone import DistributedPicnicTable/AI
 from toontown.safezone import DistributedChineseCheckers/AI
@@ -1298,6 +1300,12 @@ dclass DistributedSellbotBossStripped: DistributedBossCogStripped {
 dclass DistributedCashbotBossStripped: DistributedBossCogStripped {
   setBossDamage(uint32, uint32, uint32, bool) broadcast ram;
   setAttackCode(uint8, uint32, uint32) broadcast;
+};
+
+dclass DistributedLawbotBossStripped: DistributedBossCogStripped {
+  setBossDamage(uint32, uint32, uint32) broadcast ram;
+  setAttackCode(uint8, uint32, uint32) broadcast;
+  setTaunt(int8, int8) broadcast;
 };
 
 dclass DistributedBossCog : DistributedNode {
@@ -3866,12 +3874,10 @@ dclass DistributedPieGame: DistributedMinigame {
   touchCage() airecv clsend;
   cagedToonBattleThree(uint16, uint32) broadcast;
   addToActivityLog(uint32, string) broadcast;
-  killingBlowDealt(uint32 avId) broadcast ram;
   updateDamageDealt(uint32 avId, uint32) broadcast ram;
   updateStunCount(uint32 avId, uint32) broadcast ram;
   updateCombo(uint32 avId, uint8) broadcast ram;
   awardCombo(uint32 avId, uint8, int32) broadcast ram;
-  updateUnstun(uint32 avId) broadcast ram;
   declareVictor(uint32 avId) broadcast;
   updateTimer(uint32/255) broadcast ram;
   toonDied(uint32) broadcast;
@@ -3900,6 +3906,31 @@ dclass DistributedCraneGame: DistributedMinigame {
   updateTimer(uint32/255) broadcast ram;
   toonDied(uint32) broadcast;
   revivedToon(uint32 avId) broadcast;
+};
+
+dclass DistributedScaleGame: DistributedMinigame {
+  setRawRuleset(ScaleLeagueRuleset) required broadcast ram;
+  setBossCogId(uint32 doId) broadcast;
+  touchWitnessStand() airecv clsend;
+  addToActivityLog(uint32, string) broadcast;
+  updateDamageDealt(uint32 avId, uint32) broadcast ram;
+  updateStunCount(uint32 avId, uint32) broadcast ram;
+  updateCombo(uint32 avId, uint8) broadcast ram;
+  awardCombo(uint32 avId, uint8, int32) broadcast ram;
+  declareVictor(uint32 avId) broadcast;
+  weLost() broadcast;
+  updateTimer(uint32/255) broadcast ram;
+  toonDied(uint32) broadcast;
+  revivedToon(uint32 avId) broadcast;
+
+  hitBoss() airecv clsend;
+  healBoss(uint8) airecv clsend;
+  hitToon(uint32) airecv clsend;
+  setLawyerIds(uint32[]) broadcast ram;
+  toonGotHealed(uint32) broadcast;
+  enteredBonusState() broadcast;
+  lawyerDisabled(uint32 avid) broadcast;
+  stunBonus(uint32 avId, uint32) broadcast;
 };
 
 dclass DistributedPicnicTable : DistributedNode {

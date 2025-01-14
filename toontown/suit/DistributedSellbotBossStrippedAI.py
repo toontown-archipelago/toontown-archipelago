@@ -80,7 +80,7 @@ class DistributedSellbotBossStrippedAI(DistributedBossCogStrippedAI):
 
     def __doAreaAttack(self):
         self.b_setAttackCode(ToontownGlobals.BossCogAreaAttack)
-        if self.recoverRate > 0:
+        if self.recoverRate:
             newRecoverRate = min(200, self.recoverRate * 1.2)
         else:
             newRecoverRate = 2
@@ -106,6 +106,10 @@ class DistributedSellbotBossStrippedAI(DistributedBossCogStrippedAI):
     def getBossDamage(self):
         now = globalClock.getFrameTime()
         elapsed = now - self.recoverStartTime
+
+        # It is important that we consistently represent bossDamage as
+        # an integer value, so there is never any chance of client and
+        # AI disagreeing about whether bossDamage < bossMaxDamage.
         return int(max(self.bossDamage - self.recoverRate * elapsed / 60.0, 0))
 
     def d_setBossDamage(self, bossDamage, recoverRate, recoverStartTime):
