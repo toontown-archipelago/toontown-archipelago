@@ -69,6 +69,14 @@ class DistributedSeltzerGameAI(DistributedMinigameAI):
 
         super().generate()
 
+    def cleanup(self) -> None:
+        self.deleteBanquetTables()
+        self.deleteFoodBelts()
+
+        if self.boss is not None:
+            self.boss.requestDelete()
+            self.boss = None
+
     # Disable is never called on the AI so we do not define one
 
     def delete(self):
@@ -100,6 +108,7 @@ class DistributedSeltzerGameAI(DistributedMinigameAI):
         # ended (a player got disconnected, etc.)
         if self.gameFSM.getCurrentState():
             self.gameFSM.request('cleanup')
+        self.cleanup()
         super().setGameAbort()
 
     def gameOver(self):
@@ -166,12 +175,7 @@ class DistributedSeltzerGameAI(DistributedMinigameAI):
 
     def enterCleanup(self):
         self.notify.debug("enterCleanup")
-        self.deleteBanquetTables()
-        self.deleteFoodBelts()
-
-        self.boss.requestDelete()
-        del self.boss
-
+        self.cleanup()
         self.gameFSM.request('inactive')
 
     def exitCleanup(self):

@@ -76,6 +76,14 @@ class DistributedScaleGameAI(DistributedMinigameAI):
 
         super().generate()
 
+    def cleanup(self) -> None:
+        if self.boss is not None:
+            self.boss.requestDelete()
+            self.boss = None
+
+        self.__deleteChairs()
+        self.__deleteGavels()
+
     # Disable is never called on the AI so we do not define one
 
     def delete(self):
@@ -106,6 +114,7 @@ class DistributedScaleGameAI(DistributedMinigameAI):
         # ended (a player got disconnected, etc.)
         if self.gameFSM.getCurrentState():
             self.gameFSM.request('cleanup')
+        self.cleanup()
         super().setGameAbort()
 
     def gameOver(self):
@@ -192,12 +201,7 @@ class DistributedScaleGameAI(DistributedMinigameAI):
 
     def enterCleanup(self):
         self.notify.debug("enterCleanup")
-
-        self.boss.requestDelete()
-        del self.boss
-
-        self.__deleteChairs()
-        self.__deleteGavels()
+        self.cleanup()
         self.gameFSM.request('inactive')
 
     def exitCleanup(self):

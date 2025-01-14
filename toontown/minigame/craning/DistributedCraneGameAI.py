@@ -36,6 +36,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.treasures = {}
         self.grabbingTreasures = {}
         self.recycledTreasures = []
+        self.boss = None
 
         # We need a scene to do the collision detection in.
         self.scene = NodePath('scene')
@@ -105,6 +106,12 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.boss.attachNewNode(cn)
 
         DistributedMinigameAI.generate(self)
+
+    def cleanup(self) -> None:
+        self.__deleteCraningObjects()
+
+        self.boss.requestDelete()
+        del self.boss
 
     # Disable is never called on the AI so we do not define one
 
@@ -201,6 +208,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # ended (a player got disconnected, etc.)
         if self.gameFSM.getCurrentState():
             self.gameFSM.request('cleanup')
+
+        self.cleanup()
+
         DistributedMinigameAI.setGameAbort(self)
 
     def gameOver(self):
@@ -887,11 +897,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def enterCleanup(self):
         self.notify.debug("enterCleanup")
-        self.__deleteCraningObjects()
-
-        self.boss.requestDelete()
-        del self.boss
-
+        self.cleanup()
         self.gameFSM.request('inactive')
 
     def exitCleanup(self):
