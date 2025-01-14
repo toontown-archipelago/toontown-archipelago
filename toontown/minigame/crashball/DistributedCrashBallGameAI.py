@@ -68,6 +68,15 @@ class DistributedCrashBallGameAI(DistributedMinigameAI, CrashBallGamePhysicsWorl
 
         self.ballSpawnTask = self.uniqueName("crashBall-spawnBalls")
 
+    def cleanup(self) -> None:
+        for vehicle in self.vehicles.values():
+            vehicle.requestDelete()
+        self.vehicles = {}
+
+        for ball in self.golfBalls.values():
+            ball["golfBallOdeGeom"].destroy()
+        self.golfBalls = {}
+
     def setExpectedAvatars(self, avIds):
         super().setExpectedAvatars(avIds)
         self.npcPlayerIds = [10 + i for i in range(4 - len(self.avIdList))]
@@ -213,6 +222,8 @@ class DistributedCrashBallGameAI(DistributedMinigameAI, CrashBallGamePhysicsWorl
         if self.gameFSM.getCurrentState():
             self.gameFSM.request('cleanup')
 
+        self.cleanup()
+
         DistributedMinigameAI.setGameAbort(self)
 
     def gameOver(self):
@@ -269,10 +280,7 @@ class DistributedCrashBallGameAI(DistributedMinigameAI, CrashBallGamePhysicsWorl
 
     def enterCleanup(self):
         self.notify.debug("enterCleanup")
-
-        for vehicle in self.vehicles.values():
-            vehicle.requestDelete()
-        self.vehicles = {}
+        self.cleanup()
 
         self.gameFSM.request('inactive')
 

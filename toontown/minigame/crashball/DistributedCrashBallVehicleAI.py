@@ -51,6 +51,8 @@ class DistributedCrashBallVehicleAI(DistributedObjectAI):
         self.useExtraKick = False
         self.lastUsedExtraKick = 0.0
 
+        self.deleted = False
+
     def announceGenerate(self):
         super().announceGenerate()
 
@@ -71,6 +73,8 @@ class DistributedCrashBallVehicleAI(DistributedObjectAI):
         del self.extraKickOdeGeom
 
         del self.minigame
+
+        self.deleted = True
 
         super().delete()
 
@@ -102,6 +106,9 @@ class DistributedCrashBallVehicleAI(DistributedObjectAI):
         taskMgr.doMethodLater(1.0, self.requestDelete, self.uniqueName("crashBallVehicleDelete"), extraArgs=[])
 
     def setVehicleX(self, x: float, timestamp: int) -> None:
+        if self.deleted:
+            return
+
         if self.getPlayerAxis() == 1:
             self.node.setY(x)
         else:

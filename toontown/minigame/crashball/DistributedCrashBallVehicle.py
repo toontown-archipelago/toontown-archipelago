@@ -36,8 +36,10 @@ class DistributedCrashBallVehicle(DistributedObject):
         self.extraKickNodePath = None
         self.extraKickOdeGeom = None
         self.disappearTrack = None
+        self.aimTaskName = ""
 
         self.__isExtraKickUp = False
+        self.__isSprintHeld = False
 
         self.smoother = SmoothMover()
         self.smoother.setSmoothMode(SmoothMover.SMOn)
@@ -71,6 +73,7 @@ class DistributedCrashBallVehicle(DistributedObject):
     def delete(self) -> None:
         self.stopPosHprBroadcast()
         self.stopSmooth()
+        self.disableControls()
 
         if self.disappearTrack is not None:
             self.disappearTrack.finish()
@@ -110,26 +113,43 @@ class DistributedCrashBallVehicle(DistributedObject):
         taskMgr.add(self.__aimTask, self.aimTaskName)
 
         self.__isExtraKickUp = False
-        self.accept("delete", self.useExtraKick)
+        self.accept(base.controls.JUMP, self.useExtraKick)
+        self.accept(base.controls.SPRINT, self.__handleSprintPress)
+        self.accept(base.controls.SPRINT + '-up', self.__handleSprintRelease)
 
         self.startPosHprBroadcast()
 
     def disableControls(self) -> None:
         taskMgr.remove(self.aimTaskName)
-        self.ignore("delete")
+        self.ignore(base.controls.JUMP)
+        self.ignore(base.controls.SPRINT)
+        self.ignore(base.controls.SPRINT + '-up')
+
+    def __handleSprintPress(self) -> None:
+        self.__isSprintHeld = True
+
+    def __handleSprintRelease(self) -> None:
+        self.__isSprintHeld = False
 
     def __aimTask(self, task):
         """Handle input and other necessary stuff while in the Input Choice state."""
         dt = globalClock.getDt()
         arrowKeys = self.minigame.arrowKeys
-        # Increase speed when ctrl is held.
-        xChange = dt * (12.0 if arrowKeys.jumpPressed() else 8.0)
+        # Increase speed when sprint is held.
+        xChange = dt * (12.0 if self.__isSprintHeld else 8.0)
         oldXValue = self.tireNodePath.getPos()[self.getPlayerAxis()]
+        index = self.getControllerIndex()
 
         if arrowKeys.leftPressed() and not arrowKeys.rightPressed():
-            newX = min(max(oldXValue - xChange, -5.5), 5.5)
+            if index in (0, 2):
+                newX = min(max(oldXValue - xChange, -5.5), 5.5)
+            else:
+                newX = min(max(oldXValue + xChange, -5.5), 5.5)
         elif arrowKeys.rightPressed() and not arrowKeys.leftPressed():
-            newX = min(max(oldXValue + xChange, -5.5), 5.5)
+            if index in (0, 2):
+                newX = min(max(oldXValue + xChange, -5.5), 5.5)
+            else:
+                newX = min(max(oldXValue - xChange, -5.5), 5.5)
         else:
             return task.cont
 

@@ -96,7 +96,9 @@ class DistributedCrashBallGame(DistributedMinigame, CrashBallGamePhysicsWorld):
         return TTLocalizer.CrashBallGameTitle
 
     def getInstructions(self):
-        return TTLocalizer.CrashBallGameInstructions
+        return TTLocalizer.CrashBallGameInstructions.format(
+            sprint=base.controls.SPRINT.upper(), jump=base.controls.JUMP.upper()
+        )
 
     def getMaxDuration(self):
         # how many seconds can this minigame possibly last (within reason)?
@@ -209,6 +211,11 @@ class DistributedCrashBallGame(DistributedMinigame, CrashBallGamePhysicsWorld):
         self.notify.debug("offstage")
         # stop the minigame; parent things to hidden, stop the
         # music...
+        for avId in self.avIdList:
+            av = self.cr.getDo(avId)
+            if av:
+                av.setScale(1.0)
+                av.show()
 
         taskMgr.remove("skyTrack")
 
@@ -245,6 +252,10 @@ class DistributedCrashBallGame(DistributedMinigame, CrashBallGamePhysicsWorld):
             wall["wallNode"].removeNode()
 
         self.walls = {}
+
+        for suit in self.npcPlayers.values():
+            suit.delete()
+        self.npcPlayers = {}
 
         base.setBackgroundColor(ToontownGlobals.DefaultBackgroundColor)
 
@@ -497,7 +508,8 @@ class DistributedCrashBallGame(DistributedMinigame, CrashBallGamePhysicsWorld):
             aoe.setLinearVel(float(xVel), float(yVel), float(zVel))
 
     def getLocalVehicle(self):
-        return self.vehicles[self.localAvId]
+        if self.localAvId in self.vehicles:
+            return self.vehicles[self.localAvId]
 
     def postStep(self):
         """Play sounds as needed after one simulation step."""
@@ -561,7 +573,7 @@ class DistributedCrashBallGame(DistributedMinigame, CrashBallGamePhysicsWorld):
         self.stopSim()
 
         # Stop the local toon movement.
-        if self.vehicles:
+        if self.getLocalVehicle():
             self.getLocalVehicle().disableControls()
 
         for track in list(self.golfBallSpawnTracks.values()):
@@ -587,6 +599,7 @@ class DistributedCrashBallGame(DistributedMinigame, CrashBallGamePhysicsWorld):
         self.winSequence = Parallel()
         if winner is not None:
             winner.wrtReparentTo(render)
+            self.vehicles[winnerId].stopSmooth()
             np = self.vehicles[winnerId].getNode()
             np.wrtReparentTo(render)
             cQuat = Quat()
@@ -609,10 +622,6 @@ class DistributedCrashBallGame(DistributedMinigame, CrashBallGamePhysicsWorld):
 
     def enterCleanup(self):
         self.notify.debug("enterCleanup")
-
-        for suit in self.npcPlayers.values():
-            suit.delete()
-        self.npcPlayers = {}
 
     def exitCleanup(self):
         pass

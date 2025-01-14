@@ -9682,7 +9682,7 @@ IceGameControlKeyWarning = 'Remember to press the Ctrl key!'
 
 # DistributedCrashBallGame.py
 CrashBallGameTitle = "Crash Ball"
-CrashBallGameInstructions = "Defend the golf balls from entering your goal. Use the movement keys to move left & right, hold Ctrl to increase movement speed, and press Delete for an extra kick."
+CrashBallGameInstructions = "Defend the golf balls from entering your goal. Use the movement keys to move left & right, hold {sprint} to increase movement speed, and press {jump} for an extra kick."
 
 # DistributedPieGame.py
 PieGameTitle = "Pie Round"
