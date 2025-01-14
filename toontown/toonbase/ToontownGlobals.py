@@ -370,6 +370,7 @@ CrashBallGameId = 17
 CraneGameId = 18
 PieGameId = 19
 ScaleGameId = 20
+SeltzerGameId = 21
 TravelGameId = 100
 MinigameNames = {
     'race': RaceGameId,
@@ -395,7 +396,8 @@ MinigameNames = {
     'crashball': CrashBallGameId,
     'crane': CraneGameId,
     'pie': PieGameId,
-    'scale': ScaleGameId
+    'scale': ScaleGameId,
+    'seltzer': SeltzerGameId
 }
 MinigameTemplateId = -1
 MinigameIDs = (
@@ -419,7 +421,8 @@ MinigameIDs = (
     CrashBallGameId,
     CraneGameId,
     PieGameId,
-    ScaleGameId
+    ScaleGameId,
+    SeltzerGameId
 )
 
 MultiplayerMinigames = (
@@ -431,7 +434,8 @@ MultiplayerMinigames = (
     CrashBallGameId,
     CraneGameId,
     PieGameId,
-    ScaleGameId
+    ScaleGameId,
+    SeltzerGameId
 )
 
 MinigamePlayerMatrix = {1: (CannonGameId,

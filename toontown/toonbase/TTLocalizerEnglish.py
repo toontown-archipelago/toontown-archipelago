@@ -9692,6 +9692,14 @@ PieGameInstructions = "Touch the cage to get some pies. Stun the VP by hitting t
 CraneGameTitle = "Crane Round"
 CraneGameInstructions = "Use the cranes to pick up goons to deal damage to the CFO. When the CFO is stunned, you may also use safes as damage. The player with the most points upon the CFO's defeat wins."
 
+# DistributedScaleGame.py
+ScaleGameTitle = "Scale Round"
+ScaleGameInstructions = "Touch the witness stand to get some evidence. Throw evidence into the pan to deal damage. The lawyers may be stunned, and when all are stunned, a damage bonus is granted. The player with the most points upon the CJ's defeat wins."
+
+# DistributedSeltzerGame.py
+SeltzerGameTitle = "Seltzer Round"
+SeltzerGameInstructions = "Use the seltzer bottles to deal damage to the CEO. Stun the CEO with red damage hits. Damage is increased during stuns. The player with the most points upon the CEO's defeat wins."
+
 PicnicTableJoinButton = 'Join'
 PicnicTableObserveButton = 'Observe'
 PicnicTableCancelButton = 'Cancel'

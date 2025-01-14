@@ -27,6 +27,7 @@ from .DistributedMinigameAI import DistributedMinigameAI
 from .craning.DistributedCraneGameAI import DistributedCraneGameAI
 from .pie.DistributedPieGameAI import DistributedPieGameAI
 from .scale.DistributedScaleGameAI import DistributedScaleGameAI
+from .seltzer.DistributedSeltzerGameAI import DistributedSeltzerGameAI
 
 
 @dataclass
@@ -61,6 +62,7 @@ class MinigameCreatorAI:
         ToontownGlobals.CraneGameId: DistributedCraneGameAI,
         ToontownGlobals.PieGameId: DistributedPieGameAI,
         ToontownGlobals.ScaleGameId: DistributedScaleGameAI,
+        ToontownGlobals.SeltzerGameId: DistributedSeltzerGameAI,
     }
 
     def __init__(self, air):

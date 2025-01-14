@@ -1711,7 +1711,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def squish(self, damage):
         if self == base.localAvatar:
-            base.cr.playGame.getPlace().fsm.request('squished')
+            messenger.send("LocalSetSquishedMode")
+            place = base.cr.playGame.getPlace()
+            if place:
+                place.fsm.request('squished')
             self.stunToon()
             self.setZ(self.getZ(render) + 0.025)
 

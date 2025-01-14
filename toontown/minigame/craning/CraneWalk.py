@@ -16,6 +16,11 @@ class CraneWalk(Walk):
         craneState = self.fsm.getStateNamed('crane')
         craneState.addTransition('ouch')
 
+        self.fsm.addState(State.State('squished', self.enterSquished, self.exitSquished, ['walking', 'crane']))
+        walkState.addTransition('squished')
+        craneState = self.fsm.getStateNamed('crane')
+        craneState.addTransition('squished')
+
     def enter(self, slowWalk = 0):
         base.localAvatar.laffMeter.start()
         self.fsm.request('walking')
@@ -98,4 +103,10 @@ class CraneWalk(Walk):
         pass
 
     def exitOuch(self):
+        pass
+
+    def enterSquished(self):
+        base.localAvatar.b_setAnimState('Flattened')
+
+    def exitSquished(self):
         pass

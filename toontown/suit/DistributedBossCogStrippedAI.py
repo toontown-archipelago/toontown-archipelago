@@ -69,7 +69,7 @@ class DistributedBossCogStrippedAI(DistributedAvatarAI.DistributedAvatarAI):
         return toonId in self.involvedToons or toonId in self.looseToons
 
     def getHealthRemaining(self):
-        return self.bossMaxDamage - self.bossDamage
+        return self.getMaxHealth() - self.bossDamage
 
     def getMaxHealth(self):
         return self.bossMaxDamage

@@ -31,7 +31,7 @@ class DistributedGolfSpotAI(DistributedObjectAI.DistributedObjectAI, FSM.FSM):
         if not toon:
             return
 
-        if avId not in self.boss.involvedToons:
+        if avId not in self.boss.avIdList:
             return
 
         if self.avId != 0 or self.state == 'Off':

@@ -1,5 +1,6 @@
 import functools
 
+from direct.distributed import DistributedSmoothNode
 from direct.fsm.ClassicFSM import ClassicFSM
 from direct.fsm.State import State
 from direct.gui.DirectLabel import DirectLabel
@@ -94,10 +95,10 @@ class DistributedScaleGame(DistributedMinigame):
         self.addChildGameFSM(self.gameFSM)
 
     def getTitle(self):
-        return TTLocalizer.MinigameTemplateTitle
+        return TTLocalizer.ScaleGameTitle
 
     def getInstructions(self):
-        return TTLocalizer.MinigameTemplateInstructions
+        return TTLocalizer.ScaleGameInstructions
 
     def getMaxDuration(self):
         # how many seconds can this minigame possibly last (within reason)?
@@ -244,10 +245,15 @@ class DistributedScaleGame(DistributedMinigame):
 
         camera.setPosHpr(-3, 45, 30, 0, 0, 0)
 
+        DistributedSmoothNode.activateSmoothing(1, 1)
+
     def offstage(self):
         self.notify.debug("offstage")
         # stop the minigame; parent things to hidden, stop the
         # music...
+        DistributedSmoothNode.activateSmoothing(1, 0)
+        NametagGlobals.setMasterArrowsOn(0)
+        base.camLens.setFar(ToontownGlobals.DefaultCameraFar)
 
         # the base class parents the toons to hidden, so consider
         # calling it last
@@ -322,7 +328,6 @@ class DistributedScaleGame(DistributedMinigame):
                 self.scoreboard.addToon(avId)
 
     def exitPlay(self):
-        print(f"Fffffff {self.boss}")
         if self.boss is not None:
             self.boss.cleanupBossBattle()
 

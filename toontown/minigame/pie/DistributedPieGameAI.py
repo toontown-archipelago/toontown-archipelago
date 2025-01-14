@@ -168,7 +168,7 @@ class DistributedPieGameAI(DistributedMinigameAI):
         pass
 
     """
-    Misc shit
+    Misc
     """
 
     def d_setBossCogId(self) -> None:

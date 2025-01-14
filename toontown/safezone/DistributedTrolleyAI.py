@@ -282,7 +282,8 @@ class DistributedTrolleyAI(DistributedObjectAI.DistributedObjectAI):
                 if simbase.config.GetBool('metagame-min-2-players', 1) and len(playerArray) == 1:
                     metagameRound = -1
 
-            minigame = self.air.minigameMgr.createMinigame(playerArray, self.zoneId, newbieIds=[], startingVotes=startingVotes, metagameRound=metagameRound)
+            minigame = self.air.minigameMgr.createMinigame(playerArray, self.zoneId, newbieIds=[],
+                                                           startingVotes=startingVotes, metagameRound=metagameRound)
             for seatIndex in range(len(self.seats)):
                 avId = self.seats[seatIndex]
                 if avId:
