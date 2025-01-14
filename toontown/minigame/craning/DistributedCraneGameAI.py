@@ -110,8 +110,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
     def cleanup(self) -> None:
         self.__deleteCraningObjects()
 
-        self.boss.requestDelete()
-        del self.boss
+        if self.boss is not None:
+            self.boss.requestDelete()
+            self.boss = None
 
     # Disable is never called on the AI so we do not define one
 
