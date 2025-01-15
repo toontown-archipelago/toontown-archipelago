@@ -2,6 +2,7 @@ from typing import Dict, List
 
 from apworld.toontown.locations import LOCATION_ID_TO_NAME
 from . import ShtikerPage
+import random
 from apworld.toontown import ToontownItemName, ToontownItemDefinition, get_item_def_from_id
 from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
@@ -43,6 +44,7 @@ class HintNode(DirectFrame):
 
     def askForHint(self):
         if self.hintName is None:
+            base.talkAssistant.sendOpenTalk("!hint")
             return
         base.talkAssistant.sendOpenTalk("!hint " + self.hintName.value)
 
@@ -86,7 +88,9 @@ class HintNode(DirectFrame):
 
             # If we do not have a hint for this, set defaults
             if labelIndex >= len(hints):
-                text = "Where is it?"  # TODO: randomize out of a set of messages for fun
+                text = random.choice(["Where is it?", "Looking for me?", "Has to be somewhere...", "Got Hints? TM", "Wasted your hint points, didn't you?",
+                                      "Recover me from the Cogs!", "A check has fallen into the river in Lego City!", "Find me, I dare you.", "Hope this wasn't in sphere 1.",
+                                      "This one is going to be on the D Office, watch.", "*Crickets chirping*", "Check the tracker.", "Can you find it?"])
                 node = self.__createHintDisplay(text, xIcon, labelIndex)
                 self.hintNodes.append(node)
                 continue
@@ -106,9 +110,11 @@ class HintNode(DirectFrame):
 
         # If we know where everything is, then we shouldn't need the hint button anymore
         if len(hints) >= checkMax:
-            self.hintButton.hide()
+            self.hintButton['state'] = DGG.DISABLED
+            self.hintButton['text'] = "All Hinted"
         else:
-            self.hintButton.show()
+            self.hintButton['state'] = DGG.NORMAL
+            self.hintButton['text'] = "Give me a hint"
 
         model.removeNode()
 
@@ -166,10 +172,12 @@ class HintNode(DirectFrame):
         for h in self.hintNodes:
             h.destroy()
         self.hintNodes.clear()
+        self.hintName = None
 
         label = "Select an item to view hints for it."
         self.title["text"] = 'Select an Item'
-        self.hintButton['state'] = DGG.DISABLED
+        self.hintButton["text"] = 'Refresh Hints?'
+        self.hintButton['state'] = DGG.NORMAL
         defaultNode = self.__createDefaultDisplay(label, 0)
         self.hintNodes.append(defaultNode)
         self.regenScrollList()
