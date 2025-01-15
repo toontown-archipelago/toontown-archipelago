@@ -179,17 +179,18 @@ class ToontownWorld(World):
                 if location.name in locations.BOUNTY_LOCATIONS and location.progress_type != LocationProgressType.EXCLUDED:
                     valid_bounties.append(location.name)
             gen_bounties = len(valid_bounties)
-            # If we want more bounties than our settings allow, stop gen and let player know
+            
+            # If we want more bounties than our settings allow, overwrite values to prevent errors
             if total_bounties > gen_bounties:
-                raise Exception(f"[Toontown Slot - {self.multiworld.get_player_name(self.player)} Invalid] "
-                                f"Too many bounties wanted based on settings (wanted total: {total_bounties}).\n"
-                                f"Current settings only allow for ({gen_bounties}) bounty locations, please tweak settings.")
+                self.options.total_bounties.value = gen_bounties
+                total_bounties = self.options.total_bounties.value
 
-            # Make sure we make the right amount of bounties based on our settings
-            true_bounty = max(1, min(total_bounties, required_bounties))
+            # If we want more bounties than we have, overwrite values to prevent errors
+            if required_bounties > total_bounties:
+                self.options.bounties_required.value = total_bounties
 
             # Finally place our bounties
-            for created_bounty in range(true_bounty):
+            for created_bounty in range(total_bounties):
                 bounty_choice = random.choice(valid_bounties)
                 valid_bounties.remove(bounty_choice)
                 self._force_item_placement(bounty_choice, ToontownItemName.BOUNTY)

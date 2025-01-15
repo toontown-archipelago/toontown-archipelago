@@ -716,9 +716,9 @@ def MaxedAllGags(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
 @rule(Rule.CanReachBounties)
 def CanReachBounties(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
-        bounties_required = min(options.bounties_required.value, options.total_bounties.value)
+        bounties_required = options.bounties_required.value
     else:
-        bounties_required = min(options.get('bounties_required', 10), options.get('total_bounties', 20))
+        bounties_required = options.get('bounties_required', 10)
     args = (state, locentr, world, player, options)
 
     return state.count(ToontownItemName.BOUNTY.value, player) >= bounties_required and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
