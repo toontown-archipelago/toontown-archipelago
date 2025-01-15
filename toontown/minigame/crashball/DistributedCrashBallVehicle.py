@@ -4,12 +4,15 @@ from direct.interval.FunctionInterval import Func
 from direct.interval.LerpInterval import LerpFunctionInterval, LerpScaleInterval, LerpPosInterval
 from direct.interval.MetaInterval import Sequence, Parallel
 from direct.task.TaskManagerGlobal import taskMgr
+from panda3d.core import ConfigVariableDouble
 from panda3d.direct import SmoothMover
 
 from toontown.minigame import IceGameGlobals
 
 
 class DistributedCrashBallVehicle(DistributedObject):
+    PredictionLag = ConfigVariableDouble("smooth-prediction-lag", 0.0)
+
     # Store which index moves against which axis.
     PlayerAxis = {
         0: 1,  # y
@@ -43,9 +46,11 @@ class DistributedCrashBallVehicle(DistributedObject):
 
         self.smoother = SmoothMover()
         self.smoother.setSmoothMode(SmoothMover.SMOn)
+        self.smoother.setPredictionMode(SmoothMover.PMOn)
+        self.smoother.setDelay(self.PredictionLag.getValue())
 
         self.smoothStarted = 0
-        self.__broadcastPeriod = 0.2
+        self.__broadcastPeriod = 0.05
 
     def announceGenerate(self) -> None:
         super().announceGenerate()
