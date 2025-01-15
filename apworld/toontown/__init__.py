@@ -179,7 +179,7 @@ class ToontownWorld(World):
                 if location.name in locations.BOUNTY_LOCATIONS and location.progress_type != LocationProgressType.EXCLUDED:
                     valid_bounties.append(location.name)
             gen_bounties = len(valid_bounties)
-            
+
             # If we want more bounties than our settings allow, overwrite values to prevent errors
             if total_bounties > gen_bounties:
                 self.options.total_bounties.value = gen_bounties
@@ -194,6 +194,9 @@ class ToontownWorld(World):
                 bounty_choice = random.choice(valid_bounties)
                 valid_bounties.remove(bounty_choice)
                 self._force_item_placement(bounty_choice, ToontownItemName.BOUNTY)
+
+            if self.options.hint_bounties.value:
+                self.options.start_hints.value.add(ToontownItemName.BOUNTY.value)
 
         # only populate these locations if there's a reason to go there.
         if self.options.checks_per_boss.value > 0 or self.options.win_condition_cog_bosses.value:

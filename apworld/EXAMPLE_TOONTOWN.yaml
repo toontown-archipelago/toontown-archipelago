@@ -127,7 +127,6 @@ Toontown:
   total_bounties: 20
 
   # Should bounties be hinted from the beginning of the run?
-  # NOTE: CURRENTLY NOT IMPLEMENTED, DOES NOT DO ANYTHING
   hint_bounties: "false"
 
   ### Sanity Settings ###
