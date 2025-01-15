@@ -359,7 +359,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             ct.resetCombo()
 
         # Add a task to revive the toon.
-        taskMgr.doMethodLater(5, self.reviveToon, self.uniqueName(f"reviveToon-{toon.doId}"), extraArgs=[toon.doId])
+        taskMgr.doMethodLater(self.ruleset.REVIVE_TOONS_TIME, self.reviveToon,
+                              self.uniqueName(f"reviveToon-{toon.doId}"), extraArgs=[toon.doId])
 
     def reviveToon(self, toonId: int) -> None:
         toon = self.air.getDo(toonId)
