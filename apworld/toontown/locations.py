@@ -1209,6 +1209,17 @@ SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy() + SHOP_LOCATIONS.copy()
 LOCATION_NAME_TO_ID = {location.name.value: i + consts.BASE_ID for i, location in enumerate(LOCATION_DEFINITIONS)}
 LOCATION_ID_TO_NAME = {i + consts.BASE_ID: location.name.value for i, location in enumerate(LOCATION_DEFINITIONS)}
 
+BOUNTY_LOCATIONS = [
+    ToontownLocationName.SELLBOT_PROOF_1, ToontownLocationName.CASHBOT_PROOF_1, ToontownLocationName.LAWBOT_PROOF_1, ToontownLocationName.BOSSBOT_PROOF_1,  # Boss bounty locations
+    ToontownLocationName.URBAN_2_QUALIFY, ToontownLocationName.HARD_GOLF_9, ToontownLocationName.FISHING_COMPLETE_ALBUM, ToontownLocationName.DOG_FISH_1,  # Activity bounty locations
+    ToontownLocationName.TOONTOWN_CENTRAL_TASK_12, ToontownLocationName.DONALDS_DOCK_TASK_12, ToontownLocationName.DAISYS_GARDENS_TASK_12,  # Task bounty locations (1)
+    ToontownLocationName.MINNIES_MELODYLAND_TASK_12, ToontownLocationName.THE_BRRRGH_TASK_12, ToontownLocationName.DONALDS_DREAMLAND_TASK_12,  # Task bounty locations (2)
+    ToontownLocationName.CLEAR_FRONT_FACTORY, ToontownLocationName.CLEAR_SIDE_FACTORY, ToontownLocationName.CLEAR_COIN_MINT, ToontownLocationName.CLEAR_DOLLAR_MINT,  # Facility bounty locations (1)
+    ToontownLocationName.CLEAR_BULLION_MINT, ToontownLocationName.CLEAR_A_OFFICE, ToontownLocationName.CLEAR_B_OFFICE, ToontownLocationName.CLEAR_C_OFFICE,  # Facility bounty locations (2)
+    ToontownLocationName.CLEAR_D_OFFICE, ToontownLocationName.CLEAR_FRONT_ONE, ToontownLocationName.CLEAR_MIDDLE_TWO, ToontownLocationName.CLEAR_BACK_THREE,  # Facility bounty locations (3)
+    ToontownLocationName.TOONUP_HIGHDIVE_UNLOCKED, ToontownLocationName.TRAP_TRAIN_UNLOCKED, ToontownLocationName.LURE_PRESENTATION_UNLOCKED, ToontownLocationName.SOUND_OPERA_UNLOCKED,  # Gag bounty locations (1)
+    ToontownLocationName.THROW_WEDDING_UNLOCKED, ToontownLocationName.SQUIRT_GEYSER_UNLOCKED, ToontownLocationName.DROP_BOAT_UNLOCKED,  # Gag bounty locations (2)
+]
 
 def get_location_def_from_name(name: ToontownLocationName) -> ToontownLocationDefinition:
     return LOCATION_NAME_TO_DEFINITION[name]

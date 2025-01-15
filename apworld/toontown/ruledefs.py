@@ -713,6 +713,16 @@ def MaxedAllGags(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
     maxed_gags = sum(HasLevelSeven(gag) for gag in gag_items)
     return maxed_gags >= required_gags and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
 
+@rule(Rule.CanReachBounties)
+def CanReachBounties(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        bounties_required = options.bounties_required.value
+    else:
+        bounties_required = options.get('bounties_required', 10)
+    args = (state, locentr, world, player, options)
+
+    return state.count(ToontownItemName.BOUNTY.value, player) >= bounties_required and passes_rule(Rule.CanReachTTC, *args)  # TECHNICALLY TRUE!
+
 
 @rule(Rule.CanWinGame)
 def CanWinGame(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
@@ -728,6 +738,7 @@ def CanWinGame(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, p
         ToontownWinCondition.gag_tracks: Rule.MaxedAllGags,  # Max Gags Goal
         ToontownWinCondition.fish_species: Rule.AllFishCaught,  # Fish Species Goal
         ToontownWinCondition.laff_o_lympics: Rule.GainedEnoughLaff,  # Laff-O-Lympics Goal
+        ToontownWinCondition.bounty: Rule.CanReachBounties,  # Bounty Goal
     }
     # Return our goal rule, default to None if invalid
     return all(passes_rule(win_conditions.get(f), *args) for f in win_condition)
