@@ -247,17 +247,20 @@ class LaffOLympicsWinCondition(WinCondition):
 
 
 class BountyWinCondition(WinCondition):
-    bounty_locations = {
-        locations.LOCATION_NAME_TO_ID.get(loc)
-        for loc in locations.BOUNTY_LOCATIONS
-    }
-
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
+        self.items = toon.getReceivedItems()
         self.bounties_required = toon.slotData.get('bounties_required', 10)
 
     def __get_bounties_acquired(self) -> int:
-        return len(self.bounty_locations.intersection(self.toon.getCheckedLocations()))
+        count = 0
+        for item in self.items:
+            index_received, item_id = item
+            itemDef = get_item_def_from_id(item_id)
+            itemName = itemDef.name.value
+            if itemName == ToontownItemName.BOUNTY.value:
+                count += 1
+        return count
 
     def __get_bounties_needed(self) -> int:
         return max(0, self.bounties_required - self.__get_bounties_acquired())
