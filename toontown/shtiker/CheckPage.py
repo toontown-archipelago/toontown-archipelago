@@ -18,6 +18,7 @@ class HintNode(DirectFrame):
         super().__init__(parent)
 
         self.title = DirectLabel(parent=self, scale=0.07, pos=(0, 0, -0.08), text="Select an Item", textMayChange=True, relief=None)
+        self.scrollList = None
 
         gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
         quitHover = gui.find('**/QuitBtn_UP')
@@ -35,10 +36,10 @@ class HintNode(DirectFrame):
         )
         self.hintButton['state'] = DGG.DISABLED
 
-        gui.removeNode()
-
         self.hintName = None
         self.hintNodes = []
+
+        gui.removeNode()
 
     def askForHint(self):
         if self.hintName is None:
@@ -51,7 +52,7 @@ class HintNode(DirectFrame):
     def __createHintDisplay(self, text, icon, yOffset) -> DirectLabel:
         return DirectLabel(
             parent=self, relief=None, image=icon, image_scale=(1.25, 1.25, 1.25),
-            pos=(-0.36, 0, -0.25 - 0.05 * yOffset), text=text, text_scale=0.032,
+            pos=(0, 0, 0), text=text, text_scale=0.032,
             text_align=TextNode.ALeft, text_pos=(0.03, -0.0125), text_fg=Vec4(0, 0, 0, 1),
             text_wordwrap=24
         )
@@ -101,6 +102,8 @@ class HintNode(DirectFrame):
             node = self.__createHintDisplay(text, icon, labelIndex)
             self.hintNodes.append(node)
 
+        self.regenScrollList()
+
         # If we know where everything is, then we shouldn't need the hint button anymore
         if len(hints) >= checkMax:
             self.hintButton.hide()
@@ -108,6 +111,47 @@ class HintNode(DirectFrame):
             self.hintButton.show()
 
         model.removeNode()
+
+    def regenScrollList(self):
+        if self.scrollList:
+            self.scrollList.hide()
+            self.scrollList.destroy()
+            self.scrollList = None
+
+        self.gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
+        self.listXorigin = 0.02
+        self.listFrameSizeX = 0.65
+        self.listZorigin = -0.765
+        self.listFrameSizeZ = 0.8
+        self.arrowButtonScale = 1
+        self.itemFrameXorigin = -0.237
+        self.itemFrameZorigin = 0.32
+        self.buttonXstart = self.itemFrameXorigin + 0.318
+        self.scrollList = DirectScrolledList(
+            parent=self, relief=None, pos=(-0.077, 0, -0.65),
+            incButton_image=(self.gui.find('**/FndsLst_ScrollUp'),
+                             self.gui.find('**/FndsLst_ScrollDN'),
+                             self.gui.find('**/FndsLst_ScrollUp_Rllvr'),
+                             self.gui.find('**/FndsLst_ScrollUp')), incButton_relief=None,
+            incButton_scale=(self.arrowButtonScale * 1.5, self.arrowButtonScale, -self.arrowButtonScale),
+            incButton_pos=(self.buttonXstart, 0, self.itemFrameZorigin - 0.79),
+            incButton_image3_color=Vec4(1, 1, 1, 0.2), decButton_image=(self.gui.find('**/FndsLst_ScrollUp'),
+                                                                        self.gui.find('**/FndsLst_ScrollDN'),
+                                                                        self.gui.find('**/FndsLst_ScrollUp_Rllvr'),
+                                                                        self.gui.find('**/FndsLst_ScrollUp')),
+            decButton_relief=None,
+            decButton_scale=(self.arrowButtonScale * 1.5, self.arrowButtonScale, self.arrowButtonScale),
+            decButton_pos=(self.buttonXstart, 0, self.itemFrameZorigin + 0.07),
+            decButton_image3_color=Vec4(1, 1, 1, 0.2), itemFrame_pos=(self.itemFrameXorigin, 0, self.itemFrameZorigin),
+            itemFrame_scale=1.0, itemFrame_relief=DGG.SUNKEN, itemFrame_frameSize=(self.listXorigin,
+                                                                                   self.listXorigin + self.listFrameSizeX,
+                                                                                   self.listZorigin,
+                                                                                   self.listZorigin + self.listFrameSizeZ),
+            itemFrame_frameColor=(0.85, 0.95, 1, 1),
+            itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=13, forceHeight=0.06, items=self.hintNodes
+        )
+        make_dsl_scrollable(self.scrollList)
+
 
     def __createDefaultDisplay(self, text, yOffset) -> DirectLabel:
         return DirectLabel(
@@ -128,6 +172,7 @@ class HintNode(DirectFrame):
         self.hintButton['state'] = DGG.DISABLED
         defaultNode = self.__createDefaultDisplay(label, 0)
         self.hintNodes.append(defaultNode)
+        self.regenScrollList()
 
 
 class CheckPage(ShtikerPage.ShtikerPage):
@@ -276,6 +321,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
                 quantity = 2
             if itemName == "Bounty":
                 bounties.append(button[0])
+                continue
             if "Key" in itemName or "Disguise" in itemName:
                 if "Access" in itemName:
                     progressionItems.append(button[0])
