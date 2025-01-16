@@ -54,6 +54,7 @@ class ToontownWinCondition(IntFlag):
     gag_tracks = auto()
     fish_species = auto()
     laff_o_lympics = auto()
+    bounty = auto()
 
     @classmethod
     def from_options(cls, options):
@@ -71,4 +72,6 @@ class ToontownWinCondition(IntFlag):
             win_conditions = win_conditions | ToontownWinCondition.fish_species
         if options.win_condition_laff_o_lympics.value:
             win_conditions = win_conditions | ToontownWinCondition.laff_o_lympics
+        if options.win_condition_bounty.value:
+            win_conditions = win_conditions | ToontownWinCondition.bounty
         return win_conditions

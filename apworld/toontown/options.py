@@ -199,6 +199,39 @@ class LaffPointsRequired(Range):
     range_end = 150
     default = 120
 
+class WinConditionBounty(Toggle):
+    """Player must reach a certain number of bounty checks to complete the game (determined by bounties_required, total_bounties)"""
+    display_name = "Bounty"
+    default = False
+
+class BountiesRequired(Range):
+    """
+    How many bounties we must have before being able to talk to Flippy to complete the game
+    Unused if win_condition is not bounty
+    Range 0 to 32
+    """
+    display_name = "Bounties Required"
+    range_start = 0
+    range_end = 32
+    default = 10
+
+class TotalBounties(Range):
+    """
+    How many bounties are in the pool.
+    Unused if win_condition is not bounty
+    Must be equal to or above bounties_required
+    Range 1 to 32
+    """
+    display_name = "Total Bounties"
+    range_start = 1
+    range_end = 32
+    default = 20
+
+class BountiesHinted(Toggle):
+    """Should bounties be hinted from the beginning of the run?"""
+    display_name = "Hinted Bounties"
+    default = False
+
 class TPSanity(Choice):
     """
     Determines how Teleport Access is shuffled in the Item Pool for all Playgrounds/HQs.
@@ -602,12 +635,16 @@ class ToontownOptions(PerGameCommonOptions):
     win_condition_gag_tracks: WinConditionTotalGagTracks
     win_condition_fish_species: WinConditionFishSpecies
     win_condition_laff_o_lympics: WinConditionLaffOLympics
+    win_condition_bounty: WinConditionBounty
     cog_bosses_required: CogBossesRequired
     total_tasks_required: TotalTasksRequired
     hood_tasks_required: HoodTasksRequired
     gag_tracks_required: GagTracksRequired
     fish_species_required: FishSpeciesRequired
     laff_points_required: LaffPointsRequired
+    bounties_required: BountiesRequired
+    total_bounties: TotalBounties
+    hint_bounties: BountiesHinted
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
     checks_per_boss: ChecksPerBoss
@@ -657,7 +694,8 @@ toontown_option_groups: list[OptionGroup] = [
         WinConditionHoodTasks, HoodTasksRequired,
         WinConditionTotalGagTracks, GagTracksRequired,
         WinConditionFishSpecies, FishSpeciesRequired,
-        WinConditionLaffOLympics, LaffPointsRequired
+        WinConditionLaffOLympics, LaffPointsRequired,
+        WinConditionBounty, BountiesRequired,
         ], False),
     OptionGroup("Check/Item Behavior", [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
