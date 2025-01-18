@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import PerGameCommonOptions, Range, Choice, Toggle, OptionGroup, ProgressionBalancing, Accessibility
+from Options import PerGameCommonOptions, Range, Choice, Toggle, OptionGroup, ProgressionBalancing, Accessibility, OptionSet, StartInventoryPool, Visibility
 
 
 class TeamOption(Range):
@@ -20,6 +20,30 @@ class StartLaffOption(Range):
     range_start = 1
     range_end = 80
     default = 20
+
+
+class StartGagOption(OptionSet):
+    """
+    The gags to have when starting a new game.
+    "Randomized" will ensure you have 2 tracks, at least one being a usable offensive track.
+    if you select two other tracks here, "Randomized" will do nothing
+    Careful with this: it's possible to make sphere 1 have 0 checks if you don't have an offensive gag!
+
+    valid keys: {"Randomized", "Toon-Up", "Trap", "Lure", "Sound", "Throw", "Squirt", "Drop"}
+    """
+    display_name = "Starting Gags"
+    valid_keys = {
+        "Randomized",
+        "Toon-Up",
+        "Trap",
+        "Lure",
+        "Sound",
+        "Throw",
+        "Squirt",
+        "Drop"
+    }
+    default = {"Randomized"}
+    visibility = ~Visibility.simple_ui # Everywhere other than simple ui (web's options page)
 
 
 class MaxLaffOption(Range):
@@ -619,9 +643,11 @@ class DeathLinkOption(Toggle):
 
 @dataclass
 class ToontownOptions(PerGameCommonOptions):
+    start_inventory_from_pool: StartInventoryPool
     team: TeamOption
     max_laff: MaxLaffOption
     starting_laff: StartLaffOption
+    starting_gags: StartGagOption
     base_global_gag_xp: BaseGlobalGagXPRange
     max_global_gag_xp: MaxGlobalGagXPRange
     damage_multiplier: DamageMultiplierRange
@@ -684,9 +710,9 @@ toontown_option_groups: list[OptionGroup] = [
     ]),
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
-        BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageMultiplierRange,
-        OverflowModRange, StartMoneyOption, StartingTaskCapacityOption,
-        MaxTaskCapacityOption, DeathLinkOption
+        StartGagOption,BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
+        DamageMultiplierRange, OverflowModRange, StartMoneyOption, 
+        StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption
     ]),
     OptionGroup("Win Condition", [
         WinConditionCogBosses, CogBossesRequired,
