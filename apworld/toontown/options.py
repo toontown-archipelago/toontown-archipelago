@@ -28,21 +28,21 @@ class StartGagOption(OptionSet):
     "Randomized" will ensure you have 2 tracks, at least one being a usable offensive track.
     if you select two other tracks here, "Randomized" will do nothing
 
-    valid keys: {"Randomized", "Toon-Up", "Trap", "Lure", "Sound", "Throw", "Squirt", "Drop"}
+    valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
     """
     display_name = "Starting Gags"
     valid_keys = {
-        "Randomized",
-        "Toon-Up",
-        "Trap",
-        "Lure",
-        "Sound",
-        "Throw",
-        "Squirt",
-        "Drop"
+        "randomized",
+        "toonup",
+        "trap",
+        "lure",
+        "sound",
+        "throw",
+        "squirt",
+        "drop"
     }
-    default = {"Randomized"}
-    visibility = ~Visibility.simple_ui # Everywhere other than simple ui (web's options page)
+    default = {"randomized"}
+    visibility = ~Visibility.simple_ui  # Everywhere other than simple ui (web's options page)
 
 
 class MaxLaffOption(Range):

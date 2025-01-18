@@ -315,15 +315,25 @@ class ToontownWorld(World):
                         pool.append(item)
 
         # Dynamically generate laff boosts.
+        max_laff = self.options.max_laff.value
+        start_laff = self.options.starting_laff.value
+        if start_laff > max_laff:
+            self.options.max_laff.value = start_laff
+            max_laff = self.options.max_laff.value
         if self.options.win_condition_laff_o_lympics:  # Our goal is laff-o-lympics, only progressive +1 Boost items
             # Lets make sure our goal isn't more than our max_laff
-            # If it is, make our max laff the same as our goal
-            LAFF_TO_GIVE = max(self.options.laff_points_required, self.options.max_laff.value) - self.options.starting_laff.value
+            # If it is, make our max the same as our goal
+            required_laff = self.options.laff_points_required.value
+            if required_laff > max_laff:
+                self.options.max_laff.value = required_laff
+                max_laff = self.options.max_laff.value
+
+            LAFF_TO_GIVE = max_laff - start_laff
 
             for _ in range(LAFF_TO_GIVE):
                 pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
         else:  # If our goal isn't laff-o-lypics, generate laff items normally
-            LAFF_TO_GIVE = self.options.max_laff.value - self.options.starting_laff.value
+            LAFF_TO_GIVE = max_laff - start_laff
             if LAFF_TO_GIVE < 0:
                 logging.warning(f"[{self.multiworld.player_name[self.player]}] Too low max HP. Setting max HP to starting HP.")
                 LAFF_TO_GIVE = 0
@@ -356,7 +366,7 @@ class ToontownWorld(World):
             quantity = 8 if frame not in self.startingTracks else 7
             for _ in range(quantity):
                 pool.append(self.create_item(frame.value))
-        if len(self.startingTracks) != 2: # we're not generating starting tracks...
+        if len(self.startingTracks) != 2:  # we're not generating starting tracks...
             for frame in self.startingTracks:
                 self.multiworld.push_precollected(self.create_item(frame.value))
 
@@ -546,21 +556,21 @@ class ToontownWorld(World):
         ALL: List[ToontownItemName] = OFFENSIVE + SUPPORT
         rng = self.multiworld.random
         gag_to_item = {
-                "Toon-Up":ToontownItemName.TOONUP_FRAME,
-                "Trap":ToontownItemName.TRAP_FRAME,
-                "Lure":ToontownItemName.LURE_FRAME,
-                "Sound":ToontownItemName.SOUND_FRAME,
-                "Throw":ToontownItemName.THROW_FRAME,
-                "Squirt":ToontownItemName.SQUIRT_FRAME,
-                "Drop":ToontownItemName.DROP_FRAME
+                "toonup": ToontownItemName.TOONUP_FRAME,
+                "trap": ToontownItemName.TRAP_FRAME,
+                "lure": ToontownItemName.LURE_FRAME,
+                "sound": ToontownItemName.SOUND_FRAME,
+                "throw": ToontownItemName.THROW_FRAME,
+                "squirt": ToontownItemName.SQUIRT_FRAME,
+                "drop": ToontownItemName.DROP_FRAME
             }
         
-        if "Randomized" not in self.options.starting_gags:
+        if "randomized" not in self.options.starting_gags:
             starting_gags = [gag_to_item.get(gag) for gag in self.options.starting_gags.value]
             if (not any([gag in starting_gags for gag in OFFENSIVE])
-                and self.options.treasures_per_location.value <= 0
+                and self.options.treasures_per_location.value <= 1  # This is one to handle the edge case where our tpsanity is treasures
                 and (self.options.fish_checks.value == self.options.fish_checks.option_none
-                    or self.options.fish_progression.value in [
+                     or self.options.fish_progression.value in [
                         self.options.fish_progression.option_licenses,
                         self.options.fish_progression.option_licenses_and_rods
                     ])
@@ -574,7 +584,7 @@ class ToontownWorld(World):
                     starting_gags.append(rng.choice(choices))
             return starting_gags
         else:
-            starting_gags = [gag_to_item.get(gag) for gag in self.options.starting_gags.value if gag != "Randomized"]
+            starting_gags = [gag_to_item.get(gag) for gag in self.options.starting_gags.value if gag != "randomized"]
 
         if len(starting_gags) == 0:
             # First force pick an offensive track
@@ -594,7 +604,7 @@ class ToontownWorld(World):
 
         elif len(starting_gags) == 1:
             first_track = starting_gags[0]
-            #Ensure we have an offensive gag we can use
+            # Ensure we have an offensive gag we can use
             if first_track == ToontownItemName.TRAP_FRAME:
                 second_track = ToontownItemName.LURE_FRAME
 
@@ -634,7 +644,8 @@ class ToontownWorld(World):
         tpl = self.options.treasures_per_location.value
         # If treasures are 0, but our tp sanity is treasures; let's make it one to avoid crashes on gen
         if tpl == 0 and self.options.tpsanity.value == TPSanity.option_treasure:
-            tpl = 1
+            self.options.treasures_per_location.value = 1
+            tpl = self.options.treasures_per_location.value
         rev_locs = TREASURE_LOCATION_TYPES[::-1]
         for i in range(len(rev_locs) - tpl):
             forbidden_location_types.add(rev_locs[i])
