@@ -67,8 +67,6 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
 @rule(Rule.PolarPlace)
 @rule(Rule.LullabyLane)
 @rule(Rule.PajamaPlace)
-@rule(Rule.TierOneCogs)
-@rule(Rule.TierTwoCogs)
 def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     return True
 
@@ -440,6 +438,10 @@ def PlaygroundCountRule(state: CollectionState, locentr: LocEntrDef, world: Mult
     ]
     return sum(int(state.can_reach(pg.value, None, player)) for pg in pgs) >= argument[0]
 
+@rule(Rule.TierOneCogs)
+@rule(Rule.TierTwoCogs)
+def TierOneCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    return passes_rule(Rule.HasLevelOneOffenseGag, state, locentr, world, player, options)
 
 @rule(Rule.TierThreeCogs)
 def TierThreeCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
@@ -538,6 +540,18 @@ def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
 
 
 @rule(Rule.HasLevelOneOffenseGag,   1)
+def hasDamageGag(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    OFFENSIVE: List[ToontownItemName] = [
+            ToontownItemName.SOUND_FRAME,
+            ToontownItemName.THROW_FRAME,
+            ToontownItemName.SQUIRT_FRAME,
+            ToontownItemName.DROP_FRAME
+            ]
+    if state.has(ToontownItemName.TRAP_FRAME.value, player) and state.has(ToontownItemName.LURE_FRAME.value, player):
+        return True
+    return any(state.has(gag.value, player) for gag in OFFENSIVE)
+
+
 @rule(Rule.HasLevelTwoOffenseGag,   2)
 @rule(Rule.HasLevelThreeOffenseGag, 3)
 @rule(Rule.HasLevelFourOffenseGag,  4)
