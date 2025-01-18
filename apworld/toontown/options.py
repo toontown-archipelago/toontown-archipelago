@@ -27,7 +27,6 @@ class StartGagOption(OptionSet):
     The gags to have when starting a new game.
     "Randomized" will ensure you have 2 tracks, at least one being a usable offensive track.
     if you select two other tracks here, "Randomized" will do nothing
-    Careful with this: it's possible to make sphere 1 have 0 checks if you don't have an offensive gag!
 
     valid keys: {"Randomized", "Toon-Up", "Trap", "Lure", "Sound", "Throw", "Squirt", "Drop"}
     """
