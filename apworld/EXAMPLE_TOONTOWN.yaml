@@ -33,6 +33,17 @@ Toontown:
   # Must be above or equal to the base_global_gag_xp.
   # Range: 0 to 30
   max_global_gag_xp: 30
+
+  starting_gags:
+    # The gags to have when starting a new game.
+    # ["randomized"] will ensure you have 2 tracks, at least one being a usable offensive track.
+    # If you select two other tracks here, "randomized" will do nothing.
+    # 
+    # valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
+    # ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks
+    # ex. ["sound"] will start you with only sound as a starting track
+    # An empty list will start you with no gag tracks
+    ['randomized']
   
   # The percentage of damage that will be done when battling Cogs.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.

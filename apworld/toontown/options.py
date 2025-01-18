@@ -25,10 +25,13 @@ class StartLaffOption(Range):
 class StartGagOption(OptionSet):
     """
     The gags to have when starting a new game.
-    "Randomized" will ensure you have 2 tracks, at least one being a usable offensive track.
+    ["randomized"] will ensure you have 2 tracks, at least one being a usable offensive track.
     if you select two other tracks here, "Randomized" will do nothing
 
     valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
+    ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks.
+    ex. ["sound"] will start you with only sound as a starting track.
+    An empty list will start you with no gag tracks.
     """
     display_name = "Starting Gags"
     valid_keys = {
