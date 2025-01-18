@@ -249,12 +249,11 @@ class LaffOLympicsWinCondition(WinCondition):
 class BountyWinCondition(WinCondition):
     def __init__(self, toon: DistributedToon | DistributedToonAI):
         super().__init__(toon)
-        self.items = toon.getReceivedItems()
         self.bounties_required = toon.slotData.get('bounties_required', 10)
 
     def __get_bounties_acquired(self) -> int:
         count = 0
-        for item in self.items:
+        for item in self.toon.getReceivedItems():
             index_received, item_id = item
             itemDef = get_item_def_from_id(item_id)
             itemName = itemDef.name.value
