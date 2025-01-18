@@ -21,6 +21,9 @@ class HintedItem:
                 self.item.location == other.item.location and
                 self.item.player == other.item.player)
 
+    def similar_status(self, other: "HintedItem") -> bool:
+        return self.found == other.found
+
     def __validate_item(self) -> NetworkItem:
         """
         Returns a new NetworkItem that has valid item IDs that are safe to send over astron
@@ -68,15 +71,27 @@ class HintContainer:
         """
         return any(hint.similar(other) for hint in self.hints)
 
+    def get_similar_hint(self, other: HintedItem) -> bool:
+        for hint in self.hints:
+            if hint.similar(other):
+                return hint
+
     def addHint(self, hint: HintedItem) -> bool:
         """
         Adds a new hint to the hint container
         Returns true if the hint was added, false otherwise
         """
 
-        # If we already have this hint don't store it
+        # If we already have this hint don't store it...
         if self.contains(hint):
-            return False
+            # Unless the found status of the hint has changed; in which case we remove it, so it can be re-added
+            similar_hint = self.get_similar_hint(hint)
+            if not similar_hint.similar_status(hint):
+                self.hints.remove(similar_hint)
+                self.hints.append(hint)
+                return True
+            else:
+                return False
 
         self.hints.append(hint)
         return True
