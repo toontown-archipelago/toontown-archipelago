@@ -84,6 +84,9 @@ class HintNode(DirectFrame):
         hints: List[HintedItem] = hintContainer.getHintsForItemAndSlot(checkDef.unique_id, localToonInformation.slotId)
 
         # Using our hints we have so far, start constructing text to show that
+        foundHints = []
+        lostHints = []
+        notHinted = []
         for labelIndex in range(checkMax):
 
             # If we do not have a hint for this, set defaults
@@ -92,7 +95,7 @@ class HintNode(DirectFrame):
                                       "Recover me from the Cogs!", "A check has fallen into the river in Lego City!", "Find me, I dare you.", "Hope this wasn't in sphere 1.",
                                       "This one is going to be on the D Office, watch.", "*Crickets chirping*", "Check the tracker.", "Can you find it?"])
                 node = self.__createHintDisplay(text, xIcon, labelIndex)
-                self.hintNodes.append(node)
+                notHinted.append(node)
                 continue
 
             # We have a hint! Set up the text to tell the player where it is
@@ -104,17 +107,20 @@ class HintNode(DirectFrame):
             ])
             icon = checkIcon if hint.found else questionMarkIcon
             node = self.__createHintDisplay(text, icon, labelIndex)
-            self.hintNodes.append(node)
+            if hint.found:
+                foundHints.append(node)
+            else:
+                lostHints.append(node)
+        self.hintNodes = foundHints + lostHints + notHinted
 
         self.regenScrollList()
 
-        # If we know where everything is, then we shouldn't need the hint button anymore
+        # If we know where everything is, allow refreshing to check status
         if len(hints) >= checkMax:
-            self.hintButton['state'] = DGG.DISABLED
-            self.hintButton['text'] = "All Hinted"
+            self.hintButton['text'] = "Refresh hints?"
         else:
-            self.hintButton['state'] = DGG.NORMAL
             self.hintButton['text'] = "Give me a hint"
+        self.hintButton['state'] = DGG.NORMAL
 
         model.removeNode()
 
@@ -126,7 +132,7 @@ class HintNode(DirectFrame):
 
         self.gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
         self.listXorigin = 0.02
-        self.listFrameSizeX = 0.65
+        self.listFrameSizeX = 0.75
         self.listZorigin = -0.765
         self.listFrameSizeZ = 0.8
         self.arrowButtonScale = 1
@@ -134,7 +140,7 @@ class HintNode(DirectFrame):
         self.itemFrameZorigin = 0.32
         self.buttonXstart = self.itemFrameXorigin + 0.318
         self.scrollList = DirectScrolledList(
-            parent=self, relief=None, pos=(-0.077, 0, -0.65),
+            parent=self, relief=None, pos=(-0.09, 0, -0.65),
             incButton_image=(self.gui.find('**/FndsLst_ScrollUp'),
                              self.gui.find('**/FndsLst_ScrollDN'),
                              self.gui.find('**/FndsLst_ScrollUp_Rllvr'),
