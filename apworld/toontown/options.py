@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import PerGameCommonOptions, Range, Choice, Toggle, OptionGroup, ProgressionBalancing, Accessibility
+from Options import PerGameCommonOptions, Range, Choice, Toggle, OptionGroup, ProgressionBalancing, Accessibility, OptionSet, StartInventoryPool, Visibility
 
 
 class TeamOption(Range):
@@ -20,6 +20,32 @@ class StartLaffOption(Range):
     range_start = 1
     range_end = 80
     default = 20
+
+
+class StartGagOption(OptionSet):
+    """
+    The gags to have when starting a new game.
+    ["randomized"] will ensure you have 2 tracks, at least one being a usable offensive track.
+    if you select two other tracks here, "Randomized" will do nothing
+
+    valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
+    ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks.
+    ex. ["sound"] will start you with only sound as a starting track.
+    An empty list will start you with no gag tracks.
+    """
+    display_name = "Starting Gags"
+    valid_keys = {
+        "randomized",
+        "toonup",
+        "trap",
+        "lure",
+        "sound",
+        "throw",
+        "squirt",
+        "drop"
+    }
+    default = {"randomized"}
+    visibility = ~Visibility.simple_ui  # Everywhere other than simple ui (web's options page)
 
 
 class MaxLaffOption(Range):
@@ -198,6 +224,39 @@ class LaffPointsRequired(Range):
     range_start = 0
     range_end = 150
     default = 120
+
+class WinConditionBounty(Toggle):
+    """Player must reach a certain number of bounty checks to complete the game (determined by bounties_required, total_bounties)"""
+    display_name = "Bounty"
+    default = False
+
+class BountiesRequired(Range):
+    """
+    How many bounties we must have before being able to talk to Flippy to complete the game
+    Unused if win_condition is not bounty
+    Range 0 to 32
+    """
+    display_name = "Bounties Required"
+    range_start = 0
+    range_end = 32
+    default = 10
+
+class TotalBounties(Range):
+    """
+    How many bounties are in the pool.
+    Unused if win_condition is not bounty
+    Must be equal to or above bounties_required
+    Range 1 to 32
+    """
+    display_name = "Total Bounties"
+    range_start = 1
+    range_end = 32
+    default = 20
+
+class BountiesHinted(Toggle):
+    """Should bounties be hinted from the beginning of the run?"""
+    display_name = "Hinted Bounties"
+    default = False
 
 class TPSanity(Choice):
     """
@@ -586,9 +645,11 @@ class DeathLinkOption(Toggle):
 
 @dataclass
 class ToontownOptions(PerGameCommonOptions):
+    start_inventory_from_pool: StartInventoryPool
     team: TeamOption
     max_laff: MaxLaffOption
     starting_laff: StartLaffOption
+    starting_gags: StartGagOption
     base_global_gag_xp: BaseGlobalGagXPRange
     max_global_gag_xp: MaxGlobalGagXPRange
     damage_multiplier: DamageMultiplierRange
@@ -602,12 +663,16 @@ class ToontownOptions(PerGameCommonOptions):
     win_condition_gag_tracks: WinConditionTotalGagTracks
     win_condition_fish_species: WinConditionFishSpecies
     win_condition_laff_o_lympics: WinConditionLaffOLympics
+    win_condition_bounty: WinConditionBounty
     cog_bosses_required: CogBossesRequired
     total_tasks_required: TotalTasksRequired
     hood_tasks_required: HoodTasksRequired
     gag_tracks_required: GagTracksRequired
     fish_species_required: FishSpeciesRequired
     laff_points_required: LaffPointsRequired
+    bounties_required: BountiesRequired
+    total_bounties: TotalBounties
+    hint_bounties: BountiesHinted
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
     checks_per_boss: ChecksPerBoss
@@ -647,9 +712,9 @@ toontown_option_groups: list[OptionGroup] = [
     ]),
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
-        BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageMultiplierRange,
-        OverflowModRange, StartMoneyOption, StartingTaskCapacityOption,
-        MaxTaskCapacityOption, DeathLinkOption
+        StartGagOption,BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
+        DamageMultiplierRange, OverflowModRange, StartMoneyOption, 
+        StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption
     ]),
     OptionGroup("Win Condition", [
         WinConditionCogBosses, CogBossesRequired,
@@ -657,7 +722,8 @@ toontown_option_groups: list[OptionGroup] = [
         WinConditionHoodTasks, HoodTasksRequired,
         WinConditionTotalGagTracks, GagTracksRequired,
         WinConditionFishSpecies, FishSpeciesRequired,
-        WinConditionLaffOLympics, LaffPointsRequired
+        WinConditionLaffOLympics, LaffPointsRequired,
+        WinConditionBounty, BountiesRequired,
         ], False),
     OptionGroup("Check/Item Behavior", [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
