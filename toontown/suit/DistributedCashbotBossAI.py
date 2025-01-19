@@ -20,6 +20,7 @@ from . import DistributedBossCogAI
 import random
 import math
 
+
 class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossAI')
 

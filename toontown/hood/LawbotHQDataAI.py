@@ -3,16 +3,12 @@ from . import HoodDataAI
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedLawOfficeElevatorExtAI
 from toontown.coghq import DistributedCogHQDoorAI
-from toontown.building import DistributedDoorAI
 from toontown.building import DoorTypes
 from toontown.coghq import LobbyManagerAI
-from toontown.building import DistributedBossElevatorAI
 from toontown.suit import DistributedLawbotBossAI
 from toontown.building import DistributedCJElevatorAI
 from toontown.building import FADoorCodes
 from toontown.building import DistributedBoardingPartyAI
-from toontown.safezone import ArchipelagoTreasurePlannerAI
-from toontown.safezone import DistributedArchiTreasureAI
 
 class LawbotHQDataAI(HoodDataAI.HoodDataAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('LawbotHQDataAI')
@@ -30,11 +26,9 @@ class LawbotHQDataAI(HoodDataAI.HoodDataAI):
 
         def makeOfficeElevator(index, antiShuffle=0, minLaff=0):
             destZone = (ToontownGlobals.LawbotStageIntA, ToontownGlobals.LawbotStageIntB, ToontownGlobals.LawbotStageIntC, ToontownGlobals.LawbotStageIntD)[index]
-            lock = (FADoorCodes.OFFICE_A_ACCESS_MISSING, FADoorCodes.OFFICE_B_ACCESS_MISSING, FADoorCodes.OFFICE_C_ACCESS_MISSING, FADoorCodes.OFFICE_D_ACCESS_MISSING)[index]
             elev = DistributedLawOfficeElevatorExtAI.DistributedLawOfficeElevatorExtAI(self.air, self.air.lawMgr, destZone, index, antiShuffle=0, minLaff=minLaff)
             elev.generateWithRequired(ToontownGlobals.LawbotOfficeExt)
             self.addDistObj(elev)
-            elev.setLock(lock)
             return elev.doId
 
         mins = ToontownGlobals.FactoryLaffMinimums[2]
@@ -48,10 +42,6 @@ class LawbotHQDataAI(HoodDataAI.HoodDataAI):
         self.lobbyElevator = DistributedCJElevatorAI.DistributedCJElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.LawbotLobby, antiShuffle=1)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.LawbotLobby)
         self.addDistObj(self.lobbyElevator)
-        self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0, treasureCount=5),
-                                ]
-        for planner in self.treasurePlanner:
-            planner.start()
         if simbase.config.GetBool('want-boarding-groups', 1):
             self.boardingParty = DistributedBoardingPartyAI.DistributedBoardingPartyAI(self.air, [self.lobbyElevator.doId], 8)
             self.boardingParty.generateWithRequired(ToontownGlobals.LawbotLobby)

@@ -109,6 +109,9 @@ class PlayGame(StateData.StateData):
 
     def enter(self, hoodId, zoneId, avId):
         base.discord.setZone(zoneId)
+        # Always spawn in LawbotHQ
+        hoodId = ToontownGlobals.LawbotHQ
+        zoneId = ToontownGlobals.LawbotHQ
         if hoodId == ToontownGlobals.Tutorial:
             loaderName = 'townLoader'
             whereName = 'toonInterior'

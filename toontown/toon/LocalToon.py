@@ -3,8 +3,6 @@ from __future__ import annotations
 import random
 from typing import List, Tuple
 
-from apworld.toontown import TPSanity
-from apworld.toontown.items import hood_to_tp_item_name, ITEM_NAME_TO_ID
 from libotp import *
 from direct.interval.IntervalGlobal import *
 from direct.distributed.ClockDelta import *
@@ -33,9 +31,6 @@ from toontown.shtiker import FishPage
 from toontown.shtiker import NPCFriendPage
 from toontown.shtiker import EventsPage
 from toontown.shtiker import TIPPage
-from toontown.shtiker import CheckPage
-from toontown.shtiker import LocationPage
-from toontown.quest import Quests
 from toontown.quest import QuestParser
 from toontown.toonbase.ToontownGlobals import *
 from toontown.toonbase import ToontownGlobals
@@ -54,12 +49,8 @@ from . import Toon
 from . import LaffMeter
 from toontown.quest import QuestMap
 from toontown.archipelago.gui.ArchipelagoOnscreenLog import ArchipelagoOnscreenLog
-from toontown.archipelago.definitions.rewards import get_ap_reward_from_id
-from toontown.archipelago.gui.ArchipelagoRewardDisplay import ArchipelagoRewardDisplay, APRewardGift
-from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
-from ..archipelago.util.HintContainer import HintContainer
 from ..shtiker.ShtikerPage import ShtikerPage
 
 WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
@@ -184,11 +175,8 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.camera = camera
 
             self.archipelagoLog: ArchipelagoOnscreenLog = None
-            self.archipelagoRewardDisplay: ArchipelagoRewardDisplay = None
-            self.locationScoutsCache: LocationScoutsCache = LocationScoutsCache()
             self.currentlyInHQ = False
-            self.hintContainer: HintContainer = HintContainer(0)
-
+            self.wantCompetitiveBossScoring = base.settings.get('competitive-boss-scoring')
             self.accept("disableControls", self.disableControls)
 
             self.currentOnscreenInterface = None  # We can only exclusively show one hotkey interface at a time
@@ -295,8 +283,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         taskMgr.removeTasksMatching('*ioorrd234*')
         self.archipelagoLog.destroy()
         del self.archipelagoLog
-        self.archipelagoRewardDisplay.destroy()
-        del self.archipelagoRewardDisplay
         self.ignoreAll()
         DistributedToon.DistributedToon.disable(self)
 
@@ -353,12 +339,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.optionsPage = OptionsPage.OptionsPage()
         self.optionsPage.load()
         self.book.addPage(self.optionsPage, pageName=TTLocalizer.OptionsPageTitle)
-        self.checkPage = CheckPage.CheckPage()
-        self.checkPage.load()
-        self.book.addPage(self.checkPage, pageName=TTLocalizer.CheckPageTitle)
-        self.locationPage = LocationPage.LocationPage()
-        self.locationPage.load()
-        self.book.addPage(self.locationPage, pageName=TTLocalizer.LocationPageTitle)
         self.mapPage = MapPage.MapPage()
         self.mapPage.load()
         self.book.addPage(self.mapPage, pageName=TTLocalizer.MapPageTitle)
@@ -412,19 +392,6 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             base.setCellsAvailable([base.bottomCells[4]], 0)
 
         self.archipelagoLog = ArchipelagoOnscreenLog()
-        self.archipelagoRewardDisplay = ArchipelagoRewardDisplay(
-            frameColor=(0.1, 0.1, 0.1, .9),
-            frameSize=(0, .9, 0, .2),
-            pos=(-1, 0, -.4),
-            text='',
-            text_scale=.035,
-            text_align=TextNode.ACenter,
-            text_fg=(1, 1, 1, 1),
-            text_pos=(.55, 0.138)
-        )
-        self.archipelagoRewardDisplay.reparentTo(base.a2dTopLeft)
-        self.archipelagoRewardDisplay.set_default_options()
-        self.archipelagoRewardDisplay.hide()
 
         controls = base.controls
         self.accept(controls.SECONDARY_ACTION, self.__zeroPowerToss)
@@ -2100,71 +2067,8 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def d_setDeathReason(self, reason: DeathReason):
         self.sendUpdate('setDeathReason', [reason.to_astron()])
 
-    # Shows a reward that we were given, called from the AI
-    def showReward(self, rewardId: int, playerName: str, isLocal: bool) -> None:
-        apReward = get_ap_reward_from_id(rewardId)
-        rewardGift = APRewardGift(apReward, playerName, isLocal)
-        self.archipelagoRewardDisplay.queue_reward(rewardGift)
-
-    # Called from the ai, update our location scouts for quest poster display
-    def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
-        new_cache = LocationScoutsCache.from_struct(cacheTuples)
-        self.locationScoutsCache.merge(new_cache, update=True)
-
-    # Call this method to get the cached location that we have stored
-    def getCachedLocationReward(self, locationId: int) -> str:
-        return self.locationScoutsCache.get(locationId, default=f"Undefined <location={locationId}>")
-
-    def hasCachedLocationReward(self, locationId: int) -> bool:
-        return self.locationScoutsCache.get(locationId) is not None
-
-    def setSlotData(self, slotData) -> None:
-        super().setSlotData(slotData)
-        self.doAreaSanityCheck()
-
     def enterPlaceWalk(self):
-        if self.hasConnected():
-            self.startAreaSanityCheck()
-        else:
-            self.setArchipelagoAuto()
-
-    def setArchipelagoAuto(self, _=None):
-        slotName = os.environ.get('ARCHIPELAGO_SLOT', '')
-        serverAddr = os.environ.get('ARCHIPELAGO_ADDRESS', '')
-        self.sendUpdate('setArchipelagoAuto', [slotName, serverAddr])
-
-    def startAreaSanityCheck(self):
-        taskMgr.doMethodLater(0.01, self.doAreaSanityCheck, self.uniqueName('areaSanityCheck'))
-
-    def doAreaSanityCheck(self, _=None):
-        tpsanity = localAvatar.slotData.get('tpsanity')
-        if tpsanity == TPSanity.option_keys:
-            self.areaSanityForceMove()
-
-    def areaSanityForceMove(self):
-        # Ignore if we're in TTC
-        if self.getZoneId() == ToontownGlobals.ToontownCentral:
-            return
-
-        # Huge TPSanity barrier!
-        tpsanity = self.slotData.get('tpsanity')
-        if tpsanity != TPSanity.option_keys:
-            return
-        else:
-            tp_itemname = hood_to_tp_item_name(self.getZoneId())
-            if not tp_itemname:
-                return
-            else:
-                item_id = ITEM_NAME_TO_ID[tp_itemname.value]
-                if item_id in self.receivedItemIDs:
-                    return
-
-        # OK, try to move them now
-        place = self.cr.playGame.getPlace()
-        print(place.fsm.hasStateNamed('DFA'), place.fsm.getCurrentState().getName())
-        if place and place.fsm.hasStateNamed('DFA') and place.fsm.getCurrentState().getName() == 'walk':
-            self.doTeleport('TTC')
-            self.startAreaSanityCheck()
+       pass
 
     def enableCraneControls(self) -> None:
         self.controlManager.enableCraneControls()
@@ -2201,9 +2105,3 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.makeOverheadLaffMeter()
         else:
             self.destroyOverheadLaffMeter()
-
-    def getHintContainer(self) -> HintContainer:
-        return self.hintContainer
-
-    def setHintContainer(self, container: HintContainer):
-        self.hintContainer = container

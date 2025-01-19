@@ -1,5 +1,5 @@
 @echo off
-title Toontown Archipelago: Client 3 Launcher
+title Toontown Ranked: Client 3 Launcher
 set /P PPYTHON_PATH=<PPYTHON_PATH
 set SERVICE_TO_RUN=CLIENT
 cd ..\..

@@ -1,11 +1,10 @@
-from typing import List, Tuple, Dict
+from typing import List, Tuple
 
-from apworld.toontown.fish import FishGenus, ROD_DICT, FISH_DICT, FishDef, FishingRodDef, FishZone, get_catchable_fish, FishLocation
+from toontown.fishing.FishingConstants import FishGenus, ROD_DICT, FISH_DICT, FishDef, get_catchable_fish, FishLocation
 from toontown.toonbase import TTLocalizer
 from math import ceil, pow
 import random
 from toontown.toonbase import ToontownGlobals
-import copy
 
 NoMovie = 0
 EnterMovie = 1

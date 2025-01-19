@@ -6,7 +6,7 @@ export MAX_CHANNELS=999999
 export STATESERVER=4002
 export ASTRON_IP="127.0.0.1:7199"
 export EVENTLOGGER_IP="127.0.0.1:7197"
-export DISTRICT_NAME="Archipelago Avenue"
+export DISTRICT_NAME="Ranked Realms"
 while true;
 do
     ./launch \

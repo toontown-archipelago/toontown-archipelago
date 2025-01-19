@@ -1462,6 +1462,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
     ##### Epilogue state #####
     def enterEpilogue(self):
+        
         # No more intervals should be playing.
         self.cleanupIntervals()
         self.clearChat()

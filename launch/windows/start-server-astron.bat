@@ -1,5 +1,5 @@
 @echo off
-title Toontown Archipelago: Astron Launcher
+title Toontown Ranked: Astron Launcher
 cd ..\..\astron
 
 :main

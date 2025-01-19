@@ -2,11 +2,8 @@ from typing import List, Tuple
 
 from panda3d.core import *
 
-from toontown.archipelago.definitions.util import track_and_level_to_location, ap_location_name_to_id
 from toontown.toonbase import ToontownBattleGlobals
 from direct.directnotify import DirectNotifyGlobal
-from otp.otpbase import OTPGlobals
-
 
 class Experience:
     notify = DirectNotifyGlobal.directNotify.newCategory('Experience')
@@ -117,29 +114,6 @@ class Experience:
         # Add the xp, and make sure that it does not go above our cap
         newXp = self.experience[track] + amount
         self.experience[track] = min(trackExperienceCap, newXp)
-
-        # Here temporarily until i make options not bad.
-        # 0 = unlock, 1 = trained
-        checkBehavior = self.owner.slotData.get('gag_training_check_behavior', 1)
-        if checkBehavior not in (0, 1): checkBehavior = 1
-        # Now determine the checks that we are eligible for
-
-        if checkBehavior == 0:
-            # This is the line of code to have the legacy system where we unlock checks based on the actual gags we have
-            # unlocked. Leaving this here in case we would rather keep this logic
-            gagLevels = self.getAllowedGagLevels(track)
-        else:
-            # This line of code is the new system where we do gag location checks based on maxing a gag's exp.
-            # (Maxed as in highest exp amount before unlocking the next gag or higher)
-            gagLevels = self.getMaxedGagLevels(track)
-
-        # Now convert our gags to the corresponding AP checks.
-        apChecks = []
-        for gagLevel in gagLevels:
-            apCheckID = ap_location_name_to_id(track_and_level_to_location(track, gagLevel))
-            apChecks.append(apCheckID)
-
-        self.owner.addCheckedLocations(apChecks)
 
     # Call when we decrement track access levels, this will decrease our xp to correct values
     def fixTrackAccessLimits(self):

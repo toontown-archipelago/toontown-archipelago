@@ -1,14 +1,10 @@
 import random
 import math
-from panda3d.core import Point3
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import FSM
-from direct.interval.IntervalGlobal import LerpPosInterval
 
-from apworld.toontown import locations
 from toontown.archipelago.definitions.death_reason import DeathReason
 
-from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.coghq import DistributedFoodBeltAI
 from toontown.coghq import DistributedBanquetTableAI
 from toontown.coghq import DistributedGolfSpotAI
@@ -642,17 +638,10 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         BattleExperienceAI.assignRewards(self.involvedToons, self.toonSkillPtsGained, self.suitsKilled, ToontownGlobals.dept2cogHQ(self.dept), self.helpfulToons)
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
-            if toon:
-                toon.addCheckedLocations([ap_location_name_to_id(location) for location in [
-                    locations.ToontownLocationName.BOSSBOT_PROOF_1.value,
-                    locations.ToontownLocationName.BOSSBOT_PROOF_2.value,
-                    locations.ToontownLocationName.BOSSBOT_PROOF_3.value,
-                    locations.ToontownLocationName.BOSSBOT_PROOF_4.value,
-                    locations.ToontownLocationName.BOSSBOT_PROOF_5.value,
-                    locations.ToontownLocationName.FIGHT_CEO.value
-                ]])
-                self.givePinkSlipReward(toon)
-                toon.b_promote(self.deptIndex)
+            if toon is None:
+                continue
+            self.givePinkSlipReward(toon)
+            toon.b_promote(self.deptIndex)
 
     def givePinkSlipReward(self, toon):
         self.notify.debug('TODO give pink slip to %s' % toon)

@@ -28,31 +28,6 @@ spellbookJsonDefaultValues = '''{
 }
 '''
 
-if not os.path.exists('config/'):
-    os.mkdir('config/')
-
-if not os.path.isfile('config/spellbook.json'):
-    with open('config/spellbook.json', 'w') as data:
-        data.write(spellbookJsonDefaultValues)
-        data.close()
-
-with open('config/spellbook.json') as data:
-    spellbook = json.load(data)
-
-for word in spellbook['words']:
-    name = word['name']
-    accessLevel = word['access']
-
-    if accessLevel not in list(OTPGlobals.AccessLevelName2Int.keys()):
-        break
-
-    try:
-        wordInfo = MagicWordIndex[str(name.lower())]
-        for alias in wordInfo['aliases']:
-            MagicWordIndex[alias]['access'] = accessLevel
-    except:
-        pass
-
 
 class TTOffMagicWordManagerAI(DistributedObjectAI.DistributedObjectAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('TTOffMagicWordManagerAI')

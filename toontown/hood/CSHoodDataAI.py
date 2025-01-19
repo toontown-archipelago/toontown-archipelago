@@ -4,13 +4,11 @@ from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedFactoryElevatorExtAI
 from toontown.coghq import DistributedCogHQDoorAI
 from toontown.coghq import DistributedSellbotHQDoorAI
-from toontown.building import DoorTypes, FADoorCodes
+from toontown.building import DoorTypes
 from toontown.coghq import LobbyManagerAI
 from toontown.building import DistributedVPElevatorAI
 from toontown.suit import DistributedSellbotBossAI
 from toontown.building import DistributedBoardingPartyAI
-from toontown.safezone import ArchipelagoTreasurePlannerAI
-from toontown.safezone import DistributedArchiTreasureAI
 
 class CSHoodDataAI(HoodDataAI.HoodDataAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('CSHoodDataAI')
@@ -28,21 +26,16 @@ class CSHoodDataAI(HoodDataAI.HoodDataAI):
         self.testElev0 = DistributedFactoryElevatorExtAI.DistributedFactoryElevatorExtAI(self.air, self.air.factoryMgr, ToontownGlobals.SellbotFactoryInt, 0, antiShuffle=0)
         self.testElev0.generateWithRequired(ToontownGlobals.SellbotFactoryExt)
         self.addDistObj(self.testElev0)
-        self.testElev0.setLock(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING)
         self.testElev1 = DistributedFactoryElevatorExtAI.DistributedFactoryElevatorExtAI(self.air, self.air.factoryMgr, ToontownGlobals.SellbotFactoryIntS, 1, antiShuffle=0)
         self.testElev1.generateWithRequired(ToontownGlobals.SellbotFactoryExt)
         self.addDistObj(self.testElev1)
-        self.testElev1.setLock(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING)
         self.lobbyMgr = LobbyManagerAI.LobbyManagerAI(self.air, DistributedSellbotBossAI.DistributedSellbotBossAI)
         self.lobbyMgr.generateWithRequired(ToontownGlobals.SellbotLobby)
         self.addDistObj(self.lobbyMgr)
         self.lobbyElevator = DistributedVPElevatorAI.DistributedVPElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.SellbotLobby, antiShuffle=1)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.SellbotLobby)
         self.addDistObj(self.lobbyElevator)
-        self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
-                                ]
-        for planner in self.treasurePlanner:
-            planner.start()
+
         if simbase.config.GetBool('want-boarding-groups', 1):
             self.boardingParty = DistributedBoardingPartyAI.DistributedBoardingPartyAI(self.air, [self.lobbyElevator.doId], 8)
             self.boardingParty.generateWithRequired(ToontownGlobals.SellbotLobby)

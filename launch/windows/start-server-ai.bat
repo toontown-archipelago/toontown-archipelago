@@ -1,5 +1,5 @@
 @echo off
-title Toontown Archipelago: AI Launcher
+title Toontown Ranked: AI Launcher
 set /P PPYTHON_PATH=<PPYTHON_PATH
 set SERVICE_TO_RUN=AI
 cd ..\..
@@ -7,7 +7,7 @@ cd ..\..
 set BASE_CHANNEL=401000000
 set MAX_CHANNELS=999999
 set STATESERVER=4002
-set DISTRICT_NAME=Archipelago Avenue
+set DISTRICT_NAME=Ranked Realms
 set ASTRON_IP=127.0.0.1:7199
 set EVENTLOGGER_IP=127.0.0.1:7197
 set WANT_ERROR_REPORTING=true

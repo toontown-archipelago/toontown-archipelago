@@ -1,15 +1,11 @@
 import functools
 
 from direct.distributed import DistributedObjectAI
-from direct.directnotify import DirectNotifyGlobal
-from toontown.toonbase import ToontownGlobals
 from toontown.golf import DistributedGolfHoleAI
 from panda3d.core import *
 from direct.fsm.FSM import FSM
 from toontown.ai.ToonBarrier import *
 from toontown.golf import GolfGlobals
-from ..archipelago.definitions import util
-from apworld.toontown import locations
 INITIAL = 0
 EXITED = 1
 EXPECTED = 2
@@ -21,26 +17,6 @@ JOIN_TIMEOUT = 30
 READY_TIMEOUT = 30
 EXIT_TIMEOUT = 30
 REWARD_TIMEOUT = 30
-COURSE_TO_CHECK = {
-    0: [util.ap_location_name_to_id(locations.ToontownLocationName.EASY_GOLF_1),
-        util.ap_location_name_to_id(locations.ToontownLocationName.EASY_GOLF_2),
-        util.ap_location_name_to_id(locations.ToontownLocationName.EASY_GOLF_3)],
-    1: [util.ap_location_name_to_id(locations.ToontownLocationName.MED_GOLF_1),
-        util.ap_location_name_to_id(locations.ToontownLocationName.MED_GOLF_2),
-        util.ap_location_name_to_id(locations.ToontownLocationName.MED_GOLF_3),
-        util.ap_location_name_to_id(locations.ToontownLocationName.MED_GOLF_4),
-        util.ap_location_name_to_id(locations.ToontownLocationName.MED_GOLF_5),
-        util.ap_location_name_to_id(locations.ToontownLocationName.MED_GOLF_6)],
-    2: [util.ap_location_name_to_id(locations.ToontownLocationName.HARD_GOLF_1),
-        util.ap_location_name_to_id(locations.ToontownLocationName.HARD_GOLF_2),
-        util.ap_location_name_to_id(locations.ToontownLocationName.HARD_GOLF_3),
-        util.ap_location_name_to_id(locations.ToontownLocationName.HARD_GOLF_4),
-        util.ap_location_name_to_id(locations.ToontownLocationName.HARD_GOLF_5),
-        util.ap_location_name_to_id(locations.ToontownLocationName.HARD_GOLF_6),
-        util.ap_location_name_to_id(locations.ToontownLocationName.HARD_GOLF_7),
-        util.ap_location_name_to_id(locations.ToontownLocationName.HARD_GOLF_8),
-        util.ap_location_name_to_id(locations.ToontownLocationName.HARD_GOLF_9)]
-}
 
 class DistributedGolfCourseAI(DistributedObjectAI.DistributedObjectAI, FSM):
     notify = directNotify.newCategory('DistributedGolfCourseAI')
@@ -553,8 +529,6 @@ class DistributedGolfCourseAI(DistributedObjectAI.DistributedObjectAI, FSM):
         self.avStateDict[avId] = BALLIN
         self.updateHistoryForBallIn(avId)
         av = simbase.air.doId2do.get(avId)
-        if av:
-            av.addCheckedLocation(COURSE_TO_CHECK[self.courseId][self.numHolesPlayed])
         if self.isCurHoleDone():
             if self.isPlayingLastHole():
                 if self.state != 'WaitReward':

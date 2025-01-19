@@ -1,5 +1,5 @@
 @echo off
-title Toontown Archipelago - Launcher
+title Toontown Ranked - Launcher
 
 echo Starting Servers
 start start_servers.bat
