@@ -212,6 +212,7 @@ class Rule(Enum):
     TaskedAllHoods = auto()
     GainedEnoughLaff = auto()
     MaxedAllGags = auto()
+    CanReachBounties = auto()
 
     CanWinGame = auto()
 

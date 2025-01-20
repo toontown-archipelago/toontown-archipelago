@@ -2429,6 +2429,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         money = deltaMoney + self.money
         pocketMoney = min(money, self.maxMoney)
         self.ap_addMoney(deltaMoney)
+        self.b_setMoney(pocketMoney)
 
     def takeMoney(self, deltaMoney, bUseBank=False):
         totalMoney = self.money

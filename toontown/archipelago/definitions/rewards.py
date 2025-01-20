@@ -781,6 +781,21 @@ class ProofReward(APReward):
         pass
 
 
+class BountyReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Bounty Obtained!\n", color='green'),
+            MinimalJsonMessagePart(f"Proof of a difficult task completed!"),
+        ])
+
+    def get_image_path(self) -> str:
+        return f'phase_14/maps/bounty.png'
+
+    def apply(self, av: "DistributedToonAI"):
+        av.checkWinCondition()
+
+
 class VictoryReward(APReward):
 
     def formatted_header(self) -> str:
@@ -893,6 +908,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.CFO.value: ProofReward(1),
     ToontownItemName.CJ.value: ProofReward(2),
     ToontownItemName.CEO.value: ProofReward(3),
+    ToontownItemName.BOUNTY.value: BountyReward(),
 }
 
 

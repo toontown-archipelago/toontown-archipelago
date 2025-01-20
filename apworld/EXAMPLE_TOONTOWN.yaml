@@ -33,6 +33,17 @@ Toontown:
   # Must be above or equal to the base_global_gag_xp.
   # Range: 0 to 30
   max_global_gag_xp: 30
+
+  starting_gags:
+    # The gags to have when starting a new game.
+    # ["randomized"] will ensure you have 2 tracks, at least one being a usable offensive track.
+    # If you select two other tracks here, "randomized" will do nothing.
+    # 
+    # valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
+    # ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks
+    # ex. ["sound"] will start you with only sound as a starting track
+    # An empty list will start you with no gag tracks
+    ['randomized']
   
   # The percentage of damage that will be done when battling Cogs.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
@@ -68,6 +79,9 @@ Toontown:
   # At least one of these should be enabled, otherwise the game will immediately complete.
   # - (Default) Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
   win_condition_cog_bosses: "true"
+  # - Player must reach a certain number of bounty checks to complete the game (determined by bounties_required, total_bounties)
+  # - Bounties can be on late/challenging checks such as max fishing, each cog boss, maxing gags, etc.
+  win_condition_bounty: 'false'
   # - Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
   win_condition_total_tasks: "false"
   # - Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
@@ -109,6 +123,22 @@ Toontown:
   # Setting must be below or equal to max_laff setting
   # Range 0 to 150
   laff_points_required: 120
+
+  # BOUNTY SETTINGS #
+
+  # How many bounties we must have before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not bounty
+  # Range 0 to 32
+  bounties_required: 10
+
+  # How many bounties are in the pool.
+  # Unused if win_condition is not bounty
+  # Must be equal to or above bounties_required
+  # Range 1 to 32
+  total_bounties: 20
+
+  # Should bounties be hinted from the beginning of the run?
+  hint_bounties: "false"
 
   ### Sanity Settings ###
 
