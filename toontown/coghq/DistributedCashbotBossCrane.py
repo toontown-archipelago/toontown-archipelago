@@ -1412,7 +1412,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.controlModel.clearTransparency()
 
     def enterFree(self):
-        print(self.avId, localAvatar.doId)
         if self.avId != localAvatar.doId:
             if self.fadeTrack:
                 self.fadeTrack.finish()
@@ -1465,7 +1464,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.accept(self.triggerEvent, self.__hitTrigger)
 
     def exitFree(self):
-        print("exitFree")
         if self.fadeTrack:
             self.fadeTrack.finish()
             self.fadeTrack = None

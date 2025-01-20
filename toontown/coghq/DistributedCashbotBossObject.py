@@ -223,8 +223,8 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         if self.boss.getBoss().heldObject or self.boss.getBoss().attackCode != ToontownGlobals.BossCogDizzy:
             return
         
-        timeUntilStunEnd = self.boss.stunEndTime - globalClock.getFrameTime()
-        if timeUntilStunEnd < 1.5:
+        timeUntilStunEnd = self.boss.getBoss().stunEndTime - globalClock.getFrameTime()
+        if self.boss.getBoss().stunEndTime == 0 or timeUntilStunEnd < 1.5:
             return
 
         # Get the crane to check its damage multiplier 
@@ -244,17 +244,17 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         if self.boss.processingHp:
             curHp = self.boss.tempHp
         else:
-            curHp = self.boss.ruleset.CFO_MAX_HP - self.boss.bossDamage
+            curHp = self.boss.ruleset.CFO_MAX_HP - self.boss.getBoss().bossDamage
         
         self.boss.tempHp = curHp - damage
 
         if damage < curHp:
-            self.boss.myHits.append(self.doId)
-            self.boss.processingHp = True
-            self.boss.flashRed()
+            self.boss.getBoss().myHits.append(self.doId)
+            self.boss.getBoss().processingHp = True
+            self.boss.getBoss().flashRed()
             if self.boss.ruleset.CFO_FLINCHES_ON_HIT:
-                self.boss.doAnimate('hit', now=1)
-            self.boss.showHpText(-damage, scale=5)
+                self.boss.getBoss().doAnimate('hit', now=1)
+            self.boss.getBoss().showHpText(-damage, scale=5)
 
     def doHitBoss(self, impact, craneId):
         # Derived classes can override this to do something specific
