@@ -465,8 +465,9 @@ class DistributedPieGame(DistributedMinigame):
     Misc shit
     """
 
-    def toFinalBattleMode(self):
-        self.walkStateData.fsm.request('walking')
+    def toFinalBattleMode(self, checkForOuch: bool = False):
+        if not checkForOuch or self.walkStateData.fsm.getCurrentState().getName() != 'ouch':
+            self.walkStateData.fsm.request('walking')
 
     def toOuchMode(self):
         self.walkStateData.fsm.request('ouch')

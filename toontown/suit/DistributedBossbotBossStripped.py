@@ -488,9 +488,8 @@ class DistributedBossbotBossStripped(DistributedBossCogStripped):
                 Sequence(Func(camera.setZ, camera, 1), Wait(0.15), Func(camera.setZ, camera, -2), Wait(0.15),
                          Func(camera.setZ, camera, 1)))
         if fling:
-            if self.isToonRoaming(toon.doId):
-                toonTrack += [ActorInterval(toon, 'slip-backward')]
-                toonTrack += [toon.posInterval(0.5, getSlideToPos, fluid=1)]
+            toonTrack += [ActorInterval(toon, 'slip-backward')]
+            toonTrack += [toon.posInterval(0.5, getSlideToPos, fluid=1)]
         else:
             toonTrack += [ActorInterval(toon, 'slip-forward')]
         zapTrack.append(toonTrack)

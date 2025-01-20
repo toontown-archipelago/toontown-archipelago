@@ -1264,7 +1264,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
                 
                 localAvatar.orbitalCamera.start()
 
-                self.boss.toFinalBattleMode()
+                self.boss.toFinalBattleMode(checkForOuch=True)
 
                 # Go back to the defined setting for FOV effects
                 base.WANT_FOV_EFFECTS = base.settings.get('fovEffects')
@@ -1294,17 +1294,8 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
                 self.stopSmooth()
                 
                 localAvatar.orbitalCamera.start()
-                
-                # This is a bit hacky.  Go back to finalBattle mode, but
-                # only if we're still in crane mode.  (We might have been
-                # zapped to 'ouch' mode by a hit.)
-                if self.cr:
-                    place = self.cr.playGame.getPlace()
-                    if place and hasattr(place, 'fsm'):
-                        if place.fsm.getCurrentState().getName() == 'crane':
-                            place.setState('finalBattle')
-                            
-                self.boss.toFinalBattleMode()
+
+                self.boss.toFinalBattleMode(checkForOuch=True)
 
                 # Go back to the defined setting for FOV effects
                 base.WANT_FOV_EFFECTS = base.settings.get('fovEffects')
@@ -1350,17 +1341,8 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.tube.unstash()
             
             localAvatar.orbitalCamera.start()
-            
-            # This is a bit hacky.  Go back to finalBattle mode, but
-            # only if we're still in crane mode.  (We might have been
-            # zapped to 'ouch' mode by a hit.)
-            if self.cr:
-                place = self.cr.playGame.getPlace()
-                if place and hasattr(place, 'fsm'):
-                    if place.fsm.getCurrentState().getName() == 'crane':
-                        place.setState('finalBattle')
-                        
-            self.boss.toFinalBattleMode()
+
+            self.boss.toFinalBattleMode(checkForOuch=True)
 
             # Go back to the defined setting for FOV effects
             base.WANT_FOV_EFFECTS = base.settings.get('fovEffects')

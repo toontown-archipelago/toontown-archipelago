@@ -551,24 +551,13 @@ class DistributedGolfSpot(DistributedObject.DistributedObject, FSM.FSM):
                 grabIval.append(toonIval)
         if localAvatar.doId == toon.doId:
             if not self.goingToReward and toon.hp > 0:
-                grabIval.append(Func(self.goToFinalBattle))
                 grabIval.append(Func(self.notify.debug, 'goingToFinalBattlemode'))
                 grabIval.append(Func(self.safeBossToFinalBattleMode))
         return grabIval
 
     def safeBossToFinalBattleMode(self):
         if self.boss:
-            self.boss.toFinalBattleMode()
-
-    def goToFinalBattle(self):
-        if self.cr:
-            place = self.cr.playGame.getPlace()
-            if place and hasattr(place, 'fsm'):
-                curState = place.fsm.getCurrentState().getName()
-                if place.fsm.getCurrentState().getName() == 'crane':
-                    place.setState('finalBattle')
-                else:
-                    self.notify.debug('NOT going to final battle, state=%s' % curState)
+            self.boss.toFinalBattleMode(checkForOuch=True)
 
     def attachClub(self, avId, pointToBall = False):
         club = self.club

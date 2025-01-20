@@ -312,10 +312,11 @@ class DistributedSeltzerGame(DistributedMinigame):
             return
         self.walkStateData.fsm.request('crane')
 
-    def toFinalBattleMode(self):
+    def toFinalBattleMode(self, checkForOuch: bool = False):
         if self.gameFSM.getCurrentState().getName() != "playing":
             return
-        self.walkStateData.fsm.request('walking')
+        if not checkForOuch or self.walkStateData.fsm.getCurrentState().getName() != 'ouch':
+            self.walkStateData.fsm.request('walking')
 
     def toOuchMode(self):
         if self.gameFSM.getCurrentState().getName() != "playing":
