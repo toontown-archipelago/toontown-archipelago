@@ -3890,6 +3890,7 @@ dclass DistributedPieGame: DistributedMinigame {
   updateTimer(uint32/255) broadcast ram;
   toonDied(uint32) broadcast;
   revivedToon(uint32 avId) broadcast;
+  restart() broadcast ram;
 };
 
 dclass DistributedCraneGame: DistributedMinigame {
@@ -3914,6 +3915,7 @@ dclass DistributedCraneGame: DistributedMinigame {
   updateTimer(uint32/255) broadcast ram;
   toonDied(uint32) broadcast;
   revivedToon(uint32 avId) broadcast;
+  restart() broadcast ram;
 };
 
 dclass DistributedScaleGame: DistributedMinigame {
@@ -3930,6 +3932,7 @@ dclass DistributedScaleGame: DistributedMinigame {
   updateTimer(uint32/255) broadcast ram;
   toonDied(uint32) broadcast;
   revivedToon(uint32 avId) broadcast;
+  restart() broadcast ram;
 
   hitBoss() airecv clsend;
   healBoss(uint8) airecv clsend;
@@ -3956,6 +3959,7 @@ dclass DistributedSeltzerGame: DistributedMinigame {
   requestGetToonup(int8, int8, uint32) airecv clsend;
   toonGotToonup(uint32, int8, int8, uint32) broadcast;
   avHealed(uint32 avId, uint32) broadcast;
+  restart() broadcast ram;
 };
 
 dclass DistributedPicnicTable : DistributedNode {

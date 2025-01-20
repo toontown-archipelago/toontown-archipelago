@@ -2382,14 +2382,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def addMoney(self, deltaMoney):
         money = deltaMoney + self.money
         pocketMoney = min(money, self.maxMoney)
-        self.ap_addMoney(deltaMoney)
 
     def takeMoney(self, deltaMoney, bUseBank=False):
         totalMoney = self.money
         if deltaMoney > totalMoney:
             self.notify.warning('Not enough money! AvId: %s Has:%s Charged:%s' % (self.doId, totalMoney, deltaMoney))
             return False
-        self.ap_takeMoney(deltaMoney)
         self.b_setMoney(self.money - deltaMoney)
         return True
 

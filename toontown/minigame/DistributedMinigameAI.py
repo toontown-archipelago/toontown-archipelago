@@ -15,6 +15,8 @@ from . import MinigameGlobals
 from direct.showbase import PythonUtil
 from . import TravelGameGlobals
 from toontown.toonbase import ToontownGlobals
+from ..toon.DistributedToonAI import DistributedToonAI
+
 EXITED = 0
 EXPECTED = 1
 JOINED = 2
@@ -464,3 +466,21 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
 
     def getMetagameRound(self):
         return self.metagameRound
+
+    def getPresentToonIds(self) -> list[int]:
+        """
+        Returns a list of toon IDs that are currently present in this minigame.
+        """
+        return list(self.avIdList)
+
+    def getPresentToons(self) -> list[DistributedToonAI]:
+        """
+        Returns a list of toons that are currently present in this minigame.
+        Only will return a list of toons that are valid.
+        """
+        toons = []
+        for avId in self.getPresentToonIds():
+            av = simbase.air.doId2do.get(avId)
+            if av:
+                toons.append(av)
+        return toons
