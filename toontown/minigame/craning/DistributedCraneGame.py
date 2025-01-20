@@ -349,7 +349,10 @@ class DistributedCraneGame(DistributedMinigame):
 
         self.setToonsToBattleThreePos()
 
-        DistributedSmoothNode.activateSmoothing(1, 1)
+        # All trolley games call this function, but I am commenting it out because I have a suspicion that
+        # global smooth node predictions are fighting with physics calculations with CFO objects.
+        # I could be wrong, but this seems to be unnecessary since CFO objects appear just fine without this set.
+        # DistributedSmoothNode.activateSmoothing(1, 1)
 
     def offstage(self):
         self.notify.debug("offstage")
