@@ -975,12 +975,18 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.boss.craneStatesDebug(doId=self.doId,
                                    content='post-Releasing object, currently holding: %s' % (self.heldObject.getName() if self.heldObject else "Nothing"))
 
+    def __localToonAllowedToCrane(self) -> bool:
+        """
+        Returns True if we are allowed to use this crane.
+        """
+        return base.localAvatar.hp > 0
+
     def __hitTrigger(self, event):
+        if not self.__localToonAllowedToCrane():
+            return
         self.demand('LocalControlled', base.localAvatar.doId)
         self.d_requestControl()
 
-    
-    
     ##### Messages To/From The Server #####
 
     def setBossCogId(self, bossCogId):
