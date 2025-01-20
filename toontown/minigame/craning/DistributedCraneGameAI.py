@@ -869,6 +869,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.stopGoons()
         self.__resetCraningObjects()
         self.deleteAllTreasures()
+        taskMgr.remove(self.uniqueName('times-up-task'))
         taskName = self.uniqueName('NextGoon')
         taskMgr.remove(taskName)
 
