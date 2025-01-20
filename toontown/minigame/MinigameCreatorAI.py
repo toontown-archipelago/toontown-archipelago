@@ -25,6 +25,7 @@ from . import TravelGameGlobals
 from toontown.minigame.crashball.DistributedCrashBallGameAI import DistributedCrashBallGameAI
 from .DistributedMinigameAI import DistributedMinigameAI
 from .craning.DistributedCraneGameAI import DistributedCraneGameAI
+from .golfgreen.DistributedGolfGreenGameAI import DistributedGolfGreenGameAI
 from .pie.DistributedPieGameAI import DistributedPieGameAI
 from .scale.DistributedScaleGameAI import DistributedScaleGameAI
 from .seltzer.DistributedSeltzerGameAI import DistributedSeltzerGameAI
@@ -63,6 +64,7 @@ class MinigameCreatorAI:
         ToontownGlobals.PieGameId: DistributedPieGameAI,
         ToontownGlobals.ScaleGameId: DistributedScaleGameAI,
         ToontownGlobals.SeltzerGameId: DistributedSeltzerGameAI,
+        ToontownGlobals.GolfGreenGameId: DistributedGolfGreenGameAI,
     }
 
     def __init__(self, air):

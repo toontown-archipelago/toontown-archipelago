@@ -371,6 +371,7 @@ CraneGameId = 18
 PieGameId = 19
 ScaleGameId = 20
 SeltzerGameId = 21
+GolfGreenGameId = 22
 TravelGameId = 100
 MinigameNames = {
     'race': RaceGameId,
@@ -397,7 +398,8 @@ MinigameNames = {
     'crane': CraneGameId,
     'pie': PieGameId,
     'scale': ScaleGameId,
-    'seltzer': SeltzerGameId
+    'seltzer': SeltzerGameId,
+    'golfgreen': GolfGreenGameId,
 }
 MinigameTemplateId = -1
 MinigameIDs = (
