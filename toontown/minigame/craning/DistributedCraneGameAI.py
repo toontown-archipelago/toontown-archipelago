@@ -855,11 +855,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
     def __timesUp(self, task=None):
-        for avId in self.boss.getInvolvedToonsNotSpectating():
-            av = self.air.doId2do.get(avId)
-            if av:
-                av.takeDamage(av.getMaxHp())
-
         self.toonsWon = False
         taskMgr.remove(self.uniqueName('times-up-task'))
         self.gameFSM.request('victory')
