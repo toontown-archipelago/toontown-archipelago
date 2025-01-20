@@ -208,11 +208,11 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
         taskName = self.uniqueName('NextHelmet')
         taskMgr.remove(taskName)
         delayTime = self.game.progressValue(45, 15)
-        taskMgr.doMethodLater(delayTime, self.__donHelmet, taskName)
+        taskMgr.doMethodLater(delayTime, self.donHelmet, taskName)
         self.debug(content='Next auto-helmet in %s seconds' % delayTime)
         self.waitingForHelmet = 1
 
-    def __donHelmet(self, task):
+    def donHelmet(self, task):
 
         if self.ruleset.DISABLE_SAFE_HELMETS:
             return

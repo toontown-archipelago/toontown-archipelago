@@ -31,10 +31,6 @@ SAFE_POSHPR = [
     (133.9, -359.1, 0, 0, 0, 0),  # 2L
     (165.5, -302.4, 0, 90, 0, 0),  # 4L
     (77.2, -329.3, 0, -90, 0, 0),  # 3L
-    # (102.957,  -301.296,  0, 45, 0, 0),  # C1
-    # (138.467,  -301.042,  0, -45, 0, 0),  # C2
-    # (138.457,  -330.047,  0, -135, 0, 0),  # C3
-    # (102.675,  -328.630,  0, 135, 0, 0),  # C4
 ]
 
 SAFE_POSHPR_NEW = [
@@ -114,10 +110,10 @@ class CFORuleset:
         self.CRANE_STATES_DEBUG = False
         self.SAFE_STATES_DEBUG = False
 
-        self.TIMER_MODE = False  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
-        self.TIMER_MODE_TIME_LIMIT = 15 * 60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
+        self.TIMER_MODE = True  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
+        self.TIMER_MODE_TIME_LIMIT = 3 * 60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
 
-        self.CFO_MAX_HP = 1500  # How much HP should the CFO have?
+        self.CFO_MAX_HP = 3000  # How much HP should the CFO have?
         self.CFO_STUN_THRESHOLD = 24  # How much damage should a goon do to stun?
         self.SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 
@@ -197,10 +193,10 @@ class CFORuleset:
         self.LOW_LAFF_BONUS_INCLUDE_PENALTIES = False  # Should penalties also be increased when low on laff?
 
         # note: When REVIVE_TOONS_UPON_DEATH is True, the only fail condition is if we run out of time
-        self.RESTART_CRANE_ROUND_ON_FAIL = True  # Should we restart the crane round if all toons die?
+        self.RESTART_CRANE_ROUND_ON_FAIL = False  # Should we restart the crane round if all toons die?
         self.REVIVE_TOONS_UPON_DEATH = True  # Should we revive a toon that dies after a certain amount of time? (essentially a stun)
-        self.REVIVE_TOONS_TIME = 10  # Time in seconds to revive a toon after death
-        self.REVIVE_TOONS_LAFF_PERCENTAGE = 0.50  # How much laff should we give back to the toon when revived?
+        self.REVIVE_TOONS_TIME = 5  # Time in seconds to revive a toon after death
+        self.REVIVE_TOONS_LAFF_PERCENTAGE = 0.75  # How much laff should we give back to the toon when revived?
 
         # A for fun mechanic that makes toons have permanent damage buffs based on how much damage they do
         self.WANT_MOMENTUM_MECHANIC = False
@@ -208,28 +204,26 @@ class CFORuleset:
         # POINTS SETTINGS
         self.POINTS_GOON_STOMP = 1  # Points per goon stomp
         self.POINTS_STUN = 10  # Points per stun
-        self.POINTS_SIDESTUN = 25  # Points per stun on sidecrane
-        self.POINTS_IMPACT = 3  # Points given when a max impact hit is achieved
-        self.POINTS_DESAFE = 10  # Points for taking a safe helmet off
-        self.POINTS_GOON_KILLED_BY_SAFE = 2  # Points for killing a goon with a safe
+        self.POINTS_SIDESTUN = 30  # Points per stun on sidecrane
+        self.POINTS_IMPACT = 2  # Points given when a max impact hit is achieved
+        self.POINTS_DESAFE = 20  # Points for taking a safe helmet off
+        self.POINTS_GOON_KILLED_BY_SAFE = 3  # Points for killing a goon with a safe
         self.POINTS_KILLING_BLOW = 0  # Points for dealing the killing blow to the CFO
 
-        self.POINTS_PENALTY_SAFEHEAD = -25  # Deduction for putting a safe on the CFOs head
-        self.POINTS_PENALTY_GO_SAD = -50  # Point deduction for dying (can happen multiple times if revive setting is on)
-        self.POINTS_PENALTY_SANDBAG = -5  # Point deduction for hitting a very low impact hit
-        self.POINTS_PENALTY_UNSTUN = -25
+        self.POINTS_PENALTY_SAFEHEAD = -20  # Deduction for putting a safe on the CFOs head
+        self.POINTS_PENALTY_GO_SAD = -20  # Point deduction for dying (can happen multiple times if revive setting is on)
+        self.POINTS_PENALTY_SANDBAG = -2  # Point deduction for hitting a very low impact hit
+        self.POINTS_PENALTY_UNSTUN = 0
 
-        self.TREASURE_POINT_PENALTY = True  # Should we deduct points for picking up treasures?
+        self.TREASURE_POINT_PENALTY = False  # Should we deduct points for picking up treasures?
         self.TREASURE_POINT_PENALTY_FLAT_RATE = 1  # How much should we deduct? set to 0 or less to make it 1 to 1 with laff gained
 
         # COMBO SETTINGS
+        self.WANT_COMBO_BONUS = False
         self.COMBO_DURATION = 2.0  # How long should combos last?
         self.TREASURE_GRAB_RESETS_COMBO = True  # Should picking up a treasure reset a toon's combo?
 
         self.MODIFIER_TIER_RANGE = (1, 3)  # todo Perhaps refactor this into the modifier class
-
-    def get_max_allowed_hp(self):
-        return self.CFO_MAX_HP * 2
 
     # Called to update various list values constructed from instance attributes
     def update_lists(self):
@@ -474,6 +468,30 @@ class CFORulesetModifierBase(object):
 
 
 # Now here is where we can actually define our modifiers
+class ModifierTimerEnabler(CFORulesetModifierBase):
+    MODIFIER_ENUM = 26
+    MODIFIER_TYPE = CFORulesetModifierBase.SPECIAL
+    TITLE_COLOR = CFORulesetModifierBase.DARK_PURPLE
+    DESCRIPTION_COLOR = CFORulesetModifierBase.PURPLE
+
+    def getName(self):
+        return "Timed!"
+    
+    def _getTime(self):
+        return self.tier * 60
+    
+    def getDescription(self):
+        return f'The CFO will automatically end in %(color_start)s{self._getTime()}%(color_end)s!'
+    
+    def getHeat(self):
+        return 0
+    
+    def apply(self, cfoRuleset):
+        cfoRuleset.TIMER_MODE = True
+        cfoRuleset.TIMER_MODE_TIME_LIMIT = self._getTime()
+        cfoRuleset.CFO_MAX_HP = 3000
+
+
 class ModifierComboExtender(CFORulesetModifierBase):
     MODIFIER_ENUM = 0
     MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL

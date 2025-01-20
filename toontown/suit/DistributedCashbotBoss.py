@@ -811,7 +811,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             Func(crane.request, 'Free'),
             
             #fix the CFO's orientation
-            Func(self.getGeomNode().setH, 0),
+            Func(self.forwardHead),
             self.moveToonsToBattleThreePos(self.getInvolvedToonsNotSpectating()),
             Func(self.__showToons))
 
@@ -1590,22 +1590,73 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def announceCraneRestart(self):
         restartingOrEnding = 'Restarting ' if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL else 'Ending '
-        title = OnscreenText(parent=aspect2d, text='All toons are sad!', style=3, fg=(.8, .2, .2, 1), align=TextNode.ACenter, scale=.15, pos=(0, .35), font=ToontownGlobals.getCompetitionFont())
-        sub = OnscreenText(parent=aspect2d, text=restartingOrEnding + 'crane round in 10 seconds...', style=3, fg=(.8, .8, .8, 1), align=TextNode.ACenter, scale=.09, pos=(0, .2), font=ToontownGlobals.getCompetitionFont())
+
+        # Main title text with shadow
+        title = OnscreenText(
+            parent=aspect2d,
+            text='All toons are sad!',
+            style=3,
+            fg=(1, 0.2, 0.2, 1),  # Brighter red
+            align=TextNode.ACenter,
+            scale=0.15,
+            pos=(0, 0.35),
+            font=ToontownGlobals.getCompetitionFont(),
+            shadow=(0, 0, 0, 1),
+            shadowOffset=(0.05, 0.05)
+        )
+
+        # Countdown text with shadow
+        countdown = OnscreenText(
+            parent=aspect2d,
+            text='10',
+            style=3,
+            fg=(1, 1, 1, 1),
+            align=TextNode.ACenter,
+            scale=0.12,
+            pos=(0, 0.2),
+            font=ToontownGlobals.getCompetitionFont(),
+            shadow=(0, 0, 0, 1),
+            shadowOffset=(0.04, 0.04),
+            mayChange=True
+        )
+
+        # Subtitle text
+        sub = OnscreenText(
+            parent=aspect2d,
+            text=restartingOrEnding + 'crane round...',
+            style=3,
+            fg=(0.8, 0.8, 0.8, 1),
+            align=TextNode.ACenter,
+            scale=0.09,
+            pos=(0, 0.1),
+            font=ToontownGlobals.getCompetitionFont(),
+            shadow=(0, 0, 0, 1),
+            shadowOffset=(0.04, 0.04)
+        )
 
         Parallel(
             Sequence(
-                LerpColorScaleInterval(title, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0), blendType='easeInOut'),
+                LerpColorScaleInterval(title, 0.25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0), blendType='easeInOut'),
                 Wait(9.75),
                 LerpColorScaleInterval(title, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1), blendType='easeInOut'),
                 Func(lambda: title.cleanup())
             ),
             Sequence(
-                LerpColorScaleInterval(sub, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0),
-                                       blendType='easeInOut'),
+                LerpColorScaleInterval(countdown, 0.25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0), blendType='easeInOut'),
+                Sequence(*[
+                    Sequence(
+                        Wait(1.0),
+                        Func(lambda t=t: countdown.setText(str(t)))
+                    ) for t in range(9, 0, -1)
+                ]),
+                Wait(0.75),
+                LerpColorScaleInterval(countdown, 0.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1), blendType='easeInOut'),
+                Func(lambda: countdown.cleanup())
+            ),
+            Sequence(
+                LerpColorScaleInterval(sub, 0.25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0), blendType='easeInOut'),
                 Wait(9.75),
-                LerpColorScaleInterval(sub, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1),
-                                       blendType='easeInOut'),
+                LerpColorScaleInterval(sub, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1), blendType='easeInOut'),
                 Func(lambda: sub.cleanup())
             ),
         ).start()
@@ -1623,9 +1674,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.scoreboard.addScore(avId, amount=self.ruleset.POINTS_PENALTY_UNSTUN, reason=CraneLeagueGlobals.PENALTY_UNSTUN_TEXT)
 
     def timesUp(self):
-
         restartingOrEnding = 'Restarting ' if self.ruleset.RESTART_CRANE_ROUND_ON_FAIL else 'Ending '
-
 
         for avId in self.getInvolvedToonsNotSpectating():
             av = base.cr.doId2do.get(avId)
@@ -1634,26 +1683,72 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
                     messenger.send('exitCrane')
                 av.stunToon(knockdown=1)
 
-        title = OnscreenText(parent=aspect2d, text='Times up!', style=3, fg=(.8, .2, .2, 1),
-                             align=TextNode.ACenter, scale=.15, pos=(0, .35), font=ToontownGlobals.getCompetitionFont())
-        sub = OnscreenText(parent=aspect2d, text=restartingOrEnding + 'crane round in 10 seconds...', style=3, fg=(.8, .8, .8, 1),
-                           align=TextNode.ACenter, scale=.09, pos=(0, .2), font=ToontownGlobals.getCompetitionFont())
+        # Main title text with shadow
+        title = OnscreenText(
+            parent=aspect2d,
+            text='Times up!',
+            style=3,
+            fg=(1, 0.2, 0.2, 1),  # Brighter red
+            align=TextNode.ACenter,
+            scale=0.15,
+            pos=(0, 0.35),
+            font=ToontownGlobals.getCompetitionFont(),
+            shadow=(0, 0, 0, 1),
+            shadowOffset=(0.05, 0.05)
+        )
+
+        # Countdown text with shadow
+        countdown = OnscreenText(
+            parent=aspect2d,
+            text='10',
+            style=3,
+            fg=(1, 1, 1, 1),
+            align=TextNode.ACenter,
+            scale=0.12,
+            pos=(0, 0.2),
+            font=ToontownGlobals.getCompetitionFont(),
+            shadow=(0, 0, 0, 1),
+            shadowOffset=(0.04, 0.04),
+            mayChange=True
+        )
+
+        # Subtitle text
+        sub = OnscreenText(
+            parent=aspect2d,
+            text=restartingOrEnding + 'crane round...',
+            style=3,
+            fg=(0.8, 0.8, 0.8, 1),
+            align=TextNode.ACenter,
+            scale=0.09,
+            pos=(0, 0.1),
+            font=ToontownGlobals.getCompetitionFont(),
+            shadow=(0, 0, 0, 1),
+            shadowOffset=(0.04, 0.04)
+        )
 
         Parallel(
             Sequence(
-                LerpColorScaleInterval(title, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0),
-                                       blendType='easeInOut'),
-                Wait(8.75),
-                LerpColorScaleInterval(title, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1),
-                                       blendType='easeInOut'),
+                LerpColorScaleInterval(title, 0.25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0), blendType='easeInOut'),
+                Wait(9.75),
+                LerpColorScaleInterval(title, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1), blendType='easeInOut'),
                 Func(lambda: title.cleanup())
             ),
             Sequence(
-                LerpColorScaleInterval(sub, .25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0),
-                                       blendType='easeInOut'),
-                Wait(8.75),
-                LerpColorScaleInterval(sub, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1),
-                                       blendType='easeInOut'),
+                LerpColorScaleInterval(countdown, 0.25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0), blendType='easeInOut'),
+                Sequence(*[
+                    Sequence(
+                        Wait(1.0),
+                        Func(lambda t=t: countdown.setText(str(t)))
+                    ) for t in range(9, 0, -1)
+                ]),
+                Wait(0.75),
+                LerpColorScaleInterval(countdown, 0.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1), blendType='easeInOut'),
+                Func(lambda: countdown.cleanup())
+            ),
+            Sequence(
+                LerpColorScaleInterval(sub, 0.25, colorScale=(1, 1, 1, 1), startColorScale=(1, 1, 1, 0), blendType='easeInOut'),
+                Wait(9.75),
+                LerpColorScaleInterval(sub, 1.25, colorScale=(1, 1, 1, 0), startColorScale=(1, 1, 1, 1), blendType='easeInOut'),
                 Func(lambda: sub.cleanup())
             ),
         ).start()

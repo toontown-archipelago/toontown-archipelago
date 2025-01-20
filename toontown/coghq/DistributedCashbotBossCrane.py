@@ -982,6 +982,11 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         return base.localAvatar.hp > 0
 
     def __hitTrigger(self, event):
+
+        # If toon is sad, don't request crane control
+        if base.localAvatar.hp <= 0:
+            return
+        
         if not self.__localToonAllowedToCrane():
             return
         self.demand('LocalControlled', base.localAvatar.doId)

@@ -38,7 +38,8 @@ class CashbotBossComboTracker:
         self.boss.d_updateCombo(self.avId, self.combo)
 
     def __awardCombo(self):
-        self.boss.d_awardCombo(self.avId, self.combo, int(math.ceil(self.pointBonus)))
+        if self.boss.ruleset.WANT_COMBO_BONUS:
+            self.boss.d_awardCombo(self.avId, self.combo, int(math.ceil(self.pointBonus)))
         self.resetCombo()
 
     def cleanup(self):

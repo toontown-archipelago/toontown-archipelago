@@ -725,14 +725,14 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             taskName = self.uniqueName('NextHelmet')
             taskMgr.remove(taskName)
             delayTime = self.progressValue(45, 15)
-            taskMgr.doMethodLater(delayTime, self.__donHelmet, taskName)
+            taskMgr.doMethodLater(delayTime, self.donHelmet, taskName)
             self.debug(content='Next auto-helmet in %s seconds' % delayTime)
             self.waitingForHelmet = 1
 
     def setObjectID(self, objId):
         self.objectId = objId
 
-    def __donHelmet(self, task):
+    def donHelmet(self, task):
 
         if self.ruleset.DISABLE_SAFE_HELMETS:
             return
@@ -1070,7 +1070,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
     def __timesUp(self, task=None):
-        self.__donHelmet(None)
+        self.donHelmet(None)
         for avId in self.getInvolvedToonsNotSpectating():
             av = self.air.doId2do.get(avId)
             if av:

@@ -3916,6 +3916,7 @@ dclass DistributedCraneGame: DistributedMinigame {
   toonDied(uint32) broadcast;
   revivedToon(uint32 avId) broadcast;
   restart() broadcast ram;
+  timesUp() broadcast ram;
 };
 
 dclass DistributedScaleGame: DistributedMinigame {

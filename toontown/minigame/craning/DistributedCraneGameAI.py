@@ -627,10 +627,14 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.waitForNextGoon(delayTime)
 
     def progressValue(self, fromValue, toValue):
-        t0 = float(self.boss.bossDamage) / float(self.ruleset.CFO_MAX_HP)
-        elapsed = globalClock.getFrameTime() - self.battleThreeStart
-        t1 = elapsed / float(self.battleThreeDuration)
-        t = max(t0, t1)
+        if self.ruleset.TIMER_MODE:
+            elapsed = globalClock.getFrameTime() - self.battleThreeStart
+            t = elapsed / float(self.ruleset.TIMER_MODE_TIME_LIMIT)
+        else:
+            t0 = float(self.bossDamage) / float(self.ruleset.CFO_MAX_HP)
+            elapsed = globalClock.getFrameTime() - self.battleThreeStart
+            t1 = elapsed / float(self.battleThreeDuration)
+            t = max(t0, t1)
         return fromValue + (toValue - fromValue) * min(t, 1)
 
     def progressRandomValue(self, fromValue, toValue, radius=0.2, noRandom=False):
@@ -844,6 +848,22 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.toonsWon = False
         taskMgr.remove(self.uniqueName('times-up-task'))
         taskMgr.remove(self.uniqueName('post-times-up-task'))
+        # If timer mode is active, end the crane round later
+        if self.ruleset.TIMER_MODE:
+            taskMgr.doMethodLater(self.ruleset.TIMER_MODE_TIME_LIMIT, self.__timesUp, self.uniqueName('times-up-task'))
+            self.debug(content='Time will run out in %ss' % self.ruleset.TIMER_MODE_TIME_LIMIT)
+
+    # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
+    def __timesUp(self, task=None):
+        self.boss.donHelmet(None)
+        for avId in self.boss.getInvolvedToonsNotSpectating():
+            av = self.air.doId2do.get(avId)
+            if av:
+                av.takeDamage(av.getMaxHp())
+
+        self.toonsWon = False
+        taskMgr.remove(self.uniqueName('times-up-task'))
+        self.gameFSM.request('victory')
 
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')

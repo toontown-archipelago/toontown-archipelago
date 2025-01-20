@@ -111,6 +111,7 @@ class MinigameCreatorAI:
 
         minigameChoices = self.getMinigameChoices(len(playerArray), previousGameId=previousGameId, allowTrolleyTracks=False)
         mgId = random.choice(minigameChoices)
+        mgId = ToontownGlobals.CraneGameId
 
         if metagameRound > -1:
             if metagameRound % 2 == 0:
