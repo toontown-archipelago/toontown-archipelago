@@ -181,7 +181,6 @@ from toontown.coghq import DistributedCrusherEntity/AI
 from toontown.coghq import DistributedStomper/AI
 from toontown.coghq import DistributedStomperPair/AI
 from toontown.coghq import DistributedLaserField/AI
-from toontown.coghq import DistributedGolfGreenGame/AI
 from toontown.coghq import DistributedSecurityCamera/AI
 from toontown.coghq import DistributedMover/AI
 from toontown.coghq import DistributedElevatorMarker/AI
@@ -307,6 +306,8 @@ from toontown.minigame.pie import DistributedPieGame/AI
 from toontown.minigame.craning import DistributedCraneGame/AI
 from toontown.minigame.scale import DistributedScaleGame/AI
 from toontown.minigame.seltzer import DistributedSeltzerGame/AI
+
+from toontown.minigame.golfgreen import DistributedGolfGreenGame/AI
 
 from toontown.safezone import DistributedPicnicTable/AI
 from toontown.safezone import DistributedChineseCheckers/AI
@@ -3092,20 +3093,6 @@ struct golfGreenGameScoreData {
   uint8 score;
 };
 
-dclass DistributedGolfGreenGame : BattleBlocker {
-  requestJoin() airecv clsend;
-  leaveGame() airecv clsend;
-  acceptJoin(uint16, int32, uint32 []) broadcast ram;
-  requestBoard(uint8) airecv clsend;
-  startBoard(golfGreenGameBoardData [], uint8 []);
-  signalDone(uint8) broadcast ram;
-  boardCleared(uint32);
-  scoreData(uint8, uint8, golfGreenGameScoreData []) broadcast ram;
-  informGag(uint8, uint8);
-  helpOthers(uint32) broadcast;
-  setTimerStart(uint16, int32) broadcast ram;
-};
-
 dclass DistributedSecurityCamera : DistributedEntity {
   trapFire() airecv clsend;
   setTarget(uint8) broadcast ram;
@@ -3961,6 +3948,15 @@ dclass DistributedSeltzerGame: DistributedMinigame {
   toonGotToonup(uint32, int8, int8, uint32) broadcast;
   avHealed(uint32 avId, uint32) broadcast;
   restart() broadcast ram;
+};
+
+dclass DistributedGolfGreenGame: DistributedMinigame {
+  requestBoard(uint8) airecv clsend;
+  startBoard(golfGreenGameBoardData [], uint8 []);
+  signalDone(uint8) broadcast ram;
+  boardCleared(uint32);
+  scoreData(golfGreenGameScoreData[]) broadcast ram;
+  helpOthers(uint32) broadcast;
 };
 
 dclass DistributedPicnicTable : DistributedNode {

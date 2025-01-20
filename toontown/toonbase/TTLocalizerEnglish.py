@@ -9700,6 +9700,10 @@ ScaleGameInstructions = "Touch the witness stand to get some evidence. Throw evi
 SeltzerGameTitle = "Seltzer Round"
 SeltzerGameInstructions = "Use the seltzer bottles to deal damage to the CEO. Stun the CEO with red damage hits. Damage is increased during stuns. The player with the most points upon the CEO's defeat wins."
 
+# minigame/golfgreen/DistributedGolfGreenGame.py
+GolfGreenGameTitle = "Golf Puzzles"
+GolfGreenGameInstructions = "Shoot balls using the the mouse.\nMatching three of a color causes the balls to fall.\nRemove all Cog balls from the board.\nClear the most boards to win."
+
 PicnicTableJoinButton = 'Join'
 PicnicTableObserveButton = 'Observe'
 PicnicTableCancelButton = 'Cancel'
