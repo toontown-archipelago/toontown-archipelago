@@ -1,8 +1,10 @@
 import traceback
 import types
 import collections
-from typing import List, Dict
+import typing
+from typing import List, Dict, Type, TypeVar
 
+from direct.distributed.ClockDelta import globalClockDelta
 from direct.interval.IntervalGlobal import *
 
 from libotp import NametagGroup
@@ -36,11 +38,64 @@ import json
 
 from ..archipelago.definitions.death_reason import DeathReason
 
+ImplementsMinigame = None
+if typing.TYPE_CHECKING:
+    from ..minigame.DistributedMinigameAI import DistributedMinigameAI
+    # Generic type to signify that some instance is of type DistributedMinigameAI.
+    ImplementsMinigame = TypeVar('ImplementsMinigame', bound=DistributedMinigameAI)
+
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
 DEBUG_LOG = None
 
 magicWordIndex = collections.OrderedDict()
+
+
+def findToonInInstance(classes: list[Type[object]] | tuple[Type[object]], toonId: int) -> object | None:
+    """
+    Searches the AI Repository for a toon ID that is contained within the 'involvedToons' property on an
+    AI Distributed Object that matches the classes provided in the classes parameter.
+
+    Returns the instance that the toon was found in or None if the toon was not found.
+    Very commonly used to find toons that are in bosses from the scope of the commands.
+    """
+
+    # Loop through every Distributed Object and see if the class type matches a class we are interested in.
+    for do in list(simbase.air.doId2do.values()):
+        for cls in classes:
+            if not isinstance(do, cls):
+                continue
+            if not hasattr(do, 'getPresentToonIds'):
+                continue
+            if toonId not in do.involvedToons:
+                continue
+            return do
+
+    return None
+
+
+def findToonInMinigame(_class: Type[ImplementsMinigame], toonId) -> ImplementsMinigame:
+    """
+       Searches the AI Repository for a toon ID that is currently playing a minigame.
+
+       Returns the instance that the toon was found in or None if the toon was not found.
+       The returned minigame will be of the same exact class that was passed in via _class parameter.
+       Very commonly used to find toons that are in bosses from the scope of the commands.
+       """
+
+    # Loop through every Distributed Object and see if the class type matches a class we are interested in.
+    game = None
+    for do in list(simbase.air.doId2do.values()):
+        if not isinstance(do, _class):
+            continue
+
+        if toonId not in do.getPresentToonIds():
+            continue
+
+        game = do
+        break
+
+    return game
 
 
 def getMagicWord(name):
@@ -207,7 +262,7 @@ class SetMaxHP(MagicWord):
 
         if not 1 <= maxhp <= ToontownGlobals.MaxHpLimit:
             return "Can't set {}'s max laff to {}! Specify a value between 1 and {}.".format(toon.getName(), maxhp,
-                                                                                              ToontownGlobals.MaxHpLimit)
+                                                                                             ToontownGlobals.MaxHpLimit)
 
         toon.b_setMaxHp(maxhp)
         toon.toonUp(maxhp)
@@ -488,7 +543,6 @@ class ToggleUnlimitedGags(MagicWord):
     accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
-
         from toontown.toon.InventoryBase import InventoryBase
 
         inventory: InventoryBase = toon.inventory
@@ -1142,6 +1196,7 @@ class SetFishingBucket(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("tankVal", int, True)]
     accessLevel = 'USER'
+
     def handleWord(self, invoker, avId, toon, *args):
         tankVal = args[0]
         if not 20 <= tankVal <= 99:
@@ -1828,12 +1883,9 @@ class SkipCFO(MagicWord):
         battle = args[0]
 
         from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
+        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
+        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
+        boss = findToonInInstance(targetClasses, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
 
@@ -1866,17 +1918,12 @@ class HitCFO(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         dmg = args[0]
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-        if not boss:
-            return "You aren't in a CFO!"
+        from ..minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        craneGame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if craneGame is None:
+            return "You aren't in a crane round!"
 
-        boss.magicWordHit(dmg, invoker.doId)
+        craneGame.recordHit(dmg, impact=1)
 
 
 class RestartCraneRound(MagicWord):
@@ -1888,28 +1935,16 @@ class RestartCraneRound(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         battle = args[0]
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-        if not boss:
-            return "You aren't in a CFO!"
+        from ..minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        craneGame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if craneGame is None:
+            return "You aren't in a crane round!"
 
-        if boss.state == 'Elevator':
-            boss.sendUpdate('setState', ['Introduction'])
-            
-        boss.clearObjectSpeedCaching()
-        battle = battle.lower()
-        boss.exitIntroduction()
-        if boss.state != 'BattleThree':
-            boss.b_setState('PrepareBattleThree')
-        boss.b_setState('BattleThree')
-        
+        craneGame.gameFSM.request("cleanup")
+        craneGame.gameFSM.request('play')
         return "Restarting Crane Round"
-    
+
+
 class DumpCraneAI(MagicWord):
     desc = "Dumps info about crane on AI side"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
@@ -1917,12 +1952,9 @@ class DumpCraneAI(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
+        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
+        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
+        boss = findToonInInstance(targetClasses, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
 
@@ -1971,12 +2003,9 @@ class SetCraneSpawn(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         spawn = args[0]
         from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
+        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
+        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
+        boss = findToonInInstance(targetClasses, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
         if not (1 <= spawn <= 8):
@@ -1996,13 +2025,9 @@ class SafeRushMode(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-
+        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
+        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
+        boss = findToonInInstance(targetClasses, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
 
@@ -2012,7 +2037,7 @@ class SafeRushMode(MagicWord):
         else:
             boss.wantSafeRushPractice = True
             return ("Safe Rush => ON")
-            
+
 
 class LiveGoonMode(MagicWord):
     aliases = ['livegoon']
@@ -2022,13 +2047,9 @@ class LiveGoonMode(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in simbase.air.doId2do.values():
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-
+        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
+        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
+        boss = findToonInInstance(targetClasses, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
 
@@ -2050,26 +2071,22 @@ class RNGMode(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     accessLevel = "MODERATOR"
     arguments = [
-        ("state", int, False, 1), 
+        ("state", int, False, 1),
         ("toonIndex", int, False, 0)
     ]
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in simbase.air.doId2do.values():
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-
+        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
+        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
+        boss = findToonInInstance(targetClasses, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
-        
-        if args[1] >= len(boss.involvedToons) or args[1] < 0:
-            return "Invalid toon index, please enter a valid toon index! (0-%s)" % str(len(boss.involvedToons)-1)
 
-        if args[0]: 
+        if args[1] >= len(boss.involvedToons) or args[1] < 0:
+            return "Invalid toon index, please enter a valid toon index! (0-%s)" % str(len(boss.involvedToons) - 1)
+
+        if args[0]:
             boss.wantOpeningModifications = True
             boss.openingModificationsToonIndex = args[1]
             boss.wantMaxSizeGoons = True
@@ -2089,12 +2106,9 @@ class AimMode(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
+        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
+        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
+        boss = findToonInInstance(targetClasses, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
 
@@ -2142,13 +2156,9 @@ class SetCFOModifiers(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
 
         from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-
+        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
+        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
+        boss = findToonInInstance(targetClasses, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
 
@@ -2492,6 +2502,7 @@ class SkipVP(MagicWord):
                 boss.b_setState('BattleOne')
                 return "Skipping introduction!"
 
+
 class StunVP(MagicWord):
     desc = "Stuns the VP in the final round of his battle."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
@@ -2625,7 +2636,6 @@ class RequestMinigame(MagicWord):
     accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
-
         requested_name = args[0].lower()
         wanted_game_id = ToontownGlobals.MinigameNames.get(requested_name)
 
@@ -2792,9 +2802,8 @@ class CompleteQuests(MagicWord):
     accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
-
         for index in range(len(toon.quests)):
-            toon.quests[index][4] = 2**16
+            toon.quests[index][4] = 2 ** 16
         toon.b_setQuests(toon.quests)
         return f"Completed {len(toon.quests)} of {toon.getName()}'s quests!"
 
@@ -3787,9 +3796,9 @@ class FreeLocalToon(MagicWord):
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-
         # Check for common errors when trying to do this
-        if not hasattr(self.cr, 'playGame') or not hasattr(self.cr.playGame, 'place') or self.cr.playGame.getPlace() is None:
+        if not hasattr(self.cr, 'playGame') or not hasattr(self.cr.playGame,
+                                                           'place') or self.cr.playGame.getPlace() is None:
             return "Your toon is in an invalid state to run this command!"
 
         self.cr.playGame.getPlace().setState('walk')
@@ -3812,7 +3821,8 @@ class SandboxBattle(MagicWord):
             return f"{toon.getName()} is battling! Cannot start a new one."
 
         teammates: List[int] = []
-        for otherToonId, otherToon in self.air.getObjectsOfClassInZone(self.air.districtId, toon.zoneId, DistributedToonAI).items():
+        for otherToonId, otherToon in self.air.getObjectsOfClassInZone(self.air.districtId, toon.zoneId,
+                                                                       DistributedToonAI).items():
             if otherToon.isPlayerControlled() and toon != otherToon:
                 teammates.append(otherToonId)
 

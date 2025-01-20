@@ -30,9 +30,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         self.ruleset = CraneLeagueGlobals.CFORuleset()
         self.modifiers = []  # A list of CFORulesetModifierBase instances
-        self.cranes = None
-        self.safes = None
-        self.goons = None
+        self.cranes = []
+        self.safes = []
+        self.goons = []
         self.treasures = {}
         self.grabbingTreasures = {}
         self.recycledTreasures = []
@@ -92,9 +92,15 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def generate(self):
         self.notify.debug("generate")
+        self.__makeBoss()
+        DistributedMinigameAI.generate(self)
+
+    def __makeBoss(self):
+        self.__deleteBoss()
 
         self.boss = DistributedCashbotBossStrippedAI(self.air, self)
         self.boss.generateWithRequired(self.zoneId)
+        self.d_setBossCogId()
         self.boss.reparentTo(self.scene)
 
         # And some solids to keep the goons constrained to our room.
@@ -105,7 +111,13 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         cn.addSolid(cs)
         self.boss.attachNewNode(cn)
 
-        DistributedMinigameAI.generate(self)
+    def __deleteBoss(self):
+        if self.__bossExists():
+            self.boss.requestDelete()
+        self.boss = None
+
+    def __bossExists(self) -> bool:
+        return self.boss is not None
 
     def cleanup(self) -> None:
         self.__deleteCraningObjects()
@@ -128,9 +140,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # all of the players have checked in
         # they will now be shown the rules
         self.d_setBossCogId()
-
-        self.__makeCraningObjects()
-        self.__resetCraningObjects()
 
         self.setupRuleset()
         self.setupSpawnpoints()
@@ -246,87 +255,76 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             self.updateActivityLog(doId, content)
 
     def clearObjectSpeedCaching(self):
-        if self.safes:
-            for safe in self.safes:
-                safe.d_resetSpeedCaching()
+        for safe in self.safes:
+            safe.d_resetSpeedCaching()
 
-        if self.goons:
-            for goon in self.goons:
-                goon.d_resetSpeedCaching()
+        for goon in self.goons:
+            goon.d_resetSpeedCaching()
 
     def __makeCraningObjects(self):
-        if self.cranes is None:
-            # Generate all of the cranes.
-            self.cranes = []
-            ind = 0
 
-            self.debug(content='Generating %s normal cranes' % len(CraneLeagueGlobals.NORMAL_CRANE_POSHPR))
-            for _ in CraneLeagueGlobals.NORMAL_CRANE_POSHPR:
-                crane = DistributedCashbotBossCraneAI(self.air, self, ind)
+        # Generate all of the cranes.
+        self.cranes.clear()
+        ind = 0
+
+        self.debug(content='Generating %s normal cranes' % len(CraneLeagueGlobals.NORMAL_CRANE_POSHPR))
+        for _ in CraneLeagueGlobals.NORMAL_CRANE_POSHPR:
+            crane = DistributedCashbotBossCraneAI(self.air, self, ind)
+            crane.generateWithRequired(self.zoneId)
+            self.cranes.append(crane)
+            ind += 1
+
+        # Generate the sidecranes if wanted
+        if self.ruleset.WANT_SIDECRANES:
+            self.debug(content='Generating %s sidecranes' % len(CraneLeagueGlobals.SIDE_CRANE_POSHPR))
+            for _ in CraneLeagueGlobals.SIDE_CRANE_POSHPR:
+                crane = DistributedCashbotBossSideCraneAI(self.air, self, ind)
                 crane.generateWithRequired(self.zoneId)
                 self.cranes.append(crane)
                 ind += 1
 
-            # Generate the sidecranes if wanted
-            if self.ruleset.WANT_SIDECRANES:
-                self.debug(content='Generating %s sidecranes' % len(CraneLeagueGlobals.SIDE_CRANE_POSHPR))
-                for _ in CraneLeagueGlobals.SIDE_CRANE_POSHPR:
-                    crane = DistributedCashbotBossSideCraneAI(self.air, self, ind)
-                    crane.generateWithRequired(self.zoneId)
-                    self.cranes.append(crane)
-                    ind += 1
+        # Generate the heavy cranes if wanted
+        if self.ruleset.WANT_HEAVY_CRANES:
+            self.debug(content='Generating %s heavy cranes' % len(CraneLeagueGlobals.HEAVY_CRANE_POSHPR))
+            for _ in CraneLeagueGlobals.HEAVY_CRANE_POSHPR:
+                crane = DistributedCashbotBossHeavyCraneAI(self.air, self, ind)
+                crane.generateWithRequired(self.zoneId)
+                self.cranes.append(crane)
+                ind += 1
 
-            # Generate the heavy cranes if wanted
-            if self.ruleset.WANT_HEAVY_CRANES:
-                self.debug(content='Generating %s heavy cranes' % len(CraneLeagueGlobals.HEAVY_CRANE_POSHPR))
-                for _ in CraneLeagueGlobals.HEAVY_CRANE_POSHPR:
-                    crane = DistributedCashbotBossHeavyCraneAI(self.air, self, ind)
-                    crane.generateWithRequired(self.zoneId)
-                    self.cranes.append(crane)
-                    ind += 1
+        # And all of the safes.
+        self.safes.clear()
+        for index in range(min(self.ruleset.SAFES_TO_SPAWN, len(CraneLeagueGlobals.SAFE_POSHPR))):
+            safe = DistributedCashbotBossSafeAI(self.air, self, index)
+            safe.generateWithRequired(self.zoneId)
+            self.safes.append(safe)
 
-        if self.safes is None:
-            # And all of the safes.
-            self.safes = []
-            for index in range(min(self.ruleset.SAFES_TO_SPAWN, len(CraneLeagueGlobals.SAFE_POSHPR))):
-                safe = DistributedCashbotBossSafeAI(self.air, self, index)
-                safe.generateWithRequired(self.zoneId)
-                self.safes.append(safe)
-
-        if self.goons is None:
-            # We don't actually make the goons right now, but we make
-            # a place to hold them.
-            self.goons = []
+        self.goons.clear()
         return
 
     def __resetCraningObjects(self):
-        if self.cranes is not None:
-            for crane in self.cranes:
-                crane.request('Free')
+        for crane in self.cranes:
+            crane.request('Free')
 
-        if self.safes is not None:
-            for safe in self.safes:
-                safe.request('Initial')
+        for safe in self.safes:
+            safe.request('Initial')
 
     def __deleteCraningObjects(self):
-        if self.cranes is not None:
-            for crane in self.cranes:
-                crane.request('Off')
-                crane.requestDelete()
+        for crane in self.cranes:
+            crane.request('Off')
+            crane.requestDelete()
 
-            self.cranes = None
-        if self.safes is not None:
-            for safe in self.safes:
-                safe.request('Off')
-                safe.requestDelete()
+        self.cranes.clear()
 
-            self.safes = None
-        if self.goons is not None:
-            for goon in self.goons:
-                goon.request('Off')
-                goon.requestDelete()
+        for safe in self.safes:
+            safe.request('Off')
+            safe.requestDelete()
+        self.safes.clear()
 
-            self.goons = None
+        for goon in self.goons:
+            goon.request('Off')
+            goon.requestDelete()
+        self.goons.clear()
 
     # Call to listen for toon death events. Useful for catching deaths caused by DeathLink.
     def listenForToonDeaths(self):
@@ -392,18 +390,14 @@ class DistributedCraneGameAI(DistributedMinigameAI):
     def removeToon(self, avId):
         # The toon leaves the zone, either through disconnect, death,
         # or something else.  Tell all of the safes, cranes, and goons.
+        for crane in self.cranes:
+            crane.removeToon(avId)
 
-        if self.cranes is not None:
-            for crane in self.cranes:
-                crane.removeToon(avId)
+        for safe in self.safes:
+            safe.removeToon(avId)
 
-        if self.safes is not None:
-            for safe in self.safes:
-                safe.removeToon(avId)
-
-        if self.goons is not None:
-            for goon in self.goons:
-                goon.removeToon(avId)
+        for goon in self.goons:
+            goon.removeToon(avId)
 
     def initializeComboTrackers(self):
         self.cleanupComboTrackers()
@@ -797,7 +791,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def enterPlay(self):
         self.notify.debug("enterPlay")
-
+        taskMgr.remove(self.uniqueName("craneGameVictory"))
         self.battleThreeStart = globalClock.getFrameTime()
 
         # Stop toon passive healing.
@@ -810,10 +804,15 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.listenForToonDeaths()
 
         # Start up the big boy.
+        if not self.__bossExists():
+            self.__makeBoss()
+        self.__makeCraningObjects()
+        self.__resetCraningObjects()
         self.boss.prepareBossForBattle()
 
         # Just in case we didn't pass through PrepareBattleThree state.
         self.setupSpawnpoints()
+        self.d_restart()
 
         # Make four goons up front to keep things interesting from the
         # beginning.
@@ -888,6 +887,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def d_updateTimer(self, time):
         self.sendUpdate('updateTimer', [time])
+
+    def d_restart(self):
+        self.sendUpdate('restart', [])
 
     def enterVictory(self):
         victorId = max(self.scoreDict.items(), key=itemgetter(1))[0]

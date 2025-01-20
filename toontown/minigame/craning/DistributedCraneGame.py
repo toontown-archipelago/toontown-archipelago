@@ -27,6 +27,8 @@ class DistributedCraneGame(DistributedMinigame):
     # define constants that you won't want to tweak here
     BASE_HEAT = 500
 
+
+
     def __init__(self, cr):
         DistributedMinigame.__init__(self, cr)
 
@@ -84,7 +86,7 @@ class DistributedCraneGame(DistributedMinigame):
                                 State.State('victory',
                                             self.enterVictory,
                                             self.exitVictory,
-                                            ['cleanup']),
+                                            ['play', 'cleanup']),
                                 State.State('cleanup',
                                             self.enterCleanup,
                                             self.exitCleanup,
@@ -273,6 +275,7 @@ class DistributedCraneGame(DistributedMinigame):
         or returning any animation tracks. The position and orientation are
         applied immediately.
         """
+        print('setting toon positions.')
         if self.wantCustomCraneSpawns:
             for toonId in self.avIdList:
                 toon = base.cr.doId2do.get(toonId)
@@ -297,6 +300,7 @@ class DistributedCraneGame(DistributedMinigame):
                 toon = base.cr.doId2do.get(toonId)
                 if toon:
                     spawn_index = self.toonSpawnpointOrder[i]
+                    print(f"setting toon {toon.getName()} to {CraneLeagueGlobals.TOON_SPAWN_POSITIONS[spawn_index]}")
                     posHpr = CraneLeagueGlobals.TOON_SPAWN_POSITIONS[spawn_index]
                     pos = Point3(*posHpr[0:3])
                     hpr = VBase3(*posHpr[3:6])
@@ -448,40 +452,19 @@ class DistributedCraneGame(DistributedMinigame):
         pass
 
     def enterPlay(self):
+        taskMgr.remove(self.uniqueName("craneGameVictory"))
         self.notify.debug("enterPlay")
-
-        self.walkStateData.enter()
-
         self.evWalls.unstash()
-
-        localAvatar.orbitalCamera.start()
-        localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
-
         base.playMusic(self.music, looping=1, volume=0.9)
 
         # It is important to make sure this task runs immediately
         # before the collisionLoop of ShowBase.  That will fix up the
         # z value of the safes, etc., before their position is
         # distributed.
+        taskMgr.remove(self.uniqueName("physics"))
         taskMgr.add(self.__doPhysics, self.uniqueName('physics'), priority=25)
 
-        # Display Boss Timer
-        self.bossSpeedrunTimer.reset()
-        self.bossSpeedrunTimer.start_updating()
-        self.bossSpeedrunTimer.show()
-
-        # Display Modifiers Heat
-        self.heatDisplay.update(self.calculateHeat(), self.modifiers)
-        self.heatDisplay.show()
-
-        # Make all laff meters blink when in uber mode
-        messenger.send('uberThreshold', [self.ruleset.LOW_LAFF_BONUS_THRESHOLD])
-
-        # Setup the scoreboard
-        self.scoreboard.clearToons()
-        for avId in self.avIdList:
-            if avId in base.cr.doId2do:
-                self.scoreboard.addToon(avId)
+        self.restart()
 
         self.accept("LocalSetFinalBattleMode", self.toFinalBattleMode)
         self.accept("LocalSetOuchMode", self.toOuchMode)
@@ -511,7 +494,7 @@ class DistributedCraneGame(DistributedMinigame):
 
     def exitVictory(self):
         taskMgr.remove(self.uniqueName("craneGameVictory"))
-        camera.reparentTo(render)
+        camera.reparentTo(base.localAvatar)
 
     def enterCleanup(self):
         self.notify.debug("enterCleanup")
@@ -653,3 +636,34 @@ class DistributedCraneGame(DistributedMinigame):
     def chatClosed(self):
         if self.walkStateData.fsm.getCurrentState().getName() == "walking":
             base.localAvatar.enableAvatarControls()
+
+    def restart(self):
+        """
+        Called via astron update. Do any client side logic needed in order to restart the game.
+        """
+        self.walkStateData.enter()
+        localAvatar.orbitalCamera.start()
+        localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
+
+        self.gameFSM.request('play')
+        self.toFinalBattleMode()
+
+        # Display Boss Timer
+        self.bossSpeedrunTimer.reset()
+        self.bossSpeedrunTimer.start_updating()
+        self.bossSpeedrunTimer.show()
+
+        # Display Modifiers Heat
+        self.heatDisplay.update(self.calculateHeat(), self.modifiers)
+        self.heatDisplay.show()
+
+        # Make all laff meters blink when in uber mode
+        messenger.send('uberThreshold', [self.ruleset.LOW_LAFF_BONUS_THRESHOLD])
+
+        self.setToonsToBattleThreePos()
+
+        # Setup the scoreboard
+        self.scoreboard.clearToons()
+        for avId in self.avIdList:
+            if avId in base.cr.doId2do:
+                self.scoreboard.addToon(avId)
