@@ -75,6 +75,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         # This is the sound effect currently looping for the crane
         # controls.
         self.moveSound = None
+        self.lightning = None  # Initialize lightning
         
         self.links = []
         self.activeLinks = []
@@ -733,6 +734,8 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.sendUpdate('requestMagnetOn', [magnetOn])
 
     def setMagnetOn(self, magnetOn):
+        if base.localAvatar.doId == self.avId:
+            return
         # This is called when the AI broadcasts magnet state changes
         if magnetOn and not self.magnetOn:
             self.startFlicker()
@@ -861,9 +864,10 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.magnetLoopSfx.stop()
         
         taskMgr.remove(self.flickerName)
-        for l in self.lightning:
-            l.detachNode()
-        self.lightning = None
+        if self.lightning:  # Add safety check
+            for l in self.lightning:
+                l.detachNode()
+            self.lightning = None
         return
 
     def __flickerLightning(self, task):
