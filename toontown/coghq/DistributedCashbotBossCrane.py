@@ -437,6 +437,20 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.snifferHandler.addInPattern(self.snifferEvent)
         self.snifferHandler.addAgainPattern(self.snifferEvent)
         
+        # Add a secondary smaller sniffer for dropped objects
+        cn2 = CollisionNode('smallSniffer')
+        self.smallSniffer = magnetModel.attachNewNode(cn2)
+        self.smallSniffer.stash()
+        cs2 = CollisionCapsule(0, 0, -5, 0, 0, -8, 2)  # Much smaller sniffer
+        cs2.setTangible(0)
+        cn2.addSolid(cs2)
+        cn2.setIntoCollideMask(BitMask32(0))
+        cn2.setFromCollideMask(ToontownGlobals.CashbotBossObjectBitmask)
+        self.smallSnifferHandler = CollisionHandlerEvent()
+        self.smallSnifferEvent = self.uniqueName('smallSniffer')
+        self.smallSnifferHandler.addInPattern(self.smallSnifferEvent)
+        self.smallSnifferHandler.addAgainPattern(self.smallSnifferEvent)
+        
         rope = self.makeSpline()
         rope.reparentTo(self.cable)
         rope.setTexture(self.boss.cableTex)
@@ -782,16 +796,22 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         # something to grab.
         if not self.snifferActivated:
             self.sniffer.unstash()
+            self.smallSniffer.unstash()
             base.cTrav.addCollider(self.sniffer, self.snifferHandler)
+            base.cTrav.addCollider(self.smallSniffer, self.smallSnifferHandler)
             self.accept(self.snifferEvent, self.__sniffedSomething)
+            self.accept(self.smallSnifferEvent, self.__sniffedSomethingSmall)
             self.startFlicker()
             self.snifferActivated = 1
 
     def __deactivateSniffer(self):
         if self.snifferActivated:
             base.cTrav.removeCollider(self.sniffer)
+            base.cTrav.removeCollider(self.smallSniffer)
             self.sniffer.stash()
+            self.smallSniffer.stash()
             self.ignore(self.snifferEvent)
+            self.ignore(self.smallSnifferEvent)
             self.stopFlicker()
             self.snifferActivated = 0
 
@@ -843,7 +863,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         return Task.cont
 
     def __sniffedSomething(self, entry):
-    
         # Something was sniffed as grabbable.
         np = entry.getIntoNodePath()
         
@@ -856,6 +875,46 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.notify.debug('__sniffedSomething %d' % doId)
 
         obj = base.cr.doId2do.get(doId)
+        if not obj:
+            return
+
+        # Don't grab objects that are already grabbed
+        if obj.state == 'Grabbed':
+            return
+  
+        # Spawn protection
+        if obj.state in ['EmergeA', 'EmergeB']:
+            return
+
+        # Main sniffer can't grab dropped objects
+        if obj.state in ['Dropped', 'LocalDropped']:
+            return
+        
+        if obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
+            self.boss.craneStatesDebug(doId=self.doId, content='Sniffed something, held obj %s' % (
+                self.heldObject.getName() if self.heldObject else "Nothing"))
+            
+            self.considerObjectState(obj)
+            obj.d_requestGrab()
+            obj.demand('LocalGrabbed', localAvatar.doId, self.doId)
+
+    def __sniffedSomethingSmall(self, entry):
+        # Something was sniffed by the small sniffer
+        np = entry.getIntoNodePath()
+        
+        if np.hasNetTag('object'):
+            doId = int(np.getNetTag('object'))
+        else:
+            self.notify.warning("%s missing 'object' tag" % np)
+            return
+            
+        self.notify.debug('__sniffedSomethingSmall %d' % doId)
+
+        obj = base.cr.doId2do.get(doId)
+        if not obj:
+            return
+
+        # Don't grab objects that are already grabbed
         if obj.state == 'Grabbed':
             return
   
@@ -863,13 +922,12 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         if obj.state in ['EmergeA', 'EmergeB']:
             return
         
-        if obj and obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
-            self.boss.craneStatesDebug(doId=self.doId, content='Sniffed something, held obj %s' % (
+        if obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
+            self.boss.craneStatesDebug(doId=self.doId, content='Small sniffer grabbed something, held obj %s' % (
                 self.heldObject.getName() if self.heldObject else "Nothing"))
             
             self.considerObjectState(obj)
             obj.d_requestGrab()
-            # See if we should do anything with this object when sniffing it
             obj.demand('LocalGrabbed', localAvatar.doId, self.doId)
 
     def considerObjectState(self, obj):

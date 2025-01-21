@@ -99,6 +99,20 @@ class DistributedCashbotBossSideCrane(DistributedCashbotBossCrane.DistributedCas
         self.snifferHandler = CollisionHandlerEvent()
         self.snifferHandler.addInPattern(self.snifferEvent)
         self.snifferHandler.addAgainPattern(self.snifferEvent)
+
+        # Add a secondary smaller sniffer for dropped objects
+        cn2 = CollisionNode('smallSniffer')
+        self.smallSniffer = magnetModel.attachNewNode(cn2)
+        self.smallSniffer.stash()
+        cs2 = CollisionCapsule(0, 0, -1, 0, 0, -1, 1)  # Much smaller sniffer
+        cs2.setTangible(0)
+        cn2.addSolid(cs2)
+        cn2.setIntoCollideMask(BitMask32(0))
+        cn2.setFromCollideMask(ToontownGlobals.CashbotBossObjectBitmask)
+        self.smallSnifferHandler = CollisionHandlerEvent()
+        self.smallSnifferEvent = self.uniqueName('smallSniffer')
+        self.smallSnifferHandler.addInPattern(self.smallSnifferEvent)
+        self.smallSnifferHandler.addAgainPattern(self.smallSnifferEvent)
         
         rope = self.makeSpline()
         rope.reparentTo(self.cable)
