@@ -104,7 +104,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.armSmoother.setSmoothMode(SmoothMover.SMOn)
         self.linkSmoothers = []
         self.smoothStarted = 0
-        self.__broadcastPeriod = 0.05
+        self.__broadcastPeriod = 0.01568
 
         # Since the cable might not calculate its bounding volume
         # correctly, let's say that anything that passes the outer

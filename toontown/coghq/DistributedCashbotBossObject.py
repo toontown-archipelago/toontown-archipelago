@@ -598,7 +598,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         # query the current delay between broadcasts
         return self.__broadcastPeriod
     
-    def startPosHprBroadcast(self, avId=None, period=.2, stagger=0, type=None):
+    def startPosHprBroadcast(self, avId=None, period=.01568, stagger=0, type=None):
         if self.cnode is None:
             self.initializeCnode()
 
