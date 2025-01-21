@@ -720,12 +720,25 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.magnetOn = 1
             if not self.heldObject:
                 self.__activateSniffer()
+            self.d_requestMagnetOn(1)
 
     def __turnOffMagnet(self):
         if self.magnetOn:
             self.magnetOn = 0
             self.__deactivateSniffer()
             self.releaseObject()
+            self.d_requestMagnetOn(0)
+
+    def d_requestMagnetOn(self, magnetOn):
+        self.sendUpdate('requestMagnetOn', [magnetOn])
+
+    def setMagnetOn(self, magnetOn):
+        # This is called when the AI broadcasts magnet state changes
+        if magnetOn and not self.magnetOn:
+            self.startFlicker()
+        elif not magnetOn and self.magnetOn:
+            self.stopFlicker()
+        self.magnetOn = magnetOn
 
     def __upArrow(self, pressed):
         self.__incrementChangeSeq()

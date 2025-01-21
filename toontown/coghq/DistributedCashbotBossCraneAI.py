@@ -27,6 +27,7 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
         
         self.avId = 0
         self.objectId = 0
+        self.magnetOn = 0
         
         self.setBroadcastStateChanges(True)
 
@@ -87,7 +88,14 @@ class DistributedCashbotBossCraneAI(DistributedObjectAI.DistributedObjectAI, FSM
 
         return 0
 
+    def setMagnetOn(self, magnetOn):
+        self.magnetOn = magnetOn
+        self.sendUpdate('setMagnetOn', [magnetOn])
 
+    def requestMagnetOn(self, magnetOn):
+        avId = self.air.getAvatarIdFromSender()
+        if avId == self.avId:  # Only the controlling player can change magnet state
+            self.setMagnetOn(magnetOn)
 
     ### FSM States ###
     
