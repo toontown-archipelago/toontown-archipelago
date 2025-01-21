@@ -179,7 +179,7 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         self.avId = avId
         self.craneId = craneId
         self.d_setObjectState('D', avId, craneId)
-        self.startWaitFree(5)
+        self.startWaitFree(6)
 
     def exitDropped(self):
         self.stopWaitFree()
@@ -188,7 +188,7 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         self.avId = avId
         self.d_setObjectState('s', avId, 0)
         if self.wantsWatchDrift:
-            self.startWaitFree(5)
+            self.startWaitFree(3)
 
     def exitSlidingFloor(self):
         self.stopWaitFree()
