@@ -1414,6 +1414,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.stopPosHprBroadcast()
         self.stopShadow()
         self.stopSmooth()
+        self.stopFlicker()
         
         if self.avId == localAvatar.doId:
             # The local toon is no longer in control of the crane.
