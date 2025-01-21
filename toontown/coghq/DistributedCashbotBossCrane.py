@@ -455,7 +455,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         
         # Show collision capsules for debugging
         #self.sniffer.show()
-        self.smallSniffer.show()
+        #self.smallSniffer.show()
         
         rope = self.makeSpline()
         rope.reparentTo(self.cable)

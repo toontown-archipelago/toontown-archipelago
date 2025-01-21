@@ -494,6 +494,8 @@ class DistributedCraneGame(DistributedMinigame):
         victor.setAnimState("victory")
 
         taskMgr.doMethodLater(5, self.gameOver, self.uniqueName("craneGameVictory"), extraArgs=[])
+        for crane in self.cranes.values():
+            crane.stopFlicker()
 
     def exitVictory(self):
         taskMgr.remove(self.uniqueName("craneGameVictory"))
