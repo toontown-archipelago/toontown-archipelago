@@ -981,6 +981,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         obj.lerpInterval.start()
         
         self.heldObject = obj
+        self.stopFlicker()
         self.handler.setDynamicFrictionCoef(obj.craneFrictionCoef)
         self.slideSpeed = obj.craneSlideSpeed
         self.rotateSpeed = obj.craneRotateSpeed
