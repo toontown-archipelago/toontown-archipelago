@@ -182,7 +182,8 @@ class DistributedCashbotBossObjectAI(DistributedSmoothNodeAI.DistributedSmoothNo
         self.startWaitFree(6)
 
     def exitDropped(self):
-        self.stopWaitFree()
+        if self.newState != 'SlidingFloor':
+            self.stopWaitFree()
 
     def enterSlidingFloor(self, avId):
         self.avId = avId

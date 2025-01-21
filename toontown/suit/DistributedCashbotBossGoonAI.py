@@ -76,7 +76,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
 
         # Add safeDetectionFeelers from -45° to 45°
         cn = CollisionNode('safeDetectionFeelers')
-        cn.addSolid(CollisionSphere(0, 0, 0, 1.5))  # Sphere to detect safes
+        cn.addSolid(CollisionSphere(0, 0, 0, 1.8))  # Sphere to detect safes
         cn.setFromCollideMask(ToontownGlobals.CashbotBossObjectBitmask)
         cn.setIntoCollideMask(BitMask32(0))  # Only detect safes, no collisions INTO these segments
         self.safeDetectionFeelersPath = self.attachNewNode(cn)
