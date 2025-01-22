@@ -51,6 +51,7 @@ from toontown.quest import QuestMap
 from toontown.archipelago.gui.ArchipelagoOnscreenLog import ArchipelagoOnscreenLog
 from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
+from ..groups.DistributedGroupManager import DistributedGroupManager
 from ..shtiker.ShtikerPage import ShtikerPage
 
 WantNewsPage = base.config.GetBool('want-news-page', ToontownGlobals.DefaultWantNewsPageSetting)
@@ -174,6 +175,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.camPoints = []
             self.camera = camera
 
+            self.groupManager: DistributedGroupManager | None = None
             self.archipelagoLog: ArchipelagoOnscreenLog = None
             self.currentlyInHQ = False
             self.wantCompetitiveBossScoring = base.settings.get('competitive-boss-scoring')
@@ -182,6 +184,12 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.currentOnscreenInterface = None  # We can only exclusively show one hotkey interface at a time
 
             self.showPosInit()
+
+    def getGroupManager(self) -> DistributedGroupManager | None:
+        return self.groupManager
+
+    def setGroupManager(self, groupManager: DistributedGroupManager | None):
+        self.groupManager = groupManager
 
     def wantLegacyLifter(self):
         return True

@@ -1,3 +1,4 @@
+
 from panda3d.core import *
 from direct.gui.DirectGui import *
 from direct.showbase import DirectObject
@@ -14,6 +15,8 @@ from . import ToonAvatarDetailPanel
 from . import AvatarPanelBase
 from toontown.toontowngui import TTDialog
 from otp.otpbase import OTPGlobals
+from ..groups.DistributedGroupManager import DistributedGroupManager
+
 
 class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('ToonAvatarPanel')
@@ -479,16 +482,22 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
         return 'toon'
 
     def handleInvite(self):
-        if localAvatar.boardingParty.isInviteePanelUp():
-            localAvatar.boardingParty.showMe(TTLocalizer.BoardingPendingInvite, pos=(0, 0, 0))
-        else:
-            self.groupButton['state'] = DGG.DISABLED
-            localAvatar.boardingParty.requestInvite(self.avId)
+        """
+        Called when we attempt to invite a toon to our current group.
+        """
+        if base.localAvatar.getGroupManager() is None:
+            return
+
+        base.localAvatar.getGroupManager().attemptInvite(self.avId)
 
     def handleKick(self):
-        if not base.cr.playGame.getPlace().getState() == 'elevator':
-            self.confirmKickOutDialog = TTDialog.TTDialog(style=TTDialog.YesNo, text=TTLocalizer.BoardingKickOutConfirm % self.avName, command=self.__confirmKickOutCallback)
-            self.confirmKickOutDialog.show()
+        """
+        Called when we attempt to kick a toon from our current group.
+        """
+        if base.localAvatar.getGroupManager() is None:
+            return
+
+        base.localAvatar.getGroupManager().attemptKick(self.avId)
 
     def __confirmKickOutCallback(self, value):
         if self.confirmKickOutDialog:
@@ -502,30 +511,49 @@ class ToonAvatarPanel(AvatarPanelBase.AvatarPanelBase):
 
     def __checkGroupStatus(self):
         self.groupFrame.hide()
-        if hasattr(self, 'avatar'):
-            if self.avatar and hasattr(self.avatar, 'getZoneId') and localAvatar.getZoneId() == self.avatar.getZoneId():
-                if localAvatar.boardingParty:
-                    if self.avId in localAvatar.boardingParty.getGroupMemberList(localAvatar.doId):
-                        if localAvatar.boardingParty.getGroupLeader(localAvatar.doId) == localAvatar.doId:
-                            self.groupButton['text'] = ('', TTLocalizer.AvatarPanelGroupMemberKick, TTLocalizer.AvatarPanelGroupMemberKick)
-                            self.groupButton['image'] = self.kickOutImageList
-                            self.groupButton['command'] = self.handleKick
-                            self.groupButton['state'] = DGG.NORMAL
-                        else:
-                            self.groupButton['text'] = ('', TTLocalizer.AvatarPanelGroupMember, TTLocalizer.AvatarPanelGroupMember)
-                            self.groupButton['command'] = None
-                            self.groupButton['image'] = self.inviteImageDisabled
-                            self.groupButton['image_color'] = Vec4(1, 1, 1, 0.4)
-                            self.groupButton['state'] = DGG.NORMAL
-                    else:
-                        self.groupButton['text'] = ('', TTLocalizer.AvatarPanelGroupInvite, TTLocalizer.AvatarPanelGroupInvite)
-                        self.groupButton['command'] = self.handleInvite
-                        self.groupButton['image'] = self.inviteImageList
-                        self.groupButton['state'] = DGG.NORMAL
-                    if base.config.GetBool('want-boarding-groups', 1):
-                        base.setCellsAvailable([base.rightCells[0]], 0)
-                        self.groupFrame.show()
-        return
+        if not hasattr(self, 'avatar'):
+            return
+        if not self.avatar:
+            return
+        if not hasattr(self.avatar, 'getZoneId'):
+            return
+        if localAvatar.getZoneId() != self.avatar.getZoneId():
+            return
+
+        # Is there a group manager currently present?
+        if base.localAvatar.getGroupManager() is None:
+            return
+
+        # We have a group manager! :D
+        groupManager: DistributedGroupManager = base.localAvatar.getGroupManager()
+
+        # Decide how we want to render the state of this button depending on our status.
+        localToonIsInGroup = groupManager.getCurrentGroup() is not None
+        localToonLeadsGroup = localToonIsInGroup and groupManager.getCurrentGroup().getLeader() == base.localAvatar.doId
+        viewingToonIsInSameGroup = localToonIsInGroup and self.avId in groupManager.getCurrentGroup().getMembers()
+
+        print(f"[ToonAvatarPanel] Group state: Local toon in group: {localToonIsInGroup} Local toon is leader: {localToonLeadsGroup} In same group: {viewingToonIsInSameGroup}")
+
+        if viewingToonIsInSameGroup:
+            if localToonLeadsGroup:
+                self.groupButton['text'] = ('', TTLocalizer.AvatarPanelGroupMemberKick, TTLocalizer.AvatarPanelGroupMemberKick)
+                self.groupButton['image'] = self.kickOutImageList
+                self.groupButton['command'] = self.handleKick
+                self.groupButton['state'] = DGG.NORMAL
+            else:
+                self.groupButton['text'] = ('', TTLocalizer.AvatarPanelGroupMember, TTLocalizer.AvatarPanelGroupMember)
+                self.groupButton['command'] = None
+                self.groupButton['image'] = self.inviteImageDisabled
+                self.groupButton['image_color'] = Vec4(1, 1, 1, 0.4)
+                self.groupButton['state'] = DGG.NORMAL
+        else:
+            self.groupButton['text'] = ('', TTLocalizer.AvatarPanelGroupInvite, TTLocalizer.AvatarPanelGroupInvite)
+            self.groupButton['command'] = self.handleInvite
+            self.groupButton['image'] = self.inviteImageList
+            self.groupButton['state'] = DGG.NORMAL
+
+        base.setCellsAvailable([base.rightCells[0]], 0)
+        self.groupFrame.show()
 
     def handleReadInfo(self, task = None):
         self.boardingInfoButton['state'] = DGG.DISABLED

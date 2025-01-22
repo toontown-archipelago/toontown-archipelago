@@ -33,6 +33,8 @@ from toontown.ai import WelcomeValleyManager/AI
 from toontown.building import DistributedAnimatedProp/AI
 from toontown.toon import DistributedToon/AI/UD
 from toontown.safezone import DistributedTrolley/AI
+from toontown.groups import DistributedGroupManager/AI
+from toontown.groups import DistributedGroup/AI
 from toontown.suit import DistributedSuitPlanner/AI
 from toontown.suit import DistributedSuitBase/AI
 from toontown.suit import DistributedSuit/AI
@@ -1217,6 +1219,18 @@ dclass DistributedTrolley : DistributedObject {
   rejectBoard(uint32);
   requestExit() airecv clsend;
   setMinigameZone(uint32, uint16);
+};
+
+dclass DistributedGroupManager : DistributedObject {
+  requestKick(uint32) airecv clsend;
+  invitePlayer(uint32) airecv clsend;
+  setCurrentGroup(int32);
+};
+
+dclass DistributedGroup : DistributedObject {
+  setLeader(int32) required broadcast ram;
+  setMembers(int32[]) required broadcast ram;
+  setCapacity(int32) required broadcast ram;
 };
 
 dclass DistributedSuitPlanner : DistributedObject {
