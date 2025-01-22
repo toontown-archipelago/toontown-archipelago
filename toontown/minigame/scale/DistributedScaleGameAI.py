@@ -479,7 +479,7 @@ class DistributedScaleGameAI(DistributedMinigameAI):
         bossDamage = self.weightPerToon + 1
         bossDamage = min(self.boss.getBossDamage() + bossDamage, self.boss.bossMaxDamage)
         self.boss.b_setBossDamage(bossDamage, 0, 0)
-        if self.boss.bossDamage >= self.boss.bossMaxDamage - 50:
+        if self.boss.bossDamage >= self.boss.bossMaxDamage:
             self.gameFSM.request('victory')
 
         self.incrementCombo(avId, int(round(self.getComboLength(avId)) / 5 + 1))
