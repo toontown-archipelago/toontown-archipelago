@@ -21,6 +21,9 @@ class CraneWalk(Walk):
         craneState = self.fsm.getStateNamed('crane')
         craneState.addTransition('squished')
 
+        self.fsm.addState(State.State('movie', self.enterMovie, self.exitMovie, ['walking', 'crane']))
+        walkState.addTransition('movie')
+
     def enter(self, slowWalk = 0):
         base.localAvatar.laffMeter.start()
         self.fsm.request('walking')
@@ -98,6 +101,12 @@ class CraneWalk(Walk):
     def exitCrane(self):
         base.localAvatar.collisionsOff()
         messenger.send('exitCrane')
+
+    def enterMovie(self):
+        pass
+
+    def exitMovie(self):
+        pass
 
     def enterOuch(self):
         pass

@@ -308,23 +308,28 @@ class DistributedSeltzerGame(DistributedMinigame):
             base.localAvatar.stunToon()
 
     def toCraneMode(self):
-        if self.gameFSM.getCurrentState().getName() != "playing":
+        if self.gameFSM.getCurrentState().getName() != "play":
             return
         self.walkStateData.fsm.request('crane')
 
+    def toMovieMode(self):
+        if self.gameFSM.getCurrentState().getName() != "play":
+            return
+        self.walkStateData.fsm.request('movie')
+
     def toFinalBattleMode(self, checkForOuch: bool = False):
-        if self.gameFSM.getCurrentState().getName() != "playing":
+        if self.gameFSM.getCurrentState().getName() != "play":
             return
         if not checkForOuch or self.walkStateData.fsm.getCurrentState().getName() != 'ouch':
             self.walkStateData.fsm.request('walking')
 
     def toOuchMode(self):
-        if self.gameFSM.getCurrentState().getName() != "playing":
+        if self.gameFSM.getCurrentState().getName() != "play":
             return
         self.walkStateData.fsm.request('ouch')
 
     def toSquishedMode(self):
-        if self.gameFSM.getCurrentState().getName() != "playing":
+        if self.gameFSM.getCurrentState().getName() != "play":
             return
         self.walkStateData.fsm.request('squished')
 
