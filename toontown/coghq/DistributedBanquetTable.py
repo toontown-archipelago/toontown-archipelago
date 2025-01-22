@@ -577,7 +577,29 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
         rightHandPos = toon.rightHand.getPos(toon)
         self.toonPitcherPosition = Point3(self.handPos[0] - rightHandPos[0], self.handPos[1] - rightHandPos[1], 0)
         destZScale = rightHandPos[2] / self.handPos[2]
-        grabIval = Sequence(Func(toon.wrtReparentTo, self.waterPitcherNode), Func(toon.loop, 'neutral'), Parallel(ActorInterval(toon, 'jump'), Sequence(Wait(0.43), Parallel(ProjectileInterval(toon, duration=0.9, startPos=toon.getPos(self.waterPitcherNode), endPos=self.toonPitcherPosition), LerpHprInterval(toon, 0.9, Point3(0, 0, 0)), LerpScaleInterval(self.waterPitcherModel, 0.9, Point3(1, 1, destZScale))))), Func(toon.setPos, self.toonPitcherPosition), Func(toon.loop, 'leverNeutral'))
+
+        def updateSeltzerHeading():
+            self.waterPitcherNode.setH(toon.getHpr()[0])
+
+        grabIval = Sequence(
+            Func(updateSeltzerHeading),
+            Func(toon.wrtReparentTo, self.waterPitcherNode),
+            Func(toon.loop, 'neutral'),
+            Parallel(
+                ActorInterval(toon, 'jump'),
+                Sequence(
+                    Wait(0.43),
+                    Parallel(
+                        ProjectileInterval(toon, duration=0.9, #startPos=toon.getPos(self.waterPitcherNode),
+                                           endPos=self.toonPitcherPosition),
+                        LerpHprInterval(toon, 0.9, Point3(0, 0, 0)),
+                        LerpScaleInterval(self.waterPitcherModel, 0.9, Point3(1, 1, destZScale))
+                    )
+                )
+            ),
+            Func(toon.setPos, self.toonPitcherPosition),
+            Func(toon.loop, 'leverNeutral')
+        )
         return grabIval
 
     def makeToonReleaseInterval(self, toon):
