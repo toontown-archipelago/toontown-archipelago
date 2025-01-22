@@ -334,11 +334,11 @@ class DistributedBossbotBossStrippedAI(DistributedBossCogStrippedAI):
                 self.waitForNextAttack(0)
 
     def getDamageMultiplier(self):
-        mult = 1.0
-        if self.doneOvertimeOneAttack and not self.doneOvertimeTwoAttack:
-            mult = 1.25
-        if self.game.getBattleFourTime() > 1.0:
-            mult = self.game.getBattleFourTime() + 1
+        mult = 1.6
+        if self.doneOvertimeTwoAttack:
+            mult *= 2.0
+        elif self.doneOvertimeOneAttack:
+            mult *= 1.25
         return mult
 
     def getMaxHealth(self):

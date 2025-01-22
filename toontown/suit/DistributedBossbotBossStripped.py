@@ -44,6 +44,7 @@ class DistributedBossbotBossStripped(DistributedBossCogStripped):
         self.moveTrack = None
         self.lastZapLocalTime = 0
         self.numAttacks = 0
+        self.overtimeState = 0
         return
 
     def announceGenerate(self):
@@ -132,6 +133,8 @@ class DistributedBossbotBossStripped(DistributedBossCogStripped):
         self.bossClub.reparentTo(self.rightHandJoint)
         self.generateHealthBar()
         self.updateHealthBar()
+
+        self.overtimeState = 0
 
     def cleanupBossBattle(self):
         self.cleanupIntervals()
@@ -408,35 +411,43 @@ class DistributedBossbotBossStripped(DistributedBossCogStripped):
             leftRate = ToontownGlobals.BossCogTreadSpeed
         else:
             leftRate = -ToontownGlobals.BossCogTreadSpeed
-        if reverse:
-            rollTreadRate = -ToontownGlobals.BossCogTreadSpeed
-        else:
-            rollTreadRate = ToontownGlobals.BossCogTreadSpeed
-        rollTime = distance / ToontownGlobals.BossCogRollSpeed
-        deltaPos = toPos - fromPos
         self.toPos = toPos
         self.fromPos = fromPos
         self.dirVector = self.toPos - self.fromPos
         self.dirVector.normalize()
-        track = Sequence(Func(self.setPos, fromPos), Func(self.headsUp, toPos),
-                         Parallel(self.hprInterval(turnTime, toHpr, fromHpr), self.rollLeftTreads(turnTime, leftRate),
-                                  self.rollRightTreads(turnTime, -leftRate)), Func(self.startMoveTask))
+        track = Sequence(
+            Func(self.setPos, fromPos),
+            Func(self.headsUp, toPos),
+            Parallel(
+                self.hprInterval(turnTime, toHpr, fromHpr), self.rollLeftTreads(turnTime, leftRate),
+                self.rollRightTreads(turnTime, -leftRate)), Func(self.startMoveTask)
+        )
         return (track, toHpr)
 
     def getCurTurnSpeed(self):
-        result = ToontownGlobals.BossbotTurnSpeedMax - (
-                    ToontownGlobals.BossbotTurnSpeedMax - ToontownGlobals.BossbotTurnSpeedMin) * self.getFractionalSpeedDamage()
-        return result
+        speedMax = ToontownGlobals.BossbotTurnSpeedMax
+        speedMin = ToontownGlobals.BossbotTurnSpeedMin
+        return self.getSpeed(speedMax, speedMin)
 
     def getCurRollSpeed(self):
-        result = ToontownGlobals.BossbotRollSpeedMax - (
-                    ToontownGlobals.BossbotRollSpeedMax - ToontownGlobals.BossbotRollSpeedMin) * self.getFractionalSpeedDamage()
-        return result
+        speedMax = ToontownGlobals.BossbotRollSpeedMax
+        speedMin = ToontownGlobals.BossbotRollSpeedMin
+        return self.getSpeed(speedMax, speedMin)
 
     def getCurTreadSpeed(self):
-        result = ToontownGlobals.BossbotTreadSpeedMax - (
-                    ToontownGlobals.BossbotTreadSpeedMax - ToontownGlobals.BossbotTreadSpeedMin) * self.getFractionalSpeedDamage()
-        return result
+        speedMax = ToontownGlobals.BossbotTreadSpeedMax
+        speedMin = ToontownGlobals.BossbotTreadSpeedMin
+        return self.getSpeed(speedMax, speedMin)
+
+    def getSpeed(self, speedMax: float, speedMin: float) -> float:
+        return (speedMax - (speedMax - speedMin) * self.getFractionalSpeedDamage()) * self.getSpeedMultiplier()
+
+    def getSpeedMultiplier(self) -> float:
+        if self.overtimeState == 2:
+            return 1.5
+        elif self.overtimeState == 1:
+            return 1.25
+        return 1.0
 
     def startMoveTask(self):
         taskMgr.add(self.moveBossTask, self.moveBossTaskName)
@@ -810,6 +821,7 @@ class DistributedBossbotBossStripped(DistributedBossCogStripped):
             base.playSfx(self.toonUpSfx, node=toon)
 
     def doOvertimeAttack(self, index):
+        self.overtimeState += 1
         attackCode = ToontownGlobals.BossCogOvertimeAttack
         attackBelts = Sequence()
         if index < len(self.game.belts):
