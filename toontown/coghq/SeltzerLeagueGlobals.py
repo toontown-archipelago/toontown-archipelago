@@ -50,6 +50,7 @@ class CEORuleset:
         self.POINTS_PENALTY_GO_SAD = -50  # Point deduction for dying (can happen multiple times if revive setting is on)
 
         # COMBO SETTINGS
+        self.WANT_COMBO_BONUS = False
         self.COMBO_DURATION = 2.0  # How long should combos last?
 
     # Call to make sure certain attributes are within certain bounds, for example dont make required impacts > 100%
