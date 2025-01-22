@@ -43,6 +43,8 @@ class DistributedBossbotBossStrippedAI(DistributedBossCogStrippedAI):
         if not self.validate(avId, avId in self.game.avIdList, 'hitBoss from unknown avatar'):
             return
         self.validate(avId, bossDamage <= 3, 'invalid bossDamage %s' % bossDamage)
+        if self.game.gameFSM.getCurrentState().getName() != "play":
+            return
         if bossDamage not in (1, 2, 3):
             return
         dmg = self.ruleset.SELTZER_DAMAGE_VALUES[bossDamage - 1]
@@ -126,6 +128,8 @@ class DistributedBossbotBossStrippedAI(DistributedBossCogStrippedAI):
             return
         if speedDamage < 1:
             return
+        if self.game.gameFSM.getCurrentState().getName() != "play":
+            return
         now = globalClock.getFrameTime()
         newDamage = self.getSpeedDamage() + speedDamage
         self.notify.debug('newDamage = %s' % newDamage)
@@ -154,6 +158,9 @@ class DistributedBossbotBossStrippedAI(DistributedBossCogStrippedAI):
             self.threatDict[toonId] = 0
 
     def waitForNextAttack(self, delayTime):
+        if self.game.gameFSM.getCurrentState().getName() != "play":
+            return
+
         taskName = self.uniqueName('NextAttack')
         taskMgr.remove(taskName)
         taskMgr.doMethodLater(delayTime, self.doNextAttack, taskName)
