@@ -106,6 +106,8 @@ class DistributedCraneGame(DistributedMinigame):
         # Add our game ClassicFSM to the framework ClassicFSM
         self.addChildGameFSM(self.gameFSM)
 
+        self.overtimeActive = False
+
     def getTitle(self):
         return TTLocalizer.CraneGameTitle
 
@@ -565,6 +567,15 @@ class DistributedCraneGame(DistributedMinigame):
         self.victor = avId
         self.gameFSM.request("victory")
 
+    def setOvertime(self, flag):
+        if flag:
+            self.overtimeActive = True
+            self.bossSpeedrunTimer.show_overtime()
+            self.ruleset.REVIVE_TOONS_UPON_DEATH = False
+        else:
+            self.overtimeActive = False
+            self.bossSpeedrunTimer.hide_overtime()
+
     """
     Everything else!!!!
     """
@@ -588,8 +599,9 @@ class DistributedCraneGame(DistributedMinigame):
             crane.demand('Off')
 
     def toonDied(self, avId):
-        self.scoreboard.addScore(avId, self.ruleset.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT,
-                                 ignoreLaff=True)
+        if not self.overtimeActive:
+            self.scoreboard.addScore(avId, self.ruleset.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT,
+                                     ignoreLaff=True)
         self.scoreboard.toonDied(avId)
 
     def revivedToon(self, avId):

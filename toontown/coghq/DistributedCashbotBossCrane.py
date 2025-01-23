@@ -1314,6 +1314,8 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             # mode--for instance, because we got hit by flying
             # gears--then ask the AI to yield us up.
             self.accept('exitCrane', self.__exitCrane)
+            # Also see if we get a message for dying. We also need to exit the crane in this instance.
+            self.accept(base.localAvatar.uniqueName('died'), self.__exitCrane)
         else:
             self.startSmooth()
             toon.stopSmooth()
@@ -1324,6 +1326,7 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
     def exitLocalControlled(self):
         if self.newState == 'LocalFree':
             self.ignore('exitCrane')
+            self.ignore(base.localAvatar.uniqueName('died'))
             
             self.grabTrack.finish()
             del self.grabTrack

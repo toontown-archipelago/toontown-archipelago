@@ -3920,6 +3920,7 @@ dclass DistributedCraneGame: DistributedMinigame {
   revivedToon(uint32 avId) broadcast;
   restart() broadcast ram;
   timesUp() broadcast ram;
+  setOvertime(bool flag) broadcast ram;
 };
 
 dclass DistributedScaleGame: DistributedMinigame {

@@ -90,6 +90,10 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # Add our game ClassicFSM to the framework ClassicFSM
         self.addChildGameFSM(self.gameFSM)
 
+        # State tracking related to the overtime mechanic.
+        self.overtimeWillHappen = True  # Setting this to True will cause the CFO to enter "overtime" mode when time runs out.
+        self.currentlyInOvertime = False  # Only true when the game is currently in overtime.
+
     def generate(self):
         self.notify.debug("generate")
         self.__makeBoss()
@@ -350,6 +354,11 @@ class DistributedCraneGameAI(DistributedMinigameAI):
     def toonDied(self, toon):
         self.resetCombo(toon.doId)
         self.sendUpdate('toonDied', [toon.doId])
+
+        # If we are in overtime, we don't need to do anything else.
+        if self.currentlyInOvertime:
+            self.__checkOvertimeState()
+            return
 
         # Reset the toon's combo
         ct = self.comboTrackers.get(toon.doId)
@@ -855,9 +864,60 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
     def __timesUp(self, task=None):
-        self.toonsWon = False
         taskMgr.remove(self.uniqueName('times-up-task'))
+
+        # If we aren't about to enter overtime, feel free to end the game here.
+        if not self.overtimeWillHappen:
+            self.toonsWon = False
+            self.gameFSM.request('victory')
+            return
+
+        self.__enterOvertimeMode()
+
+    def enableOvertime(self):
+        """
+        Marks this game in progress to enter overtime when time is up.
+        """
+        self.overtimeWillHappen = True
+        self.d_setOvertime(True)
+
+    def __enterOvertimeMode(self):
+        """
+        Adjust the state of the boss to force this game to find a winner with more extreme measures.
+        """
+        self.currentlyInOvertime = True
+        self.d_setOvertime(True)
+        self.startDrainingLaff(.5)
+
+    def __checkOvertimeState(self):
+        """
+        Analyze the state of the game right now. If all toons are dead, we can now end the game.
+        """
+        for toon in self.getPresentToons():
+            if toon.getHp() > 0:
+                return  # A toon is alive! Don't do anything.
+
+        # No toon is alive. End the game.
+        self.toonsWon = False
         self.gameFSM.request('victory')
+
+    def __getLaffDrainTaskName(self):
+        return self.uniqueName('laff-drain-task')
+
+    def stopDrainingLaff(self):
+        taskMgr.remove(self.__getLaffDrainTaskName())
+
+    def startDrainingLaff(self, interval):
+        taskMgr.add(self.__laffDrainTask, self.__getLaffDrainTaskName(), delay=interval)
+
+    def __laffDrainTask(self, task):
+        """
+        Drain all present toons' laff by one.
+        """
+        for toon in self.getPresentToons():
+            self.damageToon(toon, 1)
+        self.__checkOvertimeState()  # Check if we are allowed to end the game. This will cancel the task for us if we choose to.
+        return task.again
 
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
@@ -872,6 +932,11 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         taskMgr.remove(self.uniqueName('times-up-task'))
         taskName = self.uniqueName('NextGoon')
         taskMgr.remove(taskName)
+
+        self.stopDrainingLaff()
+        self.currentlyInOvertime = False
+        # self.overtimeWillHappen = False  # todo, uncomment when overtime logic is in place
+        self.d_setOvertime(False)
 
         # Ignore death messages.
         self.ignoreToonDeaths()
@@ -905,6 +970,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def d_restart(self):
         self.sendUpdate('restart', [])
+
+    def d_setOvertime(self, flag):
+        self.sendUpdate('setOvertime', [flag])
 
     def enterVictory(self):
         victorId = max(self.scoreDict.items(), key=itemgetter(1))[0]
