@@ -34,9 +34,9 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
         max_xp = options.get("max_gag_xp", 30)
         start_xp = options.get("start_gag_xp", 5)
     # Determines if a given player has collected a sufficient amount of the XP items in the run.
-    # always returns True if the player has a difference of less than 5 mult between start and max (aka, assumes they don't care)
+    # always returns True if the player has a difference of less than 10 mult between start and max (aka, assumes they don't care)
     xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
-    sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if (max_xp - start_xp) >= 5 else True
+    sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if (max_xp - start_xp) >= 10 else True
 
     # Check collected gag capacity items too.
     cap = state.count(ToontownItemName.GAG_CAPACITY_5.value, player) + (
@@ -397,7 +397,7 @@ def GagTraining(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
     if argument[0] == ToontownItemName.LURE_FRAME:
         return state.has(argument[0].value, player, argument[1]) \
                and has_collected_items_for_gag_level(state, player, options, argument[1]) \
-               and (state.has(ToontownItemName.TRAP_FRAME.value, player) or state.has(ToontownItemName.SQUIRT_FRAME.value, player) or state.has(ToontownItemName.THROW_FRAME.value, player))
+               and (state.has(ToontownItemName.TRAP_FRAME.value, player) or state.has(ToontownItemName.SQUIRT_FRAME.value, player) or state.has(ToontownItemName.THROW_FRAME.value, player) or state.has(ToontownItemName.SOUND_FRAME.value, player))
     return state.has(argument[0].value, player, argument[1]) \
            and has_collected_items_for_gag_level(state, player, options, argument[1])
 
