@@ -29,7 +29,7 @@ RANDOM_HOLES = True
 KICKOUT_SWINGS = 2
 TIME_TIE_BREAKER = True
 SHOT_PLAYBACK_RATE = 3
-INTRO_PLAYBACK_RATE = 2
+INTRO_PLAYBACK_RATE = 5
 CourseInfo = {0: {'name': '',
      'numHoles': 3,
      'holeIds': (2,
