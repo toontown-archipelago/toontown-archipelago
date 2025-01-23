@@ -807,6 +807,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         taskMgr.remove(self.uniqueName("craneGameVictory"))
         self.battleThreeStart = globalClock.getFrameTime()
 
+        self.setupRuleset()
+
         # Stop toon passive healing.
         for avId in self.avIdList:
             av = self.air.getDo(avId)
@@ -888,6 +890,13 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.currentlyInOvertime = True
         self.d_setOvertime(True)
         self.startDrainingLaff(.5)
+        self.ruleset.MAX_GOON_AMOUNT_END += 3  # Add 3 goons
+        # Cut treasures in half
+        self.ruleset.STRONG_TREASURE_HEAL_AMOUNT = int(math.ceil(self.ruleset.STRONG_TREASURE_HEAL_AMOUNT * .5))
+        self.ruleset.AVERAGE_TREASURE_HEAL_AMOUNT = int(math.ceil(self.ruleset.AVERAGE_TREASURE_HEAL_AMOUNT * .5))
+        self.ruleset.WEAK_TREASURE_HEAL_AMOUNT = int(math.ceil(self.ruleset.WEAK_TREASURE_HEAL_AMOUNT * .5))
+        self.ruleset.REALLY_WEAK_TREASURE_HEAL_AMOUNT = int(math.ceil(self.ruleset.REALLY_WEAK_TREASURE_HEAL_AMOUNT * .5))
+        self.ruleset.update_lists()
 
     def __checkOvertimeState(self):
         """
