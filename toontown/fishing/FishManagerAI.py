@@ -6,6 +6,7 @@ from direct.directnotify import DirectNotifyGlobal
 from toontown.fishing import FishGlobals
 from toontown.fishing.DistributedFishingPondAI import DistributedFishingPondAI
 from toontown.fishing.FishBase import FishBase
+from toontown.fishing.FishingConstants import FishLocation
 from toontown.safezone.DistributedFishingSpotAI import DistributedFishingSpotAI
 
 
@@ -153,7 +154,6 @@ class FishManagerAI:
                 itemType = FishGlobals.FishItem
 
             collectionNetList = av.fishCollection.getNetLists()
-            av.ap_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
             av.fishTank.addFish(fish)
             tankNetList = av.fishTank.getNetLists()
             av.d_setFishTank(tankNetList[0], tankNetList[1], tankNetList[2])

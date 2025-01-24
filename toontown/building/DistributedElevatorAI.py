@@ -175,7 +175,7 @@ class DistributedElevatorAI(DistributedObjectAI.DistributedObjectAI):
         return True
 
     def checkBoard(self, av):
-        return True
+        return 0
 
     def requestBoard(self, *args):
         self.notify.debug('requestBoard')
