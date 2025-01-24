@@ -697,8 +697,9 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.closeButton = DirectLabel(relief=None, text=TTLocalizer.CashbotCraneLeaving, pos=(1.05, 0, -0.88), text_pos=(0, 0), text_scale=0.06, text_fg=VBase4(1, 1, 1, 1))
         self.__cleanupCraneAdvice()
         self.__cleanupMagnetAdvice()
+        if self.isDisabled():
+            return
         self.d_requestFree()
-        return
 
     def __leaveCrane(self):
         if self.closeButton:
