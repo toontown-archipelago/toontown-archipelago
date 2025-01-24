@@ -909,13 +909,9 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         # Don't grab objects that are already grabbed
         if obj.state == 'Grabbed':
             return
-  
-        # Spawn protection
-        if obj.state in ['EmergeA', 'EmergeB']:
-            return
 
-        # Main sniffer can't grab dropped objects
-        if obj.state in ['Dropped', 'LocalDropped']:
+        # Main sniffer can't grab dropped objects or objects that are emerging
+        if obj.state in ['Dropped', 'LocalDropped', 'EmergeA', 'EmergeB']:
             return
         
         if obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
@@ -949,10 +945,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
         # Don't grab objects that are already grabbed
         if obj.state == 'Grabbed':
-            return
-  
-        # Spawn protection
-        if obj.state in ['EmergeA', 'EmergeB']:
             return
         
         if obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
