@@ -137,6 +137,13 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         del self.gameFSM
         DistributedMinigameAI.delete(self)
 
+    def create20Goons(self):
+        for i in range(20):
+            goon = DistributedCashbotBossGoonAI(self.air, self)
+            goon.generateWithRequired(self.zoneId)
+            self.goons.append(goon)
+            goon.request('Off')
+
     # override some network message handlers
     def setGameReady(self):
         self.notify.debug("setGameReady")
@@ -147,6 +154,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         self.setupRuleset()
         self.setupSpawnpoints()
+        self.create20Goons()
 
     def setupRuleset(self):
         self.ruleset = CraneLeagueGlobals.CFORuleset()
@@ -302,8 +310,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             safe = DistributedCashbotBossSafeAI(self.air, self, index)
             safe.generateWithRequired(self.zoneId)
             self.safes.append(safe)
-
-        self.goons.clear()
         return
 
     def __resetCraningObjects(self):
@@ -329,6 +335,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             goon.request('Off')
             goon.requestDelete()
         self.goons.clear()
+        self.create20Goons()
 
     # Call to listen for toon death events. Useful for catching deaths caused by DeathLink.
     def listenForToonDeaths(self):
