@@ -34,11 +34,25 @@ class ArchipelagoOnscreenLog(DirectFrame):
         # We need to correctly scrub for color properties
         text_scale_modifier = max(0.4, base.settings.get('archipelago-textsize'))
         msg_label = DirectLabel(relief=None, text=msg, text_scale=(0.06 * text_scale_modifier), text_style=3,
-                                text_align=TextNode.ALeft, text_wordwrap=40, text_fg=(1, 1, 1, 1),
+                                text_align=TextNode.ALeft, text_wordwrap=40, text_fg=(1, 1, 1, 1), text_bg=(0, 0, 0, 0),
                                 text_shadow=(0, 0, 0, 1))
-
+        if base.localAvatar.wantLogBg:
+            msg_label['text_bg'] = (0, 0, 0, 0.3)
         self.log.addItem(msg_label)
         pos = len(self.log['items']) - 1
+        # Change any possible still visible entries after we change settings and add something
+        numItems = len(self.log['items'])
+        if numItems > 1:
+            if self.log['items'][pos-1]['text_scale'] != (0.06 * text_scale_modifier):
+                for item in range(numItems):
+                    self.log['items'][item]['text_scale'] = (0.06 * text_scale_modifier)
+            if base.localAvatar.wantLogBg:
+                bg_color = (0, 0, 0, 0.3)
+            else:
+                bg_color = (0, 0, 0, 0)
+            for item in range(numItems):
+                self.log['items'][item]['text_bg'] = bg_color
+
         self.log.scrollTo(pos)
         self.doFadeoutSequence(pos, msg_label)
 
@@ -80,9 +94,16 @@ class ArchipelagoOnscreenLog(DirectFrame):
         if numItems > self.NUM_ITEMS_VISIBLE:
             startShowIndex = numItems - self.NUM_ITEMS_VISIBLE
 
+        text_scale_modifier = max(0.4, base.settings.get('archipelago-textsize'))
         for labelIndex in range(startShowIndex, numItems):
             entry = self.log['items'][labelIndex]
             self.doFadeoutSequence(labelIndex, entry)
+            # Used to resize old entries if we change the setting mid session and haven't added anything new since
+            entry['text_scale'] = (0.06 * text_scale_modifier)
+            if base.localAvatar.wantLogBg:
+                entry['text_bg'] = (0, 0, 0, 0.3)
+            else:
+                entry['text_bg'] = (0, 0, 0, 0)
             entry.setColorScale(1, 1, 1, 1)
             entry.show()
 
