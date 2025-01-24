@@ -2,7 +2,7 @@ import time
 from ctypes import *
 from direct.task import Task
 from pypresence import Presence
-from pypresence.exceptions import PipeClosed, ServerError
+from pypresence.exceptions import PipeClosed
 from pypresence.exceptions import PyPresenceException
 from direct.directnotify import DirectNotifyGlobal
 from direct.task import Task
@@ -80,10 +80,14 @@ class DiscordRPC(object):
 
     def __init__(self):
         self.discordRPC = None
-        if base.wantRichPresence:
-            self.enable()
-        else:
-            self.disable()
+
+        # Delete this line when restoring discord rich presence.
+        self.disable()
+        # Uncomment this line when we want rich presence back and can verify it is working again.
+        # if base.wantRichPresence:
+        #     self.enable()
+        # else:
+        #     self.disable()
         self.updateTask = None
         self.details = "Loading"  # text next to photo
         self.image = LOGO
@@ -132,7 +136,7 @@ class DiscordRPC(object):
             try:
                 self.discordRPC.update(state=state, details=details, large_image=image, large_text=imageTxt,
                                        small_text=smallTxt, party_size=[party, maxSize])
-            except (PipeClosed, BrokenPipeError, ServerError):
+            except (PipeClosed, BrokenPipeError):
                 # schedule a task to try to reconnect to the discord
                 self.discordRPC = None
                 self.notify.warning('Discord RPC connection lost, trying to reconnect in 30 seconds.')
@@ -216,6 +220,7 @@ class DiscordRPC(object):
             self.notify.warning(f'Could not find image and description for zone {zone % 100}.')
 
     def enable(self):
+        return  # Delete this line when enabling rich presence again.
         clientId = "1255381622128377998"
         try:
             if self.discordRPC is None:
