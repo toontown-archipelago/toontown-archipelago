@@ -374,7 +374,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         if toon is None:
             return
 
-        toon.b_setHp(1)
+        toon.b_setHp(self.ruleset.REVIVE_TOONS_LAFF_PERCENTAGE * toon.getMaxHp())
 
         self.sendUpdate("revivedToon", [toonId])
 
