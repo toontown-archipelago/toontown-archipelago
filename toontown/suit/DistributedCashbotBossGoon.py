@@ -261,6 +261,7 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     def enterWalk(self, avId = None, ts = 0):
         self.resetSpeedCaching()
         self.startToonDetect()
+        self.radar.show()
         self.isStunned = 0
         self.__startWalk()
         self.loop('walk', 0)
@@ -284,7 +285,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     def exitEmergeA(self):
         if self.boss.getBoss().doorA:
             self.boss.getBoss().doorA.request('close')
-        self.radar.show()
         self.__stopWalk()
 
     def enterEmergeB(self):

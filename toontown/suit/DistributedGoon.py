@@ -78,7 +78,6 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
         triggerName = self.uniqueName('GoonTrigger')
         self.trigger.setName(triggerName)
         self.triggerEvent = 'enter%s' % triggerName
-        self.startToonDetect()
 
     def generate(self):
         DistributedCrushableEntity.DistributedCrushableEntity.generate(self)
@@ -226,6 +225,7 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
     def enterWalk(self, avId = None, ts = 0):
         self.notify.debug('enterWalk, ts = %s' % ts)
         self.startToonDetect()
+        self.radar.show()
         self.loop('walk', 0)
         self.isStunned = 0
         if self.path:
@@ -356,7 +356,6 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
             self.request('Recovery', ts - stunTime)
 
     def startToonDetect(self):
-        self.radar.show()
         if self.triggerEvent:
             self.accept(self.triggerEvent, self.handleToonDetect)
 
@@ -369,7 +368,6 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
             return
         if self.state == 'Off':
             return
-        self.stopToonDetect()
         self.request('Battle', base.localAvatar.doId)
         if self.walkTrack:
             self.pauseTime = self.walkTrack.pause()
@@ -464,7 +462,6 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
 
     def undead(self):
         if self.isDead:
-            self.startToonDetect()
             self.reparentTo(render)
             self.isDead = 0
 
