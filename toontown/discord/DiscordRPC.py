@@ -2,7 +2,7 @@ import time
 from ctypes import *
 from direct.task import Task
 from pypresence import Presence
-from pypresence.exceptions import PipeClosed
+from pypresence.exceptions import PipeClosed, ServerError
 from pypresence.exceptions import PyPresenceException
 from direct.directnotify import DirectNotifyGlobal
 from direct.task import Task
