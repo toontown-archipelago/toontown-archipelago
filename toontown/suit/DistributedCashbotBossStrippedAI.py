@@ -203,7 +203,7 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
         isStunned = self.attackCode == ToontownGlobals.BossCogDizzy
         # Are we setting to swat?
         if isStunned and attackCode == ToontownGlobals.BossCogElectricFence:
-            self.d_updateUnstun(avId)
+            self.game.d_updateUnstun(avId)
 
         self.d_showZapToon(avId, x, y, z, h, p, r, attackCode, timestamp)
 
@@ -223,10 +223,11 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
 
         if attackCode == ToontownGlobals.BossCogElectricFence:
             if bpy < 0 and abs(bpx / bpy) > 0.5:
-                if bpx < 0:
-                    self.b_setAttackCode(ToontownGlobals.BossCogSwatRight)
-                else:
-                    self.b_setAttackCode(ToontownGlobals.BossCogSwatLeft)
+                if self.ruleset.WANT_UNSTUNS:
+                    if bpx < 0:
+                        self.b_setAttackCode(ToontownGlobals.BossCogSwatRight)
+                    else:
+                        self.b_setAttackCode(ToontownGlobals.BossCogSwatLeft)
 
     def waitForNextHelmet(self):
         taskName = self.uniqueName('NextHelmet')

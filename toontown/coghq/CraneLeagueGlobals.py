@@ -121,6 +121,9 @@ class CFORuleset:
         self.WANT_SIDECRANES = True
         self.WANT_HEAVY_CRANES = False
 
+        # Set to true to allow toons to "un-stun" the CFO by bumping into him.
+        self.WANT_UNSTUNS = False
+
         self.HEAVY_CRANE_DAMAGE_MULTIPLIER = 1.25
 
         self.MIN_GOON_IMPACT = 0.1  # How much impact should a goon hit need to register?
