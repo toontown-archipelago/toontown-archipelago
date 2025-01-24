@@ -821,6 +821,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # Start up the big boy.
         if not self.__bossExists():
             self.__makeBoss()
+        self.boss.clearSafeHelmetCooldowns()
         self.__makeCraningObjects()
         self.__resetCraningObjects()
         self.boss.prepareBossForBattle()

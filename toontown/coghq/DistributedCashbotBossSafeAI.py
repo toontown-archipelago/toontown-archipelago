@@ -111,9 +111,16 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
                 if self.boss.ruleset.DISABLE_SAFE_HELMETS:
                     return
 
+                # Is there a cooldown for this toon on intentionally giving the boss a safe helmet?
+                if not self.boss.getBoss().allowedToSafeHelmet(avId):
+                    return
+
                 self.demand('Grabbed', self.boss.getBoss().doId, self.boss.getBoss().doId)
                 self.boss.getBoss().heldObject = self
                 self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_PENALTY_SAFEHEAD)
+
+                # Don't allow this toon to safe helmet again for some period of time.
+                self.boss.getBoss().addSafeHelmetCooldown(avId)
                 
         elif impact >= ToontownGlobals.CashbotBossSafeKnockImpact:
             self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_DESAFE)

@@ -1,5 +1,6 @@
 import math
 import random
+import time
 
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import FSM
@@ -14,6 +15,9 @@ from .DistributedBossCogStrippedAI import DistributedBossCogStrippedAI
 
 class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossAI')
+
+    # How long should we wait before being able to safe helmet the CFO twice?
+    SAFE_HELMET_COOLDOWN: int = 60
 
     def __init__(self, air, game):
         DistributedBossCogStrippedAI.__init__(self, air, game, 'm')
@@ -35,6 +39,26 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
 
         # The index order to spawn toons
         self.toonSpawnpointOrder = [i for i in range(8)]
+
+        # The intentional safe helmet cooldowns. These are used to prevent safe helmet abuse.
+        # Maps toon id -> next available safe helmet timestamp.
+        self.safeHelmetCooldownsDict: dict[int, float] = {}
+
+    def allowedToSafeHelmet(self, toonId: int) -> bool:
+        if toonId not in self.safeHelmetCooldownsDict:
+            return True
+
+        allowedToSafeHelmetTimestamp = self.safeHelmetCooldownsDict[toonId]
+        if time.time() >= allowedToSafeHelmetTimestamp:
+            return True
+
+        return False
+
+    def addSafeHelmetCooldown(self, toonId: int):
+        self.safeHelmetCooldownsDict[toonId] = time.time() + self.SAFE_HELMET_COOLDOWN
+
+    def clearSafeHelmetCooldowns(self):
+        self.safeHelmetCooldownsDict.clear()
 
     def d_setToonSpawnpointOrder(self):
         self.sendUpdate('setToonSpawnpoints', [self.toonSpawnpointOrder])
