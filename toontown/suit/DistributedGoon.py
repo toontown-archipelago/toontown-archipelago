@@ -90,7 +90,7 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
         self.trigger.setName(triggerName)
 
     def initCollisions(self):
-        self.cSphere = CollisionSphere(0.0, 0.0, 1.0, 1.0)
+        self.cSphere = CollisionCapsule(0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0)
         self.cSphereNode = CollisionNode('goonCollSphere')
         self.cSphereNode.addSolid(self.cSphere)
         self.cSphereNodePath = self.head.attachNewNode(self.cSphereNode)
@@ -98,7 +98,7 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
         self.cSphereBitMask = ToontownGlobals.WallBitmask
         self.cSphereNode.setCollideMask(self.cSphereBitMask)
         self.cSphere.setTangible(1)
-        self.sSphere = CollisionSphere(0.0, 0.0, self.headHeight + 0.8, 1.2)
+        self.sSphere = CollisionCapsule(0.0, 0.0, self.headHeight + 0.8, 0.0, 0.0, self.headHeight + 0.8, 1.2)
         self.sSphereNode = CollisionNode('toonSphere')
         self.sSphereNode.addSolid(self.sSphere)
         self.sSphereNodePath = self.head.attachNewNode(self.sSphereNode)
@@ -106,6 +106,12 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
         self.sSphereBitMask = ToontownGlobals.WallBitmask
         self.sSphereNode.setCollideMask(self.sSphereBitMask)
         self.sSphere.setTangible(1)
+        
+    def showCollisions(self):
+        if hasattr(self, 'cSphereNodePath'):
+            self.cSphereNodePath.show()
+        if hasattr(self, 'sSphereNodePath'):
+            self.sSphereNodePath.show()
 
     def initializeBodyCollisions(self):
         self.cSphereNode.setName(self.uniqueName('goonCollSphere'))
