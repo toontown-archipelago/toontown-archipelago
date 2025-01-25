@@ -447,22 +447,32 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             comboTracker.cleanup()
 
     def grabAttempt(self, avId, treasureId):
-        # An avatar has attempted to grab a treasure.
-        av = self.air.doId2do.get(avId)
-        if not av:
-            return
+        """
+        A toon wants to grab a certain treasure. Validates the treasure is valid to grab
+        """
+
+        # First, try to see if we can find the treasure that was grabbed.
         treasure = self.treasures.get(treasureId)
-        if treasure:
-            if treasure.validAvatar(av):
-                del self.treasures[treasureId]
-                treasure.d_setGrab(avId)
-                self.grabbingTreasures[treasureId] = treasure
-                # Wait a few seconds for the animation to play, then
-                # recycle the treasure.
-                taskMgr.doMethodLater(5, self.__recycleTreasure, treasure.uniqueName('recycleTreasure'),
-                                      extraArgs=[treasure])
-            else:
-                treasure.d_setReject()
+        if treasure is None:
+            return
+
+        # Now get the toon that wants to grab it.
+        toon = self.air.getDo(avId)
+        if toon is None:
+            return
+
+        # Are they allowed to take this treasure?
+        if not treasure.validAvatar(toon):
+            treasure.d_setReject()
+            return
+
+        del self.treasures[treasureId]
+        treasure.d_setGrab(avId)  # Todo a lot of logic is in this method call. This is such bad design and should prob be refactored.
+        self.grabbingTreasures[treasureId] = treasure
+
+        # Wait a few seconds for the animation to play, then
+        # recycle the treasure.
+        taskMgr.doMethodLater(5, self.__recycleTreasure, treasure.uniqueName('recycleTreasure'), extraArgs=[treasure])
 
     def __recycleTreasure(self, treasure):
         if treasure.doId in self.grabbingTreasures:
