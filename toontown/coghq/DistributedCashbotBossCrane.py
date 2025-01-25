@@ -901,11 +901,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         if not obj:
             return
 
-        # Only handle safes and goons
-        if not isinstance(obj, (DistributedCashbotBossSafe.DistributedCashbotBossSafe,
-                              DistributedCashbotBossGoon.DistributedCashbotBossGoon)):
-            return
-
         # Don't grab objects that are already grabbed
         if obj.state == 'Grabbed':
             return
@@ -936,11 +931,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
         obj = base.cr.doId2do.get(doId)
         if not obj:
-            return
-
-        # Only handle safes and goons
-        if not isinstance(obj, (DistributedCashbotBossSafe.DistributedCashbotBossSafe,
-                              DistributedCashbotBossGoon.DistributedCashbotBossGoon)):
             return
 
         # Don't grab objects that are already grabbed
