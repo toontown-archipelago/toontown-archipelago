@@ -220,7 +220,9 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
                     if laff:
                         av.toonUp(av.getMaxHp())
                     if av.inventory.validatePurchase(newInventory, currentMoney, newMoney):
-                        av.setMoney(newMoney)
+                        # wontfix: due to removing the constantly updating currentMoney here,
+                        # disconnecting while buying gags won't charge the toon. this is to prevent
+                        # spamming archipelago with changing jellybeans by 1 repeatedly.
                         if not done:
                             return
                         if self.playersReported[avIndex] != PURCHASE_UNREPORTED_STATE:
@@ -228,7 +230,7 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
                             self.notify.warning('Bad report state: ' + str(self.playersReported[avIndex]))
                         else:
                             av.d_setInventory(av.inventory.makeNetString())
-                            av.d_setMoney(newMoney)
+                            av.takeMoney(newMoney - currentMoney)
                     else:
                         self.air.writeServerEvent('suspicious', avId, 'PurchaseManager.setInventory invalid purchase')
                         self.notify.warning('Avatar ' + str(avId) + ' attempted an invalid purchase.')

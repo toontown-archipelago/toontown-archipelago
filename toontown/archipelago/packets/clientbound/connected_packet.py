@@ -7,9 +7,12 @@ from apworld.toontown.fish import FishProgression
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
+from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacket
+from toontown.archipelago.packets.serverbound.connect_update_packet import ConnectUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 from toontown.fishing import FishGlobals
+from otp.otpbase import OTPGlobals
 from toontown.toonbase import ToontownGlobals
 
 
@@ -79,6 +82,10 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Set their starting money
         av.b_setMoney(self.slot_data.get('starting_money', 50))
 
+        # Set their starting task capacity
+
+        av.b_setQuestCarryLimit(self.slot_data.get('starting_task_capacity', 4))
+
         # Set their starting gag xp multiplier
         av.b_setBaseGagSkillMultiplier(self.slot_data.get('base_global_gag_xp', 2))
 
@@ -87,11 +94,6 @@ class ConnectedPacket(ClientBoundPacketBase):
         need_gold_rod = fish_progression in (FishProgression.Licenses, FishProgression.Nonne)
         if need_gold_rod:
             av.b_setFishingRod(FishGlobals.MaxRodId)
-
-        # Give them global TP access if set in yaml
-        global_tpsanity = self.slot_data.get('tpsanity', TPSanity.default) == TPSanity.option_none
-        if global_tpsanity:
-            av.b_setTeleportAccess(ToontownGlobals.HoodsForTeleportAll)
 
     # Given the option defined in the YAML for RNG generation and the seed of the AP playthrough
     # Return a new modified seed based on what option was chosen in the YAML
@@ -153,9 +155,13 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         client.av.b_setName(client.slot_name)
 
-        # Is this this toon's first time? If so reset the toon's stats and initialize their settings from their YAML
+        # Is this this slot's first toon? If so reset the toon's stats and initialize their settings from their YAML
         if len(self.checked_locations) == 0:
             self.handle_first_time_player(client.av)
+        # Is this this specific toon's first slot? if so, reset this toon's stats and initialize from YAML. 
+        if len(client.av.checkedLocations) == 0:
+            self.handle_first_time_player(client.av)
+
 
         self.debug(f"Detected slot data: {self.slot_data}")
         client.av.b_setSlotData(self.slot_data)
@@ -168,10 +174,17 @@ class ConnectedPacket(ClientBoundPacketBase):
         if len(toonCheckedLocations) > 0:
             client.av.archipelago_session.sync()
 
+        # Receive all checks that were collected from our slot while disconnected
+        client.av.receiveCheckedLocations(self.checked_locations)
+
+        # Reset cheat access (also check if restricted and keep that value)
+        if client.av.getAccessLevel() != OTPGlobals.AccessLevelName2Int.get('RESTRICTED', 0):
+            client.av.b_setAccessLevel(OTPGlobals.AccessLevelName2Int.get('NO_ACCESS', 0))
+
         # Tell AP we are playing
         won_id = ap_location_name_to_id(locations.ToontownLocationName.SAVED_TOONTOWN.value)
         status_packet = StatusUpdatePacket()
-        status_packet.status = ClientStatus.CLIENT_GOAL if (client.av.getWinCondition().satisfied() and client.av.hasCheckedLocation(won_id)) else ClientStatus.CLIENT_PLAYING
+        status_packet.status = ClientStatus.CLIENT_GOAL if (client.av.hasCheckedLocation(won_id)) else ClientStatus.CLIENT_PLAYING
         client.send_packet(status_packet)
 
         # Scout some locations that we need to display
@@ -181,10 +194,19 @@ class ConnectedPacket(ClientBoundPacketBase):
         new_game = ap_location_name_to_id(locations.ToontownLocationName.STARTING_NEW_GAME.value)
         track_one_check = ap_location_name_to_id(locations.ToontownLocationName.STARTING_TRACK_ONE.value)
         track_two_check = ap_location_name_to_id(locations.ToontownLocationName.STARTING_TRACK_TWO.value)
-        client.av.addCheckedLocation(new_game)
-        client.av.addCheckedLocation(track_one_check)
-        client.av.addCheckedLocation(track_two_check)
+        client.av.addCheckedLocations([new_game, track_one_check, track_two_check])
+
+        # Checks Page Variables
         client.av.hintPoints = self.hint_points
+        client.av.totalChecks = len(self.missing_locations) + len(self.checked_locations)
+
+        # Request synced data and subscribe to changes.
+        client.av.request_default_ap_data()
+        # Update Deathlink Tag.
+        if self.slot_data.get('death_link', False):
+            update_packet = ConnectUpdatePacket()
+            update_packet.tags = [ConnectPacket.TAG_DEATHLINK]
+            client.send_packet(update_packet)
 
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)

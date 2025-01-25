@@ -58,6 +58,10 @@ jobs:
       - name: Copy Astron
         run: |
           Copy-Item -Path "astron" -Destination "release\game" -Recurse
+          # delete the unix files, keep the exe and dlls
+          Get-ChildItem -Path release\game\astron -File | Where-Object { $_.Extension -notin '.exe', '.dll' } | Remove-Item -Force
+         
+         
 
       - name: Compress Release
         run: |
@@ -105,18 +109,41 @@ jobs:
           python -m pip install nuitka
           python -m pip install -r requirements.txt
           brew install wget
-          python -m pip install "https://github.com/toontown-archipelago/panda3d/releases/latest/download/panda3d-1.11.0-cp311-cp311-macosx_11_0_arm64.whl"
+          # will change this to official repo once the changes are merged 
+          python -m pip install "https://github.com/toontown-archipelago/panda3d/releases/latest/download/panda3d-1.11.0-cp311-cp311-macosx_10_9_universal2.whl"
 
       - name: Build Client
         run: |
-          python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
+          python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output_arm64 --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
+          python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output_x86_64 --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads --macos-target-arch=x86_64
 
 
 
       - name: Copy Built Files
         run: |
+          # combine the binaries from both folders into a universal2 folder
+          mkdir output_universal
           mkdir release
-          cp -r output/launch.dist release/game
+          cp -r output_arm64/launch.dist output_arm64/unzipped
+          cp -r output_x86_64/launch.dist output_x86_64/unzipped
+          lipo -create output_arm64/unzipped/launch.bin output_x86_64/unzipped/launch.bin -output output_universal/launch.bin
+          # go through the folder and searh for each dylib, .so(search subdirectories too) and the Python file , and lipo them into universal2 folder
+          find output_arm64/unzipped -type f \( -name "*.dylib" -o -name "*.so" \) -exec bash -c '
+            f_arm64="$1"
+            sub_dir="${f_arm64#output_arm64/unzipped/}"
+            sub_dir="$(dirname "$sub_dir")"
+            f_x86_64="output_x86_64/unzipped/$sub_dir/$(basename "$f_arm64")"
+            f_universal="output_universal/$sub_dir/$(basename "$f_arm64")"
+            mkdir -p "output_x86_64/unzipped/$sub_dir"
+            mkdir -p "output_universal/$sub_dir"
+            # make sure it exists in x86_64 folder
+            if [ -f "$f_x86_64" ]; then
+              lipo -create "$f_arm64" "$f_x86_64" -output "$f_universal"
+            fi
+           
+          ' bash {} \;
+          lipo -create output_arm64/unzipped/Python output_x86_64/unzipped/Python -output output_universal/Python
+          cp -r output_universal release/game
           # rename launch.bin to launch
           mv release/game/launch.bin release/game/launch
           cp $pythonLocation/lib/python3.11/site-packages/panda3d/libpandaphysics.1.11.dylib release/game

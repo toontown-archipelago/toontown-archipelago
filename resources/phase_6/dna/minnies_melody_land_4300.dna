@@ -9327,7 +9327,7 @@ group "minniesMelodyLand" [
   ]
   landmark_building "tb70:toon_landmark_MM_A1_DNARoot" [
    code [ "toon_landmark_MM_A1" ]
-   title [ "Ziggy's Zoo of Zigeunermusik" ]
+   title [ "Ziggy's Zeitlose Zukunftsmusik" ]
    pos [ 545 45 0 ]
    nhpr [ 90 0 -0 ]
    door [
@@ -9363,28 +9363,34 @@ group "minniesMelodyLand" [
      text [
       letters [ "s" ]
      ]
-     text [
-      letters [ " " ]
-     ]
-     text [
-      letters [ "Z" ]
-     ]
-     text [
-      letters [ "o" ]
-     ]
-     text [
-      letters [ "o" ]
-     ]
     ]
     baseline [
      code [ "humanist" ]
      color [ 0.501961 0 0.25098 1 ]
      pos [ 2.01 0 -0.09 ]
      text [
+      letters [ "Z" ]
+     ]
+     text [
+      letters [ "e" ]
+     ]
+     text [
+      letters [ "i" ]
+     ]
+     text [
+      letters [ "t" ]
+     ]
+     text [
+      letters [ "l" ]
+     ]
+     text [
       letters [ "o" ]
      ]
      text [
-      letters [ "f" ]
+      letters [ "s" ]
+     ]
+     text [
+      letters [ "e" ]
      ]
     ]
     baseline [
@@ -9395,13 +9401,10 @@ group "minniesMelodyLand" [
       letters [ "Z" ]
      ]
      text [
-      letters [ "i" ]
+      letters [ "u" ]
      ]
      text [
-      letters [ "g" ]
-     ]
-     text [
-      letters [ "e" ]
+      letters [ "k" ]
      ]
      text [
       letters [ "u" ]
@@ -9410,10 +9413,13 @@ group "minniesMelodyLand" [
       letters [ "n" ]
      ]
      text [
-      letters [ "e" ]
+      letters [ "f" ]
      ]
      text [
-      letters [ "r" ]
+      letters [ "t" ]
+     ]
+     text [
+      letters [ "s" ]
      ]
      text [
       letters [ "m" ]

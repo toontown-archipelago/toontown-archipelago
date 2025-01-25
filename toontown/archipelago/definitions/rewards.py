@@ -7,6 +7,7 @@ from typing import List, Tuple
 
 from apworld.toontown import ToontownItemName, get_item_def_from_id
 from apworld.toontown.fish import LICENSE_TO_ACCESS_CODE
+from apworld.toontown.options import GagTrainingFrameBehavior
 from otp.otpbase.OTPLocalizerEnglish import EmoteFuncDict
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
@@ -77,6 +78,7 @@ class LaffBoostReward(APReward):
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxHp(av.maxHp + self.amount)
         av.toonUp(self.amount)
+        av.checkWinCondition()
 
 
 class GagCapacityReward(APReward):
@@ -110,6 +112,20 @@ class JellybeanJarUpgradeReward(APReward):
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxMoney(av.maxMoney + self.amount)
 
+class TaskCapacityReward(APReward):
+    
+        def __init__(self, amount: int):
+            self.amount: int = amount
+    
+        def formatted_header(self) -> str:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("Increased your task\ncapacity by "),
+                MinimalJsonMessagePart(f"+{self.amount}", color='green'),
+                MinimalJsonMessagePart("!"),
+            ])
+    
+        def apply(self, av: "DistributedToonAI"):
+            av.b_setQuestCarryLimit(av.getQuestCarryLimit() + self.amount)
 
 class GagTrainingFrameReward(APReward):
     TOONUP = 0
@@ -158,13 +174,6 @@ class GagTrainingFrameReward(APReward):
     def formatted_header(self) -> str:
         track_name_color = self.TRACK_TO_COLOR.get(self.track)
         level = base.localAvatar.getTrackAccessLevel(self.track)
-        # Check for organic text popup first
-        if base.localAvatar.getTrackBonusLevel()[self.track] == 7:
-            return global_text_properties.get_raw_formatted_string([
-                MinimalJsonMessagePart("Received a training frame!\nYour "),
-                MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
-                MinimalJsonMessagePart(" Gags are now organic!"),
-            ])
         # Check for new levels
         if level <= 7:
             return global_text_properties.get_raw_formatted_string([
@@ -181,45 +190,112 @@ class GagTrainingFrameReward(APReward):
 
     def get_image_path(self) -> str:
         level = base.localAvatar.getTrackAccessLevel(self.track)
-        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(level, 7))
+        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(max(level, 1), 7))
         return f'phase_14/maps/gags/{ap_icon}.png'
 
     def apply(self, av: "DistributedToonAI"):
+        
+        # Store option for behavior
+        behaviorMode = av.slotData.get("gag_frame_item_behavior", 0)
 
         # Increment track access level by 1
         oldLevel = av.getTrackAccessLevel(self.track)
         newLevel = oldLevel + 1
 
-        bonusArray = av.getTrackBonusLevel()
+        # Before we do anything, we need to see if they were capped before this so we can award them gags later
+        curExp = av.experience.getExp(self.track)
+        wasCapped = curExp == av.experience.getExperienceCapForTrack(self.track)
 
-        # If we get a frame when we already maxed and can overflow, make the track organic. No need to do anything else
-        if newLevel > 8:
-            bonusArray[self.track] = 7
-            av.b_setTrackBonusLevel(bonusArray)
+        # Otherwise increment the gag level allowed
+        av.setTrackAccessLevel(self.track, newLevel)
+
+        # Edge case, nothing else should happen if we are unlocking the "overflow xp" mechanic
+        if newLevel >= 8:
             return
 
-        # Before we do anything, we need to see if they were capped before this so we can award them gags later
-        wasCapped = av.experience.getExp(self.track) == av.experience.getExperienceCapForTrack(self.track)
-        # Edge case, we were not technically capped if we are unlocking the "overflow xp" mechanic
-        if newLevel == 8:
-            wasCapped = False
-
-        # Otherwise increment the gag level allowed and make sure it is not organic
-        av.setTrackAccessLevel(self.track, newLevel)
-        bonusArray[self.track] = -1
-        av.b_setTrackBonusLevel(bonusArray)
-
+        # Max the gag and give the new gag if the behavior mode is to max gags 
+        elif behaviorMode == GagTrainingFrameBehavior.option_trained:
+            av.experience.setExp(self.track, av.experience.getExperienceCapForTrack(track=self.track)) # max the gag exp.
+            av.ap_setExperience(av.experience.getCurrentExperience())
+            av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
+            av.b_setInventory(av.inventory.makeNetString())
         # Consider the case where we just learned a new gag track, we should give them as many of them as possible
-        if newLevel == 1:
+        elif newLevel == 1:
             av.inventory.addItemsWithListMax([(self.track, 0)])
             av.b_setInventory(av.inventory.makeNetString())
         # Now consider the case where we were maxed previously and want to upgrade by giving 1 xp and giving new gags
         # This will also trigger the new gag check to unlock :3
-        elif wasCapped:
-            av.experience.addExp(track=self.track, amount=1)  # Give them enough xp to learn the gag :)
-            av.b_setExperience(av.experience.getCurrentExperience())
+        elif (wasCapped and behaviorMode == GagTrainingFrameBehavior.option_vanilla
+            or behaviorMode == GagTrainingFrameBehavior.option_unlock):
+            toNext = av.experience.getNextExpValue(track=self.track, curSkill=curExp)
+            av.experience.setExp(track=self.track, exp=toNext)  # Give them enough xp to learn the gag :)
+            av.ap_setExperience(av.experience.getCurrentExperience())
             av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
             av.b_setInventory(av.inventory.makeNetString())
+
+class GagUpgradeReward(APReward):
+    TOONUP = 0
+    TRAP = 1
+    LURE = 2
+    SOUND = 3
+    THROW = 4
+    SQUIRT = 5
+    DROP = 6
+
+    TRACK_TO_NAME = {
+        TOONUP: "Toon-Up",
+        TRAP: "Trap",
+        LURE: "Lure",
+        SOUND: "Sound",
+        THROW: "Throw",
+        SQUIRT: "Squirt",
+        DROP: "Drop",
+    }
+
+    TRACK_TO_COLOR = {
+        TOONUP: 'slateblue',
+        TRAP: 'yellow',
+        LURE: 'green',
+        SOUND: 'plum',
+        THROW: 'yellow',  #  todo add a gold text property
+        SQUIRT: 'slateblue',  # todo add a pinkish text property
+        DROP: 'cyan'
+    }
+
+    TRACK_TO_ICON = {
+        TOONUP: "toonup_%s",
+        TRAP: "trap_%s",
+        LURE: "lure_%s",
+        SOUND: "sound_%s",
+        THROW: "throw_%s",
+        SQUIRT: "squirt_%s",
+        DROP: "drop_%s",
+    }
+
+    def __init__(self, track):
+        self.track = track
+
+    # todo: find a way to show dynamic info based on what this reward did for us exactly
+    # todo: new system was two steps forward one step back in this regard
+    def formatted_header(self) -> str:
+        track_name_color = self.TRACK_TO_COLOR.get(self.track)
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Trees have been planted!\nYour "),
+            MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
+            MinimalJsonMessagePart(" Gags are now organic!"),
+        ])
+
+    def get_image_path(self) -> str:
+        level = base.localAvatar.getTrackAccessLevel(self.track)
+        if not level:
+            level = 1
+        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(level, 7))
+        return f'phase_14/maps/gags/{ap_icon}.png'
+
+    def apply(self, av: "DistributedToonAI"):
+        bonusArray = av.getTrackBonusLevel()
+        bonusArray[self.track] = 7
+        av.b_setTrackBonusLevel(bonusArray)
 
 
 class GagTrainingMultiplierReward(APReward):
@@ -241,6 +317,32 @@ class GagTrainingMultiplierReward(APReward):
         av.b_setBaseGagSkillMultiplier(newMultiplier)
 
 
+class GolfPutterReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Get ready to go mini-golfing\nwith your new "),
+            MinimalJsonMessagePart("Golf Putter", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.addAccessKey(ToontownGlobals.PUTTER_KEY)
+
+
+class GoKartReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Get ready to go racing\nwith your new "),
+            MinimalJsonMessagePart("Go-Kart", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.b_setKartBodyType(1)
+
+
 class FishingRodUpgradeReward(APReward):
 
     def formatted_header(self) -> str:
@@ -256,7 +358,7 @@ class FishingRodUpgradeReward(APReward):
         av.b_setFishingRod(nextRodID)
 
 
-class TeleportAccessUpgradeReward(APReward):
+class AccessKeyReward(APReward):
     TOONTOWN_CENTRAL = ToontownGlobals.ToontownCentral
     DONALDS_DOCK = ToontownGlobals.DonaldsDock
     DAISYS_GARDENS = ToontownGlobals.DaisyGardens
@@ -289,53 +391,63 @@ class TeleportAccessUpgradeReward(APReward):
         GOOFY_SPEEDWAY: "Goofy Speedway",
     }
 
-    def __init__(self, playground: int):
-        self.playground: int = playground
-
-    def formatted_header(self) -> str:
-        return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("You can now teleport\nto "),
-            MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
-            MinimalJsonMessagePart("!"),
-        ])
-
-    def apply(self, av: "DistributedToonAI"):
-        av.addTeleportAccess(self.playground)
-        for pg in self.LINKED_PGS.get(self.playground, []):
-            av.addTeleportAccess(pg)
-
-
-class TaskAccessReward(APReward):
-    TOONTOWN_CENTRAL = ToontownGlobals.ToontownCentral
-    DONALDS_DOCK = ToontownGlobals.DonaldsDock
-    DAISYS_GARDENS = ToontownGlobals.DaisyGardens
-    MINNIES_MELODYLAND = ToontownGlobals.MinniesMelodyland
-    THE_BRRRGH = ToontownGlobals.TheBrrrgh
-    DONALDS_DREAMLAND = ToontownGlobals.DonaldsDreamland
-
-    ZONE_TO_DISPLAY_NAME = {
-        TOONTOWN_CENTRAL: "Toontown Central",
-        DONALDS_DOCK: "Donald's Dock",
-        DAISYS_GARDENS: "Daisy Gardens",
-        MINNIES_MELODYLAND: "Minnie's Melodyland",
-        THE_BRRRGH: "The Brrrgh",
-        DONALDS_DREAMLAND: "Donald's Dreamland",
+    ZONE_TO_ACCESS_ITEM = {
+        TOONTOWN_CENTRAL: ToontownItemName.TTC_ACCESS,
+        DONALDS_DOCK: ToontownItemName.DD_ACCESS,
+        DAISYS_GARDENS: ToontownItemName.DG_ACCESS,
+        MINNIES_MELODYLAND: ToontownItemName.MML_ACCESS,
+        THE_BRRRGH: ToontownItemName.TB_ACCESS,
+        DONALDS_DREAMLAND: ToontownItemName.DDL_ACCESS,
+        SELLBOT_HQ: ToontownItemName.SBHQ_ACCESS,
+        CASHBOT_HQ: ToontownItemName.CBHQ_ACCESS,
+        LAWBOT_HQ: ToontownItemName.LBHQ_ACCESS,
+        BOSSBOT_HQ: ToontownItemName.BBHQ_ACCESS,
+        ACORN_ACRES: ToontownItemName.AA_ACCESS,
+        GOOFY_SPEEDWAY: ToontownItemName.GS_ACCESS,
     }
 
+    COG_ZONES = (SELLBOT_HQ, CASHBOT_HQ,  LAWBOT_HQ, BOSSBOT_HQ)
+
     def __init__(self, playground: int):
         self.playground: int = playground
 
     def formatted_header(self) -> str:
-        return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("You may now complete ToonTasks\nin "),
-            MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
-            MinimalJsonMessagePart("!"),
-        ])
+        accessCount = 0
+        items = base.localAvatar.getReceivedItems()
+        for item in items:
+            index_received, item_id = item
+            if get_item_def_from_id(item_id).name == self.ZONE_TO_ACCESS_ITEM.get(self.playground, ToontownGlobals.ToontownCentral):
+                accessCount += 1
+        if accessCount >= 2:
+            if self.playground in self.COG_ZONES:
+                return global_text_properties.get_raw_formatted_string([
+                    MinimalJsonMessagePart("You may now infiltrate facilities\nin "),
+                    MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+                    MinimalJsonMessagePart("!"),
+                    ])
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("You may now complete ToonTasks\nin "),
+                MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+                MinimalJsonMessagePart("!"),
+            ])
+        else:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("You can now teleport\nto "),
+                MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+                MinimalJsonMessagePart("!"),
+            ])
 
     def apply(self, av: "DistributedToonAI"):
-        # Get the key ID for this playground
-        key = FADoorCodes.ZONE_TO_ACCESS_CODE[self.playground]
-        av.addAccessKey(key)
+        # Apply TP before HQ or facilities
+        if not av.hasTeleportAccess(self.playground):
+            av.addTeleportAccess(self.playground)
+            for pg in self.LINKED_PGS.get(self.playground, []):
+                av.addTeleportAccess(pg)
+        else:
+            # Get the key ID for this playground
+            if self.playground in list(FADoorCodes.ZONE_TO_ACCESS_CODE.keys()):
+                key = FADoorCodes.ZONE_TO_ACCESS_CODE[self.playground]
+                av.addAccessKey(key)
 
 
 class FishingLicenseReward(APReward):
@@ -450,7 +562,7 @@ class JellybeanReward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.addMoney(self.amount)
+        av.ap_setMoney(av.getMoney() + self.amount)
 
 
 class UberTrapAward(APReward):
@@ -458,7 +570,7 @@ class UberTrapAward(APReward):
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("UBER TRAP\n", color='salmon'),
-            MinimalJsonMessagePart(f"Don't get hit!"),
+            MinimalJsonMessagePart(f"Will you survive?"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
@@ -468,9 +580,59 @@ class UberTrapAward(APReward):
             av.takeDamage(damage)
         av.inventory.maxInventory(clearFirst=True, restockAmount=20)
         av.b_setInventory(av.inventory.makeNetString())
-
+        if newHp == 1:
+            av.playSound('phase_4/audio/sfx/BLACK_KNIGHT.ogg')
+        else:
+            av.playSound('phase_4/audio/sfx/NO_NO_NO.ogg')
         av.d_broadcastHpString("UBERFIED!", (.35, .7, .35))
         av.d_playEmote(EmoteFuncDict['Cry'], 1)
+
+
+class BeanTaxTrapAward(APReward):
+    def __init__(self, tax: int):
+        self.tax: int = tax
+
+    def formatted_header(self) -> str:
+        if base.localAvatar.getHasPaidTaxes():
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("BEAN TAX PAID\n", color='salmon'),
+                MinimalJsonMessagePart("You paid the tax for "),
+                MinimalJsonMessagePart(f"{self.tax} beans.", color='cyan'),
+            ])
+
+        else:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("BEAN TAX FAILED\n", color='salmon'),
+                MinimalJsonMessagePart("You tried evading the tax for "),
+                MinimalJsonMessagePart(f"{self.tax} beans.", color='cyan'),
+            ])
+
+    def getPassed(self, avMoney):
+        if avMoney >= self.tax:
+            return True
+        else:
+            return False
+
+    def apply(self, av: "DistributedToonAI"):
+        avMoney = av.getMoney()
+
+        if self.getPassed(avMoney):
+            av.b_setHasPaidTaxes(True)
+            av.ap_setMoney(max(avMoney - self.tax, 0))
+            av.playSound('phase_4/audio/sfx/tax_paid.ogg')
+            av.d_broadcastHpString("TAXES PAID!", (.35, .7, .35))
+            av.d_playEmote(EmoteFuncDict['Happy'], 1)
+        else:
+            av.b_setHasPaidTaxes(False)
+            if av.getMoney() >= 100:
+                av.ap_setMoney(100)
+            damage = av.getHp() - 1
+            if av.getHp() > 0:
+                av.takeDamage(damage)
+            av.playSound('phase_4/audio/sfx/tax_evasion.ogg')
+            av.d_broadcastHpString("EVASION ATTEMPTED!", (.3, .5, .8))
+            av.d_playEmote(EmoteFuncDict['Belly Flop'], 1)
+
 
 
 class DripTrapAward(APReward):
@@ -502,7 +664,9 @@ class GagShuffleAward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         # Let's make sure we aren't already being shuffled
+        avId = av.getDoId()
         if av.getBeingShuffled():
+            av.playSound('phase_4/audio/sfx/LETS_GO_GAMBLING.ogg')
             av.d_broadcastHpString("GAG SHUFFLE!", (.3, .5, .8))
             av.d_playEmote(EmoteFuncDict['Confused'], 1)
             return
@@ -517,19 +681,24 @@ class GagShuffleAward(APReward):
         # Only do enough attempts to fill us back up to what we were
         for _ in range(target):
             # Randomly select a gag and attempt to add it
-            gag: Tuple[int, int] = random.choice(allowedGags)
-            track, level = gag
-            gagsAdded = av.inventory.addItem(track, level)
+            if allowedGags:  # sanity check for possible empty list
+                gag: Tuple[int, int] = random.choice(allowedGags)
+                track, level = gag
+                gagsAdded = av.inventory.addItem(track, level)
 
-            # If this gag failed to add, we can no longer query for this gag. Remove it.
-            if gagsAdded <= 0:
-                allowedGags.remove(gag)
+                # If this gag failed to add, we can no longer query for this gag. Remove it.
+                if gagsAdded <= 0:
+                    allowedGags.remove(gag)
 
-            # Edge case, if we are out of gags we need to stop (in theory this should never happen but let's be safe :p)
-            if len(allowedGags) <= 0:
+                # Edge case, if we are out of gags we need to stop (in theory this should never happen but let's be safe :p)
+                if len(allowedGags) <= 0:
+                    break
+            else:
+                print(f"archipelago rewards WARNING: Could not find any allowed gags. For avId: {avId}")
                 break
         # We're done shuffling, should be good now
         av.setBeingShuffled(False)
+        av.playSound('phase_4/audio/sfx/LETS_GO_GAMBLING.ogg')
         av.b_setInventory(av.inventory.makeNetString())
         av.d_broadcastHpString("GAG SHUFFLE!", (.3, .5, .8))
         av.d_playEmote(EmoteFuncDict['Confused'], 1)
@@ -552,7 +721,9 @@ class GagExpBundleAward(APReward):
             currentCap = min(av.experience.getExperienceCapForTrack(index), ToontownBattleGlobals.regMaxSkill)
             exptoAdd = math.ceil(currentCap * (self.amount/100))
             av.experience.addExp(index, exptoAdd)
-        av.b_setExperience(av.experience.getCurrentExperience())
+        av.ap_setExperience(av.experience.getCurrentExperience())
+        # now check for win condition since we have one for maxxed gags
+        av.checkWinCondition()
 
 
 class BossRewardAward(APReward):
@@ -589,32 +760,40 @@ class BossRewardAward(APReward):
 
 
 class ProofReward(APReward):
-    class ProofType(IntEnum):
-        SellbotBossFirstTime = 0
-        CashbotBossFirstTime = 1
-        LawbotBossFirstTime = 2
-        BossbotBossFirstTime = 3
+    numToBoss = {
+        0: "VP",
+        1: "CFO",
+        2: "CJ",
+        3: "CEO"
+    }
 
-        def to_display(self):
-            return {
-                self.SellbotBossFirstTime: "First VP Defeated",
-                self.CashbotBossFirstTime: "First CFO Defeated",
-                self.LawbotBossFirstTime: "First CJ Defeated",
-                self.BossbotBossFirstTime: "First CEO Defeated"
-            }.get(self, f"Unknown Proof ({self.value})")
-
-    def __init__(self, proofType: ProofType):
-        self.proofType: ProofReward.ProofType = proofType
+    def __init__(self, proof: int):
+        self.proof = proof
 
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("Proof Obtained!\n", color='green'),
-            MinimalJsonMessagePart(f"{self.proofType.to_display()}"),
+            MinimalJsonMessagePart(f"Proof of the {self.numToBoss[self.proof]}'s defeat!"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
         # todo keep track of these
         pass
+
+
+class BountyReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Bounty Obtained!\n", color='green'),
+            MinimalJsonMessagePart(f"Proof of a difficult task completed!"),
+        ])
+
+    def get_image_path(self) -> str:
+        return f'phase_14/maps/bounty.png'
+
+    def apply(self, av: "DistributedToonAI"):
+        av.checkWinCondition()
 
 
 class VictoryReward(APReward):
@@ -654,6 +833,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.GAG_CAPACITY_10.value: GagCapacityReward(10),
     ToontownItemName.GAG_CAPACITY_15.value: GagCapacityReward(15),
     ToontownItemName.MONEY_CAP_1000.value: JellybeanJarUpgradeReward(1000),
+    ToontownItemName.TASK_CAPACITY.value: TaskCapacityReward(1),
     ToontownItemName.TOONUP_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.TOONUP),
     ToontownItemName.TRAP_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.TRAP),
     ToontownItemName.LURE_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.LURE),
@@ -661,27 +841,28 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.THROW_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.THROW),
     ToontownItemName.SQUIRT_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.SQUIRT),
     ToontownItemName.DROP_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.DROP),
+    ToontownItemName.TOONUP_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.TOONUP),
+    ToontownItemName.TRAP_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.TRAP),
+    ToontownItemName.LURE_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.LURE),
+    ToontownItemName.SOUND_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.SOUND),
+    ToontownItemName.THROW_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.THROW),
+    ToontownItemName.SQUIRT_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.SQUIRT),
+    ToontownItemName.DROP_UPGRADE.value: GagUpgradeReward(GagUpgradeReward.DROP),
     ToontownItemName.GAG_MULTIPLIER_1.value: GagTrainingMultiplierReward(1),
     ToontownItemName.GAG_MULTIPLIER_2.value: GagTrainingMultiplierReward(2),
     ToontownItemName.FISHING_ROD_UPGRADE.value: FishingRodUpgradeReward(),
-    ToontownItemName.TTC_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.TOONTOWN_CENTRAL),
-    ToontownItemName.DD_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.DONALDS_DOCK),
-    ToontownItemName.DG_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.DAISYS_GARDENS),
-    ToontownItemName.MML_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.MINNIES_MELODYLAND),
-    ToontownItemName.TB_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.THE_BRRRGH),
-    ToontownItemName.DDL_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.DONALDS_DREAMLAND),
-    ToontownItemName.SBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.SELLBOT_HQ),
-    ToontownItemName.CBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.CASHBOT_HQ),
-    ToontownItemName.LBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.LAWBOT_HQ),
-    ToontownItemName.BBHQ_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.BOSSBOT_HQ),
-    ToontownItemName.AA_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.ACORN_ACRES),
-    ToontownItemName.GS_TELEPORT.value: TeleportAccessUpgradeReward(TeleportAccessUpgradeReward.GOOFY_SPEEDWAY),
-    ToontownItemName.TTC_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.TOONTOWN_CENTRAL),
-    ToontownItemName.DD_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DONALDS_DOCK),
-    ToontownItemName.DG_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DAISYS_GARDENS),
-    ToontownItemName.MML_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.MINNIES_MELODYLAND),
-    ToontownItemName.TB_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.THE_BRRRGH),
-    ToontownItemName.DDL_HQ_ACCESS.value: TaskAccessReward(TaskAccessReward.DONALDS_DREAMLAND),
+    ToontownItemName.TTC_ACCESS.value: AccessKeyReward(AccessKeyReward.TOONTOWN_CENTRAL),
+    ToontownItemName.DD_ACCESS.value: AccessKeyReward(AccessKeyReward.DONALDS_DOCK),
+    ToontownItemName.DG_ACCESS.value: AccessKeyReward(AccessKeyReward.DAISYS_GARDENS),
+    ToontownItemName.MML_ACCESS.value: AccessKeyReward(AccessKeyReward.MINNIES_MELODYLAND),
+    ToontownItemName.TB_ACCESS.value: AccessKeyReward(AccessKeyReward.THE_BRRRGH),
+    ToontownItemName.DDL_ACCESS.value: AccessKeyReward(AccessKeyReward.DONALDS_DREAMLAND),
+    ToontownItemName.SBHQ_ACCESS.value: AccessKeyReward(AccessKeyReward.SELLBOT_HQ),
+    ToontownItemName.CBHQ_ACCESS.value: AccessKeyReward(AccessKeyReward.CASHBOT_HQ),
+    ToontownItemName.LBHQ_ACCESS.value: AccessKeyReward(AccessKeyReward.LAWBOT_HQ),
+    ToontownItemName.BBHQ_ACCESS.value: AccessKeyReward(AccessKeyReward.BOSSBOT_HQ),
+    ToontownItemName.AA_ACCESS.value: AccessKeyReward(AccessKeyReward.ACORN_ACRES),
+    ToontownItemName.GS_ACCESS.value: AccessKeyReward(AccessKeyReward.GOOFY_SPEEDWAY),
     ToontownItemName.TTC_FISHING.value: FishingLicenseReward(FishingLicenseReward.TOONTOWN_CENTRAL),
     ToontownItemName.DD_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DOCK),
     ToontownItemName.DG_FISHING.value: FishingLicenseReward(FishingLicenseReward.DAISYS_GARDENS),
@@ -689,6 +870,8 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.TB_FISHING.value: FishingLicenseReward(FishingLicenseReward.THE_BRRRGH),
     ToontownItemName.DDL_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DREAMLAND),
     ToontownItemName.FISH.value: IgnoreReward(),
+    ToontownItemName.GOLF_PUTTER.value: GolfPutterReward(),
+    ToontownItemName.GO_KART.value: GoKartReward(),
     ToontownItemName.FRONT_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
     ToontownItemName.SIDE_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING),
     ToontownItemName.COIN_MINT_ACCESS.value: FacilityAccessReward(FADoorCodes.COIN_MINT_ACCESS_MISSING),
@@ -716,8 +899,16 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.UNITE_REWARD.value: BossRewardAward(BossRewardAward.UNITE),
     ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP),
     ToontownItemName.UBER_TRAP.value: UberTrapAward(),
+    ToontownItemName.BEAN_TAX_TRAP_750.value: BeanTaxTrapAward(750),
+    ToontownItemName.BEAN_TAX_TRAP_1000.value: BeanTaxTrapAward(1000),
+    ToontownItemName.BEAN_TAX_TRAP_1250.value: BeanTaxTrapAward(1250),
     ToontownItemName.DRIP_TRAP.value: DripTrapAward(),
     ToontownItemName.GAG_SHUFFLE_TRAP.value: GagShuffleAward(),
+    ToontownItemName.VP.value: ProofReward(0),
+    ToontownItemName.CFO.value: ProofReward(1),
+    ToontownItemName.CJ.value: ProofReward(2),
+    ToontownItemName.CEO.value: ProofReward(3),
+    ToontownItemName.BOUNTY.value: BountyReward(),
 }
 
 

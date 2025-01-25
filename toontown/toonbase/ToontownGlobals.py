@@ -3,7 +3,7 @@ from enum import IntEnum
 from . import TTLocalizer
 from otp.otpbase.OTPGlobals import *
 from direct.showbase.PythonUtil import invertDict
-from panda3d.core import BitMask32, Vec4
+from panda3d.core import BitMask32, Vec4, Filename
 import collections
 
 MapHotkey = 'MapHotkey'
@@ -103,7 +103,7 @@ MaxHpLimit = 999
 PassiveHealFrequency = 10  # How often in seconds should toons passively regen?
 PassiveHealPercentage = .10  # How much percentage of laff should toons regen passively?
 MaxCarryLimit = 100
-MaxQuestCarryLimit = 4
+MaxQuestCarryLimit = 6
 CogMoneyDropChance = 0.95  # What percent chance to drop jellybeans as a reward per cog?
 CogMoneyBonusChance = 0.30
 CogMoneyDropRange = (25, 35)  # How many jellybeans do we reward per cog? (Assuming we rolled the chance for it)
@@ -273,9 +273,9 @@ MockupFactoryId = 0
 MintNumFloors = {CashbotMintIntA: 20,
  CashbotMintIntB: 20,
  CashbotMintIntC: 20}
-CashbotMintCogLevel = 10
-CashbotMintSkelecogLevel = 11
-CashbotMintBossLevel = 12
+CashbotMintCogLevel = 3
+CashbotMintSkelecogLevel = 4
+CashbotMintBossLevel = 6
 MintNumBattles = {CashbotMintIntA: 3,
  CashbotMintIntB: 4,
  CashbotMintIntC: 5}
@@ -285,9 +285,9 @@ MintCogBuckRewards = {CashbotMintIntA: 8,
 MintNumRooms = {CashbotMintIntA: 2 * (6,) + 5 * (7,) + 5 * (8,) + 5 * (9,) + 3 * (10,),
  CashbotMintIntB: 3 * (8,) + 6 * (9,) + 6 * (10,) + 5 * (11,),
  CashbotMintIntC: 4 * (10,) + 10 * (11,) + 6 * (12,)}
-BossbotCountryClubCogLevel = 11
-BossbotCountryClubSkelecogLevel = 12
-BossbotCountryClubBossLevel = 12
+BossbotCountryClubCogLevel = 7
+BossbotCountryClubSkelecogLevel = 8
+BossbotCountryClubBossLevel = 9
 CountryClubNumRooms = {BossbotCountryClubIntA: (4,),
  BossbotCountryClubIntB: 3 * (8,) + 6 * (9,) + 6 * (10,) + 5 * (11,),
  BossbotCountryClubIntC: 4 * (10,) + 10 * (11,) + 6 * (12,)}
@@ -297,9 +297,9 @@ CountryClubNumBattles = {BossbotCountryClubIntA: 3,
 CountryClubCogBuckRewards = {BossbotCountryClubIntA: 8,
  BossbotCountryClubIntB: 14,
  BossbotCountryClubIntC: 20}
-LawbotStageCogLevel = 10
-LawbotStageSkelecogLevel = 11
-LawbotStageBossLevel = 12
+LawbotStageCogLevel = 3
+LawbotStageSkelecogLevel = 4
+LawbotStageBossLevel = 6
 StageNumBattles = {LawbotStageIntA: 0,
  LawbotStageIntB: 0,
  LawbotStageIntC: 0,
@@ -392,18 +392,18 @@ MinigameIDs = (
     RaceGameId,
     CannonGameId,
     TagGameId,
-    PatternGameId,
+    # PatternGameId,
     RingGameId,
     MazeGameId,
     TugOfWarGameId,
     CatchGameId,
     DivingGameId,
-    TargetGameId,
+    # TargetGameId,
     PairingGameId,
     VineGameId,
-    IceGameId,
+    # IceGameId,
     CogThiefGameId,
-    TwoDGameId,
+    # TwoDGameId,
     PhotoGameId,
     TravelGameId
 )
@@ -519,6 +519,14 @@ dnaMap = {Tutorial: 'toontown_central',
  CashbotHQ: 'cog_hq_cashbot',
  LawbotHQ: 'cog_hq_lawbot',
  GolfZone: 'golf_zone'}
+dnaPGMap = {Tutorial: 'toontown_central',
+ ToontownCentral: 'toontown_central',
+ DonaldsDock: 'donalds_dock',
+ MinniesMelodyland: 'minnies_melody_land',
+ TheBrrrgh: 'the_burrrgh',
+ DaisyGardens: 'daisys_garden',
+ FunnyFarm: 'not done yet',
+ DonaldsDreamland: 'donalds_dreamland'}
 hoodNameMap = {DonaldsDock: TTLocalizer.DonaldsDock,
  ToontownCentral: TTLocalizer.ToontownCentral,
  TheBrrrgh: TTLocalizer.TheBrrrgh,
@@ -1625,6 +1633,12 @@ hood2Coords = {
  'BACK': [(-73.911, 87.426, 11.803, 10.170, 0, 0)],
  'MIDDLE': [(-98.805, 39.180, 11.364, -253.350, 0, 0)],
  'FRONT': [(-105.626, -33.441, 9.777, -211.885, 0, 0)]}
+
+musicJsonFilePath = Filename('/content_pack/music.json')
+suitClothesJsonFilePath = Filename('/content_pack/suit_clothes.json')
+
+PUTTER_KEY = 38
+
 # I hate these imports being here as much as you do, but putting them at the top crashes the AI on startup :)
 from ..archipelago.definitions import util
 from apworld.toontown import locations

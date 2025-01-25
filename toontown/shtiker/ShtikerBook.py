@@ -32,6 +32,7 @@ class ShtikerBook(DirectFrame, StateData.StateData):
         self.setPos(0, 0, 0.1)
         self.pageOrder = [TTLocalizer.OptionsPageTitle,
          TTLocalizer.CheckPageTitle,
+         TTLocalizer.LocationPageTitle,
          TTLocalizer.MapPageTitle,
          TTLocalizer.InventoryPageTitle,
          TTLocalizer.QuestPageToonTasks,
@@ -217,6 +218,10 @@ class ShtikerBook(DirectFrame, StateData.StateData):
             iconGeom = iconModels.find('**/checkmark')
             iconScale = 25
             iconModels.detachNode()
+        elif pageName == TTLocalizer.LocationPageTitle:
+            iconModels = loader.loadModel('phase_3.5/models/gui/sos_textures')
+            iconGeom = iconModels.find('**/district')
+            iconModels.detachNode()
         elif pageName == TTLocalizer.MapPageTitle:
             iconModels = loader.loadModel('phase_3.5/models/gui/sos_textures')
             iconGeom = iconModels.find('**/teleportIcon')
@@ -257,6 +262,11 @@ class ShtikerBook(DirectFrame, StateData.StateData):
             iconModels = loader.loadModel('phase_3.5/models/gui/playingCard')
             iconImage = iconModels.find('**/card_back')
             iconGeom = iconModels.find('**/logo')
+            iconGeom.setState(RenderState.makeEmpty())
+            cardTex = loader.loadTexture('phase_3/maps/toontown-logo.png')
+            cardTex.setMinfilter(Texture.FTLinearMipmapLinear)
+            cardTex.setMagfilter(Texture.FTLinear)
+            iconGeom.setTexture(cardTex, 1)
             iconScale = 0.22
             iconModels.detachNode()
         elif pageName == TTLocalizer.KartPageTitle:

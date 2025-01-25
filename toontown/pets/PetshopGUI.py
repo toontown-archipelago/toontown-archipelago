@@ -406,10 +406,13 @@ class PetshopGUI(DirectObject):
             self.apLabel.setTransparency(TransparencyAttrib.MAlpha)
             self.apLabel['image_scale'] = 0.12
             self.descLabel = DirectLabel(parent=self, pos=(-0.4, 0, 0.72), relief=None, scale=0.05, text=self.petDesc[self.curPet], text_align=TextNode.ALeft, text_wordwrap=TTLocalizer.PGUIwordwrap, text_scale=TTLocalizer.PGUIdescLabel)
+            self.okButton['state'] = DGG.NORMAL
             if self.petCost[self.curPet] > base.localAvatar.getTotalMoney():
                 self.okButton['state'] = DGG.DISABLED
-            else:
-                self.okButton['state'] = DGG.NORMAL
+            if self.getCheckId() in base.localAvatar.getCheckedLocations():
+                self.nameLabel.destroy()
+                self.nameLabel = DirectLabel(parent=self, pos=(0, 0, 1.35), relief=None, text="ALREADY CHECKED", text_pos=(0, 0), text_scale=0.06)
+                self.okButton['state'] = DGG.DISABLED
             return
 
         def __moneyChange(self, money):
@@ -432,7 +435,7 @@ class PetshopGUI(DirectObject):
         self.timer.reparentTo(aspect2d)
         self.timer.posInTopRightCorner()
         self.timer.countdown(PetConstants.PETCLERK_TIMER, self.__timerExpired)
-        self.doDialog(Dialog_MainMenu)
+        self.doDialog(Dialog_ChoosePet, entry=1)
         return
 
     def __timerExpired(self):
@@ -460,8 +463,10 @@ class PetshopGUI(DirectObject):
         self.dialogStack.pop()
         self.doDialog(self.dialogStack.pop())
 
-    def doDialog(self, nDialog):
+    def doDialog(self, nDialog, entry=0):
         self.destroyDialog()
+        if entry:
+            self.dialogStack.append(Dialog_MainMenu)
         self.dialogStack.append(nDialog)
         if nDialog == Dialog_MainMenu:
             self.acceptOnce(self.mainMenuDoneEvent, self.__handleMainMenuDlg)

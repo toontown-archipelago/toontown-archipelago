@@ -14,6 +14,8 @@ from toontown.cogdominium.DistributedCogdoInteriorAI import DistributedCogdoInte
 from toontown.cogdominium.SuitPlannerCogdoInteriorAI import SuitPlannerCogdoInteriorAI
 from toontown.cogdominium.CogdoLayout import CogdoLayout
 from toontown.cogdominium.DistributedCogdoElevatorExtAI import DistributedCogdoElevatorExtAI
+from ..archipelago.definitions import util
+from apworld.toontown import locations
 
 class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
     FieldOfficeNumFloors = 1
@@ -110,7 +112,7 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
         if not self.isToonBlock():
             return
         self.updateSavedBy(None)
-        difficulty = min(difficulty, len(SuitBuildingGlobals.SuitBuildingInfo) - 1)
+        difficulty = max(0, min(difficulty, (len(SuitBuildingGlobals.SuitBuildingInfo) - 1)))
         minFloors, maxFloors = self._getMinMaxFloors(difficulty)
         if buildingHeight == None:
             numFloors = random.randint(minFloors, maxFloors)
@@ -332,6 +334,14 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
                 self.air.writeServerEvent('buildingDefeated', t, '%s|%s|%s|%s' % (self.track, self.numFloors, self.zoneId, victorList))
             if toon != None:
                 self.air.questManager.toonKilledBuilding(toon, self.track, self.difficulty, self.numFloors, self.zoneId, activeToons)
+                floorToCheck = [
+                    util.ap_location_name_to_id(locations.ToontownLocationName.ONE_STORY.value),
+                    util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY.value),
+                    util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY.value),
+                    util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY.value),
+                    util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY.value)
+                    ]
+                toon.addCheckedLocation(floorToCheck[self.numFloors-1])
 
         for i in range(0, 4):
             victor = victorList[i]

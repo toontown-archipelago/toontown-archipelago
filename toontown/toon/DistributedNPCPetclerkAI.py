@@ -5,7 +5,9 @@ from toontown.toonbase import TTLocalizer
 from direct.task import Task
 from toontown.fishing import FishGlobals
 from toontown.pets import PetUtil, PetDNA, PetConstants
+from apworld.toontown.options import RewardDisplayOption
 from toontown.archipelago.definitions import util
+from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.hood import ZoneUtil
 
 class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
@@ -42,6 +44,12 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
         flag = NPCToons.SELL_MOVIE_START
         self.d_setMovie(avId, flag)
         taskMgr.doMethodLater(PetConstants.PETCLERK_TIMER, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
+        #is auto hint turned on?
+        if av.slotData.get("pet_shop_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint:
+            packet = LocationScoutsPacket()
+            packet.create_as_hint = 2 # only announce new hints
+            packet.locations = [util.ap_location_name_to_id(self.getCheckName())]
+            av.archipelago_session.client.send_packet(packet)
         DistributedNPCToonBaseAI.avatarEnter(self)
 
     def rejectAvatar(self, avId):
@@ -103,7 +111,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 self.notify.warning('somebody called petAdopted on a non-existent pet! avId: %s' % avId)
                 return
             cost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
-            if cost > av.getTotalMoney():
+            if cost > av.getMoney():
                 self.air.writeServerEvent('suspicious', avId, "DistributedNPCPetshopAI.petAdopted and toon doesn't have enough money!")
                 self.notify.warning("somebody called petAdopted and didn't have enough money to adopt! avId: %s" % avId)
                 return
@@ -120,10 +128,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
             else:
                 self.transactionType = 'checked'
                 return
-            bankPrice = min(av.getBankMoney(), cost)
-            walletPrice = cost - bankPrice
-            av.b_setBankMoney(av.getBankMoney() - bankPrice)
-            av.b_setMoney(av.getMoney() - walletPrice)
+            av.takeMoney(cost)
 
     def getCheckName(self):
         zoneId = ZoneUtil.getCanonicalSafeZoneId(self.zoneId)

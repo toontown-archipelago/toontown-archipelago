@@ -217,7 +217,7 @@ class SuitPage(ShtikerPage.ShtikerPage):
         gui = loader.loadModel('phase_3.5/models/gui/suitpage_gui')
         self.panelModel = gui.find('**/card')
         self.shadowModels = []
-        for index in range(1, len(SuitDNA.suitHeadTypes) + 1):
+        for index in range(1, len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes) + 1):
             self.shadowModels.append(gui.find('**/shadow' + str(index)))
 
         del gui

@@ -1,5 +1,6 @@
 # Represents a gameplay session attached to toon players, handles rewarding and sending items through the multiworld
-from typing import List
+import os
+from typing import List, TYPE_CHECKING, Any
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
@@ -10,12 +11,15 @@ from toontown.archipelago.packets.serverbound.location_checks_packet import Loca
 from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.archipelago.packets.serverbound.say_packet import SayPacket
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
+from toontown.archipelago.packets.serverbound.set_packet import SetPacket, DataStorageOperation
+from toontown.archipelago.packets.serverbound.get_packet import GetPacket
+from toontown.archipelago.packets.serverbound.set_notify_packet import SetNotifyPacket
 from toontown.archipelago.util import global_text_properties
+from toontown.archipelago.util.HintContainer import HintContainer
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.archipelago.util.net_utils import ClientStatus
 
-# Typing hack, delete later #todo
-if False:
+if TYPE_CHECKING:
     from toontown.toon.DistributedToonAI import DistributedToonAI
 
 
@@ -24,12 +28,18 @@ class ArchipelagoSession:
     def __init__(self, avatar: "DistributedToonAI"):
         self.avatar = avatar  # The avatar that owns this session, DistributedToonAI
         self.client = ArchipelagoClient(self.avatar, self.avatar.getName())  # The client responsible for socket communication
+        self.hint_container: HintContainer = HintContainer(self.avatar.doId)
+
+        self.default_ip = os.getenv("ARCHIPELAGO_IP", "127.0.0.1")
+        self.connect_tried = False
 
     def handle_connect(self, server_url: str = None):
 
-        if server_url:
+        if server_url or not self.connect_tried:
+            server_url = server_url or self.default_ip
             self.avatar.d_setSystemMessage(0, f"DEBUG: set AP server URL to {server_url}")
             self.client.set_connect_url(server_url)
+            self.connect_tried = True
 
         try:
             self.client.connect()
@@ -155,6 +165,47 @@ class ArchipelagoSession:
         ])
         self.avatar.d_sendArchipelagoMessage(msg)
 
+    # Store data - optionally specific to this slot.
+    def store_data(self, data: dict[str,Any], private=True):
+        if private:
+            data = {f"slot{str(self.client.slot)}:{k}":v for k,v in data.items()}
+        packets = []
+        for k,v in data.items():
+            packet = SetPacket()
+            packet.operations.append(DataStorageOperation(operation="replace", value=v))
+            packet.key= k
+            packets.append(packet)
+        self.client.send_packets(packets)
+
+    # Get data - optionally specific to this slot
+    def get_data(self, keys: list[str], private=False):
+        if private:
+            keys = [f"slot{str(self.client.slot)}:{i}" for i in keys]
+        packet = GetPacket()
+        packet.keys = keys
+        self.client.send_packet(packet)
+
+    # Request to be sent the stored data if it changes.
+    def subscribe_data(self, keys: list[str], private=False):
+        if private:
+            keys = [f"slot{str(self.client.slot)}:{i}" for i in keys]
+        packet = SetNotifyPacket()
+        packet.keys = keys
+        self.client.send_packet(packet)
+
+    # Apply multiple operations on stored archipelago data.
+    # Most useful for syncing jellybeans and gag xp.
+    def apply_ops_on_data(self, key: str, ops: list[tuple[str, Any]], private=False, *, default=0):
+        packet = SetPacket()
+        packet.key = key
+        if private:
+            packet.key = f"slot{str(self.client.slot)}:{key}"
+        for op, value in ops:
+            packet.operations.append(DataStorageOperation(operation=op, value=value))
+        packet.default=default
+        self.client.send_packet(packet)
+
+
     """
     Methods to retrieve information about an Archipelago Session
     """
@@ -164,3 +215,9 @@ class ArchipelagoSession:
 
     def getTeamId(self) -> int:
         return self.client.team
+
+    """
+    Methods to help with hint management
+    """
+    def getHintContainer(self) -> HintContainer:
+        return self.hint_container

@@ -483,13 +483,10 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         toons = self.involvedToons[:]
         random.shuffle(toons)
         numToons = min(len(toons), 8)
-        if numToons >= 5:
-            if numToons < 4:
-                numToonsB = numToons // 2
-            else:
-                numToonsB = (numToons + random.choice([0, 1])) // 2
+        if numToons < 4:
+            numToonsB = numToons // 2
         else:
-            numToonsB = 0
+            numToonsB = (numToons + random.choice([0, 1])) // 2
         teamA = toons[numToonsB:numToons]
         teamB = toons[:numToonsB]
         loose = toons[numToons:]
@@ -651,7 +648,7 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def invokeSuitPlanner(self, buildingCode, skelecog, reviveChance=0):
         numToons = len(self.involvedToons)
-        planner = SuitPlannerInteriorAI.SuitPlannerInteriorAI(1, buildingCode, self.dna.dept, self.zoneId, numToons=numToons)
+        planner = SuitPlannerInteriorAI.SuitPlannerInteriorAI(1, buildingCode, self.dna.dept, self.zoneId, numToons=numToons, isBoss=True)
         planner.respectInvasions = 0
         suits = planner.genFloorSuits(0)
         if skelecog != 0:

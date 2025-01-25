@@ -1601,7 +1601,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                         for at in self.activeToons:
                             toon = self.getToon(at)
                             if toon != None:
-                                toon.inventory.maxInventory(maxGagLevel=npc_level)
+                                toon.inventory.maxInventory(mode=InventoryBase.InventoryBase.FillMode.POWER, maxGagLevel=npc_level)
                                 toon.d_setInventory(toon.inventory.makeNetString())
 
                     elif track == HEAL:

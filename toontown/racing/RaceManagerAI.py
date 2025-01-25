@@ -4,6 +4,35 @@ from toontown.toonbase import ToontownGlobals, TTLocalizer
 from toontown.ai import HolidayBaseAI
 from direct.showbase import DirectObject
 import os, json
+from ..archipelago.definitions import util
+from apworld.toontown import locations
+
+RACE_TO_CHECKS = {
+    RaceGlobals.RT_Speedway_1:     [util.ap_location_name_to_id(locations.ToontownLocationName.SPEEDWAY_1_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.SPEEDWAY_1_QUALIFY)],
+    RaceGlobals.RT_Speedway_1_rev: [util.ap_location_name_to_id(locations.ToontownLocationName.SPEEDWAY_1_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.SPEEDWAY_1_QUALIFY)],
+    RaceGlobals.RT_Speedway_2:     [util.ap_location_name_to_id(locations.ToontownLocationName.SPEEDWAY_2_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.SPEEDWAY_2_QUALIFY)],
+    RaceGlobals.RT_Speedway_2_rev: [util.ap_location_name_to_id(locations.ToontownLocationName.SPEEDWAY_2_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.SPEEDWAY_2_QUALIFY)],
+    RaceGlobals.RT_Rural_1:        [util.ap_location_name_to_id(locations.ToontownLocationName.RURAL_1_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.RURAL_1_QUALIFY)],
+    RaceGlobals.RT_Rural_1_rev:    [util.ap_location_name_to_id(locations.ToontownLocationName.RURAL_1_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.RURAL_1_QUALIFY)],
+    RaceGlobals.RT_Rural_2:        [util.ap_location_name_to_id(locations.ToontownLocationName.RURAL_2_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.RURAL_2_QUALIFY)],
+    RaceGlobals.RT_Rural_2_rev:    [util.ap_location_name_to_id(locations.ToontownLocationName.RURAL_2_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.RURAL_2_QUALIFY)],
+    RaceGlobals.RT_Urban_1:        [util.ap_location_name_to_id(locations.ToontownLocationName.URBAN_1_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.URBAN_1_QUALIFY)],
+    RaceGlobals.RT_Urban_1_rev:    [util.ap_location_name_to_id(locations.ToontownLocationName.URBAN_1_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.URBAN_1_QUALIFY)],
+    RaceGlobals.RT_Urban_2:        [util.ap_location_name_to_id(locations.ToontownLocationName.URBAN_2_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.URBAN_2_QUALIFY)],
+    RaceGlobals.RT_Urban_2_rev:    [util.ap_location_name_to_id(locations.ToontownLocationName.URBAN_2_CLEAR),
+                        util.ap_location_name_to_id(locations.ToontownLocationName.URBAN_2_QUALIFY)]
+}
 
 class RaceManagerAI(DirectObject.DirectObject):
     notify = DirectNotifyGlobal.directNotify.newCategory('RaceManagerAI')
@@ -93,6 +122,9 @@ class RaceManagerAI(DirectObject.DirectObject):
                     race.circuitTotalBonusTickets[playerInfo.avId] = bonus
             av = self.air.doId2do.get(playerInfo.avId)
             if av:
+                # Qualify and Complete item give out
+                av.addCheckedLocation(RACE_TO_CHECKS[race.trackId][0])
+                av.addCheckedLocation(RACE_TO_CHECKS[race.trackId][1])
                 oldTickets = av.getTickets()
                 self.notify.debug('old tickets: %s' % oldTickets)
                 newTickets = oldTickets + winnings + entryFee + bonus
@@ -107,6 +139,10 @@ class RaceManagerAI(DirectObject.DirectObject):
                 self.notify.debug('circuitTotalBonusTickets: %s' % race.circuitTotalBonusTickets)
                 av.b_setTickets(newTickets)
         else:
+            av = self.air.doId2do.get(playerInfo.avId)
+            if av:
+                # Only complete item give out
+                av.addCheckedLocation(RACE_TO_CHECKS[race.trackId][0])
             race.circuitTimeList[playerInfo.avId][currentTimeIndex][1] = -1
             self.notify.debug('GrandTouring: Checking from branch: Not Qualified %s' % playerInfo.avId)
             trophies = self.checkForNonRaceTrophies(playerInfo.avId)

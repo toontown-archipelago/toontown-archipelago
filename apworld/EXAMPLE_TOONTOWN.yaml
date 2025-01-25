@@ -4,7 +4,7 @@ name: Colorful Toon
 
 Toontown:
   progression_balancing: 50
-  accessibility: locations
+  accessibility: full
 
   ### Team Settings ###
 
@@ -33,6 +33,17 @@ Toontown:
   # Must be above or equal to the base_global_gag_xp.
   # Range: 0 to 30
   max_global_gag_xp: 30
+
+  starting_gags:
+    # The gags to have when starting a new game.
+    # ["randomized"] will ensure you have 2 tracks, at least one being a usable offensive track.
+    # If you select two other tracks here, "randomized" will do nothing.
+    # 
+    # valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
+    # ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks
+    # ex. ["sound"] will start you with only sound as a starting track
+    # An empty list will start you with no gag tracks
+    ['randomized']
   
   # The percentage of damage that will be done when battling Cogs.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
@@ -48,6 +59,14 @@ Toontown:
   # Range: 0 to 1000
   starting_money: 1000
 
+  # The starting amount of tasks you can carry when starting a new game.
+  # Range: 1 to 6
+  starting_task_capacity: 4
+
+  # The max amount of tasks you can carry in a run.
+  # Range: 1 to 6
+  max_task_capacity: 4
+  
   ### Boss Settings ###
 
   # How many checks you will receive from a cog boss upon completion.
@@ -56,11 +75,24 @@ Toontown:
 
   ### Completion Settings ###
 
-  # Determines the condition before being able to talk to Flippy to complete the game.
-  # - cog_bosses (default): Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
-  # - total_tasks: Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
-  # - hood_tasks: Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
-  win_condition: cog_bosses
+  # The Following Settings determines the conditions required before being able to talk to Flippy to complete the game.
+  # At least one of these should be enabled, otherwise the game will immediately complete.
+  # - (Default) Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
+  win_condition_cog_bosses: "true"
+  # - Player must reach a certain number of bounty checks to complete the game (determined by bounties_required, total_bounties)
+  # - Bounties can be on late/challenging checks such as max fishing, each cog boss, maxing gags, etc.
+  win_condition_bounty: 'false'
+  # - Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
+  win_condition_total_tasks: "false"
+  # - Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
+  win_condition_hood_tasks: "false"
+  # - Player must max a certain amount of gag tracks to complete the game (determined by gag_tracks_required).
+  win_condition_gag_tracks: "false"
+  # - Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
+  win_condition_fish_species: "false"
+  # - Player must reach a certain amount of laff to complete the game (determined by laff_points_required).
+  # - - NOTE: laff_o_lympics replaces ALL laff boost items with only +1 Laff Boosts
+  win_condition_laff_o_lympics: "false"
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
   # Range: 0 to 4
@@ -75,6 +107,38 @@ Toontown:
   # Unused if win_condition is not hood_tasks.
   # Range: 0 to 12
   hood_tasks_required: 8
+  
+  # How many gag tracks must be maxxed before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not total_gag_tracks
+  # Range 0 to 7
+  gag_tracks_required: 5
+
+  # How many fish species must be caught before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not total_fish_species
+  # Range 0 to 70
+  fish_species_required: 70
+
+  # How many laff points we must have before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not laff_o_lympics
+  # Setting must be below or equal to max_laff setting
+  # Range 0 to 150
+  laff_points_required: 120
+
+  # BOUNTY SETTINGS #
+
+  # How many bounties we must have before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not bounty
+  # Range 0 to 32
+  bounties_required: 10
+
+  # How many bounties are in the pool.
+  # Unused if win_condition is not bounty
+  # Must be equal to or above bounties_required
+  # Range 1 to 32
+  total_bounties: 20
+
+  # Should bounties be hinted from the beginning of the run?
+  hint_bounties: "false"
 
   ### Sanity Settings ###
 
@@ -97,13 +161,31 @@ Toontown:
 
   # unlock: When unlocking a new gag, you get its respective check.
   # trained: When earning all available experience for a specific gag level, you get its respective check.
+  # disabled: Does not give checks for gags.
   gag_training_check_behavior: 'trained'
+
+  # Behavior of how gag training frame items are handled.
+
+  # vanilla: unlocks the gag when you get the exp required.
+  # unlock: unlocks the gag immediately, giving you the required exp directly.
+  # trained: maxes your experience in the track immediately, effectively disabling exp entirely until overcapped.
+  gag_frame_item_behavior: 'vanilla'
 
   ### Task Settings ###
 
   # Determines the amount of tasks per playground that are in logic.
   # Range: 0 to 12
   logical_tasks_per_playground: 12
+
+  # Determines what the starting playground is for quests (includes TP access)
+  # - ttc: start with TTC access
+  # - dd: start with DD access
+  # - dg: start with DG access
+  # - mml: start with MML access
+  # - tb: start with TB access
+  # - ddl: start with DDL access
+  # - randomized: start with a randomized task access
+  starting_task_playground: 'ttc'
 
   ### Cog Gallery Settings ###
 
@@ -114,6 +196,14 @@ Toontown:
   # The amount of Cogs required to reach its maxed Cog Gallery.
   # Range: 0 to 10
   maxed_cog_gallery_quota: 3
+
+  ### Facility Settings ###
+
+  # Determines how facilities are locked within a run.
+  # - keys: Default, each facility has its own key.
+  # - access: Adds a second area access key for each cog HQ to the pool that unlocks all facilities within.
+  # - unlocked: Facilities are unlocked from the start of the run.
+  facility_locking: 'keys'
 
   ### Fish Settings ###
 
@@ -137,6 +227,39 @@ Toontown:
   # - none: All fishing areas are available. The player starts with a Gold Rod.
   fish_progression: 'rods'
 
+  ### Data Sync Settings ###
+
+  # Enable to sync Jellybeans between toons on the same slot.
+  # Even if you aren't using multiple toons,
+  # leaving this on will retain your jellybeans if you need to make a new toon to reconnect.
+  # If this is 'false', the data will still be sent, but your toon will not sync with it.
+  slot_sync_jellybeans: 'true'
+
+  # Enable to sync Gag Experience between toons on the same slot.
+  # Even if you aren't using multiple toons,
+  # leaving this on will retain your gag experience if you need to make a new toon to reconnect.
+  # If this is 'false', the data will still be sent, but your toon will not sync with it.
+  slot_sync_gag_experience: 'true'
+
+  # Controls Display of Pet Shop and Task Rewards, respectively.
+  # - hidden: hides what a multiworld reward will be, instead it'll name the check as the reward.
+  # - owner: hides what the item is, but shows who it's for.
+  # - class: hides what the item is, but shows who it's for, and what classification it has.
+  # - shown: (default) Tells you what the reward will be when you're looking at the check.
+  # - auto_hint: As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+  pet_shop_display: 'shown'
+  task_reward_display: 'shown'
+
+  ### Activity Settings ###
+
+  # Determines if racing locations are enabled
+  # Also adds "Go-Kart" to the item pool.
+  racing_logic: 'false'
+
+  # Determines if mini golf locations are enabled
+  # Also adds "Golf Putter" to the item pool.
+  minigolf_logic: 'false'
+
   ### Seed Generation Settings ###
 
   # Type of seeding to use when RNG checks happen in game.
@@ -146,8 +269,27 @@ Toontown:
   # wild: RNG elements are completely random and will shuffle upon relogging
   seed_generation_type: 'global'
 
+  ### Junk Settings ###
+
+  # Weights for all of the various junk (0-100).
+  # At least 1 junk must have a value greater than 0.
+  bean_weight: 100
+  exp_weight: 100
+  sos_weight: 65
+  unite_weight: 65
+  fire_weight: 65
+
+  ### Trap Settings ###
+
   # Percentage of junk items to be replaced with traps
   trap_percent: 20
+
+  # Weights for all of the various traps (0-100).
+  # At least 1 trap must have a value of >0 if trap_percent is >=1.
+  uber_trap_weight: 100
+  drip_trap_weight: 50
+  bean_tax_weight: 42
+  gag_shuffle_weight: 100
 
   ### General Gameplay Settings ###
 
@@ -158,12 +300,9 @@ Toontown:
 
   # Starting hints for Cog Disguises
   start_hints:
-    - Sellbot Disguise
-    - Cashbot Disguise
-    - Lawbot Disguise
-    - Bossbot Disguise
+    - Cog Disguises
 
 game: Toontown
 requires:
-  version: 0.4.4
+  version: 0.5.1
 description: 'Default Toontown Template'

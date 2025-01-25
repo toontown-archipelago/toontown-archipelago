@@ -39,7 +39,7 @@ class DistributedNPCFlippyInToonHall(DistributedNPCToon):
         if avId == base.localAvatar.doId:
             self.__doLocalToonVictory()
 
-        fullString = "You have completed your goal!\x07You may now use !release to give the other players in your multi-world the items that you haven't found yet.\x07Thank you for playing!"
+        fullString = toon.winCondition.generate_npc_victory_dialogue(delimiter='\x07')
         self.setupAvatars(toon)
         self.acceptOnce(self.uniqueName('doneChatPage'), self.finishMovie, extraArgs=[toon, isLocalToon])
         self.clearChat()
@@ -73,10 +73,8 @@ class DistributedNPCFlippyInToonHall(DistributedNPCToon):
         super().setMovie(mode, npcId, avId, quests, timestamp)
 
     def doVictoryConditionNotMetMovie(self, toon: DistributedToon.DistributedToon):
-
         isLocalToon = toon.doId == base.localAvatar.doId
-        npcDialogue = toon.getWinCondition().generate_npc_dialogue(delimiter='\x07')
-
+        npcDialogue = toon.getWinCondition().generate_npc_dialogue(delimiter='\x07') + '\x07When you finish, come back and see me!\x07Good luck!'
         if isLocalToon:
             self.setupCamera(None)
 

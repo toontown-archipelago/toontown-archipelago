@@ -8,6 +8,8 @@ from direct.fsm import State
 from direct.task import Task
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import ToontownAccessAI
+from toontown.building import FADoorCodes
+from apworld.toontown import FacilityLocking
 
 class DistributedElevatorAI(DistributedObjectAI.DistributedObjectAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedElevatorAI')
@@ -170,15 +172,42 @@ class DistributedElevatorAI(DistributedObjectAI.DistributedObjectAI):
     def isLocked(self):
         return self.lockID is not None and self.lockID > 0
 
-    def avHasKey(self, av):
+    def avHasKey(self, av, lock=None):
+        if lock:
+            return lock in av.getAccessKeys()
         return self.lockID in av.getAccessKeys()
 
     def checkBoard(self, av):
         if av.hp < self.minLaff:
             return REJECT_MINLAFF
 
-        if self.isLocked() and not self.avHasKey(av):
-            return self.lockID
+        # This solution may be a bit hacky but elevator code sucks anyway!!!!
+        FACodeToAccess = {
+            FADoorCodes.FRONT_FACTORY_ACCESS_MISSING: FADoorCodes.SELLBOT_FACILTIES_MISSING,
+            FADoorCodes.SIDE_FACTORY_ACCESS_MISSING: FADoorCodes.SELLBOT_FACILTIES_MISSING,
+            FADoorCodes.COIN_MINT_ACCESS_MISSING: FADoorCodes.CASHBOT_FACILTIES_MISSING,
+            FADoorCodes.DOLLAR_MINT_ACCESS_MISSING: FADoorCodes.CASHBOT_FACILTIES_MISSING,
+            FADoorCodes.BULLION_MINT_ACCESS_MISSING: FADoorCodes.CASHBOT_FACILTIES_MISSING,
+            FADoorCodes.OFFICE_A_ACCESS_MISSING: FADoorCodes.LAWBOT_FACILTIES_MISSING,
+            FADoorCodes.OFFICE_B_ACCESS_MISSING: FADoorCodes.LAWBOT_FACILTIES_MISSING,
+            FADoorCodes.OFFICE_C_ACCESS_MISSING: FADoorCodes.LAWBOT_FACILTIES_MISSING,
+            FADoorCodes.OFFICE_D_ACCESS_MISSING: FADoorCodes.LAWBOT_FACILTIES_MISSING,
+            FADoorCodes.FRONT_THREE_ACCESS_MISSING: FADoorCodes.BOSSBOT_FACILTIES_MISSING,
+            FADoorCodes.MIDDLE_SIX_ACCESS_MISSING: FADoorCodes.BOSSBOT_FACILTIES_MISSING,
+            FADoorCodes.BACK_NINE_ACCESS_MISSING: FADoorCodes.BOSSBOT_FACILTIES_MISSING,
+        }
+        # Only use this locking logic for facilities, use the general otherwise
+        if self.isLocked() and self.lockID in list(FACodeToAccess.keys()):
+            if av.slotData.get('facility_locking', 0) == FacilityLocking.option_keys and not self.avHasKey(av):
+                return self.lockID
+            elif av.slotData.get('facility_locking', 0) == FacilityLocking.option_access:
+                if not self.avHasKey(av, FACodeToAccess[self.lockID]):
+                    return FACodeToAccess[self.lockID]
+            elif av.slotData.get('facility_locking', 0) == FacilityLocking.option_unlocked:
+                return 0
+        else:
+            if self.isLocked() and not self.avHasKey(av):
+                return self.lockID
 
         return 0
 

@@ -1,6 +1,7 @@
 """OptionsPage module: contains the OptionsPage class"""
 import os
 from enum import IntEnum, auto
+from typing import Optional
 
 from panda3d.core import TextNode, Vec4
 from direct.directnotify import DirectNotifyGlobal
@@ -21,6 +22,7 @@ from direct.distributed.ClockDelta import *
 
 class OptionTypes(IntEnum):
     BUTTON = auto()
+    DROPDOWN = auto()
     SLIDER = auto()
     CONTROL = auto()
     BUTTON_SPEEDCHAT = auto()
@@ -37,6 +39,10 @@ OptionToType = {
     'speedchat-style': OptionTypes.BUTTON_SPEEDCHAT,
     'discord-rich-presence': OptionTypes.BUTTON,
     'archipelago-textsize': OptionTypes.SLIDER,
+    'archipelago-log-bg': OptionTypes.BUTTON,
+    'color-blind-mode': OptionTypes.BUTTON,
+    'want-legacy-models': OptionTypes.BUTTON,
+    'laff-display': OptionTypes.BUTTON,
 
     # Privacy
     "competitive-boss-scoring": OptionTypes.BUTTON,
@@ -44,12 +50,12 @@ OptionToType = {
 
     # Video
     "borderless": OptionTypes.BUTTON,
-    "resolution": OptionTypes.BUTTON,
+    "resolution": OptionTypes.DROPDOWN,
     "vertical-sync": OptionTypes.BUTTON,
-    "anisotropic-filter": OptionTypes.BUTTON,
-    "anti-aliasing": OptionTypes.BUTTON,
+    "anisotropic-filter": OptionTypes.DROPDOWN,
+    "anti-aliasing": OptionTypes.DROPDOWN,
     "frame-rate-meter": OptionTypes.BUTTON,
-    "fps-limit": OptionTypes.BUTTON,
+    "fps-limit": OptionTypes.DROPDOWN,
 
     # Audio
     "music": OptionTypes.BUTTON,
@@ -138,6 +144,10 @@ class OptionsTabPage(DirectFrame, FSM):
             'speedchat-style',
             'discord-rich-presence',
             'archipelago-textsize',
+            'archipelago-log-bg',
+            'color-blind-mode',
+            'want-legacy-models',
+            'laff-display'
 
         ],
         "Privacy": [
@@ -251,6 +261,7 @@ class OptionsTabPage(DirectFrame, FSM):
         # Write the settings to the local JSON file.
         base.settings.write()
         base.localAvatar.resetPieKeys()
+        base.localAvatar.updateOverhead()
 
     def updateTabs(self) -> None:
         messenger.send("wakeup")
@@ -342,7 +353,7 @@ class OptionsScrolledFrame(ToontownScrolledFrame):
     width = 0.8
     height = 0.53
 
-    def __init__(self, parent=None, options: list[str] = [], gui=None, **kw) -> None:
+    def __init__(self, parent=None, options: list[str] = None, gui=None, **kw) -> None:
         super().__init__(
             parent, relief=None,
             pos=(0, 0, 0),
@@ -352,11 +363,11 @@ class OptionsScrolledFrame(ToontownScrolledFrame):
         )
         self.initialiseoptions(OptionsScrolledFrame)
 
-        self.optionNames = options
+        self.optionNames = options or []
 
         self.optionElements = []
         for index, option in enumerate(self.optionNames):
-            element = OptionElement(parent=self.getCanvas(), name=option, index=index, gui=gui)
+            element = OptionElement(parent, parent=self.getCanvas(), name=option, index=index, gui=gui)
             self.bindToScroll(element)
             self.optionElements.append(element)
 
@@ -373,6 +384,92 @@ class OptionsScrolledFrame(ToontownScrolledFrame):
             for option in self.optionElements:
                 option.destroy()
             del self.optionElements
+
+        super().destroy()
+
+
+class DropdownScrolledFrame(ToontownScrolledFrame):
+    width = 0.3
+    height = 0.3
+    offset = 0.225
+
+    def __init__(self, optionName: str, parent=None, pos=(0, 0, 0), options: list[str] = None, command=None, **kw
+                 ) -> None:
+        super().__init__(
+            parent, relief=None,
+            pos=(pos[0], pos[1], pos[2] - self.offset),
+            canvasSize=(-self.width, self.width, -self.height, self.height),
+            frameSize=(-self.width, self.width, -self.height, self.height),
+            **kw
+        )
+        self.initialiseoptions(DropdownScrolledFrame)
+
+        self.optionName = optionName
+        self.optionNames = options or []
+
+        gui = base.loader.loadModel("phase_3/models/gui/quit_button")
+
+        self.optionElements = []
+        for index, option in enumerate(self.optionNames):
+            element = DirectButton(
+                parent=self.getCanvas(), relief=None, pos=(0, 0, self.offset - (index * 0.1)),
+                text=self.formatSetting(option),
+                text_scale=0.052, image_pos=(0, 0, 0.02),
+                image=(
+                    gui.find("**/QuitBtn_UP"),
+                    gui.find("**/QuitBtn_DN"),
+                    gui.find("**/QuitBtn_RLVR"),
+                ),
+                image_scale=(0.7, 1, 1),
+                command=command, extraArgs=[option]
+            )
+            self.bindToScroll(element)
+            self.optionElements.append(element)
+
+        gui.remove_node()
+
+        optionAmt = len(self.optionElements)
+
+        # Update the scrollbar if there are more than x elements.
+        canvasHeight = ((optionAmt * 0.1) - self.height) if optionAmt > 4 else self.height
+
+        self["canvasSize"] = (-self.width, self.width, -canvasHeight, self.height)
+        self.setCanvasSize()
+
+        base.transitions.fadeScreen(0.5)
+
+    def formatSetting(self, setting: Setting) -> str:
+        """Given the type of setting we're dealing with, handle
+        how the text on the button will display.
+        """
+        if isinstance(setting, list):
+            # When dealing with list options, strip the brackets and
+            # join the parts together.
+            if self.optionName == "resolution":
+                string = "x"
+            else:
+                string = ""
+
+            return string.join([str(e) for e in setting]).replace("[", "").replace("[", "")
+        elif isinstance(setting, int):
+            # We're most likely dealing with a list of integer settings,
+            # so return the string from the localizer given the current setting.
+            if self.optionName == "anti-aliasing":
+                return TTLocalizer.OptionAntiAlias[setting]
+            if self.optionName == "anisotropic-filter":
+                return TTLocalizer.OptionAnisotropic[setting]
+            if self.optionName == "fps-limit":
+                return TTLocalizer.OptionFPSLimit[setting]
+
+        return str(setting)
+
+    def destroy(self) -> None:
+        if hasattr(self, "optionElements"):
+            for option in self.optionElements:
+                option.destroy()
+            del self.optionElements
+
+        base.transitions.noFade()
 
         super().destroy()
 
@@ -404,8 +501,10 @@ class OptionElement(DirectFrame):
         "fps-limit": list(TTLocalizer.OptionFPSLimit)
     })
 
-    def __init__(self, parent, name: str, index: int, gui, **kw):
+    def __init__(self, page, parent, name: str, index: int, gui, **kw):
         super().__init__(parent, **kw)
+
+        self.page = page
 
         # The name of the setting.
         self.optionName = name
@@ -428,11 +527,15 @@ class OptionElement(DirectFrame):
             text_scale=0.052,
         )
 
+        # A separate frame for dropdown options which contains a list of option buttons.
+        self.dropdownFrame: Optional[DropdownScrolledFrame] = None
+
         # Make the button which will appear on the right-hand side of
         # the page.
-        if self.optionType in (OptionTypes.BUTTON, OptionTypes.CONTROL, OptionTypes.BUTTON_SPEEDCHAT):
+        if self.optionType in (OptionTypes.BUTTON, OptionTypes.CONTROL, OptionTypes.BUTTON_SPEEDCHAT,
+                               OptionTypes.DROPDOWN):
             self.optionModifier = DirectButton(
-                parent=self, relief=None, pos=(0.4, 0, z),
+                parent=self, relief=None, pos=(0.37, 0, z),
                 text=self.formatSetting(currSetting),
                 text_scale=0.052, image_pos=(0, 0, 0.02),
                 image=(
@@ -441,8 +544,11 @@ class OptionElement(DirectFrame):
                     gui.find("**/QuitBtn_RLVR"),
                 ),
                 image_scale=(0.7, 1, 1),
-                command=self._updateButtonOption
             )
+            if self.optionType == OptionTypes.DROPDOWN:
+                self.optionModifier["command"] = self._openDropdown
+            else:
+                self.optionModifier["command"] = self._updateButtonOption
 
             if self.optionType == OptionTypes.CONTROL:
                 self.checkForDuplicates()
@@ -451,7 +557,7 @@ class OptionElement(DirectFrame):
         # the page.
         elif self.optionType == OptionTypes.SLIDER:
             self.optionModifier = DirectSlider(
-                parent=self, relief=DGG.SUNKEN, pos=(0.4, 0, z), thumb_relief=None,
+                parent=self, relief=DGG.SUNKEN, pos=(0.37, 0, z), thumb_relief=None,
                 thumb_image_scale=(0.3, 0.8, 0.8),
                 frameSize=(-0.25, 0.25, -0.1, 0.1),
                 image_pos=(0, 0, 0.02),
@@ -465,7 +571,7 @@ class OptionElement(DirectFrame):
             )
 
             self.sliderLabel = DirectLabel(
-                parent=self.optionModifier, relief=None, pos=(0.34, 0, 0),
+                parent=self.optionModifier, relief=None, pos=(0.3, 0, -0.01),
                 text=str(round(currSetting * 100)), text_scale=0.052,
             )
         else:
@@ -557,6 +663,34 @@ class OptionElement(DirectFrame):
         # No duplicates were found, keep the color the same.
         self.optionModifier["image_color"] = Vec4(1, 1, 1, 1)
 
+    def _openDropdown(self) -> None:
+        self.dropdownFrame = DropdownScrolledFrame(
+            self.optionName, parent=self.page, pos=self.optionModifier.getPos(),
+            options=self.optionOptions[self.optionName],
+            command=self._updateDropdownOption
+        )
+        self.dropdownFrame.setBin('gui-popup', 5000)
+
+    def _updateDropdownOption(self, newSetting) -> None:
+        if self.dropdownFrame is not None:
+            self.dropdownFrame.destroy()
+            self.dropdownFrame = None
+
+        # Update the new setting.
+        base.settings.set(self.optionName, newSetting)
+
+        if self.optionName in ("resolution", "anisotropic-filter"):
+            base.updateDisplay()
+        elif self.optionName == "fps-limit":
+            if newSetting != 0:
+                globalClock.setMode(ClockObject.MLimited)
+                globalClock.setFrameRate(newSetting)
+            else:
+                globalClock.setMode(ClockObject.MNormal)
+
+        # Update the button text with the new setting.
+        self.optionModifier["text"] = self.formatSetting(newSetting)
+
     def _updateButtonOption(self) -> None:
         messenger.send("wakeup")
 
@@ -616,19 +750,14 @@ class OptionElement(DirectFrame):
             base.toonChatSounds = newSetting
         elif self.optionName == 'competitive-boss-scoring':
             base.localAvatar.wantCompetitiveBossScoring = newSetting
+        elif self.optionName == 'archipelago-log-bg':
+            base.localAvatar.wantLogBg = newSetting
         elif self.optionName == 'report-errors':
             os.environ['WANT_ERROR_REPORTING'] = 'true' if newSetting else 'false'
-        elif self.optionName in ("borderless", "resolution", "vertical-sync",
-                                 "anisotropic-filter"):
+        elif self.optionName in ("borderless", "vertical-sync"):
             base.updateDisplay()
         elif self.optionName == "frame-rate-meter":
             base.setFrameRateMeter(newSetting)
-        elif self.optionName == "fps-limit":
-            if newSetting != 0:
-                globalClock.setMode(ClockObject.MLimited)
-                globalClock.setFrameRate(newSetting)
-            else:
-                globalClock.setMode(ClockObject.MNormal)
         elif self.optionName == "movement_mode":
             base.localAvatar.updateMovementMode()
         elif self.optionName == "fovEffects":
@@ -638,6 +767,12 @@ class OptionElement(DirectFrame):
             base.setRichPresence()
         elif self.optionName == "cam-toggle-lock":
             base.CAM_TOGGLE_LOCK = newSetting
+        elif self.optionName == "color-blind-mode":
+            base.colorBlindMode = newSetting
+        elif self.optionName == "want-legacy-models":
+            base.WANT_LEGACY_MODELS = newSetting
+        elif self.optionName == "laff-display":
+            base.laffMeterDisplay = newSetting
 
         # Update the button text with the new setting.
         self.optionModifier["text"] = self.formatSetting(newSetting)

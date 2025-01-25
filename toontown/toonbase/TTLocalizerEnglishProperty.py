@@ -95,6 +95,7 @@ MASPnameText = 0.055
 MRPgameTitleText = 0.11
 MRgameTitleTextPos = (-0.046, 0.2, 0.092)
 MRPplayButton = 0.055
+MRPskipButton = 0.055
 MRPinstructionsText = 0.07
 MRPinstructionsTextWordwrap = 26.5
 MRPinstructionsTextPos = (-0.115, 0.05, 0)

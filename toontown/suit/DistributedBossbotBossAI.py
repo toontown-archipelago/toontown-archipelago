@@ -109,11 +109,11 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
              (2, 2),
              (1, 1),
              (1, 1, 1, 1, 1))
-            listVersion = list(SuitBuildingGlobals.SuitBuildingInfo)
+            listVersion = list(SuitBuildingGlobals.SuitBossInfo)
             if simbase.config.GetBool('bossbot-boss-cheat', 0):
                 listVersion[14] = weakenedValue
-                SuitBuildingGlobals.SuitBuildingInfo = tuple(listVersion)
-            retval = self.invokeSuitPlanner(14, 0, 0)
+                SuitBuildingGlobals.SuitBossInfo = tuple(listVersion)
+            retval = self.invokeSuitPlanner(5, 0, 0)
             return retval
         else:
             suits = self.generateDinerSuits()
@@ -428,6 +428,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         
 
     def enterBattleFour(self):
+        self.divideToons()
         self.battleFourTimeStarted = globalClock.getFrameTime()
         self.numToonsAtStart = len(self.involvedToons)
         # 500 + 100x where x is numtoons-1
@@ -642,15 +643,14 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                bundleCount = toon.slotData.get('checks_per_boss', 4)
-                bundle = [locations.ToontownLocationName.BOSSBOT_PROOF_1.value,
-                          locations.ToontownLocationName.BOSSBOT_PROOF_2.value,
-                          locations.ToontownLocationName.BOSSBOT_PROOF_3.value,
-                          locations.ToontownLocationName.BOSSBOT_PROOF_4.value,
-                          locations.ToontownLocationName.BOSSBOT_PROOF_5.value]
-                if bundleCount:
-                    for checkNum in range(bundleCount):
-                        toon.addCheckedLocation(ap_location_name_to_id(bundle[checkNum]))
+                toon.addCheckedLocations([ap_location_name_to_id(location) for location in [
+                    locations.ToontownLocationName.BOSSBOT_PROOF_1.value,
+                    locations.ToontownLocationName.BOSSBOT_PROOF_2.value,
+                    locations.ToontownLocationName.BOSSBOT_PROOF_3.value,
+                    locations.ToontownLocationName.BOSSBOT_PROOF_4.value,
+                    locations.ToontownLocationName.BOSSBOT_PROOF_5.value,
+                    locations.ToontownLocationName.FIGHT_CEO.value
+                ]])
                 self.givePinkSlipReward(toon)
                 toon.b_promote(self.deptIndex)
 

@@ -47,6 +47,13 @@ BACK_NINE_ACCESS_MISSING = 31
 # TB_FISHING_MISSING = 36   defined elsewhere
 # DDL_FISHING_MISSING = 37  defined elsewhere
 
+# PUTTER_KEY = 38  defined elsewhere
+
+SELLBOT_FACILTIES_MISSING = 39
+CASHBOT_FACILTIES_MISSING = 40
+LAWBOT_FACILTIES_MISSING = 41
+BOSSBOT_FACILTIES_MISSING = 42
+
 ZONE_TO_ACCESS_CODE = {
     ToontownGlobals.ToontownCentral: TTC_ACCESS_MISSING,
     ToontownGlobals.DonaldsDock: DD_ACCESS_MISSING,
@@ -54,7 +61,20 @@ ZONE_TO_ACCESS_CODE = {
     ToontownGlobals.MinniesMelodyland: MM_ACCESS_MISSING,
     ToontownGlobals.TheBrrrgh: TB_ACCESS_MISSING,
     ToontownGlobals.DonaldsDreamland: DDL_ACCESS_MISSING,
+    ToontownGlobals.SellbotHQ: SELLBOT_FACILTIES_MISSING,
+    ToontownGlobals.CashbotHQ: CASHBOT_FACILTIES_MISSING,
+    ToontownGlobals.LawbotHQ: LAWBOT_FACILTIES_MISSING,
+    ToontownGlobals.BossbotHQ: BOSSBOT_FACILTIES_MISSING
 }
+
+PLAYGROUND_ZONES = (
+    ToontownGlobals.ToontownCentral,
+    ToontownGlobals.DonaldsDock,
+    ToontownGlobals.DaisyGardens,
+    ToontownGlobals.MinniesMelodyland,
+    ToontownGlobals.TheBrrrgh,
+    ToontownGlobals.DonaldsDreamland
+)
 
 FACILITY_TO_ACCESS_CODE = {
     ToontownGlobals.SellbotFactoryInt: FRONT_FACTORY_ACCESS_MISSING,
@@ -112,10 +132,17 @@ reasonDict = {
     MIDDLE_SIX_ACCESS_MISSING: TTLocalizer.FADoorCodes_MIDDLE_SIX_ACCESS_MISSING,
     BACK_NINE_ACCESS_MISSING: TTLocalizer.FADoorCodes_BACK_NINE_ACCESS_MISSING,
 
+    SELLBOT_FACILTIES_MISSING: TTLocalizer.FADoorCodes_SELLBOT_FACILTIES_MISSING,
+    CASHBOT_FACILTIES_MISSING: TTLocalizer.FADoorCodes_CASHBOT_FACILTIES_MISSING,
+    LAWBOT_FACILTIES_MISSING: TTLocalizer.FADoorCodes_LAWBOT_FACILTIES_MISSING,
+    BOSSBOT_FACILTIES_MISSING: TTLocalizer.FADoorCodes_BOSSBOT_FACILTIES_MISSING,
+
     fish.TTC_FISHING_MISSING: TTLocalizer.FADoorCodes_TTC_FISHING_MISSING,
     fish.DD_FISHING_MISSING: TTLocalizer.FADoorCodes_DD_FISHING_MISSING,
     fish.DG_FISHING_MISSING: TTLocalizer.FADoorCodes_DG_FISHING_MISSING,
     fish.MM_FISHING_MISSING: TTLocalizer.FADoorCodes_MM_FISHING_MISSING,
     fish.TB_FISHING_MISSING: TTLocalizer.FADoorCodes_TB_FISHING_MISSING,
     fish.DDL_FISHING_MISSING: TTLocalizer.FADoorCodes_DDL_FISHING_MISSING,
+
+    ToontownGlobals.PUTTER_KEY: TTLocalizer.FADoorCodes_GOLF_PUTTER_MISSING,
 }

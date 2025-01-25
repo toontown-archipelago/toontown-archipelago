@@ -23,7 +23,7 @@ class DistributedMoleFieldAI(DistributedEntityAI.DistributedEntityAI, MoleFieldB
         numToons = 0
         if hasattr(self, 'level'):
             numToons = len(self.level.presentAvIds)
-        self.moleTarget = self.molesBase + self.molesPerPlayer * numToons
+        self.moleTarget = self.molesBase + self.molesPerPlayer * (numToons - 1)
 
     def delete(self):
         DistributedEntityAI.DistributedEntityAI.delete(self)

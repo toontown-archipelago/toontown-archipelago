@@ -432,7 +432,7 @@ class PhysicsWorldBase:
             cross.setPosition(self.subPlacerNode.getPos(self.root))
             cross.setQuaternion(self.placerNode.getQuat())
             ourAxis = self.root.getRelativeVector(self.subPlacerNode, Vec3(0, 0, 1))
-            motor.setParamVel(1.0)
+            motor.setParamVel(0)
             motor.setParamFMax(50000.0)
             boxsize = Vec3(1.0, 1.0, 1.0)
             motor.attachBody(cross, 0)

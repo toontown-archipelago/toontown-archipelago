@@ -20,6 +20,7 @@ from toontown.building import ToonInterior
 from toontown.hood import QuietZoneState
 from toontown.hood import ZoneUtil
 from direct.interval.IntervalGlobal import *
+import json
 
 class TownLoader(StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('TownLoader')
@@ -37,6 +38,8 @@ class TownLoader(StateData.StateData):
         self.canonicalBranchZone = None
         self.placeDoneEvent = 'placeDone'
         self.townBattleDoneEvent = 'town-battle-done'
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(musicJsonFilePath, True))
         return
 
     def loadBattleAnims(self):
@@ -56,6 +59,13 @@ class TownLoader(StateData.StateData):
         self.battleMusic = base.loader.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.ogg')
         self.townBattle = TownBattle.TownBattle(self.townBattleDoneEvent)
         self.townBattle.load()
+
+        if str(self.branchZone) in self.musicJson['global_music']:
+            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.branchZone)])
+            if (str(self.branchZone) + '_activity') in self.musicJson['global_music']:
+                self.activityMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.branchZone) + '_activity')])
+            if (str(self.branchZone) + '_battle') in self.musicJson['global_music']:
+                self.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.branchZone) + '_battle')])
 
     def unload(self):
         self.unloadBattleAnims()

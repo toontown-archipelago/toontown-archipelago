@@ -47,7 +47,7 @@ class RewardPanel(DirectFrame):
                                       text_pos=(0, 0.2), text_scale=0.06)
         self.questLabelList = []
         for i in range(ToontownGlobals.MaxQuestCarryLimit):
-            label = DirectLabel(parent=self.questFrame, relief=None, pos=(-0.85, 0, -0.1 * i),
+            label = DirectLabel(parent=self.questFrame, relief=None, pos=(-0.85, 0, 0.1 - 0.095 * i),
                                 text=TTLocalizer.RewardPanelQuestLabel % i, text_scale=0.05, text_align=TextNode.ALeft)
             label.hide()
             self.questLabelList.append(label)
@@ -716,7 +716,7 @@ class RewardPanel(DirectFrame):
             track.append(Func(self.vanishFrames))
             track.append(Fanfare.makeFanfare(0, toon)[0])
             for i in range(len(endTracks)):
-                if endTracks[i] is 1:
+                if endTracks[i] == 1:
                     track += self.getEndTrackIntervalList(toon, toonList, i)
 
             track.append(Func(self.cleanupEndTrack))

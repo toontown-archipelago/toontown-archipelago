@@ -63,9 +63,7 @@ class NewsManagerAI(DistributedObjectAI):
         # These are the weekly events that run consistently each week.
         weeklyEvents = [
             # [holidayId, weekday]
-            [ToontownGlobals.CIRCUIT_RACING, 0],  # Grand Prix Mondays
             [ToontownGlobals.FISH_BINGO_NIGHT, 2],  # Fish Bingo Wednesdays
-            [ToontownGlobals.SILLY_SATURDAY_BINGO, 5]  # Silly Saturdays
         ]
 
         # If an event from weeklyEvents doesn't already exist in weeklyCalendarHolidays, add it.
@@ -299,6 +297,9 @@ class NewsManagerAI(DistributedObjectAI):
 
     def d_setBingoStart(self):
         self.sendUpdate('setBingoStart')
+
+    def d_setToonShout(self, shout):
+        self.sendUpdate('setToonShout', [shout])
 
     def d_setBingoEnd(self):
         self.sendUpdate('setBingoEnd')

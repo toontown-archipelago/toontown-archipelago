@@ -12,6 +12,8 @@ from toontown.toonbase import TTLocalizer
 from toontown.toontowngui import TTDialog
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.building import Elevator
+from direct.stdpy.file import open as sopen
+import json
 
 class FactoryInterior(BattlePlace.BattlePlace):
     notify = DirectNotifyGlobal.directNotify.newCategory('FactoryInterior')
@@ -68,7 +70,16 @@ class FactoryInterior(BattlePlace.BattlePlace):
          State.State('final', self.enterFinal, self.exitFinal, ['start'])], 'start', 'final')
         self.parentFSM.getStateNamed('factoryInterior').addChild(self.fsm)
         BattlePlace.BattlePlace.load(self)
-        self.music = base.loader.loadMusic('phase_9/audio/bgm/CHQ_FACT_bg.ogg')
+
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
+
+        if str(self.zoneId) in self.musicJson['global_music']:
+            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.zoneId)])
+            if (str(self.zoneId) + '_battle') in self.musicJson['global_music']:
+                self.loader.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.zoneId) + '_battle')])
+        else:
+            self.music = base.loader.loadMusic('phase_9/audio/bgm/CHQ_FACT_bg.ogg')
 
     def unload(self):
         self.parentFSM.getStateNamed('factoryInterior').removeChild(self.fsm)
@@ -114,6 +125,7 @@ class FactoryInterior(BattlePlace.BattlePlace):
         self.loader.music.stop()
         self.music.stop()
         self.ignoreAll()
+        self.loader.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
 
     def enterWalk(self, teleportIn = 0):
         BattlePlace.BattlePlace.enterWalk(self, teleportIn)
@@ -232,10 +244,7 @@ class FactoryInterior(BattlePlace.BattlePlace):
 
         self.factoryDefeated = 1
 
-        if 1:
-            zoneId = ZoneUtil.getHoodId(self.zoneId)
-        else:
-            zoneId = ZoneUtil.getSafeZoneId(base.localAvatar.defaultZone)
+        zoneId = ZoneUtil.getHoodId(self.zoneId)
 
         self.fsm.request('teleportOut', [{
             'loader': ZoneUtil.getLoaderName(zoneId),

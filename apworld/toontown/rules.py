@@ -56,6 +56,14 @@ class Rule(Enum):
     HasTBHQAccess  = auto()
     HasDDLHQAccess = auto()
 
+    ### Building Access ###
+
+    OneStory      = auto()
+    TwoStory      = auto()
+    ThreeStory    = auto()
+    FourStory     = auto()
+    FiveStory     = auto()
+
     ### Cog Tier Access ###
 
     TierOneCogs   = auto()
@@ -88,6 +96,18 @@ class Rule(Enum):
     FrontOneKey  = auto()
     MiddleTwoKey = auto()
     BackThreeKey = auto()
+
+    ### Laff Logic ###
+
+    Has20PercentMax = auto()
+    Has40PercentMax = auto()
+    Has60PercentMax = auto()
+    Has80PercentMax = auto()
+
+    ### Activities ###
+
+    Racing  = auto()
+    Golfing = auto()
 
     ### Cog Disguises ###
 
@@ -185,7 +205,16 @@ class Rule(Enum):
     CanFightCJ  = auto()
     CanFightCEO = auto()
 
+    ### WIN CONDITION ###
+
     AllBossesDefeated = auto()
+    AllFishCaught = auto()
+    TaskedAllHoods = auto()
+    GainedEnoughLaff = auto()
+    MaxedAllGags = auto()
+    CanReachBounties = auto()
+
+    CanWinGame = auto()
 
 
 class ItemRule(Enum):
