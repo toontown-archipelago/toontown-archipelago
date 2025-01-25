@@ -66,10 +66,10 @@ class DistributedRacePadAI(DistributedKartPadAI, FSM):
         pass
 
     def enterWaitEmpty(self):
-        taskMgr.doMethodLater(RaceGlobals.TrackSignDuration, self.changeTrack, self.uniqueName('changeTrack'))
+        pass
 
     def exitWaitEmpty(self):
-        taskMgr.remove(self.uniqueName('changeTrack'))
+        pass
 
     def changeTrack(self, task):
         trackInfo = RaceGlobals.getNextRaceInfo(self.trackInfo[0], self.genre, self.index)

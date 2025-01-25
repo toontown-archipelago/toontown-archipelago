@@ -237,13 +237,10 @@ def getNextRaceInfo(prevTrackId, genreString, padId):
     cPadId = getCanonicalPadId(padId)
     raceInfo = RacePadId2RaceInfo.get(cPadId)
     trackList = getTrackListByType(genre, raceInfo[0])
-    if trackList.count(prevTrackId) == 0:
-        trackId = trackList[1]
+    if cPadId in (0, 1):
+        trackId = trackList[0]
     else:
-        index = trackList.index(prevTrackId)
-        index += 1
-        index %= len(trackList)
-        trackId = trackList[index]
+        trackId = trackList[1]
     return (trackId, raceInfo[1], raceInfo[2])
 
 
