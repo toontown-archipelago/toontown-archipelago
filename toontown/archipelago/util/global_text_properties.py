@@ -2,13 +2,15 @@
 # COLOR_BLACK = (0, 0, 0, 1)
 # COLOR_RED = (.93, 0, 0, 1)
 # COLOR_GREEN = (0, 1, .5, 1)
+# COLOR_FLAT_GREEN = (0, 0.9, 0.49, 1)
 # COLOR_YELLOW = (.98, .98, .82, 1)
 # COLOR_BLUE = (.4, .58, .93, 1)
+# COLOR_LIGHT_BLUE = (0, .78, .94, 1)
 # COLOR_MAGENTA = (.93, 0, .93, 1)
 # COLOR_CYAN = (0, .93, .93, 1)
 # COLOR_WHITE = (1, 1, 1, 1)
 #
-# COLOR_PLUM = (.69, .6, .93, 1)
+# COLOR_PLUM = (.67, .55, .86, 1)
 # COLOR_SLATEBLUE = (.43, .54, .9, 1)
 # COLOR_SALMON = (.97, .5, .45, 1)
 #
@@ -23,7 +25,9 @@
 #     'white': COLOR_WHITE,
 #     'plum': COLOR_PLUM,
 #     'slateblue': COLOR_SLATEBLUE,
-#     'salmon': COLOR_SALMON
+#     'salmon': COLOR_SALMON,
+#     'flatgreen': COLOR_FLAT_GREEN,
+#     'lightblue': COLOR_LIGHT_BLUE
 # }
 from typing import List, NamedTuple
 
@@ -122,6 +126,20 @@ TEXT_PROPERTIES_CODE_SALMON = "json_salmon"
 __TEXT_PROPERTIES_SALMON = TextProperties()
 __TEXT_PROPERTIES_SALMON.setTextColor(*JSONPartFormatter.COLOR_SALMON)
 __register_property('salmon', TEXT_PROPERTIES_CODE_SALMON, __TEXT_PROPERTIES_SALMON)
+
+
+# light blue text
+TEXT_PROPERTIES_CODE_LIGHT_BLUE = "json_lightblue"
+__TEXT_PROPERTIES_LIGHT_BLUE = TextProperties()
+__TEXT_PROPERTIES_LIGHT_BLUE.setTextColor(*JSONPartFormatter.COLOR_LIGHT_BLUE)
+__register_property('lightblue', TEXT_PROPERTIES_CODE_LIGHT_BLUE, __TEXT_PROPERTIES_LIGHT_BLUE)
+
+
+# flat green text
+TEXT_PROPERTIES_CODE_FLAT_GREEN = "json_flatgreen"
+__TEXT_PROPERTIES_FLAT_GREEN = TextProperties()
+__TEXT_PROPERTIES_FLAT_GREEN.setTextColor(*JSONPartFormatter.COLOR_FLAT_GREEN)
+__register_property('flatgreen', TEXT_PROPERTIES_CODE_FLAT_GREEN, __TEXT_PROPERTIES_FLAT_GREEN)
 
 
 # Bold text (ideally use a diff font but too much work rn so i am making bold actually italics)

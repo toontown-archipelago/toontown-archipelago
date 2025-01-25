@@ -147,13 +147,13 @@ class GagTrainingFrameReward(APReward):
     }
 
     TRACK_TO_COLOR = {
-        TOONUP: 'slateblue',
+        TOONUP: 'plum',
         TRAP: 'yellow',
         LURE: 'green',
-        SOUND: 'plum',
+        SOUND: 'blue',
         THROW: 'yellow',  #  todo add a gold text property
         SQUIRT: 'slateblue',  # todo add a pinkish text property
-        DROP: 'cyan'
+        DROP: 'lightblue'
     }
 
     TRACK_TO_ICON = {
@@ -253,13 +253,13 @@ class GagUpgradeReward(APReward):
     }
 
     TRACK_TO_COLOR = {
-        TOONUP: 'slateblue',
+        TOONUP: 'plum',
         TRAP: 'yellow',
         LURE: 'green',
-        SOUND: 'plum',
+        SOUND: 'blue',
         THROW: 'yellow',  #  todo add a gold text property
         SQUIRT: 'slateblue',  # todo add a pinkish text property
-        DROP: 'cyan'
+        DROP: 'lightblue'
     }
 
     TRACK_TO_ICON = {
