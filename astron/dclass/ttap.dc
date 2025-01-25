@@ -1489,7 +1489,7 @@ dclass DistributedCashbotBossObject : DistributedSmoothNode {
   requestGrab() airecv clsend;
   rejectGrab();
   requestDrop() airecv clsend;
-  hitFloor() airecv clsend;
+  hitFloor() clsend;
   requestFree(int16/10, int16/10, int16/10, uint16%360/100) airecv clsend;
   hitBoss(uint16/255, uint32) airecv clsend;
   setX(int16/10) broadcast ram clsend airecv;
@@ -2463,7 +2463,7 @@ dclass DistCogdoCraneObject : DistributedObject {
   requestGrab() airecv clsend;
   rejectGrab();
   requestDrop() airecv clsend;
-  hitFloor() airecv clsend;
+  hitFloor() clsend;
   requestFree(int16/10, int16/10, int16/10, uint16%360/100) airecv clsend;
   hitBoss(uint16/255) airecv clsend;
   setX(int16/10) broadcast ram clsend airecv;
