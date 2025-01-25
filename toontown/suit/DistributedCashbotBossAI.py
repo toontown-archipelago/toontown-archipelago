@@ -30,6 +30,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.ruleset = CraneLeagueGlobals.CFORuleset()
         self.rulesetFallback = self.ruleset  # A fallback ruleset for when we rcr, or change mods mid round
         self.modifiers = []  # A list of CFORulesetModifierBase instances
+        self.goonCache = ("Recent emerging side", 0) # Cache for goon spawn bad luck protection
         self.oldMaxLaffs = {}
         self.cranes = None
         self.safes = None
@@ -608,7 +609,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.goonMovementTime = globalClock.getFrameTime()
         if side == None:
             if not self.wantOpeningModifications:
-                side = random.choice(['EmergeA', 'EmergeB'])
+                if self.goonCache[1] < 2:
+                    side = random.choice(['EmergeA', 'EmergeB'])
+                elif self.goonCache[0] == 'EmergeA':
+                    side = 'EmergeA'
+                else:
+                    side = 'EmergeB'
+
             else:
                 avId = self.involvedToons[self.openingModificationsToonIndex]
                 toon = self.air.doId2do.get(avId)
@@ -617,6 +624,12 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     side = 'EmergeB'
                 else:
                     side = 'EmergeA'
+
+        #Updates goon cache
+        if side == self.goonCache[0]:
+            self.goonCache = (side, self.goonCache[1] + 1)
+        else:
+            self.goonCache = (side, 1)
 
         # First, look to see if we have a goon we can recycle.
         goon = self.__chooseOldGoon()
@@ -1055,6 +1068,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
         self.makeGoon(side='EmergeB')
+        self.goonCache = (None, 0)
         if self.wantLiveGoonPractice:
             self.waitForNextGoon(7)
         else:
