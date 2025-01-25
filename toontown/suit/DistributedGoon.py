@@ -335,25 +335,25 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
     def doAttack(self, avId):
         pass
 
-    def __startResumeWalkTask(self, ts):
-        resumeTime = 1.5
-        if ts < resumeTime:
-            taskMgr.remove(self.taskName('resumeWalk'))
-            taskMgr.doMethodLater(resumeTime - ts, self.request, self.taskName('resumeWalk'), extraArgs=('Walk',))
-        else:
-            self.request('Walk', ts - resumeTime)
-
-    def __reverseWalk(self, task):
-        self.request('Walk')
-        return Task.done
-
-    def __startRecoverTask(self, ts):
-        stunTime = 4.0
-        if ts < stunTime:
-            taskMgr.remove(self.taskName('resumeWalk'))
-            taskMgr.doMethodLater(stunTime - ts, self.request, self.taskName('resumeWalk'), extraArgs=('Recovery',))
-        else:
-            self.request('Recovery', ts - stunTime)
+    # def __startResumeWalkTask(self, ts):
+    #     resumeTime = 1.5
+    #     if ts < resumeTime:
+    #         taskMgr.remove(self.taskName('resumeWalk'))
+    #         taskMgr.doMethodLater(resumeTime - ts, self.request, self.taskName('resumeWalk'), extraArgs=('Walk',))
+    #     else:
+    #         self.request('Walk', ts - resumeTime)
+    #
+    # def __reverseWalk(self, task):
+    #     self.request('Walk')
+    #     return Task.done
+    #
+    # def __startRecoverTask(self, ts):
+    #     stunTime = 4.0
+    #     if ts < stunTime:
+    #         taskMgr.remove(self.taskName('resumeWalk'))
+    #         taskMgr.doMethodLater(stunTime - ts, self.request, self.taskName('resumeWalk'), extraArgs=('Recovery',))
+    #     else:
+    #         self.request('Recovery', ts - stunTime)
 
     def startToonDetect(self):
         if self.triggerEvent:

@@ -168,7 +168,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
             self.target = None
             self.arrivalTime = None
             self.b_destroyGoon()
-            return
+            return False
             
         heading, dist = direction
         dist = min(dist, self.legLength)
@@ -190,7 +190,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         self.arrivalTime = self.departureTime + turnTime + walkTime + extraDelay
         
         self.d_setTarget(self.target[0], self.target[1], h, globalClockDelta.localToNetworkTime(self.arrivalTime))
-        return
+        return True
 
     def __chooseDirection(self):
 
@@ -431,9 +431,9 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         self.avId = 0
         self.craneId = 0
         
-        self.__chooseTarget()
-        self.__startWalk()
-        self.d_setObjectState('W', 0, 0)
+        if self.__chooseTarget():
+            self.__startWalk()
+            self.d_setObjectState('W', 0, 0)
 
     def exitWalk(self):
         self.__stopWalk()
