@@ -429,7 +429,6 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
     def _startMouseControlTasks(self):
         if self.mouseControl:
             properties = WindowProperties()
-            properties.setMouseMode(properties.MRelative)
             base.win.requestProperties(properties)
             self._startMouseReadTask()
             self._startMouseUpdateTask()
