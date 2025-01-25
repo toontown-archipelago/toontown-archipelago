@@ -59,14 +59,15 @@ class Settings:
         "camSensitivityX": 0.25,
         "camSensitivityY": 0.1,
         "fps-limit": 0,
+        'laff-display': True,
+        "archipelago-textsize": 0.5,
+        "archipelago-log-bg": False,
         # Options below this comment will not be exposed by OptionsPage
         # They can still be configurable by the end user
         "want-legacy-models": False,
         "experimental-multithreading": False,
         'discord-rich-presence': False,
-        "archipelago-textsize": 0.5,
         "color-blind-mode": False,
-        'laff-display': True,
     }
     settingsFile = Path.home() / "Documents" / "Toontown Archipelago" / "settings.json"
 

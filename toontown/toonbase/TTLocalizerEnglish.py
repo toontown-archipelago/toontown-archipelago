@@ -9957,6 +9957,7 @@ OptionNames = {
     "speedchat-style": "Speedchat Color",
     'discord-rich-presence': 'Discord Rich Presence',
     "archipelago-textsize": "Archipelago Log Text Size",
+    "archipelago-log-bg": "Archipelago Log Background",
     "color-blind-mode": "Colorblind Mode",
     "want-legacy-models": "Toggle TTO Species Models*",
     'laff-display': "Toggle Overhead Laff Meter",

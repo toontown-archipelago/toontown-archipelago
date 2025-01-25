@@ -418,7 +418,7 @@ class ArchipelagoClient(DirectObject):
 
 
         # Let's make the string pretty
-        name_color = 'green' if someone_elses else 'magenta'
+        name_color = 'flatgreen' if someone_elses else 'magenta'
         item_color = item_flag_to_color(item_flag)
         item_display_string = global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("AP Reward: ", color='salmon'),

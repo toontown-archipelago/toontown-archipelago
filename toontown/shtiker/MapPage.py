@@ -225,12 +225,10 @@ class MapPage(ShtikerPage.ShtikerPage):
                 petPoster.update(base.localAvatar)
 
             # Can we fish here?
-            if not fishPoster.isVisible(base.localAvatar):
-                fishPoster.hide()
-            elif not can_av_fish_at_zone(base.localAvatar, hoodId):
+            if not can_av_fish_at_zone(base.localAvatar, hoodId):
                 fishPoster.showLocked()
             else:
-                fishPoster.update(base.localAvatar)
+                fishPoster.update(base.localAvatar, hoodId)
 
             # Do we not have access to this hood?
             if hoodId in FADoorCodes.PLAYGROUND_ZONES:

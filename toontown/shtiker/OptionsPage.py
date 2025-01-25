@@ -39,6 +39,7 @@ OptionToType = {
     'speedchat-style': OptionTypes.BUTTON_SPEEDCHAT,
     'discord-rich-presence': OptionTypes.BUTTON,
     'archipelago-textsize': OptionTypes.SLIDER,
+    'archipelago-log-bg': OptionTypes.BUTTON,
     'color-blind-mode': OptionTypes.BUTTON,
     'want-legacy-models': OptionTypes.BUTTON,
     'laff-display': OptionTypes.BUTTON,
@@ -143,6 +144,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'speedchat-style',
             'discord-rich-presence',
             'archipelago-textsize',
+            'archipelago-log-bg',
             'color-blind-mode',
             'want-legacy-models',
             'laff-display'
@@ -748,6 +750,8 @@ class OptionElement(DirectFrame):
             base.toonChatSounds = newSetting
         elif self.optionName == 'competitive-boss-scoring':
             base.localAvatar.wantCompetitiveBossScoring = newSetting
+        elif self.optionName == 'archipelago-log-bg':
+            base.localAvatar.wantLogBg = newSetting
         elif self.optionName == 'report-errors':
             os.environ['WANT_ERROR_REPORTING'] = 'true' if newSetting else 'false'
         elif self.optionName in ("borderless", "vertical-sync"):
