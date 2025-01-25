@@ -1433,7 +1433,6 @@ struct SeltzerLeagueRuleset {
 };
 
 dclass DistributedCashbotBoss : DistributedBossCog {
-  addToActivityLog(uint32, string) broadcast;
   updateSpectators(uint32[]) broadcast ram;
   setRawRuleset(CraneLeagueRuleset) required broadcast ram;
   setModifiers(CraneLeagueModifier[]) broadcast ram;
@@ -3884,7 +3883,6 @@ dclass DistributedPieGame: DistributedMinigame {
   setBossCogId(uint32 doId) broadcast;
   touchCage() airecv clsend;
   cagedToonBattleThree(uint16, uint32) broadcast;
-  addToActivityLog(uint32, string) broadcast;
   updateDamageDealt(uint32 avId, uint32) broadcast ram;
   updateStunCount(uint32 avId, uint32) broadcast ram;
   updateCombo(uint32 avId, uint8) broadcast ram;
@@ -3898,7 +3896,6 @@ dclass DistributedPieGame: DistributedMinigame {
 
 dclass DistributedCraneGame: DistributedMinigame {
   setBossCogId(uint32 doId) broadcast;
-  addToActivityLog(uint32, string) broadcast;
   setRawRuleset(CraneLeagueRuleset) required broadcast ram;
   setModifiers(CraneLeagueModifier[]) broadcast ram;
   setToonSpawnpoints(uint8[]) broadcast ram;
@@ -3927,7 +3924,6 @@ dclass DistributedScaleGame: DistributedMinigame {
   setRawRuleset(ScaleLeagueRuleset) required broadcast ram;
   setBossCogId(uint32 doId) broadcast;
   touchWitnessStand() airecv clsend;
-  addToActivityLog(uint32, string) broadcast;
   updateDamageDealt(uint32 avId, uint32) broadcast ram;
   updateStunCount(uint32 avId, uint32) broadcast ram;
   updateCombo(uint32 avId, uint8) broadcast ram;
@@ -3952,7 +3948,6 @@ dclass DistributedScaleGame: DistributedMinigame {
 dclass DistributedSeltzerGame: DistributedMinigame {
   setRawRuleset(SeltzerLeagueRuleset) required broadcast ram;
   setBossCogId(uint32 doId) broadcast;
-  addToActivityLog(uint32, string) broadcast;
   updateDamageDealt(uint32 avId, uint32) broadcast ram;
   updateStunCount(uint32 avId, uint32) broadcast ram;
   updateCombo(uint32 avId, uint8) broadcast ram;

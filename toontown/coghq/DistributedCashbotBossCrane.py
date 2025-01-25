@@ -131,18 +131,9 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         self.locallyExited = False
         
         self.setBroadcastStateChanges(True)
-        self.accept(self.getStateChangeEvent(), self._doDebug)
 
         self.pendingControl = False
         self.pendingFree = False
-
-    def _doDebug(self, _=None):
-
-        if not self.boss:
-            return
-        
-        self.boss.craneStatesDebug(doId=self.doId,
-                              content='(Client) state change %s ---> %s' % (self.oldState, self.newState))
 
     def getName(self):
         return 'NormalCrane-%s' % self.index
@@ -915,9 +906,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             return
         
         if obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
-            self.boss.craneStatesDebug(doId=self.doId, content='Sniffed something, held obj %s' % (
-                self.heldObject.getName() if self.heldObject else "Nothing"))
-            
             self.considerObjectState(obj)
             obj.d_requestGrab()
             obj.demand('LocalGrabbed', localAvatar.doId, self.doId)
@@ -946,11 +934,8 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         # Don't grab objects that are already grabbed
         if obj.state == 'Grabbed':
             return
-        
+
         if obj.state != 'LocalDropped' and (obj.state != 'Dropped' or obj.craneId != self.doId):
-            self.boss.craneStatesDebug(doId=self.doId, content='Small sniffer grabbed something, held obj %s' % (
-                self.heldObject.getName() if self.heldObject else "Nothing"))
-            
             self.considerObjectState(obj)
             obj.d_requestGrab()
             obj.demand('LocalGrabbed', localAvatar.doId, self.doId)
@@ -967,7 +952,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
 
     def grabObject(self, obj):
         # This is only called by DistributedCashbotBossObject.enterGrabbed().
-        self.boss.craneStatesDebug(doId=self.doId, content='pre-Grabbing object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
         if self.state == 'Off':
             return
 
@@ -997,15 +981,9 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         if self.avId == localAvatar.doId and not self.magnetOn:
             # We got a late grab.  Grab it, then immediately drop it.
             self.releaseObject()
-            
-        self.boss.craneStatesDebug(doId=self.doId,
-                                   content='post-Grabbing object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
 
     def dropObject(self, obj):
         # This is only called by DistributedCashbotBossObject.exitGrabbed().
-        
-        self.boss.craneStatesDebug(doId=self.doId,
-                                   content='pre-Dropping object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
         if obj.lerpInterval:
             obj.lerpInterval.finish()
             
@@ -1026,8 +1004,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
             self.handler.setDynamicFrictionCoef(self.emptyFrictionCoef)
             self.slideSpeed = self.emptySlideSpeed
             self.rotateSpeed = self.emptyRotateSpeed
-        self.boss.craneStatesDebug(doId=self.doId,
-                                   content='post-Dropping object %s, currently holding: %s' % (obj.getName(), self.heldObject.getName() if self.heldObject else "Nothing"))
 
     def releaseObject(self):
         # Don't confuse this method with dropObject.  That method
@@ -1037,10 +1013,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
         # to drop itself, so that the object will set its state
         # appropriately.  A side-effect of this call will be an
         # eventual call to dropObject() by the newly-released object.
-        if self.boss:
-            self.boss.craneStatesDebug(doId=self.doId,
-                                   content='pre-Releasing object, currently holding: %s' % (self.heldObject.getName() if self.heldObject else "Nothing"))
-        
         if self.heldObject:
             obj = self.heldObject
             obj.d_requestDrop()
@@ -1054,10 +1026,6 @@ class DistributedCashbotBossCrane(DistributedObject.DistributedObject, FSM.FSM):
                 # object's position until we *know* we're the object's
                 # owner.
                 obj.demand('LocalDropped', localAvatar.doId, self.doId)
-
-        if self.boss:
-            self.boss.craneStatesDebug(doId=self.doId,
-                                   content='post-Releasing object, currently holding: %s' % (self.heldObject.getName() if self.heldObject else "Nothing"))
 
     def __localToonAllowedToCrane(self) -> bool:
         """

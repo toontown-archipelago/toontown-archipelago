@@ -13,7 +13,6 @@ from panda3d.physics import LinearVectorForce, ForceNode, LinearEulerIntegrator,
 from libotp.nametag import NametagGlobals
 from otp.otpbase import OTPGlobals
 from toontown.coghq import CraneLeagueGlobals
-from toontown.coghq.ActivityLog import ActivityLog
 from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimedTimer, BossSpeedrunTimer
 from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
 from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
@@ -55,8 +54,6 @@ class DistributedCraneGame(DistributedMinigame):
         self.warningSfx = None
 
         self.latency = 0.5  # default latency for updating object posHpr
-
-        self.activityLog = ActivityLog()
 
         self.toonSpawnpointOrder = [i for i in range(8)]
         self.stunEndTime = 0
@@ -609,34 +606,6 @@ class DistributedCraneGame(DistributedMinigame):
         if avId == base.localAvatar.doId:
             self.boss.localToonIsSafe = False
             base.localAvatar.stunToon()
-
-    def debug(self, doId='system', content='null'):
-        if self.ruleset.GENERAL_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def goonStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.GOON_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def safeStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.SAFE_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def craneStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.CRANE_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def addToActivityLog(self, doId, content):
-        doObj = base.cr.doId2do.get(doId)
-
-        try:
-            name = doObj.getName()
-        except:
-            name = doId
-
-        msg = '[%s]' % name
-        msg += ' %s' % content
-        self.activityLog.addToLog(msg)
 
     def getBoss(self):
         return self.boss

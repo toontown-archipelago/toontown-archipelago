@@ -14,7 +14,6 @@ from otp.otpbase import OTPGlobals
 
 from toontown.battle import SuitBattleGlobals
 from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
-from toontown.coghq.ActivityLog import ActivityLog
 from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 from toontown.estate import GardenGlobals
 from toontown.fishing import FishGlobals
@@ -3745,32 +3744,6 @@ class ShowScoreboard(MagicWord):
         DEBUG_SCOREBOARD.addScore(avId, m, reason=s)
 
         return "set heat to " + str(n)
-
-
-class ShowActivityLog(MagicWord):
-    aliases = ['log', 'activitylog']
-    desc = 'make debug log appear'
-    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-    accessLevel = 'NO_ACCESS'
-
-    CHOICES = [
-        'ye',
-        'as;lkdfj;laksdfj;lkasdjf;lkasdfl;kasdljk;fasdf',
-        'aaaaaaaaaaaaaaaaaaaaa',
-        'words words words words words words words words words words words',
-        'msg_labelmsg_labelmsg_labelmsg_labelmsg_labelmsg_label msg_label msg_labelmsg_label msg_label'
-
-    ]
-
-    def handleWord(self, invoker, avId, toon, *args):
-        global DEBUG_LOG
-
-        if not DEBUG_LOG:
-            DEBUG_LOG = ActivityLog()
-
-        DEBUG_LOG.addToLog(random.choice(self.CHOICES))
-
-        return 'modified log'
 
 
 class SetGagSkillMultiplier(MagicWord):

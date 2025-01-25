@@ -71,13 +71,9 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
         self.lerpInterval = None
         
         self.setBroadcastStateChanges(True)
-        self.accept(self.getStateChangeEvent(), self._doDebug)
-        
+
         self.__broadcastPeriod = None
         self.broadcasting = False
-
-    def _doDebug(self, _=None):
-        pass
 
     def disable(self):
         self.cleanup()

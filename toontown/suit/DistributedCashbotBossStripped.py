@@ -1,30 +1,17 @@
-import functools
-import random
-
 from direct.directnotify import DirectNotifyGlobal
-from direct.fsm import FSM
-from direct.gui.OnscreenText import OnscreenText
 from direct.interval.IntervalGlobal import *
-from direct.task.Task import Task
 from panda3d.core import *
 from panda3d.direct import *
 
 from libotp import *
-from otp.otpbase import OTPGlobals
-from toontown.building import ElevatorConstants
 from toontown.coghq import CraneLeagueGlobals
-from toontown.coghq.ActivityLog import ActivityLog
-from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimedTimer, BossSpeedrunTimer
-from toontown.distributed import DelayDelete
 from toontown.toonbase import TTLocalizer
 from toontown.toonbase import ToontownGlobals
-from . import DistributedBossCog
 from . import SuitDNA
 from .DistributedBossCogStripped import DistributedBossCogStripped
 
 TTL = TTLocalizer
 from toontown.coghq import BossHealthBar
-from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 
 
 class DistributedCashbotBossStripped(DistributedBossCogStripped):
@@ -43,8 +30,6 @@ class DistributedCashbotBossStripped(DistributedBossCogStripped):
         self.customSpawnPositions = {}
         self.ruleset = CraneLeagueGlobals.CFORuleset()  # Setup a default ruleset as a fallback
         self.modifiers = []
-        self.heatDisplay = CraneLeagueHeatDisplay()
-        self.heatDisplay.hide()
         self.spectators = []
         self.localToonSpectating = False
         self.endVault = None
@@ -56,9 +41,6 @@ class DistributedCashbotBossStripped(DistributedBossCogStripped):
         self.heldObject = None
 
         self.latency = 0.5  # default latency for updating object posHpr
-
-        self.activityLog = ActivityLog()
-
         self.toonSpawnpointOrder = [i for i in range(8)]
         self.stunEndTime = 0
         self.myHits = []
@@ -68,34 +50,6 @@ class DistributedCashbotBossStripped(DistributedBossCogStripped):
 
     def setToonSpawnpoints(self, order):
         self.toonSpawnpointOrder = order
-
-    def addToActivityLog(self, doId, content):
-        doObj = base.cr.doId2do.get(doId)
-
-        try:
-            name = doObj.getName()
-        except:
-            name = doId
-
-        msg = '[%s]' % name
-        msg += ' %s' % content
-        self.activityLog.addToLog(msg)
-
-    def debug(self, doId='system', content='null'):
-        if self.ruleset.GENERAL_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def goonStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.GOON_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def safeStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.SAFE_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
-
-    def craneStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.CRANE_STATES_DEBUG:
-            self.addToActivityLog(doId, content)
 
     def updateSpectators(self, specs):
         self.spectators = specs

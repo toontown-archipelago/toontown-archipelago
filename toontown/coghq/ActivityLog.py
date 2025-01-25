@@ -6,6 +6,11 @@ from direct.interval.MetaInterval import Sequence
 
 
 class ActivityLog(DirectFrame):
+    """
+    A class that can be used for debugging information. Essentially works like a giant "chat log" that takes up a large
+    portion of the screen.
+    """
+
     def __init__(self):
         DirectFrame.__init__(self, relief=None)
         self.log = DirectScrolledList(parent=self, pos=(.6, 0, .3), items=['' for _ in range(12)], numItemsVisible=12, decButton_relief=None, incButton_relief=None, forceHeight=.1)

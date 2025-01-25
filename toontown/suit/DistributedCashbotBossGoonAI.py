@@ -132,9 +132,6 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
                         self._pushSafe(safe)
         return task.cont
 
-    def _doDebug(self, _=None):
-        self.boss.goonStatesDebug(doId=self.doId, content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
-
     def requestBattle(self, pauseTime):
         avId = self.air.getAvatarIdFromSender()
 
@@ -363,8 +360,6 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         self.validate(avId, 1.0 >= impact >= 0, 'invalid hitBoss impact %s' % impact)
         if avId not in self.boss.avIdList:
             return
-
-        self.boss.debug(doId=avId, content='Goon hit with impact=%.2f' % impact)
 
         if impact <= self.getMinImpact():
             self.boss.d_updateLowImpactHits(avId)

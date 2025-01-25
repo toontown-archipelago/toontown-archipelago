@@ -50,9 +50,6 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         self.collisionNode.setTag('doId', str(self.doId))
         self.safeToSafeNode.setTag('doId', str(self.doId))
 
-    def _doDebug(self, _=None):
-        self.boss.safeStatesDebug(doId=self.doId, content='(Server) state change %s ---> %s' % (self.oldState, self.newState))
-
     def resetToInitialPosition(self):
         posHpr = CraneLeagueGlobals.SAFE_POSHPR[self.index]
         self.setPosHpr(*posHpr)
@@ -83,8 +80,6 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         if self.avoidHelmet or self == self.boss.getBoss().heldObject:
             # Ignore the helmet we just knocked off.
             return
-
-        self.boss.debug(doId=avId, content='Safe hit with impact=%.2f' % impact)
 
         if impact <= self.getMinImpact():
             self.boss.d_updateLowImpactHits(avId)

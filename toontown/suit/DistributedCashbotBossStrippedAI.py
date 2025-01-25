@@ -71,29 +71,6 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
 
         return n
 
-    def updateActivityLog(self, doId, content):
-        self.sendUpdate('addToActivityLog', [doId, content])
-
-    def debug(self, doId=None, content='null'):
-
-        if not doId:
-            doId = self.doId
-
-        if self.ruleset.GENERAL_DEBUG:
-            self.updateActivityLog(doId, content)
-
-    def goonStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.GOON_STATES_DEBUG:
-            self.updateActivityLog(doId, content)
-
-    def safeStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.SAFE_STATES_DEBUG:
-            self.updateActivityLog(doId, content)
-
-    def craneStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.CRANE_STATES_DEBUG:
-            self.updateActivityLog(doId, content)
-
     def getInvolvedToonsNotSpectating(self):
         return self.involvedToons
 
@@ -217,8 +194,6 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
         # Clamp the damage to make sure it at least does 1
         damage = max(int(damage), 1)
 
-        self.debug(doId=avId, content='Damaged for %s' % damage)
-
         self.game.damageToon(toon, damage)
 
         if attackCode == ToontownGlobals.BossCogElectricFence:
@@ -234,7 +209,6 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
         taskMgr.remove(taskName)
         delayTime = self.game.progressValue(45, 15)
         taskMgr.doMethodLater(delayTime, self.donHelmet, taskName)
-        self.debug(content='Next auto-helmet in %s seconds' % delayTime)
         self.waitingForHelmet = 1
 
     def donHelmet(self, task):
@@ -286,7 +260,6 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
 
     def waitForNextAttack(self, delayTime):
         DistributedBossCogStrippedAI.waitForNextAttack(self, delayTime)
-        self.debug(content='Next attack in %.2fs' % delayTime)
 
     def prepareBossForBattle(self):
         # Force unstun the CFO if he was stunned in a previous Battle Three round

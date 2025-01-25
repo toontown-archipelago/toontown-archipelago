@@ -160,7 +160,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.applyModifiers()
         # Make sure they didn't do anything bad
         self.ruleset.validate()
-        self.debug(content='Applied %s modifiers' % len(self.modifiers))
 
         # Update the client
         self.d_setRawRuleset()
@@ -235,29 +234,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # tell the base class to wrap things up
         DistributedMinigameAI.gameOver(self)
 
-    def updateActivityLog(self, doId, content):
-        self.sendUpdate('addToActivityLog', [doId, content])
-
-    def debug(self, doId=None, content='null'):
-
-        if not doId:
-            doId = self.doId
-
-        if self.ruleset.GENERAL_DEBUG:
-            self.updateActivityLog(doId, content)
-
-    def goonStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.GOON_STATES_DEBUG:
-            self.updateActivityLog(doId, content)
-
-    def safeStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.SAFE_STATES_DEBUG:
-            self.updateActivityLog(doId, content)
-
-    def craneStatesDebug(self, doId='system', content='null'):
-        if self.ruleset.CRANE_STATES_DEBUG:
-            self.updateActivityLog(doId, content)
-
     def clearObjectSpeedCaching(self):
         for safe in self.safes:
             safe.d_resetSpeedCaching()
@@ -271,7 +247,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.cranes.clear()
         ind = 0
 
-        self.debug(content='Generating %s normal cranes' % len(CraneLeagueGlobals.NORMAL_CRANE_POSHPR))
         for _ in CraneLeagueGlobals.NORMAL_CRANE_POSHPR:
             crane = DistributedCashbotBossCraneAI(self.air, self, ind)
             crane.generateWithRequired(self.zoneId)
@@ -280,7 +255,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         # Generate the sidecranes if wanted
         if self.ruleset.WANT_SIDECRANES:
-            self.debug(content='Generating %s sidecranes' % len(CraneLeagueGlobals.SIDE_CRANE_POSHPR))
             for _ in CraneLeagueGlobals.SIDE_CRANE_POSHPR:
                 crane = DistributedCashbotBossSideCraneAI(self.air, self, ind)
                 crane.generateWithRequired(self.zoneId)
@@ -289,7 +263,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         # Generate the heavy cranes if wanted
         if self.ruleset.WANT_HEAVY_CRANES:
-            self.debug(content='Generating %s heavy cranes' % len(CraneLeagueGlobals.HEAVY_CRANE_POSHPR))
             for _ in CraneLeagueGlobals.HEAVY_CRANE_POSHPR:
                 crane = DistributedCashbotBossHeavyCraneAI(self.air, self, ind)
                 crane.generateWithRequired(self.zoneId)
@@ -503,16 +476,11 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         # Too many treasures on the field?
         if len(self.treasures) >= self.ruleset.MAX_TREASURE_AMOUNT:
-            self.debug(doId=goon.doId,
-                       content='Not spawning treasure, already %s present' % self.ruleset.MAX_TREASURE_AMOUNT)
             return
 
         # Drop chance?
         if self.ruleset.GOON_TREASURE_DROP_CHANCE < 1.0:
-            r = random.random()
-            self.debug(doId=goon.doId, content='Rolling for treasure drop, need > %s, got %s' % (
-            self.ruleset.GOON_TREASURE_DROP_CHANCE, r))
-            if r > self.ruleset.GOON_TREASURE_DROP_CHANCE:
+            if random.random() > self.ruleset.GOON_TREASURE_DROP_CHANCE:
                 return
 
         # The BossCog acts like a treasure planner as far as the
@@ -614,10 +582,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
                          strength=goon_strength, scale=goon_scale)
         goon.request(side)
 
-        self.debug(doId=goon.doId,
-                   content='Spawning on %s, stun=%.2f, vel=%.2f, hfov=%.2f, attRadius=%.2f, str=%s, scale=%.2f' % (
-                   side, goon_stun_time, goon_velocity, goon_hfov, goon_attack_radius, goon_strength, goon_scale))
-
     def __chooseOldGoon(self):
         # Walks through the list of goons managed by the boss to see
         # if any of them have recently been deleted and can be
@@ -631,7 +595,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         taskName = self.uniqueName('NextGoon')
         taskMgr.remove(taskName)
         taskMgr.doMethodLater(delayTime, self.doNextGoon, taskName)
-        self.debug(content='Spawning goon in %.2fs' % delayTime)
 
     def stopGoons(self):
         taskName = self.uniqueName('NextGoon')
@@ -725,8 +688,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         comboTracker = self.comboTrackers[avId]
         comboTracker.incrementCombo((comboTracker.combo + 1.0) / 10.0 * damage)
-
-        self.debug(doId=avId, content='Damaged for %s with impact: %.2f' % (damage, impact))
 
         # The CFO has been defeated, proceed to Victory state
         if self.boss.bossDamage >= self.ruleset.CFO_MAX_HP:
@@ -861,11 +822,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
                 if self.ruleset.FORCE_MAX_LAFF:
                     self.oldMaxLaffs[avId] = av.getMaxHp()
                     av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
-                    self.debug(content='Forcing max laff to %s' % self.ruleset.FORCE_MAX_LAFF_AMOUNT)
 
                 if self.ruleset.HEAL_TOONS_ON_START:
                     av.b_setHp(av.getMaxHp())
-                    self.debug(content='Healing all toons')
 
         self.toonsWon = False
         taskMgr.remove(self.uniqueName('times-up-task'))
@@ -873,7 +832,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # If timer mode is active, end the crane round later
         if self.ruleset.TIMER_MODE:
             taskMgr.doMethodLater(self.ruleset.TIMER_MODE_TIME_LIMIT, self.__timesUp, self.uniqueName('times-up-task'))
-            self.debug(content='Time will run out in %ss' % self.ruleset.TIMER_MODE_TIME_LIMIT)
 
     # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
     def __timesUp(self, task=None):
@@ -982,7 +940,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         craneTime = globalClock.getFrameTime()
         actualTime = craneTime - self.battleThreeStart
         timeToSend = 0.0 if self.ruleset.TIMER_MODE and not self.toonsWon else actualTime
-        self.debug(content='Crane round over in %ss' % timeToSend)
         self.d_updateTimer(timeToSend)
 
     def d_updateTimer(self, time):
