@@ -76,7 +76,7 @@ class FishAvailablePoster(QuestsAvailablePoster):
             return False
         return True
 
-    def update(self, av):
+    def update(self, av, hoodId):
         # How many fish are present?
         location = FishLocation(av.slotData.get('fish_locations', 1))
         if location == FishLocation.Vanilla:
@@ -84,7 +84,7 @@ class FishAvailablePoster(QuestsAvailablePoster):
             location = FishLocation.Playgrounds
 
         fishRemaining = 0
-        for genus, species in get_catchable_fish_no_rarity(self.hoodId, av.fishingRod, location):
+        for genus, species in get_catchable_fish_no_rarity(hoodId, av.fishingRod, location):
             if not av.fishCollection.hasFish(genus, species):
                 fishRemaining += 1
 
