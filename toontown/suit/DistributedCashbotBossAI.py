@@ -30,6 +30,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.ruleset = CraneLeagueGlobals.CFORuleset()
         self.rulesetFallback = self.ruleset  # A fallback ruleset for when we rcr, or change mods mid round
         self.modifiers = []  # A list of CFORulesetModifierBase instances
+        self.goonCache = ("Recent emerging side", 0) # Cache for goon spawn bad luck protection
         self.oldMaxLaffs = {}
         self.cranes = None
         self.safes = None
@@ -63,7 +64,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.wantCustomCraneSpawns = False
         self.wantAimPractice = False
         self.toonsWon = False
-        
+
         # Controlled RNG parameters, True to enable, False to disable
         self.wantOpeningModifications = False
         self.openingModificationsToonIndex = 0
@@ -115,7 +116,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if self.safes:
             for safe in self.safes:
                 safe.d_resetSpeedCaching()
-        
+
         if self.goons:
             for goon in self.goons:
                 goon.d_resetSpeedCaching()
@@ -450,7 +451,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         return
 
     def d_setAttackCode(self, attackCode, avId=0, delayTime=0):
-        self.sendUpdate('setAttackCode', [attackCode, avId, delayTime])   
+        self.sendUpdate('setAttackCode', [attackCode, avId, delayTime])
 
     def b_setAttackCode(self, attackCode, avId=0, delayTime=0):
         self.d_setAttackCode(attackCode, avId, delayTime=delayTime)
@@ -608,7 +609,13 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.goonMovementTime = globalClock.getFrameTime()
         if side == None:
             if not self.wantOpeningModifications:
-                side = random.choice(['EmergeA', 'EmergeB'])
+                if self.goonCache[1] < 2:
+                    side = random.choice(['EmergeA', 'EmergeB'])
+                elif self.goonCache[0] == 'EmergeA':
+                    side = 'EmergeA'
+                else:
+                    side = 'EmergeB'
+
             else:
                 avId = self.involvedToons[self.openingModificationsToonIndex]
                 toon = self.air.doId2do.get(avId)
@@ -617,6 +624,12 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     side = 'EmergeB'
                 else:
                     side = 'EmergeA'
+
+        #Updates goon cache
+        if side == self.goonCache[0]:
+            self.goonCache = (side, self.goonCache[1] + 1)
+        else:
+            self.goonCache = (side, 1)
 
         # First, look to see if we have a goon we can recycle.
         goon = self.__chooseOldGoon()
@@ -966,7 +979,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # It's important to set our position correctly even on the AI,
         # so the goons can orient to the center of the room.
         self.setPosHpr(*ToontownGlobals.CashbotBossBattleThreePosHpr)
-        
+
         # Just in case we didn't pass through PrepareBattleThree state.
         self.setupRuleset()
         self.setupSpawnpoints()
@@ -1055,6 +1068,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
         self.makeGoon(side='EmergeB')
+        self.goonCache = (None, 0)
         if self.wantLiveGoonPractice:
             self.waitForNextGoon(7)
         else:

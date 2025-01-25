@@ -30,6 +30,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         self.ruleset = CraneLeagueGlobals.CFORuleset()
         self.modifiers = []  # A list of CFORulesetModifierBase instances
+        self.goonCache = ("Recent emerging side", 0) # Cache for goon spawn bad luck protection
         self.cranes = []
         self.safes = []
         self.goons = []
@@ -531,11 +532,17 @@ class DistributedCraneGameAI(DistributedMinigameAI):
     def getMaxGoons(self):
         return self.progressValue(self.ruleset.MAX_GOON_AMOUNT_START, self.ruleset.MAX_GOON_AMOUNT_END)
 
-    def makeGoon(self, side=None):
+    def makeGoon(self, side = None):
         self.goonMovementTime = globalClock.getFrameTime()
         if side == None:
             if not self.wantOpeningModifications:
-                side = random.choice(['EmergeA', 'EmergeB'])
+                if self.goonCache[1] < 2:
+                    side = random.choice(['EmergeA', 'EmergeB'])
+                elif self.goonCache[0] == 'EmergeA':
+                    side = 'EmergeB'
+                else:
+                    side = 'EmergeA'
+
             else:
                 avId = self.avIdList[self.openingModificationsToonIndex]
                 toon = self.air.doId2do.get(avId)
@@ -544,6 +551,12 @@ class DistributedCraneGameAI(DistributedMinigameAI):
                     side = 'EmergeB'
                 else:
                     side = 'EmergeA'
+
+        #Updates goon cache
+        if side == self.goonCache[0]:
+            self.goonCache = (side, self.goonCache[1] + 1)
+        else:
+            self.goonCache = (side, 1)
 
         # First, look to see if we have a goon we can recycle.
         goon = self.__chooseOldGoon()
@@ -900,6 +913,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
     def __doInitialGoons(self, task):
         self.makeGoon(side='EmergeA')
         self.makeGoon(side='EmergeB')
+        self.goonCache = (None, 0)
         self.waitForNextGoon(10)
 
     def exitPlay(self):
