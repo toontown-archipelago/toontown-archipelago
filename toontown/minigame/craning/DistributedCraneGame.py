@@ -7,7 +7,7 @@ from direct.fsm import State
 from direct.showbase.MessengerGlobal import messenger
 from direct.task.TaskManagerGlobal import taskMgr
 from panda3d.core import CollisionPlane, Plane, Vec3, Point3, CollisionNode, NodePath, CollisionPolygon, BitMask32, \
-    VBase3
+    VBase3, VBase4
 from panda3d.physics import LinearVectorForce, ForceNode, LinearEulerIntegrator, PhysicsManager
 
 from libotp.nametag import NametagGlobals
@@ -25,8 +25,6 @@ class DistributedCraneGame(DistributedMinigame):
 
     # define constants that you won't want to tweak here
     BASE_HEAT = 500
-
-
 
     def __init__(self, cr):
         DistributedMinigame.__init__(self, cr)
@@ -47,8 +45,6 @@ class DistributedCraneGame(DistributedMinigame):
         self.modifiers = []
         self.heatDisplay = CraneLeagueHeatDisplay()
         self.heatDisplay.hide()
-        self.spectators = []
-        self.localToonSpectating = False
         self.endVault = None
 
         self.warningSfx = None
@@ -115,6 +111,41 @@ class DistributedCraneGame(DistributedMinigame):
         # how many seconds can this minigame possibly last (within reason)?
         # this is for debugging only
         return 0
+
+    def setSpectators(self, avIds):
+        super().setSpectators(avIds)
+        self.__checkSpectatorState()
+
+    def __checkSpectatorState(self):
+
+        # Loop through every spectator and make sure they are hidden.
+        for toon in self.getSpectatingToons():
+
+            # If this is us, let's apply some special logic.
+            if toon.isLocal():
+                toon.setGhostMode(True)
+                continue
+
+            toon.setGhostMode(True)
+            toon.hide()
+
+        # Loop through every non-spectator and make sure we can see them.
+        for toon in self.getParticipantsNotSpectating():
+            toon.setGhostMode(False)
+            toon.show()
+
+        # If we are spectating, make sure the boss cannot touch us.
+        if self.boss is not None:
+            if self.localToonSpectating():
+                self.boss.makeLocalToonSafe()
+            else:
+                self.boss.makeLocalToonUnsafe()
+
+        if self.scoreboard is not None:
+            if self.localToonSpectating():
+                self.scoreboard.enableSpectating()
+            else:
+                self.scoreboard.disableSpectating()
 
     def load(self):
         self.notify.debug("load")
@@ -274,36 +305,36 @@ class DistributedCraneGame(DistributedMinigame):
         or returning any animation tracks. The position and orientation are
         applied immediately.
         """
-        print('setting toon positions.')
+
+        # If we want custom crane spawns, completely override the spawn logic.
         if self.wantCustomCraneSpawns:
-            for toonId in self.avIdList:
-                toon = base.cr.doId2do.get(toonId)
-                if toon:
-                    if toonId in self.customSpawnPositions:
-                        # Use the stored custom position for this toon
-                        toonWantedPosition = self.customSpawnPositions[toonId]
-                    else:
-                        # Or pick a random spot if it doesn't exist
-                        toonWantedPosition = random.randrange(0, 7)
+            for toon in self.getParticipantIdsNotSpectating():
+                if toon in self.customSpawnPositions:
+                    # Use the stored custom position for this toon
+                    toonWantedPosition = self.customSpawnPositions[toon]
+                else:
+                    # Or pick a random spot if it doesn't exist
+                    toonWantedPosition = random.randrange(0, 7)
 
-                    # Retrieve the position/HPR from the global constants
-                    posHpr = CraneLeagueGlobals.TOON_SPAWN_POSITIONS[toonWantedPosition]
-                    pos = Point3(*posHpr[0:3])
-                    hpr = VBase3(*posHpr[3:6])
+                # Retrieve the position/HPR from the global constants
+                posHpr = CraneLeagueGlobals.TOON_SPAWN_POSITIONS[toonWantedPosition]
+                pos = Point3(*posHpr[0:3])
+                hpr = VBase3(*posHpr[3:6])
 
-                    # Instantly set the toon’s position/orientation
-                    toon.setPosHpr(pos, hpr)
-        else:
-            # Otherwise, use the pre-defined spawn-point order
-            for i, toonId in enumerate(self.avIdList):
-                toon = base.cr.doId2do.get(toonId)
-                if toon:
-                    spawn_index = self.toonSpawnpointOrder[i]
-                    print(f"setting toon {toon.getName()} to {CraneLeagueGlobals.TOON_SPAWN_POSITIONS[spawn_index]}")
-                    posHpr = CraneLeagueGlobals.TOON_SPAWN_POSITIONS[spawn_index]
-                    pos = Point3(*posHpr[0:3])
-                    hpr = VBase3(*posHpr[3:6])
-                    toon.setPosHpr(pos, hpr)
+                # Instantly set the toon’s position/orientation
+                toon.setPosHpr(pos, hpr)
+            return
+
+        # Otherwise, use the pre-defined spawn-point order as normal
+        for i, toon in enumerate(self.getParticipantsNotSpectating()):
+            spawn_index = self.toonSpawnpointOrder[i]
+            posHpr = CraneLeagueGlobals.TOON_SPAWN_POSITIONS[spawn_index]
+            pos = Point3(*posHpr[0:3])
+            hpr = VBase3(*posHpr[3:6])
+            toon.setPosHpr(pos, hpr)
+
+        for toon in self.getSpectatingToons():
+            toon.setPos(self.getBoss().getPos())
 
     def unload(self):
         self.notify.debug("unload")
@@ -386,11 +417,8 @@ class DistributedCraneGame(DistributedMinigame):
         # Enable the special CFO chat menu.
         localAvatar.chatMgr.chatInputSpeedChat.addCFOMenu()
 
-        for i in range(self.numPlayers):
-            avId = self.avIdList[i]
-            avatar = self.getAvatar(avId)
-            if avatar:
-                avatar.startSmooth()
+        for toon in self.getParticipants():
+            toon.startSmooth()
 
         self.setToonsToBattleThreePos()
 
@@ -449,6 +477,7 @@ class DistributedCraneGame(DistributedMinigame):
 
     def enterOff(self):
         self.notify.debug("enterOff")
+        self.__checkSpectatorState()
 
     def exitOff(self):
         pass
@@ -476,6 +505,8 @@ class DistributedCraneGame(DistributedMinigame):
         if self.boss is not None:
             self.boss.cleanupBossBattle()
 
+        self.scoreboard.disableSpectating()
+
         self.walkStateData.exit()
 
     def enterVictory(self):
@@ -502,6 +533,9 @@ class DistributedCraneGame(DistributedMinigame):
 
     def enterCleanup(self):
         self.notify.debug("enterCleanup")
+        for toon in self.getParticipants():
+            toon.setGhostMode(False)
+            toon.show()
 
     def exitCleanup(self):
         pass
@@ -651,6 +685,7 @@ class DistributedCraneGame(DistributedMinigame):
 
         # Setup the scoreboard
         self.scoreboard.clearToons()
-        for avId in self.avIdList:
-            if avId in base.cr.doId2do:
-                self.scoreboard.addToon(avId)
+        for avId in self.getParticipantIdsNotSpectating():
+            self.scoreboard.addToon(avId)
+
+        self.__checkSpectatorState()

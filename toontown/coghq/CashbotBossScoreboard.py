@@ -185,11 +185,10 @@ class CashbotBossScoreboardToonRow(DirectObject):
                 continue
 
             # Another thing was clicked, force stop spectating if they were
-            if ins.isBeingSpectated:
-                ins.__stop_spectating()
+            ins.stopSpectating()
 
-        # Spec
-        instance.__attempt_spectate()
+        # Spectate!
+        instance.attemptSpectateToon()
 
     def __init__(self, scoreboard_frame, avId, place=0, ruleset=None):
 
@@ -238,16 +237,29 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
         self.isBeingSpectated = False
 
+        # Set to true to actually handle spectate click events.
+        self.allowSpectating = False
+
         self.inc_ival = None
 
-    def __attempt_spectate(self):
+    def enableSpectating(self):
+        self.allowSpectating = True
 
-        # If there is no base.boss attribute set don't do anything
-        if not hasattr(base, 'boss'):
-            return
+    def disableSpectating(self):
+        self.stopSpectating()
+        self.allowSpectating = False
 
-        # Is the toon spectating?
-        if not base.boss.localToonSpectating:
+    def attemptSpectateToon(self):
+        """
+        Attempts to spectate this toon.
+
+        There are multiple conditions where this method will do nothing:
+        - The toon is not valid. (Not contained in the client repository)
+        - the spectating mode is not enabled. Call self.enableSpectating() first.
+        """
+
+        # Is spectating enabled?
+        if not self.allowSpectating:
             return
 
         # Toon exists?
@@ -257,34 +269,40 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
         # Already spectating?
         if self.isBeingSpectated:
-            self.__stop_spectating()
+            self.stopSpectating()
             return
 
-        # Check all the cranes
-        crane = None
-        for c in list(base.boss.cranes.values()):
-            # Our toon is on a crane
-            if c.avId == self.avId:
-                crane = c
-                break
-
         # Spectate them
-        self.__change_camera_angle(t, crane)
+        self.__change_camera_angle(t)
         self.isBeingSpectated = True
 
-        # Listen for when the toon hops on/off the crane
+        # Listen for any events where we should change the camera angle based on what the toon is doing that we are
+        # spectating.
         self.accept('crane-enter-exit-%s' % self.avId, self.__change_camera_angle)
 
-    def __change_camera_angle(self, toon, crane, _=None):
+    def stopSpectating(self):
+
+        if not self.isBeingSpectated:
+            return
+
+        localAvatar.attachCamera()
+        localAvatar.orbitalCamera.start()
+        localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
+        base.localAvatar.startUpdateSmartCamera()
+        self.isBeingSpectated = False
+        # Not spectating anymore, no need to watch for crane events any more
+        self.ignore('crane-enter-exit-%s' % self.avId)
+
+    def __change_camera_angle(self, toon, crane=None, _=None):
 
         base.localAvatar.stopUpdateSmartCamera()
         base.camera.reparentTo(render)
         # if crane is not None, then parent the camera to the crane, otherwise the toon
-        if not crane:
+        if crane is None:
 
             # Fallback, if toon does not exist then just exit spectate
             if not toon:
-                self.__stop_spectating()
+                self.stopSpectating()
                 return
 
             base.camera.reparentTo(toon)
@@ -294,15 +312,6 @@ class CashbotBossScoreboardToonRow(DirectObject):
         else:
             base.camera.reparentTo(crane.hinge)
             camera.setPosHpr(0, -20, -5, 0, -20, 0)
-
-    def __stop_spectating(self):
-        localAvatar.attachCamera()
-        localAvatar.orbitalCamera.start()
-        localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
-        base.localAvatar.startUpdateSmartCamera()
-        self.isBeingSpectated = False
-        # Not spectating anymore, no need to watch for crane events any more
-        self.ignore('crane-enter-exit-%s' % self.avId)
 
     def getYFromPlaceOffset(self, y):
         return y - (self.PLACE_Y_OFFSET * self.place)
@@ -371,7 +380,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
     def reset(self):
         if self.isBeingSpectated:
-            self.__stop_spectating()
+            self.stopSpectating()
         self.points = 0
         self.damage = 0
         self.stuns = 0
@@ -387,7 +396,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
     def cleanup(self):
         if self.isBeingSpectated:
-            self.__stop_spectating()
+            self.stopSpectating()
         self.toon_head.cleanup()
         del self.toon_head
         self.points_text.cleanup()
@@ -485,9 +494,8 @@ class CashbotBossScoreboard(DirectObject):
             r.collapse()
 
     def addToon(self, avId):
-        if avId not in self.rows:
+        if avId not in self.rows and avId in base.cr.doId2do:
             self.rows[avId] = CashbotBossScoreboardToonRow(self.frame, avId, len(self.rows), ruleset=self.ruleset)
-
         self.show()
 
     def clearToons(self):
@@ -636,3 +644,21 @@ class CashbotBossScoreboard(DirectObject):
         row = self.rows.get(avId)
         if row:
             row.addStomp()
+
+    def enableSpectating(self):
+        """
+        Allows this scoreboard to be clicked to spectate toons.
+        """
+        for row in self.rows.values():
+            row.enableSpectating()
+
+        if len(self.rows) > 0:
+            firstRow = list(self.rows.values())[0]
+            firstRow.attemptSpectateToon()
+
+    def disableSpectating(self):
+        """
+        Disallows this scoreboard to be clicked to spectate toons.
+        """
+        for row in self.rows.values():
+            row.disableSpectating()

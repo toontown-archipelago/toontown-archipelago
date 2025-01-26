@@ -220,6 +220,18 @@ class DistributedBossCogStripped(DistributedAvatar.DistributedAvatar, BossCog.Bo
     def makeEndOfBattleMovie(self, hasLocalToon):
         return Sequence()
 
+    def makeLocalToonSafe(self):
+        """
+        Puts our local toon in a state where they are safe from taking damage so they can freely watch.
+        """
+        self.localToonIsSafe = True
+
+    def makeLocalToonUnsafe(self):
+        """
+        Ensures our local toon can take damage and interact with the fight.
+        """
+        self.localToonIsSafe = False
+
     def enableLocalToonSimpleCollisions(self):
         if not self.toonSphere:
             sphere = CollisionSphere(0, 0, 1, 1)

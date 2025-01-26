@@ -46,6 +46,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
 
         self.frameworkFSM.enterInitialState()
         self.avIdList = []
+        self._spectators = []
         self.toonsSkipped = []
         self.stateDict = {}
         self.scoreDict = {}
@@ -64,6 +65,28 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
         self.avIdList = avIds
         self.numPlayers = len(self.avIdList)
         self.notify.debug('BASE: setExpectedAvatars: expecting avatars: ' + str(self.avIdList))
+
+    def setSpectators(self, avIds):
+        self._spectators = avIds
+
+    def getSpectators(self) -> list[int]:
+        """
+        Returns a list of toon IDs that are flagged as spectators.
+        """
+        return list(self._spectators)
+
+    def b_setSpectators(self, avIds):
+        self.setSpectators(avIds)
+        self.d_setSpectators(avIds)
+
+    def d_setSpectators(self, avIds):
+        self.sendUpdate('setSpectators', [avIds])
+
+    def isSpectating(self, avId) -> bool:
+        """
+        Returns True if the given toon id is flagged as a spectator.
+        """
+        return avId in self._spectators
 
     def setNewbieIds(self, newbieIds):
         self.newbieIdList = newbieIds
@@ -113,8 +136,47 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
         else:
             return 0
 
-    def getParticipants(self):
+    def getParticipants(self) -> list[int]:
+        """
+        Returns a list of toon IDs that are present in this minigame.
+        """
         return self.avIdList
+
+    def getParticipantIdsNotSpectating(self):
+        """
+        Gets a list of toon IDs that are not spectating.
+        These are toons that should be considered to be active players in the minigame.
+        We should always opt in to call this method instead of self.avIdList directly for game logic if possible.
+        """
+        toons = []
+        for avId in self.avIdList:
+            if avId not in self.getSpectators():
+                toons.append(avId)
+        return toons
+
+    def getParticipantsNotSpectating(self):
+        """
+        Gets a list of DistributedToon instances that are not spectating.
+        These are toons that should be considered to be active players in the minigame.
+        We should always opt in to call this method instead of self.avIdList directly for game logic if possible.
+        """
+        toons = []
+        for avId in self.getParticipantIdsNotSpectating():
+            toon = self.air.getDo(avId)
+            if toon:
+                toons.append(toon)
+        return toons
+
+    def getParticipatingToons(self):
+        """
+        Returns a list of DistributedToon objects that are present in this minigame.
+        """
+        toons = []
+        for avId in self.getParticipants():
+            toon = self.air.getDo(avId)
+            if toon:
+                toons.append(toon)
+        return toons
 
     def getTrolleyZone(self):
         return self.trolleyZone
@@ -466,21 +528,3 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
 
     def getMetagameRound(self):
         return self.metagameRound
-
-    def getPresentToonIds(self) -> list[int]:
-        """
-        Returns a list of toon IDs that are currently present in this minigame.
-        """
-        return list(self.avIdList)
-
-    def getPresentToons(self) -> list[DistributedToonAI]:
-        """
-        Returns a list of toons that are currently present in this minigame.
-        Only will return a list of toons that are valid.
-        """
-        toons = []
-        for avId in self.getPresentToonIds():
-            av = simbase.air.doId2do.get(avId)
-            if av:
-                toons.append(av)
-        return toons

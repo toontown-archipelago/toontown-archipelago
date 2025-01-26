@@ -88,7 +88,7 @@ def findToonInMinigame(_class: Type[ImplementsMinigame], toonId) -> ImplementsMi
         if not isinstance(do, _class):
             continue
 
-        if toonId not in do.getPresentToonIds():
+        if toonId not in do.getParticipants():
             continue
 
         game = do
@@ -1933,7 +1933,6 @@ class RestartCraneRound(MagicWord):
     accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
-        battle = args[0]
         from ..minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
         craneGame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
         if craneGame is None:
@@ -1942,6 +1941,31 @@ class RestartCraneRound(MagicWord):
         craneGame.gameFSM.request("cleanup")
         craneGame.gameFSM.request('play')
         return "Restarting Crane Round"
+
+
+class SpectateMinigame(MagicWord):
+    aliases = ['spec', 'spectate']
+    desc = "Toggles your toon in/out of spectator mode for this minigame."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from ..minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        craneGame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if craneGame is None:
+            return "You aren't in a crane round!"
+
+        if craneGame.isSpectating(avId):
+            without = [spec for spec in craneGame.getSpectators() if spec != avId]  # Filter them out.
+            craneGame.b_setSpectators(without)
+        else:
+            _with = craneGame.getSpectators()
+            _with.append(avId)
+            craneGame.b_setSpectators(_with)
+
+        return f"You are no{'w' if avId in craneGame.getSpectators() else ' longer'} spectating!"
+
+
 
 
 class DumpCraneAI(MagicWord):

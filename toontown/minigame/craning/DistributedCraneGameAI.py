@@ -23,7 +23,7 @@ from toontown.toonbase import ToontownGlobals
 
 
 class DistributedCraneGameAI(DistributedMinigameAI):
-    battleThreeDuration = 1800
+    DESPERATION_MODE_ACTIVATE_THRESHOLD = 1800
 
     def __init__(self, air, minigameId):
         DistributedMinigameAI.__init__(self, air, minigameId)
@@ -99,6 +99,17 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.notify.debug("generate")
         self.__makeBoss()
         DistributedMinigameAI.generate(self)
+
+    def announceGenerate(self):
+        self.notify.debug("announceGenerate")
+
+        # Until the proper setup is finished for coming into these, only the first toons are non spectators.
+        # Everyone else will be a spectator.
+        # When the group/party system is implemented, this can be deleted.
+        spectators = []
+        if len(self.getParticipants()) > 2:
+            spectators = self.getParticipants()[2:]
+        self.b_setSpectators(spectators)
 
     def __makeBoss(self):
         self.__deleteBoss()
@@ -307,16 +318,13 @@ class DistributedCraneGameAI(DistributedMinigameAI):
     # Call to listen for toon death events. Useful for catching deaths caused by DeathLink.
     def listenForToonDeaths(self):
         self.ignoreToonDeaths()
-        for avId in self.avIdList:
-            toon = self.air.doId2do.get(avId)
-            if toon is None:
-                continue
+        for toon in self.getParticipatingToons():
             self.__listenForToonDeath(toon)
 
     # Ignore toon death events. We don't need to worry about toons dying in specific scenarios
     # Such as turn based battles as BattleBase handles that for us.
     def ignoreToonDeaths(self):
-        for toon in self.avIdList:
+        for toon in self.getParticipants():
             self.__ignoreToonDeath(toon)
 
     def __listenForToonDeath(self, toon):
@@ -384,7 +392,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def initializeComboTrackers(self):
         self.cleanupComboTrackers()
-        for avId in self.avIdList:
+        for avId in self.getParticipants():
             if avId in self.air.doId2do:
                 self.comboTrackers[avId] = CashbotBossComboTracker(self, avId)
 
@@ -532,27 +540,41 @@ class DistributedCraneGameAI(DistributedMinigameAI):
     def getMaxGoons(self):
         return self.progressValue(self.ruleset.MAX_GOON_AMOUNT_START, self.ruleset.MAX_GOON_AMOUNT_END)
 
+    def __chooseGoonEmergeSide(self) -> str:
+        """
+        Determines the next side for a goon to emerge from.
+        To limit the amount of RNG present, we prevent goons from spawning from the same side over and over in a row.
+        """
+
+        if self.wantOpeningModifications:
+            # Controlled goon spawning logic, activated through commands.
+            # Evaluate the toon position and spawn a goon based on it.
+            avId = self.avIdList[self.openingModificationsToonIndex]
+            toon = self.air.doId2do.get(avId)
+            pos = toon.getPos()[1]
+            if pos < -315:
+                return 'EmergeB'
+            return 'EmergeA'
+
+        # Default goon spawning logic.
+        # Is it okay to pick a random side?
+        if self.goonCache[1] < 2:
+            return random.choice(['EmergeA', 'EmergeB'])
+
+        # There's too many goons coming from a certain side. Pick the opposite one.
+        if self.goonCache[0] == 'EmergeA':
+            return 'EmergeB'
+        return 'EmergeA'
+
     def makeGoon(self, side = None):
+
         self.goonMovementTime = globalClock.getFrameTime()
-        if side == None:
-            if not self.wantOpeningModifications:
-                if self.goonCache[1] < 2:
-                    side = random.choice(['EmergeA', 'EmergeB'])
-                elif self.goonCache[0] == 'EmergeA':
-                    side = 'EmergeB'
-                else:
-                    side = 'EmergeA'
 
-            else:
-                avId = self.avIdList[self.openingModificationsToonIndex]
-                toon = self.air.doId2do.get(avId)
-                pos = toon.getPos()[1]
-                if pos < -315:
-                    side = 'EmergeB'
-                else:
-                    side = 'EmergeA'
+        # If a side wasn't provided, we want to generate one
+        if side is None:
+            side = self.__chooseGoonEmergeSide()
 
-        #Updates goon cache
+        # Updates goon cache
         if side == self.goonCache[0]:
             self.goonCache = (side, self.goonCache[1] + 1)
         else:
@@ -560,7 +582,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         # First, look to see if we have a goon we can recycle.
         goon = self.__chooseOldGoon()
-        if goon == None:
+        if goon is None:
             # No, no old goon; is there room for a new one?
             if len(self.goons) >= self.getMaxGoons():
                 return
@@ -574,8 +596,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         goon_velocity = 8
         goon_hfov = 90
         goon_attack_radius = 20
-        goon_strength = self.ruleset.MAX_GOON_DAMAGE
-        goon_scale = 1.8
+        goon_strength = self.ruleset.MAX_GOON_DAMAGE + 10
+        goon_scale = self.goonMaxScale + .3
 
         # If the battle isn't in desperation yet override the values to normal values
         if self.getBattleThreeTime() <= 1.0:
@@ -628,7 +650,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         else:
             t0 = float(self.bossDamage) / float(self.ruleset.CFO_MAX_HP)
             elapsed = globalClock.getFrameTime() - self.battleThreeStart
-            t1 = elapsed / float(self.battleThreeDuration)
+            t1 = elapsed / float(self.DESPERATION_MODE_ACTIVATE_THRESHOLD)
             t = max(t0, t1)
         return fromValue + (toValue - fromValue) * min(t, 1)
 
@@ -644,7 +666,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def getBattleThreeTime(self):
         elapsed = globalClock.getFrameTime() - self.battleThreeStart
-        t1 = elapsed / float(self.battleThreeDuration)
+        duration = self.ruleset.TIMER_MODE_TIME_LIMIT if self.ruleset.TIMER_MODE else self.DESPERATION_MODE_ACTIVATE_THRESHOLD
+        t1 = elapsed / float(duration)
         return t1
 
     def setupSpawnpoints(self):
@@ -669,20 +692,18 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         if toon.getHp() <= 0:
             return
 
+        if self.isSpectating(toon.getDoId()):
+            return
+
         toon.takeDamage(deduction)
 
     def getToonOutgoingMultiplier(self, avId):
-        n = self.toonDmgMultipliers.get(avId)
-        if not n:
-            n = 100
-            self.toonDmgMultipliers[avId] = n
-
-        return n
+        return 100
 
     def recordHit(self, damage, impact=0, craneId=-1, objId=0, isGoon=False):
         avId = self.air.getAvatarIdFromSender()
         crane = simbase.air.doId2do.get(craneId)
-        if not self.validate(avId, avId in self.avIdList, 'recordHit from unknown avatar'):
+        if not self.validate(avId, avId in self.getParticipants(), 'recordHit from unknown avatar'):
             return
 
         # Momentum mechanic?
@@ -737,10 +758,10 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             self.increaseToonOutgoingMultiplier(avId, damage)
 
     def increaseToonOutgoingMultiplier(self, avId, n):
-        # Makes sure theres something in the dict
-        old = self.getToonOutgoingMultiplier(avId)
-        self.toonDmgMultipliers[avId] = old + n
-        print(("avId now does +" + str(old + n) + "% damage"))
+        """
+        todo: implement
+        """
+        pass
 
     def d_killingBlowDealt(self, avId):
         self.scoreDict[avId] += self.ruleset.POINTS_KILLING_BLOW
@@ -794,10 +815,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.setupRuleset()
 
         # Stop toon passive healing.
-        for avId in self.avIdList:
-            av = self.air.getDo(avId)
-            if av:
-                av.stopToonUp()
+        for toon in self.getParticipatingToons():
+            toon.stopToonUp()
 
         # Listen to death messages.
         self.listenForToonDeaths()
@@ -822,22 +841,15 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         taskMgr.remove(taskName)
         taskMgr.doMethodLater(2, self.__doInitialGoons, taskName)
 
-        self.oldMaxLaffs = {}
-        self.toonDmgMultipliers = {}
-
         self.initializeComboTrackers()
 
-        # heal all toons and setup a combo tracker for them
-        for avId in self.avIdList:
-            if avId in self.air.doId2do:
-                av = self.air.doId2do[avId]
+        # Fix all toon's HP that are present.
+        for toon in self.getParticipatingToons():
+            if self.ruleset.FORCE_MAX_LAFF:
+                toon.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
 
-                if self.ruleset.FORCE_MAX_LAFF:
-                    self.oldMaxLaffs[avId] = av.getMaxHp()
-                    av.b_setMaxHp(self.ruleset.FORCE_MAX_LAFF_AMOUNT)
-
-                if self.ruleset.HEAL_TOONS_ON_START:
-                    av.b_setHp(av.getMaxHp())
+            if self.ruleset.HEAL_TOONS_ON_START:
+                toon.b_setHp(toon.getMaxHp())
 
         self.toonsWon = False
         taskMgr.remove(self.uniqueName('times-up-task'))
@@ -879,12 +891,13 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.ruleset.WEAK_TREASURE_HEAL_AMOUNT = int(math.ceil(self.ruleset.WEAK_TREASURE_HEAL_AMOUNT * .5))
         self.ruleset.REALLY_WEAK_TREASURE_HEAL_AMOUNT = int(math.ceil(self.ruleset.REALLY_WEAK_TREASURE_HEAL_AMOUNT * .5))
         self.ruleset.update_lists()
+        self.__cancelReviveTasks()
 
     def __checkOvertimeState(self):
         """
         Analyze the state of the game right now. If all toons are dead, we can now end the game.
         """
-        for toon in self.getPresentToons():
+        for toon in self.getParticipantsNotSpectating():
             if toon.getHp() > 0:
                 return  # A toon is alive! Don't do anything.
 
@@ -905,7 +918,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         """
         Drain all present toons' laff by one.
         """
-        for toon in self.getPresentToons():
+        for toon in self.getParticipantsNotSpectating():
             self.damageToon(toon, 1)
         self.__checkOvertimeState()  # Check if we are allowed to end the game. This will cancel the task for us if we choose to.
         return task.again
@@ -915,6 +928,13 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.makeGoon(side='EmergeB')
         self.goonCache = (None, 0)
         self.waitForNextGoon(10)
+        self.__cancelReviveTasks()
+    def __cancelReviveTasks(self):
+        """
+        Cleanup function to cancel any impending revives.
+        """
+        for toonId in self.getParticipants():
+            taskMgr.remove(self.uniqueName(f"reviveToon-{toonId}"))
 
     def exitPlay(self):
         self.deleteAllTreasures()
@@ -932,21 +952,13 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         # Ignore death messages.
         self.ignoreToonDeaths()
+        self.__cancelReviveTasks()
 
-        for avId in self.avIdList:
-            taskMgr.remove(self.uniqueName(f"reviveToon-{avId}"))
-
-            av = self.air.doId2do.get(avId)
-            if av:
-                # Restore old max HPs
-                if avId in self.oldMaxLaffs:
-                    av.b_setMaxHp(self.oldMaxLaffs[avId])
-
-                # Restart toon passive healing.
-                av.startToonUp(ToontownGlobals.PassiveHealFrequency)
-
-                # Restore health.
-                av.b_setHp(av.getMaxHp())
+        for toon in self.getParticipatingToons():
+            # Restart toon passive healing.
+            toon.startToonUp(ToontownGlobals.PassiveHealFrequency)
+            # Restore health.
+            toon.b_setHp(toon.getMaxHp())
 
         if self.boss is not None:
             self.boss.cleanupBossBattle()

@@ -71,9 +71,6 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
 
         return n
 
-    def getInvolvedToonsNotSpectating(self):
-        return self.involvedToons
-
     # Clears all current modifiers and restores the ruleset before modifiers were applied
     def resetModifiers(self):
         self.modifiers = []
@@ -102,20 +99,29 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
         # Do a directed attack.
         self.__doDirectedAttack()
 
-    def __doDirectedAttack(self):
-        # Choose the next toon in line to get the assault.
+    def __findEligibleTargets(self):
+        """
+        Create a list of DistributedToonAI objects that are valid to be targeted for a gear throw.
+        Returns an empty list if there are none.
+        """
+        return self.game.getParticipantIdsNotSpectating()
 
+    def __doDirectedAttack(self):
+
+        # Choose the next toon in line to get the assault.
+        targets = self.__findEligibleTargets()
         # Check if we ran out of targets, if so reset the list back to everyone involved
         if len(self.toonsToAttack) <= 0:
-            self.toonsToAttack = list(self.game.avIdList)
+            self.toonsToAttack = list(targets)
             # Shuffle the toons if we want random gear throws
             if self.ruleset.RANDOM_GEAR_THROW_ORDER:
                 random.shuffle(self.toonsToAttack)
+
             # remove people who are dead or gone
-            for id in self.toonsToAttack[:]:
-                toon = self.air.doId2do.get(id)
+            for toonId in self.toonsToAttack[:]:
+                toon = self.air.doId2do.get(toonId)
                 if not toon or toon.getHp() <= 0:
-                    self.toonsToAttack.remove(id)
+                    self.toonsToAttack.remove(toonId)
 
         # are there no valid targets even after resetting? i.e. is everyone sad
         if len(self.toonsToAttack) <= 0:
@@ -169,7 +175,10 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
     def zapToon(self, x, y, z, h, p, r, bpx, bpy, attackCode, timestamp):
 
         avId = self.air.getAvatarIdFromSender()
-        if not self.validate(avId, avId in self.game.avIdList, 'zapToon from unknown avatar'):
+        if not self.validate(avId, avId in self.game.getParticipants(), 'zapToon from unknown avatar'):
+            return
+
+        if self.game.isSpectating(avId):
             return
 
         toon = simbase.air.doId2do.get(avId)

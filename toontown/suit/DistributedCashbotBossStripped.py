@@ -30,8 +30,6 @@ class DistributedCashbotBossStripped(DistributedBossCogStripped):
         self.customSpawnPositions = {}
         self.ruleset = CraneLeagueGlobals.CFORuleset()  # Setup a default ruleset as a fallback
         self.modifiers = []
-        self.spectators = []
-        self.localToonSpectating = False
         self.endVault = None
         self.warningSfx = None
         # By "heldObject", we mean the safe he's currently wearing as
@@ -50,37 +48,6 @@ class DistributedCashbotBossStripped(DistributedBossCogStripped):
 
     def setToonSpawnpoints(self, order):
         self.toonSpawnpointOrder = order
-
-    def updateSpectators(self, specs):
-        self.spectators = specs
-        if not self.localToonSpectating and localAvatar.doId in self.spectators:
-            self.setLocalToonSpectating()
-        elif self.localToonSpectating and localAvatar.doId not in self.spectators:
-            self.disableLocalToonSpectating()
-
-        for toonId in self.involvedToons:
-            t = base.cr.doId2do.get(toonId)
-            if t:
-                if toonId in self.spectators:
-                    t.hide()
-                elif toonId in self.getInvolvedToonsNotSpectating():
-                    t.show()
-
-    def setLocalToonSpectating(self):
-        self.localToonSpectating = True
-        self.localToonIsSafe = True
-
-    def disableLocalToonSpectating(self):
-        self.localToonSpectating = False
-        self.localToonIsSafe = False
-
-    def getInvolvedToonsNotSpectating(self):
-        toons = list(self.involvedToons)
-        for s in self.spectators:
-            if s in toons:
-                toons.remove(s)
-
-        return toons
 
     def announceGenerate(self):
         super().announceGenerate()
