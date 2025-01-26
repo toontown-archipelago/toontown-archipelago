@@ -27,7 +27,6 @@ class DistributedNPCFlippyInToonHallAI(DistributedNPCToonAI):
 
     # We reject the avatar when their completion condition isn't met
     def rejectAvatar(self, avId):
-        self.busy = avId
         self.sendUpdate('setMovie',
                         [
                             NPCToons.QUEST_MOVIE_AP_WIN_CONDITION_NOT_MET,
