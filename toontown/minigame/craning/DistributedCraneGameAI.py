@@ -439,7 +439,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             return
 
         # Now get the toon that wants to grab it.
-        toon = self.air.getDo(avId)
+        toon = simbase.air.getDo(avId)
         if toon is None:
             return
 
