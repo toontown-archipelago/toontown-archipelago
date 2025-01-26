@@ -594,8 +594,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # Attributes for desperation mode goons
         goon_stun_time = 4
         goon_velocity = 8
-        goon_hfov = 90
-        goon_attack_radius = 20
+        goon_hfov = 85
+        goon_attack_radius = 16
         goon_strength = self.ruleset.MAX_GOON_DAMAGE + 10
         goon_scale = self.goonMaxScale + .3
 
