@@ -19,6 +19,7 @@ from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 from toontown.minigame.DistributedMinigame import DistributedMinigame
 from toontown.minigame.craning.CraneWalk import CraneWalk
 from toontown.toonbase import TTLocalizer, ToontownGlobals
+from toontown.minigame.craning.CraneGameSettingsPanel import CraneGameSettingsPanel
 
 
 class DistributedCraneGame(DistributedMinigame):
@@ -321,7 +322,7 @@ class DistributedCraneGame(DistributedMinigame):
                 pos = Point3(*posHpr[0:3])
                 hpr = VBase3(*posHpr[3:6])
 
-                # Instantly set the toon’s position/orientation
+                # Instantly set the toon's position/orientation
                 toon.setPosHpr(pos, hpr)
             return
 
@@ -427,6 +428,16 @@ class DistributedCraneGame(DistributedMinigame):
         base.localAvatar.b_setAnimState('neutral', 1)
         base.localAvatar.b_setParent(ToontownGlobals.SPRender)
 
+        # Update the settings panel with the current toons
+        if hasattr(self, 'rulesPanel'):
+            for i, avId in enumerate(self.avIdList):
+                toon = self.cr.doId2do.get(avId)
+                if toon:
+                    self.rulesPanel.occupySpot(i, toon)
+                    # Set leader status based on being first in avIdList
+                    if i == 0:
+                        self.rulesPanel.isLeader = (avId == base.localAvatar.doId)
+
     def calculateHeat(self):
         bonusHeat = 0
         # Loop through all modifiers present and calculate the bonus heat
@@ -465,6 +476,11 @@ class DistributedCraneGame(DistributedMinigame):
     def setGameStart(self, timestamp):
         if not self.hasLocalToon: return
         self.notify.debug("setGameStart")
+        # Make sure the rules panel is cleaned up for all clients
+        if hasattr(self, 'rulesPanel'):
+            self.rulesPanel.hide()
+            self.rulesPanel.cleanup()
+            del self.rulesPanel
         # base class will cause gameFSM to enter initial state
         DistributedMinigame.setGameStart(self, timestamp)
         # all players have finished reading the rules,
@@ -689,3 +705,40 @@ class DistributedCraneGame(DistributedMinigame):
             self.scoreboard.addToon(avId)
 
         self.__checkSpectatorState()
+
+    def enterFrameworkRules(self):
+        self.notify.debug('BASE: enterFrameworkRules')
+        self.accept(self.rulesDoneEvent, self.handleRulesDone)
+        self.rulesPanel = CraneGameSettingsPanel(self.getTitle(), self.rulesDoneEvent)
+        self.rulesPanel.load()
+        self.rulesPanel.show()  # Instead of enter(), just show() since it's a DirectFrame
+        # Accept spot status change messages
+        self.accept('spotStatusChanged', self.handleSpotStatusChanged)
+
+    def exitFrameworkRules(self):
+        self.ignore(self.rulesDoneEvent)
+        self.ignore('spotStatusChanged')
+        if hasattr(self, 'rulesPanel'):
+            self.rulesPanel.hide()  # Instead of exit(), just hide() since it's a DirectFrame
+            self.rulesPanel.cleanup()  # Use cleanup() instead of unload()
+            del self.rulesPanel
+
+    def handleRulesDone(self):
+        self.notify.debug('BASE: handleRulesDone')
+        self.sendUpdate('setAvatarReady', [])
+        self.frameworkFSM.request('frameworkWaitServerStart')
+
+    def handleSpotStatusChanged(self, spotIndex, isPlayer):
+        """
+        Called when a spot's status is changed between Player and Spectator
+        Send the change to the server
+        """
+        self.sendUpdate('handleSpotStatusChanged', [spotIndex, isPlayer])
+
+    def updateSpotStatus(self, spotIndex, isPlayer):
+        """
+        Received from the server when any client changes a spot's status
+        Update the local panel to reflect the change
+        """
+        if hasattr(self, 'rulesPanel'):
+            self.rulesPanel.updateSpotStatus(spotIndex, isPlayer)

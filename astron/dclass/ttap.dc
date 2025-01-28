@@ -1334,7 +1334,7 @@ dclass DistributedBossCog : DistributedNode {
   avatarNearExit() airecv clsend;
   toonDied(uint32) broadcast;
   revivedToon(uint32 avId) broadcast ram;
-  setBattleExperience(int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], uint8[], uint32[]) required broadcast ram;
+  setBattleExperience(int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int32[], int32[], uint32[], int16[], int16[], int16[], int16[], uint32[], uint8[], uint32[]) required broadcast ram;
   zapToon(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, int8/100, int8/100, uint8, int16) airecv clsend;
   showZapToon(uint32, int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, uint8, int16) broadcast;
   setAttackCode(uint8, uint32) broadcast;
@@ -3919,6 +3919,8 @@ dclass DistributedCraneGame: DistributedMinigame {
   restart() broadcast ram;
   timesUp() broadcast ram;
   setOvertime(bool flag) broadcast ram;
+  handleSpotStatusChanged(uint8 spotIndex, bool isPlayer) airecv clsend;
+  updateSpotStatus(uint8 spotIndex, bool isPlayer) broadcast ram;
 };
 
 dclass DistributedScaleGame: DistributedMinigame {
