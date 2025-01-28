@@ -11,7 +11,6 @@ from . import CrashedLeaderBoardDecorator
 from direct.interval.IntervalGlobal import *
 import calendar
 from copy import deepcopy
-from toontown.speedchat import TTSCJellybeanJamMenu
 decorationHolidays = [ToontownGlobals.WINTER_DECORATIONS,
  ToontownGlobals.WACKY_WINTER_DECORATIONS,
  ToontownGlobals.HALLOWEEN_PROPS,
@@ -176,12 +175,6 @@ class NewsManager(DistributedObject.DistributedObject):
                 if hasattr(base, 'localAvatar') and base.localAvatar and hasattr(base.localAvatar, 'chatMgr') and base.localAvatar.chatMgr:
                     self.setSellbotNerfHolidayStart()
                     base.localAvatar.chatMgr.chatInputSpeedChat.addSellbotNerfMenu()
-            elif holidayId == ToontownGlobals.JELLYBEAN_TROLLEY_HOLIDAY or holidayId == ToontownGlobals.JELLYBEAN_TROLLEY_HOLIDAY_MONTH:
-                if hasattr(base, 'localAvatar') and base.localAvatar and hasattr(base.localAvatar, 'chatMgr') and base.localAvatar.chatMgr:
-                    base.localAvatar.chatMgr.chatInputSpeedChat.addJellybeanJamMenu(TTSCJellybeanJamMenu.JellybeanJamPhases.TROLLEY)
-            elif holidayId == ToontownGlobals.JELLYBEAN_FISHING_HOLIDAY or holidayId == ToontownGlobals.JELLYBEAN_FISHING_HOLIDAY_MONTH:
-                if hasattr(base, 'localAvatar') and base.localAvatar and hasattr(base.localAvatar, 'chatMgr') and base.localAvatar.chatMgr:
-                    base.localAvatar.chatMgr.chatInputSpeedChat.addJellybeanJamMenu(TTSCJellybeanJamMenu.JellybeanJamPhases.FISHING)
             elif holidayId == ToontownGlobals.JELLYBEAN_PARTIES_HOLIDAY:
                 if hasattr(base, 'localAvatar') and base.localAvatar and hasattr(base.localAvatar, 'chatMgr') and base.localAvatar.chatMgr:
                     self.setJellybeanPartiesHolidayStart()

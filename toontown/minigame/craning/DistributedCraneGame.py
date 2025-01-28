@@ -354,7 +354,6 @@ class DistributedCraneGame(DistributedMinigame):
         self.heatDisplay.cleanup()
 
         base.cr.forbidCheesyEffects(0)
-        localAvatar.chatMgr.chatInputSpeedChat.removeCFOMenu()
         localAvatar.setCameraFov(ToontownGlobals.CogHQCameraFov)
         self.music.stop()
         taskMgr.remove(self.uniqueName('physics'))
@@ -414,9 +413,6 @@ class DistributedCraneGame(DistributedMinigame):
         # all of the remote toons have joined the game;
         # it's safe to show them now.
         self.setToonsToBattleThreePos()
-
-        # Enable the special CFO chat menu.
-        localAvatar.chatMgr.chatInputSpeedChat.addCFOMenu()
 
         for toon in self.getParticipants():
             toon.startSmooth()

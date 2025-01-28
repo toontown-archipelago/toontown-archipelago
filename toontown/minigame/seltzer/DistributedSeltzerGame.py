@@ -128,8 +128,6 @@ class DistributedSeltzerGame(DistributedMinigame):
         self.bossSpeedrunTimer.cleanup()
         del self.bossSpeedrunTimer
 
-        localAvatar.chatMgr.chatInputSpeedChat.removeCEOMenu()
-
     def onstage(self):
         self.notify.debug("onstage")
         super().onstage()
@@ -177,9 +175,6 @@ class DistributedSeltzerGame(DistributedMinigame):
             return
         # all of the remote toons have joined the game;
         # it's safe to show them now.
-
-        # Enable the special CEO chat menu.
-        localAvatar.chatMgr.chatInputSpeedChat.addCEOMenu()
 
     def setGameStart(self, timestamp):
         if not self.hasLocalToon: return
