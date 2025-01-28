@@ -396,8 +396,8 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         # shuffled off this mortal coil.
         
         self.demand('Off')
-        #if self in self.boss.goons:
-            #self.boss.goons.remove(self)
+        if self in self.boss.goons:
+            self.boss.goons.remove(self)
             
     
     ### FSM States ###

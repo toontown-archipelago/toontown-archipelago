@@ -582,16 +582,14 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         else:
             self.goonCache = (side, 1)
 
-        # First, look to see if we have a goon we can recycle.
-        goon = self.__chooseOldGoon()
-        if goon is None:
-            # No, no old goon; is there room for a new one?
-            if len(self.goons) >= self.getMaxGoons():
-                return
-            # make a new one.
-            goon = DistributedCashbotBossGoonAI(self.air, self)
-            goon.generateWithRequired(self.zoneId)
-            self.goons.append(goon)
+        # Check if we can make a new goon
+        if len(self.goons) >= self.getMaxGoons():
+            return
+
+        # Make a new goon
+        goon = DistributedCashbotBossGoonAI(self.air, self)
+        goon.generateWithRequired(self.zoneId)
+        self.goons.append(goon)
 
         # Attributes for desperation mode goons
         goon_stun_time = 4
