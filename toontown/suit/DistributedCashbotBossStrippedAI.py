@@ -83,6 +83,9 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
     def getRuleset(self):
         return self.ruleset
 
+    def setRuleset(self, ruleset):
+        self.ruleset = ruleset
+
     def doNextAttack(self, task):
         # Choose an attack and do it.
 
@@ -214,6 +217,8 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
                         self.b_setAttackCode(ToontownGlobals.BossCogSwatLeft)
 
     def waitForNextHelmet(self):
+        if self.ruleset.DISABLE_SAFE_HELMETS:
+            return
         taskName = self.uniqueName('NextHelmet')
         taskMgr.remove(taskName)
         delayTime = self.game.progressValue(45, 15)

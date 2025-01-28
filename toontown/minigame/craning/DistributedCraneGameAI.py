@@ -162,6 +162,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def setupRuleset(self):
         self.ruleset = CraneLeagueGlobals.CFORuleset()
+        if self.getBoss() is not None:
+            self.getBoss().setRuleset(self.ruleset)
 
         self.rulesetFallback = self.ruleset
 
@@ -883,14 +885,21 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         """
         self.currentlyInOvertime = True
         self.d_setOvertime(True)
+
         self.startDrainingLaff(.5)
+
         self.ruleset.MAX_GOON_AMOUNT_END += 3  # Add 3 goons
+
+        self.ruleset.DISABLE_SAFE_HELMETS = True  # Turn off helmets
+        self.getBoss().stopHelmets()
+
         # Cut treasures in half
         self.ruleset.STRONG_TREASURE_HEAL_AMOUNT = int(math.ceil(self.ruleset.STRONG_TREASURE_HEAL_AMOUNT * .5))
         self.ruleset.AVERAGE_TREASURE_HEAL_AMOUNT = int(math.ceil(self.ruleset.AVERAGE_TREASURE_HEAL_AMOUNT * .5))
         self.ruleset.WEAK_TREASURE_HEAL_AMOUNT = int(math.ceil(self.ruleset.WEAK_TREASURE_HEAL_AMOUNT * .5))
         self.ruleset.REALLY_WEAK_TREASURE_HEAL_AMOUNT = int(math.ceil(self.ruleset.REALLY_WEAK_TREASURE_HEAL_AMOUNT * .5))
         self.ruleset.update_lists()
+
         self.__cancelReviveTasks()
 
     def __checkOvertimeState(self):
