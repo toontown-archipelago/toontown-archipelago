@@ -16,6 +16,7 @@ from toontown.coghq import CraneLeagueGlobals
 from toontown.coghq.BossSpeedrunTimer import BossSpeedrunTimedTimer, BossSpeedrunTimer
 from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
 from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
+from toontown.coghq.DistributedCashbotBossSideCrane import DistributedCashbotBossSideCrane
 from toontown.minigame.DistributedMinigame import DistributedMinigame
 from toontown.minigame.craning.CraneWalk import CraneWalk
 from toontown.toonbase import TTLocalizer, ToontownGlobals
@@ -571,7 +572,8 @@ class DistributedCraneGame(DistributedMinigame):
     def updateStunCount(self, avId, craneId):
         crane = base.cr.doId2do.get(craneId)
         if crane:
-            self.scoreboard.addScore(avId, crane.getPointsForStun(), CraneLeagueGlobals.STUN_TEXT)
+            text = CraneLeagueGlobals.SIDECRANE_STUN_TEXT if isinstance(crane, DistributedCashbotBossSideCrane) else CraneLeagueGlobals.STUN_TEXT
+            self.scoreboard.addScore(avId, crane.getPointsForStun(), text)
             self.scoreboard.addStun(avId)
 
     def updateGoonsStomped(self, avId):
