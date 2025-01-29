@@ -1872,43 +1872,6 @@ class RestartPieRound(MagicWord):
         return "Restarting Pie Round"
 
 
-class SkipCFO(MagicWord):
-    desc = "Skips to the indicated round of the CFO."
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("round", str, False, "next")]
-    accessLevel = 'USER'
-
-    def handleWord(self, invoker, avId, toon, *args):
-        battle = args[0]
-
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
-        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
-        boss = findToonInInstance(targetClasses, invoker.doId)
-        if not boss:
-            return "You aren't in a CFO!"
-
-        battle = battle.lower()
-
-        if battle == 'two':
-            if boss.state in ('PrepareBattleThree', 'BattleThree'):
-                return "You can not return to previous rounds!"
-            else:
-                boss.exitIntroduction()
-                boss.b_setState('PrepareBattleThree')
-                return "Skipping to last round..."
-
-        if battle == 'next':
-            if boss.state in ('PrepareBattleOne', 'BattleOne'):
-                boss.exitIntroduction()
-                boss.b_setState('PrepareBattleThree')
-                return "Skipping current round..."
-            elif boss.state in ('PrepareBattleThree', 'BattleThree'):
-                boss.exitIntroduction()
-                boss.b_setState('Victory')
-                return "Skipping final round..."
-
-
 class HitCFO(MagicWord):
     desc = "Hits the CFO."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
@@ -1966,56 +1929,6 @@ class SpectateMinigame(MagicWord):
         return f"You are no{'w' if avId in craneGame.getSpectators() else ' longer'} spectating!"
 
 
-
-
-class DumpCraneAI(MagicWord):
-    desc = "Dumps info about crane on AI side"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = "MODERATOR"
-
-    def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
-        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
-        boss = findToonInInstance(targetClasses, invoker.doId)
-        if not boss:
-            return "You aren't in a CFO!"
-
-        retString = ''
-        for crane in boss.cranes:
-            retString += 'Crane: ' + str(crane.index) + '\n'
-            retString += 'Current AvId: ' + str(crane.avId) + '\n'
-            retString += 'Current object held: ' + str(crane.objectId) + '\n'
-            retString += 'state: ' + str(crane.state) + '\n'
-            retString += '\n'
-        return retString
-
-
-class DumpCraneClient(MagicWord):
-    desc = "Dumps info about crane on Client side"
-    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-    accessLevel = "MODERATOR"
-
-    def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedCashbotBoss import DistributedCashbotBoss
-        boss = None
-        for do in list(base.cr.doId2do.values()):
-            if isinstance(do, DistributedCashbotBoss):
-                boss = do
-
-        if not boss:
-            return "You aren't in a CFO!"
-
-        retString = ''
-        for crane in list(boss.cranes.values()):
-            retString += 'Crane: ' + str(crane.index) + '\n'
-            retString += 'Current AvId: ' + str(crane.avId) + '\n'
-            retString += 'Current object held: ' + str(crane.heldObject.doId) if crane.heldObject else 'nothing' + '\n'
-            retString += 'state: ' + str(crane.state) + '\n'
-            retString += '\n'
-        return retString
-
-
 class SetCraneSpawn(MagicWord):
     aliases = ['cranespawn', 'spawn']
     desc = "Sets the craning spawn point of a certain toon"
@@ -2025,10 +1938,8 @@ class SetCraneSpawn(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         spawn = args[0]
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
-        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
-        boss = findToonInInstance(targetClasses, invoker.doId)
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        boss = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
         if not (1 <= spawn <= 8):
@@ -2047,18 +1958,17 @@ class SafeRushMode(MagicWord):
     accessLevel = "MODERATOR"
 
     def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
-        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
-        boss = findToonInInstance(targetClasses, invoker.doId)
+
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        boss = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
 
-        if boss.wantSafeRushPractice:
-            boss.wantSafeRushPractice = False
+        if boss.ruleset.CFO_STUN_THRESHOLD == 1:
+            boss.ruleset.CFO_STUN_THRESHOLD = 24
             return ("Safe Rush => OFF")
         else:
-            boss.wantSafeRushPractice = True
+            boss.ruleset.CFO_STUN_THRESHOLD = 1
             return ("Safe Rush => ON")
 
 
@@ -2069,14 +1979,13 @@ class LiveGoonMode(MagicWord):
     accessLevel = "MODERATOR"
 
     def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
-        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
-        boss = findToonInInstance(targetClasses, invoker.doId)
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        boss = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+
         if not boss:
             return "You aren't in a CFO!"
 
-        if boss.wantSafeRushPractice:
+        if boss.wantLiveGoonPractice:
             boss.wantLiveGoonPractice = False
             boss.wantOpeningModifications = False
             boss.wantNoStunning = False
@@ -2099,15 +2008,13 @@ class RNGMode(MagicWord):
     ]
 
     def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
-        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
-        boss = findToonInInstance(targetClasses, invoker.doId)
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        boss = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
 
-        if args[1] >= len(boss.involvedToons) or args[1] < 0:
-            return "Invalid toon index, please enter a valid toon index! (0-%s)" % str(len(boss.involvedToons) - 1)
+        if args[1] >= len(boss.getParticipantsNotSpectating()) or args[1] < 0:
+            return "Invalid toon index, please enter a valid toon index! (0-%s)" % str(len(boss.getParticipantsNotSpectating()) - 1)
 
         if args[0]:
             boss.wantOpeningModifications = True
@@ -2176,12 +2083,10 @@ class SetCFOModifiers(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
 
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
-        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
-        boss = findToonInInstance(targetClasses, invoker.doId)
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        boss = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
         if not boss:
-            return "You aren't in a CFO!"
+            return "You aren't in the Crane Game!"
 
         # Handle if no arguments given
         if args[0].lower() == self.VALID_SUBCOMMANDS[0]:
@@ -2288,18 +2193,6 @@ class SetCFOModifiers(MagicWord):
                 s += ' warning: roll modifiers on rcr active, use ~modifiers random off'
 
             return s
-
-
-class DisableGoons(MagicWord):
-    desc = "Stuns all of the goons in an area."
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = 'USER'
-
-    def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedGoonAI import DistributedGoonAI
-        for goon in simbase.air.doFindAllInstances(DistributedGoonAI):
-            goon.requestStunned(0)
-        return "Disabled all Goons!"
 
 
 class SkipCJ(MagicWord):
