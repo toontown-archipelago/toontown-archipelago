@@ -107,6 +107,10 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
         Create a list of DistributedToonAI objects that are valid to be targeted for a gear throw.
         Returns an empty list if there are none.
         """
+
+        if self.game is None:
+            return []
+
         return self.game.getParticipantIdsNotSpectating()
 
     def __doDirectedAttack(self):
