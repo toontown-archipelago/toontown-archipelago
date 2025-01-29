@@ -127,7 +127,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
                 safeDoIdTag = intoNodePath.getNetTag('doId')
                 if safeDoIdTag:
                     safeDoId = int(safeDoIdTag)
-                    safe = self.air.doId2do.get(safeDoId)
+                    safe = simbase.air.doId2do.get(safeDoId)
                     if safe and safe.state in ['Sliding Floor', 'Free']:
                         self._pushSafe(safe)
         return task.cont

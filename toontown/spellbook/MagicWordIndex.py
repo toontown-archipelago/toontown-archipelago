@@ -2128,29 +2128,27 @@ class AimMode(MagicWord):
     accessLevel = "MODERATOR"
 
     def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
-        targetClasses = (DistributedCashbotBossAI, DistributedCashbotBossStrippedAI)
-        boss = findToonInInstance(targetClasses, invoker.doId)
-        if not boss:
-            return "You aren't in a CFO!"
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        minigame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if not minigame:
+            return "You aren't in the Crane Game!"
 
         safes = args[0]
         if not (0 <= safes <= 8):
             return "Invalid # of safes, try a number between 0 and 8 :)"
 
-        if boss.state not in ('PrepareBattleThree', 'BattleThree'):
-            return "Need to be in a crane round to use!"
+        if minigame.gameFSM.getCurrentState().getName() != "play":
+            return f"Crane game must be in state 'play', was '{minigame.gameFSM.getCurrentState().getName()}'!"
 
-        if boss.wantAimPractice:
-            boss.wantAimPractice = False
-            boss.stopCheckNearby()
-            return ("Aim Practice => OFF")
+        on_off = 'OFF' if minigame.safeAimCheat.isEnabled() else f'ON ({safes} safes)'
+        message = f"Safe Aim Practice => {on_off}"
+
+        if minigame.safeAimCheat.isEnabled():
+            minigame.safeAimCheat.disable()
         else:
-            boss.safesWanted = safes
-            boss.wantAimPractice = True
-            boss.checkNearby()
-            return ("Aim Practice => ON")
+            minigame.safeAimCheat.enable(safes=safes)
+
+        return message
 
 
 class DisableGoons(MagicWord):

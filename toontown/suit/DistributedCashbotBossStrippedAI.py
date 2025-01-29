@@ -308,69 +308,6 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
         self.stopHelmets()
         self.heldObject = None
 
-    def checkNearby(self, task=None):
-        # Prevent helmets, stun CFO, destroy goons
-        self.stopHelmets()
-        self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
-        for goon in self.goons:
-            goon.request('Off')
-            goon.requestDelete()
-
-        nearbyDistance = 22
-
-        # Get the toon's position
-        toon = self.air.doId2do.get(self.involvedToons[0])
-        toonX = toon.getPos().x
-        toonY = toon.getPos().y
-
-        # Count nearby safes
-        nearbySafes = []
-        farSafes = []
-        farDistances = []
-        for safe in self.game.safes:
-            # Safe on his head doesn't count and is not a valid target to move
-            if self.heldObject is safe:
-                continue
-
-            safeX = safe.getPos().x
-            safeY = safe.getPos().y
-
-            distance = math.sqrt((toonX - safeX) ** 2 + (toonY - safeY) ** 2)
-            if distance <= nearbyDistance:
-                nearbySafes.append(safe)
-            else:
-                farDistances.append(distance)
-                farSafes.append(safe)
-
-        # Sort the possible safes by their distance away from us
-        farSafes = [x for y, x in sorted(zip(farDistances, farSafes), reverse=True)]
-
-        # If there's not enough nearby safes, relocate far ones
-        if len(nearbySafes) < self.safesWanted:
-            self.relocateSafes(farSafes, self.safesWanted - len(nearbySafes), toonX, toonY)
-
-        # Schedule this to be done again in 1s unless the user stops it
-        taskName = self.uniqueName('CheckNearbySafes')
-        taskMgr.doMethodLater(4, self.checkNearby, taskName)
-
-    def stopCheckNearby(self):
-        taskName = self.uniqueName('CheckNearbySafes')
-        taskMgr.remove(taskName)
-
-    def relocateSafes(self, farSafes, numRelocate, toonX, toonY):
-        for safe in farSafes[:numRelocate]:
-            randomDistance = 22 * random.random()
-            randomAngle = 2 * math.pi * random.random()
-            newX = toonX + randomDistance * math.cos(randomAngle)
-            newY = toonY + randomDistance * math.sin(randomAngle)
-            while not self.isLocationInBounds(newX, newY):
-                randomDistance = 22 * random.random()
-                randomAngle = 2 * math.pi * random.random()
-                newX = toonX + randomDistance * math.cos(randomAngle)
-                newY = toonY + randomDistance * math.sin(randomAngle)
-
-            safe.move(newX, newY, 0, 360 * random.random())
-
     def __restartCraneRoundTask(self, task):
         self.exitIntroduction()
         self.b_setState('PrepareBattleThree')

@@ -1162,69 +1162,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         # Tell the clients now what the reward Id will be.
         '''self.d_setRewardId(self.rewardId)'''
 
-    def checkNearby(self, task=None):
-        # Prevent helmets, stun CFO, destroy goons
-        self.stopHelmets()
-        self.b_setAttackCode(ToontownGlobals.BossCogDizzy)
-        for goon in self.goons:
-            goon.request('Off')
-            goon.requestDelete()
-
-        nearbyDistance = 22
-
-        # Get the toon's position
-        toon = self.air.doId2do.get(self.involvedToons[0])
-        toonX = toon.getPos().x
-        toonY = toon.getPos().y
-
-        # Count nearby safes
-        nearbySafes = []
-        farSafes = []
-        farDistances = []
-        for safe in self.safes:
-            # Safe on his head doesn't count and is not a valid target to move
-            if self.heldObject is safe:
-                continue
-
-            safeX = safe.getPos().x
-            safeY = safe.getPos().y
-
-            distance = math.sqrt((toonX - safeX) ** 2 + (toonY - safeY) ** 2)
-            if distance <= nearbyDistance:
-                nearbySafes.append(safe)
-            else:
-                farDistances.append(distance)
-                farSafes.append(safe)
-
-        # Sort the possible safes by their distance away from us
-        farSafes = [x for y, x in sorted(zip(farDistances, farSafes), reverse=True)]
-
-        # If there's not enough nearby safes, relocate far ones
-        if len(nearbySafes) < self.safesWanted:
-            self.relocateSafes(farSafes, self.safesWanted - len(nearbySafes), toonX, toonY)
-
-        # Schedule this to be done again in 1s unless the user stops it
-        taskName = self.uniqueName('CheckNearbySafes')
-        taskMgr.doMethodLater(4, self.checkNearby, taskName)
-
-    def stopCheckNearby(self):
-        taskName = self.uniqueName('CheckNearbySafes')
-        taskMgr.remove(taskName)
-
-    def relocateSafes(self, farSafes, numRelocate, toonX, toonY):
-        for safe in farSafes[:numRelocate]:
-            randomDistance = 22 * random.random()
-            randomAngle = 2 * math.pi * random.random()
-            newX = toonX + randomDistance * math.cos(randomAngle)
-            newY = toonY + randomDistance * math.sin(randomAngle)
-            while not self.isLocationInBounds(newX, newY):
-                randomDistance = 22 * random.random()
-                randomAngle = 2 * math.pi * random.random()
-                newX = toonX + randomDistance * math.cos(randomAngle)
-                newY = toonY + randomDistance * math.sin(randomAngle)
-
-            safe.move(newX, newY, 0, 360 * random.random())
-
     def __restartCraneRoundTask(self, task):
         self.exitIntroduction()
         self.b_setState('PrepareBattleThree')
@@ -1279,30 +1216,6 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             taskMgr.remove(self.uniqueName('post-times-up-task'))
             taskMgr.doMethodLater(10.0, lambda _: self.b_setState('Victory'), self.uniqueName('failedCraneRound'))
             self.sendUpdate('announceCraneRestart', [])
-
-
-    # Probably a better way to do this but o well
-    # Checking each line of the octogon to see if the location is outside
-    def isLocationInBounds(self, x, y):
-        if x > 165.7:
-            return False
-        if x < 77.1:
-            return False
-        if y > -274.1:
-            return False
-        if y < -359.1:
-            return False
-
-        if y - 0.936455 * x > -374.901:
-            return False
-        if y + 0.973856 * x < -254.118:
-            return False
-        if y - 1.0283 * x < -496.79:
-            return False
-        if y + 0.884984 * x > -155.935:
-            return False
-
-        return True
 
     def d_updateCombo(self, avId, comboLength):
         self.sendUpdate('updateCombo', [avId, comboLength])

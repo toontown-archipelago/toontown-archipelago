@@ -16,6 +16,7 @@ from toontown.coghq.DistributedCashbotBossSafeAI import DistributedCashbotBossSa
 from toontown.coghq.DistributedCashbotBossSideCraneAI import DistributedCashbotBossSideCraneAI
 from toontown.coghq.DistributedCashbotBossTreasureAI import DistributedCashbotBossTreasureAI
 from toontown.minigame.DistributedMinigameAI import DistributedMinigameAI
+from toontown.minigame.craning.CraneGameSafeAimCheatAI import CraneGameSafeAimCheatAI
 from toontown.suit.DistributedCashbotBossGoonAI import DistributedCashbotBossGoonAI
 from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
 from toontown.toon.DistributedToonAI import DistributedToonAI
@@ -94,6 +95,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # State tracking related to the overtime mechanic.
         self.overtimeWillHappen = True  # Setting this to True will cause the CFO to enter "overtime" mode when time runs out.
         self.currentlyInOvertime = False  # Only true when the game is currently in overtime.
+
+        # Instances of "cheats" that can be interacted with to make the crane round behave a certain way.
+        self.safeAimCheat: CraneGameSafeAimCheatAI = CraneGameSafeAimCheatAI(self)
 
     def generate(self):
         self.notify.debug("generate")
@@ -938,6 +942,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.goonCache = (None, 0)
         self.waitForNextGoon(10)
         self.__cancelReviveTasks()
+
     def __cancelReviveTasks(self):
         """
         Cleanup function to cancel any impending revives.
@@ -946,6 +951,11 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             taskMgr.remove(self.uniqueName(f"reviveToon-{toonId}"))
 
     def exitPlay(self):
+
+        # Disable any cheats that were activated.
+        self.safeAimCheat.disable()
+
+        # Get rid of all the CFO objects.
         self.deleteAllTreasures()
         self.stopGoons()
         self.__resetCraningObjects()
