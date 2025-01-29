@@ -1,9 +1,9 @@
 from otp.speedchat.SCTerminal import *
-from otp.otpbase.OTPLocalizer import SpeedChatStaticText
+from toontown.chat.SpeedChatLocalizer import SpeedChatPhrases
 TTSCIndexedMsgEvent = 'SCIndexedMsg'
 
 def decodeTTSCIndexedMsg(msgIndex):
-    return SpeedChatStaticText.get(msgIndex, None)
+    return SpeedChatPhrases.get(msgIndex, None)
 
 
 class TTSCIndexedTerminal(SCTerminal):

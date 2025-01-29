@@ -302,8 +302,6 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
         self.toonsWon = False
 
     def cleanupBossBattle(self):
-        helmetName = self.uniqueName('NextHelmet')
-        taskMgr.remove(helmetName)
         self.stopAttacks()
         self.stopHelmets()
         self.heldObject = None

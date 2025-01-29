@@ -113,7 +113,7 @@ class DistributedSellbotBossStrippedAI(DistributedBossCogStrippedAI):
         return int(max(self.bossDamage - self.recoverRate * elapsed / 60.0, 0))
 
     def d_setBossDamage(self, bossDamage, recoverRate, recoverStartTime):
-        timestamp = globalClockDelta.localToNetworkTime(recoverStartTime)
+        timestamp = globalClockDelta.localToNetworkTime(recoverStartTime, bits=32)
         self.sendUpdate('setBossDamage', [bossDamage, recoverRate, timestamp])
 
     def waitForNextStrafe(self, delayTime):
@@ -149,7 +149,6 @@ class DistributedSellbotBossStrippedAI(DistributedBossCogStrippedAI):
         self.stopStrafes()
 
     def __recordHit(self):
-        now = globalClock.getFrameTime()
         self.hitCount += 1
         if self.hitCount < self.limitHitCount or self.bossDamage < SellbotBossGlobals.HitCountDamage:
             return

@@ -110,10 +110,10 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # Until the proper setup is finished for coming into these, only the first toons are non spectators.
         # Everyone else will be a spectator.
         # When the group/party system is implemented, this can be deleted.
-        spectators = []
-        if len(self.getParticipants()) > 2:
-            spectators = self.getParticipants()[2:]
-        self.b_setSpectators(spectators)
+        #spectators = []
+        #if len(self.getParticipants()) > 2:
+        #    spectators = self.getParticipants()[2:]
+        #self.b_setSpectators(spectators)
 
     def __makeBoss(self):
         self.__deleteBoss()
@@ -160,6 +160,14 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # all of the players have checked in
         # they will now be shown the rules
         self.d_setBossCogId()
+
+        # Until the proper setup is finished for coming into these, only the first two toons are non spectators.
+        # Everyone else will be a spectator.
+        # When the group/party system is implemented, this can be deleted.
+        #spectators = []
+        #if len(self.getParticipants()) > 2:
+        #    spectators = self.getParticipants()[2:]
+        # self.b_setSpectators(spectators)
 
         self.setupRuleset()
         self.setupSpawnpoints()
@@ -586,16 +594,14 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         else:
             self.goonCache = (side, 1)
 
-        # First, look to see if we have a goon we can recycle.
-        goon = self.__chooseOldGoon()
-        if goon is None:
-            # No, no old goon; is there room for a new one?
-            if len(self.goons) >= self.getMaxGoons():
-                return
-            # make a new one.
-            goon = DistributedCashbotBossGoonAI(self.air, self)
-            goon.generateWithRequired(self.zoneId)
-            self.goons.append(goon)
+        # Check if we can make a new goon
+        if len(self.goons) >= self.getMaxGoons():
+            return
+
+        # Make a new goon
+        goon = DistributedCashbotBossGoonAI(self.air, self)
+        goon.generateWithRequired(self.zoneId)
+        self.goons.append(goon)
 
         # Attributes for desperation mode goons
         goon_stun_time = 4
@@ -1011,3 +1017,22 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def exitCleanup(self):
         pass
+
+    def handleSpotStatusChanged(self, spotIndex, isPlayer):
+        """
+        Called when the leader changes a spot's status between Player and Spectator
+        """
+        if spotIndex >= len(self.avIdList):
+            return
+            
+        avId = self.avIdList[spotIndex]
+        currentSpectators = list(self.getSpectators())
+        
+        if isPlayer and avId in currentSpectators:
+            currentSpectators.remove(avId)
+        elif not isPlayer and avId not in currentSpectators:
+            currentSpectators.append(avId)
+            
+        self.b_setSpectators(currentSpectators)
+        # Broadcast the spot status change to all clients
+        self.sendUpdate('updateSpotStatus', [spotIndex, isPlayer])

@@ -9,7 +9,7 @@ from direct.fsm.FSM import FSM
 from direct.gui.DirectGui import *
 from direct.showbase.MessengerGlobal import messenger
 
-from otp.otpbase.OTPLocalizerEnglish import SpeedChatStaticTextToontown
+from toontown.chat.SpeedChatLocalizer import SpeedChatPhrases
 from otp.speedchat.SpeedChatGlobals import speedChatStyles
 from toontown.settings.Settings import Setting
 from toontown.shtiker.ShtikerPage import ShtikerPage
@@ -598,7 +598,7 @@ class OptionElement(DirectFrame):
 
     @staticmethod
     def formatSpeedchat(index: int) -> str:
-        return SpeedChatStaticTextToontown[speedChatStyles[index][0]]
+        return SpeedChatPhrases[speedChatStyles[index][0]]
 
     def formatSetting(self, setting: Setting) -> str:
         """Given the type of setting we're dealing with, handle

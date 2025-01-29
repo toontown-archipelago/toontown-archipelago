@@ -225,8 +225,6 @@ class DistributedScaleGame(DistributedMinigame):
             self.cooldownTimer.destroy()
         del self.cooldownTimer
 
-        localAvatar.chatMgr.chatInputSpeedChat.removeCJMenu()
-
     def onstage(self):
         self.notify.debug("onstage")
         super().onstage()
@@ -276,7 +274,6 @@ class DistributedScaleGame(DistributedMinigame):
         # all of the remote toons have joined the game;
         # it's safe to show them now.
         self.weightPerToon = self.ruleset.JURORS_SEATED // len(self.avIdList)
-        localAvatar.chatMgr.chatInputSpeedChat.addCJMenu(self.weightPerToon)
 
     def setGameStart(self, timestamp):
         if not self.hasLocalToon: return
