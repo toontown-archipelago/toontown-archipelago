@@ -133,18 +133,12 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def __deleteBoss(self):
         if self.__bossExists():
+            self.boss.cleanupBossBattle()
             self.boss.requestDelete()
         self.boss = None
 
     def __bossExists(self) -> bool:
         return self.boss is not None
-
-    def cleanup(self) -> None:
-        self.__deleteCraningObjects()
-
-        if self.boss is not None:
-            self.boss.requestDelete()
-            self.boss = None
 
     # Disable is never called on the AI so we do not define one
 
@@ -247,8 +241,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # ended (a player got disconnected, etc.)
         if self.gameFSM.getCurrentState():
             self.gameFSM.request('cleanup')
-
-        self.cleanup()
 
         DistributedMinigameAI.setGameAbort(self)
 
@@ -1012,7 +1004,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def enterCleanup(self):
         self.notify.debug("enterCleanup")
-        self.cleanup()
+        self.__deleteCraningObjects()
+        self.__deleteBoss()
         self.gameFSM.request('inactive')
 
     def exitCleanup(self):
