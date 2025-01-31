@@ -405,7 +405,8 @@ class EstateManagerAI(DistributedObjectAI):
 
             # If a timeout is active, cancel it:
             if estate in self.estate2timeout:
-                self.estate2timeout[estate].remove()
+                self.estate2timeout[estate].cancel()
+                # self.estate2timeout[estate].remove()
                 del self.estate2timeout[estate]
 
             return
@@ -508,6 +509,7 @@ class EstateManagerAI(DistributedObjectAI):
                 # replace with threading timer till we figure out whats wrong with taskMgr
                 self.estate2timeout[estate] = threading.Timer(HouseGlobals.BOOT_GRACE_PERIOD, self._cleanupEstate,
                                                               [estate])
+                self.estate2timeout[estate].start()
                 # self.estate2timeout[estate] = taskMgr.doMethodLater(HouseGlobals.BOOT_GRACE_PERIOD, self._cleanupEstate,
                 #                                                     estate.uniqueName('unload-estate'),
                 #                                                     extraArgs=[estate])
@@ -585,6 +587,7 @@ class EstateManagerAI(DistributedObjectAI):
 
         # Clean up timeout, if it exists:
         if estate in self.estate2timeout:
+            self.estate2timeout[estate].cancel()
             del self.estate2timeout[estate]
 
         # Destroy estate and unmap from owner:
