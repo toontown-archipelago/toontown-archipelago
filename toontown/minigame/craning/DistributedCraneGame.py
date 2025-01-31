@@ -621,6 +621,14 @@ class DistributedCraneGame(DistributedMinigame):
             self.overtimeActive = False
             self.bossSpeedrunTimer.hide_overtime()
 
+    def setModifiers(self, mods):
+        modsToSet = []  # A list of CFORulesetModifierBase subclass instances
+        for modStruct in mods:
+            modsToSet.append(CraneLeagueGlobals.CFORulesetModifierBase.fromStruct(modStruct))
+
+        self.modifiers = modsToSet
+        self.modifiers.sort(key=lambda m: m.MODIFIER_TYPE)
+
     """
     Everything else!!!!
     """

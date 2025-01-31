@@ -171,8 +171,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         if self.getBoss() is not None:
             self.getBoss().setRuleset(self.ruleset)
 
-        self.rulesetFallback = self.ruleset
-
         # Should we randomize some modifiers?
         if self.rollModsOnStart:
             self.rollRandomModifiers()
@@ -197,14 +195,12 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     # Any time you change the ruleset, you should call this to sync the clients
     def d_setRawRuleset(self):
-        print((self.getRawRuleset()))
         self.sendUpdate('setRawRuleset', [self.getRawRuleset()])
 
     def __getRawModifierList(self):
         mods = []
         for modifier in self.modifiers:
             mods.append(modifier.asStruct())
-
         return mods
 
     def d_setModifiers(self):
