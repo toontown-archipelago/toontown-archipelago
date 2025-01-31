@@ -230,7 +230,7 @@ class DistributedTrolley(DistributedObject.DistributedObject):
         else:
             toon.startSmooth()
 
-    def emptySlot(self, index, avId, timestamp):
+    def emptySlot(self, index, avId):
         if avId == 0:
             return
 

@@ -1208,7 +1208,7 @@ dclass DistributedCCharBase : DistributedObject {
 dclass DistributedTrolley : DistributedObject {
   setState(string, int16) broadcast ram;
   fillSlot(uint16 index, uint32 avId) broadcast ram;
-  emptySlot(uint16 index, uint32 avId, uint32 timestamp) broadcast ram;
+  emptySlot(uint16 index, uint32 avId) broadcast ram;
   requestBoard() airecv clsend;
   rejectBoard(uint32);
   requestExit() airecv clsend;

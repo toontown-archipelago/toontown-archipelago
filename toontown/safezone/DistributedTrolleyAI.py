@@ -109,7 +109,7 @@ class DistributedTrolleyAI(DistributedObjectAI.DistributedObjectAI):
             pass
         else:
             self.clearFullNow(seatIndex)
-            self.sendUpdate('emptySlot', [seatIndex, avId, globalClockDelta.getRealNetworkTime()])
+            self.sendUpdate('emptySlot', [seatIndex, avId])
             if self.countFullSeats() == 0:
                 self.waitEmpty()
             taskMgr.doMethodLater(TOON_EXIT_TIME, self.clearEmptyNow, self.uniqueName('clearEmpty-%s' % seatIndex), extraArgs=(seatIndex,))
