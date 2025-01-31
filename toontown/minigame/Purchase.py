@@ -244,7 +244,7 @@ class Purchase(PurchaseBase):
         self.title.hide()
         self.bg.reparentTo(render)
         camera.reparentTo(render)
-        base.camLens.setFov(ToontownGlobals.DefaultCameraFov + (4 * len(self.ids)))
+        base.camLens.setFov(ToontownGlobals.DefaultCameraFov + (2 * len(self.ids)))
         camera.setPos(0, 16.0, 2.0)
         camera.lookAt(0, 0, 0.75)
         base.transitions.irisIn(0.4)
@@ -293,9 +293,9 @@ class Purchase(PurchaseBase):
             toon.setShadowHeight(0)
             if not toon.isDisabled():
                 toon.reparentTo(render)
-            self.counters[pos].setPos(thisPos * -0.17, 0, toon.getHeight() / 10 + 0.25)
+            self.counters[pos].setPos(thisPos * -0.1, 0, toon.getHeight() / 10 + 0.25)
             self.counters[pos].reparentTo(aspect2d)
-            self.totalCounters[pos].setPos(thisPos * -0.17, 0, -0.825)
+            self.totalCounters[pos].setPos(thisPos * -0.1, 0, -0.825)
             self.totalCounters[pos].reparentTo(aspect2d)
             pos += 1
 
