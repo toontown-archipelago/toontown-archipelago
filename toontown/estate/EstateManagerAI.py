@@ -505,9 +505,12 @@ class EstateManagerAI(DistributedObjectAI):
         if getattr(av, 'estate', None):
             estate = av.estate
             if estate not in self.estate2timeout:
-                self.estate2timeout[estate] = taskMgr.doMethodLater(HouseGlobals.BOOT_GRACE_PERIOD, self._cleanupEstate,
-                                                                    estate.uniqueName('unload-estate'),
-                                                                    extraArgs=[estate])
+                # replace with threading timer till we figure out whats wrong with taskMgr
+                self.estate2timeout[estate] = threading.Timer(HouseGlobals.BOOT_GRACE_PERIOD, self._cleanupEstate,
+                                                              [estate])
+                # self.estate2timeout[estate] = taskMgr.doMethodLater(HouseGlobals.BOOT_GRACE_PERIOD, self._cleanupEstate,
+                #                                                     estate.uniqueName('unload-estate'),
+                #                                                     extraArgs=[estate])
 
             # Send warning:
             self._sendToonsToPlayground(av.estate, 0)
