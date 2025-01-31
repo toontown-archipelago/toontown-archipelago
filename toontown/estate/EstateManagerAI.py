@@ -28,7 +28,8 @@ class LoadHouseOperation(FSM):
             # Case #1: There isn't an avatar in that estate slot. Make a blank house.
             # Because this state completes so fast, we'll use taskMgr to delay
             # it until the next iteration. This solves reentrancy problems.
-            threading.Timer(0.0, self.demand, ['MakeBlankHouse']).start()
+            # threading.Timer(0.0, self.demand, ['MakeBlankHouse']).start()
+            taskMgr.doMethodLater(0, self.makeBlankHouse, 'makeBlankHouse-%d' % self.index)
             return
 
         style = ToonDNA.ToonDNA()
@@ -41,6 +42,11 @@ class LoadHouseOperation(FSM):
         else:
             # Case #3: Avatar with a setHouseId. Load it:
             self.demand('LoadHouse')
+
+    # function to enter the make blank house state
+    def makeBlankHouse(self, task):
+        self.demand('MakeBlankHouse')
+        return task.done
 
     def enterMakeBlankHouse(self):
         self.house = DistributedHouseAI(self.mgr.air)
@@ -248,11 +254,8 @@ class LoadEstateOperation(FSM):
 
         # A house operation just finished! Let's see if all of them are done:
         if all(houseOperation.done for houseOperation in self.houseOperations):
-            # TODO fix doodles and reimplementation of them
             # Load our pets:
-            # self.demand('LoadPets')
-            # Enter finished
-            self.demand('Finished')
+            self.demand('LoadPets')
 
     def enterLoadPets(self):
         self.petOperations = []
@@ -264,7 +267,11 @@ class LoadEstateOperation(FSM):
                 petOperation.start()
 
         if not self.petOperations:
-            taskMgr.doMethodLater(0, lambda: self.demand('Finished'), 'no-pets', extraArgs=[])
+            taskMgr.doMethodLater(0, self.noPets, 'noPets-%d' % self.estateId)
+
+    def noPets(self, task):
+        self.demand('Finished')
+        return task.done
 
     def __handlePetLoaded(self, pet):
         if self.state != 'LoadPets':
@@ -363,15 +370,14 @@ class EstateManagerAI(DistributedObjectAI):
                     # to another estate, we want to unload their estate.
                     self._unloadEstate(senderAv)
 
-                    # Disabled pets
-                    # if senderAv and senderAv.getPetId() != 0:
-                    #     pet = self.air.doId2do.get(senderAv.getPetId())
-                    #     if pet:
-                    #         self.acceptOnce(self.air.getAvatarExitEvent(senderAv.getPetId()), self.__handleLoadPet,
-                    #                         extraArgs=[estate, senderAv])
-                    #         pet.requestDelete()
-                    #     else:
-                    #         self.__handleLoadPet(estate, senderAv)
+                    if senderAv and senderAv.getPetId() != 0:
+                        pet = self.air.doId2do.get(senderAv.getPetId())
+                        if pet:
+                            self.acceptOnce(self.air.getAvatarExitEvent(senderAv.getPetId()), self.__handleLoadPet,
+                                            extraArgs=[estate, senderAv])
+                            pet.requestDelete()
+                        else:
+                            self.__handleLoadPet(estate, senderAv)
 
                     # Now we want to send the sender to the estate.
                     if hasattr(senderAv, 'enterEstate'):
@@ -388,15 +394,14 @@ class EstateManagerAI(DistributedObjectAI):
         if estate:
             # The sender already has an estate loaded, so let's send them there.
             self._mapToEstate(senderAv, senderAv.estate)
-            # Disabled pets
-            # if senderAv and senderAv.getPetId() != 0:
-            #     pet = self.air.doId2do.get(senderAv.getPetId())
-            #     if pet:
-            #         self.acceptOnce(self.air.getAvatarExitEvent(senderAv.getPetId()), self.__handleLoadPet,
-            #                         extraArgs=[estate, senderAv])
-            #         pet.requestDelete()
-            #     else:
-            #         self.__handleLoadPet(estate, senderAv)
+            if senderAv and senderAv.getPetId() != 0:
+                pet = self.air.doId2do.get(senderAv.getPetId())
+                if pet:
+                    self.acceptOnce(self.air.getAvatarExitEvent(senderAv.getPetId()), self.__handleLoadPet,
+                                    extraArgs=[estate, senderAv])
+                    pet.requestDelete()
+                else:
+                    self.__handleLoadPet(estate, senderAv)
 
             if hasattr(senderAv, 'enterEstate'):
                 senderAv.enterEstate(senderId, estate.zoneId)
@@ -405,8 +410,7 @@ class EstateManagerAI(DistributedObjectAI):
 
             # If a timeout is active, cancel it:
             if estate in self.estate2timeout:
-                self.estate2timeout[estate].cancel()
-                # self.estate2timeout[estate].remove()
+                self.estate2timeout[estate].remove()
                 del self.estate2timeout[estate]
 
             return
@@ -506,13 +510,9 @@ class EstateManagerAI(DistributedObjectAI):
         if getattr(av, 'estate', None):
             estate = av.estate
             if estate not in self.estate2timeout:
-                # replace with threading timer till we figure out whats wrong with taskMgr
-                self.estate2timeout[estate] = threading.Timer(HouseGlobals.BOOT_GRACE_PERIOD, self._cleanupEstate,
-                                                              [estate])
-                self.estate2timeout[estate].start()
-                # self.estate2timeout[estate] = taskMgr.doMethodLater(HouseGlobals.BOOT_GRACE_PERIOD, self._cleanupEstate,
-                #                                                     estate.uniqueName('unload-estate'),
-                #                                                     extraArgs=[estate])
+                self.estate2timeout[estate] = taskMgr.doMethodLater(HouseGlobals.BOOT_GRACE_PERIOD, self._cleanupEstate,
+                                                                    estate.uniqueName('unload-estate'),
+                                                                    extraArgs=[estate])
 
             # Send warning:
             self._sendToonsToPlayground(av.estate, 0)
@@ -587,7 +587,6 @@ class EstateManagerAI(DistributedObjectAI):
 
         # Clean up timeout, if it exists:
         if estate in self.estate2timeout:
-            self.estate2timeout[estate].cancel()
             del self.estate2timeout[estate]
 
         # Destroy estate and unmap from owner:
