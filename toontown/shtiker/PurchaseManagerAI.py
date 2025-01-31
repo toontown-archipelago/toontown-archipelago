@@ -27,24 +27,15 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
             self.votesArray = []
         self.metagameRound = metagameRound
         self.desiredNextGame = desiredNextGame
-        for i in range(len(self.playerIds), 4):
+        for i in range(len(self.playerIds)):
             self.playerIds.append(0)
 
-        for i in range(len(self.minigamePoints), 4):
+        for i in range(len(self.minigamePoints)):
             self.minigamePoints.append(0)
 
-        self.playerStates = [None,
-         None,
-         None,
-         None]
-        self.playersReported = [None,
-         None,
-         None,
-         None]
-        self.playerMoney = [0,
-         0,
-         0,
-         0]
+        self.playerStates = [None] * len(self.playerIds)
+        self.playersReported = [None] * len(self.playerIds)
+        self.playerMoney = [0] * len(self.playerIds)
         for i in range(len(self.playerIds)):
             avId = self.playerIds[i]
             if avId <= 3:
@@ -122,7 +113,7 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
         return self.playerMoney
 
     def d_setPlayerStates(self, stateArray):
-        self.sendUpdate('setPlayerStates', stateArray)
+        self.sendUpdate('setPlayerStates', [stateArray])
         return None
 
     def getPlayerStates(self):

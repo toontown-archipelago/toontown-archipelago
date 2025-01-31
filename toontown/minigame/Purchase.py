@@ -47,34 +47,26 @@ class Purchase(PurchaseBase):
     def load(self):
         purchaseModels = loader.loadModel('phase_4/models/gui/purchase_gui')
         PurchaseBase.load(self, purchaseModels)
-        interiorPhase = 3.5
-        self.bg = loader.loadModel('phase_%s/models/modules/toon_interior' % interiorPhase)
-        self.bg.setPos(0.0, 5.0, -1.0)
-        self.wt = self.bg.find('**/random_tc1_TI_wallpaper')
-        wallTex = loader.loadTexture('phase_%s/maps/wall_paper_a5.jpg' % interiorPhase)
-        self.wt.setTexture(wallTex, 100)
-        self.wt.setColorScale(0.8, 0.67, 0.549, 1.0)
-        self.bt = self.bg.find('**/random_tc1_TI_wallpaper_border')
-        wallTex = loader.loadTexture('phase_%s/maps/wall_paper_a5.jpg' % interiorPhase)
-        self.bt.setTexture(wallTex, 100)
-        self.bt.setColorScale(0.8, 0.67, 0.549, 1.0)
-        self.wb = self.bg.find('**/random_tc1_TI_wainscotting')
-        wainTex = loader.loadTexture('phase_%s/maps/wall_paper_b4.jpg' % interiorPhase)
-        self.wb.setTexture(wainTex, 100)
-        self.wb.setColorScale(0.473, 0.675, 0.488, 1.0)
-        self.playAgain = DirectButton(parent=self.frame, relief=None, scale=1.04, pos=(0.72, 0, -0.24), image=(purchaseModels.find('**/PurchScrn_BTN_UP'),
+
+        # Load the environment.
+        self.bg = loader.loadModel('phase_10/models/cogHQ/EndVault.bam')
+        self.bg.setPos(-36, 100, -12)
+
+        # Load UI elements.
+        self.playAgain = DirectButton(parent=self.frame, relief=None, scale=1.04, pos=(-0.3, 0, -0.8), image=(purchaseModels.find('**/PurchScrn_BTN_UP'),
          purchaseModels.find('**/PurchScrn_BTN_DN'),
          purchaseModels.find('**/PurchScrn_BTN_RLVR'),
          purchaseModels.find('**/PurchScrn_BTN_UP')), text=TTLocalizer.GagShopPlayAgain, text_fg=(0, 0.1, 0.7, 1), text_scale=0.05, text_pos=(0, 0.015, 0), image3_color=Vec4(0.6, 0.6, 0.6, 1), text3_fg=Vec4(0, 0, 0.4, 1), command=self.__handlePlayAgain)
-        self.backToPlayground = DirectButton(parent=self.frame, relief=None, scale=1.04, pos=(0.72, 0, -0.045), image=(purchaseModels.find('**/PurchScrn_BTN_UP'),
+        self.backToPlayground = DirectButton(parent=self.frame, relief=None, scale=1.04, pos=(0.3, 0, -0.8), image=(purchaseModels.find('**/PurchScrn_BTN_UP'),
          purchaseModels.find('**/PurchScrn_BTN_DN'),
          purchaseModels.find('**/PurchScrn_BTN_RLVR'),
          purchaseModels.find('**/PurchScrn_BTN_UP')), text=TTLocalizer.GagShopBackToPlayground, text_fg=(0, 0.1, 0.7, 1), text_scale=0.05, text_pos=(0, 0.015, 0), image3_color=Vec4(0.6, 0.6, 0.6, 1), text3_fg=Vec4(0, 0, 0.4, 1), command=self.__handleBackToPlayground)
         self.timer = ToontownTimer.ToontownTimer()
         self.timer.hide()
         self.timer.posInTopRightCorner()
+
+        # Figure out the toon layout.
         numAvs = 0
-        count = 0
         localToonIndex = 0
         for index in range(len(self.ids)):
             avId = self.ids[index]
@@ -83,16 +75,27 @@ class Purchase(PurchaseBase):
             if self.states[index] != PURCHASE_NO_CLIENT_STATE and self.states[index] != PURCHASE_DISCONNECTED_STATE:
                 numAvs = numAvs + 1
 
-        layoutList = (None,
-         (0,),
-         (0, 2),
-         (0, 1, 3),
-         (0, 1, 2, 3))
-        layout = layoutList[numAvs]
-        headFramePosList = (Vec3(0.105, 0, -0.384),
-         Vec3(0.105, 0, -0.776),
-         Vec3(0.85, 0, -0.555),
-         Vec3(-0.654, 0, -0.555))
+        headFramePosList = (
+            Vec3(-.9, 0, .45),
+            Vec3(-.3, 0, .45),
+            Vec3(.3, 0, .45),
+            Vec3(.9, 0, .45),
+
+            Vec3(-.9, 0, .15),
+            Vec3(-.3, 0, .15),
+            Vec3(.3, 0, .15),
+            Vec3(.9, 0, .15),
+
+            Vec3(-.9, 0, -.15),
+            Vec3(-.3, 0, -.15),
+            Vec3(.3, 0, -.15),
+            Vec3(.9, 0, -.15),
+
+            Vec3(-.9, 0, -.45),
+            Vec3(-.3, 0, -.45),
+            Vec3(.3, 0, -.45),
+            Vec3(.9, 0, -.45),
+        )
         AVID_INDEX = 0
         LAYOUT_INDEX = 1
         TOON_INDEX = 2
@@ -103,7 +106,7 @@ class Purchase(PurchaseBase):
             if self.states[index] != PURCHASE_NO_CLIENT_STATE and self.states[index] != PURCHASE_DISCONNECTED_STATE:
                 if avId != base.localAvatar.doId:
                     if avId in base.cr.doId2do:
-                        self.avInfoArray.append((avId, headFramePosList[layout[pos]], index))
+                        self.avInfoArray.append((avId, headFramePosList[pos], index))
                         pos = pos + 1
 
         self.headFrames = []
@@ -113,31 +116,10 @@ class Purchase(PurchaseBase):
                 headFrame = PurchaseHeadFrame(av, purchaseModels)
                 headFrame.setAvatarState(self.states[avInfo[TOON_INDEX]])
                 headFrame.setPos(avInfo[LAYOUT_INDEX])
+                headFrame.setScale(.75)
                 self.headFrames.append((avInfo[AVID_INDEX], headFrame))
 
         purchaseModels.removeNode()
-        self.foreground = loader.loadModel('phase_3.5/models/modules/TT_A1')
-        self.foreground.setPos(12.5, -20, -5.5)
-        self.foreground.setHpr(180, 0, 0)
-        self.backgroundL = loader.loadModel('phase_3.5/models/modules/TT_A1')
-        self.backgroundL.setPos(-12.5, -25, -5)
-        self.backgroundL.setHpr(180, 0, 0)
-        self.backgroundR = self.backgroundL.copyTo(hidden)
-        self.backgroundR.setPos(20, -25, -5)
-        streets = loader.loadModel('phase_3.5/models/modules/street_modules')
-        sidewalk = streets.find('**/street_sidewalk_40x40')
-        self.sidewalk = sidewalk.copyTo(hidden)
-        self.sidewalk.setPos(-20, -25, -5.5)
-        self.sidewalk.setColor(0.9, 0.6, 0.4)
-        streets.removeNode()
-        doors = loader.loadModel('phase_4/models/modules/doors')
-        door = doors.find('**/door_single_square_ur_door')
-        self.door = door.copyTo(hidden)
-        self.door.setH(180)
-        self.door.setPos(0, -16.75, -5.5)
-        self.door.setScale(1.5, 1.5, 2.0)
-        self.door.setColor(1.0, 0.8, 0, 1)
-        doors.removeNode()
         self.convertingVotesToBeansLabel = DirectLabel(text=TTLocalizer.TravelGameConvertingVotesToBeans, text_fg=VBase4(1, 1, 1, 1), relief=None, pos=(0.0, 0, -0.58), scale=0.075)
         self.convertingVotesToBeansLabel.hide()
         self.rewardDoubledJellybeanLabel = DirectLabel(text=TTLocalizer.PartyRewardDoubledJellybean, text_fg=(1.0, 0.125, 0.125, 1.0), text_shadow=(0, 0, 0, 1), relief=None, pos=(0.0, 0, -0.67), scale=0.08)
@@ -187,16 +169,6 @@ class Purchase(PurchaseBase):
         taskMgr.remove('purchase-trans')
         taskMgr.remove('delayAdd')
         taskMgr.remove('delaySubtract')
-        self.foreground.removeNode()
-        del self.foreground
-        self.backgroundL.removeNode()
-        del self.backgroundL
-        self.backgroundR.removeNode()
-        del self.backgroundR
-        self.sidewalk.removeNode()
-        del self.sidewalk
-        self.door.removeNode()
-        del self.door
         self.collisionFloor.removeNode()
         del self.collisionFloor
         del self.countSound
@@ -265,30 +237,18 @@ class Purchase(PurchaseBase):
 
     def enterReward(self):
         numToons = 0
-        toonLayouts = ((2,),
-         (1, 3),
-         (0, 2, 4),
-         (0, 1, 3, 4))
-        toonPositions = (5.0,
-         1.75,
-         -0.25,
-         -1.75,
-         -5.0)
         self.toons = []
         self.toonsKeep = []
         self.counters = []
         self.totalCounters = []
+        self.title.hide()
+        self.bg.reparentTo(render)
         camera.reparentTo(render)
-        base.camLens.setFov(ToontownGlobals.DefaultCameraFov)
+        base.camLens.setFov(ToontownGlobals.DefaultCameraFov + (4 * len(self.ids)))
         camera.setPos(0, 16.0, 2.0)
         camera.lookAt(0, 0, 0.75)
         base.transitions.irisIn(0.4)
         self.title.reparentTo(aspect2d)
-        self.foreground.reparentTo(render)
-        self.backgroundL.reparentTo(render)
-        self.backgroundR.reparentTo(render)
-        self.sidewalk.reparentTo(render)
-        self.door.reparentTo(render)
         size = 20
         z = -2.5
         floor = CollisionPolygon(Point3(-size, -size, z), Point3(size, -size, z), Point3(size, size, z), Point3(-size, size, z))
@@ -321,9 +281,12 @@ class Purchase(PurchaseBase):
 
         self.accept('clientCleanup', self._handleClientCleanup)
         pos = 0
-        toonLayout = toonLayouts[numToons - 1]
         for toon in self.toons:
-            thisPos = toonPositions[toonLayout[pos]]
+            sideMultiplier = math.pow(-1, pos)
+            distanceMultiplier = (pos+1) // 2 * 3
+            thisPos = sideMultiplier * distanceMultiplier
+            if len(self.toons) % 2 == 0:
+                thisPos += 1.5
             toon.setPos(Vec3(thisPos, 1.0, -2.5))
             toon.setHpr(Vec3(0, 0, 0))
             toon.setAnimState('neutral', 1)
@@ -581,12 +544,6 @@ class Purchase(PurchaseBase):
 
         for total in self.totalCounters:
             total.reparentTo(hidden)
-
-        self.foreground.reparentTo(hidden)
-        self.backgroundL.reparentTo(hidden)
-        self.backgroundR.reparentTo(hidden)
-        self.sidewalk.reparentTo(hidden)
-        self.door.reparentTo(hidden)
         self.title.reparentTo(self.frame)
         self.convertingVotesToBeansLabel.hide()
         self.rewardDoubledJellybeanLabel.hide()
@@ -603,18 +560,12 @@ class Purchase(PurchaseBase):
 
     def enterPurchase(self):
         PurchaseBase.enterPurchase(self)
+        self.toon.inventory.hide()
         self.convertingVotesToBeansLabel.hide()
         self.rewardDoubledJellybeanLabel.hide()
-        self.bg.reparentTo(render)
-        base.setBackgroundColor(0.05, 0.14, 0.4)
         self.accept('purchaseStateChange', self.__handleStateChange)
-        self.playAgain.reparentTo(self.toon.inventory.purchaseFrame)
-        self.backToPlayground.reparentTo(self.toon.inventory.purchaseFrame)
-        self.pointDisplay.reparentTo(self.toon.inventory.purchaseFrame)
-        self.statusLabel.reparentTo(self.toon.inventory.purchaseFrame)
         for headFrame in self.headFrames:
             headFrame[1].show()
-            headFrame[1].reparentTo(self.toon.inventory.purchaseFrame)
 
         if base.cr.periodTimerExpired:
             base.cr.loginFSM.request('periodTimeout')
@@ -642,13 +593,16 @@ class Purchase(PurchaseBase):
             base.transitions.fadeOut(0)
             self.__handlePlayAgain()
 
+        self.pointDisplay.hide()
+        self.statusLabel.hide()
+        self.title.hide()
+
     def exitPurchase(self):
         PurchaseBase.exitPurchase(self)
         self.ignore('disableGagPanel')
         self.ignore('disableBackToPlayground')
         self.ignore('enableGagPanel')
         self.ignore('enableBackToPlayground')
-        self.bg.reparentTo(hidden)
         self.playAgain.reparentTo(self.frame)
         self.backToPlayground.reparentTo(self.frame)
         self.pointDisplay.reparentTo(self.frame)
@@ -675,7 +629,6 @@ class Purchase(PurchaseBase):
         self.newbieId = newbieId
 
     def handleEnableGagPanel(self):
-        self.toon.inventory.setActivateMode('purchase', gagTutMode=1)
         self.checkForBroke()
 
     def handleGagTutorialDone(self):

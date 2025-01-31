@@ -16,7 +16,7 @@ class PurchaseManager(DistributedObject.DistributedObject):
         DistributedObject.DistributedObject.disable(self)
         self.ignoreAll()
 
-    def setPlayerIds(self, *playerIds):
+    def setPlayerIds(self, playerIds):
         self.notify.debug('setPlayerIds: %s' % (playerIds,))
         self.playerIds = playerIds
 
@@ -24,15 +24,15 @@ class PurchaseManager(DistributedObject.DistributedObject):
         self.notify.debug('setNewbieIds: %s' % (newbieIds,))
         self.newbieIds = newbieIds
 
-    def setMinigamePoints(self, *mpArray):
+    def setMinigamePoints(self, mpArray):
         self.notify.debug('setMinigamePoints: %s' % (mpArray,))
         self.mpArray = mpArray
 
-    def setPlayerMoney(self, *moneyArray):
+    def setPlayerMoney(self, moneyArray):
         self.notify.debug('setPlayerMoney: %s' % (moneyArray,))
         self.moneyArray = moneyArray
 
-    def setPlayerStates(self, *stateArray):
+    def setPlayerStates(self, stateArray):
         self.notify.debug('setPlayerStates: %s' % (stateArray,))
         self.playerStates = stateArray
         if self.isGenerated() and self.hasLocalToon:

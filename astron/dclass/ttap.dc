@@ -1207,14 +1207,8 @@ dclass DistributedCCharBase : DistributedObject {
 
 dclass DistributedTrolley : DistributedObject {
   setState(string, int16) broadcast ram;
-  fillSlot0(uint32) broadcast ram;
-  fillSlot1(uint32) broadcast ram;
-  fillSlot2(uint32) broadcast ram;
-  fillSlot3(uint32) broadcast ram;
-  emptySlot0(uint32, int16) broadcast ram;
-  emptySlot1(uint32, int16) broadcast ram;
-  emptySlot2(uint32, int16) broadcast ram;
-  emptySlot3(uint32, int16) broadcast ram;
+  fillSlot(uint16 index, uint32 avId) broadcast ram;
+  emptySlot(uint16 index, uint32 avId, uint32 timestamp) broadcast ram;
   requestBoard() airecv clsend;
   rejectBoard(uint32);
   requestExit() airecv clsend;
@@ -2200,11 +2194,11 @@ dclass NewsManager : DistributedObject {
 };
 
 dclass PurchaseManager : DistributedObject {
-  setPlayerIds(uint32, uint32, uint32, uint32) required broadcast ram;
+  setPlayerIds(uint32[]) required broadcast ram;
   setNewbieIds(uint32[]) required broadcast ram;
-  setMinigamePoints(uint32, uint32, uint32, uint32) required broadcast ram;
-  setPlayerMoney(uint32, uint32, uint32, uint32) required broadcast ram;
-  setPlayerStates(uint8, uint8, uint8, uint8) required broadcast ram;
+  setMinigamePoints(uint32[]) required broadcast ram;
+  setPlayerMoney(uint32[]) required broadcast ram;
+  setPlayerStates(uint8[]) required broadcast ram;
   setCountdown(int16) required broadcast ram;
   setMetagameRound(int8) required broadcast ram;
   setVotesArray(int16[]) required broadcast ram;
