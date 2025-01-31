@@ -63,7 +63,16 @@ class GroupInterface(DirectFrame):
             textures = (promoteTexture, switchTeamTexture, kickTexture,
                         leaderTexture, readyStatusTexture, notReadyStatusTexture)
             button = GroupInterfaceMemberButton(textures, parent=self, pos=pos)
+            # Bind a special hover event to this button to handle the sub option hiding/showing.
+            button.bind(DGG.ENTER, self.__onHoverRow, extraArgs=[button])
             self.rows.append(button)
+
+        # The first member can never be promoted or kicked.
+        self.rows[0].promoteButton.setColorScale(.5, .5, .5, 1)
+        self.rows[0].kickButton.setColorScale(.5, .5, .5, 1)
+        self.rows[0].promoteButton['state'] = DGG.DISABLED
+        self.rows[0].kickButton['state'] = DGG.DISABLED
+        self.rows[0].updateStatus(GroupInterfaceMemberButton.STATUS_LEADER)
 
         # Cleanup.
         model.removeNode()
@@ -97,6 +106,13 @@ class GroupInterface(DirectFrame):
         """
         base.localAvatar.setChatAbsolute('I WANT TO PLAY THE VIDEO GAME!!!', CFSpeech | CFTimeout)
 
+    def __onHoverRow(self, row, event=None):
+        # Hide every single row.
+        for other in self.rows:
+            other.hideOptions()
+        # Show this one.
+        row.showOptions()
+
     """
     Boilerplate
     """
@@ -123,15 +139,18 @@ class GroupInterfaceMemberButton(DirectButton):
     TEXT_SCALE = .025
 
     OPTS = {
-        'relief': None,
+        'relief': DGG.FLAT,
         'scale': BUTTON_SCALE,
         'text': "Waiting for toon...",
         'text_align': TextNode.ALeft,
         'text_scale': TEXT_SCALE,
         'text_pos': (0, -.005),
         'textMayChange': 1,
-        'frameSize': (0, .3, -.015, .015)
+        'frameSize': (0, .391, -.015, .015),
+        'frameColor': (1, 1, 1, 0)
     }
+
+    HOVER_FRAME_COLOR = (.6, .8, 1, .2)
 
     X_ORIGIN = -0.18
     Y_ORIGIN = .31
@@ -160,15 +179,21 @@ class GroupInterfaceMemberButton(DirectButton):
         self._leaderTexture = leaderTexture
         self._readyTexture = readyTexture
         self._notReadyTexture = notReadyTexture
-        self.promoteButton = DirectButton(parent=self, relief=None, scale=GroupInterfaceMemberButton.SUBOPTION_BUTTON_SCALE, pos=(.305, 0, 0), image=promoteTexture, command=self.__onPromoteClicked)
-        self.switchButton = DirectButton(parent=self, relief=None, scale=GroupInterfaceMemberButton.SUBOPTION_BUTTON_SCALE, pos=(.34, 0, 0), image=switchTexture, command=self.__onSwitchClicked)
+        self.promoteButton = DirectButton(parent=self, relief=None, scale=GroupInterfaceMemberButton.SUBOPTION_BUTTON_SCALE, pos=(.34, 0, 0), image=promoteTexture, command=self.__onPromoteClicked)
+        self.switchButton = DirectButton(parent=self, relief=None, scale=GroupInterfaceMemberButton.SUBOPTION_BUTTON_SCALE, pos=(.305, 0, 0), image=switchTexture, command=self.__onSwitchClicked)
         self.kickButton = DirectButton(parent=self, relief=None, scale=GroupInterfaceMemberButton.SUBOPTION_BUTTON_SCALE, pos=(.375, 0, 0), image=kickTexture, command=self.__onKickClicked)
         self.statusLabel = DirectButton(parent=self, relief=None, scale=GroupInterfaceMemberButton.SUBOPTION_BUTTON_SCALE * .65, pos=(-.02, 0, 0), image=self._notReadyTexture)
+        self.hideOptions()
+
+        # Now bind hover events to the buttons so the user knows what they do.
+        self.__addTooltip(self.promoteButton, HoverableTooltip(self.promoteButton, 'promote-node', "Promote", (.8, .6, .1, 1)))
+        self.__addTooltip(self.switchButton, HoverableTooltip(self.switchButton, 'promote-node', "Switch", (.1, .9, .9, 1)))
+        self.__addTooltip(self.kickButton, HoverableTooltip(self.kickButton, 'kick-node', "Kick", (.9, .3, .3, 1)))
 
         # Initialize state. (The toon that is bound to this button)
         self.avatar = None
         self.avatarID = None
-        self['state'] = DGG.DISABLED
+        self['state'] = DGG.NORMAL
 
     def setAvatar(self, avatar):
         self.avatar = avatar
@@ -195,6 +220,18 @@ class GroupInterfaceMemberButton(DirectButton):
                 self.statusLabel['image'] = self._notReadyTexture
                 self.statusLabel.setColorScale(.25, .25, .25, .75)
 
+    def hideOptions(self):
+        self.promoteButton.hide()
+        self.kickButton.hide()
+        self.switchButton.hide()
+        self['frameColor'] = (1, 1, 1, 0)
+
+    def showOptions(self):
+        self.promoteButton.show()
+        self.kickButton.show()
+        self.switchButton.show()
+        self['frameColor'] = GroupInterfaceMemberButton.HOVER_FRAME_COLOR
+
     """
     Button Handlers
     """
@@ -211,6 +248,16 @@ class GroupInterfaceMemberButton(DirectButton):
     def __onKickClicked(self):
         base.localAvatar.setChatAbsolute(f"I want to kick {self.avatarID}.", CFSpeech | CFTimeout)
 
+    def __addTooltip(self, button, tooltip):
+        def __show(_):
+            tooltip.show()
+
+        def __hide(_):
+            tooltip.hide()
+
+        button.bind(DGG.ENTER, __show)
+        button.bind(DGG.EXIT, __hide)
+
     """
     Boilerplate
     """
@@ -223,3 +270,31 @@ class GroupInterfaceMemberButton(DirectButton):
         self.kickButton.destroy()
         self.statusLabel.destroy()
         super().destroy()
+
+
+class HoverableTooltip:
+    def __init__(self, parent, name: str, text: str, border: tuple = (1, 1, 1, 1)):
+
+        # The text that describes modifiers
+        self.modifiers_desc = TextNode(name)
+        self.modifiers_desc.setText(text)
+        self.modifiers_desc.setAlign(TextNode.ACenter)
+        self.modifiers_desc.setFrameColor(border)
+        self.modifiers_desc.setFrameAsMargin(0.3, 0.3, 0.15, 0.15)
+        self.modifiers_desc.setCardColor(.2, .2, .2, .75)
+        self.modifiers_desc.setCardAsMargin(0.28, 0.28, 0.14, 0.14)
+        self.modifiers_desc.setCardDecal(True)
+        self.modifiers_desc.setShadow(0.05, 0.05)
+        self.modifiers_desc.setShadowColor(0, 0, 0, 1)
+        self.modifiers_desc.setTextColor(1, 1, 1, 1)
+        self.modifiers_desc.setTextScale(1)
+        self.modifiers_desc_path = parent.attachNewNode(self.modifiers_desc)
+        self.modifiers_desc_path.setScale(1)
+        self.modifiers_desc_path.setPos(0, 0, 1)
+        self.modifiers_desc_path.hide()
+
+    def hide(self):
+        self.modifiers_desc_path.hide()
+
+    def show(self):
+        self.modifiers_desc_path.show()
