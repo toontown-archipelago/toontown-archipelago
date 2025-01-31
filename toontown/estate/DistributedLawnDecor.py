@@ -337,6 +337,7 @@ class DistributedLawnDecor(DistributedNode.DistributedNode, NodePath, ShadowCast
             self.expectingReplacement = 1
             self.movie.append(Func(self.movieDone))
         self.movie.start()
+        self.movie.setPlayRate(5.0)
 
     def generateDigupTrack(self, toon):
         sound = loader.loadSfx('phase_5.5/audio/sfx/burrow.ogg')
@@ -368,6 +369,7 @@ class DistributedLawnDecor(DistributedNode.DistributedNode, NodePath, ShadowCast
             if hasattr(self, 'doResultDialog'):
                 self.movie.append(Func(self.doResultDialog))
         self.movie.start()
+        self.movie.setPlayRate(5.0)
 
     def interactionDenied(self, avId):
         if avId == localAvatar.doId:
