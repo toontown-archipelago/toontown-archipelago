@@ -248,8 +248,11 @@ class LoadEstateOperation(FSM):
 
         # A house operation just finished! Let's see if all of them are done:
         if all(houseOperation.done for houseOperation in self.houseOperations):
+            # TODO fix doodles and reimplementation of them
             # Load our pets:
-            self.demand('LoadPets')
+            # self.demand('LoadPets')
+            # Enter finished
+            self.demand('Finished')
 
     def enterLoadPets(self):
         self.petOperations = []
@@ -360,14 +363,15 @@ class EstateManagerAI(DistributedObjectAI):
                     # to another estate, we want to unload their estate.
                     self._unloadEstate(senderAv)
 
-                    if senderAv and senderAv.getPetId() != 0:
-                        pet = self.air.doId2do.get(senderAv.getPetId())
-                        if pet:
-                            self.acceptOnce(self.air.getAvatarExitEvent(senderAv.getPetId()), self.__handleLoadPet,
-                                            extraArgs=[estate, senderAv])
-                            pet.requestDelete()
-                        else:
-                            self.__handleLoadPet(estate, senderAv)
+                    # Disabled pets
+                    # if senderAv and senderAv.getPetId() != 0:
+                    #     pet = self.air.doId2do.get(senderAv.getPetId())
+                    #     if pet:
+                    #         self.acceptOnce(self.air.getAvatarExitEvent(senderAv.getPetId()), self.__handleLoadPet,
+                    #                         extraArgs=[estate, senderAv])
+                    #         pet.requestDelete()
+                    #     else:
+                    #         self.__handleLoadPet(estate, senderAv)
 
                     # Now we want to send the sender to the estate.
                     if hasattr(senderAv, 'enterEstate'):
@@ -384,15 +388,15 @@ class EstateManagerAI(DistributedObjectAI):
         if estate:
             # The sender already has an estate loaded, so let's send them there.
             self._mapToEstate(senderAv, senderAv.estate)
-
-            if senderAv and senderAv.getPetId() != 0:
-                pet = self.air.doId2do.get(senderAv.getPetId())
-                if pet:
-                    self.acceptOnce(self.air.getAvatarExitEvent(senderAv.getPetId()), self.__handleLoadPet,
-                                    extraArgs=[estate, senderAv])
-                    pet.requestDelete()
-                else:
-                    self.__handleLoadPet(estate, senderAv)
+            # Disabled pets
+            # if senderAv and senderAv.getPetId() != 0:
+            #     pet = self.air.doId2do.get(senderAv.getPetId())
+            #     if pet:
+            #         self.acceptOnce(self.air.getAvatarExitEvent(senderAv.getPetId()), self.__handleLoadPet,
+            #                         extraArgs=[estate, senderAv])
+            #         pet.requestDelete()
+            #     else:
+            #         self.__handleLoadPet(estate, senderAv)
 
             if hasattr(senderAv, 'enterEstate'):
                 senderAv.enterEstate(senderId, estate.zoneId)
