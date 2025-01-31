@@ -7,7 +7,7 @@ from direct.fsm.FSM import FSM
 from toontown.estate import HouseGlobals
 from toontown.estate.DistributedHouseAI import DistributedHouseAI
 from toontown.toon import ToonDNA
-
+import threading
 
 class LoadHouseOperation(FSM):
     def __init__(self, mgr, estate, index, avatar, callback):
@@ -28,7 +28,7 @@ class LoadHouseOperation(FSM):
             # Case #1: There isn't an avatar in that estate slot. Make a blank house.
             # Because this state completes so fast, we'll use taskMgr to delay
             # it until the next iteration. This solves reentrancy problems.
-            taskMgr.doMethodLater(0.0, self.demand, 'makeBlankHouse-%s' % id(self), extraArgs=['MakeBlankHouse'])
+            threading.Timer(0.0, self.demand, ['MakeBlankHouse']).start()
             return
 
         style = ToonDNA.ToonDNA()
