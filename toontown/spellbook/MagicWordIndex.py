@@ -2966,6 +2966,17 @@ class FreeBldg(MagicWord):
             return "Toons are currently taking back the building!"
         return "Couldn't free building."
 
+class StartGarden(MagicWord):
+    aliases = ["garden"]
+    desc = "Starts a garden on the target."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        if toon.getGardenStarted():
+            return "You already have a garden!"
+        toon.b_setGardenStarted(True)
+        return "Started a garden for %s!" % toon.getName()
 
 class MaxGarden(MagicWord):
     desc = "Maxes your garden."
