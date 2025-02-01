@@ -2835,14 +2835,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setDamageMultiplier(self, newDamageMultiplier) -> None:
         self.damageMultiplier = newDamageMultiplier
 
-    # What is this toon's overflow modifier
-    def getOverflowMod(self) -> int:
-        return self.overflowMod
-
-    # Set this toon's overflow modifier
-    def setOverflowMod(self, newOverflow) -> None:
-        self.overflowMod = newOverflow
-
     # To be overridden in LocalToon, just here for safety
     def sendArchipelagoMessages(self, messages: List[str]) -> None:
         pass

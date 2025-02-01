@@ -172,8 +172,8 @@ class Experience:
         return retList
 
     # Based on how much overflow XP we have, how much damage should we add as a bonus?
-    def getUberDamageBonus(self, track, overflowMod=None) -> float:
-        return ToontownBattleGlobals.getUberDamageBonus(self.experience[track], track, overflowMod)
+    def getUberDamageBonus(self, track) -> float:
+        return ToontownBattleGlobals.getUberDamageBonus(self.experience[track], track)
 
     # Returns a clean string representation of the damage bonus from above
     def getUberDamageBonusString(self, track) -> str:
