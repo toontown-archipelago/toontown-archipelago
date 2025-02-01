@@ -366,6 +366,8 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
     def handleToonDetect(self, collEntry = None):
         if base.localAvatar.isStunned:
             return
+        if base.localAvatar.hp <= 0:
+            return
         if self.state == 'Off':
             return
         self.request('Battle', base.localAvatar.doId)
