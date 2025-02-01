@@ -116,7 +116,7 @@ class DistributedTrolleyAI(DistributedObjectAI.DistributedObjectAI):
         return
 
     def clearEmptyNow(self, seatIndex):
-        self.sendUpdate('emptySlot', [seatIndex, 0, globalClockDelta.getRealNetworkTime()])
+        self.sendUpdate('emptySlot', [seatIndex, 0])
 
     def clearFullNow(self, seatIndex):
         avId = self.seats[seatIndex]

@@ -36,6 +36,7 @@ import random
 import json
 
 from ..archipelago.definitions.death_reason import DeathReason
+from ..minigame.craning.CraneGamePracticeCheatAI import CraneGamePracticeCheatAI
 
 ImplementsMinigame = None
 if typing.TYPE_CHECKING:
@@ -1960,16 +1961,15 @@ class SafeRushMode(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
 
         from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
-        boss = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
-        if not boss:
+        minigame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if not minigame:
             return "You aren't in a CFO!"
 
-        if boss.ruleset.CFO_STUN_THRESHOLD == 1:
-            boss.ruleset.CFO_STUN_THRESHOLD = 24
-            return ("Safe Rush => OFF")
-        else:
-            boss.ruleset.CFO_STUN_THRESHOLD = 1
-            return ("Safe Rush => ON")
+        on_off = 'OFF' if minigame.practiceCheatHandler.wantSafeRushPractice else f'ON'
+        message = f"Safe Rush Mode => {on_off}"
+
+        minigame.practiceCheatHandler.setPracticeParams(CraneGamePracticeCheatAI.SAFE_RUSH_PRACTICE)
+        return message
 
 
 class LiveGoonMode(MagicWord):
@@ -1980,21 +1980,16 @@ class LiveGoonMode(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
-        boss = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        minigame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
 
-        if not boss:
+        if not minigame:
             return "You aren't in a CFO!"
 
-        if boss.wantLiveGoonPractice:
-            boss.wantLiveGoonPractice = False
-            boss.wantOpeningModifications = False
-            boss.wantNoStunning = False
-            return ("Live Goon => OFF")
-        else:
-            boss.wantLiveGoonPractice = True
-            boss.wantOpeningModifications = True
-            boss.wantNoStunning = True
-            return ("Live Goon => ON")
+        on_off = 'OFF' if minigame.practiceCheatHandler.wantLiveGoonPractice else f'ON'
+        message = f"Live Goon Mode => {on_off}"
+
+        minigame.practiceCheatHandler.setPracticeParams(CraneGamePracticeCheatAI.LIVE_GOON_PRACTICE)
+        return message
 
 
 class RNGMode(MagicWord):
@@ -2009,22 +2004,18 @@ class RNGMode(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
-        boss = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
-        if not boss:
+        minigame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if not minigame:
             return "You aren't in a CFO!"
 
-        if args[1] >= len(boss.getParticipantsNotSpectating()) or args[1] < 0:
-            return "Invalid toon index, please enter a valid toon index! (0-%s)" % str(len(boss.getParticipantsNotSpectating()) - 1)
+        if args[1] >= len(minigame.getParticipantsNotSpectating()) or args[1] < 0:
+            return "Invalid toon index, please enter a valid toon index! (0-%s)" % str(len(minigame.getParticipantsNotSpectating()) - 1)
 
-        if args[0]:
-            boss.wantOpeningModifications = True
-            boss.openingModificationsToonIndex = args[1]
-            boss.wantMaxSizeGoons = True
-            return ("RNG => ON")
-        else:
-            boss.wantOpeningModifications = False
-            boss.wantMaxSizeGoons = False
-            return ("RNG => OFF")
+        on_off = 'OFF' if minigame.practiceCheatHandler.wantRNGMode else f'ON'
+        message = f"RNG Mode => {on_off}"
+
+        minigame.practiceCheatHandler.setPracticeParams(CraneGamePracticeCheatAI.RNG_MODE)
+        return message
 
 
 class AimMode(MagicWord):
@@ -2047,14 +2038,11 @@ class AimMode(MagicWord):
         if minigame.gameFSM.getCurrentState().getName() != "play":
             return f"Crane game must be in state 'play', was '{minigame.gameFSM.getCurrentState().getName()}'!"
 
-        on_off = 'OFF' if minigame.safeAimCheat.isEnabled() else f'ON ({safes} safes)'
+        on_off = 'OFF' if minigame.practiceCheatHandler.wantAimPractice else f'ON ({safes} safes)'
         message = f"Safe Aim Practice => {on_off}"
 
-        if minigame.safeAimCheat.isEnabled():
-            minigame.safeAimCheat.disable()
-        else:
-            minigame.safeAimCheat.enable(safes=safes)
-
+        minigame.practiceCheatHandler.numSafesWanted = safes
+        minigame.practiceCheatHandler.setPracticeParams(CraneGamePracticeCheatAI.AIM_PRACTICE)
         return message
 
 

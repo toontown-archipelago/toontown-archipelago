@@ -246,6 +246,11 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI.enterFree(self)
         self.avoidHelmet = 0
         
+    def enterDropped(self, avId, craneId):
+        super().enterDropped(avId, craneId)
+        if self.index != 0:  # Only trigger for non-helmet safes during aim mode
+            self.boss.practiceCheatHandler.handleSafeDropped(self)
+
     def move(self, x, y, z, rotation):
         # Update the safe's position and heading
         self.setPosHpr(x, y, z, rotation, 0, 0)  # Smoothly update position and heading
@@ -265,3 +270,5 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
     def destroyedGoon(self):
         avId = self.air.getAvatarIdFromSender()
         self.boss.d_updateGoonKilledBySafe(avId)
+        
+    

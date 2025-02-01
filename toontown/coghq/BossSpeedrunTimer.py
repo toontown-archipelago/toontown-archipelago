@@ -45,15 +45,17 @@ class BossSpeedrunTimer:
         self.update_time()
         return Task.cont
 
+    def _get_formatted_time(self, total_seconds):
+        min = total_seconds // 60
+        sec = total_seconds % 60
+        frac = int((total_seconds - int(total_seconds)) * 100)
+        return '{:02}:{:02}.{:02}'.format(int(min), int(sec), frac)
+
     def update_time(self):
         now = datetime.now()
         difference = now - self.started
         total_secs = difference.total_seconds() if not self.overridden_time else self.overridden_time
-        min = total_secs // 60
-        sec = total_secs % 60
-        frac = int((total_secs - int(total_secs)) * 100)
-        new_time = '{:02}:{:02}.{:02}'.format(int(min), int(sec), frac)
-        self.time_text.setText(new_time)
+        self.time_text.setText(self._get_formatted_time(total_secs))
 
     def override_time(self, secs):
         self.overridden_time = secs
@@ -106,7 +108,9 @@ class BossSpeedrunTimedTimer(BossSpeedrunTimer):
             self.time_text['fg'] = (0, .7, 0, 1) if self.overridden_time > 0.0 else (.7, 0, 0, 1)
             if self.overridden_time <= 0.0:
                 self.time_text.setText('00:00.00')
-                return
+            else:
+                self.time_text.setText(self._get_formatted_time(self.overridden_time))
+            return
 
         if self.want_overtime:
             self.time_text.hide()
@@ -121,12 +125,7 @@ class BossSpeedrunTimedTimer(BossSpeedrunTimer):
         elif total_secs <= 31:
             self.time_text['fg'] = (.7, 0, 0, 1) if int(total_secs) % 2 == 0 else (.9, .9, .9, .85)
 
-        min = total_secs // 60
-        sec = total_secs % 60
-        frac = int((total_secs - int(total_secs)) * 100)
-
-        new_time = '{:02}:{:02}.{:02}'.format(int(min), int(sec), frac)
-        self.time_text.setText(new_time)
+        self.time_text.setText(self._get_formatted_time(total_secs))
 
     def show_overtime(self):
         self.want_overtime = True

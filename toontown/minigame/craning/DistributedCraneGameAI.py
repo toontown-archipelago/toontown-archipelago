@@ -16,7 +16,7 @@ from toontown.coghq.DistributedCashbotBossSafeAI import DistributedCashbotBossSa
 from toontown.coghq.DistributedCashbotBossSideCraneAI import DistributedCashbotBossSideCraneAI
 from toontown.coghq.DistributedCashbotBossTreasureAI import DistributedCashbotBossTreasureAI
 from toontown.minigame.DistributedMinigameAI import DistributedMinigameAI
-from toontown.minigame.craning.CraneGameSafeAimCheatAI import CraneGameSafeAimCheatAI
+from toontown.minigame.craning.CraneGamePracticeCheatAI import CraneGamePracticeCheatAI
 from toontown.suit.DistributedCashbotBossGoonAI import DistributedCashbotBossGoonAI
 from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
 from toontown.toon.DistributedToonAI import DistributedToonAI
@@ -43,16 +43,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # We need a scene to do the collision detection in.
         self.scene = NodePath('scene')
 
-        self.wantCustomCraneSpawns = False
-        self.wantAimPractice = False
         self.toonsWon = False
-
-        # Controlled RNG parameters, True to enable, False to disable
-        self.wantOpeningModifications = False
-        self.openingModificationsToonIndex = 0
-        self.wantMaxSizeGoons = False
-        self.wantLiveGoonPractice = False
-        self.wantNoStunning = False
 
         self.rollModsOnStart = False
         self.numModsWanted = 5
@@ -60,7 +51,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.customSpawnPositions = {}
         self.goonMinScale = 0.8
         self.goonMaxScale = 2.4
-        self.safesWanted = 5
 
         self.comboTrackers = {}  # Maps avId -> CashbotBossComboTracker instance
 
@@ -97,7 +87,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.currentlyInOvertime = False  # Only true when the game is currently in overtime.
 
         # Instances of "cheats" that can be interacted with to make the crane round behave a certain way.
-        self.safeAimCheat: CraneGameSafeAimCheatAI = CraneGameSafeAimCheatAI(self)
+        self.practiceCheatHandler: CraneGamePracticeCheatAI = CraneGamePracticeCheatAI(self)
 
     def generate(self):
         self.notify.debug("generate")
@@ -548,10 +538,10 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         To limit the amount of RNG present, we prevent goons from spawning from the same side over and over in a row.
         """
 
-        if self.wantOpeningModifications:
+        if self.practiceCheatHandler.wantOpeningModifications:
             # Controlled goon spawning logic, activated through commands.
             # Evaluate the toon position and spawn a goon based on it.
-            avId = self.avIdList[self.openingModificationsToonIndex]
+            avId = self.avIdList[self.practiceCheatHandler.openingModificationsToonIndex]
             toon = self.air.doId2do.get(avId)
             pos = toon.getPos()[1]
             if pos < -315:
@@ -606,7 +596,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             goon_hfov = self.progressRandomValue(70, 80)
             goon_attack_radius = self.progressRandomValue(6, 15)
             goon_strength = int(self.progressRandomValue(self.ruleset.MIN_GOON_DAMAGE, self.ruleset.MAX_GOON_DAMAGE))
-            goon_scale = self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=self.wantMaxSizeGoons)
+            goon_scale = self.progressRandomValue(self.goonMinScale, self.goonMaxScale, noRandom=self.practiceCheatHandler.wantMaxSizeGoons)
 
         # Apply multipliers if necessary
         goon_velocity *= self.ruleset.GOON_SPEED_MULTIPLIER
@@ -641,6 +631,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         # How long to wait for the next goon?
         delayTime = self.progressValue(10, 2)
+        if self.practiceCheatHandler.wantFasterGoonSpawns:
+            delayTime = 4
         self.waitForNextGoon(delayTime)
 
     def progressValue(self, fromValue, toValue):
@@ -738,8 +730,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         # Is the damage high enough to stun? or did a side crane hit a high impact hit?
         hitMeetsStunRequirements = self.boss.considerStun(crane, damage, impact)
-        if self.wantNoStunning:
-            hitMeetsStunRequirements = False
         if hitMeetsStunRequirements:
             # A particularly good hit (when he's not already
             # dizzy) will make the boss dizzy for a little while.
@@ -858,6 +848,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         if self.ruleset.TIMER_MODE:
             taskMgr.doMethodLater(self.ruleset.TIMER_MODE_TIME_LIMIT, self.__timesUp, self.uniqueName('times-up-task'))
 
+        if self.practiceCheatHandler.wantAimPractice:
+            self.practiceCheatHandler.setupAimMode()
+
     # Called when we actually run out of time, simply tell the clients we ran out of time then handle it later
     def __timesUp(self, task=None):
         taskMgr.remove(self.uniqueName('times-up-task'))
@@ -946,9 +939,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def exitPlay(self):
 
-        # Disable any cheats that were activated.
-        self.safeAimCheat.disable()
-
         # Get rid of all the CFO objects.
         self.deleteAllTreasures()
         self.stopGoons()
@@ -981,7 +971,17 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         timeToSend = 0.0 if self.ruleset.TIMER_MODE and not self.toonsWon else actualTime
         self.d_updateTimer(timeToSend)
 
-    def d_updateTimer(self, time):
+    def __calculateTimeToSend(self):
+        """
+        Determine a proper time to send to the client to show on their timers.
+        """
+        craneTime = globalClock.getFrameTime()
+        actualTime = craneTime - self.battleThreeStart
+        return actualTime if not self.ruleset.TIMER_MODE else self.ruleset.TIMER_MODE_TIME_LIMIT - actualTime
+
+    def d_updateTimer(self, time=None):
+        if time is None:
+            time = self.__calculateTimeToSend()
         self.sendUpdate('updateTimer', [time])
 
     def d_restart(self):
