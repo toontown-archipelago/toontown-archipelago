@@ -561,6 +561,7 @@ class DistributedCraneGame(DistributedMinigame):
         self.boss = base.cr.getDo(bossCogId)
         self.boss.game = self
         self.boss.prepareBossForBattle()
+        self.boss.setRuleset(self.ruleset)
 
     def killingBlowDealt(self, avId):
         self.scoreboard.addScore(avId, self.ruleset.POINTS_KILLING_BLOW, CraneLeagueGlobals.KILLING_BLOW_TEXT)
@@ -699,6 +700,9 @@ class DistributedCraneGame(DistributedMinigame):
         # Display Modifiers Heat
         self.heatDisplay.update(self.calculateHeat(), self.modifiers)
         self.heatDisplay.show()
+
+        if self.boss is not None:
+            self.boss.setRuleset(self.ruleset)
 
         # Make all laff meters blink when in uber mode
         messenger.send('uberThreshold', [self.ruleset.LOW_LAFF_BONUS_THRESHOLD])

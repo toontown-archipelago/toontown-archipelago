@@ -601,18 +601,11 @@ class ModifierCFOHPDecreaser(CFORulesetModifierBase):
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
 
     # The combo percentage increase per tier
-    CFO_DECREASE_PER_TIER = [0, 20, 35, 50]
+    CFO_DECREASE_PER_TIER = [0, 20, 35, 50, 60, 70, 75, 80, 85, 90, 95, 99]
 
     def _perc_decrease(self):
         if self.tier <= len(self.CFO_DECREASE_PER_TIER):
             return self.CFO_DECREASE_PER_TIER[self.tier]
-
-        # tier 4 = 65, 5=75 6=80...
-        # todo: grow some brain cells and find formula that does this
-        if self.tier == 4:
-            return 65
-        if self.tier == 5:
-            return 75
 
         # Don't let it go higher than 99%
         return min(99, self.tier * 5 + 50)
@@ -1326,6 +1319,30 @@ class ModifierInstakillGoons(CFORulesetModifierBase):
 
     def apply(self, cfoRuleset):
         cfoRuleset.GOONS_DIE_ON_STOMP = True
+
+
+# (-) Slow and Steady!
+# --------------------------------
+# - Timer is disabled
+class ModifierNoTimeLimit(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 26
+    MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+
+    def getName(self):
+        return 'Slow And Steady!'
+
+    def getDescription(self):
+        return 'The time limit is %(color_start)sdisabled%(color_end)s for this crane round!'
+
+    def getHeat(self):
+        return -100
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.TIMER_MODE = False
 
 
 # Any implemented subclasses of CFORulesetModifierBase cannot go past this point

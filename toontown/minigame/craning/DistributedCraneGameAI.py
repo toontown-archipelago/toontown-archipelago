@@ -640,7 +640,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             elapsed = globalClock.getFrameTime() - self.battleThreeStart
             t = elapsed / float(self.ruleset.TIMER_MODE_TIME_LIMIT)
         else:
-            t0 = float(self.bossDamage) / float(self.ruleset.CFO_MAX_HP)
+            t0 = float(self.getBoss().bossDamage) / float(self.ruleset.CFO_MAX_HP)
             elapsed = globalClock.getFrameTime() - self.battleThreeStart
             t1 = elapsed / float(self.DESPERATION_MODE_ACTIVATE_THRESHOLD)
             t = max(t0, t1)

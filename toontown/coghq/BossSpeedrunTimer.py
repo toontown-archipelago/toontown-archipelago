@@ -26,6 +26,7 @@ class BossSpeedrunTimer:
         self.reset()
         self.overridden_time = None
         self.start_updating()
+        self.hide_overtime()
 
     def reset(self):
         self.started = datetime.now()

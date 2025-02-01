@@ -2077,7 +2077,7 @@ class SetCFOModifiers(MagicWord):
             return "You aren't in the Crane Game!"
 
         # Handle if no arguments given
-        if args[0].lower() == self.VALID_SUBCOMMANDS[0]:
+        if args[0].lower() == self.VALID_SUBCOMMANDS[0] or args[0].lower() not in self.VALID_SUBCOMMANDS:
             return 'Valid subcommands: ' + ', '.join(self.VALID_SUBCOMMANDS)
 
         # Handle if they just want to turn them on or off

@@ -233,3 +233,7 @@ class DistributedCashbotBossStripped(DistributedBossCogStripped):
         obj.unstashCollisions()
 
         self.heldObject = None
+
+    def setRuleset(self, ruleset):
+        self.ruleset = ruleset
+        self.bossHealthBar.update(self.ruleset.CFO_MAX_HP - self.bossDamage, self.ruleset.CFO_MAX_HP)
