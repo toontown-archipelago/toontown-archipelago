@@ -198,6 +198,7 @@ class BossHealthBar:
         pass
 
     def cleanup(self):
+        taskMgr.remove('drain-damage-bar-task')
         if self.bossBarFrame:
             self.bossBarFrame.destroy()
             del self.bossBarFrame
