@@ -229,7 +229,7 @@ class CFORuleset:
         self.TREASURE_POINT_PENALTY_FLAT_RATE = 1  # How much should we deduct? set to 0 or less to make it 1 to 1 with laff gained
 
         # COMBO SETTINGS
-        self.WANT_COMBO_BONUS = True
+        self.WANT_COMBO_BONUS = False
         self.COMBO_DURATION = 2.0  # How long should combos last?
         self.TREASURE_GRAB_RESETS_COMBO = False  # Should picking up a treasure reset a toon's combo?
 
@@ -1397,6 +1397,8 @@ class ScoreReason(Enum):
     REMOVE_HELMET = "DE-SAFE!"
     GOON_KILL = "DESTRUCTION!"
     KILLING_BLOW = 'FINAL BLOW!'
+
+    COIN_FLIP = 'COIN FLIP!'
 
     COMBO = "COMBO!"
 
