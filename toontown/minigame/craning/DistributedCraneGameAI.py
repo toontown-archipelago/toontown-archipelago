@@ -786,6 +786,11 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # Update current winners so we can check for position overtakes (where we should enable overtime)
         self.__updateCurrentWinners()
 
+        # If we are in overtime, check the overtime state. There is a chance this toon overtook 1st place when
+        # everyone is dead and should be declared winner.
+        if self.currentlyInOvertime and reason != CraneLeagueGlobals.ScoreReason.COIN_FLIP:
+            self.__checkOvertimeState()
+
         # Check if we can award an uber bonus for being low laff
         self.__awardUberBonusIfEligible(avId, amount, reason)
 
@@ -950,15 +955,28 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def __checkOvertimeState(self):
         """
-        Analyze the state of the game right now. If all toons are dead, we can now end the game.
+        Analyze the state of the game right now.
+        We can only end overtime if it is impossible for someone else to win.
         """
+        aliveToons = []
         for toon in self.getParticipantsNotSpectating():
             if toon.getHp() > 0:
-                return  # A toon is alive! Don't do anything.
+                aliveToons.append(toon)
 
-        # No toon is alive. End the game.
-        self.toonsWon = False
-        self.gameFSM.request('victory')
+        allToonsAreDead = len(aliveToons) == 0
+        winnerIsAlreadyDetermined = len(aliveToons) == 1 and len(self.currentWinners) == 1 and self.currentWinners[0] == aliveToons[0].getDoId()
+
+        # Absolute freak incident check. Are we STILL tied for first place when everyone died?
+        # If so, assign one lucky person the win.
+        # In the future, we can probably determine this another way, but right now I am lazy.
+        if allToonsAreDead and len(self.currentWinners) > 1:
+            self.addScore(random.choice(self.currentWinners), 1, CraneLeagueGlobals.ScoreReason.COIN_FLIP)
+
+        # End the game if everyone died or if it is literally impossible for the winner to be overtaken.
+        if allToonsAreDead or winnerIsAlreadyDetermined:
+            self.toonsWon = False
+            self.gameFSM.request('victory')
+            return
 
     def __getLaffDrainTaskName(self):
         return self.uniqueName('laff-drain-task')
