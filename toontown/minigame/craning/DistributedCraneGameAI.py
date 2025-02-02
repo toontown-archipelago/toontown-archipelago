@@ -937,6 +937,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def exitPlay(self):
 
+        for comboTracker in self.comboTrackers:
+            comboTracker.finishCombo()
+
         # Get rid of all the CFO objects.
         self.deleteAllTreasures()
         self.stopGoons()

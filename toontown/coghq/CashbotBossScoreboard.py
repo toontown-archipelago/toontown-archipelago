@@ -386,7 +386,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
         return task.done
 
-    def __flush_queued_points(self):
+    def flushQueuedPoints(self):
         taskMgr.remove(f'queued-points-{self.avId}')
         for points in self._doLaterPointGains:
             self.__addScore(points.amount, points.reason, points.callback)
@@ -438,7 +438,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
         self.cancel_inc_ival()
 
     def cleanup(self):
-        self.__flush_queued_points()
+        self.flushQueuedPoints()
         if self.isBeingSpectated:
             self.stopSpectating()
         self.toon_head.cleanup()
@@ -690,3 +690,7 @@ class CashbotBossScoreboard(DirectObject):
         """
         for row in self.rows.values():
             row.disableSpectating()
+
+    def finish(self):
+        for row in self.rows.values():
+            row.flushQueuedPoints()

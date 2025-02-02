@@ -515,10 +515,14 @@ class DistributedCraneGame(DistributedMinigame):
         self.accept("ChatMgr-enterMainMenu", self.chatClosed)
 
     def exitPlay(self):
+
+
+
         if self.boss is not None:
             self.boss.cleanupBossBattle()
 
         self.scoreboard.disableSpectating()
+        self.scoreboard.finish()
 
         self.walkStateData.exit()
 
