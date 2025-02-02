@@ -81,6 +81,6 @@ class DistributedCashbotBossTreasureAI(DistributedSZTreasureAI.DistributedSZTrea
                     if boss.ruleset.TREASURE_POINT_PENALTY_FLAT_RATE > 0:
                         amount = boss.ruleset.TREASURE_POINT_PENALTY_FLAT_RATE
 
-                    self.sendUpdate('deductScoreboardPoints', [avId, -amount])
+                    boss.addScore(avId, -amount, reason=CraneLeagueGlobals.ScoreReason.TOOK_TREASURE)
 
                 av.toonUp(self.healAmount)

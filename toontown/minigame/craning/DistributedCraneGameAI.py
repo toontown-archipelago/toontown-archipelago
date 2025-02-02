@@ -10,6 +10,7 @@ from panda3d.core import CollisionInvSphere, CollisionNode, CollisionSphere, Nod
 
 from toontown.coghq import CraneLeagueGlobals
 from toontown.coghq.CashbotBossComboTracker import CashbotBossComboTracker
+from toontown.coghq.CraneLeagueGlobals import ScoreReason
 from toontown.coghq.DistributedCashbotBossCraneAI import DistributedCashbotBossCraneAI
 from toontown.coghq.DistributedCashbotBossHeavyCraneAI import DistributedCashbotBossHeavyCraneAI
 from toontown.coghq.DistributedCashbotBossSafeAI import DistributedCashbotBossSafeAI
@@ -334,10 +335,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             self.__checkOvertimeState()
             return
 
-        # Reset the toon's combo
-        ct = self.comboTrackers.get(toon.doId)
-        if ct:
-            ct.resetCombo()
+        # Toons are expected to die in overtime. Only penalize them if it is in the normal round.
+        self.addScore(toon.doId, self.ruleset.POINTS_PENALTY_GO_SAD, reason=ScoreReason.WENT_SAD)
 
         # Add a task to revive the toon.
         taskMgr.doMethodLater(self.ruleset.REVIVE_TOONS_TIME, self.reviveToon,
@@ -354,15 +353,6 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
     def d_updateCombo(self, avId, comboLength):
         self.sendUpdate('updateCombo', [avId, comboLength])
-
-    def d_awardCombo(self, avId, comboLength, amount):
-        self.sendUpdate('awardCombo', [avId, comboLength, amount])
-
-    def d_updateGoonKilledBySafe(self, avId):
-        self.sendUpdate('goonKilledBySafe', [avId])
-
-    def d_updateUnstun(self, avId):
-        self.sendUpdate('updateUnstun', [avId])
 
     def handleExitedAvatar(self, avId):
         taskMgr.remove(self.uniqueName(f"reviveToon-{avId}"))
@@ -709,15 +699,15 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         # Award bonus points for hits with maximum impact
         if impact == 1.0:
-            self.d_updateMaxImpactHits(avId)
-        self.d_updateDamageDealt(avId, damage)
+            self.addScore(avId, self.ruleset.POINTS_IMPACT, reason=CraneLeagueGlobals.ScoreReason.FULL_IMPACT)
+        self.addScore(avId, damage)
 
         comboTracker = self.comboTrackers[avId]
         comboTracker.incrementCombo((comboTracker.combo + 1.0) / 10.0 * damage)
 
         # The CFO has been defeated, proceed to Victory state
         if self.boss.bossDamage >= self.ruleset.CFO_MAX_HP:
-            self.d_killingBlowDealt(avId)
+            self.addScore(avId, self.ruleset.POINTS_KILLING_BLOW, CraneLeagueGlobals.ScoreReason.KILLING_BLOW)
             self.toonsWon = True
             self.gameFSM.request('victory')
             return
@@ -735,7 +725,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             # dizzy) will make the boss dizzy for a little while.
             delayTime = self.progressValue(20, 5)
             self.boss.b_setAttackCode(ToontownGlobals.BossCogDizzy, delayTime=delayTime)
-            self.d_updateStunCount(avId, craneId)
+            isSideCrane = isinstance(crane, DistributedCashbotBossSideCraneAI)
+            reason = CraneLeagueGlobals.ScoreReason.SIDE_STUN if isSideCrane else CraneLeagueGlobals.ScoreReason.STUN
+            self.addScore(avId, crane.getPointsForStun(), reason=reason)
         else:
 
             if self.ruleset.CFO_FLINCHES_ON_HIT:
@@ -753,36 +745,42 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         """
         pass
 
-    def d_killingBlowDealt(self, avId):
-        self.scoreDict[avId] += self.ruleset.POINTS_KILLING_BLOW
-        self.sendUpdate('killingBlowDealt', [avId])
+    def addScore(self, avId: int, amount: int, reason: CraneLeagueGlobals.ScoreReason = CraneLeagueGlobals.ScoreReason.DEFAULT):
 
-    def d_updateDamageDealt(self, avId, damageDealt):
-        self.scoreDict[avId] += damageDealt
-        self.sendUpdate('updateDamageDealt', [avId, damageDealt])
+        if amount == 0:
+            return
+        if avId not in self.scoreDict:
+            return
 
-    def d_updateStunCount(self, avId, craneId):
-        crane = self.air.doId2do.get(craneId)
-        if crane:
-            self.scoreDict[avId] += crane.getPointsForStun()
-        self.sendUpdate('updateStunCount', [avId, craneId])
-
-    def d_updateGoonsStomped(self, avId):
-        self.scoreDict[avId] += self.ruleset.POINTS_GOON_STOMP
-        self.sendUpdate('updateGoonsStomped', [avId])
-
-    # call with 10 when we take a safe off, -20 when we put a safe on
-    def d_updateSafePoints(self, avId, amount):
         self.scoreDict[avId] += amount
-        self.sendUpdate('updateSafePoints', [avId, amount])
+        self.d_addScore(avId, amount, reason)
 
-    def d_updateMaxImpactHits(self, avId):
-        self.scoreDict[avId] += self.ruleset.POINTS_IMPACT
-        self.sendUpdate('updateMaxImpactHits', [avId])
+        self.__awardUberBonusIfEligible(avId, amount, reason)
 
-    def d_updateLowImpactHits(self, avId):
-        self.scoreDict[avId] += self.ruleset.POINTS_PENALTY_SANDBAG
-        self.sendUpdate('updateLowImpactHits', [avId])
+    def __awardUberBonusIfEligible(self, avId, amount, reason):
+        if not self.ruleset.WANT_LOW_LAFF_BONUS:
+            return
+
+        if reason.ignore_uber_bonus():
+            return
+
+        toon = simbase.air.getDo(avId)
+        if toon is None:
+            return
+
+        if toon.getHp() > self.ruleset.LOW_LAFF_BONUS_THRESHOLD:
+            return
+
+        uberAmount = int(self.ruleset.LOW_LAFF_BONUS * amount)
+        if uberAmount == 0:
+            return
+
+        # Add additional score if uber bonus is on.
+        self.addScore(avId, uberAmount, reason=CraneLeagueGlobals.ScoreReason.LOW_LAFF)
+
+
+    def d_addScore(self, avId: int, amount: int, reason: CraneLeagueGlobals.ScoreReason = CraneLeagueGlobals.ScoreReason.DEFAULT):
+        self.sendUpdate('addScore', [avId, amount, reason.to_astron()])
 
     def d_setCraneSpawn(self, want, spawn, toonId):
         self.sendUpdate('setCraneSpawn', [want, spawn, toonId])

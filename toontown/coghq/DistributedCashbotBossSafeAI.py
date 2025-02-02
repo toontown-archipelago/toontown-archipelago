@@ -82,7 +82,7 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
             return
 
         if impact <= self.getMinImpact():
-            self.boss.d_updateLowImpactHits(avId)
+            self.boss.addScore(avId, self.boss.ruleset.POINTS_PENALTY_SANDBAG, reason=CraneLeagueGlobals.ScoreReason.LOW_IMPACT)
             return
 
         # The client reports successfully striking the boss in the
@@ -112,14 +112,14 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
 
                 self.demand('Grabbed', self.boss.getBoss().doId, self.boss.getBoss().doId)
                 self.boss.getBoss().heldObject = self
-                self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_PENALTY_SAFEHEAD)
+
+                self.boss.addScore(avId, self.boss.ruleset.POINTS_PENALTY_SAFEHEAD, reason=CraneLeagueGlobals.ScoreReason.APPLIED_HELMET)
 
                 # Don't allow this toon to safe helmet again for some period of time.
                 self.boss.getBoss().addSafeHelmetCooldown(avId)
                 
         elif impact >= ToontownGlobals.CashbotBossSafeKnockImpact:
-            self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_DESAFE)
-
+            self.boss.addScore(avId, self.boss.ruleset.POINTS_DESAFE,reason=CraneLeagueGlobals.ScoreReason.REMOVE_HELMET)
             boss = self.boss.getBoss()
             boss.heldObject.demand('Dropped', avId, self.boss.doId)
             boss.heldObject.avoidHelmet = 1
@@ -269,6 +269,4 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
     # Called from client when a safe destroys a goon
     def destroyedGoon(self):
         avId = self.air.getAvatarIdFromSender()
-        self.boss.d_updateGoonKilledBySafe(avId)
-        
-    
+        self.boss.addScore(avId, self.boss.ruleset.POINTS_GOON_KILLED_BY_SAFE, reason=CraneLeagueGlobals.ScoreReason.GOON_KILL)

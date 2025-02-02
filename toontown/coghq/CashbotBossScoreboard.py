@@ -1,3 +1,4 @@
+import dataclasses
 
 from direct.gui.DirectGui import *
 from panda3d.core import *
@@ -162,6 +163,13 @@ def getScoreboardTextRow(scoreboard_frame, unique_id, default_text='', frame_col
     return n, p  # Modify n for actual text properties, p for scale/pos
 
 
+@dataclasses.dataclass
+class CachedPointInstance:
+    reason: CraneLeagueGlobals.ScoreReason
+    amount: int
+    callback: object
+
+
 class CashbotBossScoreboardToonRow(DirectObject):
     INSTANCES = []
 
@@ -241,6 +249,9 @@ class CashbotBossScoreboardToonRow(DirectObject):
         self.allowSpectating = False
 
         self.inc_ival = None
+
+        self._doLaterPointGains: list[CachedPointInstance] = []
+
 
     def enableSpectating(self):
         self.allowSpectating = True
@@ -334,8 +345,19 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
         self.inc_ival = None
 
-    def addScore(self, amount, reason=''):
+    def addScore(self, amount, reason: CraneLeagueGlobals.ScoreReason, callback):
 
+        # Check if the reason wants a delay
+        if reason.want_delay():
+            self._doLaterPointGains.append(CachedPointInstance(reason, amount, callback))
+            # If this is the only thing queued up, start a new task
+            if len(self._doLaterPointGains) == 1:
+                taskMgr.doMethodLater(.5, self.__process_queued_points, f'queued-points-{self.avId}')
+            return
+
+        self.__addScore(amount, reason, callback)
+
+    def __addScore(self, amount, reason, callback, task=None):
         # First update the amount
         old = self.points
         self.points += amount
@@ -345,15 +367,36 @@ class CashbotBossScoreboardToonRow(DirectObject):
 
         # if we lost points make a red popup, if we gained green popup
         if diff > 0:
-            doGainAnimation(self, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason)
+            doGainAnimation(self, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason.value)
         elif diff < 0:
-            doLossAnimation(self, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason)
+            doLossAnimation(self, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason.value)
+
+        callback()
+
+    def __process_queued_points(self, task):
+
+        if len(self._doLaterPointGains) <= 0:
+            return task.done
+
+        next = self._doLaterPointGains.pop(0)
+        self.__addScore(next.amount, next.reason, next.callback)
+
+        if len(self._doLaterPointGains) > 0:
+            return task.again
+
+        return task.done
+
+    def __flush_queued_points(self):
+        taskMgr.remove(f'queued-points-{self.avId}')
+        for points in self._doLaterPointGains:
+            self.__addScore(points.amount, points.reason, points.callback)
+        self._doLaterPointGains.clear()
 
     def updatePosition(self):
         # Move to new position based on place
         oldPos = Point3(self.frame.getX(), self.frame.getY(), self.frame.getZ())
         newPos = Point3(self.frame.getX(), self.frame.getY(), self.getYFromPlaceOffset(self.FRAME_Y_FIRST_PLACE))
-        LerpPosInterval(self.frame, duration=.5, pos=newPos, startPos=oldPos, blendType='easeInOut').start()
+        LerpPosInterval(self.frame, duration=.5, pos=newPos, startPos=oldPos, blendType='easeOut').start()
 
     def updateExtraStatsLabel(self):
         s = '%-7s %-7s %-7s' % (self.damage, self.stuns, self.stomps)
@@ -395,6 +438,7 @@ class CashbotBossScoreboardToonRow(DirectObject):
         self.cancel_inc_ival()
 
     def cleanup(self):
+        self.__flush_queued_points()
         if self.isBeingSpectated:
             self.stopSpectating()
         self.toon_head.cleanup()
@@ -505,34 +549,18 @@ class CashbotBossScoreboard(DirectObject):
 
         self.hide()
 
-    def __addScoreLater(self, avId, amount, task=None):
-        self.addScore(avId, amount, reason=CraneLeagueGlobals.LOW_LAFF_BONUS_TEXT, ignoreLaff=True)
-
-    # Positive/negative amount of points to add to a player
-    def addScore(self, avId, amount, reason='', ignoreLaff=False):
-
-        # If we don't want to include penalties for low laff bonuses and the amount is negative ignore laff
-        if not self.ruleset.LOW_LAFF_BONUS_INCLUDE_PENALTIES and amount <= 0:
-            ignoreLaff = True
-
-        # Should we consider a low laff bonus?
-        if not ignoreLaff and self.ruleset.WANT_LOW_LAFF_BONUS:
-            av = base.cr.doId2do.get(avId)
-            if av and av.getHp() <= self.ruleset.LOW_LAFF_BONUS_THRESHOLD:
-                taskMgr.doMethodLater(.75, self.__addScoreLater, 'delayedScore',
-                                      extraArgs=[avId, int(amount * self.ruleset.LOW_LAFF_BONUS)])
-
-        # If we don't get an integer
-        if not isinstance(amount, int):
-            raise Exception("amount should be an int! got " + type(amount))
-
+    def addScore(self, avId, amount, reason: CraneLeagueGlobals.ScoreReason = CraneLeagueGlobals.ScoreReason.DEFAULT):
+        """
+        Adds score for a toon. Does additional checking and also will delay "special" point reasons if many are being
+        received at once.
+        """
         # If it is 0 (could be set by developer) don't do anything
         if amount == 0:
             return
 
+        # Go ahead and add the score
         if avId in self.rows:
-            self.rows[avId].addScore(amount, reason=reason)
-            self.updatePlacements()
+            self.rows[avId].addScore(amount, reason=reason, callback=self.updatePlacements)
 
     def updatePlacements(self):
         # make a list of all the objects

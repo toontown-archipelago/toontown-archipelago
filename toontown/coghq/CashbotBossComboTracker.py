@@ -39,7 +39,7 @@ class CashbotBossComboTracker:
 
     def __awardCombo(self):
         if self.boss.ruleset.WANT_COMBO_BONUS:
-            self.boss.d_awardCombo(self.avId, self.combo, int(math.ceil(self.pointBonus)))
+            self.boss.addPoints(self.avId, int(math.ceil(self.pointBonus)), reason=CraneLeagueGlobals.ScoreReason.COMBO)
         self.resetCombo()
 
     def cleanup(self):

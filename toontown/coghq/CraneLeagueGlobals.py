@@ -1,4 +1,6 @@
 # A file to put all crane league settings in one place for easy adjustment
+from enum import Enum
+
 from toontown.toonbase import ToontownGlobals
 
 SPECIAL_MODIFIER_CHANCE = 3  # % chance you want to roll a special modifier for a cfo  *** server side only
@@ -82,22 +84,22 @@ TOON_SPAWN_POSITIONS = [
 
 ALL_CRANE_POSHPR = NORMAL_CRANE_POSHPR + SIDE_CRANE_POSHPR + HEAVY_CRANE_POSHPR
 
-LOW_LAFF_BONUS_TEXT = "UBER BONUS"  # Text to display alongside a low laff bonus
+LOW_LAFF = "UBER BONUS"  # Text to display alongside a low laff bonus
 
 # Text to display in popup text for misc point gains
-GOON_STOMP_TEXT = 'STOMP!'
-STUN_TEXT = "STUN!"
-SIDECRANE_STUN_TEXT = "SIDE-STUN!"
-IMPACT_TEXT = "PERFECT!"
-DESAFE_TEXT = "DE-SAFE!"
-GOON_KILLED_BY_SAFE_TEXT = "DESTRUCTION!"
-KILLING_BLOW_TEXT = 'FINAL BLOW!'
+GOON_STOMP = 'STOMP!'
+STUN = "STUN!"
+SIDE_STUN = "SIDE-STUN!"
+FULL_IMPACT = "PERFECT!"
+REMOVE_HELMET = "DE-SAFE!"
+GOON_KILL = "DESTRUCTION!"
+KILLING_BLOW = 'FINAL BLOW!'
 
-PENALTY_SAFEHEAD_TEXT = "SAFED!"
-PENALTY_TREASURE_TEXT = 'TREASURE!'
-PENALTY_GO_SAD_TEXT = "DIED!"
-PENALTY_SANDBAG_TEXT = 'SLOPPY!'
-PENALTY_UNSTUN_TEXT = 'UN-STUN!'
+APPLIED_HELMET = "SAFED!"
+TOOK_TREASURE = 'TREASURE!'
+WENT_SAD = "DIED!"
+LOW_IMPACT = 'SLOPPY!'
+UNSTUN = 'UN-STUN!'
 
 
 # Ruleset
@@ -1374,3 +1376,67 @@ NON_SPECIAL_MODIFIER_CLASSES = HURTFUL_MODIFIER_CLASSES + HELPFUL_MODIFIER_CLASS
 #     i = c()
 #     d = i.getDescription() % {'color_start': '', 'color_end': ''}
 #     print('(ID:%s) %s\n%s\n' % (e, i.getName(), d))
+
+
+class ScoreReason(Enum):
+
+
+    DEFAULT = ""
+
+    LOW_LAFF = "UBER BONUS"  # Text to display alongside a low laff bonus
+
+    # Text to display in popup text for misc point gains
+    GOON_STOMP = 'STOMP!'
+    STUN = "STUN!"
+    SIDE_STUN = "SIDE-STUN!"
+    FULL_IMPACT = "PERFECT!"
+    REMOVE_HELMET = "DE-SAFE!"
+    GOON_KILL = "DESTRUCTION!"
+    KILLING_BLOW = 'FINAL BLOW!'
+
+    COMBO = "COMBO!"
+
+    APPLIED_HELMET = "SAFED!"
+    TOOK_TREASURE = 'TREASURE!'
+    WENT_SAD = "DIED!"
+    LOW_IMPACT = 'SLOPPY!'
+    UNSTUN = 'UN-STUN!'
+
+    # What should be sent over astron?
+    def to_astron(self) -> str:
+        return self.name
+
+    # What should be received and converted via astron?
+    # Returns a DeathReason enum or None
+    @classmethod
+    def from_astron(cls, name) -> Enum | None:
+        try:
+            return cls[name]
+        except KeyError:
+            return None
+
+    def want_delay(self) -> bool:
+        """
+        Determines if a score reason should have a "delay" when being awarded. This prevents score reasons that are
+        usually always awarded alongside another to be able to be read.
+        """
+        return self in {
+            ScoreReason.STUN,
+            ScoreReason.SIDE_STUN,
+            ScoreReason.COMBO,
+            ScoreReason.FULL_IMPACT,
+            ScoreReason.LOW_LAFF,
+        }
+
+    def ignore_uber_bonus(self) -> bool:
+        """
+        Returns True if this reason should be ignored when considering a low laff bonus.
+        Things such as losing laff, other uber bonuses, etc should be ignored.
+        """
+        return self in {
+            ScoreReason.LOW_LAFF,
+            ScoreReason.WENT_SAD,
+            ScoreReason.APPLIED_HELMET,
+            ScoreReason.TOOK_TREASURE,
+            ScoreReason.LOW_IMPACT
+        }

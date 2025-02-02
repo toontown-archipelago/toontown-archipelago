@@ -198,7 +198,7 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
         isStunned = self.attackCode == ToontownGlobals.BossCogDizzy
         # Are we setting to swat?
         if isStunned and attackCode == ToontownGlobals.BossCogElectricFence:
-            self.game.d_updateUnstun(avId)
+            self.game.addScore(avId, self.game.ruleset.POINTS_PENALTY_UNSTUN, reason=CraneLeagueGlobals.UNSTUN)
 
         self.d_showZapToon(avId, x, y, z, h, p, r, attackCode, timestamp)
 

@@ -563,47 +563,16 @@ class DistributedCraneGame(DistributedMinigame):
         self.boss.prepareBossForBattle()
         self.boss.setRuleset(self.ruleset)
 
-    def killingBlowDealt(self, avId):
-        self.scoreboard.addScore(avId, self.ruleset.POINTS_KILLING_BLOW, CraneLeagueGlobals.KILLING_BLOW_TEXT)
+    def addScore(self, avId: int, score: int, reason: str):
 
-    def updateDamageDealt(self, avId, damageDealt):
-        self.scoreboard.addScore(avId, damageDealt)
-        self.scoreboard.addDamage(avId, damageDealt)
-
-    def updateStunCount(self, avId, craneId):
-        crane = base.cr.doId2do.get(craneId)
-        if crane:
-            text = CraneLeagueGlobals.SIDECRANE_STUN_TEXT if isinstance(crane, DistributedCashbotBossSideCrane) else CraneLeagueGlobals.STUN_TEXT
-            self.scoreboard.addScore(avId, crane.getPointsForStun(), text)
-            self.scoreboard.addStun(avId)
-
-    def updateGoonsStomped(self, avId):
-        self.scoreboard.addScore(avId, self.ruleset.POINTS_GOON_STOMP, CraneLeagueGlobals.GOON_STOMP_TEXT)
-        self.scoreboard.addStomp(avId)
-
-    def updateSafePoints(self, avId, points):
-        self.scoreboard.addScore(avId, points,
-                                 CraneLeagueGlobals.PENALTY_SAFEHEAD_TEXT if points < 0 else CraneLeagueGlobals.DESAFE_TEXT)
-
-    def updateMaxImpactHits(self, avId):
-        self.scoreboard.addScore(avId, self.ruleset.POINTS_IMPACT, CraneLeagueGlobals.IMPACT_TEXT)
-
-    def updateLowImpactHits(self, avId):
-        self.scoreboard.addScore(avId, self.ruleset.POINTS_PENALTY_SANDBAG, CraneLeagueGlobals.PENALTY_SANDBAG_TEXT)
+        # Convert the reason into a valid reason enum that our scoreboard accepts.
+        convertedReason = CraneLeagueGlobals.ScoreReason.from_astron(reason)
+        if convertedReason is None:
+            convertedReason = CraneLeagueGlobals.ScoreReason.DEFAULT
+        self.scoreboard.addScore(avId, score, convertedReason)
 
     def updateCombo(self, avId, comboLength):
         self.scoreboard.setCombo(avId, comboLength)
-
-    def awardCombo(self, avId, comboLength, amount):
-        self.scoreboard.addScore(avId, amount, reason='COMBO x' + str(comboLength) + '!')
-
-    def goonKilledBySafe(self, avId):
-        self.scoreboard.addScore(avId, amount=self.ruleset.POINTS_GOON_KILLED_BY_SAFE,
-                                 reason=CraneLeagueGlobals.GOON_KILLED_BY_SAFE_TEXT)
-
-    def updateUnstun(self, avId):
-        self.scoreboard.addScore(avId, amount=self.ruleset.POINTS_PENALTY_UNSTUN,
-                                 reason=CraneLeagueGlobals.PENALTY_UNSTUN_TEXT)
 
     def updateTimer(self, secs):
         self.bossSpeedrunTimer.override_time(secs)
@@ -653,9 +622,6 @@ class DistributedCraneGame(DistributedMinigame):
             crane.demand('Off')
 
     def toonDied(self, avId):
-        if not self.overtimeActive:
-            self.scoreboard.addScore(avId, self.ruleset.POINTS_PENALTY_GO_SAD, CraneLeagueGlobals.PENALTY_GO_SAD_TEXT,
-                                     ignoreLaff=True)
         self.scoreboard.toonDied(avId)
 
     def revivedToon(self, avId):

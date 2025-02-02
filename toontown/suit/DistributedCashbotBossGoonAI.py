@@ -336,7 +336,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
 
         if self.boss.ruleset.GOONS_DIE_ON_STOMP:
             self.b_destroyGoon()
-            self.boss.d_updateGoonKilledBySafe(avId)
+            self.boss.addScore(avId, self.boss.ruleset.POINTS_GOON_KILLED_BY_SAFE, reason=CraneLeagueGlobals.GOON_KILL)
             return
             
         # Stop the goon right where he is.
@@ -346,7 +346,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         self.boss.makeTreasure(self)
         
         # Update stats and add track combo for points
-        self.boss.d_updateGoonsStomped(avId)
+        self.boss.addScore(avId, self.boss.ruleset.POINTS_GOON_STOMP, reason=CraneLeagueGlobals.ScoreReason.GOON_STOMP)
         comboTracker = self.boss.comboTrackers[avId]
         comboTracker.incrementCombo(math.ceil((comboTracker.combo+1.0) / 4.0))
         
@@ -362,7 +362,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
             return
 
         if impact <= self.getMinImpact():
-            self.boss.d_updateLowImpactHits(avId)
+            self.boss.addScore(avId, self.boss.ruleset.POINTS_PENALTY_SANDBAG, reason=CraneLeagueGlobals.ScoreReason.LOW_IMPACT)
             return
 
         avatar = self.air.doId2do.get(avId)
