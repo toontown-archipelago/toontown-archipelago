@@ -371,6 +371,14 @@ class CashbotBossScoreboardToonRow(DirectObject):
         elif diff < 0:
             doLossAnimation(self, diff, old, self.points, localAvFlag=self.avId == base.localAvatar.doId, reason=reason.value)
 
+        # This is temporary until we bind the scoreboard to display the counts of certain "events"
+        if reason == CraneLeagueGlobals.ScoreReason.GOON_STOMP:
+            self.addStomp()
+        elif reason == CraneLeagueGlobals.ScoreReason.DEFAULT:
+            self.addDamage(amount)
+        elif reason in (CraneLeagueGlobals.ScoreReason.STUN, CraneLeagueGlobals.ScoreReason.SIDE_STUN):
+            self.addStun()
+
         callback()
 
     def __process_queued_points(self, task):
