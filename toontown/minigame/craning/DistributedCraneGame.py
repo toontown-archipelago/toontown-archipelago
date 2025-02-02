@@ -587,10 +587,11 @@ class DistributedCraneGame(DistributedMinigame):
         self.gameFSM.request("victory")
 
     def setOvertime(self, flag):
-        if flag:
+        if flag == CraneLeagueGlobals.OVERTIME_FLAG_START:
             self.overtimeActive = True
-            self.bossSpeedrunTimer.show_overtime()
             self.ruleset.REVIVE_TOONS_UPON_DEATH = False
+        elif flag == CraneLeagueGlobals.OVERTIME_FLAG_ENABLE:
+            self.bossSpeedrunTimer.show_overtime()
         else:
             self.overtimeActive = False
             self.bossSpeedrunTimer.hide_overtime()

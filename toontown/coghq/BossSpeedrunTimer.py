@@ -96,7 +96,27 @@ class BossSpeedrunTimedTimer(BossSpeedrunTimer):
         BossSpeedrunTimer.reset(self)
         self.time_text['fg'] = (.9, .9, .9, .85)
 
+    def _determine_color(self, seconds):
+        # If a time is overridden, it is red if it is 0 and green otherwise.
+        if self.overridden_time is not None:
+            return (0, .7, 0, 1) if self.overridden_time > 0.0 else (.7, 0, 0, 1)
+
+        # If overtime is going to happen, the timer will always be orange.
+        if self.want_overtime:
+            return .9, .75, .4, .85
+
+        # Color is determined by how much time is left under normal circumstances.
+        if seconds <= 10:
+            frac_secs = int((seconds - int(seconds))*100)
+            return (.7, 0, 0, .85) if frac_secs < 50 else (.9, .9, .9, .85)
+        elif seconds <= 31:
+            return (.7, 0, 0, 1) if int(seconds) % 2 == 0 else (.9, .9, .9, .85)
+        else:
+            return .9, .9, .9, .85
+
     def update_time(self):
+
+        # Run some math that we need
         now = datetime.now()
         end = self.started + timedelta(seconds=self.time_limit)
         time_left = end - now
@@ -104,28 +124,30 @@ class BossSpeedrunTimedTimer(BossSpeedrunTimer):
         if total_secs < 0:
             total_secs = 0
 
+        # Figure out the color we want to set the timer to
+        self.time_text['fg'] = self._determine_color(total_secs)
+
+        # If a time is overridden, always prefer to show that time.
         if self.overridden_time is not None:
-            self.time_text['fg'] = (0, .7, 0, 1) if self.overridden_time > 0.0 else (.7, 0, 0, 1)
-            if self.overridden_time <= 0.0:
-                self.time_text.setText('00:00.00')
-            else:
-                self.time_text.setText(self._get_formatted_time(self.overridden_time))
+            self.overtime_text.hide()
+            self.time_text.show()
+            self.time_text.setText('00:00.00' if self.overridden_time <= 0 else self._get_formatted_time(self.overridden_time))
             return
 
-        if self.want_overtime:
+        # Timer is ticking down normally. 3 things can happen:
+        # - Time is running down normally. Overtime is not set to happen.
+        # - Time is left but overtime is GOING to happen. This is handled for us when determining a color.
+        # - Time is out. Overtime is happening. Show the overtime label and hide the timer.
+        self.time_text.setText('00:00.00' if total_secs <= 0 else self._get_formatted_time(total_secs))
+
+        # If we are out of time but overtime is going to happen, show the overtime label and not the time left.
+        if total_secs <= 0 and self.want_overtime:
             self.time_text.hide()
             super().show_overtime()
+        # If we either have time left or overtime is not happening show the normal time.
         else:
             self.time_text.show()
             super().hide_overtime()
-
-        if total_secs <= 10:
-            frac_secs = int((total_secs - int(total_secs))*100)
-            self.time_text['fg'] = (.7, 0, 0, 1) if frac_secs < 50 else (.9, .9, .9, .85)
-        elif total_secs <= 31:
-            self.time_text['fg'] = (.7, 0, 0, 1) if int(total_secs) % 2 == 0 else (.9, .9, .9, .85)
-
-        self.time_text.setText(self._get_formatted_time(total_secs))
 
     def show_overtime(self):
         self.want_overtime = True

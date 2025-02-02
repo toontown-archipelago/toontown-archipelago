@@ -27,6 +27,9 @@ from toontown.toonbase import ToontownGlobals
 class DistributedCraneGameAI(DistributedMinigameAI):
     DESPERATION_MODE_ACTIVATE_THRESHOLD = 1800
 
+    # If time limit is enabled, how many seconds should be remaining to activate when an overtake happens?
+    OVERTIME_OVERTAKE_ACTIVATION_THRESHOLD = 10
+
     def __init__(self, air, minigameId):
         DistributedMinigameAI.__init__(self, air, minigameId)
 
@@ -84,8 +87,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.addChildGameFSM(self.gameFSM)
 
         # State tracking related to the overtime mechanic.
-        self.overtimeWillHappen = True  # Setting this to True will cause the CFO to enter "overtime" mode when time runs out.
+        self.overtimeWillHappen = False  # Setting this to True will cause the CFO to enter "overtime" mode when time runs out.
         self.currentlyInOvertime = False  # Only true when the game is currently in overtime.
+        self.currentWinners: list[int] = []  # Keeps track of who's in the lead so we know when to trigger overtime.
 
         # Instances of "cheats" that can be interacted with to make the crane round behave a certain way.
         self.practiceCheatHandler: CraneGamePracticeCheatAI = CraneGamePracticeCheatAI(self)
@@ -341,6 +345,30 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # Add a task to revive the toon.
         taskMgr.doMethodLater(self.ruleset.REVIVE_TOONS_TIME, self.reviveToon,
                               self.uniqueName(f"reviveToon-{toon.doId}"), extraArgs=[toon.doId])
+
+    def getHighestScorers(self):
+        """
+        Gets a list of who is currently in the lead.
+        If the list is empty, we have no players playing.
+        If the list has one person, someone is in the lead.
+        If the last has multiple people, they are tied for 1st place.
+        """
+
+        # Are there no players?
+        if len(self.scoreDict) <= 0:
+            return []
+
+        # Create a reversed dict where we map score to the players who have that score.
+        results = {}
+        highestScore = -999_999
+        for player, score in self.scoreDict.items():
+            toonsWithScore = results.get(score, [])
+            toonsWithScore.append(player)
+            results[score] = toonsWithScore
+            highestScore = max(highestScore, score)
+
+        # Query the players with the highest score.
+        return results[highestScore]
 
     def reviveToon(self, toonId: int) -> None:
         toon = self.air.getDo(toonId)
@@ -755,7 +783,30 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.scoreDict[avId] += amount
         self.d_addScore(avId, amount, reason)
 
+        # Update current winners so we can check for position overtakes (where we should enable overtime)
+        self.__updateCurrentWinners()
+
+        # Check if we can award an uber bonus for being low laff
         self.__awardUberBonusIfEligible(avId, amount, reason)
+
+    def __updateCurrentWinners(self):
+
+        newLeaders = self.getHighestScorers()
+
+        # Perform a quick check for overtime enabling.
+        # This check basically is making sure that we are the clock is running low and there is a new leader to check.
+        if self.ruleset.TIMER_MODE and not self.overtimeWillHappen and len(newLeaders) > 0 and self.__calculateTimeToSend() < self.OVERTIME_OVERTAKE_ACTIVATION_THRESHOLD:
+
+            # Is there a tie (or was there a tie)?
+            tie = len(newLeaders) > 1 or len(self.currentWinners) > 1
+            # Is the new leader not the previous?
+            overtake = newLeaders[0] != self.currentWinners[0]
+            if tie or overtake:
+                self.enableOvertime()
+
+        # Update who is currently winning
+        self.currentWinners = newLeaders
+
 
     def __awardUberBonusIfEligible(self, avId, amount, reason):
         if not self.ruleset.WANT_LOW_LAFF_BONUS:
@@ -846,6 +897,12 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         if self.ruleset.TIMER_MODE:
             taskMgr.doMethodLater(self.ruleset.TIMER_MODE_TIME_LIMIT, self.__timesUp, self.uniqueName('times-up-task'))
 
+        for toon, score in self.scoreDict.items():
+            self.scoreDict[toon] = 0
+        self.currentWinners.clear()
+
+        self.d_setOvertime(CraneLeagueGlobals.OVERTIME_FLAG_DISABLE)
+
         if self.practiceCheatHandler.wantAimPractice:
             self.practiceCheatHandler.setupAimMode()
 
@@ -866,14 +923,14 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         Marks this game in progress to enter overtime when time is up.
         """
         self.overtimeWillHappen = True
-        self.d_setOvertime(True)
+        self.d_setOvertime(CraneLeagueGlobals.OVERTIME_FLAG_ENABLE)
 
     def __enterOvertimeMode(self):
         """
         Adjust the state of the boss to force this game to find a winner with more extreme measures.
         """
         self.currentlyInOvertime = True
-        self.d_setOvertime(True)
+        self.d_setOvertime(CraneLeagueGlobals.OVERTIME_FLAG_START)
 
         self.startDrainingLaff(.5)
 
@@ -951,8 +1008,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         self.stopDrainingLaff()
         self.currentlyInOvertime = False
-        # self.overtimeWillHappen = False  # todo, uncomment when overtime logic is in place
-        self.d_setOvertime(False)
+        self.overtimeWillHappen = False
+        self.d_setOvertime(CraneLeagueGlobals.OVERTIME_FLAG_DISABLE)
 
         # Ignore death messages.
         self.ignoreToonDeaths()
