@@ -1,3 +1,5 @@
+import time
+
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
 from toontown.groups.GroupBase import GroupBase
@@ -9,6 +11,7 @@ class DistributedGroupAI(DistributedObjectAI, GroupBase):
     def __init__(self, air, leader: DistributedToonAI):
         DistributedObjectAI.__init__(self, air)
         GroupBase.__init__(self, leader.getDoId())
+        self.activityStartCooldown = 0
 
     def getToons(self):
         """
@@ -23,6 +26,22 @@ class DistributedGroupAI(DistributedObjectAI, GroupBase):
             dos.append(toon)
 
         return dos
+
+    def announce(self, message: str) -> None:
+        """
+        Announces a message to the toons in the group.
+        """
+        self.d_announce(message)
+
+    def startActivity(self) -> None:
+
+        if self.activityStartCooldown > time.time():
+            return
+
+        self.announce("Activity starting...")
+        self.activityStartCooldown = time.time() + 6
+        minigame = self.air.minigameMgr.createMinigame(self.getMembers(), self.zoneId, newbieIds=[], startingVotes=None, metagameRound=-1)
+        self.d_setMinigameZone(minigame)
 
     """
     Astron Methods (Outgoing)
@@ -48,3 +67,17 @@ class DistributedGroupAI(DistributedObjectAI, GroupBase):
 
     def d_setCapacity(self, capacity: int):
         self.sendUpdate('setCapacity', [capacity])
+
+    def d_announce(self, message: str):
+        """
+        Sends a message to all members in the group. It is probably ideal if this isn't just sending raw strings over
+        the network for localizing purposes, but this is fine for now.
+        """
+        self.sendUpdate('announce', [message])
+
+    def d_setMinigameZone(self, minigame):
+        """
+        Forces all members to teleport to a newly created minigame.
+        """
+        for avId in self.getMembers():
+            self.sendUpdateToAvatarId(avId, 'setMinigameZone', [minigame.zone, minigame.gameId])

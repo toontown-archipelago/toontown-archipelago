@@ -62,8 +62,9 @@ class DistributedGroupManager(DistributedObject):
         if self.getCurrentGroup() is None:
             return
 
-        # Are we the leader of our group?
-        if self.getCurrentGroup().getLeader() != base.localAvatar.doId:
+        # Are we the leader of our group and not trying to kick ourselves?
+        if base.localAvatar.getDoId() != avId and self.getCurrentGroup().getLeader() != base.localAvatar.doId:
+            print("cant send a request to kick. the person attempted to kick is not us and we are not the leader.")
             return
 
         self.d_requestKick(avId)
@@ -75,6 +76,13 @@ class DistributedGroupManager(DistributedObject):
         print(f'[DistributedGroupManager] attempting invite to {avId}')
         self.d_invitePlayer(avId)
 
+    def attemptPromote(self, avId: int):
+        self.d_promote(avId)
+
+    def attemptStart(self):
+        if self.getCurrentGroup() is not None:
+            self.d_requestStart()
+
     """
     Astron Methods
     """
@@ -84,6 +92,12 @@ class DistributedGroupManager(DistributedObject):
 
     def d_invitePlayer(self, avId: int):
         self.sendUpdate('invitePlayer', [avId])
+
+    def d_promote(self, avId: int):
+        self.sendUpdate('requestPromote', [avId])
+
+    def d_requestStart(self):
+        self.sendUpdate('requestStart')
 
     def setCurrentGroup(self, groupId: int):
         """

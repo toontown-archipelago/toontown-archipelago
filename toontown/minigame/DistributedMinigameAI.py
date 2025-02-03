@@ -357,14 +357,11 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
         self.notify.debug('BASE: enterFrameworkCleanup: normalExit=%s' % self.normalExit)
         scoreMult = MinigameGlobals.getScoreMult(self.getSafezoneId())
         self.notify.debug('score multiplier: %s' % scoreMult)
-        for avId in self.avIdList:
-            self.scoreDict[avId] *= scoreMult
-
         scoreList = []
         if not self.normalExit:
             randReward = random.randrange(DEFAULT_POINTS, MAX_POINTS + 1)
         for avId in self.avIdList:
-            if self.normalExit:
+            if self.normalExit and avId in self.scoreDict:
                 score = int(self.scoreDict[avId] + 0.5)
             else:
                 score = randReward

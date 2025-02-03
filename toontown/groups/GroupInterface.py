@@ -1,7 +1,13 @@
+import typing
+
 from direct.gui.DirectGui import *
 from panda3d.core import TextNode
 
 from libotp import CFSpeech, CFTimeout
+from toontown.friends.OnlineToon import OnlineToon
+
+if typing.TYPE_CHECKING:
+    from toontown.groups.DistributedGroup import DistributedGroup
 
 
 class GroupInterface(DirectFrame):
@@ -24,7 +30,9 @@ class GroupInterface(DirectFrame):
 
     MEMBER_ROWS = 16
 
-    def __init__(self, **kw):
+    def __init__(self, group: "DistributedGroup", **kw):
+
+        self.group: "DistributedGroup" = group
 
         # Load in the elements we need.
         model = loader.loadModel(GroupInterface.GUI_MODEL_PATH)
@@ -42,7 +50,7 @@ class GroupInterface(DirectFrame):
 
         leaderTexture = model.find('**/status-leader')
         notReadyStatusTexture = model.find('**/status-notready')
-        readyStatusTexture = model.find('**/status-ready')
+        readyStatusTexture = model.find('**/ready-final')
 
         # Apply any keywords that our highest level frame needs.
         kw.update(GroupInterface.OPTS)
@@ -67,25 +75,22 @@ class GroupInterface(DirectFrame):
             button.bind(DGG.ENTER, self.__onHoverRow, extraArgs=[button])
             self.rows.append(button)
 
-        # The first member can never be promoted or kicked.
-        self.rows[0].promoteButton.setColorScale(.5, .5, .5, 1)
-        self.rows[0].kickButton.setColorScale(.5, .5, .5, 1)
-        self.rows[0].promoteButton['state'] = DGG.DISABLED
-        self.rows[0].kickButton['state'] = DGG.DISABLED
-        self.rows[0].updateStatus(GroupInterfaceMemberButton.STATUS_LEADER)
-
         # Cleanup.
         model.removeNode()
 
-    def updateMembers(self, members: list):
+    def updateMembers(self, members: list[int]):
+        self.clearMembers()
         for index, member in enumerate(members):
             if index >= GroupInterface.MEMBER_ROWS:
                 return
-            self.rows[index].setAvatar(member)
+            row = self.rows[index]
+            row.setAvatar(member)
+            row.updateStateFromGroup(self.group)
 
     def clearMembers(self):
         for row in self.rows:
             row.clearAvatar()
+            row.updateStateFromGroup(self.group)
 
     """
     Button Handlers
@@ -97,14 +102,15 @@ class GroupInterface(DirectFrame):
     def __onLeaveClicked(self):
         """
         Called via a button press when the leave group button is pressed.
+        When this button is clicked, we are essentially trying to kick ourselves from the group.
         """
-        base.localAvatar.setChatAbsolute('I WANT TO LEAVE MY GROUP!!!', CFSpeech | CFTimeout)
+        base.localAvatar.getGroupManager().attemptKick(base.localAvatar.getDoId())
 
     def __onPlayClicked(self):
         """
         Called via a button press when the start game button is pressed.
         """
-        base.localAvatar.setChatAbsolute('I WANT TO PLAY THE VIDEO GAME!!!', CFSpeech | CFTimeout)
+        base.localAvatar.getGroupManager().attemptStart()
 
     def __onHoverRow(self, row, event=None):
         # Hide every single row.
@@ -191,21 +197,29 @@ class GroupInterfaceMemberButton(DirectButton):
         self.__addTooltip(self.kickButton, HoverableTooltip(self.kickButton, 'kick-node', "Kick", (.9, .3, .3, 1)))
 
         # Initialize state. (The toon that is bound to this button)
-        self.avatar = None
+        self.avatar: OnlineToon | None = None
         self.avatarID = None
-        self['state'] = DGG.NORMAL
+        self['state'] = DGG.DISABLED
+        self.updateStatus(GroupInterfaceMemberButton.STATUS_EMPTY)
 
-    def setAvatar(self, avatar):
-        self.avatar = avatar
-        self.avatarID = avatar.getDoId()
+    def setAvatar(self, avId):
+        onlineToon = base.cr.onlinePlayerManager.getOnlineToon(avId)
+        name = f"??? - {avId}"
+        if onlineToon is not None:
+            name = onlineToon.name
+        self.avatar = onlineToon
+        self.avatarID = avId
+        self['text_fg'] = (.2, .2, .6, 1)
         self['state'] = DGG.NORMAL
-        self['text'] = avatar.getName()
+        self['text'] = name
 
     def clearAvatar(self):
         self.avatar = None
         self.avatarID = None
         self['state'] = DGG.DISABLED
         self['text'] = GroupInterfaceMemberButton.DEFAULT_TEXT
+        self.updateStatus(GroupInterfaceMemberButton.STATUS_EMPTY)
+        self['text_fg'] = (.6, .6, .6, .6)
 
     def updateStatus(self, code):
         self.statusLabel.setColorScale(1, 1, 1, 1)
@@ -219,6 +233,36 @@ class GroupInterfaceMemberButton(DirectButton):
             case GroupInterfaceMemberButton.STATUS_EMPTY:
                 self.statusLabel['image'] = self._notReadyTexture
                 self.statusLabel.setColorScale(.25, .25, .25, .75)
+
+    def updateStateFromGroup(self, group):
+
+        if self.avatarID is None:
+            self.hideOptions()
+            self.updateStatus(GroupInterfaceMemberButton.STATUS_EMPTY)
+            return
+
+        if group.getLeader() == self.avatarID:
+            self.updateStatus(GroupInterfaceMemberButton.STATUS_LEADER)
+        else:
+            self.updateStatus(GroupInterfaceMemberButton.STATUS_READY)
+
+        # Are we the leader of the group? we have full control over everything except promoting ourselves.
+        if group.getLeader() == base.localAvatar.getDoId():
+            self.promoteButton['state'] = DGG.DISABLED if self.avatarID == group.getLeader() else DGG.NORMAL
+            self.promoteButton.setColorScale((.5, .5, .5, 1) if self.avatarID == group.getLeader() else (1, 1, 1, 1))
+            self.switchButton['state'] = DGG.NORMAL
+            self.switchButton.setColorScale(1, 1, 1, 1)
+            self.kickButton['state'] = DGG.NORMAL
+            self.kickButton.setColorScale(1, 1, 1, 1)
+            return
+
+        # We are a normal member of the group. Only allow the switch button and kick button ourselves.
+        self.promoteButton['state'] = DGG.DISABLED
+        self.promoteButton.setColorScale(.5, .5, .5, 1)
+        self.switchButton['state'] = DGG.DISABLED if self.avatarID != base.localAvatar.getDoId() else DGG.NORMAL
+        self.switchButton.setColorScale((.5, .5, .5, 1) if self.avatarID != base.localAvatar.getDoId() else (1, 1, 1, 1))
+        self.kickButton['state'] = DGG.DISABLED if self.avatarID != base.localAvatar.getDoId() else DGG.NORMAL
+        self.kickButton.setColorScale((.5, .5, .5, 1) if self.avatarID != base.localAvatar.getDoId() else (1, 1, 1, 1))
 
     def hideOptions(self):
         self.promoteButton.hide()
@@ -237,16 +281,26 @@ class GroupInterfaceMemberButton(DirectButton):
     """
 
     def __onAvatarClicked(self):
-        base.localAvatar.setChatAbsolute(f"I want to view {self.avatarID}'s toon.", CFSpeech | CFTimeout)
+        # We need to resolve a handler to dispatch over the messenger. This either needs to be a DisToon or a friend handle.
+        if None in (self.avatar, self.avatarID):
+            return
+
+        handle = base.cr.getDo(self.avatarID)
+        if handle is None:
+            handle = self.avatar.handle()
+
+        messenger.send('clickedNametag', [handle])
 
     def __onPromoteClicked(self):
-        base.localAvatar.setChatAbsolute(f"I want to promote {self.avatarID}.", CFSpeech | CFTimeout)
+        if self.avatar is not None:
+            base.localAvatar.getGroupManager().attemptPromote(self.avatarID)
 
     def __onSwitchClicked(self):
-        base.localAvatar.setChatAbsolute(f"I want to switch {self.avatarID}'s team.", CFSpeech | CFTimeout)
+        pass
 
     def __onKickClicked(self):
-        base.localAvatar.setChatAbsolute(f"I want to kick {self.avatarID}.", CFSpeech | CFTimeout)
+        if self.avatar is not None:
+            base.localAvatar.getGroupManager().attemptKick(self.avatarID)
 
     def __addTooltip(self, button, tooltip):
         def __show(_):

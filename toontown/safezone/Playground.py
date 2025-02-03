@@ -527,6 +527,11 @@ class Playground(BattlePlace):
         teleportDebug(requestStatus, 'Playground.__teleportOutDone(%s)' % (requestStatus,))
         if hasattr(self, 'activityFsm'):
             self.activityFsm.requestFinalState()
+
+        if 'mode' in requestStatus and requestStatus['mode'] == 'minigame':
+            messenger.send(self.doneEvent)
+            return
+
         hoodId = requestStatus['hoodId']
         zoneId = requestStatus['zoneId']
         avId = requestStatus['avId']

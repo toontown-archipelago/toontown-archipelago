@@ -20,8 +20,13 @@ class DistributedGroupManagerAI(DistributedObjectAI):
         super().__init__(air)
         self.groups: list[DistributedGroupAI] = []
 
+    def announceGenerate(self):
+        super().announceGenerate()
+        self.accept('avatarExited', self.__handleUnexpectedExit)
+
     def delete(self):
         DistributedObjectAI.delete(self)
+        self.ignore('avatarExited')
 
         for group in self.groups:
             group.delete()
@@ -61,6 +66,19 @@ class DistributedGroupManagerAI(DistributedObjectAI):
         self.d_setCurrentGroup(leader.getDoId(), group.getDoId())
         return group
 
+    def __handleUnexpectedExit(self, toon):
+        group = self.getGroup(toon)
+        if group is None:
+            return
+
+        removed = group.removeMember(toon.getDoId())
+        group.b_setLeader(group.getLeader())
+        group.b_setMembers(group.getMembers())
+        if removed:
+            group.announce(f"{toon.getName()} has logged out. Removing them from the group.")
+            if len(group.getMembers()) == 0:
+                group.requestDelete()
+
     """
     Astron Methods (Outgoing)
     """
@@ -83,18 +101,29 @@ class DistributedGroupManagerAI(DistributedObjectAI):
         if group is None:
             return
 
-        # Is the leader actually a leader?
-        if group.getLeader() != leader.getDoId():
-            return
-
         # Is the leader in the same group as the other toon?
         if toKickId not in group.getMembers():
             return
 
+        # Is the leader actually a leader? Only check this if the person is not kicking themselves.
+        if leaderId != toKickId and group.getLeader() != leader.getDoId():
+            return
+
+        if toKickId == leaderId:
+            group.announce(f"{leader.getName()} has chose to leave the group.")
+        else:
+            name = toKickId
+            if self.air.getDo(toKickId) is not None:
+                name = self.air.getDo(toKickId).getName()
+            group.announce(f"{leader.getName()} has kicked {name} from the group.")
+
         # This is a valid operation.
         group.removeMember(toKickId)
         group.b_setMembers(group.getMembers())
-        print(f"{leader.getName()} has kicked {toKickId}. The updated roster is now {group.getMembers()}")
+
+        # Is this group empty? If so, delete it.
+        if len(group.getMembers()) == 0:
+            group.requestDelete()
 
     def invitePlayer(self, toInviteId: int):
 
@@ -105,12 +134,15 @@ class DistributedGroupManagerAI(DistributedObjectAI):
             return
 
         otherGroup = self.getGroup(otherToon)
+        group = self.getGroup(inviter)
+
         # Is the other toon already in a group?
         if otherGroup is not None:
+            group.announce(f"{inviter.getName()} tried to invite {otherToon.getName()}, but they are already in a group!")
             return
 
         # Is the inviter in a group?
-        group = self.getGroup(inviter)
+
         if group is None:
             # Are both players not in a group? This is valid. Create a new group.
             if otherGroup is None:
@@ -118,14 +150,62 @@ class DistributedGroupManagerAI(DistributedObjectAI):
                 group.addMember(otherToon.getDoId())
                 group.b_setMembers(group.getMembers())
                 self.d_setCurrentGroup(toInviteId, group.getDoId())
+                group.announce(f"{inviter.getName()} has started a group with {otherToon.getName()}")
             return
 
         # Is the group already full?
         if group.isFull():
+            group.announce(f"{inviter.getName()} tried to invite {otherToon.getName()} but the group is full!")
             return
 
         # This is a valid operation.
         group.addMember(toInviteId)
         group.b_setMembers(group.getMembers())
         self.d_setCurrentGroup(toInviteId, group.getDoId())
-        print(f"{inviter.getName()} has invited {toInviteId}. The updated roster is now {group.getMembers()}")
+        group.announce(f"{inviter.getName()} has added {otherToon.getName()} to the group!")
+
+    def requestPromote(self, toPromoteId: int):
+
+        leaderId: int = self.air.getAvatarIdFromSender()
+        leader = self.air.getDo(leaderId)
+        if leader is None:
+            return
+
+        toPromote = self.air.getDo(toPromoteId)
+        if toPromote is None:
+            return
+
+        # Are the two users in the same group?
+        leadersGroup = self.getGroup(leader)
+        if leadersGroup is None or toPromoteId not in leadersGroup.getMembers():
+            return
+
+        # Is the leader actually the leader?
+        if leadersGroup.getLeader() != leaderId:
+            return
+
+        # This is a valid operation. Swap the two members places.
+        members = leadersGroup.getMembers()
+        oldToPromoteIndex = members.index(toPromoteId)
+        oldLeaderIndex = members.index(leaderId)
+        members[oldToPromoteIndex] = leaderId
+        members[oldLeaderIndex] = toPromoteId
+        leadersGroup.b_setLeader(toPromoteId)
+        leadersGroup.b_setMembers(members)
+        leadersGroup.announce(f"{leader.getName()} has promoted {toPromote.getName()} to the group leader!")
+
+    def requestStart(self):
+        requesterId = self.air.getAvatarIdFromSender()
+        requester = self.air.getDo(requesterId)
+        if requester is None:
+            return
+
+        group = self.getGroup(requester)
+        if group is None:
+            return
+
+        # Is this the group leader?
+        if group.getLeader() != requesterId:
+            return
+
+        group.startActivity()

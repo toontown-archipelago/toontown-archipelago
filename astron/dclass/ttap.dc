@@ -1218,6 +1218,8 @@ dclass DistributedTrolley : DistributedObject {
 dclass DistributedGroupManager : DistributedObject {
   requestKick(uint32) airecv clsend;
   invitePlayer(uint32) airecv clsend;
+  requestPromote(uint32) airecv clsend;
+  requestStart() airecv clsend;
   setCurrentGroup(int32);
 };
 
@@ -1225,6 +1227,8 @@ dclass DistributedGroup : DistributedObject {
   setLeader(int32) required broadcast ram;
   setMembers(int32[]) required broadcast ram;
   setCapacity(int32) required broadcast ram;
+  setMinigameZone(uint32, uint16);
+  announce(string) broadcast;
 };
 
 dclass DistributedSuitPlanner : DistributedObject {
