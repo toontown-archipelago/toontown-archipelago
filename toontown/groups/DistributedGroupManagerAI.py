@@ -1,5 +1,6 @@
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
+from toontown.groups import GroupGlobals
 from toontown.groups.DistributedGroupAI import DistributedGroupAI
 from toontown.toon.DistributedToonAI import DistributedToonAI
 
@@ -38,7 +39,7 @@ class DistributedGroupManagerAI(DistributedObjectAI):
         Gets the current group this toon is in. Returns None if this toon is not in the group.
         """
         for group in self.groups:
-            if toon.getDoId() in group.getMembers():
+            if toon.getDoId() in group.getMemberIds():
                 return group
 
         return None
@@ -60,11 +61,15 @@ class DistributedGroupManagerAI(DistributedObjectAI):
         self.groups.append(group)
 
         # Setup the required state.
-        group.b_setLeader(leader.getDoId())
-        group.b_setMembers(group.getMembers())
         group.b_setCapacity(group.DefaultCapacity)
+        group.b_setMembers(group.getMembers())
         self.d_setCurrentGroup(leader.getDoId(), group.getDoId())
         return group
+
+    def deleteGroup(self, group: DistributedGroupAI):
+        group.requestDelete()
+        if group in self.groups:
+            self.groups.remove(group)
 
     def __handleUnexpectedExit(self, toon):
         group = self.getGroup(toon)
@@ -72,12 +77,11 @@ class DistributedGroupManagerAI(DistributedObjectAI):
             return
 
         removed = group.removeMember(toon.getDoId())
-        group.b_setLeader(group.getLeader())
         group.b_setMembers(group.getMembers())
         if removed:
             group.announce(f"{toon.getName()} has logged out. Removing them from the group.")
             if len(group.getMembers()) == 0:
-                group.requestDelete()
+                self.deleteGroup(group)
 
     """
     Astron Methods (Outgoing)
@@ -102,7 +106,7 @@ class DistributedGroupManagerAI(DistributedObjectAI):
             return
 
         # Is the leader in the same group as the other toon?
-        if toKickId not in group.getMembers():
+        if toKickId not in group.getMemberIds():
             return
 
         # Is the leader actually a leader? Only check this if the person is not kicking themselves.
@@ -123,7 +127,7 @@ class DistributedGroupManagerAI(DistributedObjectAI):
 
         # Is this group empty? If so, delete it.
         if len(group.getMembers()) == 0:
-            group.requestDelete()
+            self.deleteGroup(group)
 
     def invitePlayer(self, toInviteId: int):
 
@@ -177,20 +181,27 @@ class DistributedGroupManagerAI(DistributedObjectAI):
 
         # Are the two users in the same group?
         leadersGroup = self.getGroup(leader)
-        if leadersGroup is None or toPromoteId not in leadersGroup.getMembers():
+        if leadersGroup is None or toPromoteId not in leadersGroup.getMemberIds():
             return
 
         # Is the leader actually the leader?
         if leadersGroup.getLeader() != leaderId:
             return
 
-        # This is a valid operation. Swap the two members places.
+        # This is a valid operation. Swap the two members places and update their statuses and leader variable.
+        memberIds = leadersGroup.getMemberIds()
         members = leadersGroup.getMembers()
-        oldToPromoteIndex = members.index(toPromoteId)
-        oldLeaderIndex = members.index(leaderId)
-        members[oldToPromoteIndex] = leaderId
-        members[oldLeaderIndex] = toPromoteId
-        leadersGroup.b_setLeader(toPromoteId)
+        oldToPromoteIndex = memberIds.index(toPromoteId)
+        oldLeaderIndex = memberIds.index(leaderId)
+        oldLeader = members[oldLeaderIndex]
+        newLeader = members[oldToPromoteIndex]
+        newLeader.status = GroupGlobals.STATUS_LEADER
+        newLeader.leader = True
+        oldLeader.status = GroupGlobals.STATUS_READY
+        oldLeader.leader = False
+        members[oldLeaderIndex] = newLeader
+        members[oldToPromoteIndex] = oldLeader
+        leadersGroup.setLeader(toPromoteId)
         leadersGroup.b_setMembers(members)
         leadersGroup.announce(f"{leader.getName()} has promoted {toPromote.getName()} to the group leader!")
 
@@ -208,4 +219,39 @@ class DistributedGroupManagerAI(DistributedObjectAI):
         if group.getLeader() != requesterId:
             return
 
+        # Is everyone ready?
+        notReady = 0
+        for member in group.getMembers():
+            if member.status == GroupGlobals.STATUS_UNREADY:
+                notReady += 1
+        if notReady > 0:
+            group.announce(f"{requester.getName()} wants to start the activity but {notReady} toon{'s' if notReady > 1 else ''} {'are' if notReady > 1 else 'is'} not ready!")
+            return
+
         group.startActivity()
+
+    def updateStatus(self, code):
+        avId = self.air.getAvatarIdFromSender()
+        av = self.air.getDo(avId)
+        if av is None:
+            return
+
+        group = self.getGroup(av)
+        if group is None:
+            return
+
+        # Don't update statuses unless they are ready/unready codes.
+        if code not in (GroupGlobals.STATUS_UNREADY, GroupGlobals.STATUS_READY):
+            return
+
+        # Don't update the status if it's the leader. It doesn't matter.
+        if avId == group.getLeader():
+            return
+
+        # Update the status and re update the members.
+        member = group.getMember(avId)
+        shouldUpdate = member.status != code
+        member.status = code
+
+        if shouldUpdate:
+            group.d_setMembers(group.getMembers())

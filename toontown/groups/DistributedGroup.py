@@ -1,9 +1,10 @@
 from direct.distributed.DistributedObject import DistributedObject
 
 from libotp.nametag.WhisperGlobals import WhisperType
+from toontown.groups import GroupGlobals
 from toontown.groups.GroupBase import GroupBase
 from toontown.groups.GroupInterface import GroupInterface
-from toontown.toonbase import ToontownGlobals
+from toontown.groups.GroupMemberStruct import GroupMemberStruct
 
 
 class DistributedGroup(DistributedObject, GroupBase):
@@ -22,11 +23,17 @@ class DistributedGroup(DistributedObject, GroupBase):
         self.render()
 
     def delete(self):
+
+        # If we are in the group and this group is deleting, send an update to mark us as not ready.
+        # This probably means we are leaving the area and are unable to respond to the group sending us to game.
+        if self.__localToonInGroup() and base.localAvatar.getGroupManager() is not None:
+            base.localAvatar.getGroupManager().updateStatus(GroupGlobals.STATUS_UNREADY)
+
         DistributedObject.delete(self)
         self.cleanup()
 
     def __localToonInGroup(self) -> bool:
-        return base.localAvatar.getDoId() in self.getMembers()
+        return base.localAvatar.getDoId() in self.getMemberIds()
 
     """
     Methods used for GUI management.
@@ -59,12 +66,28 @@ class DistributedGroup(DistributedObject, GroupBase):
     """
     Methods called from the AI over astron.
     """
-    def setLeader(self, leader: int):
-        super().setLeader(leader)
-        self.render()
+    def setMembers(self, members: list[list[int, int, bool]]):
 
-    def setMembers(self, members: list[int]):
-        super().setMembers(members)
+        formattedMembers: list[GroupMemberStruct] = []
+        leader = None
+        weAreNotInThisGroup = self.__localToonInGroup()
+
+        for entry in members:
+            member = GroupMemberStruct.from_struct(entry)
+            if member.leader:
+                leader = member
+            formattedMembers.append(member)
+
+        super().setMembers(formattedMembers)
+        self.setLeader(leader.avId if leader is not None else GroupBase.NoLeader)
+
+        # If we are a newcomer to this group, analyze the state of this group.
+        # If we are in the walk state, we are considered ready to go.
+        weJoined = not weAreNotInThisGroup and self.__localToonInGroup()
+        if weJoined:
+            if base.cr.playGame.getPlace() is not None and base.cr.playGame.getPlace().getState() == 'walk' and base.localAvatar.getGroupManager() is not None:
+                base.localAvatar.getGroupManager().updateStatus(GroupGlobals.STATUS_READY)
+
         self.render()
 
     def announce(self, message: str):

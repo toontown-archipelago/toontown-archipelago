@@ -1,3 +1,7 @@
+from toontown.groups import GroupGlobals
+from toontown.groups.GroupMemberStruct import GroupMemberStruct
+
+
 class GroupBase:
     """
     Holds a collection of IDs. Provides basic functionality for having a list of members
@@ -12,10 +16,10 @@ class GroupBase:
 
     def __init__(self, leader: int):
         self.leader: int = leader
-        self.members: list[int] = []
+        self.members: list[GroupMemberStruct] = []
 
         if self.leader != GroupBase.NoLeader:
-            self.members.append(leader)
+            self.members.append(GroupMemberStruct(self.leader, GroupGlobals.STATUS_LEADER, True))
 
         self.capacity = GroupBase.DefaultCapacity
 
@@ -32,27 +36,39 @@ class GroupBase:
         Sets the leader of the group. If the given parameter is not present in the group already,
         this does nothing.
         """
-        if self.leader not in self.members:
+        if leader not in self.getMemberIds():
             return
         self.leader = leader
 
     def hasLeader(self) -> bool:
         return self.leader != GroupBase.NoLeader
 
-    def getMembers(self) -> list[int]:
+    def getMembers(self) -> list[GroupMemberStruct]:
         """
         Returns a list of members in this group. The returned list is a list of their IDs.
         """
         return self.members
 
-    def setMembers(self, members: list[int]):
+    def getMemberIds(self) -> list[int]:
+        """
+        Returns a list of integers representing IDs of members in this group.
+        """
+        return [member.avId for member in self.members]
+
+    def isInGroup(self, avId: int) -> bool:
+        """
+        Checks if a toon with the given avId is in the group. Returns False if they are not.
+        """
+        return avId in self.getMemberIds()
+
+    def setMembers(self, members: list[GroupMemberStruct]):
         """
         Sets the members of the group. If the leader is not present in the group already,
         the leader is set to whoever is first.
         """
         self.members = members
-        if self.leader not in members and self.getMemberCount() > 0:
-            self.leader = members[0]
+        if self.leader not in self.getMemberIds() and self.getMemberCount() > 0:
+            self.leader = members[0].avId
 
     def getMemberCount(self) -> int:
         """
@@ -65,24 +81,36 @@ class GroupBase:
         Attempts to add a member to the group.
         Returns True if the member was successfully added.
         """
-        if member in self.members:
+        if member in self.getMemberIds():
             return False
 
-        self.members.append(member)
+        self.members.append(GroupMemberStruct(member, GroupGlobals.STATUS_UNREADY, False))
+        return True
 
-    def removeMember(self, member: int) -> bool:
+    def getMember(self, avId: int) -> GroupMemberStruct | None:
+        """
+        Queries this group for a member. Returns None if there is not a member with the given ID.
+        """
+        for member in self.members:
+            if member.avId == avId:
+                return member
+
+        return None
+
+    def removeMember(self, memberId: int) -> bool:
         """
         Attempts to remove a member from the group.
         Returns True if the member was successfully removed.
         """
-        if member not in self.members:
+        member = self.getMember(memberId)
+        if member is None:
             return False
 
         self.members.remove(member)
 
         # If the member that is being removed was the leader, we should make the leader the first person.
-        if member == self.leader:
-            self.leader = self.members[0] if self.getMemberCount() > 0 else GroupBase.NoLeader
+        if memberId == self.leader:
+            self.leader = self.members[0].avId if self.getMemberCount() > 0 else GroupBase.NoLeader
 
         return True
 

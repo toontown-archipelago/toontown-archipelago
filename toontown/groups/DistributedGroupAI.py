@@ -3,6 +3,7 @@ import time
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
 from toontown.groups.GroupBase import GroupBase
+from toontown.groups.GroupMemberStruct import GroupMemberStruct
 from toontown.toon.DistributedToonAI import DistributedToonAI
 
 
@@ -18,7 +19,7 @@ class DistributedGroupAI(DistributedObjectAI, GroupBase):
         Returns a list of DistributedToonAI instances in this group.
         """
         dos = []
-        for doId in self.getMembers():
+        for doId in self.getMemberIds():
             toon = self.air.getDo(doId)
             if toon is None:
                 continue
@@ -40,26 +41,19 @@ class DistributedGroupAI(DistributedObjectAI, GroupBase):
 
         self.announce("Activity starting...")
         self.activityStartCooldown = time.time() + 6
-        minigame = self.air.minigameMgr.createMinigame(self.getMembers(), self.zoneId, newbieIds=[], startingVotes=None, metagameRound=-1)
+        minigame = self.air.minigameMgr.createMinigame(self.getMemberIds(), self.zoneId, newbieIds=[], startingVotes=None, metagameRound=-1)
         self.d_setMinigameZone(minigame)
 
     """
     Astron Methods (Outgoing)
     """
 
-    def b_setLeader(self, leader: int):
-        self.setLeader(leader)
-        self.d_SetLeader(leader)
-
-    def d_SetLeader(self, leader: int):
-        self.sendUpdate('setLeader', [leader])
-
-    def b_setMembers(self, members: list[int]):
+    def b_setMembers(self, members: list[GroupMemberStruct]):
         self.setMembers(members)
-        self.d_setMembers(self.getMembers())
+        self.d_setMembers(members)
 
-    def d_setMembers(self, members: list[int]):
-        self.sendUpdate('setMembers', [members])
+    def d_setMembers(self, members: list[GroupMemberStruct]):
+        self.sendUpdate('setMembers', [[member.to_struct() for member in members]])
 
     def b_setCapacity(self, capacity: int):
         self.setCapacity(capacity)
@@ -79,5 +73,5 @@ class DistributedGroupAI(DistributedObjectAI, GroupBase):
         """
         Forces all members to teleport to a newly created minigame.
         """
-        for avId in self.getMembers():
+        for avId in self.getMemberIds():
             self.sendUpdateToAvatarId(avId, 'setMinigameZone', [minigame.zone, minigame.gameId])

@@ -1,5 +1,6 @@
 from direct.distributed.DistributedObject import DistributedObject
 
+from toontown.groups import GroupGlobals
 from toontown.groups.DistributedGroup import DistributedGroup
 from toontown.groups.GroupBase import GroupBase
 
@@ -30,7 +31,6 @@ class DistributedGroupManager(DistributedObject):
         an invite button.
         """
         super().generate()
-        print("Generating DistributedGroupManager")
         base.localAvatar.setGroupManager(self)
 
     def delete(self):
@@ -38,7 +38,6 @@ class DistributedGroupManager(DistributedObject):
         When this group manager deletes, we need to make sure that we leave our current group.
         """
         super().delete()
-        print("Deleting DistributedGroupManager")
         base.localAvatar.setGroupManager(None)
 
     def findGroupById(self, groupId: int) -> DistributedGroup | None:
@@ -58,13 +57,11 @@ class DistributedGroupManager(DistributedObject):
         """
         Attempt to kick this toon from the boarding group we are currently in.
         """
-        print(f'[DistributedGroupManager] attempting kick to {avId}')
         if self.getCurrentGroup() is None:
             return
 
         # Are we the leader of our group and not trying to kick ourselves?
         if base.localAvatar.getDoId() != avId and self.getCurrentGroup().getLeader() != base.localAvatar.doId:
-            print("cant send a request to kick. the person attempted to kick is not us and we are not the leader.")
             return
 
         self.d_requestKick(avId)
@@ -73,7 +70,6 @@ class DistributedGroupManager(DistributedObject):
         """
         Attempt to add this toon to the group we are currently in.
         """
-        print(f'[DistributedGroupManager] attempting invite to {avId}')
         self.d_invitePlayer(avId)
 
     def attemptPromote(self, avId: int):
@@ -82,6 +78,18 @@ class DistributedGroupManager(DistributedObject):
     def attemptStart(self):
         if self.getCurrentGroup() is not None:
             self.d_requestStart()
+
+    def updateStatus(self, code: int):
+
+        # Don't send codes unless they are ready/unready codes.
+        if code not in (GroupGlobals.STATUS_UNREADY, GroupGlobals.STATUS_READY):
+            return
+
+        # If we are the leader we don't need to update the ID. We are in charge of starting the group anyway.
+        if self.getCurrentGroup() is not None and self.getCurrentGroup().getLeader() == base.localAvatar.getDoId():
+            return
+
+        self.d_setStatus(code)
 
     """
     Astron Methods
@@ -98,6 +106,9 @@ class DistributedGroupManager(DistributedObject):
 
     def d_requestStart(self):
         self.sendUpdate('requestStart')
+
+    def d_setStatus(self, code):
+        self.sendUpdate('updateStatus', [code])
 
     def setCurrentGroup(self, groupId: int):
         """

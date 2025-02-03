@@ -1215,17 +1215,23 @@ dclass DistributedTrolley : DistributedObject {
   setMinigameZone(uint32, uint16);
 };
 
+struct GroupMember {
+  uint32 avId;
+  uint8 status;
+  bool leader;
+}
+
 dclass DistributedGroupManager : DistributedObject {
-  requestKick(uint32) airecv clsend;
-  invitePlayer(uint32) airecv clsend;
-  requestPromote(uint32) airecv clsend;
+  requestKick(uint32 avId) airecv clsend;
+  invitePlayer(uint32 avId) airecv clsend;
+  requestPromote(uint32 avId) airecv clsend;
   requestStart() airecv clsend;
-  setCurrentGroup(int32);
+  updateStatus(uint8 code) airecv clsend;
+  setCurrentGroup(int32 groupId);
 };
 
 dclass DistributedGroup : DistributedObject {
-  setLeader(int32) required broadcast ram;
-  setMembers(int32[]) required broadcast ram;
+  setMembers(GroupMember[]) required broadcast ram;
   setCapacity(int32) required broadcast ram;
   setMinigameZone(uint32, uint16);
   announce(string) broadcast;

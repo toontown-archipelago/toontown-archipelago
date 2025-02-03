@@ -5,6 +5,7 @@ from panda3d.core import TextNode
 
 from libotp import CFSpeech, CFTimeout
 from toontown.friends.OnlineToon import OnlineToon
+from toontown.groups.GroupMemberStruct import GroupMemberStruct
 
 if typing.TYPE_CHECKING:
     from toontown.groups.DistributedGroup import DistributedGroup
@@ -78,13 +79,14 @@ class GroupInterface(DirectFrame):
         # Cleanup.
         model.removeNode()
 
-    def updateMembers(self, members: list[int]):
+    def updateMembers(self, members: list[GroupMemberStruct]):
         self.clearMembers()
         for index, member in enumerate(members):
             if index >= GroupInterface.MEMBER_ROWS:
                 return
             row = self.rows[index]
             row.setAvatar(member)
+            row.updateStatus(member.status)
             row.updateStateFromGroup(self.group)
 
     def clearMembers(self):
@@ -202,14 +204,14 @@ class GroupInterfaceMemberButton(DirectButton):
         self['state'] = DGG.DISABLED
         self.updateStatus(GroupInterfaceMemberButton.STATUS_EMPTY)
 
-    def setAvatar(self, avId):
-        onlineToon = base.cr.onlinePlayerManager.getOnlineToon(avId)
-        name = f"??? - {avId}"
+    def setAvatar(self, member: GroupMemberStruct):
+        onlineToon = base.cr.onlinePlayerManager.getOnlineToon(member.avId)
+        name = f"??? - {member.avId}"
         if onlineToon is not None:
             name = onlineToon.name
         self.avatar = onlineToon
-        self.avatarID = avId
-        self['text_fg'] = (.2, .2, .6, 1)
+        self.avatarID = member.avId
+        self['text_fg'] = (.25, .25, .6, 1)
         self['state'] = DGG.NORMAL
         self['text'] = name
 
@@ -243,8 +245,6 @@ class GroupInterfaceMemberButton(DirectButton):
 
         if group.getLeader() == self.avatarID:
             self.updateStatus(GroupInterfaceMemberButton.STATUS_LEADER)
-        else:
-            self.updateStatus(GroupInterfaceMemberButton.STATUS_READY)
 
         # Are we the leader of the group? we have full control over everything except promoting ourselves.
         if group.getLeader() == base.localAvatar.getDoId():
