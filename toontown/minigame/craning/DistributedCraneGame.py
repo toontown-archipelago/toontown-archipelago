@@ -4,12 +4,18 @@ import random
 from direct.distributed import DistributedSmoothNode
 from direct.fsm import ClassicFSM
 from direct.fsm import State
+from direct.gui.OnscreenText import OnscreenText
+from direct.interval.FunctionInterval import Func, Wait
+from direct.interval.LerpInterval import LerpPosHprInterval
+from direct.interval.MetaInterval import Parallel, Sequence
 from direct.showbase.MessengerGlobal import messenger
+from direct.showbase.PythonUtil import reduceAngle
 from direct.task.TaskManagerGlobal import taskMgr
 from panda3d.core import CollisionPlane, Plane, Vec3, Point3, CollisionNode, NodePath, CollisionPolygon, BitMask32, \
     VBase3, VBase4
 from panda3d.physics import LinearVectorForce, ForceNode, LinearEulerIntegrator, PhysicsManager
 
+from libotp import CFSpeech
 from libotp.nametag import NametagGlobals
 from otp.otpbase import OTPGlobals
 from toontown.coghq import CraneLeagueGlobals
@@ -35,12 +41,10 @@ class DistributedCraneGame(DistributedMinigame):
         self.safes = {}
         self.goons = []
 
+        self.overlayText = OnscreenText('', shadow=(0, 0, 0, 1), font=ToontownGlobals.getCompetitionFont(), pos=(0, 0), scale=0.35, mayChange=1)
+        self.overlayText.hide()
         self.boss = None
         self.bossRequest = None
-
-        # hack for quick access while debugging
-        base.boss = self
-
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
         self.ruleset = CraneLeagueGlobals.CFORuleset()  # Setup a default ruleset as a fallback
@@ -50,6 +54,9 @@ class DistributedCraneGame(DistributedMinigame):
         self.endVault = None
 
         self.warningSfx = None
+
+        self.timerTickSfx = None
+        self.goSfx = None
 
         self.latency = 0.5  # default latency for updating object posHpr
 
@@ -73,15 +80,19 @@ class DistributedCraneGame(DistributedMinigame):
                                 State.State('off',
                                             self.enterOff,
                                             self.exitOff,
-                                            ['play']),
+                                            ['prepare']),
+                                State.State('prepare',
+                                            self.enterPrepare,
+                                            self.exitPrepare,
+                                            ['play', 'cleanup']),
                                 State.State('play',
                                             self.enterPlay,
                                             self.exitPlay,
-                                            ['victory', 'cleanup']),
+                                            ['victory', 'cleanup', 'prepare']),
                                 State.State('victory',
                                             self.enterVictory,
                                             self.exitVictory,
-                                            ['play', 'cleanup']),
+                                            ['cleanup', 'prepare']),
                                 State.State('cleanup',
                                             self.enterCleanup,
                                             self.exitCleanup,
@@ -157,6 +168,9 @@ class DistributedCraneGame(DistributedMinigame):
         self.music = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
         self.winSting = base.loader.loadSfx("phase_4/audio/sfx/MG_win.ogg")
         self.loseSting = base.loader.loadSfx("phase_4/audio/sfx/MG_lose.ogg")
+
+        self.timerTickSfx = base.loader.loadSfx("phase_3.5/audio/sfx/tick_counter.ogg")
+        self.goSfx = base.loader.loadSfx('phase_4/audio/sfx/AA_sound_whistle.ogg')
 
         base.cr.forbidCheesyEffects(1)
 
@@ -338,6 +352,53 @@ class DistributedCraneGame(DistributedMinigame):
         for toon in self.getSpectatingToons():
             toon.setPos(self.getBoss().getPos())
 
+    def __displayOverlayText(self, text, color=(1, 1, 1, 1)):
+        self.overlayText['text'] = text
+        self.overlayText['fg'] = color
+        self.overlayText.show()
+
+    def __hideOverlayText(self):
+        self.overlayText.hide()
+
+    def __generatePrepareInterval(self):
+        """
+        Generates a cute little sequence where we pan the camera to our toon before we start a round.
+        """
+
+        if len(self.getParticipantsNotSpectating()) <= 0:
+            return Sequence(
+                Wait(5.25),
+                Func(self.gameFSM.request, 'play'),
+            )
+
+        toon = base.localAvatar if not self.localToonSpectating() else self.getParticipantsNotSpectating()[0]
+        targetCameraPos = render.getRelativePoint(toon, Vec3(0, -10, toon.getHeight()))
+        startCameraHpr = Point3(reduceAngle(camera.getH()), camera.getP(), camera.getR())
+        return Parallel(
+            LerpPosHprInterval(camera, 2, Point3(*targetCameraPos), Point3(reduceAngle(toon.getH()), 0, 0), startPos=camera.getPos(), startHpr=startCameraHpr, blendType='easeInOut'),
+            Sequence(
+                Func(self.__displayOverlayText, '5', (.65, .2, .2, 1)),
+                Func(base.playSfx, self.timerTickSfx),
+                Wait(1),
+                Func(self.__displayOverlayText, '4', (.65, .2, .2, 1)),
+                Func(base.playSfx, self.timerTickSfx),
+                Wait(1),
+                Func(self.__displayOverlayText, '3', (.65, .45, .2, 1)),
+                Func(base.playSfx, self.timerTickSfx),
+                Wait(1),
+                Func(self.__displayOverlayText, '2', (.65, .65, .2, 1)),
+                Func(base.playSfx, self.timerTickSfx),
+                Wait(1),
+                Func(self.__displayOverlayText, '1', (.65, .65, .2, 1)),
+                Func(base.playSfx, self.timerTickSfx),
+                Wait(1),
+                Func(self.__displayOverlayText, 'GO!', (.2, .65, .2, 1)),
+                Func(base.playSfx, self.goSfx),
+                Wait(.25),
+                Func(self.gameFSM.request, 'play'),
+            )
+        )
+
     def unload(self):
         self.notify.debug("unload")
         DistributedMinigame.unload(self)
@@ -483,7 +544,7 @@ class DistributedCraneGame(DistributedMinigame):
         # all players have finished reading the rules,
         # and are ready to start playing.
         # transition to the appropriate state
-        self.gameFSM.request("play")
+        self.gameFSM.request("prepare")
 
     # these are enter and exit functions for the game's
     # fsm (finite state machine)
@@ -494,6 +555,34 @@ class DistributedCraneGame(DistributedMinigame):
 
     def exitOff(self):
         pass
+
+    def enterPrepare(self):
+
+        # Make all laff meters blink when in uber mode
+        messenger.send('uberThreshold', [self.ruleset.LOW_LAFF_BONUS_THRESHOLD])
+
+        camera.wrtReparentTo(render)
+        self.setToonsToBattleThreePos()
+
+        # Display Modifiers Heat
+        self.heatDisplay.update(self.calculateHeat(), self.modifiers)
+        self.heatDisplay.show()
+
+        # Setup the scoreboard
+        self.scoreboard.clearToons()
+        for avId in self.getParticipantIdsNotSpectating():
+            self.scoreboard.addToon(avId)
+
+        self.__checkSpectatorState()
+
+        self.introductionMovie = self.__generatePrepareInterval()
+        self.introductionMovie.start()
+        self.boss.prepareBossForBattle()
+
+    def exitPrepare(self):
+        self.introductionMovie.pause()
+        self.introductionMovie = None
+        self.__hideOverlayText()
 
     def enterPlay(self):
         taskMgr.remove(self.uniqueName("craneGameVictory"))
@@ -508,15 +597,24 @@ class DistributedCraneGame(DistributedMinigame):
         taskMgr.remove(self.uniqueName("physics"))
         taskMgr.add(self.__doPhysics, self.uniqueName('physics'), priority=25)
 
-        self.restart()
+        # Allow us to play the game.
+        self.walkStateData.enter()
+        localAvatar.orbitalCamera.start()
+        localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
+        self.toFinalBattleMode()
+
+        # Display Boss Timer
+        self.bossSpeedrunTimer.reset()
+        self.bossSpeedrunTimer.start_updating()
+        self.bossSpeedrunTimer.show()
+
+        self.boss.prepareBossForBattle()
 
         self.accept("LocalSetFinalBattleMode", self.toFinalBattleMode)
         self.accept("LocalSetOuchMode", self.toOuchMode)
         self.accept("ChatMgr-enterMainMenu", self.chatClosed)
 
     def exitPlay(self):
-
-
 
         if self.boss is not None:
             self.boss.cleanupBossBattle()
@@ -553,6 +651,7 @@ class DistributedCraneGame(DistributedMinigame):
         for toon in self.getParticipants():
             toon.setGhostMode(False)
             toon.show()
+        self.overlayText.removeNode()
 
     def exitCleanup(self):
         pass
@@ -604,6 +703,12 @@ class DistributedCraneGame(DistributedMinigame):
         self.modifiers = modsToSet
         self.modifiers.sort(key=lambda m: m.MODIFIER_TYPE)
 
+    def restart(self):
+        """
+        Called via astron update. Do any client side logic needed in order to restart the game.
+        """
+        self.gameFSM.request('prepare')
+
     """
     Everything else!!!!
     """
@@ -651,41 +756,6 @@ class DistributedCraneGame(DistributedMinigame):
     def chatClosed(self):
         if self.walkStateData.fsm.getCurrentState().getName() == "walking":
             base.localAvatar.enableAvatarControls()
-
-    def restart(self):
-        """
-        Called via astron update. Do any client side logic needed in order to restart the game.
-        """
-        self.walkStateData.enter()
-        localAvatar.orbitalCamera.start()
-        localAvatar.setCameraFov(ToontownGlobals.BossBattleCameraFov)
-
-        self.gameFSM.request('play')
-        self.toFinalBattleMode()
-
-        # Display Boss Timer
-        self.bossSpeedrunTimer.reset()
-        self.bossSpeedrunTimer.start_updating()
-        self.bossSpeedrunTimer.show()
-
-        # Display Modifiers Heat
-        self.heatDisplay.update(self.calculateHeat(), self.modifiers)
-        self.heatDisplay.show()
-
-        if self.boss is not None:
-            self.boss.setRuleset(self.ruleset)
-
-        # Make all laff meters blink when in uber mode
-        messenger.send('uberThreshold', [self.ruleset.LOW_LAFF_BONUS_THRESHOLD])
-
-        self.setToonsToBattleThreePos()
-
-        # Setup the scoreboard
-        self.scoreboard.clearToons()
-        for avId in self.getParticipantIdsNotSpectating():
-            self.scoreboard.addToon(avId)
-
-        self.__checkSpectatorState()
 
     def enterFrameworkRules(self):
         self.notify.debug('BASE: enterFrameworkRules')

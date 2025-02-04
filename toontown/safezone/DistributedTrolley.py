@@ -214,7 +214,15 @@ class DistributedTrolley(DistributedObject.DistributedObject):
             toon.setGeomNodeH(0)
             toon.headsUp(-5, -4.5 + index * 3, 1.4)
             sitStartDuration = toon.getDuration('sit-start')
-            track = Sequence(LerpPosInterval(toon, TOON_BOARD_TIME * 0.75, Point3(-5, -4.5 + index * 3, 1.4)), LerpHprInterval(toon, TOON_BOARD_TIME * 0.25, Point3(90, 0, 0)), Parallel(Sequence(Wait(sitStartDuration * 0.25), LerpPosInterval(toon, sitStartDuration * 0.25, Point3(-3.9, -4.5 + index * 3, 3.0))), ActorInterval(toon, 'sit-start')), Func(toon.setAnimState, 'Sit', 1.0), Func(self.clearToonTrack, avId), name=toon.uniqueName('fillTrolley'), autoPause=1)
+            track = Sequence(
+                LerpPosInterval(toon, TOON_BOARD_TIME * 0.75, Point3(-5, -4.5 + index * 3, 1.4)),
+                LerpHprInterval(toon, TOON_BOARD_TIME * 0.25, Point3(90, 0, 0)),
+                Parallel(
+                    Sequence(Wait(sitStartDuration * 0.25), LerpPosInterval(toon, sitStartDuration * 0.25, Point3(-3.9, -4.5 + index * 3, 3.0))),
+                    ActorInterval(toon, 'sit-start')
+                ),
+                Func(toon.setAnimState, 'Sit', 1.0), Func(self.clearToonTrack, avId), name=toon.uniqueName('fillTrolley'), autoPause=1
+            )
             track.delayDelete = DelayDelete.DelayDelete(toon, 'Trolley.fillSlot')
             self.storeToonTrack(avId, track)
             track.start()

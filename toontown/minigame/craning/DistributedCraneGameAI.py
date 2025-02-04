@@ -63,6 +63,10 @@ class DistributedCraneGameAI(DistributedMinigameAI):
                                 State.State('inactive',
                                             self.enterInactive,
                                             self.exitInactive,
+                                            ['prepare']),
+                                State.State('prepare',
+                                            self.enterPrepare,
+                                            self.exitPrepare,
                                             ['play']),
                                 State.State('play',
                                             self.enterPlay,
@@ -224,7 +228,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         DistributedMinigameAI.setGameStart(self, timestamp)
         # all of the players are ready to start playing the game
         # transition to the appropriate ClassicFSM state
-        self.gameFSM.request('play')
+        self.gameFSM.request('prepare')
 
     def setGameAbort(self):
         self.notify.debug("setGameAbort")
@@ -851,12 +855,28 @@ class DistributedCraneGameAI(DistributedMinigameAI):
     def exitInactive(self):
         pass
 
+    def enterPrepare(self):
+        self.notify.debug("enterPrepare")
+
+        # Start up the big boy.
+        if not self.__bossExists():
+            self.__makeBoss()
+        self.boss.b_setAttackCode(ToontownGlobals.BossCogNoAttack)
+        self.__makeCraningObjects()
+        self.__resetCraningObjects()
+        self.setupRuleset()
+        self.setupSpawnpoints()
+        taskMgr.doMethodLater(5.25, self.gameFSM.request, self.uniqueName('start-game-task'), extraArgs=['play'])
+        self.d_restart()
+
+    def exitPrepare(self):
+        self.notify.debug("exitPrepare")
+        taskMgr.remove(self.uniqueName('start-game-task'))
+
     def enterPlay(self):
         self.notify.debug("enterPlay")
         taskMgr.remove(self.uniqueName("craneGameVictory"))
         self.battleThreeStart = globalClock.getFrameTime()
-
-        self.setupRuleset()
 
         # Stop toon passive healing.
         for toon in self.getParticipatingToons():
@@ -864,18 +884,12 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         # Listen to death messages.
         self.listenForToonDeaths()
-
-        # Start up the big boy.
-        if not self.__bossExists():
-            self.__makeBoss()
         self.boss.clearSafeHelmetCooldowns()
-        self.__makeCraningObjects()
         self.__resetCraningObjects()
         self.boss.prepareBossForBattle()
 
         # Just in case we didn't pass through PrepareBattleThree state.
         self.setupSpawnpoints()
-        self.d_restart()
 
         # Make four goons up front to keep things interesting from the
         # beginning.

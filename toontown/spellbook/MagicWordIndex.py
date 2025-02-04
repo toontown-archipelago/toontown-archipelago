@@ -1903,7 +1903,7 @@ class RestartCraneRound(MagicWord):
             return "You aren't in a crane round!"
 
         craneGame.gameFSM.request("cleanup")
-        craneGame.gameFSM.request('play')
+        craneGame.gameFSM.request('prepare')
         return "Restarting Crane Round"
 
 
