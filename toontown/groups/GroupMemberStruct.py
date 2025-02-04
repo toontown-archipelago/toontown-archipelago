@@ -8,11 +8,12 @@ class GroupMemberStruct:
     Provides an easy way to communicate group member information over the network.
     """
     avId: int
+    team: int
     status: int
     leader: bool
 
     def to_struct(self):
-        return [self.avId, self.status, self.leader]
+        return [self.avId, self.team, self.status, self.leader]
 
     @classmethod
     def from_struct(cls, entry):

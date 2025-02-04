@@ -102,9 +102,12 @@ class MinigameCreatorAI:
 
         return choices
 
-    def createMinigame(self, playerArray, trolleyZone, minigameZone=None, previousGameId=ToontownGlobals.NoPreviousGameId, newbieIds=None, startingVotes=None, metagameRound=-1, desiredNextGame=None) -> GeneratedMinigame:
+    def createMinigame(self, playerArray, trolleyZone, minigameZone=None, previousGameId=ToontownGlobals.NoPreviousGameId, newbieIds=None, spectatorIds=None, startingVotes=None, metagameRound=-1, desiredNextGame=None) -> GeneratedMinigame:
         if newbieIds is None:
             newbieIds = []
+
+        if spectatorIds is None:
+            spectatorIds = []
 
         if minigameZone is None:
             minigameZone = self.air.allocateZone()
@@ -153,6 +156,7 @@ class MinigameCreatorAI:
 
         mg.setMetagameRound(metagameRound)
         mg.generateWithRequired(minigameZone)
+        mg.b_setSpectators(spectatorIds)
 
         for avId in playerArray:
             toon = self.air.doId2do.get(avId)

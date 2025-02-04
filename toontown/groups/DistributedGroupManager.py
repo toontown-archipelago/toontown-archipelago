@@ -75,6 +75,9 @@ class DistributedGroupManager(DistributedObject):
     def attemptPromote(self, avId: int):
         self.d_promote(avId)
 
+    def attemptSwitch(self, avId: int):
+        self.d_requestTeamSwap(avId)
+
     def attemptStart(self):
         if self.getCurrentGroup() is not None:
             self.d_requestStart()
@@ -103,6 +106,9 @@ class DistributedGroupManager(DistributedObject):
 
     def d_promote(self, avId: int):
         self.sendUpdate('requestPromote', [avId])
+
+    def d_requestTeamSwap(self, avId: int):
+        self.sendUpdate('requestTeamSwap', [avId])
 
     def d_requestStart(self):
         self.sendUpdate('requestStart')

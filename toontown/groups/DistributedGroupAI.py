@@ -2,6 +2,7 @@ import time
 
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
+from toontown.groups import GroupGlobals
 from toontown.groups.GroupBase import GroupBase
 from toontown.groups.GroupMemberStruct import GroupMemberStruct
 from toontown.toon.DistributedToonAI import DistributedToonAI
@@ -28,20 +29,28 @@ class DistributedGroupAI(DistributedObjectAI, GroupBase):
 
         return dos
 
+    def getSpectators(self) -> list[int]:
+        return [member.avId for member in self.getMembers() if member.team == GroupGlobals.TEAM_SPECTATOR]
+
     def announce(self, message: str) -> None:
         """
         Announces a message to the toons in the group.
         """
         self.d_announce(message)
 
+    def onCooldown(self) -> bool:
+        if self.activityStartCooldown > time.time():
+            return True
+        return False
+
     def startActivity(self) -> None:
 
-        if self.activityStartCooldown > time.time():
+        if self.onCooldown():
             return
 
         self.announce("Activity starting...")
         self.activityStartCooldown = time.time() + 6
-        minigame = self.air.minigameMgr.createMinigame(self.getMemberIds(), self.zoneId, newbieIds=[], startingVotes=None, metagameRound=-1)
+        minigame = self.air.minigameMgr.createMinigame(self.getMemberIds(), self.zoneId, newbieIds=[], spectatorIds=self.getSpectators(), startingVotes=None, metagameRound=-1)
         self.d_setMinigameZone(minigame)
 
     """

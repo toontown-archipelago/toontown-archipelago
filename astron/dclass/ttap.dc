@@ -1217,6 +1217,7 @@ dclass DistributedTrolley : DistributedObject {
 
 struct GroupMember {
   uint32 avId;
+  int8 team;
   uint8 status;
   bool leader;
 }
@@ -1226,6 +1227,7 @@ dclass DistributedGroupManager : DistributedObject {
   invitePlayer(uint32 avId) airecv clsend;
   requestPromote(uint32 avId) airecv clsend;
   requestStart() airecv clsend;
+  requestTeamSwap(uint32 avId) airecv clsend;
   updateStatus(uint8 code) airecv clsend;
   setCurrentGroup(int32 groupId);
 };

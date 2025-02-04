@@ -66,7 +66,7 @@ class DistributedGroup(DistributedObject, GroupBase):
     """
     Methods called from the AI over astron.
     """
-    def setMembers(self, members: list[list[int, int, bool]]):
+    def setMembers(self, members: list[list[int, int, int, bool]]):
 
         formattedMembers: list[GroupMemberStruct] = []
         leader = None

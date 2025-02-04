@@ -5,6 +5,7 @@ from panda3d.core import TextNode
 
 from libotp import CFSpeech, CFTimeout
 from toontown.friends.OnlineToon import OnlineToon
+from toontown.groups import GroupGlobals
 from toontown.groups.GroupMemberStruct import GroupMemberStruct
 
 if typing.TYPE_CHECKING:
@@ -211,7 +212,7 @@ class GroupInterfaceMemberButton(DirectButton):
             name = onlineToon.name
         self.avatar = onlineToon
         self.avatarID = member.avId
-        self['text_fg'] = (.25, .25, .6, 1)
+        self['text_fg'] = (.3, .3, .3, 1) if member.team == GroupGlobals.TEAM_SPECTATOR else (.25, .25, .6, 1)
         self['state'] = DGG.NORMAL
         self['text'] = name
 
@@ -296,7 +297,8 @@ class GroupInterfaceMemberButton(DirectButton):
             base.localAvatar.getGroupManager().attemptPromote(self.avatarID)
 
     def __onSwitchClicked(self):
-        pass
+        if self.avatar is not None:
+            base.localAvatar.getGroupManager().attemptSwitch(self.avatarID)
 
     def __onKickClicked(self):
         if self.avatar is not None:

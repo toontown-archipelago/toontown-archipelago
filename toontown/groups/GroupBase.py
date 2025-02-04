@@ -19,7 +19,7 @@ class GroupBase:
         self.members: list[GroupMemberStruct] = []
 
         if self.leader != GroupBase.NoLeader:
-            self.members.append(GroupMemberStruct(self.leader, GroupGlobals.STATUS_LEADER, True))
+            self.members.append(GroupMemberStruct(self.leader, GroupGlobals.TEAM_FFA, GroupGlobals.STATUS_LEADER, True))
 
         self.capacity = GroupBase.DefaultCapacity
 
@@ -84,7 +84,7 @@ class GroupBase:
         if member in self.getMemberIds():
             return False
 
-        self.members.append(GroupMemberStruct(member, GroupGlobals.STATUS_UNREADY, False))
+        self.members.append(GroupMemberStruct(member, GroupGlobals.TEAM_FFA, GroupGlobals.STATUS_UNREADY, False))
         return True
 
     def getMember(self, avId: int) -> GroupMemberStruct | None:

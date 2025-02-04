@@ -113,6 +113,9 @@ class DistributedGroupManagerAI(DistributedObjectAI):
         if leaderId != toKickId and group.getLeader() != leader.getDoId():
             return
 
+        if group.onCooldown():
+            return
+
         if toKickId == leaderId:
             group.announce(f"{leader.getName()} has chose to leave the group.")
         else:
@@ -162,6 +165,9 @@ class DistributedGroupManagerAI(DistributedObjectAI):
             group.announce(f"{inviter.getName()} tried to invite {otherToon.getName()} but the group is full!")
             return
 
+        if group.onCooldown():
+            return
+
         # This is a valid operation.
         group.addMember(toInviteId)
         group.b_setMembers(group.getMembers())
@@ -188,6 +194,9 @@ class DistributedGroupManagerAI(DistributedObjectAI):
         if leadersGroup.getLeader() != leaderId:
             return
 
+        if leadersGroup.onCooldown():
+            return
+
         # This is a valid operation. Swap the two members places and update their statuses and leader variable.
         memberIds = leadersGroup.getMemberIds()
         members = leadersGroup.getMembers()
@@ -204,6 +213,43 @@ class DistributedGroupManagerAI(DistributedObjectAI):
         leadersGroup.setLeader(toPromoteId)
         leadersGroup.b_setMembers(members)
         leadersGroup.announce(f"{leader.getName()} has promoted {toPromote.getName()} to the group leader!")
+
+    def requestTeamSwap(self, avId: int):
+
+        requester: int = self.air.getAvatarIdFromSender()
+        leader = self.air.getDo(requester)
+        if leader is None:
+            return
+
+        toSwap = self.air.getDo(avId)
+        if toSwap is None:
+            return
+
+        # Are the two users in the same group?
+        leadersGroup = self.getGroup(leader)
+        if leadersGroup is None or avId not in leadersGroup.getMemberIds():
+            return
+
+        # We can only allow this operation if the user is the leader or they are acting on themselves.
+        selfSwap = avId == requester
+        isLeader = leadersGroup.getLeader() == requester
+        if not (selfSwap or isLeader):
+            return
+
+        if leadersGroup.onCooldown():
+            return
+
+        # Allow this operation.
+        teamCycle = (GroupGlobals.TEAM_SPECTATOR, GroupGlobals.TEAM_FFA)
+        memberIndex = leadersGroup.getMemberIds().index(avId)
+        oldTeam = leadersGroup.members[memberIndex].team
+        oldTeamIndex = teamCycle.index(oldTeam)
+        newTeamIndex = oldTeamIndex + 1
+        if newTeamIndex >= len(teamCycle):
+            newTeamIndex = 0
+        leadersGroup.members[memberIndex].team = teamCycle[newTeamIndex]
+
+        leadersGroup.b_setMembers(leadersGroup.getMembers())
 
     def requestStart(self):
         requesterId = self.air.getAvatarIdFromSender()
@@ -226,6 +272,10 @@ class DistributedGroupManagerAI(DistributedObjectAI):
                 notReady += 1
         if notReady > 0:
             group.announce(f"{requester.getName()} wants to start the activity but {notReady} toon{'s' if notReady > 1 else ''} {'are' if notReady > 1 else 'is'} not ready!")
+            return
+
+        if len(group.getSpectators()) >= len(group.getMembers()):
+            group.announce(f"{requester.getName()} wants to start the activity but everyone is spectating!")
             return
 
         group.startActivity()

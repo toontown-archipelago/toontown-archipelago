@@ -496,6 +496,9 @@ class DistributedCraneGame(DistributedMinigame):
                     if i == 0:
                         self.rulesPanel.isLeader = (avId == base.localAvatar.doId)
 
+                    if avId in self.getSpectators():
+                        self.rulesPanel.updateSpotStatus(i, False)
+
     def calculateHeat(self):
         bonusHeat = 0
         # Loop through all modifiers present and calculate the bonus heat

@@ -13,7 +13,7 @@ from toontown.minigame import MinigameGlobals
 class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('PurchaseManagerAI')
 
-    def __init__(self, air, playerArray, mpArray, previousMinigameId, trolleyZone, newbieIdList = [], votesArray = None, metagameRound = -1, desiredNextGame = None):
+    def __init__(self, air, playerArray, mpArray, previousMinigameId, trolleyZone, newbieIdList = [], votesArray = None, metagameRound = -1, desiredNextGame = None, spectators=None):
         DistributedObjectAI.DistributedObjectAI.__init__(self, air)
         self.playerIds = copy.deepcopy(playerArray)
         self.minigamePoints = copy.deepcopy(mpArray)
@@ -27,6 +27,9 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
             self.votesArray = []
         self.metagameRound = metagameRound
         self.desiredNextGame = desiredNextGame
+        if spectators is None:
+            spectators = []
+        self.spectators = spectators
         for i in range(len(self.playerIds)):
             self.playerIds.append(0)
 
@@ -283,7 +286,11 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
                     newVotesArray = [TravelGameGlobals.DefaultStartingVotes] * len(playAgainList)
             if len(playAgainList) == 1 and simbase.config.GetBool('metagame-min-2-players', 1):
                 newRound = -1
-            self.air.minigameMgr.createMinigame(playAgainList, self.trolleyZone, minigameZone=self.zoneId, previousGameId=self.previousMinigameId, newbieIds=newbieIdsToPass, startingVotes=newVotesArray, metagameRound=newRound, desiredNextGame=self.desiredNextGame)
+            newSpecList = []
+            for oldSpec in self.spectators:
+                if oldSpec in playAgainList:
+                    newSpecList.append(oldSpec)
+            self.air.minigameMgr.createMinigame(playAgainList, self.trolleyZone, minigameZone=self.zoneId, previousGameId=self.previousMinigameId, newbieIds=newbieIdsToPass, startingVotes=newVotesArray, metagameRound=newRound, desiredNextGame=self.desiredNextGame, spectatorIds=newSpecList)
         else:
             self.air.minigameMgr.releaseMinigameZone(self.zoneId)
         self.requestDelete()

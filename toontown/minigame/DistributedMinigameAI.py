@@ -447,7 +447,7 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
             pm.generateWithRequired(self.zoneId)
 
         if len(self.avIdList) > len(self.newbieIdList):
-            pm = PurchaseManagerAI.PurchaseManagerAI(self.air, self.avIdList, scoreList, self.minigameId, self.trolleyZone, self.newbieIdList)
+            pm = PurchaseManagerAI.PurchaseManagerAI(self.air, self.avIdList, scoreList, self.minigameId, self.trolleyZone, self.newbieIdList, spectators=self.getSpectators())
             pm.generateWithRequired(self.zoneId)
 
     def exitFrameworkCleanup(self):
