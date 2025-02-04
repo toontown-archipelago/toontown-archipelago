@@ -127,9 +127,9 @@ class DistributedCraneGame(DistributedMinigame):
 
     def setSpectators(self, avIds):
         super().setSpectators(avIds)
-        self.__checkSpectatorState()
+        self.__checkSpectatorState(spectate=False)
 
-    def __checkSpectatorState(self):
+    def __checkSpectatorState(self, spectate=True):
 
         # Loop through every spectator and make sure they are hidden.
         for toon in self.getSpectatingToons():
@@ -154,7 +154,7 @@ class DistributedCraneGame(DistributedMinigame):
             else:
                 self.boss.makeLocalToonUnsafe()
 
-        if self.scoreboard is not None:
+        if spectate and self.scoreboard is not None:
             if self.localToonSpectating():
                 self.scoreboard.enableSpectating()
             else:
@@ -551,7 +551,7 @@ class DistributedCraneGame(DistributedMinigame):
 
     def enterOff(self):
         self.notify.debug("enterOff")
-        self.__checkSpectatorState()
+        self.__checkSpectatorState(spectate=False)
 
     def exitOff(self):
         pass
@@ -572,8 +572,6 @@ class DistributedCraneGame(DistributedMinigame):
         self.scoreboard.clearToons()
         for avId in self.getParticipantIdsNotSpectating():
             self.scoreboard.addToon(avId)
-
-        self.__checkSpectatorState()
 
         self.introductionMovie = self.__generatePrepareInterval()
         self.introductionMovie.start()
@@ -613,6 +611,8 @@ class DistributedCraneGame(DistributedMinigame):
         self.accept("LocalSetFinalBattleMode", self.toFinalBattleMode)
         self.accept("LocalSetOuchMode", self.toOuchMode)
         self.accept("ChatMgr-enterMainMenu", self.chatClosed)
+
+        self.__checkSpectatorState()
 
     def exitPlay(self):
 
