@@ -3363,48 +3363,6 @@ class PrintChildren(MagicWord):
                 print(child.getChildren())
 
 
-class StartBoss(MagicWord):
-    aliases = ['startvp', 'startcfo', 'startcj', 'startceo']
-    desc = 'Starts a boss battle.'
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = 'TTOFF_DEVELOPER'
-
-    def handleWord(self, invoker, avId, toon, *args):
-
-        from ..toon.DistributedToonAI import DistributedToonAI
-
-        hood_zones = [ToontownGlobals.BossbotHQ, ToontownGlobals.LawbotHQ,
-                      ToontownGlobals.CashbotHQ, ToontownGlobals.SellbotHQ]
-        if toon.zoneId not in hood_zones:
-            return 'Toon is not in the correct zone! Expected a Cog HQ courtyard, got {}.'.format(toon.zoneId)
-
-        # Get all players online
-        online_toons: List[DistributedToonAI] = simbase.air.getAllOfType(DistributedToonAI)
-        for online_toon in list(online_toons):
-            if not online_toon.isPlayerControlled():
-                online_toons.remove(online_toon)
-
-        for hood in simbase.air.hoods:
-            if hood.zoneId == toon.zoneId:
-
-                toons_in_zone = [online_toon for online_toon in online_toons if online_toon.zoneId == toon.zoneId]
-
-                # If there are more than 8 players, just grab the first 7 we find and assure that invoker is in it
-                if len(toons_in_zone) > 8:
-                    if toon.getDoId() in toons_in_zone:
-                        toons_in_zone.remove(toon)
-
-                    toons_in_zone = toons_in_zone[0:7]
-                    toons_in_zone.append(toon)
-
-                zone = hood.lobbyMgr.createBossOffice([t.getDoId() for t in toons_in_zone])
-                for t in toons_in_zone:
-                    t.sendUpdate('forceEnterBoss', [t.zoneId, zone])
-                return f'Successfully created a boss for {len(toons_in_zone)} toons!!'
-
-        return 'Cog HQ hood data not found!'
-
-
 class SetDNA(MagicWord):
     aliases = ['dna']
     desc = 'Modify a DNA part on the invoker'

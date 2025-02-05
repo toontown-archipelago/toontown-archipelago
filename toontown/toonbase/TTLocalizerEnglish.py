@@ -9546,6 +9546,7 @@ LogoutForced = 'You have done something wrong\n and are being logged out automat
 CountryClubToonEnterElevator = '%s \nhas jumped in the golf kart.'
 CountryClubBossConfrontedMsg = '%s is battling the Club President!'
 ElevatorBlockedRoom = 'All challenges must be defeated first.'
+ElevatorOutOfBusiness = 'The elevator seems to be broken.\nCheck out the Trolley instead!'
 MolesLeft = 'Moles Left: %d'
 MolesInstruction = 'Mole Stomp!\nJump on the red moles!'
 MolesFinished = 'Mole Stomp successful!'

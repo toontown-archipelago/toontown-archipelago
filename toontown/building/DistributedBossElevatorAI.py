@@ -53,12 +53,7 @@ class DistributedBossElevatorAI(DistributedElevatorExtAI.DistributedElevatorExtA
         taskMgr.doMethodLater(ElevatorData[self.type]['openTime'], self.waitEmptyTask, self.uniqueName('opening-timer'))
 
     def checkBoard(self, av):
-        dept = ToontownGlobals.cogHQZoneId2deptIndex(self.zone)
-        if av.hp < self.minLaff:
-            return REJECT_MINLAFF
-        if not av.readyForPromotion(dept):
-            return REJECT_PROMOTION
-        return 0
+        return REJECT_OUT_OF_ORDER  # Never let toons board boss elevators. The rounds are playable on the trolley now!
 
     def requestBoard(self, *args):
         self.notify.debug('requestBoard')

@@ -376,6 +376,8 @@ class DistributedElevator(DistributedObject.DistributedObject):
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.BossElevatorRejectMessage)
             elif reason == REJECT_NOT_YET_AVAILABLE:
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.NotYetAvailable)
+            elif reason == REJECT_OUT_OF_ORDER:
+                base.localAvatar.elevatorNotifier.showMe(TTLocalizer.ElevatorOutOfBusiness)
             elif reason in FADoorCodes.reasonDict.keys():
                 base.localAvatar.elevatorNotifier.showMe(FADoorCodes.reasonDict[reason])
         doneStatus = {'where': 'reject'}

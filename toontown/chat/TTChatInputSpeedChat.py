@@ -342,233 +342,75 @@ class TTChatInputSpeedChat(DirectObject.DirectObject):
         self.speedChat.finalizeAll()
 
     def addFactoryMenu(self):
-        if self.factoryMenu == None:
-            menu = TTSCFactoryMenu()
-            self.factoryMenu = SCMenuHolder(OTPLocalizer.SCMenuFactory, menu=menu)
-            self.speedChat[2:2] = [self.factoryMenu]
         return
 
     def removeFactoryMenu(self):
-        if self.factoryMenu:
-            i = self.speedChat.index(self.factoryMenu)
-            del self.speedChat[i]
-            self.factoryMenu.destroy()
-            self.factoryMenu = None
         return
 
     def addKartRacingMenu(self):
-        if self.kartRacingMenu == None:
-            menu = TTSCKartRacingMenu()
-            self.kartRacingMenu = SCMenuHolder(OTPLocalizer.SCMenuKartRacing, menu=menu)
-            self.speedChat[2:2] = [self.kartRacingMenu]
         return
 
     def removeKartRacingMenu(self):
-        if self.kartRacingMenu:
-            i = self.speedChat.index(self.kartRacingMenu)
-            del self.speedChat[i]
-            self.kartRacingMenu.destroy()
-            self.kartRacingMenu = None
         return
 
     def addCogMenu(self, indices):
-        if self.cogMenu == None:
-            menu = TTSCCogMenu(indices)
-            self.cogMenu = SCMenuHolder(OTPLocalizer.SCMenuCog, menu=menu)
-            self.speedChat[2:2] = [self.cogMenu]
         return
 
     def removeCogMenu(self):
-        if self.cogMenu:
-            i = self.speedChat.index(self.cogMenu)
-            del self.speedChat[i]
-            self.cogMenu.destroy()
-            self.cogMenu = None
         return
 
     def addCFOMenu(self):
-        if self.cfoMenu == None:
-            menu = SCMenu()
-            menu.rebuildFromStructure(cfoMenuStructure)
-            self.cfoMenu = SCMenuHolder(OTPLocalizer.SCMenuCFOBattle, menu=menu)
-            self.speedChat[2:2] = [self.cfoMenu]
         return
 
     def removeCFOMenu(self):
-        if self.cfoMenu:
-            i = self.speedChat.index(self.cfoMenu)
-            del self.speedChat[i]
-            self.cfoMenu.destroy()
-            self.cfoMenu = None
         return
 
     def addCJMenu(self, bonusWeight=-1):
-        if self.cjMenu == None:
-            menu = SCMenu()
-            myMenuCopy = cjMenuStructure[:]
-            if bonusWeight >= 0:
-                myMenuCopy.append(2211 + bonusWeight)
-            menu.rebuildFromStructure(myMenuCopy)
-            self.cjMenu = SCMenuHolder(OTPLocalizer.SCMenuCJBattle, menu=menu)
-            self.speedChat[2:2] = [self.cjMenu]
         return
 
     def removeCJMenu(self):
-        if self.cjMenu:
-            i = self.speedChat.index(self.cjMenu)
-            del self.speedChat[i]
-            self.cjMenu.destroy()
-            self.cjMenu = None
         return
 
     def addCEOMenu(self):
-        if self.ceoMenu == None:
-            menu = SCMenu()
-            menu.rebuildFromStructure(ceoMenuStructure)
-            self.ceoMenu = SCMenuHolder(OTPLocalizer.SCMenuCEOBattle, menu=menu)
-            self.speedChat[2:2] = [self.ceoMenu]
         return
 
     def removeCEOMenu(self):
-        if self.ceoMenu:
-            i = self.speedChat.index(self.ceoMenu)
-            del self.speedChat[i]
-            self.ceoMenu.destroy()
-            self.ceoMenu = None
         return
 
     def addInsidePartiesMenu(self):
-
-        def isActivityInParty(activityId):
-            activityList = base.distributedParty.partyInfo.activityList
-            for activity in activityList:
-                if activity.activityId == activityId:
-                    return True
-
-            return False
-
-        def isDecorInParty(decorId):
-            decorList = base.distributedParty.partyInfo.decors
-            for decor in decorList:
-                if decor.decorId == decorId:
-                    return True
-
-            return False
-
-        insidePartiesMenuStructure = [5305,
-                                      5306,
-                                      5307,
-                                      5308,
-                                      5309]
-        if self.insidePartiesMenu == None:
-            menu = SCMenu()
-            if hasattr(base, 'distributedParty') and base.distributedParty:
-                if base.distributedParty.partyInfo.hostId == localAvatar.doId:
-                    insidePartiesMenuStructure.insert(0, 5304)
-                if isActivityInParty(0):
-                    insidePartiesMenuStructure.extend([5310, 5311])
-                if isActivityInParty(1):
-                    insidePartiesMenuStructure.append(5312)
-                if isActivityInParty(2):
-                    insidePartiesMenuStructure.extend([5313, 5314])
-                if isActivityInParty(3):
-                    insidePartiesMenuStructure.append(5315)
-                if isActivityInParty(4):
-                    insidePartiesMenuStructure.extend([5316, 5317])
-                if isActivityInParty(5):
-                    insidePartiesMenuStructure.append(5318)
-                if isActivityInParty(6):
-                    insidePartiesMenuStructure.extend([5319, 5320])
-                if len(base.distributedParty.partyInfo.decors):
-                    insidePartiesMenuStructure.append(5321)
-                    if isDecorInParty(3):
-                        insidePartiesMenuStructure.append(5322)
-            menu.rebuildFromStructure(insidePartiesMenuStructure)
-            self.insidePartiesMenu = SCMenuHolder(OTPLocalizer.SCMenuParties, menu=menu)
-            self.speedChat[2:2] = [self.insidePartiesMenu]
         return
 
     def removeInsidePartiesMenu(self):
-        if self.insidePartiesMenu:
-            i = self.speedChat.index(self.insidePartiesMenu)
-            del self.speedChat[i]
-            self.insidePartiesMenu.destroy()
-            self.insidePartiesMenu = None
         return
 
     def addGolfMenu(self):
-        if self.golfMenu == None:
-            menu = TTSCGolfMenu()
-            self.golfMenu = SCMenuHolder(OTPLocalizer.SCMenuGolf, menu=menu)
-            self.speedChat[2:2] = [self.golfMenu]
         return
 
     def removeGolfMenu(self):
-        if self.golfMenu:
-            i = self.speedChat.index(self.golfMenu)
-            del self.speedChat[i]
-            self.golfMenu.destroy()
-            self.golfMenu = None
         return
 
     def addBoardingGroupMenu(self, zoneId):
-        if self.boardingGroupMenu == None:
-            menu = TTSCBoardingMenu(zoneId)
-            self.boardingGroupMenu = SCMenuHolder(OTPLocalizer.SCMenuBoardingGroup, menu=menu)
-            self.speedChat[2:2] = [self.boardingGroupMenu]
         return
 
     def removeBoardingGroupMenu(self):
-        if self.boardingGroupMenu:
-            i = self.speedChat.index(self.boardingGroupMenu)
-            del self.speedChat[i]
-            self.boardingGroupMenu.destroy()
-            self.boardingGroupMenu = None
         return
 
     def addAprilToonsMenu(self):
-        if self.aprilToonsMenu == None:
-            menu = TTSCAprilToonsMenu()
-            self.aprilToonsMenu = SCMenuHolder(OTPLocalizer.SCMenuAprilToons, menu=menu)
-            self.speedChat[3:3] = [self.aprilToonsMenu]
         return
 
     def removeAprilToonsMenu(self):
-        if self.aprilToonsMenu:
-            i = self.speedChat.index(self.aprilToonsMenu)
-            del self.speedChat[i]
-            self.aprilToonsMenu.destroy()
-            self.aprilToonsMenu = None
         return
 
     def addHalloweenMenu(self):
-        if self.halloweenMenu == None:
-            menu = TTSCHalloweenMenu()
-            self.halloweenMenu = SCMenuHolder(OTPLocalizer.SCMenuHalloween, menu=menu)
-            self.speedChat[2:2] = [self.halloweenMenu]
         return
 
     def removeHalloweenMenu(self):
-        if self.halloweenMenu:
-            i = self.speedChat.index(self.halloweenMenu)
-            del self.speedChat[i]
-            self.halloweenMenu.destroy()
-            self.halloweenMenu = None
         return
 
     def addWinterMenu(self, carol=False):
-        if self.winterMenu == None:
-            menu = TTSCWinterMenu(carol)
-            self.winterMenu = SCMenuHolder(OTPLocalizer.SCMenuWinter, menu=menu)
-            self.speedChat[2:2] = [self.winterMenu]
         return
 
     def removeWinterMenu(self):
-        if self.winterMenu:
-            i = self.speedChat.index(self.winterMenu)
-            del self.speedChat[i]
-            self.winterMenu.destroy()
-            self.winterMenu = None
         return
 
     def addCarolMenu(self):
@@ -579,31 +421,13 @@ class TTChatInputSpeedChat(DirectObject.DirectObject):
         pass
 
     def addWhiteList(self):
-        if self.whiteList == None:
-            from toontown.chat.TTSCWhiteListTerminal import TTSCWhiteListTerminal
-            self.whiteList = TTSCWhiteListTerminal(4, self)
-            self.speedChat[1:1] = [self.whiteList]
         return
 
     def removeWhiteList(self):
-        if self.whiteList:
-            i = self.speedChat.index(self.whiteList)
-            del self.speedChat[i]
-            self.whiteList.destroy()
-            self.whiteList = None
         return
 
     def addSellbotInvasionMenu(self):
-        if self.sellbotInvasionMenu == None:
-            menu = TTSCSellbotInvasionMenu()
-            self.sellbotInvasionMenu = SCMenuHolder(OTPLocalizer.SCMenuSellbotInvasion, menu=menu)
-            self.speedChat[2:2] = [self.sellbotInvasionMenu]
         return
 
     def removeSellbotInvasionMenu(self):
-        if self.sellbotInvasionMenu:
-            i = self.speedChat.index(self.sellbotInvasionMenu)
-            del self.speedChat[i]
-            self.sellbotInvasionMenu.destroy()
-            self.sellbotInvasionMenu = None
         return
