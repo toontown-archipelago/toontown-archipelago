@@ -29,6 +29,7 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
         self.rulesetFallback = self.ruleset  # A fallback ruleset for when we rcr, or change mods mid round
         self.oldMaxLaffs = {}
         self.heldObject = None
+        self.waitingForHelmet = 0
 
         # Some overrides from commands
         self.doTimer = None  # If true, make timer run down instead of count up, modified from a command, if false, count up, if none, use the rule

@@ -43,6 +43,7 @@ class DistributedCraneGame(DistributedMinigame):
 
         self.overlayText = OnscreenText('', shadow=(0, 0, 0, 1), font=ToontownGlobals.getCompetitionFont(), pos=(0, 0), scale=0.35, mayChange=1)
         self.overlayText.hide()
+        self.rulesPanel = None
         self.boss = None
         self.bossRequest = None
         self.wantCustomCraneSpawns = False
@@ -485,17 +486,19 @@ class DistributedCraneGame(DistributedMinigame):
         base.localAvatar.b_setParent(ToontownGlobals.SPRender)
 
         # Update the settings panel with the current toons
-        if hasattr(self, 'rulesPanel'):
+        if self.rulesPanel is not None:
             for i, avId in enumerate(self.avIdList):
-                toon = self.cr.doId2do.get(avId)
-                if toon:
-                    self.rulesPanel.occupySpot(i, toon)
-                    # Set leader status based on being first in avIdList
-                    if i == 0:
-                        self.rulesPanel.isLeader = (avId == base.localAvatar.doId)
+                toon = self.cr.getDo(avId)
+                if toon is None:
+                    continue
 
-                    if avId in self.getSpectators():
-                        self.rulesPanel.updateSpotStatus(i, False)
+                self.rulesPanel.occupySpot(i, toon)
+                # Set leader status based on being first in avIdList
+                if i == 0:
+                    self.rulesPanel.isLeader = (avId == base.localAvatar.doId)
+
+                if avId in self.getSpectators():
+                    self.rulesPanel.updateSpotStatus(i, False)
 
     def calculateHeat(self):
         bonusHeat = 0
@@ -504,6 +507,14 @@ class DistributedCraneGame(DistributedMinigame):
             bonusHeat += modifier.getHeat()
 
         return self.BASE_HEAT + bonusHeat
+
+    def __generateRulesPanel(self):
+        return CraneGameSettingsPanel(self.getTitle(), self.rulesDoneEvent)
+
+    def __cleanupRulesPanel(self):
+        if self.rulesPanel is not None:
+            self.rulesPanel.cleanup()
+            self.rulesPanel = None
 
     def updateRequiredElements(self):
         self.bossSpeedrunTimer.cleanup()
@@ -536,10 +547,7 @@ class DistributedCraneGame(DistributedMinigame):
         if not self.hasLocalToon: return
         self.notify.debug("setGameStart")
         # Make sure the rules panel is cleaned up for all clients
-        if hasattr(self, 'rulesPanel'):
-            self.rulesPanel.hide()
-            self.rulesPanel.cleanup()
-            del self.rulesPanel
+        self.__cleanupRulesPanel()
         # base class will cause gameFSM to enter initial state
         DistributedMinigame.setGameStart(self, timestamp)
         # all players have finished reading the rules,
@@ -765,7 +773,7 @@ class DistributedCraneGame(DistributedMinigame):
     def enterFrameworkRules(self):
         self.notify.debug('BASE: enterFrameworkRules')
         self.accept(self.rulesDoneEvent, self.handleRulesDone)
-        self.rulesPanel = CraneGameSettingsPanel(self.getTitle(), self.rulesDoneEvent)
+        self.rulesPanel = self.__generateRulesPanel()
         self.rulesPanel.load()
         self.rulesPanel.show()  # Instead of enter(), just show() since it's a DirectFrame
         # Accept spot status change messages
@@ -774,10 +782,7 @@ class DistributedCraneGame(DistributedMinigame):
     def exitFrameworkRules(self):
         self.ignore(self.rulesDoneEvent)
         self.ignore('spotStatusChanged')
-        if hasattr(self, 'rulesPanel'):
-            self.rulesPanel.hide()  # Instead of exit(), just hide() since it's a DirectFrame
-            self.rulesPanel.cleanup()  # Use cleanup() instead of unload()
-            del self.rulesPanel
+        self.__cleanupRulesPanel()
 
     def handleRulesDone(self):
         self.notify.debug('BASE: handleRulesDone')
@@ -796,5 +801,5 @@ class DistributedCraneGame(DistributedMinigame):
         Received from the server when any client changes a spot's status
         Update the local panel to reflect the change
         """
-        if hasattr(self, 'rulesPanel'):
+        if self.rulesPanel is not None:
             self.rulesPanel.updateSpotStatus(spotIndex, isPlayer)
