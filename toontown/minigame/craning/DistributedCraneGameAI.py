@@ -715,6 +715,11 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         return 100
 
     def recordHit(self, damage, impact=0, craneId=-1, objId=0, isGoon=False):
+
+        # Don't process a hit if we aren't in the play state.
+        if self.gameFSM.getCurrentState().getName() != 'play':
+            return
+        
         avId = self.air.getAvatarIdFromSender()
         crane = simbase.air.doId2do.get(craneId)
         if not self.validate(avId, avId in self.getParticipants(), 'recordHit from unknown avatar'):
