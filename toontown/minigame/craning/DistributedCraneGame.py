@@ -479,8 +479,6 @@ class DistributedCraneGame(DistributedMinigame):
         for toon in self.getParticipants():
             toon.startSmooth()
 
-        self.setToonsToBattleThreePos()
-
         base.localAvatar.d_clearSmoothing()
         base.localAvatar.sendCurrentPosition()
         base.localAvatar.b_setAnimState('neutral', 1)
@@ -566,6 +564,10 @@ class DistributedCraneGame(DistributedMinigame):
 
         camera.wrtReparentTo(render)
         self.setToonsToBattleThreePos()
+        base.localAvatar.d_clearSmoothing()
+        base.localAvatar.sendCurrentPosition()
+        base.localAvatar.b_setAnimState('neutral', 1)
+        base.localAvatar.b_setParent(ToontownGlobals.SPRender)
 
         # Display Modifiers Heat
         self.heatDisplay.update(self.calculateHeat(), self.modifiers)
