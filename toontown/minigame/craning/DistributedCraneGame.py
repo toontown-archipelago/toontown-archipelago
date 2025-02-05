@@ -48,7 +48,7 @@ class DistributedCraneGame(DistributedMinigame):
         self.bossRequest = None
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
-        self.ruleset = CraneLeagueGlobals.CFORuleset()  # Setup a default ruleset as a fallback
+        self.ruleset = CraneLeagueGlobals.CraneGameRuleset()  # Setup a default ruleset as a fallback
         self.modifiers = []
         self.heatDisplay = CraneLeagueHeatDisplay()
         self.heatDisplay.hide()
@@ -526,11 +526,12 @@ class DistributedCraneGame(DistributedMinigame):
             self.scoreboard.set_ruleset(self.ruleset)
 
         self.heatDisplay.update(self.calculateHeat(), self.modifiers)
+        if self.boss is not None:
+            self.boss.setRuleset(self.ruleset)
 
     def setRawRuleset(self, attrs):
-        self.ruleset = CraneLeagueGlobals.CFORuleset.fromStruct(attrs)
+        self.ruleset = CraneLeagueGlobals.CraneGameRuleset.fromStruct(attrs)
         self.updateRequiredElements()
-        print(('ruleset updated: ' + str(self.ruleset)))
 
     def getRawRuleset(self):
         return self.ruleset.asStruct()

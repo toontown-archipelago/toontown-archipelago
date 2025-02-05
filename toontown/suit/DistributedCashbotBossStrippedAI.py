@@ -25,7 +25,7 @@ class DistributedCashbotBossStrippedAI(DistributedBossCogStrippedAI, FSM.FSM):
 
         self.game = game
 
-        self.ruleset = CraneLeagueGlobals.CFORuleset()
+        self.ruleset = CraneLeagueGlobals.CraneGameRuleset()
         self.rulesetFallback = self.ruleset  # A fallback ruleset for when we rcr, or change mods mid round
         self.oldMaxLaffs = {}
         self.heldObject = None

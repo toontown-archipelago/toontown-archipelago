@@ -28,7 +28,7 @@ class DistributedCashbotBossStripped(DistributedBossCogStripped):
 
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
-        self.ruleset = CraneLeagueGlobals.CFORuleset()  # Setup a default ruleset as a fallback
+        self.ruleset = CraneLeagueGlobals.CraneGameRuleset()  # Setup a default ruleset as a fallback
         self.modifiers = []
         self.endVault = None
         self.warningSfx = None

@@ -27,7 +27,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def __init__(self, air):
         DistributedBossCogAI.DistributedBossCogAI.__init__(self, air, 'm')
         FSM.FSM.__init__(self, 'DistributedCashbotBossAI')
-        self.ruleset = CraneLeagueGlobals.CFORuleset()
+        self.ruleset = CraneLeagueGlobals.CraneGameRuleset()
         self.rulesetFallback = self.ruleset  # A fallback ruleset for when we rcr, or change mods mid round
         self.modifiers = []  # A list of CFORulesetModifierBase instances
         self.goonCache = ("Recent emerging side", 0) # Cache for goon spawn bad luck protection
@@ -209,7 +209,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def setupRuleset(self):
 
-        self.ruleset = CraneLeagueGlobals.CFORuleset()
+        self.ruleset = CraneLeagueGlobals.CraneGameRuleset()
 
         self.setupTimer()
 

@@ -33,7 +33,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
     def __init__(self, air, minigameId):
         DistributedMinigameAI.__init__(self, air, minigameId)
 
-        self.ruleset = CraneLeagueGlobals.CFORuleset()
+        self.ruleset = CraneLeagueGlobals.CraneGameRuleset()
         self.modifiers = []  # A list of CFORulesetModifierBase instances
         self.goonCache = ("Recent emerging side", 0) # Cache for goon spawn bad luck protection
         self.cranes = []
@@ -153,20 +153,19 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # all of the players have checked in
         # they will now be shown the rules
         self.d_setBossCogId()
-
-        # Until the proper setup is finished for coming into these, only the first two toons are non spectators.
-        # Everyone else will be a spectator.
-        # When the group/party system is implemented, this can be deleted.
-        #spectators = []
-        #if len(self.getParticipants()) > 2:
-        #    spectators = self.getParticipants()[2:]
-        # self.b_setSpectators(spectators)
-
         self.setupRuleset()
         self.setupSpawnpoints()
 
     def setupRuleset(self):
-        self.ruleset = CraneLeagueGlobals.CFORuleset()
+
+        # Temporary until the ruleset/modifiers tabs are implemented into the rules panel interface.
+        # If a toon is performing a solo crane round, use clash rules.
+        # If there is more than one toon present, use competitive crane league rules.
+        if len(self.getParticipants()) >= 2:
+            self.ruleset = CraneLeagueGlobals.CraneGameRuleset()
+        else:
+            self.ruleset = CraneLeagueGlobals.ClashCraneGameRuleset()
+
         if self.getBoss() is not None:
             self.getBoss().setRuleset(self.ruleset)
 
@@ -719,7 +718,7 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         # Don't process a hit if we aren't in the play state.
         if self.gameFSM.getCurrentState().getName() != 'play':
             return
-        
+
         avId = self.air.getAvatarIdFromSender()
         crane = simbase.air.doId2do.get(craneId)
         if not self.validate(avId, avId in self.getParticipants(), 'recordHit from unknown avatar'):

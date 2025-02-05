@@ -60,7 +60,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         
         self.wantCustomCraneSpawns = False
         self.customSpawnPositions = {}
-        self.ruleset = CraneLeagueGlobals.CFORuleset()  # Setup a default ruleset as a fallback
+        self.ruleset = CraneLeagueGlobals.CraneGameRuleset()  # Setup a default ruleset as a fallback
         self.scoreboard = None
         self.modifiers = []
         self.heatDisplay = CraneLeagueHeatDisplay()
@@ -214,7 +214,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.disableBackWall()
 
     def setRawRuleset(self, attrs):
-        self.ruleset = CraneLeagueGlobals.CFORuleset.fromStruct(attrs)
+        self.ruleset = CraneLeagueGlobals.CraneGameRuleset.fromStruct(attrs)
         self.updateRequiredElements()
         print(('ruleset updated: ' + str(self.ruleset)))
 

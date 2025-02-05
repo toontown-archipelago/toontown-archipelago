@@ -108,14 +108,9 @@ UNSTUN = 'UN-STUN!'
 
 # Ruleset
 # Instance attached to cfo boss instances, so we can easily modify stuff dynamically
-class CFORuleset:
+class CraneGameRuleset:
 
     def __init__(self):
-        # Enable for debugging
-        self.GENERAL_DEBUG = False
-        self.GOON_STATES_DEBUG = False
-        self.CRANE_STATES_DEBUG = False
-        self.SAFE_STATES_DEBUG = False
 
         self.TIMER_MODE = True  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
         self.TIMER_MODE_TIME_LIMIT = 3 * 60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
@@ -331,22 +326,19 @@ class CFORuleset:
         return repr(self.__dict__)
 
 
-# Some other default rulesets to choose from
-class SemiFinalsCFORuleset(CFORuleset):
+
+
+class ClashCraneGameRuleset(CraneGameRuleset):
+    """
+    Tweaks the crane game ruleset to match the gameplay that is present on clash.
+    Since crane league was inspired by clash's CFO gameplay, the only things we have to tweak really is
+    timer behavior and the CFO's HP.
+    """
 
     def __init__(self):
-        CFORuleset.__init__(self)
-        self.TIMER_MODE_TIME_LIMIT = int(60 * 12.5)
-        self.CFO_MAX_HP = 2250
-
-
-class FinalsCFORuleset(CFORuleset):
-
-    def __init__(self):
-        CFORuleset.__init__(self)
-        self.TIMER_MODE_TIME_LIMIT = 60 * 15
-        self.CFO_MAX_HP = 3000
-
+        super().__init__()
+        self.TIMER_MODE = False
+        self.CFO_MAX_HP = 1500
 
 # This is where we define modifiers, all modifiers alter a ruleset instance in some way to tweak cfo behavior
 # dynamically, first the base class that any modifiers should extend from
