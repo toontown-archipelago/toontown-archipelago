@@ -17,6 +17,7 @@ from toontown.coghq.DistributedCashbotBossSafeAI import DistributedCashbotBossSa
 from toontown.coghq.DistributedCashbotBossSideCraneAI import DistributedCashbotBossSideCraneAI
 from toontown.coghq.DistributedCashbotBossTreasureAI import DistributedCashbotBossTreasureAI
 from toontown.minigame.DistributedMinigameAI import DistributedMinigameAI
+from toontown.minigame.craning import CraneGameGlobals
 from toontown.minigame.craning.CraneGamePracticeCheatAI import CraneGamePracticeCheatAI
 from toontown.suit.DistributedCashbotBossGoonAI import DistributedCashbotBossGoonAI
 from toontown.suit.DistributedCashbotBossStrippedAI import DistributedCashbotBossStrippedAI
@@ -870,7 +871,13 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         self.__resetCraningObjects()
         self.setupRuleset()
         self.setupSpawnpoints()
-        taskMgr.doMethodLater(5.25, self.gameFSM.request, self.uniqueName('start-game-task'), extraArgs=['play'])
+
+        # Calculate how long we should wait to actually start the game.
+        # If more than 1 player is present, we want to have a delay present for a cutscene to play.
+        delayTime = CraneGameGlobals.PREPARE_LATENCY_FACTOR
+        if len(self.getParticipantIdsNotSpectating()) != 1:
+            delayTime += CraneGameGlobals.PREPARE_DELAY
+        taskMgr.doMethodLater(delayTime, self.gameFSM.request, self.uniqueName('start-game-task'), extraArgs=['play'])
         self.d_restart()
 
     def exitPrepare(self):

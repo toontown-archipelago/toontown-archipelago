@@ -24,6 +24,9 @@ from toontown.coghq.CashbotBossScoreboard import CashbotBossScoreboard
 from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 from toontown.coghq.DistributedCashbotBossSideCrane import DistributedCashbotBossSideCrane
 from toontown.minigame.DistributedMinigame import DistributedMinigame
+from toontown.minigame.craning import CraneGameGlobals
+from toontown.minigame.craning.CraneGameGlobals import RED_COUNTDOWN_COLOR, ORANGE_COUNTDOWN_COLOR, \
+    YELLOW_COUNTDOWN_COLOR
 from toontown.minigame.craning.CraneWalk import CraneWalk
 from toontown.toonbase import TTLocalizer, ToontownGlobals
 from toontown.minigame.craning.CraneGameSettingsPanel import CraneGameSettingsPanel
@@ -366,39 +369,40 @@ class DistributedCraneGame(DistributedMinigame):
         Generates a cute little sequence where we pan the camera to our toon before we start a round.
         """
 
-        if len(self.getParticipantsNotSpectating()) <= 0:
+        players = self.getParticipantsNotSpectating()
+        # This is just an edge case to prevent the client from crashing if somehow everyone is spectating.
+        if len(players) <= 0:
             return Sequence(
-                Wait(5.25),
+                Wait(CraneGameGlobals.PREPARE_DELAY + CraneGameGlobals.PREPARE_LATENCY_FACTOR),
                 Func(self.gameFSM.request, 'play'),
             )
 
+        # If this is a solo crane round, we are not going to play a cutscene. Get right into the action.
+        if len(players) == 1:
+            return Sequence(
+                Wait(CraneGameGlobals.PREPARE_LATENCY_FACTOR),
+                Func(self.gameFSM.request, 'play'),
+            )
+
+        # Generate a camera track so that the camera slowly pans on to the toon.
         toon = base.localAvatar if not self.localToonSpectating() else self.getParticipantsNotSpectating()[0]
         targetCameraPos = render.getRelativePoint(toon, Vec3(0, -10, toon.getHeight()))
         startCameraHpr = Point3(reduceAngle(camera.getH()), camera.getP(), camera.getR())
-        return Parallel(
-            LerpPosHprInterval(camera, 2, Point3(*targetCameraPos), Point3(reduceAngle(toon.getH()), 0, 0), startPos=camera.getPos(), startHpr=startCameraHpr, blendType='easeInOut'),
-            Sequence(
-                Func(self.__displayOverlayText, '5', (.65, .2, .2, 1)),
-                Func(base.playSfx, self.timerTickSfx),
-                Wait(1),
-                Func(self.__displayOverlayText, '4', (.65, .2, .2, 1)),
-                Func(base.playSfx, self.timerTickSfx),
-                Wait(1),
-                Func(self.__displayOverlayText, '3', (.65, .45, .2, 1)),
-                Func(base.playSfx, self.timerTickSfx),
-                Wait(1),
-                Func(self.__displayOverlayText, '2', (.65, .65, .2, 1)),
-                Func(base.playSfx, self.timerTickSfx),
-                Wait(1),
-                Func(self.__displayOverlayText, '1', (.65, .65, .2, 1)),
-                Func(base.playSfx, self.timerTickSfx),
-                Wait(1),
-                Func(self.__displayOverlayText, 'GO!', (.2, .65, .2, 1)),
-                Func(base.playSfx, self.goSfx),
-                Wait(.25),
-                Func(self.gameFSM.request, 'play'),
-            )
-        )
+        cameraTrack = LerpPosHprInterval(camera, CraneGameGlobals.PREPARE_DELAY / 2.5, Point3(*targetCameraPos), Point3(reduceAngle(toon.getH()), 0, 0), startPos=camera.getPos(), startHpr=startCameraHpr, blendType='easeInOut')
+
+        # Setup a countdown track to display when the round will start. Also at the end, start the game.
+        countdownTrack = Sequence()
+        for secondsLeft in range(5, 0, -1):
+            color = RED_COUNTDOWN_COLOR if secondsLeft > 2 else (ORANGE_COUNTDOWN_COLOR if secondsLeft > 1 else YELLOW_COUNTDOWN_COLOR)
+            countdownTrack.append(Func(self.__displayOverlayText, f"{secondsLeft}", color))
+            countdownTrack.append(Func(base.playSfx, self.timerTickSfx))
+            countdownTrack.append(Wait(1))
+        countdownTrack.append(Func(self.__displayOverlayText, 'GO!', CraneGameGlobals.GREEN_COUNTDOWN_COLOR))
+        countdownTrack.append(Func(base.playSfx, self.goSfx))
+        countdownTrack.append(Wait(CraneGameGlobals.PREPARE_LATENCY_FACTOR))
+        countdownTrack.append(Func(self.gameFSM.request, 'play'))
+
+        return Parallel(cameraTrack, countdownTrack)
 
     def unload(self):
         self.notify.debug("unload")
