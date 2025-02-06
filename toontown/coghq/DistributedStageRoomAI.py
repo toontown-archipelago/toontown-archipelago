@@ -1,8 +1,6 @@
-from otp.level import DistributedLevelAI, LevelSpec
+from otp.level import DistributedLevelAI
 from direct.directnotify import DirectNotifyGlobal
-from direct.task import Task
 from otp.level import LevelSpec
-from toontown.archipelago.definitions.util import get_facility_id
 from toontown.toonbase import ToontownGlobals, ToontownBattleGlobals
 from toontown.coghq import FactoryEntityCreatorAI, StageRoomSpecs
 from toontown.coghq import StageRoomBase, LevelSuitPlannerAI
@@ -133,9 +131,6 @@ class DistributedStageRoomAI(DistributedLevelAI.DistributedLevelAI, StageRoomBas
             self.air.writeServerEvent('stageDefeated', avId, description)
 
         for toon in activeVictors:
-            ap_check_id = get_facility_id(self.stageId)
-            if ap_check_id >= 0:
-                toon.addCheckedLocation(ap_check_id)
             simbase.air.questManager.toonDefeatedStage(toon, self.stageId, activeVictors)
 
         return

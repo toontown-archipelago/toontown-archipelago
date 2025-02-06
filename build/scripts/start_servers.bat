@@ -1,5 +1,5 @@
 @echo off
-title Toontown Archipelago - Server Launcher
+title Toontown Ranked - Server Launcher
 
 echo Starting Astron
 start start_server_astron.bat

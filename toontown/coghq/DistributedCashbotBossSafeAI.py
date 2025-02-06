@@ -28,10 +28,27 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         self.avoidHelmet = 0
         
         # A sphere so goons will see and avoid us.
-        cn = CollisionNode('sphere')
-        cs = CollisionSphere(0, 0, 0, 6)
-        cn.addSolid(cs)
-        self.attachNewNode(cn)
+        self.collisionNode = CollisionNode('safe')
+        self.collisionNode.addSolid(CollisionSphere(0, 0, 0, 6))
+        self.collisionNode.setIntoCollideMask(ToontownGlobals.CashbotBossObjectBitmask)
+        self.collisionNodePath = self.attachNewNode(self.collisionNode)
+        
+        # A sphere so safes will see and push us when needed.
+        self.safeToSafeNode = CollisionNode('safe-to-safe')
+        self.safeToSafeNode.addSolid(CollisionSphere(0, 0, 0, 8))
+        self.safeToSafeNode.setIntoCollideMask(ToontownGlobals.CashbotBossObjectBitmask)
+        self.safeToSafeNodePath = self.attachNewNode(self.safeToSafeNode)
+  
+        self.cTrav = CollisionTraverser('safe')
+        self.cQueue = CollisionHandlerQueue()
+        self.cTrav.addCollider(self.safeToSafeNodePath, self.cQueue)
+
+    def announceGenerate(self):
+        DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI.announceGenerate(self)
+
+        # Set the doId tag here
+        self.collisionNode.setTag('doId', str(self.doId))
+        self.safeToSafeNode.setTag('doId', str(self.doId))
 
     def resetToInitialPosition(self):
         posHpr = CraneLeagueGlobals.SAFE_POSHPR[self.index]
@@ -44,7 +61,7 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         return self.index
 
     def getMinImpact(self):
-        if self.boss.heldObject:
+        if self.boss.getBoss().heldObject:
             return self.boss.ruleset.MIN_DEHELMET_IMPACT
         else:
             return self.boss.ruleset.MIN_SAFE_IMPACT
@@ -54,26 +71,24 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         
         self.validate(avId, 1.0 >= impact >= 0, 'invalid hitBoss impact %s' % impact)
         
-        if avId not in self.boss.involvedToons:
+        if avId not in self.boss.avIdList:
             return
             
         if self.state != 'Dropped' and self.state != 'Grabbed':
             return
             
-        if self.avoidHelmet or self == self.boss.heldObject:
+        if self.avoidHelmet or self == self.boss.getBoss().heldObject:
             # Ignore the helmet we just knocked off.
             return
 
-        self.boss.debug(doId=avId, content='Safe hit with impact=%.2f' % impact)
-
         if impact <= self.getMinImpact():
-            self.boss.d_updateLowImpactHits(avId)
+            self.boss.addScore(avId, self.boss.ruleset.POINTS_PENALTY_SANDBAG, reason=CraneLeagueGlobals.ScoreReason.LOW_IMPACT)
             return
 
         # The client reports successfully striking the boss in the
         # head with this object.
-        if self.boss.heldObject == None:
-            if self.boss.attackCode == ToontownGlobals.BossCogDizzy:
+        if self.boss.getBoss().heldObject == None:
+            if self.boss.getBoss().attackCode == ToontownGlobals.BossCogDizzy:
                 # While the boss is dizzy, a safe hitting him in the
                 # head does lots of damage.
                 damage = int(impact * 50)
@@ -84,25 +99,33 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
                 damage *= self.boss.ruleset.SAFE_CFO_DAMAGE_MULTIPLIER
                 damage = math.ceil(damage)
                 
-                self.boss.recordHit(max(damage, 2), impact, craneId)
-                
-            elif self.boss.acceptHelmetFrom(avId):
+                self.boss.recordHit(max(damage, 2), impact, craneId, objId=self.doId)
+            else:
                 # If he's not dizzy, he grabs the safe and makes a
                 # helmet out of it only if he is allowed to safe helmet.
                 if self.boss.ruleset.DISABLE_SAFE_HELMETS:
                     return
 
-                self.demand('Grabbed', self.boss.doId, self.boss.doId)
-                self.boss.heldObject = self
-                self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_PENALTY_SAFEHEAD)
+                # Is there a cooldown for this toon on intentionally giving the boss a safe helmet?
+                if not self.boss.getBoss().allowedToSafeHelmet(avId):
+                    return
+
+                self.demand('Grabbed', self.boss.getBoss().doId, self.boss.getBoss().doId)
+                self.boss.getBoss().heldObject = self
+
+                self.boss.addScore(avId, self.boss.ruleset.POINTS_PENALTY_SAFEHEAD, reason=CraneLeagueGlobals.ScoreReason.APPLIED_HELMET)
+
+                # Don't allow this toon to safe helmet again for some period of time.
+                self.boss.getBoss().addSafeHelmetCooldown(avId)
                 
-        elif impact >= self.getMinImpact():
-            self.boss.d_updateSafePoints(avId, self.boss.ruleset.POINTS_DESAFE)
-            self.boss.heldObject.demand('Dropped', avId, self.boss.doId)
-            self.boss.heldObject.avoidHelmet = 1
-            self.boss.heldObject = None
+        elif impact >= ToontownGlobals.CashbotBossSafeKnockImpact:
+            self.boss.addScore(avId, self.boss.ruleset.POINTS_DESAFE,reason=CraneLeagueGlobals.ScoreReason.REMOVE_HELMET)
+            boss = self.boss.getBoss()
+            boss.heldObject.demand('Dropped', avId, self.boss.doId)
+            boss.heldObject.avoidHelmet = 1
+            boss.heldObject = None
             self.avoidHelmet = 1
-            self.boss.waitForNextHelmet()
+            boss.waitForNextHelmet()
         return
 
     def requestInitial(self):
@@ -116,33 +139,88 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
 
     def requestGrab(self):
         avId = self.air.getAvatarIdFromSender()
-        if self.state != 'Grabbed' and self.state != 'Off':
-            craneId, objectId = self.__getCraneAndObject(avId)
-            crane = simbase.air.doId2do.get(craneId)
-            if crane:
-                if craneId != 0 and objectId == 0:
-                    # If it is a sidecrane, dont pick up the safe
-                    if isinstance(crane, DistributedCashbotBossSideCraneAI):
-                        self.sendUpdateToAvatarId(avId, 'rejectGrab', [])
-                        return
+        craneId, objectId = self.getCraneAndObject(avId)
+        crane = simbase.air.doId2do.get(craneId)
+        if crane:
+            if craneId != 0 and objectId == 0:
+                # If it is a sidecrane, dont pick up the safe
+                if isinstance(crane, DistributedCashbotBossSideCraneAI):
+                    self.sendUpdateToAvatarId(avId, 'rejectGrab', [])
+                    self.demand('Dropped', avId, craneId)
+                    return
+                elif self.state != 'Grabbed' and self.state != 'Off':
                     self.demand('Grabbed', avId, craneId)
                     return
             self.sendUpdateToAvatarId(avId, 'rejectGrab', [])
             
-    def __getCraneAndObject(self, avId):
+    def getCraneAndObject(self, avId):
         if self.boss and self.boss.cranes != None:
             for crane in self.boss.cranes:
                 if crane.avId == avId:
                     return (crane.doId, crane.objectId)
         return (0, 0)
+
+    def _pushSafe(self, safe, goon, pushed_safes=None):
+        if pushed_safes is None:
+            pushed_safes = set()
+            
+        # Prevent pushing the same safe multiple times
+        if safe.doId in pushed_safes:
+            return
+        pushed_safes.add(safe.doId)
         
+        thisSafePos = self.getPos()
+        otherSafePos = safe.getPos()
+
+        direction = otherSafePos - thisSafePos
+        if direction.length() > 0:
+            direction.normalize()
+
+        pushDistance = goon.velocity * globalClock.getDt()
+        newSafePos = otherSafePos + direction * pushDistance
+        safe.push(newSafePos[0], newSafePos[1], newSafePos[2], safe.getH(), self)
+    
+    def __checkSafeCollisions(self, goon, pushed_safes=None):
+        if pushed_safes is None:
+            pushed_safes = set()
+            
+        self.cTrav.traverse(self.boss.scene)
         
+        for i in range(self.cQueue.getNumEntries()):
+            entry = self.cQueue.getEntry(i)
+            intoNodePath = entry.getIntoNodePath()
+            intoNode = intoNodePath.node()
+            fromNode = entry.getFromNode()
+
+            if 'safe-to-safe' in intoNode.getName() and 'safe-to-safe' in fromNode.getName():
+                safeDoIdTag = intoNodePath.getNetTag('doId')
+                if safeDoIdTag:
+                    safeDoId = int(safeDoIdTag)
+                    safe = self.air.doId2do.get(safeDoId)
+                    if safe and safe.state in ['Sliding Floor', 'Free']:
+                        self._pushSafe(safe, goon, pushed_safes)
 
     ### FSM States ###
 
     def enterGrabbed(self, avId, craneId):
         DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI.enterGrabbed(self, avId, craneId)
         self.avoidHelmet = 0
+        
+        # Move collision node far away when grabbed
+        # We can move it very far below the battle area
+        # This prevents goons from self destructing
+        for collNode in self.findAllMatches('**/safe'):
+            collNode.setPos(0, 0, -1000)  # Move collision 1000 units down
+        for collNode in self.findAllMatches('**/safe-to-safe'):
+            collNode.setPos(0, 0, -1000)  # Move collision 1000 units down
+
+    def exitGrabbed(self):
+        DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI.exitGrabbed(self)
+        # Reset collision node position
+        for collNode in self.findAllMatches('**/safe'):
+            collNode.setPos(0, 0, 0)  # Reset to original position
+        for collNode in self.findAllMatches('**/safe-to-safe'):
+            collNode.setPos(0, 0, 0)  # Reset to original position
 
     def enterInitial(self):
         # The safe is in its initial, resting position.
@@ -168,11 +246,27 @@ class DistributedCashbotBossSafeAI(DistributedCashbotBossObjectAI.DistributedCas
         DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI.enterFree(self)
         self.avoidHelmet = 0
         
+    def enterDropped(self, avId, craneId):
+        super().enterDropped(avId, craneId)
+        if self.index != 0:  # Only trigger for non-helmet safes during aim mode
+            self.boss.practiceCheatHandler.handleSafeDropped(self)
+
     def move(self, x, y, z, rotation):
-        self.setPosHpr(x, y, z, rotation, 0, 0)
+        # Update the safe's position and heading
+        self.setPosHpr(x, y, z, rotation, 0, 0)  # Smoothly update position and heading
+        self.sendUpdate('move', [x, y, z, rotation])  # Inform the client about the move
+        
+    def push(self, x, y, z, rotation, pusher):
+        # Update the safe's position and heading
+        self.setSmPosHpr(x, y, z, rotation, 0, 0)
         self.sendUpdate('move', [x, y, z, rotation])
+        
+        # Only check for secondary collisions if being pushed by a goon
+        # This prevents safe-to-safe pushes from triggering more collisions
+        if pusher.__class__.__name__ == 'DistributedCashbotBossGoonAI':
+            self.__checkSafeCollisions(pusher)
 
     # Called from client when a safe destroys a goon
     def destroyedGoon(self):
         avId = self.air.getAvatarIdFromSender()
-        self.boss.d_updateGoonKilledBySafe(avId)
+        self.boss.addScore(avId, self.boss.ruleset.POINTS_GOON_KILLED_BY_SAFE, reason=CraneLeagueGlobals.ScoreReason.GOON_KILL)

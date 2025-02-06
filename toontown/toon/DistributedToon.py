@@ -53,7 +53,6 @@ from toontown.parties.PartyReplyInfo import PartyReplyInfoBase
 from toontown.parties.SimpleMailBase import SimpleMailBase
 from toontown.parties import PartyGlobals
 from toontown.friends import FriendHandle
-from toontown.archipelago.util import win_condition
 import time
 import operator
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, SoundInterval
@@ -67,9 +66,7 @@ import copy
 from ..archipelago.definitions import color_profile
 from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
-from ..archipelago.util import win_condition
 from ..util.astron.AstronDict import AstronDict
-from apworld.toontown import ToontownRegionName, ToontownItemName, get_item_def_from_id, ITEM_NAME_TO_ID, TPSanity
 
 
 if base.wantKarts:
@@ -221,8 +218,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintCost = 0
 
         self.slotData = {}
-        self.winCondition = win_condition.NoWinCondition(self)
-        self.ConfirmedWinConditionError = False
         self.rewardHistory = []
         self.rewardTier = 0
         self.alreadyNotified = False
@@ -795,9 +790,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def died(self):
         messenger.send(self.uniqueName('died'))
         if self.isLocal():
-            self.sendUpdate('clientDied')  # Tell the server we saw our toon die for deathlink purposes
-            target_sz = ZoneUtil.getSafeZoneId(self.defaultZone)
-            place = self.cr.playGame.getPlace()
+            pass
             # if place and place.fsm:
             #     place.fsm.request('died', [{'loader': ZoneUtil.getLoaderName(target_sz),
             #       'where': ZoneUtil.getWhereName(target_sz, 1),
@@ -1711,7 +1704,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def squish(self, damage):
         if self == base.localAvatar:
-            base.cr.playGame.getPlace().fsm.request('squished')
+            messenger.send("LocalSetSquishedMode")
+            place = base.cr.playGame.getPlace()
+            if place:
+                place.fsm.request('squished')
             self.stunToon()
             self.setZ(self.getZ(render) + 0.025)
 
@@ -2839,125 +2835,13 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setDamageMultiplier(self, newDamageMultiplier) -> None:
         self.damageMultiplier = newDamageMultiplier
 
-    # What is this toon's overflow modifier
-    def getOverflowMod(self) -> int:
-        return self.overflowMod
-
-    # Set this toon's overflow modifier
-    def setOverflowMod(self, newOverflow) -> None:
-        self.overflowMod = newOverflow
-
-    # What is this toon's list of access keys acquired
-    def getAccessKeys(self) -> List[int]:
-        return self.accessKeys
-
-    # Set this toon's list of access keys acquired from the server
-    def setAccessKeys(self, keys: List) -> None:
-        self.accessKeys = keys
-
-    # Set the AP items this toon has received
-    def setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
-        self.receivedItems = receivedItems
-        self.receivedItemIDs = set(x[1] for x in receivedItems)
-
-    # Get a list of item IDs this toon has received via AP
-    def getReceivedItems(self) -> List[Tuple[int, int]]:
-        return self.receivedItems
-
-    def setCheckedLocations(self, checkedLocations: List[int]) -> None:
-        self.checkedLocations = checkedLocations
-
-    def getCheckedLocations(self) -> List[int]:
-        return self.checkedLocations
-
     # To be overridden in LocalToon, just here for safety
     def sendArchipelagoMessages(self, messages: List[str]) -> None:
-        pass
-
-    # To be overridden in LocalToon, just here for safety
-    def showReward(self, rewardId: int, playerName: str, isLocal: bool) -> None:
-        pass
-
-    # To be overridden in LocalToon, just here for safety
-    def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
         pass
 
     # To be overriden in LocalToon, just here for safety
     def d_setDeathReason(self, reason: DeathReason):
         pass
-
-    def count(self, item, player):
-        count = 0
-        for receivedItem in self.getReceivedItems():
-            if ITEM_NAME_TO_ID[item] == receivedItem[1]:
-                count += 1
-        return count
-
-    def has(self, item, player, wantedCount=1):
-        count = 0
-        for receivedItem in self.getReceivedItems():
-            if ITEM_NAME_TO_ID[item] == receivedItem[1]:
-                count += 1
-        return count >= wantedCount
-
-    def can_reach(self, region, filler, player):
-        region_to_tp_item = {
-            ToontownRegionName.TTC.value: ToontownItemName.TTC_ACCESS,
-            ToontownRegionName.DD.value: ToontownItemName.DD_ACCESS,
-            ToontownRegionName.DG.value: ToontownItemName.DG_ACCESS,
-            ToontownRegionName.MML.value: ToontownItemName.MML_ACCESS,
-            ToontownRegionName.TB.value: ToontownItemName.TB_ACCESS,
-            ToontownRegionName.DDL.value: ToontownItemName.DDL_ACCESS,
-            ToontownRegionName.GS.value: ToontownItemName.GS_ACCESS,
-            ToontownRegionName.AA.value: ToontownItemName.AA_ACCESS,
-            ToontownRegionName.SBHQ.value: ToontownItemName.SBHQ_ACCESS,
-            ToontownRegionName.CBHQ.value: ToontownItemName.CBHQ_ACCESS,
-            ToontownRegionName.LBHQ.value: ToontownItemName.LBHQ_ACCESS,
-            ToontownRegionName.BBHQ.value: ToontownItemName.BBHQ_ACCESS,
-        }
-        # The only time we actually need to check access is when the sanity is keys,
-        # since we can reach everywhere by default otherwise
-        if base.localAvatar.slotData.get("tpsanity", 0) != TPSanity.option_keys:
-            return True
-        for item in self.getReceivedItems():
-            if region_to_tp_item[region] == get_item_def_from_id(item[1]).name:
-                return True
-        return False
-
-    def hintPointResp(self, pts, cost):
-        self.hintPoints = pts
-        self.hintCost = cost
-        if self.isLocal:
-            base.localAvatar.checkPage.updateHintPointText()
-
-    def getSlotData(self) -> dict[str, int]:
-        return self.slotData
-
-    def setSlotData(self, slotData) -> None:
-        self.slotData = AstronDict.fromStruct(slotData)
-        self.updateWinCondition()
-
-    def hasConnected(self) -> bool:
-        # kinda hacky
-        return bool(self.slotData)
-
-    def updateWinCondition(self) -> None:
-        self.winCondition = win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self)
-        # check if we have previously met the win condition on login
-        # if we have, send a system message to the player that they can complete their run and talk to flippy
-        self.checkWinCondition()
-
-    def checkWinCondition(self):
-        if (self == base.localAvatar  # Ensure local toon, prevents a bug (Audio plays for other toons' goals)
-            and not self.alreadyNotified # Only alert the toon once.
-            and self.getWinCondition().satisfied()):
-            self.setSystemMessage(0, TTLocalizer.WinConditionMet)
-            # play the golf victory sound so they dont miss it
-            base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
-            self.alreadyNotified = True
-
-    def getWinCondition(self) -> win_condition.WinCondition:
-        return self.winCondition
 
     ###
     ### Methods for managing Color Profiles and Nametags.

@@ -29,3 +29,4 @@ venv/
 output/
 release/
 apworld/toontown.apworld
+launch/windows/PPYTHON_PATH

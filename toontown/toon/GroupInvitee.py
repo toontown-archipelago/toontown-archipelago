@@ -22,7 +22,7 @@ class GroupInvitee(ToonHeadDialog.ToonHeadDialog):
         self.avId = toon.doId
         self.avDNA = toon.getStyle()
         self.party = party
-        text = TTLocalizer.BoardingInviteeMessage % self.avName
+        text = TTLocalizer.BoardingInviteeMessage % self.avName if self.party is not None else TTLocalizer.BoardingInviteeStartMessage % self.avName
         style = TTDialog.TwoChoice
         buttonTextList = [OTPLocalizer.FriendInviteeOK, OTPLocalizer.FriendInviteeNo]
         command = self.__handleButton
@@ -48,14 +48,11 @@ class GroupInvitee(ToonHeadDialog.ToonHeadDialog):
     def cleanup(self):
         ToonHeadDialog.ToonHeadDialog.cleanup(self)
 
-    def forceCleanup(self):
-        self.party.requestRejectInvite(self.leaderId, self.avId)
-        self.cleanup()
-
     def __handleButton(self, value):
-        place = base.cr.playGame.getPlace()
-        if value == DGG.DIALOG_OK and place and not place.getState() == 'elevator':
-            self.party.requestAcceptInvite(self.leaderId, self.avId)
-        else:
-            self.party.requestRejectInvite(self.leaderId, self.avId)
-        self.cleanup()
+
+        groups = base.localAvatar.getGroupManager()
+        if groups is None:
+            return
+
+        groups.d_respondToInvite(self.avId, value == DGG.DIALOG_OK)
+        groups.destroyCurrentInvitePanel()

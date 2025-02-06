@@ -10,7 +10,6 @@ from toontown.suit import DistributedCashbotBossAI
 from toontown.building import FADoorCodes
 from toontown.building import DistributedBoardingPartyAI
 from toontown.safezone import ArchipelagoTreasurePlannerAI
-from toontown.safezone import DistributedArchiTreasureAI
 
 class CashbotHQDataAI(HoodDataAI.HoodDataAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('CashbotHqDataAI')
@@ -28,25 +27,18 @@ class CashbotHQDataAI(HoodDataAI.HoodDataAI):
         self.testElev0 = DistributedMintElevatorExtAI.DistributedMintElevatorExtAI(self.air, self.air.mintMgr, ToontownGlobals.CashbotMintIntA, antiShuffle=0, minLaff=mins[0])
         self.testElev0.generateWithRequired(ToontownGlobals.CashbotHQ)
         self.addDistObj(self.testElev0)
-        self.testElev0.setLock(FADoorCodes.COIN_MINT_ACCESS_MISSING)
         self.testElev1 = DistributedMintElevatorExtAI.DistributedMintElevatorExtAI(self.air, self.air.mintMgr, ToontownGlobals.CashbotMintIntB, antiShuffle=0, minLaff=mins[1])
         self.testElev1.generateWithRequired(ToontownGlobals.CashbotHQ)
         self.addDistObj(self.testElev1)
-        self.testElev1.setLock(FADoorCodes.DOLLAR_MINT_ACCESS_MISSING)
         self.testElev2 = DistributedMintElevatorExtAI.DistributedMintElevatorExtAI(self.air, self.air.mintMgr, ToontownGlobals.CashbotMintIntC, antiShuffle=0, minLaff=mins[2])
         self.testElev2.generateWithRequired(ToontownGlobals.CashbotHQ)
         self.addDistObj(self.testElev2)
-        self.testElev2.setLock(FADoorCodes.BULLION_MINT_ACCESS_MISSING)
         self.lobbyMgr = LobbyManagerAI.LobbyManagerAI(self.air, DistributedCashbotBossAI.DistributedCashbotBossAI)
         self.lobbyMgr.generateWithRequired(ToontownGlobals.CashbotLobby)
         self.addDistObj(self.lobbyMgr)
         self.lobbyElevator = DistributedCFOElevatorAI.DistributedCFOElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.CashbotLobby, antiShuffle=1)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.CashbotLobby)
         self.addDistObj(self.lobbyElevator)
-        self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0, treasureCount=5),
-                                ]
-        for planner in self.treasurePlanner:
-            planner.start()
         if simbase.config.GetBool('want-boarding-groups', 1):
             self.boardingParty = DistributedBoardingPartyAI.DistributedBoardingPartyAI(self.air, [self.lobbyElevator.doId], 8)
             self.boardingParty.generateWithRequired(ToontownGlobals.CashbotLobby)

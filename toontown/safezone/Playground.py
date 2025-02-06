@@ -2,6 +2,7 @@ from direct.interval.IntervalGlobal import *
 from panda3d.core import *
 
 from toontown.battle.BattlePlace import BattlePlace
+from toontown.groups import GroupGlobals
 from toontown.toonbase.ToonBaseGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from toontown.hood import Place
@@ -454,7 +455,15 @@ class Playground(BattlePlace):
             self.deathAckBox.cleanup()
             self.deathAckBox = None
         Place.Place.enterWalk(self, teleportIn)
+        if base.localAvatar.getGroupManager() is not None:
+            base.localAvatar.getGroupManager().updateStatus(GroupGlobals.STATUS_READY)
         return
+
+    def exitWalk(self):
+        super().exitWalk()
+
+        if base.localAvatar.getGroupManager() is not None:
+            base.localAvatar.getGroupManager().updateStatus(GroupGlobals.STATUS_UNREADY)
 
     def enterDeathAck(self, requestStatus):
         self.deathAckBox = None
@@ -527,6 +536,11 @@ class Playground(BattlePlace):
         teleportDebug(requestStatus, 'Playground.__teleportOutDone(%s)' % (requestStatus,))
         if hasattr(self, 'activityFsm'):
             self.activityFsm.requestFinalState()
+
+        if 'mode' in requestStatus and requestStatus['mode'] == 'minigame':
+            messenger.send(self.doneEvent)
+            return
+
         hoodId = requestStatus['hoodId']
         zoneId = requestStatus['zoneId']
         avId = requestStatus['avId']

@@ -496,25 +496,16 @@ class BossCog(Avatar.Avatar):
         return (ival, 1)
 
     def setDizzy(self, dizzy):
-
-        # Already dizzy don't do anything
-        if dizzy and self.dizzy:
-            return
+        if dizzy and not self.dizzy:
+            base.playSfx(self.dizzyAlert)
 
         self.dizzy = dizzy
-
-        # Remove dizziness
-        if not dizzy:
+        if dizzy:
+            self.stars.reparentTo(self.neck)
+            base.playSfx(self.birdsSfx, looping=1)
+        else:
             self.stars.detachNode()
             self.birdsSfx.stop()
-            return
-
-        # Make him dizzy
-        base.playSfx(self.dizzyAlert)
-        self.stars.reparentTo(self.neck)
-        base.playSfx(self.birdsSfx, looping=1)
-        self.dizzy = dizzy
-        self.doAnimate('hit', now=1)
 
     def getAngryActorInterval(self, animName, **kw):
         if self.happy:

@@ -1,6 +1,6 @@
 from otp.level import EntityCreatorAI
 from direct.showbase.PythonUtil import Functor
-from . import DistributedBeanBarrelAI, DistributedAPCheckBarrelAI
+from . import DistributedBeanBarrelAI
 from . import DistributedButtonAI
 from . import DistributedCrateAI
 from . import DistributedLiftAI
@@ -35,7 +35,6 @@ class FactoryEntityCreatorAI(EntityCreatorAI.EntityCreatorAI):
         cLE = EntityCreatorAI.createLocalEntity
         nothing = EntityCreatorAI.nothing
         self.privRegisterTypes({'activeCell': Functor(cDE, ActiveCellAI.ActiveCellAI),
-         'apBarrel': Functor(cDE, DistributedAPCheckBarrelAI.DistributedAPCheckBarrelAI),
          'crusherCell': Functor(cDE, CrusherCellAI.CrusherCellAI),
          'battleBlocker': Functor(cDE, BattleBlockerAI.BattleBlockerAI),
          'beanBarrel': Functor(cDE, DistributedBeanBarrelAI.DistributedBeanBarrelAI),

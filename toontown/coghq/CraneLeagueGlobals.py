@@ -1,7 +1,13 @@
 # A file to put all crane league settings in one place for easy adjustment
+from enum import Enum
+
 from toontown.toonbase import ToontownGlobals
 
 SPECIAL_MODIFIER_CHANCE = 3  # % chance you want to roll a special modifier for a cfo  *** server side only
+
+OVERTIME_FLAG_DISABLE = 0  # Overtime will not happen
+OVERTIME_FLAG_ENABLE = 1  # Overtime will happen
+OVERTIME_FLAG_START = 2  # Overtime has started
 
 # Ruleset
 
@@ -31,10 +37,6 @@ SAFE_POSHPR = [
     (133.9, -359.1, 0, 0, 0, 0),  # 2L
     (165.5, -302.4, 0, 90, 0, 0),  # 4L
     (77.2, -329.3, 0, -90, 0, 0),  # 3L
-    (102.957,  -301.296,  0, 45, 0, 0),  # C1
-    (138.467,  -301.042,  0, -45, 0, 0),  # C2
-    (138.457,  -330.047,  0, -135, 0, 0),  # C3
-    (102.675,  -328.630,  0, 135, 0, 0),  # C4
 ]
 
 SAFE_POSHPR_NEW = [
@@ -86,51 +88,49 @@ TOON_SPAWN_POSITIONS = [
 
 ALL_CRANE_POSHPR = NORMAL_CRANE_POSHPR + SIDE_CRANE_POSHPR + HEAVY_CRANE_POSHPR
 
-LOW_LAFF_BONUS_TEXT = "UBER BONUS"  # Text to display alongside a low laff bonus
+LOW_LAFF = "UBER BONUS"  # Text to display alongside a low laff bonus
 
 # Text to display in popup text for misc point gains
-GOON_STOMP_TEXT = 'GOON!'
-STUN_TEXT = "STUN!"
-IMPACT_TEXT = "PERFECT!"
-DESAFE_TEXT = "DESAFE!"
-GOON_KILLED_BY_SAFE_TEXT = "DESTRUCTION!"
-KILLING_BLOW_TEXT = 'KILLING BLOW!'
+GOON_STOMP = 'STOMP!'
+STUN = "STUN!"
+SIDE_STUN = "SIDE-STUN!"
+FULL_IMPACT = "PERFECT!"
+REMOVE_HELMET = "DE-SAFE!"
+GOON_KILL = "DESTRUCTION!"
+KILLING_BLOW = 'FINAL BLOW!'
 
-PENALTY_SAFEHEAD_TEXT = "SAFED!"
-PENALTY_TREASURE_TEXT = 'TREASURE!'
-PENALTY_GO_SAD_TEXT = "DIED!"
-PENALTY_SANDBAG_TEXT = 'SLOPPY!'
-PENALTY_UNSTUN_TEXT = 'UN-STUN!'
+APPLIED_HELMET = "SAFED!"
+TOOK_TREASURE = 'TREASURE!'
+WENT_SAD = "DIED!"
+LOW_IMPACT = 'SLOPPY!'
+UNSTUN = 'UN-STUN!'
 
 
 # Ruleset
 # Instance attached to cfo boss instances, so we can easily modify stuff dynamically
-class CFORuleset:
+class CraneGameRuleset:
 
     def __init__(self):
-        # Enable for debugging
-        self.GENERAL_DEBUG = False
-        self.GOON_STATES_DEBUG = False
-        self.CRANE_STATES_DEBUG = False
-        self.SAFE_STATES_DEBUG = False
 
-        self.TIMER_MODE = False  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
-        self.TIMER_MODE_TIME_LIMIT = 15 * 60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
+        self.TIMER_MODE = True  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
+        self.TIMER_MODE_TIME_LIMIT = 3 * 60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
 
-        self.CFO_MAX_HP = 400  # How much HP should the CFO have?
-        self.HP_PER_EXTRA = 150  # How much HP should the CFO increase by per toon?
-        self.CFO_STUN_THRESHOLD = 15  # How much damage should a goon do to stun?
+        self.CFO_MAX_HP = 10000  # How much HP should the CFO have?
+        self.CFO_STUN_THRESHOLD = 24  # How much damage should a goon do to stun?
         self.SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
 
         self.WANT_BACKWALL = False
         self.WANT_SIDECRANES = True
         self.WANT_HEAVY_CRANES = False
 
-        self.HEAVY_CRANE_DAMAGE_MULTIPLIER = 1.5
+        # Set to true to allow toons to "un-stun" the CFO by bumping into him.
+        self.WANT_UNSTUNS = False
+
+        self.HEAVY_CRANE_DAMAGE_MULTIPLIER = 1.25
 
         self.MIN_GOON_IMPACT = 0.1  # How much impact should a goon hit need to register?
         self.MIN_SAFE_IMPACT = 0.0  # How much impact should a safe hit need to register?
-        self.MIN_DEHELMET_IMPACT = 0.25  # How much impact should a safe hit need to desafe the CFO?
+        self.MIN_DEHELMET_IMPACT = 0.5  # How much impact should a safe hit need to desafe the CFO?
 
         self.GOON_CFO_DAMAGE_MULTIPLIER = 1.0
         self.SAFE_CFO_DAMAGE_MULTIPLIER = 1.0
@@ -147,7 +147,7 @@ class CFORuleset:
             ToontownGlobals.BossCogElectricFence: 1,  # The actual bump
             ToontownGlobals.BossCogSwatLeft: 5,  # Swats from bumping
             ToontownGlobals.BossCogSwatRight: 5,
-            ToontownGlobals.BossCogSlowDirectedAttack: 10,  # Gear throw
+            ToontownGlobals.BossCogSlowDirectedAttack: 15,  # Gear throw
             ToontownGlobals.BossCogAreaAttack: 20,  # Jump
         }
 
@@ -157,8 +157,8 @@ class CFORuleset:
         self.CFO_ATTACKS_MULTIPLIER_INTERPOLATE = True
 
         # GOON/TREASURE SETTINGS
-        self.MIN_GOON_DAMAGE = 3  # What is the lowest amount of damage a goon should do? (beginning of CFO)
-        self.MAX_GOON_DAMAGE = 20  # What is the highest amount of damage a goon should do? (end of CFO)
+        self.MIN_GOON_DAMAGE = 5  # What is the lowest amount of damage a goon should do? (beginning of CFO)
+        self.MAX_GOON_DAMAGE = 35  # What is the highest amount of damage a goon should do? (end of CFO)
         self.GOON_SPEED_MULTIPLIER = 1.0  # How fast should goons move?
 
         # How many goons should we allow to spawn? This will scale up towards the end of the fight to the 2nd var
@@ -173,23 +173,23 @@ class CFORuleset:
         self.GOONS_ALWAYS_WAKE_WHEN_GRABBED = False
 
         # How many treasures should we allow to spawn?
-        self.MAX_TREASURE_AMOUNT = 30
+        self.MAX_TREASURE_AMOUNT = 15
 
         # Should we have a drop chance?
         self.GOON_TREASURE_DROP_CHANCE = 1.0
 
-        self.REALLY_WEAK_TREASURE_HEAL_AMOUNT = 5  # How much should the treasures from very small goons heal?
-        self.WEAK_TREASURE_HEAL_AMOUNT = 7  # How much should the treasures from small goons heal?
-        self.AVERAGE_TREASURE_HEAL_AMOUNT = 10  # How much should the treasures from med goons heal?
-        self.STRONG_TREASURE_HEAL_AMOUNT = 12  # How much should the treasures from the big goons heal?
+        self.REALLY_WEAK_TREASURE_HEAL_AMOUNT = 3  # How much should the treasures from very small goons heal?
+        self.WEAK_TREASURE_HEAL_AMOUNT = 5  # How much should the treasures from small goons heal?
+        self.AVERAGE_TREASURE_HEAL_AMOUNT = 7  # How much should the treasures from med goons heal?
+        self.STRONG_TREASURE_HEAL_AMOUNT = 10  # How much should the treasures from the big goons heal?
 
         # Applies treasure heal amounts
         self.update_lists()
 
         # TOON SETTINGS
-        self.FORCE_MAX_LAFF = False  # Should we force a laff limit for this crane round?
+        self.FORCE_MAX_LAFF = True  # Should we force a laff limit for this crane round?
         self.FORCE_MAX_LAFF_AMOUNT = 100  # The laff that we are going to force all toons participating to have
-        self.HEAL_TOONS_ON_START = False  # Should we set all toons to full laff when starting the round?
+        self.HEAL_TOONS_ON_START = True  # Should we set all toons to full laff when starting the round?
         self.RANDOM_SPAWN_POSITIONS = False  # Should spawn positions be completely random?
 
         self.WANT_LOW_LAFF_BONUS = True  # Should we award toons with low laff bonus points?
@@ -199,9 +199,9 @@ class CFORuleset:
 
         # note: When REVIVE_TOONS_UPON_DEATH is True, the only fail condition is if we run out of time
         self.RESTART_CRANE_ROUND_ON_FAIL = False  # Should we restart the crane round if all toons die?
-        self.REVIVE_TOONS_UPON_DEATH = False  # Should we revive a toon that dies after a certain amount of time? (essentially a stun)
-        self.REVIVE_TOONS_TIME = 10  # Time in seconds to revive a toon after death
-        self.REVIVE_TOONS_LAFF_PERCENTAGE = 0.50  # How much laff should we give back to the toon when revived?
+        self.REVIVE_TOONS_UPON_DEATH = True  # Should we revive a toon that dies after a certain amount of time? (essentially a stun)
+        self.REVIVE_TOONS_TIME = 5  # Time in seconds to revive a toon after death
+        self.REVIVE_TOONS_LAFF_PERCENTAGE = 0.75  # How much laff should we give back to the toon when revived?
 
         # A for fun mechanic that makes toons have permanent damage buffs based on how much damage they do
         self.WANT_MOMENTUM_MECHANIC = False
@@ -209,28 +209,26 @@ class CFORuleset:
         # POINTS SETTINGS
         self.POINTS_GOON_STOMP = 1  # Points per goon stomp
         self.POINTS_STUN = 10  # Points per stun
-        self.POINTS_SIDESTUN = 25  # Points per stun on sidecrane
-        self.POINTS_IMPACT = 3  # Points given when a max impact hit is achieved
-        self.POINTS_DESAFE = 10  # Points for taking a safe helmet off
-        self.POINTS_GOON_KILLED_BY_SAFE = 2  # Points for killing a goon with a safe
+        self.POINTS_SIDESTUN = 30  # Points per stun on sidecrane
+        self.POINTS_IMPACT = 2  # Points given when a max impact hit is achieved
+        self.POINTS_DESAFE = 20  # Points for taking a safe helmet off
+        self.POINTS_GOON_KILLED_BY_SAFE = 3  # Points for killing a goon with a safe
         self.POINTS_KILLING_BLOW = 0  # Points for dealing the killing blow to the CFO
 
-        self.POINTS_PENALTY_SAFEHEAD = -25  # Deduction for putting a safe on the CFOs head
-        self.POINTS_PENALTY_GO_SAD = -50  # Point deduction for dying (can happen multiple times if revive setting is on)
-        self.POINTS_PENALTY_SANDBAG = -5  # Point deduction for hitting a very low impact hit
-        self.POINTS_PENALTY_UNSTUN = -25
+        self.POINTS_PENALTY_SAFEHEAD = -20  # Deduction for putting a safe on the CFOs head
+        self.POINTS_PENALTY_GO_SAD = -20  # Point deduction for dying (can happen multiple times if revive setting is on)
+        self.POINTS_PENALTY_SANDBAG = -2  # Point deduction for hitting a very low impact hit
+        self.POINTS_PENALTY_UNSTUN = 0
 
         self.TREASURE_POINT_PENALTY = False  # Should we deduct points for picking up treasures?
         self.TREASURE_POINT_PENALTY_FLAT_RATE = 1  # How much should we deduct? set to 0 or less to make it 1 to 1 with laff gained
 
         # COMBO SETTINGS
+        self.WANT_COMBO_BONUS = False
         self.COMBO_DURATION = 2.0  # How long should combos last?
         self.TREASURE_GRAB_RESETS_COMBO = False  # Should picking up a treasure reset a toon's combo?
 
         self.MODIFIER_TIER_RANGE = (1, 3)  # todo Perhaps refactor this into the modifier class
-
-    def get_max_allowed_hp(self):
-        return self.CFO_MAX_HP * 2
 
     # Called to update various list values constructed from instance attributes
     def update_lists(self):
@@ -328,22 +326,19 @@ class CFORuleset:
         return repr(self.__dict__)
 
 
-# Some other default rulesets to choose from
-class SemiFinalsCFORuleset(CFORuleset):
+
+
+class ClashCraneGameRuleset(CraneGameRuleset):
+    """
+    Tweaks the crane game ruleset to match the gameplay that is present on clash.
+    Since crane league was inspired by clash's CFO gameplay, the only things we have to tweak really is
+    timer behavior and the CFO's HP.
+    """
 
     def __init__(self):
-        CFORuleset.__init__(self)
-        self.TIMER_MODE_TIME_LIMIT = int(60 * 12.5)
-        self.CFO_MAX_HP = 2250
-
-
-class FinalsCFORuleset(CFORuleset):
-
-    def __init__(self):
-        CFORuleset.__init__(self)
-        self.TIMER_MODE_TIME_LIMIT = 60 * 15
-        self.CFO_MAX_HP = 3000
-
+        super().__init__()
+        self.TIMER_MODE = False
+        self.CFO_MAX_HP = 1500
 
 # This is where we define modifiers, all modifiers alter a ruleset instance in some way to tweak cfo behavior
 # dynamically, first the base class that any modifiers should extend from
@@ -475,6 +470,30 @@ class CFORulesetModifierBase(object):
 
 
 # Now here is where we can actually define our modifiers
+class ModifierTimerEnabler(CFORulesetModifierBase):
+    MODIFIER_ENUM = 26
+    MODIFIER_TYPE = CFORulesetModifierBase.SPECIAL
+    TITLE_COLOR = CFORulesetModifierBase.DARK_PURPLE
+    DESCRIPTION_COLOR = CFORulesetModifierBase.PURPLE
+
+    def getName(self):
+        return "Timed!"
+    
+    def _getTime(self):
+        return self.tier * 60
+    
+    def getDescription(self):
+        return f'The CFO will automatically end in %(color_start)s{self._getTime()}%(color_end)s!'
+    
+    def getHeat(self):
+        return 0
+    
+    def apply(self, cfoRuleset):
+        cfoRuleset.TIMER_MODE = True
+        cfoRuleset.TIMER_MODE_TIME_LIMIT = self._getTime()
+        cfoRuleset.CFO_MAX_HP = 3000
+
+
 class ModifierComboExtender(CFORulesetModifierBase):
     MODIFIER_ENUM = 0
     MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
@@ -580,18 +599,11 @@ class ModifierCFOHPDecreaser(CFORulesetModifierBase):
     DESCRIPTION_COLOR = CFORulesetModifierBase.RED
 
     # The combo percentage increase per tier
-    CFO_DECREASE_PER_TIER = [0, 20, 35, 50]
+    CFO_DECREASE_PER_TIER = [0, 20, 35, 50, 60, 70, 75, 80, 85, 90, 95, 99]
 
     def _perc_decrease(self):
         if self.tier <= len(self.CFO_DECREASE_PER_TIER):
             return self.CFO_DECREASE_PER_TIER[self.tier]
-
-        # tier 4 = 65, 5=75 6=80...
-        # todo: grow some brain cells and find formula that does this
-        if self.tier == 4:
-            return 65
-        if self.tier == 5:
-            return 75
 
         # Don't let it go higher than 99%
         return min(99, self.tier * 5 + 50)
@@ -1307,6 +1319,30 @@ class ModifierInstakillGoons(CFORulesetModifierBase):
         cfoRuleset.GOONS_DIE_ON_STOMP = True
 
 
+# (-) Slow and Steady!
+# --------------------------------
+# - Timer is disabled
+class ModifierNoTimeLimit(CFORulesetModifierBase):
+    # The enum used by astron to know the type
+    MODIFIER_ENUM = 26
+    MODIFIER_TYPE = CFORulesetModifierBase.HELPFUL
+
+    TITLE_COLOR = CFORulesetModifierBase.DARK_GREEN
+    DESCRIPTION_COLOR = CFORulesetModifierBase.GREEN
+
+    def getName(self):
+        return 'Slow And Steady!'
+
+    def getDescription(self):
+        return 'The time limit is %(color_start)sdisabled%(color_end)s for this crane round!'
+
+    def getHeat(self):
+        return -100
+
+    def apply(self, cfoRuleset):
+        cfoRuleset.TIMER_MODE = False
+
+
 # Any implemented subclasses of CFORulesetModifierBase cannot go past this point
 # Loop through all the classes that extend the base modifier class and map an enum to the class for easier construction
 for subclass in CFORulesetModifierBase.__subclasses__():
@@ -1336,3 +1372,69 @@ NON_SPECIAL_MODIFIER_CLASSES = HURTFUL_MODIFIER_CLASSES + HELPFUL_MODIFIER_CLASS
 #     i = c()
 #     d = i.getDescription() % {'color_start': '', 'color_end': ''}
 #     print('(ID:%s) %s\n%s\n' % (e, i.getName(), d))
+
+
+class ScoreReason(Enum):
+
+
+    DEFAULT = ""
+
+    LOW_LAFF = "UBER BONUS"  # Text to display alongside a low laff bonus
+
+    # Text to display in popup text for misc point gains
+    GOON_STOMP = 'STOMP!'
+    STUN = "STUN!"
+    SIDE_STUN = "SIDE-STUN!"
+    FULL_IMPACT = "PERFECT!"
+    REMOVE_HELMET = "DE-SAFE!"
+    GOON_KILL = "DESTRUCTION!"
+    KILLING_BLOW = 'FINAL BLOW!'
+
+    COIN_FLIP = 'COIN FLIP!'
+
+    COMBO = "COMBO!"
+
+    APPLIED_HELMET = "SAFED!"
+    TOOK_TREASURE = 'TREASURE!'
+    WENT_SAD = "DIED!"
+    LOW_IMPACT = 'SLOPPY!'
+    UNSTUN = 'UN-STUN!'
+
+    # What should be sent over astron?
+    def to_astron(self) -> str:
+        return self.name
+
+    # What should be received and converted via astron?
+    # Returns a DeathReason enum or None
+    @classmethod
+    def from_astron(cls, name) -> Enum | None:
+        try:
+            return cls[name]
+        except KeyError:
+            return None
+
+    def want_delay(self) -> bool:
+        """
+        Determines if a score reason should have a "delay" when being awarded. This prevents score reasons that are
+        usually always awarded alongside another to be able to be read.
+        """
+        return self in {
+            ScoreReason.STUN,
+            ScoreReason.SIDE_STUN,
+            ScoreReason.COMBO,
+            ScoreReason.FULL_IMPACT,
+            ScoreReason.LOW_LAFF,
+        }
+
+    def ignore_uber_bonus(self) -> bool:
+        """
+        Returns True if this reason should be ignored when considering a low laff bonus.
+        Things such as losing laff, other uber bonuses, etc should be ignored.
+        """
+        return self in {
+            ScoreReason.LOW_LAFF,
+            ScoreReason.WENT_SAD,
+            ScoreReason.APPLIED_HELMET,
+            ScoreReason.TOOK_TREASURE,
+            ScoreReason.LOW_IMPACT
+        }

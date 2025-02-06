@@ -1,7 +1,7 @@
 # Server settings
-version v0.13.3 Alpha
+version v0.1.0 Alpha
 
-server-version tt-ap-edition
+server-version tt-ranked-edition
 
 # Developer settings
 want-dev false
@@ -20,7 +20,7 @@ default-directnotify-level info
 
 # Window settings
 load-display pandagl
-window-title Toontown: Archipelago
+window-title Toontown Ranked Client
 win-origin -2 -2
 depth-bits 24
 frame-rate-meter-text-pattern %0.f FPS

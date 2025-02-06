@@ -86,22 +86,7 @@ class PurchaseBase(StateData.StateData):
         return Task.done
 
     def checkForBroke(self):
-        money = self.toon.getMoney()
-        self.pointDisplay['text'] = str(money)
-        if money == 0:
-            if not self.isBroke:
-                self.toon.inventory.setActivateModeBroke()
-                taskMgr.doMethodLater(2.25, self.showBrokeMsg, 'showBrokeMsgTask')
-                self.isBroke = 1
-        else:
-            if self.isBroke:
-                self.toon.inventory.setActivateMode(self.activateMode)
-                taskMgr.remove('showBrokeMsgTask')
-                self.isBroke = 0
-            if money == 1:
-                self.statusLabel['text'] = TTLocalizer.GagShopYouHaveOne
-            else:
-                self.statusLabel['text'] = TTLocalizer.GagShopYouHave % money
+        pass
 
     def showBrokeMsg(self, task):
         self.statusLabel['text'] = TTLocalizer.GagShopOutOfJellybeans

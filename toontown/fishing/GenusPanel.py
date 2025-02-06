@@ -1,5 +1,5 @@
-from apworld.toontown import fish
-from apworld.toontown.fish import FishZone, FishLocation, FishZoneToName, can_av_fish_at_zone
+from toontown.fishing import FishingConstants
+from toontown.fishing.FishingConstants import FishZone, FishLocation, FishZoneToName, can_av_fish_at_zone
 from toontown.toonbase import ToontownGlobals
 from direct.directnotify import DirectNotifyGlobal
 from direct.gui.DirectGui import *
@@ -101,12 +101,12 @@ class GenusPanel(DirectFrame):
             textProperty = '\1black\1' if hasGenus else '\1red\1'
             self['text'] = textProperty + TTLocalizer.FishGenusNames[self.genus] + '\2'
         for species in range(len(FishGlobals.getSpecies(self.genus))):
-            fishDef = fish.get_fish_def(self.genus, species)
+            fishDef = FishingConstants.get_fish_def(self.genus, species)
 
             hasFish = base.localAvatar.fishCollection.hasFish(self.genus, species)
-            rodRequired = fish.get_required_rod(fishDef)
+            rodRequired = FishingConstants.get_required_rod(fishDef)
             rodName = FishingRodNameDict[rodRequired]
-            hasSufficientRod = fish.can_catch_fish(fishDef, base.localAvatar.fishingRod)
+            hasSufficientRod = FishingConstants.can_catch_fish(fishDef, base.localAvatar.fishingRod)
 
             textProperty = '\1measly_brown\1' if hasFish else '\1red\1' if hasSufficientRod else '\1red\1'
 
@@ -114,7 +114,7 @@ class GenusPanel(DirectFrame):
             if hasFish:
                 speciesSubtext = '\2'
             elif hasSufficientRod:
-                # Show the location of the fish.
+                # Show the location of the FishingConstants.
                 fishLocation = FishLocation(base.localAvatar.slotData.get('fish_locations', 1))
                 location_strings = [
                     (

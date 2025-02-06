@@ -5,7 +5,7 @@ from direct.directtools.DirectGeometry import LineNodePath
 from direct.distributed import DistributedObject
 from direct.directnotify import DirectNotifyGlobal
 
-from apworld.toontown.fish import MAX_SPECIES_PER_ROD_TIER, FishLocation, get_catchable_fish_no_rarity
+from toontown.fishing.FishingConstants import MAX_SPECIES_PER_ROD_TIER, FishLocation, get_catchable_fish_no_rarity
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.building import FADoorCodes

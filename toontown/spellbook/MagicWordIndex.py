@@ -1,11 +1,12 @@
 import traceback
 import types
 import collections
-from typing import List, Dict
+import typing
+from typing import List, Dict, Type, TypeVar
 
+from direct.distributed.ClockDelta import globalClockDelta
 from direct.interval.IntervalGlobal import *
 
-from apworld.toontown.locations import ToontownLocationDefinition
 from libotp import NametagGroup
 
 from otp.otpbase import OTPLocalizer
@@ -13,7 +14,6 @@ from otp.otpbase import OTPGlobals
 
 from toontown.battle import SuitBattleGlobals
 from toontown.coghq import CogDisguiseGlobals, CraneLeagueGlobals
-from toontown.coghq.ActivityLog import ActivityLog
 from toontown.coghq.CraneLeagueHeatDisplay import CraneLeagueHeatDisplay
 from toontown.estate import GardenGlobals
 from toontown.fishing import FishGlobals
@@ -35,16 +35,67 @@ import time
 import random
 import json
 
-from apworld.toontown import locations, items
-from toontown.archipelago.definitions import rewards
 from ..archipelago.definitions.death_reason import DeathReason
-from ..archipelago.packets.clientbound.bounced_packet import BouncedPacket
+from ..minigame.craning.CraneGamePracticeCheatAI import CraneGamePracticeCheatAI
+
+ImplementsMinigame = None
+if typing.TYPE_CHECKING:
+    from ..minigame.DistributedMinigameAI import DistributedMinigameAI
+    # Generic type to signify that some instance is of type DistributedMinigameAI.
+    ImplementsMinigame = TypeVar('ImplementsMinigame', bound=DistributedMinigameAI)
 
 DEBUG_SCOREBOARD = None
 DEBUG_HEAT = None
 DEBUG_LOG = None
 
 magicWordIndex = collections.OrderedDict()
+
+
+def findToonInInstance(classes: list[Type[object]] | tuple[Type[object]], toonId: int) -> object | None:
+    """
+    Searches the AI Repository for a toon ID that is contained within the 'involvedToons' property on an
+    AI Distributed Object that matches the classes provided in the classes parameter.
+
+    Returns the instance that the toon was found in or None if the toon was not found.
+    Very commonly used to find toons that are in bosses from the scope of the commands.
+    """
+
+    # Loop through every Distributed Object and see if the class type matches a class we are interested in.
+    for do in list(simbase.air.doId2do.values()):
+        for cls in classes:
+            if not isinstance(do, cls):
+                continue
+            if not hasattr(do, 'getPresentToonIds'):
+                continue
+            if toonId not in do.involvedToons:
+                continue
+            return do
+
+    return None
+
+
+def findToonInMinigame(_class: Type[ImplementsMinigame], toonId) -> ImplementsMinigame:
+    """
+       Searches the AI Repository for a toon ID that is currently playing a minigame.
+
+       Returns the instance that the toon was found in or None if the toon was not found.
+       The returned minigame will be of the same exact class that was passed in via _class parameter.
+       Very commonly used to find toons that are in bosses from the scope of the commands.
+       """
+
+    # Loop through every Distributed Object and see if the class type matches a class we are interested in.
+    game = None
+    for do in list(simbase.air.doId2do.values()):
+        if not isinstance(do, _class):
+            continue
+
+        if toonId not in do.getParticipants():
+            continue
+
+        game = do
+        break
+
+    return game
 
 
 def getMagicWord(name):
@@ -211,7 +262,7 @@ class SetMaxHP(MagicWord):
 
         if not 1 <= maxhp <= ToontownGlobals.MaxHpLimit:
             return "Can't set {}'s max laff to {}! Specify a value between 1 and {}.".format(toon.getName(), maxhp,
-                                                                                              ToontownGlobals.MaxHpLimit)
+                                                                                             ToontownGlobals.MaxHpLimit)
 
         toon.b_setMaxHp(maxhp)
         toon.toonUp(maxhp)
@@ -399,8 +450,6 @@ class MaxToon(MagicWord):
 
         toon.b_setGolfHistory([600] * (GolfGlobals.MaxHistoryIndex * 2))
 
-        toon.b_setAccessKeys([_ for _ in range(100)])
-
         return "Maxed out {}'s stats.".format(toon.getName())
 
 
@@ -494,7 +543,6 @@ class ToggleUnlimitedGags(MagicWord):
     accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
-
         from toontown.toon.InventoryBase import InventoryBase
 
         inventory: InventoryBase = toon.inventory
@@ -1148,6 +1196,7 @@ class SetFishingBucket(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("tankVal", int, True)]
     accessLevel = 'USER'
+
     def handleWord(self, invoker, avId, toon, *args):
         tankVal = args[0]
         if not 20 <= tankVal <= 99:
@@ -1824,46 +1873,6 @@ class RestartPieRound(MagicWord):
         return "Restarting Pie Round"
 
 
-class SkipCFO(MagicWord):
-    desc = "Skips to the indicated round of the CFO."
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("round", str, False, "next")]
-    accessLevel = 'USER'
-
-    def handleWord(self, invoker, avId, toon, *args):
-        battle = args[0]
-
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-        if not boss:
-            return "You aren't in a CFO!"
-
-        battle = battle.lower()
-
-        if battle == 'two':
-            if boss.state in ('PrepareBattleThree', 'BattleThree'):
-                return "You can not return to previous rounds!"
-            else:
-                boss.exitIntroduction()
-                boss.b_setState('PrepareBattleThree')
-                return "Skipping to last round..."
-
-        if battle == 'next':
-            if boss.state in ('PrepareBattleOne', 'BattleOne'):
-                boss.exitIntroduction()
-                boss.b_setState('PrepareBattleThree')
-                return "Skipping current round..."
-            elif boss.state in ('PrepareBattleThree', 'BattleThree'):
-                boss.exitIntroduction()
-                boss.b_setState('Victory')
-                return "Skipping final round..."
-
-
 class HitCFO(MagicWord):
     desc = "Hits the CFO."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
@@ -1872,17 +1881,12 @@ class HitCFO(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         dmg = args[0]
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-        if not boss:
-            return "You aren't in a CFO!"
+        from ..minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        craneGame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if craneGame is None:
+            return "You aren't in a crane round!"
 
-        boss.magicWordHit(dmg, invoker.doId)
+        craneGame.recordHit(dmg, impact=1)
 
 
 class RestartCraneRound(MagicWord):
@@ -1893,27 +1897,164 @@ class RestartCraneRound(MagicWord):
     accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
-        battle = args[0]
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
+        from ..minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        craneGame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if craneGame is None:
+            return "You aren't in a crane round!"
+
+        craneGame.gameFSM.request("cleanup")
+        craneGame.gameFSM.request('prepare')
+        return "Restarting Crane Round"
+
+
+class SpectateMinigame(MagicWord):
+    aliases = ['spec', 'spectate']
+    desc = "Toggles your toon in/out of spectator mode for this minigame."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from ..minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        craneGame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if craneGame is None:
+            return "You aren't in a crane round!"
+
+        if craneGame.isSpectating(avId):
+            without = [spec for spec in craneGame.getSpectators() if spec != avId]  # Filter them out.
+            craneGame.b_setSpectators(without)
+        else:
+            _with = craneGame.getSpectators()
+            _with.append(avId)
+            craneGame.b_setSpectators(_with)
+
+        return f"You are no{'w' if avId in craneGame.getSpectators() else ' longer'} spectating!"
+
+
+class SetCraneSpawn(MagicWord):
+    aliases = ['cranespawn', 'spawn']
+    desc = "Sets the craning spawn point of a certain toon"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("spawn", int, False, "next")]
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        spawn = args[0]
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        boss = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
         if not boss:
             return "You aren't in a CFO!"
+        if not (1 <= spawn <= 8):
+            return "Incorrect spawn position, please enter between 1 to 8!"
 
-        if boss.state == 'Elevator':
-            boss.sendUpdate('setState', ['Introduction'])
-            
-        boss.clearObjectSpeedCaching()
-        battle = battle.lower()
-        boss.exitIntroduction()
-        boss.b_setState('PrepareBattleThree')
-        boss.b_setState('BattleThree')
-        
-        return "Restarting Crane Round"
+        boss.wantCustomCraneSpawns = True
+        boss.d_setCraneSpawn(True, args[0] - 1, invoker.doId)
+
+        return ("Set your spawn position to #%s" % (spawn))
+
+
+class SafeRushMode(MagicWord):
+    aliases = ['saferush', 'rush']
+    desc = "Sets knockout damage in cfo to 2 for safe rush practice"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        minigame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if not minigame:
+            return "You aren't in a CFO!"
+
+        on_off = 'OFF' if minigame.practiceCheatHandler.wantSafeRushPractice else f'ON'
+        message = f"Safe Rush Mode => {on_off}"
+
+        minigame.practiceCheatHandler.setPracticeParams(CraneGamePracticeCheatAI.SAFE_RUSH_PRACTICE)
+        return message
+
+
+class LiveGoonMode(MagicWord):
+    aliases = ['livegoon']
+    desc = "Sets goon spawn rate to 4 seconds"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        minigame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+
+        if not minigame:
+            return "You aren't in a CFO!"
+
+        on_off = 'OFF' if minigame.practiceCheatHandler.wantLiveGoonPractice else f'ON'
+        message = f"Live Goon Mode => {on_off}"
+
+        minigame.practiceCheatHandler.setPracticeParams(CraneGamePracticeCheatAI.LIVE_GOON_PRACTICE)
+        return message
+
+
+class RNGMode(MagicWord):
+    aliases = ['rng']
+    desc = "Sets sides to always open your side, and max goon size"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+    arguments = [
+        ("state", int, False, 1),
+        ("toonIndex", int, False, 0)
+    ]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        minigame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if not minigame:
+            return "You aren't in a CFO!"
+
+        if args[1] >= len(minigame.getParticipantsNotSpectating()) or args[1] < 0:
+            return "Invalid toon index, please enter a valid toon index! (0-%s)" % str(len(minigame.getParticipantsNotSpectating()) - 1)
+
+        on_off = 'OFF' if minigame.practiceCheatHandler.wantRNGMode else f'ON'
+        message = f"RNG Mode => {on_off}"
+
+        minigame.practiceCheatHandler.setPracticeParams(CraneGamePracticeCheatAI.RNG_MODE)
+        return message
+
+
+class AimMode(MagicWord):
+    aliases = ['aim']
+    desc = "Resets the locations of the safes"
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("safes", int, False, 5)]
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        minigame = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
+        if not minigame:
+            return "You aren't in the Crane Game!"
+
+        safes = args[0]
+        if not (0 <= safes <= 8):
+            return "Invalid # of safes, try a number between 0 and 8 :)"
+
+        if minigame.gameFSM.getCurrentState().getName() != "play":
+            return f"Crane game must be in state 'play', was '{minigame.gameFSM.getCurrentState().getName()}'!"
+
+        on_off = 'OFF' if minigame.practiceCheatHandler.wantAimPractice else f'ON ({safes} safes)'
+        message = f"Safe Aim Practice => {on_off}"
+
+        minigame.practiceCheatHandler.numSafesWanted = safes
+        minigame.practiceCheatHandler.setPracticeParams(CraneGamePracticeCheatAI.AIM_PRACTICE)
+        return message
+
+
+class DisableGoons(MagicWord):
+    desc = "Stuns all of the goons in an area."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedGoonAI import DistributedGoonAI
+        for goon in simbase.air.doFindAllInstances(DistributedGoonAI):
+            goon.requestStunned(0)
+        return "Disabled all Goons!"
 
 
 class SetCFOModifiers(MagicWord):
@@ -1930,19 +2071,13 @@ class SetCFOModifiers(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
 
-        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
-        boss = None
-        for do in list(simbase.air.doId2do.values()):
-            if isinstance(do, DistributedCashbotBossAI):
-                if invoker.doId in do.involvedToons:
-                    boss = do
-                    break
-
+        from toontown.minigame.craning.DistributedCraneGameAI import DistributedCraneGameAI
+        boss = findToonInMinigame(DistributedCraneGameAI, invoker.doId)
         if not boss:
-            return "You aren't in a CFO!"
+            return "You aren't in the Crane Game!"
 
         # Handle if no arguments given
-        if args[0].lower() == self.VALID_SUBCOMMANDS[0]:
+        if args[0].lower() == self.VALID_SUBCOMMANDS[0] or args[0].lower() not in self.VALID_SUBCOMMANDS:
             return 'Valid subcommands: ' + ', '.join(self.VALID_SUBCOMMANDS)
 
         # Handle if they just want to turn them on or off
@@ -2046,18 +2181,6 @@ class SetCFOModifiers(MagicWord):
                 s += ' warning: roll modifiers on rcr active, use ~modifiers random off'
 
             return s
-
-
-class DisableGoons(MagicWord):
-    desc = "Stuns all of the goons in an area."
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = 'USER'
-
-    def handleWord(self, invoker, avId, toon, *args):
-        from toontown.suit.DistributedGoonAI import DistributedGoonAI
-        for goon in simbase.air.doFindAllInstances(DistributedGoonAI):
-            goon.requestStunned(0)
-        return "Disabled all Goons!"
 
 
 class SkipCJ(MagicWord):
@@ -2281,6 +2404,7 @@ class SkipVP(MagicWord):
                 boss.b_setState('BattleOne')
                 return "Skipping introduction!"
 
+
 class StunVP(MagicWord):
     desc = "Stuns the VP in the final round of his battle."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
@@ -2414,7 +2538,6 @@ class RequestMinigame(MagicWord):
     accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
-
         requested_name = args[0].lower()
         wanted_game_id = ToontownGlobals.MinigameNames.get(requested_name)
 
@@ -2581,9 +2704,8 @@ class CompleteQuests(MagicWord):
     accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
-
         for index in range(len(toon.quests)):
-            toon.quests[index][4] = 2**16
+            toon.quests[index][4] = 2 ** 16
         toon.b_setQuests(toon.quests)
         return f"Completed {len(toon.quests)} of {toon.getName()}'s quests!"
 
@@ -3241,48 +3363,6 @@ class PrintChildren(MagicWord):
                 print(child.getChildren())
 
 
-class StartBoss(MagicWord):
-    aliases = ['startvp', 'startcfo', 'startcj', 'startceo']
-    desc = 'Starts a boss battle.'
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = 'TTOFF_DEVELOPER'
-
-    def handleWord(self, invoker, avId, toon, *args):
-
-        from ..toon.DistributedToonAI import DistributedToonAI
-
-        hood_zones = [ToontownGlobals.BossbotHQ, ToontownGlobals.LawbotHQ,
-                      ToontownGlobals.CashbotHQ, ToontownGlobals.SellbotHQ]
-        if toon.zoneId not in hood_zones:
-            return 'Toon is not in the correct zone! Expected a Cog HQ courtyard, got {}.'.format(toon.zoneId)
-
-        # Get all players online
-        online_toons: List[DistributedToonAI] = simbase.air.getAllOfType(DistributedToonAI)
-        for online_toon in list(online_toons):
-            if not online_toon.isPlayerControlled():
-                online_toons.remove(online_toon)
-
-        for hood in simbase.air.hoods:
-            if hood.zoneId == toon.zoneId:
-
-                toons_in_zone = [online_toon for online_toon in online_toons if online_toon.zoneId == toon.zoneId]
-
-                # If there are more than 8 players, just grab the first 7 we find and assure that invoker is in it
-                if len(toons_in_zone) > 8:
-                    if toon.getDoId() in toons_in_zone:
-                        toons_in_zone.remove(toon)
-
-                    toons_in_zone = toons_in_zone[0:7]
-                    toons_in_zone.append(toon)
-
-                zone = hood.lobbyMgr.createBossOffice([t.getDoId() for t in toons_in_zone])
-                for t in toons_in_zone:
-                    t.sendUpdate('forceEnterBoss', [t.zoneId, zone])
-                return f'Successfully created a boss for {len(toons_in_zone)} toons!!'
-
-        return 'Cog HQ hood data not found!'
-
-
 class SetDNA(MagicWord):
     aliases = ['dna']
     desc = 'Modify a DNA part on the invoker'
@@ -3527,32 +3607,6 @@ class ShowScoreboard(MagicWord):
         return "set heat to " + str(n)
 
 
-class ShowActivityLog(MagicWord):
-    aliases = ['log', 'activitylog']
-    desc = 'make debug log appear'
-    execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-    accessLevel = 'NO_ACCESS'
-
-    CHOICES = [
-        'ye',
-        'as;lkdfj;laksdfj;lkasdjf;lkasdfl;kasdljk;fasdf',
-        'aaaaaaaaaaaaaaaaaaaaa',
-        'words words words words words words words words words words words',
-        'msg_labelmsg_labelmsg_labelmsg_labelmsg_labelmsg_label msg_label msg_labelmsg_label msg_label'
-
-    ]
-
-    def handleWord(self, invoker, avId, toon, *args):
-        global DEBUG_LOG
-
-        if not DEBUG_LOG:
-            DEBUG_LOG = ActivityLog()
-
-        DEBUG_LOG.addToLog(random.choice(self.CHOICES))
-
-        return 'modified log'
-
-
 class SetGagSkillMultiplier(MagicWord):
     aliases = ['xpmultiplier', 'setxpmultiplier']
     desc = "Sets toon's base gag experience multiplier"
@@ -3563,91 +3617,6 @@ class SetGagSkillMultiplier(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         toon.b_setBaseGagSkillMultiplier(args[0])
         return f"Set {toon.getName()}'s base gag xp multiplier to {args[0]}!"
-
-
-class SetAccessKeys(MagicWord):
-    aliases = ['keys', 'access']
-    desc = "Modifies a toons access to HQs and Cog Facilities"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("operation", str, False, 'list'), ('key', int, False, 0)]
-    accessLevel = 'TTOFF_DEVELOPER'
-
-    def handleWord(self, invoker, avId, toon, *args):
-        operation = args[0].lower()
-        key = args[1]
-
-        if operation not in ('add', 'remove', 'clear', 'all', 'list'):
-            return f"Invalid operation: {operation}, must be add, remove, clear, or list"
-
-        if operation == 'add':
-            toon.addAccessKey(key)
-            return f"Added {key} to {toon.getName()}'s list of keys!"
-
-        if operation == 'remove':
-            toon.removeAccessKey(key)
-            return f"Removed {key} from {toon.getName()}'s list of keys!"
-
-        if operation == 'clear':
-            toon.clearAccessKeys()
-            return f"Removed all keys from {toon.getName()}!"
-
-        if operation == 'all':
-            toon.b_setAccessKeys([_ for _ in range(100)])  # Kinda hacky but meh i don't think im adding 75 more locks lol
-
-        return f"{toon.getName()}'s keys: {toon.getAccessKeys()}"
-
-
-class Archipelago(MagicWord):
-    aliases = ['ap', 'archi']
-    desc = "Commands to force certain behavior with an AP session, does not work unless an active AP session is active"
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [('operation', str, True)]
-    accessLevel = 'NO_ACCESS'
-
-    def handleWord(self, invoker, avId, toon, *args):
-        operation = args[0].lower()
-
-        if not toon.archipelago_session:
-            return f"Toon {toon.getName()} does not have an active AP session!"
-
-        # Add a random location check
-        if operation in ('check', 'addcheck'):
-            check: ToontownLocationDefinition = random.choice(locations.LOCATION_DEFINITIONS)
-            toon.addCheckedLocation(check.unique_id)
-            return f"Gave {toon.getName()} the {check.name} check!"
-
-        if operation in ('wipe', 'reset', 'clear'):
-            toon.newToon()
-            return f"Wiped {toon.getName()}'s progress!"
-
-        if operation in ('reward', 'gift'):
-            # Get a random reward, apply it and show it just like the packet does
-            for _ in range(random.randint(1, 20)):
-                item_def = random.choice(items.ITEM_DEFINITIONS)
-                reward = rewards.get_ap_reward_from_id(item_def.unique_id)
-                reward.apply(toon)
-                toon.d_showReward(item_def.unique_id, "The Spellbook", False)
-            return f"Gave {toon.getName()} a few random AP rewards"
-
-        if operation in ('deathlink'):
-            # Simulate a deathlink packet.
-
-            # Hack in a fake "AP client"
-            class FakeAPClient:
-                pass
-            client = FakeAPClient()
-            client.av = toon
-            # Create a deathlink packet
-            deathlink_packet = BouncedPacket({'cmd': "Bounced"})
-            deathlink_packet.data = {
-                'time': globalClock.getRealTime(),
-                'source': 'The Spellbook',
-                'cause': 'the spellbook decided it was your time to go.',
-            }
-            deathlink_packet.handle_deathlink(client)
-            return f"Simulating deathlink packet for {toon.getName()}"
-
-        return f"Invalid argument, valid arguments are: check"
 
 
 # Command that forces your state to the 'Walk' state.
@@ -3661,9 +3630,9 @@ class FreeLocalToon(MagicWord):
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-
         # Check for common errors when trying to do this
-        if not hasattr(self.cr, 'playGame') or not hasattr(self.cr.playGame, 'place') or self.cr.playGame.getPlace() is None:
+        if not hasattr(self.cr, 'playGame') or not hasattr(self.cr.playGame,
+                                                           'place') or self.cr.playGame.getPlace() is None:
             return "Your toon is in an invalid state to run this command!"
 
         self.cr.playGame.getPlace().setState('walk')
@@ -3686,7 +3655,8 @@ class SandboxBattle(MagicWord):
             return f"{toon.getName()} is battling! Cannot start a new one."
 
         teammates: List[int] = []
-        for otherToonId, otherToon in self.air.getObjectsOfClassInZone(self.air.districtId, toon.zoneId, DistributedToonAI).items():
+        for otherToonId, otherToon in self.air.getObjectsOfClassInZone(self.air.districtId, toon.zoneId,
+                                                                       DistributedToonAI).items():
             if otherToon.isPlayerControlled() and toon != otherToon:
                 teammates.append(otherToonId)
 

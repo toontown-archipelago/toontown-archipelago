@@ -22,7 +22,13 @@ from . import DistributedCogThiefGameAI
 from . import DistributedTwoDGameAI
 from . import DistributedTravelGameAI
 from . import TravelGameGlobals
+from toontown.minigame.crashball.DistributedCrashBallGameAI import DistributedCrashBallGameAI
 from .DistributedMinigameAI import DistributedMinigameAI
+from .craning.DistributedCraneGameAI import DistributedCraneGameAI
+from .golfgreen.DistributedGolfGreenGameAI import DistributedGolfGreenGameAI
+from .pie.DistributedPieGameAI import DistributedPieGameAI
+from .scale.DistributedScaleGameAI import DistributedScaleGameAI
+from .seltzer.DistributedSeltzerGameAI import DistributedSeltzerGameAI
 
 
 @dataclass
@@ -35,25 +41,31 @@ class GeneratedMinigame:
 class MinigameCreatorAI:
 
     MINIGAME_ID_TO_CLASS = {
-            ToontownGlobals.RaceGameId: DistributedRaceGameAI.DistributedRaceGameAI,
-            ToontownGlobals.CannonGameId: DistributedCannonGameAI.DistributedCannonGameAI,
-            ToontownGlobals.TagGameId: DistributedTagGameAI.DistributedTagGameAI,
-            ToontownGlobals.PatternGameId: DistributedPatternGameAI.DistributedPatternGameAI,
-            ToontownGlobals.RingGameId: DistributedRingGameAI.DistributedRingGameAI,
-            ToontownGlobals.MazeGameId: DistributedMazeGameAI.DistributedMazeGameAI,
-            ToontownGlobals.TugOfWarGameId: DistributedTugOfWarGameAI.DistributedTugOfWarGameAI,
-            ToontownGlobals.CatchGameId: DistributedCatchGameAI.DistributedCatchGameAI,
-            ToontownGlobals.DivingGameId: DistributedDivingGameAI.DistributedDivingGameAI,
-            ToontownGlobals.TargetGameId: DistributedTargetGameAI.DistributedTargetGameAI,
-            ToontownGlobals.MinigameTemplateId: DistributedMinigameTemplateAI.DistributedMinigameTemplateAI,
-            ToontownGlobals.PairingGameId: DistributedPairingGameAI.DistributedPairingGameAI,
-            ToontownGlobals.VineGameId: DistributedVineGameAI.DistributedVineGameAI,
-            ToontownGlobals.IceGameId: DistributedIceGameAI.DistributedIceGameAI,
-            ToontownGlobals.CogThiefGameId: DistributedCogThiefGameAI.DistributedCogThiefGameAI,
-            ToontownGlobals.TwoDGameId: DistributedTwoDGameAI.DistributedTwoDGameAI,
-            ToontownGlobals.TravelGameId: DistributedTravelGameAI.DistributedTravelGameAI,
-            ToontownGlobals.PhotoGameId: DistributedPhotoGameAI.DistributedPhotoGameAI
-        }
+        ToontownGlobals.RaceGameId: DistributedRaceGameAI.DistributedRaceGameAI,
+        ToontownGlobals.CannonGameId: DistributedCannonGameAI.DistributedCannonGameAI,
+        ToontownGlobals.TagGameId: DistributedTagGameAI.DistributedTagGameAI,
+        ToontownGlobals.PatternGameId: DistributedPatternGameAI.DistributedPatternGameAI,
+        ToontownGlobals.RingGameId: DistributedRingGameAI.DistributedRingGameAI,
+        ToontownGlobals.MazeGameId: DistributedMazeGameAI.DistributedMazeGameAI,
+        ToontownGlobals.TugOfWarGameId: DistributedTugOfWarGameAI.DistributedTugOfWarGameAI,
+        ToontownGlobals.CatchGameId: DistributedCatchGameAI.DistributedCatchGameAI,
+        ToontownGlobals.DivingGameId: DistributedDivingGameAI.DistributedDivingGameAI,
+        ToontownGlobals.TargetGameId: DistributedTargetGameAI.DistributedTargetGameAI,
+        ToontownGlobals.MinigameTemplateId: DistributedMinigameTemplateAI.DistributedMinigameTemplateAI,
+        ToontownGlobals.PairingGameId: DistributedPairingGameAI.DistributedPairingGameAI,
+        ToontownGlobals.VineGameId: DistributedVineGameAI.DistributedVineGameAI,
+        ToontownGlobals.IceGameId: DistributedIceGameAI.DistributedIceGameAI,
+        ToontownGlobals.CogThiefGameId: DistributedCogThiefGameAI.DistributedCogThiefGameAI,
+        ToontownGlobals.TwoDGameId: DistributedTwoDGameAI.DistributedTwoDGameAI,
+        ToontownGlobals.TravelGameId: DistributedTravelGameAI.DistributedTravelGameAI,
+        ToontownGlobals.PhotoGameId: DistributedPhotoGameAI.DistributedPhotoGameAI,
+        ToontownGlobals.CrashBallGameId: DistributedCrashBallGameAI,
+        ToontownGlobals.CraneGameId: DistributedCraneGameAI,
+        ToontownGlobals.PieGameId: DistributedPieGameAI,
+        ToontownGlobals.ScaleGameId: DistributedScaleGameAI,
+        ToontownGlobals.SeltzerGameId: DistributedSeltzerGameAI,
+        ToontownGlobals.GolfGreenGameId: DistributedGolfGreenGameAI,
+    }
 
     def __init__(self, air):
         self.air = air
@@ -90,9 +102,12 @@ class MinigameCreatorAI:
 
         return choices
 
-    def createMinigame(self, playerArray, trolleyZone, minigameZone=None, previousGameId=ToontownGlobals.NoPreviousGameId, newbieIds=None, startingVotes=None, metagameRound=-1, desiredNextGame=None) -> GeneratedMinigame:
+    def createMinigame(self, playerArray, trolleyZone, minigameZone=None, previousGameId=ToontownGlobals.NoPreviousGameId, newbieIds=None, spectatorIds=None, startingVotes=None, metagameRound=-1, desiredNextGame=None) -> GeneratedMinigame:
         if newbieIds is None:
             newbieIds = []
+
+        if spectatorIds is None:
+            spectatorIds = []
 
         if minigameZone is None:
             minigameZone = self.air.allocateZone()
@@ -101,6 +116,7 @@ class MinigameCreatorAI:
 
         minigameChoices = self.getMinigameChoices(len(playerArray), previousGameId=previousGameId, allowTrolleyTracks=False)
         mgId = random.choice(minigameChoices)
+        mgId = ToontownGlobals.CraneGameId
 
         if metagameRound > -1:
             if metagameRound % 2 == 0:
@@ -140,6 +156,7 @@ class MinigameCreatorAI:
 
         mg.setMetagameRound(metagameRound)
         mg.generateWithRequired(minigameZone)
+        mg.b_setSpectators(spectatorIds)
 
         for avId in playerArray:
             toon = self.air.doId2do.get(avId)

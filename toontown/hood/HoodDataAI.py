@@ -10,6 +10,8 @@ from panda3d.core import *
 from panda3d.toontown import *
 from toontown.toon import NPCToons
 from toontown.toonbase import ToontownGlobals, TTLocalizer
+from ..safezone.TreasurePlannerAI import TreasurePlannerAI
+
 
 class HoodDataAI:
     notify = DirectNotifyGlobal.directNotify.newCategory('HoodDataAI')

@@ -1,8 +1,5 @@
 from typing import List
 
-from apworld.toontown.fish import can_av_fish_at_zone
-from apworld.toontown import locations
-from toontown.quest import Quests
 from . import ShtikerPage
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import PythonUtil
@@ -204,59 +201,6 @@ class MapPage(ShtikerPage.ShtikerPage):
             else:
                 continue
 
-    def updateTasksAvailableFrames(self):
-
-        # Loop through all the posters
-        for questPoster, fishPoster, treasurePoster, petPoster, racePoster, golfPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons, self.raceIcons, self.golfIcons):
-            treasurePoster.hide()
-            questPoster.hide()
-            fishPoster.hide()
-            petPoster.hide()
-            racePoster.hide()
-            golfPoster.hide()
-            hoodId = questPoster.getHoodId()
-
-            treasurePoster.update(base.localAvatar)
-            golfPoster.update(base.localAvatar)
-            racePoster.update(base.localAvatar)
-
-            # Are there pets here?
-            if petPoster.hoodId in ToontownGlobals.ZONE_TO_ID_TO_CHECK.keys():
-                petPoster.update(base.localAvatar)
-
-            # Can we fish here?
-            if not fishPoster.isVisible(base.localAvatar):
-                fishPoster.hide()
-            elif not can_av_fish_at_zone(base.localAvatar, hoodId):
-                fishPoster.showLocked()
-            else:
-                fishPoster.update(base.localAvatar)
-
-            # Do we not have access to this hood?
-            if hoodId in FADoorCodes.PLAYGROUND_ZONES:
-                if FADoorCodes.ZONE_TO_ACCESS_CODE[hoodId] not in base.localAvatar.getAccessKeys():
-                    questPoster.showLocked()
-                else:
-                    # Get the reward IDs from this playground
-                    rewardIds = Quests.getRewardIdsFromHood(hoodId)
-                    rewardIdCopy = rewardIds.copy()
-
-                    # Filter out the rewards we can't get bc we already earned them
-                    for reward in rewardIds:
-                        apLocation = Quests.RewardDict.get(reward)[1]
-                        if apLocation is not None:
-                            if locations.LOCATION_NAME_TO_ID[apLocation] in base.localAvatar.getCheckedLocations():
-                                rewardIdCopy.remove(reward)
-
-                    # Now filter out the rewards we are working on
-                    for quest in base.localAvatar.quests:
-                        questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
-                        if rewardId in rewardIdCopy:
-                            rewardIdCopy.remove(rewardId)
-
-                    # Now we have a number that tells us how many quests this person can learn here
-                    questPoster.showNumAvailable(len(rewardIdCopy))
-
     def unload(self):
         for labelButton in self.labels:
             labelButton.destroy()
@@ -283,8 +227,6 @@ class MapPage(ShtikerPage.ShtikerPage):
             zone = base.cr.playGame.getPlace().getZoneId()
         except:
             zone = 0
-
-        self.updateTasksAvailableFrames()
 
         if base.localAvatar.lastHood >= ToontownGlobals.BossbotHQ:
             self.safeZoneButton['text'] = TTLocalizer.MapPageBackToCogHQ

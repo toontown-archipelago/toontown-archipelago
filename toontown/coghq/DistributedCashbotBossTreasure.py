@@ -45,7 +45,3 @@ class DistributedCashbotBossTreasure(DistributedSZTreasure.DistributedSZTreasure
         self.treasureFlyTrack = Sequence(Func(self.collNodePath.stash), Parallel(ProjectileInterval(self.treasure, startPos=Point3(0, 0, 0), endPos=Point3(0, 0, 0), duration=lerpTime, gravityMult=2.0), LerpPosInterval(self.nodePath, lerpTime, Point3(x, y, z), startPos=startPos)), Func(self.collNodePath.unstash))
         self.treasureFlyTrack.start()
         return
-
-    def deductScoreboardPoints(self, avId, amount):
-        if self.boss:
-            self.boss.scoreboard.addScore(avId, amount, CraneLeagueGlobals.PENALTY_TREASURE_TEXT)

@@ -1,9 +1,6 @@
 from toontown.toonbase.TTLocalizerEnglishProperty import *
 from toontown.catalog import CatalogAccessoryItemGlobals
 from otp.otpbase import OTPLocalizer as OL
-OL.SpeedChatStaticText = OL.SpeedChatStaticTextToontown.copy()
-for key in OL.SpeedChatStaticTextCommon.keys():
-    OL.SpeedChatStaticText[key] = OL.SpeedChatStaticTextCommon[key]
 
 commitmantst = 'kptmptest - removable'
 InterfaceFont = 'phase_3/models/fonts/ImpressBT.ttf'
@@ -2773,7 +2770,7 @@ SuitAttackTaunts = {'AUDIT': ["I believe your books don't balance.",
               "You aren't above the law!",
               'There should be a law against you.',
               "There's no ex post facto with me!",
-              "The opinions expressed in this attack are not those of Toontown: Archipelago.",
+              "The opinions expressed in this attack are not those of Toontown Ranked.",
               'We cannot be held responsible for damages suffered in this attack.',
               'Your results for this attack may vary.',
               'This attack is void where prohibited.',
@@ -4177,7 +4174,7 @@ LauncherPhaseNames = {0: 'Initialization',
  13: 'Parties',
  14: 'AP'}
 LauncherProgress = '%(name)s (%(current)s of %(total)s)'
-LauncherStartingMessage = "Starting Toontown: Archipelago... "
+LauncherStartingMessage = "Starting Toontown Ranked... "
 LauncherDownloadFile = 'Downloading update for ' + LauncherProgress + '...'
 LauncherDownloadFileBytes = 'Downloading update for ' + LauncherProgress + ': %(bytes)s'
 LauncherDownloadFilePercent = 'Downloading update for ' + LauncherProgress + ': %(percent)s%%'
@@ -4193,7 +4190,7 @@ LauncherDownloadServerFileList = 'Updating Toontown...'
 LauncherCreatingDownloadDb = 'Updating Toontown...'
 LauncherDownloadClientFileList = 'Updating Toontown...'
 LauncherFinishedDownloadDb = 'Updating Toontown... '
-LauncherStartingGame = 'Starting Toontown: Archipelago...'
+LauncherStartingGame = 'Starting Toontown Ranked...'
 LauncherRecoverFiles = 'Updating Toontown. Recovering files...'
 LauncherCheckUpdates = 'Checking for updates for ' + LauncherProgress
 LauncherVerifyPhase = 'Updating Toontown...'
@@ -5472,7 +5469,7 @@ GagShopWaitingOtherPlayers = 'Waiting for other players...'
 GagShopPlayerDisconnected = '%s has disconnected'
 GagShopPlayerExited = '%s has exited'
 GagShopPlayerPlayAgain = 'Play Again'
-GagShopPlayerBuying = 'Buying'
+GagShopPlayerBuying = 'Waiting...'
 GenderShopQuestionMickey = 'To make a boy toon, click on me!'
 GenderShopQuestionMinnie = 'To make a girl toon, click on me!'
 GenderShopFollow = 'Follow me!'
@@ -9549,6 +9546,7 @@ LogoutForced = 'You have done something wrong\n and are being logged out automat
 CountryClubToonEnterElevator = '%s \nhas jumped in the golf kart.'
 CountryClubBossConfrontedMsg = '%s is battling the Club President!'
 ElevatorBlockedRoom = 'All challenges must be defeated first.'
+ElevatorOutOfBusiness = 'The elevator seems to be broken.\nCheck out the Trolley instead!'
 MolesLeft = 'Moles Left: %d'
 MolesInstruction = 'Mole Stomp!\nJump on the red moles!'
 MolesFinished = 'Mole Stomp successful!'
@@ -9605,7 +9603,8 @@ BoardingGroupAlreadyFull = 'You cannot accept this invitation because the group 
 BoardingKickOutConfirm = 'Are you sure you want to remove %s?'
 BoardingPendingInvite = 'You need to deal with the\n pending invitation first.'
 BoardingCannotLeaveZone = 'You cannot leave this area because you are part of a Boarding Group.'
-BoardingInviteeMessage = '%s would like you to join their Boarding Group.'
+BoardingInviteeStartMessage = '%s would like to start a party with you.'
+BoardingInviteeMessage = '%s would like you to join their party.'
 BoardingInvitingMessage = 'Inviting %s to your Boarding Group.'
 BoardingInvitationRejected = '%s has rejected to join your Boarding Group.'
 BoardingMessageKickedOut = 'You have been removed from the Boarding Group.'
@@ -9679,6 +9678,31 @@ IceGameWaitingForPlayersToFinishMove = 'Waiting for other players...'
 IceGameWaitingForAISync = 'Waiting for other players...'
 IceGameInfo = 'Match %(curMatch)d/%(numMatch)d, Round %(curRound)d/%(numRound)d'
 IceGameControlKeyWarning = 'Remember to press the Ctrl key!'
+
+# DistributedCrashBallGame.py
+CrashBallGameTitle = "Crash Ball"
+CrashBallGameInstructions = "Defend the golf balls from entering your goal. Use the movement keys to move left & right, hold {sprint} to increase movement speed, and press {jump} for an extra kick."
+
+# DistributedPieGame.py
+PieGameTitle = "Pie Round"
+PieGameInstructions = "Touch the cage to get some pies. Stun the VP by hitting the inside of his carriage while it's open, and use the pies to push him back while he's stunned. The player with the most points upon the VP's defeat wins."
+
+# DistributedCraneGame.py
+CraneGameTitle = "Crane Round"
+CraneGameInstructions = "Use the cranes to pick up goons to deal damage to the CFO. When the CFO is stunned, you may also use safes as damage. The player with the most points upon the CFO's defeat wins."
+
+# DistributedScaleGame.py
+ScaleGameTitle = "Scale Round"
+ScaleGameInstructions = "Touch the witness stand to get some evidence. Throw evidence into the pan to deal damage. The lawyers may be stunned, and when all are stunned, a damage bonus is granted. The player with the most points upon the CJ's defeat wins."
+
+# DistributedSeltzerGame.py
+SeltzerGameTitle = "Seltzer Round"
+SeltzerGameInstructions = "Use the seltzer bottles to deal damage to the CEO. Stun the CEO with red damage hits. Damage is increased during stuns. The player with the most points upon the CEO's defeat wins."
+
+# minigame/golfgreen/DistributedGolfGreenGame.py
+GolfGreenGameTitle = "Golf Puzzles"
+GolfGreenGameInstructions = "Shoot balls using the the mouse.\nMatching three of a color causes the balls to fall.\nRemove all Cog balls from the board.\nClear the most boards to win."
+
 PicnicTableJoinButton = 'Join'
 PicnicTableObserveButton = 'Observe'
 PicnicTableCancelButton = 'Cancel'
@@ -9962,7 +9986,6 @@ OptionNames = {
     'laff-display': "Toggle Overhead Laff Meter",
 
     # Privacy
-    "competitive-boss-scoring": "Want Competitive Boss Scoring",
     "report-errors": "Report Crash Logs to TT:AP",
 
     # Controls
@@ -10027,4 +10050,3 @@ OptionFPSLimit = {
 
 OptionEnabled = "Enabled"
 OptionDisabled = "Disabled"
-WinConditionMet = 'Congratulations, you have completed your goal! You may now talk to Flippy to redeem your reward!'

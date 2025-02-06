@@ -281,11 +281,16 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.activeIntervals[name] = interval
 
     def cleanupIntervals(self):
-        for interval in list(self.activeIntervals.values()):
+        # Copy the current intervals into a local list
+        intervals = list(self.activeIntervals.values())
+
+        # Iterate over that list
+        for interval in intervals:
             interval.finish()
             DelayDelete.cleanupDelayDeletes(interval)
 
-        self.activeIntervals = {}
+        # Clear the dictionary once you’re done
+        self.activeIntervals.clear()
 
     def clearInterval(self, name, finish = 1):
         if name in self.activeIntervals:

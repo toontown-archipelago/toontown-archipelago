@@ -1,19 +1,14 @@
-from panda3d.core import Point3
 from direct.directnotify import DirectNotifyGlobal
 from . import HoodDataAI
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedCogHQDoorAI
-from toontown.building import DistributedDoorAI
 from toontown.building import DoorTypes
 from toontown.coghq import LobbyManagerAI
-from toontown.building import DistributedBossElevatorAI
 from toontown.suit import DistributedBossbotBossAI
 from toontown.building import DistributedBBElevatorAI
 from toontown.building import DistributedBoardingPartyAI
 from toontown.building import FADoorCodes
 from toontown.coghq import DistributedCogKartAI
-from toontown.safezone import ArchipelagoTreasurePlannerAI
-from toontown.safezone import DistributedArchiTreasureAI
 
 class BossbotHQDataAI(HoodDataAI.HoodDataAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('BossbotHQDataAI')
@@ -36,10 +31,6 @@ class BossbotHQDataAI(HoodDataAI.HoodDataAI):
         self.lobbyElevator = DistributedBBElevatorAI.DistributedBBElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.BossbotLobby, antiShuffle=1)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.BossbotLobby)
         self.addDistObj(self.lobbyElevator)
-        self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
-                                ]
-        for planner in self.treasurePlanner:
-            planner.start()
         if simbase.config.GetBool('want-boarding-groups', 1):
             self.boardingParty = DistributedBoardingPartyAI.DistributedBoardingPartyAI(self.air, [self.lobbyElevator.doId], 8)
             self.boardingParty.generateWithRequired(ToontownGlobals.BossbotLobby)
@@ -67,7 +58,6 @@ class BossbotHQDataAI(HoodDataAI.HoodDataAI):
         posList = (
          (154.762, 37.169, 0), (141.403, -81.887, 0), (-48.44, 15.308, 0))
         hprList = ((110.815, 0, 0), (61.231, 0, 0), (-105.481, 0, 0))
-        lockList = (FADoorCodes.FRONT_THREE_ACCESS_MISSING, FADoorCodes.MIDDLE_SIX_ACCESS_MISSING, FADoorCodes.BACK_NINE_ACCESS_MISSING)
         mins = ToontownGlobals.FactoryLaffMinimums[3]
         kartIdList = []
         for cogCourse in range(len(posList)):
@@ -75,7 +65,6 @@ class BossbotHQDataAI(HoodDataAI.HoodDataAI):
             hpr = hprList[cogCourse]
             cogKart = DistributedCogKartAI.DistributedCogKartAI(self.air, cogCourse, pos[0], pos[1], pos[2], hpr[0], hpr[1], hpr[2], self.air.countryClubMgr, minLaff=mins[cogCourse])
             cogKart.generateWithRequired(self.zoneId)
-            cogKart.setLock(lockList[cogCourse])
             self.cogKarts.append(cogKart)
             kartIdList.append(cogKart.doId)
 

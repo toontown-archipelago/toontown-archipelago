@@ -78,7 +78,6 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
         triggerName = self.uniqueName('GoonTrigger')
         self.trigger.setName(triggerName)
         self.triggerEvent = 'enter%s' % triggerName
-        self.startToonDetect()
 
     def generate(self):
         DistributedCrushableEntity.DistributedCrushableEntity.generate(self)
@@ -90,7 +89,7 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
         self.trigger.setName(triggerName)
 
     def initCollisions(self):
-        self.cSphere = CollisionSphere(0.0, 0.0, 1.0, 1.0)
+        self.cSphere = CollisionCapsule(0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0)
         self.cSphereNode = CollisionNode('goonCollSphere')
         self.cSphereNode.addSolid(self.cSphere)
         self.cSphereNodePath = self.head.attachNewNode(self.cSphereNode)
@@ -98,7 +97,7 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
         self.cSphereBitMask = ToontownGlobals.WallBitmask
         self.cSphereNode.setCollideMask(self.cSphereBitMask)
         self.cSphere.setTangible(1)
-        self.sSphere = CollisionSphere(0.0, 0.0, self.headHeight + 0.8, 1.2)
+        self.sSphere = CollisionCapsule(0.0, 0.0, self.headHeight + 0.8, 0.0, 0.0, self.headHeight + 0.8, 1.2)
         self.sSphereNode = CollisionNode('toonSphere')
         self.sSphereNode.addSolid(self.sSphere)
         self.sSphereNodePath = self.head.attachNewNode(self.sSphereNode)
@@ -106,6 +105,12 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
         self.sSphereBitMask = ToontownGlobals.WallBitmask
         self.sSphereNode.setCollideMask(self.sSphereBitMask)
         self.sSphere.setTangible(1)
+        
+    def showCollisions(self):
+        if hasattr(self, 'cSphereNodePath'):
+            self.cSphereNodePath.show()
+        if hasattr(self, 'sSphereNodePath'):
+            self.sSphereNodePath.show()
 
     def initializeBodyCollisions(self):
         self.cSphereNode.setName(self.uniqueName('goonCollSphere'))
@@ -220,6 +225,7 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
     def enterWalk(self, avId = None, ts = 0):
         self.notify.debug('enterWalk, ts = %s' % ts)
         self.startToonDetect()
+        self.radar.show()
         self.loop('walk', 0)
         self.isStunned = 0
         if self.path:
@@ -329,28 +335,27 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
     def doAttack(self, avId):
         pass
 
-    def __startResumeWalkTask(self, ts):
-        resumeTime = 1.5
-        if ts < resumeTime:
-            taskMgr.remove(self.taskName('resumeWalk'))
-            taskMgr.doMethodLater(resumeTime - ts, self.request, self.taskName('resumeWalk'), extraArgs=('Walk',))
-        else:
-            self.request('Walk', ts - resumeTime)
-
-    def __reverseWalk(self, task):
-        self.request('Walk')
-        return Task.done
-
-    def __startRecoverTask(self, ts):
-        stunTime = 4.0
-        if ts < stunTime:
-            taskMgr.remove(self.taskName('resumeWalk'))
-            taskMgr.doMethodLater(stunTime - ts, self.request, self.taskName('resumeWalk'), extraArgs=('Recovery',))
-        else:
-            self.request('Recovery', ts - stunTime)
+    # def __startResumeWalkTask(self, ts):
+    #     resumeTime = 1.5
+    #     if ts < resumeTime:
+    #         taskMgr.remove(self.taskName('resumeWalk'))
+    #         taskMgr.doMethodLater(resumeTime - ts, self.request, self.taskName('resumeWalk'), extraArgs=('Walk',))
+    #     else:
+    #         self.request('Walk', ts - resumeTime)
+    #
+    # def __reverseWalk(self, task):
+    #     self.request('Walk')
+    #     return Task.done
+    #
+    # def __startRecoverTask(self, ts):
+    #     stunTime = 4.0
+    #     if ts < stunTime:
+    #         taskMgr.remove(self.taskName('resumeWalk'))
+    #         taskMgr.doMethodLater(stunTime - ts, self.request, self.taskName('resumeWalk'), extraArgs=('Recovery',))
+    #     else:
+    #         self.request('Recovery', ts - stunTime)
 
     def startToonDetect(self):
-        self.radar.show()
         if self.triggerEvent:
             self.accept(self.triggerEvent, self.handleToonDetect)
 
@@ -361,9 +366,10 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
     def handleToonDetect(self, collEntry = None):
         if base.localAvatar.isStunned:
             return
+        if base.localAvatar.hp <= 0:
+            return
         if self.state == 'Off':
             return
-        self.stopToonDetect()
         self.request('Battle', base.localAvatar.doId)
         if self.walkTrack:
             self.pauseTime = self.walkTrack.pause()
@@ -458,7 +464,6 @@ class DistributedGoon(DistributedCrushableEntity.DistributedCrushableEntity, Goo
 
     def undead(self):
         if self.isDead:
-            self.startToonDetect()
             self.reparentTo(render)
             self.isDead = 0
 

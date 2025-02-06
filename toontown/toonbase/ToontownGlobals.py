@@ -366,27 +366,41 @@ IceGameId = 13
 CogThiefGameId = 14
 TwoDGameId = 15
 PhotoGameId = 16
+CrashBallGameId = 17
+CraneGameId = 18
+PieGameId = 19
+ScaleGameId = 20
+SeltzerGameId = 21
+GolfGreenGameId = 22
 TravelGameId = 100
-MinigameNames = {'race': RaceGameId,
- 'cannon': CannonGameId,
- 'tag': TagGameId,
- 'pattern': PatternGameId,
- 'minnie': PatternGameId,
- 'match': PatternGameId,
- 'matching': PatternGameId,
- 'ring': RingGameId,
- 'maze': MazeGameId,
- 'tug': TugOfWarGameId,
- 'catch': CatchGameId,
- 'diving': DivingGameId,
- 'target': TargetGameId,
- 'pairing': PairingGameId,
- 'vine': VineGameId,
- 'ice': IceGameId,
- 'thief': CogThiefGameId,
- '2d': TwoDGameId,
- 'photo': PhotoGameId,
- 'travel': TravelGameId}
+MinigameNames = {
+    'race': RaceGameId,
+    'cannon': CannonGameId,
+    'tag': TagGameId,
+    'pattern': PatternGameId,
+    'minnie': PatternGameId,
+    'match': PatternGameId,
+    'matching': PatternGameId,
+    'ring': RingGameId,
+    'maze': MazeGameId,
+    'tug': TugOfWarGameId,
+    'catch': CatchGameId,
+    'diving': DivingGameId,
+    'target': TargetGameId,
+    'pairing': PairingGameId,
+    'vine': VineGameId,
+    'ice': IceGameId,
+    'thief': CogThiefGameId,
+    '2d': TwoDGameId,
+    'photo': PhotoGameId,
+    'travel': TravelGameId,
+    'crashball': CrashBallGameId,
+    'crane': CraneGameId,
+    'pie': PieGameId,
+    'scale': ScaleGameId,
+    'seltzer': SeltzerGameId,
+    'golfgreen': GolfGreenGameId,
+}
 MinigameTemplateId = -1
 MinigameIDs = (
     RaceGameId,
@@ -405,7 +419,12 @@ MinigameIDs = (
     CogThiefGameId,
     # TwoDGameId,
     PhotoGameId,
-    TravelGameId
+    TravelGameId,
+    CrashBallGameId,
+    CraneGameId,
+    PieGameId,
+    ScaleGameId,
+    SeltzerGameId
 )
 
 MultiplayerMinigames = (
@@ -413,7 +432,12 @@ MultiplayerMinigames = (
     TagGameId,
     IceGameId,
     RaceGameId,
-    TravelGameId
+    TravelGameId,
+    CrashBallGameId,
+    CraneGameId,
+    PieGameId,
+    ScaleGameId,
+    SeltzerGameId
 )
 
 MinigamePlayerMatrix = {1: (CannonGameId,
@@ -706,7 +730,7 @@ BossCogBattleBPosHpr = (0,
  180,
  0,
  0)
-SellbotBossMaxDamage = 500
+SellbotBossMaxDamage = 100
 SellbotBossMinMaxDamage = 250
 SellbotBossMaxDamageNerfed = 150
 SellbotBossBattleOnePosHpr = (0,
@@ -915,7 +939,7 @@ LawbotBossBattleOnePosHpr = (-2.798,
  0)
 LawbotBossBattleTwoPosHpr = (-2.798,
  89,
- 19.145,
+ 21,
  0,
  0,
  0)
@@ -1638,127 +1662,3 @@ musicJsonFilePath = Filename('/content_pack/music.json')
 suitClothesJsonFilePath = Filename('/content_pack/suit_clothes.json')
 
 PUTTER_KEY = 38
-
-# I hate these imports being here as much as you do, but putting them at the top crashes the AI on startup :)
-from ..archipelago.definitions import util
-from apworld.toontown import locations
-ZONE_TO_CHECK_COST = {
-    ToontownCentral: 750,
-    DonaldsDock: 1250,
-    DaisyGardens: 2000,
-    MinniesMelodyland: 2750,
-    TheBrrrgh: 3500,
-    DonaldsDreamland: 4250
-}
-ZONE_TO_ID_TO_CHECK = {
-        ToontownCentral: {1: locations.ToontownLocationName.TTC_SHOP_1.value,
-                          2: locations.ToontownLocationName.TTC_SHOP_2.value,
-                          3: locations.ToontownLocationName.TTC_SHOP_3.value,
-                          },
-        DonaldsDock: {1: locations.ToontownLocationName.DD_SHOP_1.value,
-                      2: locations.ToontownLocationName.DD_SHOP_2.value,
-                      3: locations.ToontownLocationName.DD_SHOP_3.value,
-                      },
-        DaisyGardens: {1: locations.ToontownLocationName.DG_SHOP_1.value,
-                       2: locations.ToontownLocationName.DG_SHOP_2.value,
-                       3: locations.ToontownLocationName.DG_SHOP_3.value,
-                       },
-        MinniesMelodyland: {1: locations.ToontownLocationName.MML_SHOP_1.value,
-                            2: locations.ToontownLocationName.MML_SHOP_2.value,
-                            3: locations.ToontownLocationName.MML_SHOP_3.value,
-                            },
-        TheBrrrgh: {1: locations.ToontownLocationName.TB_SHOP_1.value,
-                    2: locations.ToontownLocationName.TB_SHOP_2.value,
-                    3: locations.ToontownLocationName.TB_SHOP_3.value,
-                    },
-        DonaldsDreamland: {1: locations.ToontownLocationName.DDL_SHOP_1.value,
-                           2: locations.ToontownLocationName.DDL_SHOP_2.value,
-                           3: locations.ToontownLocationName.DDL_SHOP_3.value,
-                           },
-}
-ARCHI_CODE_TO_LOCATION = {
-        ToontownCentral: [util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_1.value),
-                          util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_2.value),
-                          util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_3.value),
-                          util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_4.value),
-                          util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_5.value),
-                          util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_6.value)
-                          ],
-        DonaldsDock: [util.ap_location_name_to_id(locations.ToontownLocationName.DD_TREASURE_1.value),
-                      util.ap_location_name_to_id(locations.ToontownLocationName.DD_TREASURE_2.value),
-                      util.ap_location_name_to_id(locations.ToontownLocationName.DD_TREASURE_3.value),
-                      util.ap_location_name_to_id(locations.ToontownLocationName.DD_TREASURE_4.value),
-                      util.ap_location_name_to_id(locations.ToontownLocationName.DD_TREASURE_5.value),
-                      util.ap_location_name_to_id(locations.ToontownLocationName.DD_TREASURE_6.value)
-                      ],
-        DaisyGardens: [util.ap_location_name_to_id(locations.ToontownLocationName.DG_TREASURE_1.value),
-                       util.ap_location_name_to_id(locations.ToontownLocationName.DG_TREASURE_2.value),
-                       util.ap_location_name_to_id(locations.ToontownLocationName.DG_TREASURE_3.value),
-                       util.ap_location_name_to_id(locations.ToontownLocationName.DG_TREASURE_4.value),
-                       util.ap_location_name_to_id(locations.ToontownLocationName.DG_TREASURE_5.value),
-                       util.ap_location_name_to_id(locations.ToontownLocationName.DG_TREASURE_6.value)
-                       ],
-        MinniesMelodyland: [util.ap_location_name_to_id(locations.ToontownLocationName.MML_TREASURE_1.value),
-                            util.ap_location_name_to_id(locations.ToontownLocationName.MML_TREASURE_2.value),
-                            util.ap_location_name_to_id(locations.ToontownLocationName.MML_TREASURE_3.value),
-                            util.ap_location_name_to_id(locations.ToontownLocationName.MML_TREASURE_4.value),
-                            util.ap_location_name_to_id(locations.ToontownLocationName.MML_TREASURE_5.value),
-                            util.ap_location_name_to_id(locations.ToontownLocationName.MML_TREASURE_6.value)
-                            ],
-        TheBrrrgh: [util.ap_location_name_to_id(locations.ToontownLocationName.TB_TREASURE_1.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.TB_TREASURE_2.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.TB_TREASURE_3.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.TB_TREASURE_4.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.TB_TREASURE_5.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.TB_TREASURE_6.value)
-                    ],
-        DonaldsDreamland: [util.ap_location_name_to_id(locations.ToontownLocationName.DDL_TREASURE_1.value),
-                           util.ap_location_name_to_id(locations.ToontownLocationName.DDL_TREASURE_2.value),
-                           util.ap_location_name_to_id(locations.ToontownLocationName.DDL_TREASURE_3.value),
-                           util.ap_location_name_to_id(locations.ToontownLocationName.DDL_TREASURE_4.value),
-                           util.ap_location_name_to_id(locations.ToontownLocationName.DDL_TREASURE_5.value),
-                           util.ap_location_name_to_id(locations.ToontownLocationName.DDL_TREASURE_6.value)
-                           ],
-        OutdoorZone: [util.ap_location_name_to_id(locations.ToontownLocationName.AA_TREASURE_1.value),
-                      util.ap_location_name_to_id(locations.ToontownLocationName.AA_TREASURE_2.value),
-                      util.ap_location_name_to_id(locations.ToontownLocationName.AA_TREASURE_3.value),
-                      util.ap_location_name_to_id(locations.ToontownLocationName.AA_TREASURE_4.value),
-                      util.ap_location_name_to_id(locations.ToontownLocationName.AA_TREASURE_5.value),
-                      util.ap_location_name_to_id(locations.ToontownLocationName.AA_TREASURE_6.value)
-                      ],
-        GoofySpeedway: [util.ap_location_name_to_id(locations.ToontownLocationName.GS_TREASURE_1.value),
-                        util.ap_location_name_to_id(locations.ToontownLocationName.GS_TREASURE_2.value),
-                        util.ap_location_name_to_id(locations.ToontownLocationName.GS_TREASURE_3.value),
-                        util.ap_location_name_to_id(locations.ToontownLocationName.GS_TREASURE_4.value),
-                        util.ap_location_name_to_id(locations.ToontownLocationName.GS_TREASURE_5.value),
-                        util.ap_location_name_to_id(locations.ToontownLocationName.GS_TREASURE_6.value)
-                        ],
-        SellbotHQ: [util.ap_location_name_to_id(locations.ToontownLocationName.SBHQ_TREASURE_1.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.SBHQ_TREASURE_2.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.SBHQ_TREASURE_3.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.SBHQ_TREASURE_4.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.SBHQ_TREASURE_5.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.SBHQ_TREASURE_6.value)
-                    ],
-        CashbotHQ: [util.ap_location_name_to_id(locations.ToontownLocationName.CBHQ_TREASURE_1.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.CBHQ_TREASURE_2.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.CBHQ_TREASURE_3.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.CBHQ_TREASURE_4.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.CBHQ_TREASURE_5.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.CBHQ_TREASURE_6.value)
-                    ],
-        LawbotHQ: [util.ap_location_name_to_id(locations.ToontownLocationName.LBHQ_TREASURE_1.value),
-                   util.ap_location_name_to_id(locations.ToontownLocationName.LBHQ_TREASURE_2.value),
-                   util.ap_location_name_to_id(locations.ToontownLocationName.LBHQ_TREASURE_3.value),
-                   util.ap_location_name_to_id(locations.ToontownLocationName.LBHQ_TREASURE_4.value),
-                   util.ap_location_name_to_id(locations.ToontownLocationName.LBHQ_TREASURE_5.value),
-                   util.ap_location_name_to_id(locations.ToontownLocationName.LBHQ_TREASURE_6.value)
-                   ],
-        BossbotHQ: [util.ap_location_name_to_id(locations.ToontownLocationName.BBHQ_TREASURE_1.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.BBHQ_TREASURE_2.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.BBHQ_TREASURE_3.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.BBHQ_TREASURE_4.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.BBHQ_TREASURE_5.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.BBHQ_TREASURE_6.value)
-                    ]
-    }

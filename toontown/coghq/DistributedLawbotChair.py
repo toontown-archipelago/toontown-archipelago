@@ -1,29 +1,27 @@
-from direct.gui.DirectGui import *
-from panda3d.core import *
-from direct.interval.IntervalGlobal import *
+import random
+
+from direct.actor.Actor import Actor
 from direct.distributed.ClockDelta import *
+from direct.distributed.DistributedObject import DistributedObject
 from direct.fsm import FSM
-from direct.distributed import DistributedObject
-from direct.showutil import Rope
-from direct.showbase import PythonUtil
-from direct.task import Task
-from toontown.toonbase import ToontownGlobals
-from otp.otpbase import OTPGlobals
-from direct.actor import Actor
+from direct.interval.IntervalGlobal import *
+from panda3d.core import *
+
+from toontown.battle import BattleProps
 from toontown.suit import Suit
 from toontown.suit import SuitDNA
-import random
-from toontown.battle import BattleProps
 from toontown.toon import NPCToons
+from toontown.toonbase import ToontownGlobals
 
-class DistributedLawbotChair(DistributedObject.DistributedObject, FSM.FSM):
+
+class DistributedLawbotChair(DistributedObject, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedLawbotChair')
     chairCushionSurface = Point3(0, -0.75, 2.25)
     landingPt = Point3(0, -1.5, 0)
     courtroomCeiling = 30
 
     def __init__(self, cr):
-        DistributedObject.DistributedObject.__init__(self, cr)
+        DistributedObject.__init__(self, cr)
         FSM.FSM.__init__(self, 'DistributedLawbotBossChair')
         self.boss = None
         self.index = None
@@ -47,7 +45,7 @@ class DistributedLawbotChair(DistributedObject.DistributedObject, FSM.FSM):
 
     def announceGenerate(self):
         self.notify.debug('announceGenerate: %s' % self.doId)
-        DistributedObject.DistributedObject.announceGenerate(self)
+        DistributedObject.announceGenerate(self)
         self.name = 'Chair-%s' % self.doId
         self.loadModel(self.modelPath, self.modelFindString)
         self.randomGenerator = random.Random()
@@ -63,7 +61,7 @@ class DistributedLawbotChair(DistributedObject.DistributedObject, FSM.FSM):
         self.boss.chairs[self.index] = self
 
     def delete(self):
-        DistributedObject.DistributedObject.delete(self)
+        DistributedObject.delete(self)
         loader.unloadModel(self.modelPath)
         self.unloadSounds()
         self.nodePath.cleanup()
@@ -146,11 +144,11 @@ class DistributedLawbotChair(DistributedObject.DistributedObject, FSM.FSM):
         self.collNodePath = self.nodePath.attachNewNode(collNode)
 
     def makeNodePath(self):
-        self.nodePath = Actor.Actor()
+        self.nodePath = Actor()
         self.chair = self.nodePath.attachNewNode('myChair')
 
     def disable(self):
-        DistributedObject.DistributedObject.disable(self)
+        DistributedObject.disable(self)
         self.nodePath.detachNode()
         if self.ival:
             self.ival.finish()
@@ -283,14 +281,12 @@ class DistributedLawbotChair(DistributedObject.DistributedObject, FSM.FSM):
 
     def enterToonJuror(self):
         self.chair.setColorScale(0.2, 0.2, 1.0, 1.0)
-        self.boss.countToonJurors()
         if not self.cogJurorTrack:
             self.cogJuror.stash()
         self.putToonJurorOnSeat()
 
     def enterSuitJuror(self):
         self.chair.setColorScale(0.5, 0.5, 0.5, 1.0)
-        self.boss.countToonJurors()
         if self.toonJuror:
             self.toonJuror.hide()
         self.putCogJurorOnSeat()
@@ -338,7 +334,6 @@ class DistributedLawbotChair(DistributedObject.DistributedObject, FSM.FSM):
         self.notify.debug('curDisplacement = %s' % newPos)
         newPos += startPt
         self.notify.debug('newPos before offset  = %s' % newPos)
-        newPos -= Point3(*ToontownGlobals.LawbotBossJuryBoxRelativeEndPos)
         self.notify.debug('newPos  = %s' % newPos)
         return newPos
 

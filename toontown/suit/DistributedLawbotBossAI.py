@@ -16,11 +16,7 @@ from toontown.coghq import DistributedLawbotCannonAI
 from toontown.coghq import DistributedLawbotChairAI
 from toontown.toonbase import ToontownBattleGlobals
 
-from apworld.toontown import locations
 from ..archipelago.definitions.death_reason import DeathReason
-
-from ..archipelago.definitions.util import ap_location_name_to_id
-
 
 class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedLawbotBossAI')
@@ -705,14 +701,6 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                toon.addCheckedLocations([ap_location_name_to_id(location) for location in [
-                    locations.ToontownLocationName.LAWBOT_PROOF_1.value,
-                    locations.ToontownLocationName.LAWBOT_PROOF_2.value,
-                    locations.ToontownLocationName.LAWBOT_PROOF_3.value,
-                    locations.ToontownLocationName.LAWBOT_PROOF_4.value,
-                    locations.ToontownLocationName.LAWBOT_PROOF_5.value,
-                    locations.ToontownLocationName.FIGHT_CJ.value
-                ]])
                 for reward in range(numRewards):
                     preferredDept = random.randrange(len(SuitDNA.suitDepts))
                     typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3

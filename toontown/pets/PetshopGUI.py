@@ -2,14 +2,9 @@ from direct.gui.DirectGui import *
 from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.DirectObject import DirectObject
-from toontown.archipelago.definitions import util
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from toontown.toonbase import ToontownTimer
-from direct.task import Task
-from otp.namepanel import NameTumbler
-from otp.otpbase import OTPGlobals
-from otp.otpbase import OTPLocalizer
 from toontown.fishing import FishSellGUI
 from toontown.pets import Pet, PetConstants
 from toontown.pets import PetDNA
@@ -18,7 +13,6 @@ from toontown.pets import PetDetail
 from toontown.pets import PetTraits
 from toontown.pets import PetNameGenerator
 from toontown.hood import ZoneUtil
-import string
 import random
 Dialog_MainMenu = 0
 Dialog_AdoptPet = 1
@@ -363,28 +357,6 @@ class PetshopGUI(DirectObject):
                 formattedStr += (desc + '\n')
             self.petDesc.append(formattedStr)
             self.petCost.append(cost)
-
-        def getCheckId(self):
-            return util.ap_location_name_to_id(self.getCheckName())
-
-        def getCheckName(self):
-            zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
-            return ToontownGlobals.ZONE_TO_ID_TO_CHECK[zoneId][self.subId]
-
-        def getItemName(self):
-            av = None
-            try:
-                av = base.localAvatar
-            # This is the AI, just use the check name
-            except AttributeError:
-                return self.getCheckName()
-
-            # Do we have it cached?
-            if not av.hasCachedLocationReward(self.getCheckId()):
-                return self.getCheckName()
-
-            # Send
-            return av.getCachedLocationReward(self.getCheckId())
 
         def destroy(self):
             self.ignore(localAvatar.uniqueName('moneyChange'))

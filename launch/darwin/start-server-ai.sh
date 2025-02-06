@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Toontown Archipelago: AI Launcher"
+echo "Toontown Ranked: AI Launcher"
 echo
 export PPYTHON_PATH=$(cat PPYTHON_PATH)
 export SERVICE_TO_RUN=AI
@@ -10,7 +10,7 @@ export MAX_CHANNELS=999999
 export STATESERVER=4002
 export ASTRON_IP="127.0.0.1:7199"
 export EVENTLOGGER_IP="127.0.0.1:7197"
-export DISTRICT_NAME="Archipelago Avenue"
+export DISTRICT_NAME="Ranked Realms"
 export WANT_ERROR_REPORTING="true"
 
 while true

@@ -163,7 +163,7 @@ class DistributedBanquetTableAI(DistributedObjectAI.DistributedObjectAI, FSM.FSM
         if self.avId != 0 or self.state != 'Free':
             return
 
-        if avId not in self.boss.involvedToons:
+        if avId not in self.boss.avIdList:
             return
 
         tableId = self.__getTableId(avId)
@@ -196,7 +196,7 @@ class DistributedBanquetTableAI(DistributedObjectAI.DistributedObjectAI, FSM.FSM
             if self.state == 'Controlled':
                 self.b_setState('Free', extraInfo=gotHitByBoss)
                 if self.boss:
-                    self.boss.toonLeftTable(self.index)
+                    self.boss.getBoss().toonLeftTable(self.index)
             else:
                 self.notify.debug('requestFree denied in state %s' % self.state)
 

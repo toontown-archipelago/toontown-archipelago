@@ -88,7 +88,7 @@ class DiscordRPC(object):
         self.updateTask = None
         self.details = "Loading" # text next to photo
         self.image = LOGO
-        self.imageTxt = 'Toontown Archipelago' #Hover text for main image 
+        self.imageTxt = 'Toontown Ranked' #Hover text for main image
         self.state = '   ' #Displayed underneath details, used for boarding groups
         self.smallTxt = 'Loading'
         self.partySize = 1

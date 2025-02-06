@@ -3,13 +3,10 @@ from typing import Dict
 
 from direct.directnotify import DirectNotifyGlobal
 
-from apworld.toontown import locations
-from apworld.toontown.fish import can_catch_new_species, FishLocation, GENUS_SPECIES_TO_LOCATION, GENUS_TO_LOCATION, FishChecks
-
-from toontown.archipelago.definitions.util import ap_location_name_to_id
 from toontown.fishing import FishGlobals
 from toontown.fishing.DistributedFishingPondAI import DistributedFishingPondAI
 from toontown.fishing.FishBase import FishBase
+from toontown.fishing.FishingConstants import FishLocation
 from toontown.safezone.DistributedFishingSpotAI import DistributedFishingSpotAI
 
 
@@ -156,15 +153,7 @@ class FishManagerAI:
             else:
                 itemType = FishGlobals.FishItem
 
-            # Do location checks on this.
-            fishLocationName = GENUS_SPECIES_TO_LOCATION[fish.getGenus(), fish.getSpecies()]
-            genusLocationName = GENUS_TO_LOCATION[fish.getGenus()]
-
-            av.addCheckedLocation(ap_location_name_to_id(fishLocationName.value))
-            av.addCheckedLocation(ap_location_name_to_id(genusLocationName.value))
-
             collectionNetList = av.fishCollection.getNetLists()
-            av.ap_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
             av.fishTank.addFish(fish)
             tankNetList = av.fishTank.getNetLists()
             av.d_setFishTank(tankNetList[0], tankNetList[1], tankNetList[2])
@@ -182,7 +171,6 @@ class FishManagerAI:
         curTrophies = len(av.fishingTrophies)
         av.addMoney(av.fishTank.getTotalValue())
         av.b_setFishTank([], [], [])
-        self.checkForFishingLocationCompletions(av)
 
         if trophies > curTrophies:
             # av.b_setMaxHp(av.getMaxHp() + trophies - curTrophies)
@@ -192,21 +180,3 @@ class FishManagerAI:
 
         return False
 
-    def checkForFishingLocationCompletions(self, av):
-        thresholdToLocation = {
-            10: locations.ToontownLocationName.FISHING_10_SPECIES.value,
-            20: locations.ToontownLocationName.FISHING_20_SPECIES.value,
-            30: locations.ToontownLocationName.FISHING_30_SPECIES.value,
-            40: locations.ToontownLocationName.FISHING_40_SPECIES.value,
-            50: locations.ToontownLocationName.FISHING_50_SPECIES.value,
-            60: locations.ToontownLocationName.FISHING_60_SPECIES.value,
-            70: locations.ToontownLocationName.FISHING_COMPLETE_ALBUM.value,
-        }
-
-        numFish = len(av.fishCollection)
-        for threshold, check in thresholdToLocation.items():
-            if numFish < threshold:
-                continue
-
-            check_id = ap_location_name_to_id(check)
-            av.addCheckedLocation(check_id)

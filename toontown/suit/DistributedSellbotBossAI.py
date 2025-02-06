@@ -2,22 +2,16 @@ from otp.ai.AIBaseGlobal import *
 from direct.distributed.ClockDelta import *
 from . import DistributedBossCogAI, SuitDNA, BossCogGlobals
 from direct.directnotify import DirectNotifyGlobal
-from otp.avatar import DistributedAvatarAI
 from . import DistributedSuitAI
 from toontown.battle import BattleExperienceAI
 from direct.fsm import FSM
 from toontown.toonbase import ToontownGlobals
-from toontown.toon import InventoryBase
 from toontown.toonbase import TTLocalizer
-from toontown.battle import BattleBase
 from toontown.toon import NPCToons
 from toontown.suit import SellbotBossGlobals
 import random
 
-from apworld.toontown import locations
 from ..archipelago.definitions.death_reason import DeathReason
-
-from ..archipelago.definitions.util import ap_location_name_to_id
 
 
 class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
@@ -432,15 +426,6 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                toon.addCheckedLocations([ap_location_name_to_id(location) for location in [
-                    locations.ToontownLocationName.SELLBOT_PROOF_1.value,
-                    locations.ToontownLocationName.SELLBOT_PROOF_2.value,
-                    locations.ToontownLocationName.SELLBOT_PROOF_3.value,
-                    locations.ToontownLocationName.SELLBOT_PROOF_4.value,
-                    locations.ToontownLocationName.SELLBOT_PROOF_5.value,
-                    locations.ToontownLocationName.FIGHT_VP.value
-                ]])
-
                 configMax = simbase.config.GetInt('max-sos-cards', 16)
                 if configMax == 8:
                     maxNumCalls = 1

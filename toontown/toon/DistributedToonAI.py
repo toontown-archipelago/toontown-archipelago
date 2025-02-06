@@ -41,15 +41,7 @@ from toontown.toonbase import ToontownAccessAI
 from toontown.catalog import CatalogAccessoryItem
 from . import ModuleListAI
 
-from toontown.archipelago.apclient.archipelago_session import ArchipelagoSession
-from ..archipelago.apclient.distributed_toon_apmessage_queue import DistributedToonAPMessageQueue
-from ..archipelago.apclient.distributed_toon_reward_queue import DistributedToonRewardQueue
 from ..archipelago.definitions.death_reason import DeathReason
-from ..archipelago.definitions.rewards import EarnedAPReward
-from ..archipelago.definitions.util import get_zone_discovery_id
-from ..archipelago.util import win_condition
-from ..archipelago.util.HintContainer import HintedItem
-from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..shtiker import CogPageGlobals
 from ..util.astron.AstronDict import AstronDict
 
@@ -236,14 +228,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.totalChecks = 0 # How many checks are there in total, calculates exact cost for display for client.
         self.damageMultiplier = 100
         self.overflowMod = 100
-        self.beingShuffled = False
-
-        self.archipelago_session: ArchipelagoSession = None
-        self.apRewardQueue: DistributedToonRewardQueue = DistributedToonRewardQueue(self)
-        self.apMessageQueue: DistributedToonAPMessageQueue = DistributedToonAPMessageQueue(self)
         self.deathReason: DeathReason = DeathReason.UNKNOWN
         self.slotData = {}  # set in connected_packet.py
-        self.winCondition = win_condition.NoWinCondition(self)
 
     def generate(self):
         DistributedPlayerAI.DistributedPlayerAI.generate(self)
@@ -257,23 +243,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             if self.WantOldGMNameBan:
                 self._checkOldGMName()
             messenger.send('avatarEntered', [self])
-
-            # Set a default for slot data to override astron's empty byte tuple thing?
-            # If we don't do this, self.slotData will be: (b'',)
-            self.b_setSlotData({})
-
-            self.archipelago_session = ArchipelagoSession(self)
-            self.apRewardQueue.start()
-            self.apMessageQueue.start()
-
-            # Do they have information cached?
-            lastSlot, lastAddress = self.air.getCachedArchipelagoConnectionInformation(self.doId)
-            if lastSlot is not None and lastAddress is not None:
-                self.d_sendArchipelagoMessage(f"Trying to reconnect to {lastAddress} with slot name {lastSlot}...")
-                self.archipelago_session.handle_slot(lastSlot)
-                self.archipelago_session.handle_connect(lastAddress)
-            else:
-                self.d_sendArchipelagoMessage(f"In order to connect to Archipelago, use !slot <slotname> to match your slot and !connect <address> to start sending/receiving items!")
 
         if hasattr(self, 'gameAccess') and self.gameAccess != 2:
             if self.hat[0] != 0:
@@ -348,8 +317,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def delete(self):
         self.notify.debug('----Deleting DistributedToonAI %d ' % self.doId)
         if self.isPlayerControlled():
-            self.apRewardQueue.stop()
-            self.apMessageQueue.stop()
             messenger.send('avatarExited', [self])
         if simbase.wantPets:
             if self.isInEstate():
@@ -379,11 +346,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self._sendExitServerEvent()
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.delete(self)
         DistributedPlayerAI.DistributedPlayerAI.delete(self)
-
-        if self.archipelago_session:
-            self.archipelago_session.cleanup()
-            self.archipelago_session = None
-            simbase.air.archipelagoManager.updateToonInfo(self.doId, -1, 999)
 
     def deleteDummy(self):
         self.notify.debug('----deleteDummy DistributedToonAI %d ' % self.doId)
@@ -1747,9 +1709,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                     newRewardHistory = self.rewardHistory + [finalReward]
                     self.b_setRewardHistory(self.rewardTier, newRewardHistory)
 
-    def checkWinCondition(self):
-        self.sendUpdate('checkWinCondition')
-
     def removeAllTracesOfQuest(self, questId, rewardId):
         self.notify.debug('removeAllTracesOfQuest: questId: %s rewardId: %s' % (questId, rewardId))
         self.notify.debug('removeAllTracesOfQuest: quests before: %s' % self.quests)
@@ -1932,11 +1891,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.sendUpdate('setHoodsVisited', [hoodsVisitedArray])
 
     def addHoodVisited(self, hoodId):
-
-        # zone_reward = get_zone_discovery_id(hoodId)
-        # if zone_reward >= 0:
-        #     self.addCheckedLocation(zone_reward)
-
         hoods = self.getHoodsVisited()
         if hoodId in hoods:
             return
@@ -2428,14 +2382,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def addMoney(self, deltaMoney):
         money = deltaMoney + self.money
         pocketMoney = min(money, self.maxMoney)
-        self.ap_addMoney(deltaMoney)
 
     def takeMoney(self, deltaMoney, bUseBank=False):
         totalMoney = self.money
         if deltaMoney > totalMoney:
             self.notify.warning('Not enough money! AvId: %s Has:%s Charged:%s' % (self.doId, totalMoney, deltaMoney))
             return False
-        self.ap_takeMoney(deltaMoney)
         self.b_setMoney(self.money - deltaMoney)
         return True
 
@@ -4312,12 +4264,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def d_doTeleport(self, hood):
         self.sendUpdateToAvatarId(self.doId, 'doTeleport', [hood])
 
-    def setTalk(self, fromAV, fromAC, avatarName, chat, mods, flags):
-        if self.archipelago_session:
-            self.archipelago_session.handle_chat(chat)
-
     ### Archipelago stuff ###
-
     # Set this toon's base gag XP multiplier and tell its client counterpart what it is (and save it to db?)
     def b_setBaseGagSkillMultiplier(self, newGagSkillMultiplier) -> None:
         self.setBaseGagSkillMultiplier(newGagSkillMultiplier)
@@ -4352,164 +4299,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def setDamageMultiplier(self, newDamageMultiplier) -> None:
         self.damageMultiplier = newDamageMultiplier
 
-    # Set this toon's overflow modifier and tell its client counterpart what it is
-    def b_setOverflowMod(self, newOverflow) -> None:
-        self.setOverflowMod(newOverflow)
-        self.d_setOverflowMod(newOverflow)
-
-    # Tell the client what its new overflow modifier is
-    def d_setOverflowMod(self, newOverflow) -> None:
-        self.sendUpdate('setOverflowMod', [newOverflow])
-
-    # What is this toon's overflow modifier
-    def getOverflowMod(self) -> int:
-        return self.overflowMod
-
-    # Set this toon's overflow modidier
-    def setOverflowMod(self, newOverflow) -> None:
-        self.overflowMod = newOverflow
-
-    def getBeingShuffled(self):
-        return self.beingShuffled
-
-    def setBeingShuffled(self, beingShuffled):
-        self.beingShuffled = beingShuffled
-
-    # Set this toon's list of access keys acquired and tell its client counterpart what it is (and save it to db?)
-    def b_setAccessKeys(self, keys: List):
-        self.setAccessKeys(keys)
-        self.d_setAccessKeys(keys)
-
-    # Only tell the client what its list of access keys acquired is (and save it to db?)
-    def d_setAccessKeys(self, keys: List) -> None:
-        self.sendUpdate('setAccessKeys', [keys])
-
-    # What is this toon's list of access keys acquired
-    def getAccessKeys(self) -> List[int]:
-        return self.accessKeys
-
-    # Set this toon's list of access keys acquired but only on the server
-    def setAccessKeys(self, keys: List) -> None:
-        self.accessKeys = keys
-
-    # Give this toon a key to access some area
-    def addAccessKey(self, key: int) -> None:
-
-        if key not in self.getAccessKeys():
-            self.accessKeys.append(key)
-            self.b_setAccessKeys(self.accessKeys)
-
-    # Revoke this toon's key to access some area
-    def removeAccessKey(self, key: int) -> None:
-
-        if key in self.getAccessKeys():
-            self.accessKeys.remove(key)
-            self.b_setAccessKeys(self.accessKeys)
-
-    # Remove this toon's access keys completely
-    def clearAccessKeys(self) -> None:
-        self.accessKeys.clear()
-        self.b_setAccessKeys(self.accessKeys)
-
-    # Set the AP items this toon has received from an AP client and tell the client
-    def b_setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
-        self.setReceivedItems(receivedItems)
-        self.d_setReceivedItems(receivedItems)
-
-    # Set the AP items this toon has received but only server side
-    def setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
-        self.receivedItems = receivedItems
-
-    # Get a list of item IDs this toon has received via AP
-    def getReceivedItems(self) -> List[Tuple[int, int]]:
-        return self.receivedItems
-
-    # Tell the client what items we have received via AP
-    def d_setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
-        self.sendUpdate('setReceivedItems', [receivedItems])
-
-    def addReceivedItem(self, index: int, ap_item_id: int):
-        item = (index, ap_item_id)
-        self.receivedItems.append(item)
-        self.b_setReceivedItems(self.receivedItems)
-
-    # Set the AP locations this toon has checked and tell the client
-    def b_setCheckedLocations(self, checkedLocations: List[int]):
-        self.setCheckedLocations(checkedLocations)
-        self.d_setCheckedLocations(checkedLocations)
-
-    # Set the AP locations this toon has checked but only server side
-    def setCheckedLocations(self, checkedLocations: List[int]):
-        self.checkedLocations = checkedLocations
-
-    # Get a list of locations IDs this toon has checked
-    def getCheckedLocations(self) -> List[int]:
-        return self.checkedLocations
-
-    # Tell the client what locations we have checked
-    def d_setCheckedLocations(self, checkedLocations: List[int]):
-        self.sendUpdate('setCheckedLocations', [checkedLocations])
-
-    def hasCheckedLocation(self, location: int):
-        return location in self.checkedLocations
-
-    def addCheckedLocation(self, location: int):
-        if self.hasCheckedLocation(location):
-            return
-
-        self.checkedLocations.append(location)
-        self.b_setCheckedLocations(self.checkedLocations)
-
-        if self.archipelago_session:
-            self.archipelago_session.complete_check(location)
-
-    def addCheckedLocations(self, locations: List[int]):
-        self.checkedLocations.extend(locations)
-        unique = set(self.checkedLocations)
-        self.checkedLocations = list(unique)
-
-        self.b_setCheckedLocations(self.checkedLocations)
-
-        if self.archipelago_session:
-            self.archipelago_session.complete_checks(list(locations))
-
-    # Called when recieving locations from Archipelago.
-    def receiveCheckedLocations(self, locations: List[int]):
-        self.checkedLocations.extend(locations)
-        unique = set(self.checkedLocations)
-        self.checkedLocations = list(unique)
-
-        self.b_setCheckedLocations(self.checkedLocations)
-
-
-
-    # Called to announce to Archipelago that we need to know what this location ID is so we can receive
-    # A LocationInfo packet and keep track of it
-    def scoutLocation(self, location: int):
-        self.scoutLocations([location])
-
-    # Called to announce to Archipelago that we need to know what these location IDs are so we can receive
-    # A LocationInfo packet and keep track all of them and know what item is present for this check upon completion
-    def scoutLocations(self, locations: List[int]):
-        if self.archipelago_session:
-            self.archipelago_session.scout(locations)
-
-    def d_updateLocationScoutsCache(self, cache: LocationScoutsCache = None):
-
-        if cache is None:
-            if not self.archipelago_session:
-                return
-
-            cache = self.archipelago_session.client.location_scouts_cache
-
-        self.sendUpdate('updateLocationScoutsCache', [cache.struct()])
-
-    def sendHint(self, hint: HintedItem):
-        self.air.archipelagoManager.d_sendHint(self.getDoId(), hint)
-
-    def queueArchipelagoMessage(self, message: str):
-        self.apMessageQueue.queue(message)
-
     # Send this toon an archipelago message to display on their log
     def d_sendArchipelagoMessage(self, message: str) -> None:
         self.d_sendArchipelagoMessages([message])
@@ -4525,51 +4314,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # IDs, item IDs, etc etc so we do that work on the AI
     def d_showReward(self, rewardId: int, displayString: str, isLocal: bool) -> None:
         self.sendUpdate('showReward', [rewardId, displayString, isLocal])
-
-    # Sent by client to request hint points from the arch session
-    def requestHintPoints(self):
-        self.sendUpdate('hintPointResp', [self.hintPoints, self.hintCostPercentage * self.totalChecks // 100])
-
-    def setLastSeed(self, seedName: str):
-        self._lastSeedName = seedName
-
-    def d_setLastSeed(self, seedName: str):
-        self.sendUpdate('setLastSeed', [seedName])
-
-    def b_setLastSeed(self, seedName: str):
-        self.setLastSeed(seedName)
-        self.d_setLastSeed(seedName)
-    
-    # Passed seed_name from archipelago, ensure newToon or the same as previously connected room.
-    def checkLastSeed(self, seedName: str) -> bool:
-        return (seedName == self._lastSeedName or
-                self._lastSeedName == "")
-
-    def b_setSlotData(self, slotData: dict):
-        slotData = AstronDict.fromDict(slotData)
-        self.setSlotData(slotData)
-        self.d_setSlotData(slotData)
-
-    def setSlotData(self, slotData: dict):
-        self.slotData = slotData
-
-    def getSlotData(self) -> list:
-        return AstronDict.fromDict(self.slotData).toStruct()
-
-    def d_setSlotData(self, slotData: AstronDict):
-        self.sendUpdate('setSlotData', [slotData.toStruct()])
-
-    def setArchipelagoAuto(self, slotName: str, serverAddr: str):
-        if not self.archipelago_session:
-            return
-        # confirm that we were provided a real slot name,
-        # and ensure it's not the same as the cached value
-        # (since we'll use the cached one already to reconnect)
-        lastSlot, lastAddress = self.air.getCachedArchipelagoConnectionInformation(self.doId)
-        if slotName and slotName != lastSlot:
-            self.archipelago_session.handle_slot(slotName)
-        if serverAddr and serverAddr != lastAddress:
-            self.archipelago_session.handle_connect(serverAddr)
 
     # Sets this toons stats as if they were a freshly created toon
     # This should only be called when we detect an AP player connected for the very first time.
@@ -4643,30 +4387,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setCogRadar([0] * 4)
         self.b_setBuildingRadar([0] * 4)
 
-        # AP stuff
-        self.b_setLastSeed("")
-        self.b_setCheckedLocations([])
-        self.b_setReceivedItems([])
-        self.b_setAccessKeys([])
-
-        # Regenerate the toon's UUID used for archipelago connections.
-        self.regenerateUUID()
-
-    def APVictory(self):
-        if self.archipelago_session:
-            self.archipelago_session.victory()
-
-    # Sets a seed value to use for any RNG elements that want to be determined by the AP seed
-    def setSeed(self, seed):
-        self.seed = seed
-
-    # Gets this toon's current AP seed, used for task generation mainly
-    def getSeed(self):
-        return self.seed
-
-    def queueAPReward(self, reward: EarnedAPReward):
-        self.apRewardQueue.queue(reward)
-
     # Can be called either from the AI directly or via an astron update from the client.
     # When we are given a string, we know that it is from the client so we need to make sure
     # they didn't send us garbage.
@@ -4687,169 +4407,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def getDeathReason(self) -> DeathReason:
         return self.deathReason
-
-    # Called via astron and is ran when the client that owns this toon registered a death from their perspective.
-    # We do it this way so that when we trigger deathlink events it happens the moment the client sees it and not
-    # When the server processes it. (Think movies in turn based battles, we want to do deathlink when they die in that)
-    def clientDied(self):
-        self.archipelago_session.toon_died()
-
-    def updateWinCondition(self) -> None:
-        self.winCondition = win_condition.generate_win_condition(self.slotData.get('win_condition', -2), self)
-
-    def getWinCondition(self) -> win_condition.WinCondition:
-        return self.winCondition
-    
-    # UUID for use with archipelago, stored in the toon for use as an identifier.
-    def getUUID(self) -> str:
-        return str(self.__uuid)
-
-    def setUUID(self, toonUUID: str) -> None:
-        if toonUUID == '':
-            self.notify.debug(f"toon with id {self.getDoId()} did not have a UUID defined in the database, defining one now to avoid errors.")
-            self.regenerateUUID()
-            return
-        self.__uuid = uuid.UUID(toonUUID)
-
-    def d_setUUID(self, toonUUID: str) -> None:
-        self.sendUpdate('setUUID', [toonUUID])
-
-    def b_setUUID(self, toonUUID) -> None:
-        self.d_setUUID(str(toonUUID))
-        self.setUUID(str(toonUUID))
-
-    def regenerateUUID(self) -> None:
-        self.b_setUUID(uuid.uuid4())
-
-    # Set and get personal data from AP, actual key in storage will be prefixed with "slot{slot}:"
-    def set_ap_data(self, key, value, private) -> None:
-        self.archipelago_session.store_data({key: value}, private)
-
-    def apply_to_ap_data(self, key, ops, private, *, default=0) -> None:
-        self.archipelago_session.apply_ops_on_data(key, ops, private, default=default)
-
-    # Requests update and subscribes to changes of stored AP data.
-    def get_ap_data(self, keys, private) -> None:
-        if isinstance(keys, str):
-            keys = [keys]
-        self.archipelago_session.get_data(keys, private)
-        self.archipelago_session.subscribe_data(keys, private)
-
-    # Set fish collection and send out to AP.
-    # there's a possible race condition with this where it will overwrite if another toon is fishing at the same time.
-    def ap_setFishCollection(self, genusList: list[int], speciesList: list[int], weightList: list[int]):
-        self.d_setFishCollection(genusList, speciesList, weightList)
-        self.notify.debug(f"setting AP fish-collection for {self.getDoId()} to: {[genusList, speciesList, weightList]}" )
-        self.set_ap_data("fish-collection", [genusList, speciesList, weightList], True)
-
-    def ap_setCogCount(self, cogCountList: List[int]):
-        self.b_setCogCount(cogCountList)
-        self.notify.debug(f"setting AP cog-gallery for {self.getDoId()} to: {cogCountList}" )
-        self.set_ap_data("cog-gallery", cogCountList, True)
-
-    # Avoid using this directly unless necessary:
-    # necessary here means the effects of AP rewards
-    def ap_setMoney(self, money):
-        money = min(max(money, 0), self.getMaxMoney()) # Ensure within bounds.
-        self.b_setMoney(money)
-        self.notify.debug(f"setting AP jellybeans for {self.getDoId()} to: {money}" )
-        self.set_ap_data("jellybeans", money, True)
-
-    # Generally called by addMoney
-    def ap_addMoney(self, money):
-        self.notify.debug(f"increasing AP jellybeans for {self.getDoId()} by: {money}" )
-        ops = [("default", True), ("add", money), ("min", self.getMaxMoney())] # Keep stored money below max.
-        self.apply_to_ap_data("jellybeans", ops, True, default=self.slotData.get('starting_money', 50))
-
-    # Generally called by takeMoney
-    def ap_takeMoney(self, money):
-        self.notify.debug(f"decreasing AP jellybeans for {self.getDoId()} by: {money}" )
-        ops = [("default", True), ("add", -money), ("max", 0)] # Keep stored money above 0
-        self.apply_to_ap_data("jellybeans", ops, True, default=self.slotData.get('starting_money', 50))
-
-    # Mirrors Experience.addExp
-    def ap_addExperience(self, track, amount):
-        self.experience.addExp(track, amount)
-        self.notify.debug(f"{self.getDoId()} is increasing {ToontownBattleGlobals.Tracks[track]} by: {amount}" )
-        self.apply_to_ap_data(ToontownBattleGlobals.Tracks[track], [("add", amount), ('min', self.experience.getExperienceCapForTrack(track))], True)
-
-    # Mirrors setExperience for syncing, avoid directly unless necessary, as with setMoney above.
-    def ap_setExperience(self, experience: list[int]):
-        self.b_setExperience(experience)
-        for i, track in enumerate(ToontownBattleGlobals.Tracks):
-            self.apply_to_ap_data(track, [("max", self.experience.getExp(i))], True)
-
-    def request_default_ap_data(self) -> None:
-        # keys currently unused = ["tasks"]
-        privateKeys = ["fish-collection", "cog-gallery"]
-        if self.slotData.get("slot_sync_jellybeans", True):
-            privateKeys.append("jellybeans")
-        if self.slotData.get("slot_sync_gag_experience", True): 
-            privateKeys.extend(ToontownBattleGlobals.Tracks)
-        self.get_ap_data(privateKeys, True)
-
-    # AP datastore updates passed to this in form of a dict.
-    def handle_ap_data_update(self, data: dict[str,Any]):
-        for k,v in data.items():
-            if v is None:
-                self.notify.debug(f"Ignoring empty ap data for key {k} for toon {self.getDoId()}")
-                continue
-            self.notify.debug(f"Handling incoming ap data for key {k} for toon {self.getDoId()}")
-            match k:
-                case "fish-collection":
-                    if v == self.fishCollection.getNetLists():
-                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
-                        continue
-                    # Getting data from here assumes AP already tracked it.
-                    # The client that set the data should have gotten any location checks for it when it was sent.
-                    # Possiblity you might need to catch any fish to update it if you skip past a check, somehow.
-                    for i in zip(*v):
-                        self.fishCollection.collectFish(i)
-                    collectionNetList = self.fishCollection.getNetLists()
-                    self.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
-
-                case track if track in ToontownBattleGlobals.Tracks:
-                    trackIndex = ToontownBattleGlobals.Tracks.index(k)
-                    if v <= self.experience.getExp(trackIndex):
-                        self.notify.debug(f"value of {k} unchanged or decreased for {self.getDoId()}")
-                        continue
-                    self.experience.setExp(trackIndex, v)
-                    self.b_setExperience(self.experience.getCurrentExperience())
-
-                case "cog-gallery":
-                    if v == self.getCogCount():
-                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
-                        continue
-                    # Getting data from here assumes AP already tracked it.
-                    # Should be the case, this can"t add more cogs than any toon had individually.
-                    cogCount = self.getCogCount()
-                    cogStatus = self.getCogStatus()
-                    for suitIndex, count in enumerate(v):
-                        # Ensure we don't overwrite if any are already higher than what was sent to us.
-                        cogCount[suitIndex] = max(cogCount[suitIndex], count)
-                        if cogCount[suitIndex] >= 1: # Don't mark cogs with a count of 0 as defeated.
-                            cogStatus[suitIndex] = CogPageGlobals.COG_DEFEATED
-                            cogQuota = CogPageGlobals.get_min_cog_quota(self)
-                            cogMaxQuota = CogPageGlobals.get_max_cog_quota(self)
-                            if cogQuota <= cogCount[suitIndex] < cogMaxQuota:
-                                cogStatus[suitIndex] = CogPageGlobals.COG_COMPLETE1
-                            else:
-                                cogStatus[suitIndex] = CogPageGlobals.COG_COMPLETE2
-                    self.b_setCogStatus(cogStatus)
-                    self.b_setCogCount(cogCount)
-
-                case "jellybeans":
-                    if v == self.getMoney():
-                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
-                        continue
-                    self.notify.debug(f"setting local jellybeans to AP provided value: '{v}' for {self.getDoId()}")
-                    self.b_setMoney(v)
-
-                case "tasks":
-                    self.notify.debug("unimplemented sync for tasks")
-
-                case _:
-                    self.notify.debug(f"Recieved Unknown key: {k}")
 
     # Magic word stuff
     def setMagicDNA(self, dnaString):

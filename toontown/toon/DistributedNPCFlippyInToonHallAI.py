@@ -1,9 +1,5 @@
 from .DistributedNPCToonAI import *
 
-from apworld.toontown import locations
-
-from ..archipelago.definitions import util
-
 
 class DistributedNPCFlippyInToonHallAI(DistributedNPCToonAI):
 
@@ -19,11 +15,7 @@ class DistributedNPCFlippyInToonHallAI(DistributedNPCToonAI):
         if not toon:
             return
 
-        # If they have not beat their game, reject them
-        if toon.getWinCondition().satisfied():
-            self.doAvatarVictory(toon)
-        else:
-            self.rejectAvatar(avId)
+        self.rejectAvatar(avId)
 
     # We reject the avatar when their completion condition isn't met
     def rejectAvatar(self, avId):
@@ -39,10 +31,5 @@ class DistributedNPCFlippyInToonHallAI(DistributedNPCToonAI):
 
     # Called when a toon interacted with us and has satisfied their win condition
     def doAvatarVictory(self, av: DistributedToonAI):
-
-        # Toon won their game, give them the check and play the cutscene
-        won_id = util.ap_location_name_to_id(locations.ToontownLocationName.SAVED_TOONTOWN.value)
-        av.addCheckedLocation(won_id)
         av.APVictory()
-
         self.sendUpdate('doToonVictory', [av.doId])

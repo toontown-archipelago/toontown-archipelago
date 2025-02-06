@@ -176,7 +176,6 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
         self.setupChairCols()
         self.squirtSfx = loader.loadSfx('phase_4/audio/sfx/AA_squirt_seltzer_miss.ogg')
         self.hitBossSfx = loader.loadSfx('phase_5/audio/sfx/SA_watercooler_spray_only.ogg')
-        self.hitBossSoundInterval = SoundInterval(self.hitBossSfx, node=self.boss, volume=1.0)
         self.serveFoodSfx = loader.loadSfx('phase_4/audio/sfx/MG_sfx_travel_game_bell_for_trolley.ogg')
         self.pitcherMoveSfx = base.loader.loadSfx('phase_4/audio/sfx/MG_cannon_adjust.ogg')
 
@@ -526,7 +525,12 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
             self.boss.toMovieMode()
             self.__enableControlInterface()
             self.startPosHprBroadcast()
-            self.grabTrack = Sequence(self.grabTrack, Func(camera.wrtReparentTo, localAvatar), LerpPosHprInterval(camera, 1, self.pitcherCamPos, self.pitcherCamHpr), Func(self.boss.toCraneMode))
+            self.grabTrack = Sequence(
+                self.grabTrack,
+                Func(camera.wrtReparentTo, localAvatar),
+                LerpPosHprInterval(camera, 1, self.pitcherCamPos, self.pitcherCamHpr),
+                Func(self.boss.toCraneMode)
+            )
             if self.TugOfWarControls:
                 self.__spawnUpdateKeyPressRateTask()
             self.accept('exitCrane', self.gotBossZapped)
@@ -543,8 +547,6 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
         nextState = self.getCurrentOrNextState()
         self.notify.debug('nextState=%s' % nextState)
         if nextState == 'Flat':
-            place = base.cr.playGame.getPlace()
-            self.notify.debug('%s' % place.fsm)
             if self.avId == localAvatar.doId:
                 self.__disableControlInterface()
         else:
@@ -557,8 +559,6 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
             if self.avId == localAvatar.doId:
                 localAvatar.wrtReparentTo(render)
                 self.__disableControlInterface()
-                base.localAvatar.orbitalCamera.start()
-                self.goToFinalBattle()
                 self.safeBossToFinalBattleMode()
             else:
                 toon = base.cr.doId2do.get(self.avId)
@@ -569,14 +569,7 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
 
     def safeBossToFinalBattleMode(self):
         if self.boss:
-            self.boss.toFinalBattleMode()
-
-    def goToFinalBattle(self):
-        if self.cr:
-            place = self.cr.playGame.getPlace()
-            if place and hasattr(place, 'fsm'):
-                if place.fsm.getCurrentState().getName() == 'crane':
-                    place.setState('finalBattle')
+            self.boss.toFinalBattleMode(checkForOuch=True)
 
     def makeToonGrabInterval(self, toon):
         toon.pose('leverNeutral', 0)
@@ -584,7 +577,29 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
         rightHandPos = toon.rightHand.getPos(toon)
         self.toonPitcherPosition = Point3(self.handPos[0] - rightHandPos[0], self.handPos[1] - rightHandPos[1], 0)
         destZScale = rightHandPos[2] / self.handPos[2]
-        grabIval = Sequence(Func(toon.wrtReparentTo, self.waterPitcherNode), Func(toon.loop, 'neutral'), Parallel(ActorInterval(toon, 'jump'), Sequence(Wait(0.43), Parallel(ProjectileInterval(toon, duration=0.9, startPos=toon.getPos(self.waterPitcherNode), endPos=self.toonPitcherPosition), LerpHprInterval(toon, 0.9, Point3(0, 0, 0)), LerpScaleInterval(self.waterPitcherModel, 0.9, Point3(1, 1, destZScale))))), Func(toon.setPos, self.toonPitcherPosition), Func(toon.loop, 'leverNeutral'))
+
+        def updateSeltzerHeading():
+            self.waterPitcherNode.setH(toon.getHpr()[0])
+
+        grabIval = Sequence(
+            Func(updateSeltzerHeading),
+            Func(toon.wrtReparentTo, self.waterPitcherNode),
+            Func(toon.loop, 'neutral'),
+            Parallel(
+                ActorInterval(toon, 'jump'),
+                Sequence(
+                    Wait(0.43),
+                    Parallel(
+                        ProjectileInterval(toon, duration=0.9, #startPos=toon.getPos(self.waterPitcherNode),
+                                           endPos=self.toonPitcherPosition),
+                        LerpHprInterval(toon, 0.9, Point3(0, 0, 0)),
+                        LerpScaleInterval(self.waterPitcherModel, 0.9, Point3(1, 1, destZScale))
+                    )
+                )
+            ),
+            Func(toon.setPos, self.toonPitcherPosition),
+            Func(toon.loop, 'leverNeutral')
+        )
         return grabIval
 
     def makeToonReleaseInterval(self, toon):
@@ -892,6 +907,8 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
         tag = self.hitObject.getNetTag('pieCode')
         pieCode = int(tag)
         if pieCode == ToontownGlobals.PieCodeBossCog:
+            if not hasattr(self, "hitBossSoundInterval"):
+                self.hitBossSoundInterval = SoundInterval(self.hitBossSfx, node=self.boss.getBoss(), volume=1.0)
             self.hitBossSoundInterval.start()
             self.sendUpdate('waterHitBoss', [self.index])
             if self.TugOfWarControls:
@@ -902,7 +919,7 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
                     damage = 2
                 else:
                     damage = 3
-                self.boss.d_hitBoss(damage)
+                self.boss.getBoss().d_hitBoss(damage)
             else:
                 damage = 1
                 if self.lastPowerFired < self.YELLOW_POWER_THRESHOLD:
@@ -911,7 +928,7 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
                     damage = 2
                 else:
                     damage = 3
-                self.boss.d_hitBoss(damage)
+                self.boss.getBoss().d_hitBoss(damage)
 
     def waterHitBoss(self, tableIndex):
         if self.index == tableIndex:
@@ -958,7 +975,6 @@ class DistributedBanquetTable(DistributedObject.DistributedObject, FSM.FSM, Banq
         messenger.send('wakeup')
         self.aimStart = None
         origin = self.nozzle.getPos(render)
-        target = self.boss.getPos(render)
         angle = deg2Rad(self.waterPitcherNode.getH() + 90)
         x = math.cos(angle)
         y = math.sin(angle)

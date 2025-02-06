@@ -1,5 +1,5 @@
 @echo off
-title Toontown Archipelago - Astron Server
+title Toontown Ranked - Astron Server
 cd game\astron
 
 :launch

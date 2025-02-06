@@ -80,6 +80,7 @@ class BossHealthBar:
         taskMgr.remove('drain-damage-bar-task')
         # Instantly set the hp bar, but queue up the damage bar to go down
         self.bossBar['value'] = hp
+        self.bossBar['range'] = maxHp
         self.bossBar['text'] = '%s / %s' % (str(max(0, hp)), str(maxHp))
         cond = self.__updateCondition(hp, maxHp)
 
@@ -197,6 +198,7 @@ class BossHealthBar:
         pass
 
     def cleanup(self):
+        taskMgr.remove('drain-damage-bar-task')
         if self.bossBarFrame:
             self.bossBarFrame.destroy()
             del self.bossBarFrame

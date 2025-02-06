@@ -177,7 +177,6 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
 
         toon.b_setExperience(toon.experience.getCurrentExperience())
         toon.d_setInventory(toon.inventory.makeNetString())
-        toon.checkWinCondition()
         if moneyAward > 0:
             toon.addMoney(moneyAward)
         toon.b_setAnimState('victory', 1)

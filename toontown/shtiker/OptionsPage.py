@@ -9,7 +9,7 @@ from direct.fsm.FSM import FSM
 from direct.gui.DirectGui import *
 from direct.showbase.MessengerGlobal import messenger
 
-from otp.otpbase.OTPLocalizerEnglish import SpeedChatStaticTextToontown
+from toontown.chat.SpeedChatLocalizer import SpeedChatPhrases
 from otp.speedchat.SpeedChatGlobals import speedChatStyles
 from toontown.settings.Settings import Setting
 from toontown.shtiker.ShtikerPage import ShtikerPage
@@ -44,7 +44,6 @@ OptionToType = {
     'laff-display': OptionTypes.BUTTON,
 
     # Privacy
-    "competitive-boss-scoring": OptionTypes.BUTTON,
     "report-errors": OptionTypes.BUTTON,
 
     # Video
@@ -149,7 +148,6 @@ class OptionsTabPage(DirectFrame, FSM):
 
         ],
         "Privacy": [
-            "competitive-boss-scoring",
             "report-errors"
         ],
         "Controls": [*list(base.settings.getControls())],
@@ -600,7 +598,7 @@ class OptionElement(DirectFrame):
 
     @staticmethod
     def formatSpeedchat(index: int) -> str:
-        return SpeedChatStaticTextToontown[speedChatStyles[index][0]]
+        return SpeedChatPhrases[speedChatStyles[index][0]]
 
     def formatSetting(self, setting: Setting) -> str:
         """Given the type of setting we're dealing with, handle
@@ -746,8 +744,6 @@ class OptionElement(DirectFrame):
             base.enableSoundEffects(newSetting)
         elif self.optionName == "toon-chat-sounds":
             base.toonChatSounds = newSetting
-        elif self.optionName == 'competitive-boss-scoring':
-            base.localAvatar.wantCompetitiveBossScoring = newSetting
         elif self.optionName == 'report-errors':
             os.environ['WANT_ERROR_REPORTING'] = 'true' if newSetting else 'false'
         elif self.optionName in ("borderless", "vertical-sync"):

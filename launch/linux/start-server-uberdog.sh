@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Toontown Archipelago: UD Launcher"
+echo "Toontown Ranked: UD Launcher"
 echo
 export PPYTHON_PATH=$(cat PPYTHON_PATH)
 export SERVICE_TO_RUN=UD

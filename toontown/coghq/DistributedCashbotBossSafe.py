@@ -29,7 +29,7 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
     # A safe remains under physical control of whichever client
     # last dropped it, even after it stops moving.  This allows
     # goons to push safes out of the way.
-    wantsWatchDrift = 0
+    wantsWatchDrift = 1
 
     def __init__(self, cr):
         DistributedCashbotBossObject.DistributedCashbotBossObject.__init__(self, cr)
@@ -70,19 +70,8 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
             
         self.boss.safes[self.index] = self
         
-        #print(self)
-        #self.setH(CraneLeagueGlobals.SAFE_H[self.index])
-        #print(self.getH())
-        
-        #self.setH(180)
         self.setupPhysics('safe')
-        #print("Safe: %s, Node: %s" % (self.getH(), self.collisionNodePath.getH()))
         self.resetToInitialPosition()
-        #print("AFTER RESET: Safe: %s, Node: %s" % (self.getH(), self.collisionNodePath.getH()))
-        
-        #print(self.getH())
-        #print(self.physicsObject.getOrientation())
-        #print("")
 
     def disable(self):
         del self.boss.safes[self.index]
@@ -106,17 +95,10 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         NodePath.assign(self, anp)
         
         self.physicsObject = an.getPhysicsObject()
-        #self.copy.physicsObject = an.getPhysicsObject()
-        #print(self.copy.physicsObject.getOrientation())
-        #print(self.copy.physicsObject.getOrientation().getAngle())
-        #self.physicsObject.setOriented(False)
         self.setTag('object', str(self.doId))
        
         self.collisionNodePath.reparentTo(self)
-        #self.collisionNodePath.setH(180)
         self.handler = PhysicsCollisionHandler()
-        #self.copy = copy.copy(self)
-        #print(self.copy)
         self.handler.addCollider(self.collisionNodePath, self)
 
         # Set up a collision event so we know when the object hits the
@@ -132,7 +114,7 @@ class DistributedCashbotBossSafe(DistributedCashbotBossObject.DistributedCashbot
         # This method returns the minimum impact, in feet per second,
         # with which the object should hit the boss before we bother
         # to tell the server.
-        if self.boss.heldObject:
+        if self.boss.getBoss().heldObject:
             return self.boss.ruleset.MIN_DEHELMET_IMPACT
         else:
             return self.boss.ruleset.MIN_SAFE_IMPACT

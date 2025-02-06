@@ -1,6 +1,5 @@
 from panda3d.core import *
 
-from apworld.toontown import TPSanity
 from toontown.toonbase.ToonBaseGlobal import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import StateData
@@ -502,13 +501,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
 
         if localAvatar.hasActiveBoardingGroup():
             return rejectEntry(TTLocalizer.BoardingCannotLeaveZone)
-
-        tpsanity = localAvatar.slotData.get('tpsanity')
-        if tpsanity == TPSanity.option_keys:
-            targetHood = requestStatus.get('hoodId')
-            if targetHood is not None:
-                if not localAvatar.hasTeleportAccess(targetHood):
-                    return rejectEntry("You'll need Teleport Access to go through there!")
 
         self.requestLeave(requestStatus)
 

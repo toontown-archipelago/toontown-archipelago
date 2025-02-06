@@ -27,6 +27,7 @@ class DistributedMinigame(DistributedObject.DistributedObject):
         self.waitingStartLabel = DirectLabel(text=TTLocalizer.MinigameWaitingForOtherPlayers, text_fg=VBase4(1, 1, 1, 1), relief=None, pos=(-0.6, 0, -0.75), scale=0.075)
         self.waitingStartLabel.hide()
         self.avIdList = []
+        self._spectators = []
         self.remoteAvIdList = []
         self.localAvId = base.localAvatar.doId
         self.frameworkFSM = ClassicFSM.ClassicFSM('DistributedMinigame', [State.State('frameworkInit', self.enterFrameworkInit, self.exitFrameworkInit, ['frameworkRules', 'frameworkCleanup', 'frameworkAvatarExited']),
@@ -213,6 +214,83 @@ class DistributedMinigame(DistributedObject.DistributedObject):
         for avId in self.avIdList:
             if avId != self.localAvId:
                 self.remoteAvIdList.append(avId)
+
+    def getParticipantIds(self) -> list[int]:
+        """
+        Returns a list of toon IDs that are present in this minigame.
+        """
+        return list(self.avIdList)
+
+    def getParticipants(self):
+        """
+        Returns a list of DistributedToon objects that are present in this minigame.
+        """
+        toons = []
+        for avId in self.getParticipantIds():
+            toon = self.cr.getDo(avId)
+            if toon:
+                toons.append(toon)
+        return toons
+
+    def setSpectators(self, avIds):
+        """
+        Implicitly called from astron to sync the AI managed list of toons that are flagged as spectators.
+        """
+        self._spectators = avIds
+
+    def getSpectators(self) -> list[int]:
+        """
+        Returns a list of toon IDs that are flagged as spectators.
+        """
+        return list(self._spectators)
+
+    def getSpectatingToons(self):
+        """
+        Gets a list of DistributedToon instances that are spectating.
+        """
+        toons = []
+        for avId in self.getSpectators():
+            toon = self.cr.getDo(avId)
+            if toon:
+                toons.append(toon)
+        return toons
+
+    def getParticipantIdsNotSpectating(self):
+        """
+        Gets a list of toon IDs that are not spectating.
+        These are toons that should be considered to be active players in the minigame.
+        We should always opt in to call this method instead of self.avIdList directly for game logic if possible.
+        """
+        toons = []
+        for avId in self.avIdList:
+            if avId not in self.getSpectators():
+                toons.append(avId)
+        return toons
+
+    def getParticipantsNotSpectating(self):
+        """
+        Gets a list of DistributedToon instances that are not spectating.
+        These are toons that should be considered to be active players in the minigame.
+        We should always opt in to call this method instead of self.avIdList directly for game logic if possible.
+        """
+        toons = []
+        for avId in self.getParticipantIdsNotSpectating():
+            toon = self.cr.getDo(avId)
+            if toon:
+                toons.append(toon)
+        return toons
+
+    def isSpectating(self, avId) -> bool:
+        """
+        Returns True if the given toon id is flagged as a spectator.
+        """
+        return avId in self._spectators
+
+    def localToonSpectating(self) -> bool:
+        """
+        Returns True if our local toon is spectating.
+        """
+        return self.isSpectating(self.localAvId)
 
     def setTrolleyZone(self, trolleyZone):
         if not self.hasLocalToon:

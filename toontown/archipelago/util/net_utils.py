@@ -5,7 +5,6 @@ from __future__ import annotations
 import typing
 import enum
 from copy import deepcopy
-from BaseClasses import ItemClassification as IC
 from json import JSONEncoder, JSONDecoder
 
 from toontown.archipelago.util.utils import Version, ByValue
