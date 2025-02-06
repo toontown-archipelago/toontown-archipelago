@@ -2,6 +2,7 @@ from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
 from toontown.groups import GroupGlobals
 from toontown.groups.DistributedGroupAI import DistributedGroupAI
+from toontown.groups.GroupOperationResult import GroupOperationResult
 from toontown.toon.DistributedToonAI import DistributedToonAI
 
 
@@ -83,6 +84,46 @@ class DistributedGroupManagerAI(DistributedObjectAI):
             if len(group.getMembers()) == 0:
                 self.deleteGroup(group)
 
+    def __canJoinGroup(self, inviter: int, recipient: int) -> GroupOperationResult:
+
+        # First case, is this the same person?
+        if inviter == recipient:
+            return GroupOperationResult.IS_SAME_PERSON
+
+        # Do both toons exist?
+        inviterToon = self.air.getDo(inviter)
+        recipientToon = self.air.getDo(recipient)
+        if None in (inviterToon, recipientToon):
+            return GroupOperationResult.NONEXISTENT_TOON
+
+        # Grab the groups of both members.
+        inviterGroup = self.getGroup(inviterToon)
+        recipientGroup = self.getGroup(recipientToon)
+
+        # Are both toons not in a group?
+        if inviterGroup is None and recipientGroup is None:
+            return GroupOperationResult.SUCCESS_BOTH_GROUPLESS
+
+        # Are both toons in the same group already?
+        if inviterGroup is recipientGroup:
+            return GroupOperationResult.ALREADY_PRESENT
+
+        # Now that we know that the groups are two separate values, is the recipient in a different group?
+        if recipientGroup is not None and inviterGroup is not recipientGroup:
+            return GroupOperationResult.ALREADY_IN_GROUP
+
+        # Is the group full?
+        if inviterGroup.isFull():
+            return GroupOperationResult.GROUP_FULL
+
+        # Is the group on cooldown from starting?
+        if inviterGroup.onCooldown():
+            return GroupOperationResult.GROUP_STARTING
+
+        # Ran through all the conditions. This should be a success.
+        return GroupOperationResult.SUCCESS
+
+
     """
     Astron Methods (Outgoing)
     """
@@ -135,44 +176,91 @@ class DistributedGroupManagerAI(DistributedObjectAI):
     def invitePlayer(self, toInviteId: int):
 
         inviterId: int = self.air.getAvatarIdFromSender()
+
+        # What would happen if we attempted to add this toon to the group?
+        result = self.__canJoinGroup(inviterId, toInviteId)
         inviter = self.air.getDo(inviterId)
         otherToon = self.air.getDo(toInviteId)
+
+        match result:
+
+            # Is this invite allowed to go through?
+            case GroupOperationResult.SUCCESS | GroupOperationResult.SUCCESS_BOTH_GROUPLESS:
+                group = self.getGroup(inviter)
+                self.sendUpdateToAvatarId(toInviteId, "sendInvite", [inviterId, group.getDoId() if group is not None else 0])
+                if group is not None:
+                    group.announce(f"{inviter.getName()} has invited {otherToon.getName()}.")
+                else:
+                    inviter.d_setSystemMessage(0, f"Asking {otherToon.getName()} if they want to start a party with you!")
+
+            # Is this toon inviting themselves?
+            case GroupOperationResult.IS_SAME_PERSON:
+                group = self.getGroup(inviter)
+                # If this toon is in a group it would not make sense to invite them.
+                if group is not None:
+                    inviter.d_setSystemMessage(0, f"You are already in a group. Why are you inviting yourself?")
+                    return
+
+                # This is valid! Start a group with ourselves...
+                group = self.createGroup(inviter)
+                self.d_setCurrentGroup(inviterId, group.getDoId())
+                group.announce(f"Started a new group!")
+
+            # Failed?
+            case _:
+                group = self.getGroup(inviter)
+                if group is not None:
+                    group.announce(f"{inviter.getName()} tried to invite {otherToon.getName()} but {result.value}.")
+                else:
+                    inviter.d_setSystemMessage(0, f"Can't invite this toon to a group because {result.value}.")
+
+    def inviteResponse(self, inviterId: int, decision: bool):
+
+        inviter = self.air.getDo(inviterId)
         if inviter is None:
             return
 
-        otherGroup = self.getGroup(otherToon)
+        deciderId: int = self.air.getAvatarIdFromSender()
+        invited = self.air.getDo(deciderId)
+        if invited is None:
+            return
+
         group = self.getGroup(inviter)
 
-        # Is the other toon already in a group?
-        if otherGroup is not None:
-            group.announce(f"{inviter.getName()} tried to invite {otherToon.getName()}, but they are already in a group!")
+        # Have they declined the invite?
+        if not decision:
+            msg = f"{invited.getName()} has declined the invite."
+            if group is not None:
+                group.announce(msg)
+            else:
+                inviter.d_setSystemMessage(0, msg)
             return
 
-        # Is the inviter in a group?
+        # They accepted. Can they join?
+        result = self.__canJoinGroup(inviterId, deciderId)
+        match result:
 
-        if group is None:
-            # Are both players not in a group? This is valid. Create a new group.
-            if otherGroup is None:
+            # Both toons groupless?
+            case GroupOperationResult.SUCCESS_BOTH_GROUPLESS:
                 group = self.createGroup(inviter)
-                group.addMember(otherToon.getDoId())
+                group.addMember(invited.getDoId())
                 group.b_setMembers(group.getMembers())
-                self.d_setCurrentGroup(toInviteId, group.getDoId())
-                group.announce(f"{inviter.getName()} has started a group with {otherToon.getName()}")
-            return
+                self.d_setCurrentGroup(deciderId, group.getDoId())
+                group.announce(f"{inviter.getName()} has started a group with {invited.getName()}")
 
-        # Is the group already full?
-        if group.isFull():
-            group.announce(f"{inviter.getName()} tried to invite {otherToon.getName()} but the group is full!")
-            return
+            # Normal invite to a group?
+            case GroupOperationResult.SUCCESS:
+                group = self.getGroup(inviter)
+                group.addMember(deciderId)
+                group.b_setMembers(group.getMembers())
+                self.d_setCurrentGroup(deciderId, group.getDoId())
+                group.announce(f"{invited.getName()} has joined the group!")
 
-        if group.onCooldown():
-            return
-
-        # This is a valid operation.
-        group.addMember(toInviteId)
-        group.b_setMembers(group.getMembers())
-        self.d_setCurrentGroup(toInviteId, group.getDoId())
-        group.announce(f"{inviter.getName()} has added {otherToon.getName()} to the group!")
+            # Failed?
+            case _:
+                group = self.getGroup(inviter)
+                if group is not None:
+                    group.announce(f"{invited.getName()} tried to join the group but {result.value}.")
 
     def requestPromote(self, toPromoteId: int):
 

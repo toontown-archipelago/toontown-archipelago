@@ -1223,8 +1223,15 @@ struct GroupMember {
 }
 
 dclass DistributedGroupManager : DistributedObject {
-  requestKick(uint32 avId) airecv clsend;
+
+  // The client requesting to invite some avId
   invitePlayer(uint32 avId) airecv clsend;
+  // The AI informing a client that sender has invited them to their group
+  sendInvite(uint32 sender, uint32 groupId);
+  // The client responding to the invite from inviter
+  inviteResponse(uint32 inviter, bool yesno) airecv clsend;
+
+  requestKick(uint32 avId) airecv clsend;
   requestPromote(uint32 avId) airecv clsend;
   requestStart() airecv clsend;
   requestTeamSwap(uint32 avId) airecv clsend;

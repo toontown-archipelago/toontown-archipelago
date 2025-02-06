@@ -3,6 +3,7 @@ from direct.distributed.DistributedObject import DistributedObject
 from toontown.groups import GroupGlobals
 from toontown.groups.DistributedGroup import DistributedGroup
 from toontown.groups.GroupBase import GroupBase
+from toontown.toon.GroupInvitee import GroupInvitee
 
 
 class DistributedGroupManager(DistributedObject):
@@ -23,6 +24,7 @@ class DistributedGroupManager(DistributedObject):
         # The current group that our client is currently in.
         # Once we are in a group, we can actually properly render it.
         self.currentGroup: DistributedGroup | None = None
+        self.currentInvite: GroupInvitee | None = None
 
     def generate(self):
         """
@@ -39,6 +41,12 @@ class DistributedGroupManager(DistributedObject):
         """
         super().delete()
         base.localAvatar.setGroupManager(None)
+        self.destroyCurrentInvitePanel()
+
+    def destroyCurrentInvitePanel(self):
+        if self.currentInvite is not None:
+            self.currentInvite.cleanup()
+            self.currentInvite = None
 
     def findGroupById(self, groupId: int) -> DistributedGroup | None:
         """
@@ -98,11 +106,14 @@ class DistributedGroupManager(DistributedObject):
     Astron Methods
     """
 
-    def d_requestKick(self, avId: int):
-        self.sendUpdate('requestKick', [avId])
+    def d_respondToInvite(self, inviter: int, decision: bool):
+        self.sendUpdate("inviteResponse", [inviter, decision])
 
     def d_invitePlayer(self, avId: int):
         self.sendUpdate('invitePlayer', [avId])
+
+    def d_requestKick(self, avId: int):
+        self.sendUpdate('requestKick', [avId])
 
     def d_promote(self, avId: int):
         self.sendUpdate('requestPromote', [avId])
@@ -134,3 +145,16 @@ class DistributedGroupManager(DistributedObject):
 
     def getCurrentGroup(self) -> DistributedGroup | None:
         return self.currentGroup
+
+    def sendInvite(self, sender: int, groupId: int):
+
+        inviter = self.cr.getDo(sender)
+        if inviter is None:
+            return
+
+        self.destroyCurrentInvitePanel()
+
+        group = self.cr.getDo(groupId)
+
+        self.currentInvite = GroupInvitee()
+        self.currentInvite.make(group, inviter, sender if group is None else group.getLeader())
