@@ -83,6 +83,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
 
         # Add safeDetectionFeelers to cTrav
         self.cTrav.addCollider(self.safeDetectionFeelersPath, self.cQueue)
+        self.isStunned = 0
 
     def __syncEmergePosition(self, task):
         now = globalClock.getFrameTime()
@@ -312,7 +313,10 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
     def doFree(self, task):
         # This method is fired as a do-later when we enter WaitFree.
         DistributedCashbotBossObjectAI.DistributedCashbotBossObjectAI.doFree(self, task)
-        self.demand('Walk')
+        if self.isStunned:
+            self.demand('Recovery')
+        else:
+            self.demand('Walk')
         return Task.done
         
     
@@ -425,6 +429,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         
         self.avId = 0
         self.craneId = 0
+        self.isStunned = 0
         
         if self.__chooseTarget():
             self.__startWalk()
@@ -516,6 +521,7 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
         taskMgr.remove(self.taskName('resumeWalk'))
 
     def enterStunned(self):
+        self.isStunned = 1
         self.d_setObjectState('S', 0, 0)
 
     def exitStunned(self):
