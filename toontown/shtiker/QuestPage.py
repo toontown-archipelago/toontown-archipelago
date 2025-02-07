@@ -126,6 +126,8 @@ class QuestPage(ShtikerPage.ShtikerPage):
                 self.fillQuestFrame(newQuestDesc, index)
 
         for i, questDesc in self.quests.items():
+            if i >= len(self.questFrames):
+                continue
             if questDesc:
                 if self.canDeleteQuest(questDesc):
                     self.questFrames[i].setDeleteCallback(self.__deleteQuest)

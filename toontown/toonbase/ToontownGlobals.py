@@ -98,12 +98,13 @@ FM_RecoveredItem = 4
 SPDonaldsBoat = 3
 SPMinniesPiano = 4
 CEVirtual = 14
-MaxHpLimit = 999
+CheatMaxHpLimit = 999
+MaxHpLimit = 100
 
 PassiveHealFrequency = 10  # How often in seconds should toons passively regen?
 PassiveHealPercentage = .10  # How much percentage of laff should toons regen passively?
 MaxCarryLimit = 100
-MaxQuestCarryLimit = 6
+MaxQuestCarryLimit = 4
 CogMoneyDropChance = 0.95  # What percent chance to drop jellybeans as a reward per cog?
 CogMoneyBonusChance = 0.30
 CogMoneyDropRange = (25, 35)  # How many jellybeans do we reward per cog? (Assuming we rolled the chance for it)
@@ -1536,7 +1537,7 @@ AnimPropTypes = IntEnum('AnimPropTypes',('Unknown',
  'Trashcan'), start=-1)
 EmblemTypes = IntEnum('EmblemTypes', ('Silver', 'Gold'), start=0)
 NumEmblemTypes = 2
-DefaultMaxBankMoney = 12000
+DefaultMaxBankMoney = 99999
 DefaultBankItemId = 1350
 ToonAnimStates = set(['off',
  'neutral',

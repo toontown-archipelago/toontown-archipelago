@@ -260,9 +260,9 @@ class SetMaxHP(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         maxhp = args[0]
 
-        if not 1 <= maxhp <= ToontownGlobals.MaxHpLimit:
+        if not 1 <= maxhp <= ToontownGlobals.CheatMaxHpLimit:
             return "Can't set {}'s max laff to {}! Specify a value between 1 and {}.".format(toon.getName(), maxhp,
-                                                                                             ToontownGlobals.MaxHpLimit)
+                                                                                             ToontownGlobals.CheatMaxHpLimit)
 
         toon.b_setMaxHp(maxhp)
         toon.toonUp(maxhp)
@@ -378,7 +378,7 @@ class MaxToon(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         missingTrack = args[0]
 
-        gagTracks = [8, 8, 8, 8, 8, 8, 8]  # 8s to allow gag exp overflow
+        gagTracks = [7] * len(ToontownBattleGlobals.Tracks)  # 8s to allow gag exp overflow
         if missingTrack != '':
             try:
                 index = ('toonup', 'trap', 'lure', 'sound', 'throw',
@@ -387,20 +387,21 @@ class MaxToon(MagicWord):
                 return 'Missing Gag track is invalid!'
             gagTracks[index] = 0
         toon.b_setTrackAccess(gagTracks)
+        toon.b_setTrackBonusLevel([ToontownBattleGlobals.UBER_GAG_LEVEL_INDEX] * len(ToontownBattleGlobals.Tracks))
         toon.b_setMaxCarry(ToontownGlobals.MaxCarryLimit)
 
         experience = Experience.Experience(toon.getExperience(), toon)
         for i, track in enumerate(toon.getTrackAccess()):
             if track:
-                experience.experience[i] = ToontownBattleGlobals.MaxSkill
+                experience.experience[i] = ToontownBattleGlobals.regMaxSkill
         toon.b_setExperience(experience.getCurrentExperience())
 
         toon.inventory.maxInventory(clearFirst=True)
         toon.b_setInventory(toon.inventory.makeNetString())
 
-        toon.b_setBaseGagSkillMultiplier(50)
+        toon.b_setBaseGagSkillMultiplier(10)
 
-        toon.b_setMaxMoney(30000)
+        toon.b_setMaxMoney(9999)
         toon.b_setMoney(toon.getMaxMoney())
         toon.b_setBankMoney(ToontownGlobals.DefaultMaxBankMoney)
 
