@@ -359,8 +359,8 @@ class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.KartMinLaff % self.minLaff)
             elif reason == ElevatorConstants.REJECT_PROMOTION:
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.BossElevatorRejectMessage)
-            elif reason == ElevatorConstants.REJECT_NOT_YET_AVAILABLE:
-                base.localAvatar.elevatorNotifier.showMe(TTLocalizer.NotYetAvailable)
+            elif reason == ElevatorConstants.REJECT_OUT_OF_ORDER_KART:
+                base.localAvatar.elevatorNotifier.showMe(TTLocalizer.KartOutOfBusiness)
             elif reason in FADoorCodes.reasonDict.keys():
                 base.localAvatar.elevatorNotifier.showMe(FADoorCodes.reasonDict[reason])
         doneStatus = {'where': 'reject'}

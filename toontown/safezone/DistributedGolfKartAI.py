@@ -85,7 +85,7 @@ class DistributedGolfKartAI(DistributedObjectAI.DistributedObjectAI):
         seatIndex = self.findAvailableSeat()
         av = self.air.doId2do.get(avId)
         if av:
-            if seatIndex == None or PUTTER_KEY not in av.getAccessKeys():
+            if seatIndex is None:
                 self.rejectBoarder(avId)
             else:
                 self.acceptBoarder(avId, seatIndex)

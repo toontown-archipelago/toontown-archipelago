@@ -333,35 +333,11 @@ LICENSE_TO_ACCESS_CODE = {
 
 
 def can_av_fish_here(av, zoneId) -> int:
-    fishProgression = FishProgression(av.slotData.get('fish_progression', 3))
-    needLicense = fishProgression in (FishProgression.Licenses, FishProgression.LicensesAndRods)
-    if needLicense:
-        hoodId = zoneId - zoneId % 1000
-        accessCode = LICENSE_TO_ACCESS_CODE.get(hoodId)
-        if not accessCode:
-            raise KeyError("This is a bug, tell Mica (zoneId=%s, hoodId=%s)" % (zoneId, hoodId))
-        if accessCode not in av.getAccessKeys():
-            return accessCode
-    return -1
+    return True
 
 
 def can_av_fish_at_zone(av, fishZone) -> bool:
-    if fishZone == FishZone.MyEstate:
-        return False
-    elif fishZone == FishZone.Anywhere:
-        fishProgression = FishProgression(av.slotData.get('fish_progression', 3))
-        needLicense = fishProgression in (FishProgression.Licenses, FishProgression.LicensesAndRods)
-        if needLicense:
-            # True as long as they have any license.
-            accessKeys = av.getAccessKeys()
-            return any(
-                accessCode in accessKeys
-                for accessCode in LICENSE_TO_ACCESS_CODE.values()
-            )
-        else:
-            return True
-    else:
-        return can_av_fish_here(av, fishZone) == -1
+    return True
 
 
 # A cache for the below function.

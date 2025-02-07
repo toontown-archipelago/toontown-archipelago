@@ -210,7 +210,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.baseGagSkillMultiplier = 1
         self.damageMultiplier = 100
         self.overflowMod = 100
-        self.accessKeys: List[int] = []
         self.receivedItems: List[Tuple[int, int]] = []
         self.receivedItemIDs: set[int] = set()
         self.checkedLocations: List[int] = []

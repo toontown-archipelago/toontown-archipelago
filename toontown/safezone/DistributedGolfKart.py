@@ -231,11 +231,7 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
 
     def rejectBoard(self, avId):
         # We're rejecting for a reason other than our putter, since we have our putter
-        if ToontownGlobals.PUTTER_KEY in base.localAvatar.getAccessKeys():
-            self.loader.place.trolley.handleRejectBoard()
-            return
-        message = FADoorCodes.reasonDict[ToontownGlobals.PUTTER_KEY]
-        self.__faRejectEnter(message)
+        self.__faRejectEnter("Unable to board the golf kart.")
 
     ### DistributedDoor reject code ###
     def __faRejectEnter(self, message):

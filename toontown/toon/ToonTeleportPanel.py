@@ -310,17 +310,6 @@ class ToonTeleportPanel(DirectFrame):
         if avId != self.avId:
             return
 
-        # Was this toon in an HQ?
-        if available == TELEPORT_RESPONSE_AVAILABLE_CODE_IN_HQ:
-            # Do we not have the required key for this?
-            key = FADoorCodes.ZONE_TO_ACCESS_CODE.get(hoodId)
-            # This hood has an HQ access key
-            if key is not None:
-                # We do not have this key, do not let the tp occur
-                if key not in base.localAvatar.getAccessKeys():
-                    self.fsm.request('noHqAccess', [hoodId])
-                    return
-
         if available == 0:
             teleportNotify.debug('__teleportResponse: not available')
             self.fsm.request('notAvailable')

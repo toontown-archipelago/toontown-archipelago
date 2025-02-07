@@ -220,7 +220,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self._lastSeedName = "" # The previous room connected to, using ap's seed_name to validate. Might overlap if multiple rooms started from the same seed.
         self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
         self.baseGagSkillMultiplier = 1  # Multiplicative stacking gag xp multiplier to consider
-        self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
         self.receivedItems: List[Tuple[int, int]] = []  # List of AP items received so far, [(index, itemid), (index, itemid)]
         self.checkedLocations: List[int] = []  # List of AP checks we have completed
         self.hintPoints = 0  # How many hint points the player has

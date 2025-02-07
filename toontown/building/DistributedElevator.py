@@ -378,6 +378,8 @@ class DistributedElevator(DistributedObject.DistributedObject):
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.NotYetAvailable)
             elif reason == REJECT_OUT_OF_ORDER:
                 base.localAvatar.elevatorNotifier.showMe(TTLocalizer.ElevatorOutOfBusiness)
+            elif reason == REJECT_OUT_OF_ORDER_KART:
+                base.localAvatar.elevatorNotifier.showMe(TTLocalizer.KartOutOfBusiness)
             elif reason in FADoorCodes.reasonDict.keys():
                 base.localAvatar.elevatorNotifier.showMe(FADoorCodes.reasonDict[reason])
         doneStatus = {'where': 'reject'}

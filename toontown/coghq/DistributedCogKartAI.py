@@ -62,3 +62,6 @@ class DistributedCogKartAI(DistributedElevatorExtAI.DistributedElevatorExtAI):
     def enterClosed(self):
         DistributedElevatorExtAI.DistributedElevatorExtAI.enterClosed(self)
         self.fsm.request('opening')
+
+    def checkBoard(self, av):
+        return ElevatorConstants.REJECT_OUT_OF_ORDER_KART

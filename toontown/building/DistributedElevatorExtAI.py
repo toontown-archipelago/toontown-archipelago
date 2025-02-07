@@ -188,3 +188,6 @@ class DistributedElevatorExtAI(DistributedElevatorAI.DistributedElevatorAI):
             else:
                 self.notify.warning('avId: %s does not exist, but tried to exit an elevator' % avId)
             return
+
+    def checkBoard(self, av):
+        return REJECT_OUT_OF_ORDER

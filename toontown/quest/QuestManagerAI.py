@@ -128,60 +128,8 @@ class QuestManagerAI:
         if not av:
             return
 
-
-        # A list of Reward IDs this toon is currently working on
-        currentlyWorkingOnRewards = []
-
-        for index, quest in enumerate(self.__toonQuestsList2Quests(av.quests)):
-
-            questId, fromNpcId, toNpcId, rewardId, toonProgress = av.quests[index]
-            currentlyWorkingOnRewards.append(rewardId)
-            isComplete = quest.getCompletionStatus(av, av.quests[index], npc)
-
-            # Quest is not complete, go to next one
-            if isComplete != Quests.COMPLETE:
-                continue
-
-            if isinstance(quest, Quests.DeliverGagQuest):
-                track, level = quest.getGagType()
-                av.inventory.setItem(track, level, av.inventory.numItem(track, level) - quest.getNumGags())
-                av.b_setInventory(av.inventory.makeNetString())
-
-            nextQuest = Quests.getNextQuest(questId, npc, av)
-
-            # There is no next quest, complete it and give them their reward
-            if nextQuest == (Quests.NA, Quests.NA):
-                if isinstance(quest, Quests.TrackChoiceQuest):
-                    npc.presentTrackChoice(avId, questId, quest.getChoices())
-                    return
-
-                rewardId = Quests.getAvatarRewardId(av, questId)
-                npc.completeQuest(avId, questId, rewardId)
-                self.completeQuest(av, questId)
-                self.giveReward(av, rewardId)
-                return
-
-            # There is another part to this quest, complete this one and assign the next
-            self.completeQuest(av, questId)
-            nextQuestId = nextQuest[0]
-            nextRewardId = Quests.getFinalRewardId(questId, 1)
-            nextToNpcId = nextQuest[1]
-            self.npcGiveQuest(npc, av, nextQuestId, nextRewardId, nextToNpcId)
-            return
-
-        # We cannot pickup any more quests
-        if len(self.__toonQuestsList2Quests(av.quests)) >= av.getQuestCarryLimit():
-            npc.rejectAvatar(avId)
-            return
-
-        # Randomly pick some quests to pick from
-        bestQuests = Quests.chooseBestQuests(npc, av, excludeRewards=currentlyWorkingOnRewards, seed=av.getSeed())
-        if not bestQuests:
-            npc.rejectAvatar(avId)
-            return
-
-        npc.presentQuestChoice(avId, bestQuests)
-        return
+        # We don't give out quests in this game. Don't do anything.
+        npc.rejectAvatar(avId)
 
     def __toonQuestsList2Quests(self, quests):
         return [Quests.getQuest(x[0]) for x in quests]

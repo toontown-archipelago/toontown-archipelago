@@ -112,8 +112,7 @@ class DistributedDoorAI(DistributedObjectAI.DistributedObjectAI):
         if not av:
             return False
 
-        lockedBy = self.isLockedDoor()
-        return lockedBy in av.getAccessKeys()
+        return True
 
     def requestEnter(self):
         avatarID = self.air.getAvatarIdFromSender()
