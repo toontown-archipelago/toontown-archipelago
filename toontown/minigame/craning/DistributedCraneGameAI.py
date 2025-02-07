@@ -580,25 +580,32 @@ class DistributedCraneGameAI(DistributedMinigameAI):
             return 'EmergeB'
         return 'EmergeA'
 
-    def makeGoon(self, side = None):
+    def __isPositionClear(self, x, y, minDistance=5):
+        # Check distance to all safes
+        for safe in self.safes:
+            safePos = safe.getPos()
+            if abs(safePos[0] - x) < minDistance and abs(safePos[1] - y) < minDistance:
+                return False
+                
+        # Check distance to all cranes
+        for crane in self.cranes:
+            # Get crane position based on its type and index
+            if isinstance(crane, DistributedCashbotBossSideCraneAI):
+                poshpr = CraneLeagueGlobals.SIDE_CRANE_POSHPR[crane.index - len(CraneLeagueGlobals.NORMAL_CRANE_POSHPR)]
+            else:
+                poshpr = CraneLeagueGlobals.NORMAL_CRANE_POSHPR[crane.index]
+            cranePos = (poshpr[0], poshpr[1], poshpr[2])
+            if abs(cranePos[0] - x) < minDistance and abs(cranePos[1] - y) < minDistance:
+                return False
+                
+        return True
 
-        self.goonMovementTime = globalClock.getFrameTime()
-
-        # If a side wasn't provided, we want to generate one
-        if side is None:
-            side = self.__chooseGoonEmergeSide()
-
-        # Updates goon cache
-        if side == self.goonCache[0]:
-            self.goonCache = (side, self.goonCache[1] + 1)
-        else:
-            self.goonCache = (side, 1)
-
+    def makeGoon(self, side=None, forceNormalSpawn=False):
         # Check if we can make a new goon
         if len(self.goons) >= self.getMaxGoons():
             return
 
-        # Make a new goon
+        # Create and generate the goon
         goon = DistributedCashbotBossGoonAI(self.air, self)
         goon.generateWithRequired(self.zoneId)
         self.goons.append(goon)
@@ -627,7 +634,45 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         goon.STUN_TIME = goon_stun_time
         goon.b_setupGoon(velocity=goon_velocity, hFov=goon_hfov, attackRadius=goon_attack_radius,
                          strength=goon_strength, scale=goon_scale)
-        goon.request(side)
+
+        # If this is an initial spawn or we're forced to use normal spawn, use door emergence
+        if forceNormalSpawn:
+            if side is None:
+                side = self.__chooseGoonEmergeSide()
+            goon.request(side)
+            return
+
+        # Only allow falling goons during overtime mode, with 40% chance
+        if self.currentlyInOvertime and random.random() < 0.4:
+            bossPos = self.boss.getPos()
+            
+            # Keep trying positions until we find a clear one
+            maxAttempts = 10  # Prevent infinite loops
+            attempts = 0
+            while attempts < maxAttempts:
+                # Random position 15-20 units away from CFO
+                xOffset = random.uniform(15, 20) * (1 if random.random() < 0.5 else -1)
+                yOffset = random.uniform(15, 20) * (1 if random.random() < 0.5 else -1)
+                
+                # Check if position is clear
+                if self.__isPositionClear(bossPos[0] + xOffset, bossPos[1] + yOffset):
+                    randomH = random.uniform(0, 360)  # Random heading between 0-360 degrees
+                    goon.setPos(bossPos[0] + xOffset, bossPos[1] + yOffset, 40)
+                    goon.d_setPosHpr(bossPos[0] + xOffset, bossPos[1] + yOffset, 40, randomH, 0, 0)
+                    goon.request('Falling')
+                    break
+                attempts += 1
+                
+            # If we couldn't find a clear position after max attempts, use door emergence
+            if attempts >= maxAttempts:
+                if side is None:
+                    side = self.__chooseGoonEmergeSide()
+                goon.request(side)
+        else:
+            # Normal door emergence
+            if side is None:
+                side = self.__chooseGoonEmergeSide()
+            goon.request(side)
 
     def __chooseOldGoon(self):
         # Walks through the list of goons managed by the boss to see
@@ -904,8 +949,8 @@ class DistributedCraneGameAI(DistributedMinigameAI):
 
         # Make four goons up front to keep things interesting from the
         # beginning.
-        self.makeGoon(side='EmergeA')
-        self.makeGoon(side='EmergeB')
+        self.makeGoon(side='EmergeA', forceNormalSpawn=True)
+        self.makeGoon(side='EmergeB', forceNormalSpawn=True)
         taskName = self.uniqueName('NextGoon')
         taskMgr.remove(taskName)
         taskMgr.doMethodLater(2, self.__doInitialGoons, taskName)
@@ -1022,8 +1067,9 @@ class DistributedCraneGameAI(DistributedMinigameAI):
         return task.again
 
     def __doInitialGoons(self, task):
-        self.makeGoon(side='EmergeA')
-        self.makeGoon(side='EmergeB')
+        # Initial goons should ALWAYS come from doors
+        self.makeGoon(side='EmergeA', forceNormalSpawn=True)
+        self.makeGoon(side='EmergeB', forceNormalSpawn=True)
         self.goonCache = (None, 0)
         self.waitForNextGoon(10)
         self.__cancelReviveTasks()

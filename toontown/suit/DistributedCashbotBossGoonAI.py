@@ -549,3 +549,32 @@ class DistributedCashbotBossGoonAI(DistributedGoonAI.DistributedGoonAI, Distribu
     def stopSmooth(self):
         self.sendUpdate('stopSmooth')
         DistributedSmoothNodeAI.stopSmooth(self)
+
+    def enterFalling(self):
+        self.avId = 0
+        self.craneId = 0
+        self.isStunned = 1
+        self.d_setObjectState('F', 0, 0)
+        # Schedule recovery after landing
+        taskMgr.doMethodLater(2.0, self.__recoverFromFall, self.uniqueName('recoverFromFall'))
+
+    def exitFalling(self):
+        taskMgr.remove(self.uniqueName('recoverFromFall'))
+
+    def __recoverFromFall(self, task):
+        # Make sure we're at ground level
+        pos = self.getPos()
+        self.setPos(pos[0], pos[1], 0)
+        
+        # Choose initial direction and target before entering Recovery
+        direction = self.__chooseDirection()
+        if direction:
+            heading, dist = direction
+            targetH = PythonUtil.reduceAngle(self.getH() + heading)
+            self.setH(targetH)
+            
+            # Set up initial target point
+            self.target = self.boss.scene.getRelativePoint(self, Point3(0, dist, 0))
+            
+        self.demand('Recovery')
+        return Task.done

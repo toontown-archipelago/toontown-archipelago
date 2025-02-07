@@ -201,7 +201,6 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
     ##### Messages To/From The Server #####
 
     def setObjectState(self, state, avId, craneId):
-        #self.crane = self.cr.doId2do.get(craneId)
         if state == 'W':
             self.demand('Walk')
         elif state == 'B':
@@ -217,6 +216,8 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
             self.demand('EmergeA')
         elif state == 'b':
             self.demand('EmergeB')
+        elif state == 'F':
+            self.demand('Falling')
         else:
             DistributedCashbotBossObject.DistributedCashbotBossObject.setObjectState(self, state, avId, craneId)
 
@@ -319,3 +320,31 @@ class DistributedCashbotBossGoon(DistributedGoon.DistributedGoon, DistributedCas
 
     def d_requestWalk(self):
         self.sendUpdate('requestWalk')
+
+    def enterFalling(self):
+        self.undead()
+        self.stopToonDetect()
+        self.radar.hide()
+        
+        # Use stunned animation during fall
+        self.pose('collapse', 48)
+        
+        # Activate physics to handle collisions and bouncing
+        self.activatePhysics()
+        
+        # Set physics properties for bouncy behavior
+        self.handler.setStaticFrictionCoef(0)  # Make it slide
+        self.handler.setDynamicFrictionCoef(0)
+        
+        # Add some initial downward velocity
+        self.physicsObject.setVelocity(0, 0, -5)  # Start falling at 5 units/sec
+
+    def exitFalling(self):
+        self.deactivatePhysics()
+
+    def __hitFloor(self, entry):
+        if self.state == 'Falling':
+            self.d_hitFloor()
+            self.demand('Recovery')
+        else:
+            DistributedCashbotBossObject.DistributedCashbotBossObject.__hitFloor(self, entry)
