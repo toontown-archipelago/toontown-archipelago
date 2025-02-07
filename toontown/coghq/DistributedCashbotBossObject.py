@@ -417,7 +417,7 @@ class DistributedCashbotBossObject(DistributedSmoothNode.DistributedSmoothNode, 
             self.showShadows()
 
     def enterGrabbed(self, avId, craneId):
-        # Grabbed by a crane, or by the boss for a helmet.  craneId is
+        # Grabbed by a crane, or by the boss for a helmet. craneId is
         # the doId of the crane or the doId of the boss himself.
 
         if avId != base.localAvatar.doId:
