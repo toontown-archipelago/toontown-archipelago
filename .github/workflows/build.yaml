@@ -30,11 +30,6 @@ jobs:
         run: |
           python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
 
-      - name: Build APWorld Files
-        run: |
-          cd apworld
-          .\make_apworld.bat
-
       - name: Copy Built Files
         run: |
           New-Item -Name "release" -ItemType "directory"
@@ -61,27 +56,20 @@ jobs:
 
       - name: Compress Release
         run: |
-          Compress-Archive -Path release\* -DestinationPath TTAP.zip
+          Compress-Archive -Path release\* -DestinationPath TTRanked.zip
 
       - name: Upload Game Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "TTAP.zip"
-          path: "TTAP.zip"
+          name: "TTRanked.zip"
+          path: "TTRanked.zip"
           if-no-files-found: "error"
-
-      - name: Upload APWorld Files to Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release upload ${{ github.ref_name }} ./apworld/toontown.apworld
-          gh release upload ${{ github.ref_name }} ./apworld/EXAMPLE_TOONTOWN.yaml
 
       - name: Upload Game to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.ref_name }} TTAP.zip
+          gh release upload ${{ github.ref_name }} TTRanked.zip
 
 # add build for macOS
   build-game-macos:
@@ -105,15 +93,12 @@ jobs:
           python -m pip install nuitka
           python -m pip install -r requirements.txt
           brew install wget
-          # will change this to official repo once the changes are merged 
           python -m pip install "https://github.com/toontown-archipelago/panda3d/releases/latest/download/panda3d-1.11.0-cp311-cp311-macosx_10_9_universal2.whl"
 
       - name: Build Client
         run: |
           python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output_arm64 --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
           python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output_x86_64 --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads --macos-target-arch=x86_64
-
-
 
       - name: Copy Built Files
         run: |
@@ -171,16 +156,16 @@ jobs:
 
       - name: Compress Release
         run: |
-          zip -r TTAP-macos.zip release
+          zip -r TTRanked-macos.zip release
       - name: Upload Game Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "TTAP-macos.zip"
-          path: "TTAP-macos.zip"
+          name: "TTRanked-macos.zip"
+          path: "TTRanked-macos.zip"
           if-no-files-found: "error"    
 
       - name: Upload Game to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            gh release upload ${{ github.ref_name }} TTAP-macos.zip
+            gh release upload ${{ github.ref_name }} TTRanked-macos.zip
