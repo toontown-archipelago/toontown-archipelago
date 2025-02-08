@@ -37,7 +37,7 @@ class HolidayManagerAI:
     def startHoliday(self, holidayId, task=None):
         if holidayId not in self.currentHolidays:
             self.currentHolidays[holidayId] = True
-            self.air.newsManager.d_setHolidayIdList(list(self.currentHolidays.keys()))
+            self.air.newsManager.d_setHolidayIdList(self.currentHolidays.keys())
             if holidayId == ToontownGlobals.SILLY_SATURDAY_BINGO:
                 self.air.newsManager.d_setBingoStart()
             elif holidayId == ToontownGlobals.SILLY_SATURDAY_CIRCUIT:
