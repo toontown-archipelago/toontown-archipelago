@@ -113,7 +113,7 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
         if usingFlowerAll:
             handlePlantFlower(None)
         else:
-            taskMgr.doMethodLater(7, handlePlantFlower, self.uniqueName('handle-plant-flower'))
+            taskMgr.doMethodLater(1.0, handlePlantFlower, self.uniqueName('handle-plant-flower'))
 
         self.__plantingAvId = av.doId
         return 1
@@ -156,7 +156,7 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
             self.air.writeServerEvent('plant-tree', self.__plantingAvId, track=track, index=index, plot=self.plot)
             return task.done
 
-        taskMgr.doMethodLater(7, handlePlantTree, self.uniqueName('handle-plant-tree'))
+        taskMgr.doMethodLater(1.0, handlePlantTree, self.uniqueName('handle-plant-tree'))
         self.__plantingAvId = av.doId
 
     def plantStatuary(self, species):
@@ -196,7 +196,7 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
             self.air.writeServerEvent('plant-statuary', self.__plantingAvId, species=species, plot=self.plot)
             return task.done
 
-        taskMgr.doMethodLater(7, handlePlaceStatuary, self.uniqueName('handle-place-statuary'))
+        taskMgr.doMethodLater(1.0, handlePlaceStatuary, self.uniqueName('handle-place-statuary'))
         self.__plantingAvId = av.doId
 
     def plantToonStatuary(self, species, dnaCode):
@@ -231,7 +231,7 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
             self.air.writeServerEvent('plant-statuary', self.__plantingAvId, species=species, plot=self.plot)
             return task.done
 
-        taskMgr.doMethodLater(7, handlePlaceStatuary, self.uniqueName('handle-place-statuary'))
+        taskMgr.doMethodLater(1.0, handlePlaceStatuary, self.uniqueName('handle-place-statuary'))
         self.__plantingAvId = av.doId
 
     def plantNothing(self, burntBeans):
