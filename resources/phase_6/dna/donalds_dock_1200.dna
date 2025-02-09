@@ -174,7 +174,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_40x40_DNARoot" [
     code [ "street_40x40" ]
-    pos [ -335 -450 3.8147e-005 ]
+    pos [ -335 -450 3.8147e-05 ]
     nhpr [ -0 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -324,7 +324,7 @@ group "donaldsDock" [
     ]
     prop "prop_2ftdockpiling_DNARoot" [
      code [ "prop_2ftdockpiling" ]
-     pos [ -1.22005 -8.11996 -2.28882e-005 ]
+     pos [ -1.22005 -8.11996 -2.28882e-05 ]
      nhpr [ -180 0 -0 ]
     ]
    ]
@@ -462,7 +462,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_full_corner_DNARoot" [
     code [ "street_full_corner" ]
-    pos [ -375 -450 -7.24792e-005 ]
+    pos [ -375 -450 -7.24792e-05 ]
     nhpr [ 90 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -697,7 +697,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_mailbox" ]
    anim [ "tt_a_ara_dod_mailbox_fightBoost" ]
    cell_id [ 0 ]
-   pos [ -380.81 -415.203 -7.24792e-005 ]
+   pos [ -380.81 -415.203 -7.24792e-05 ]
    nhpr [ -45 0 -0 ]
   ]
  ]
@@ -719,7 +719,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_40x40_DNARoot" [
     code [ "street_40x40" ]
-    pos [ -375 -410 4.57764e-005 ]
+    pos [ -375 -410 4.57764e-05 ]
     nhpr [ 90 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -728,7 +728,7 @@ group "donaldsDock" [
   ]
   group "buildings" [
    flat_building "toonTenTen_DNARoot" [
-    pos [ -415 -400 4.57764e-005 ]
+    pos [ -415 -400 4.57764e-05 ]
     nhpr [ 90 0 -0 ]
     width [ 15 ]
     wall [
@@ -822,7 +822,7 @@ group "donaldsDock" [
     ]
     prop "prop_palm_tree_topflat_DNARoot" [
      code [ "prop_palm_tree_topflat" ]
-     pos [ 5.00001 -8 3.8147e-005 ]
+     pos [ 5.00001 -8 3.8147e-05 ]
      nhpr [ -30 0 -0 ]
     ]
     prop "streetlight_DD_left_DNARoot" [
@@ -839,7 +839,7 @@ group "donaldsDock" [
    ]
    landmark_building "tb3:toon_landmark_DD_C1_DNARoot" [
     code [ "toon_landmark_DD_C1" ]
-    title [ "Wok the Plank Chinese Food" ]
+    title [ "Over-Seas Security Service" ]
     pos [ -375 -370 0 ]
     nhpr [ -90 0 -0 ]
     door [
@@ -860,62 +860,31 @@ group "donaldsDock" [
       stomp [ 0.057571 ]
       flags [ "d" ]
       text [
-       letters [ "W" ]
-      ]
-      text [
        letters [ "O" ]
       ]
       text [
-       letters [ "K" ]
+       letters [ "V" ]
       ]
       text [
-       letters [ " " ]
+       letters [ "E" ]
       ]
       text [
-       letters [ " " ]
+       letters [ "R" ]
       ]
       text [
-       letters [ " " ]
+       letters [ "-" ]
       ]
       text [
-       letters [ " " ]
+       letters [ "S" ]
       ]
       text [
-       letters [ " " ]
-      ]
-      text [
-       letters [ "P" ]
-      ]
-      text [
-       letters [ "L" ]
+       letters [ "E" ]
       ]
       text [
        letters [ "A" ]
       ]
       text [
-       letters [ "N" ]
-      ]
-      text [
-       letters [ "K" ]
-      ]
-     ]
-     baseline [
-      code [ "humanist" ]
-      color [ 1 1 0 1 ]
-      pos [ -0.58 0 -0.03 ]
-      scale [ 0.7 1 0.7 ]
-      kern [ 0.047608 ]
-      wiggle [ 5.99008 ]
-      stumble [ 0.031533 ]
-      flags [ "d" ]
-      text [
-       letters [ "T" ]
-      ]
-      text [
-       letters [ "H" ]
-      ]
-      text [
-       letters [ "E" ]
+       letters [ "S" ]
       ]
      ]
      baseline [
@@ -925,19 +894,31 @@ group "donaldsDock" [
       scale [ 0.7 1 0.7 ]
       kern [ 0.092405 ]
       text [
+       letters [ "S" ]
+      ]
+      text [
+       letters [ "E" ]
+      ]
+      text [
        letters [ "C" ]
       ]
       text [
-       letters [ "H" ]
+       letters [ "U" ]
+      ]
+      text [
+       letters [ "R" ]
       ]
       text [
        letters [ "I" ]
       ]
       text [
-       letters [ "N" ]
+       letters [ "T" ]
       ]
       text [
-       letters [ "E" ]
+       letters [ "Y" ]
+      ]
+      text [
+       letters [ " " ]
       ]
       text [
        letters [ "S" ]
@@ -946,22 +927,19 @@ group "donaldsDock" [
        letters [ "E" ]
       ]
       text [
-       letters [ " " ]
+       letters [ "R" ]
       ]
       text [
-       letters [ " " ]
+       letters [ "V" ]
       ]
       text [
-       letters [ "F" ]
+       letters [ "I" ]
       ]
       text [
-       letters [ "O" ]
+       letters [ "C" ]
       ]
       text [
-       letters [ "O" ]
-      ]
-      text [
-       letters [ "D" ]
+       letters [ "E" ]
       ]
      ]
     ]
@@ -1007,7 +985,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_trashcan" ]
    anim [ "tt_a_ara_dod_trashcan_idle1" ]
    cell_id [ 0 ]
-   pos [ -411.67 -398.874 4.57764e-005 ]
+   pos [ -411.67 -398.874 4.57764e-05 ]
    nhpr [ 90 0 -0 ]
   ]
  ]
@@ -1025,7 +1003,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_full_corner_DNARoot" [
     code [ "street_full_corner" ]
-    pos [ -415 -350 -7.62939e-006 ]
+    pos [ -415 -350 -7.62939e-06 ]
     nhpr [ -0 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -1126,7 +1104,7 @@ group "donaldsDock" [
     ]
     prop "prop_palm_tree_topflat_DNARoot" [
      code [ "prop_crate" ]
-     pos [ 2.00054 -38.0002 -7.62939e-006 ]
+     pos [ 2.00054 -38.0002 -7.62939e-06 ]
      nhpr [ 60 0 -0 ]
      scale [ 0.7 0.7 0.7 ]
     ]
@@ -1529,7 +1507,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_mailbox" ]
    anim [ "tt_a_ara_dod_mailbox_fightBoost" ]
    cell_id [ 0 ]
-   pos [ -411.769 -324.492 -7.62939e-006 ]
+   pos [ -411.769 -324.492 -7.62939e-06 ]
    nhpr [ 90 0 -0 ]
   ]
  ]
@@ -2165,7 +2143,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_5_models_char__ttc_hydrant" ]
    anim [ "tt_a_ara_ttc_hydrant_fightIdle" ]
    cell_id [ 0 ]
-   pos [ -310.907 -329.973 -7.62939e-006 ]
+   pos [ -310.907 -329.973 -7.62939e-06 ]
    nhpr [ -75 0 0 ]
   ]
  ]
@@ -2191,7 +2169,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_full_corner_DNARoot" [
     code [ "street_full_corner" ]
-    pos [ -305 -400 -1.14441e-005 ]
+    pos [ -305 -400 -1.14441e-05 ]
     nhpr [ 90 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -2431,7 +2409,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_trashcan" ]
    anim [ "tt_a_ara_dod_trashcan_idle1" ]
    cell_id [ 0 ]
-   pos [ -341.573 -371.713 -1.14441e-005 ]
+   pos [ -341.573 -371.713 -1.14441e-05 ]
    nhpr [ 90 0 -0 ]
   ]
  ]
@@ -2563,7 +2541,7 @@ group "donaldsDock" [
    ]
    prop "prop_palm_tree_topflat_DNARoot" [
     code [ "prop_palm_tree_topflat" ]
-    pos [ 4 -8 -1.14441e-005 ]
+    pos [ 4 -8 -1.14441e-05 ]
     nhpr [ -120 0 -0 ]
     scale [ 1.4 1.4 1.4 ]
    ]
@@ -3375,7 +3353,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_trashcan" ]
    anim [ "tt_a_ara_dod_trashcan_idle1" ]
    cell_id [ 0 ]
-   pos [ -241.371 -341.387 -1.14441e-005 ]
+   pos [ -241.371 -341.387 -1.14441e-05 ]
    nhpr [ 90 0 -0 ]
   ]
  ]
@@ -3394,7 +3372,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_full_corner_DNARoot" [
     code [ "street_full_corner" ]
-    pos [ -245 -280 7.62939e-006 ]
+    pos [ -245 -280 7.62939e-06 ]
     nhpr [ 0 0 0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -3602,7 +3580,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_mailbox" ]
    anim [ "tt_a_ara_dod_mailbox_fightBoost" ]
    cell_id [ 0 ]
-   pos [ -220.442 -243.781 7.62939e-006 ]
+   pos [ -220.442 -243.781 7.62939e-06 ]
    nhpr [ -0 0 -0 ]
   ]
  ]
@@ -3624,7 +3602,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_30x40_DNARoot" [
     code [ "street_30x40" ]
-    pos [ -205 -280 -7.62939e-006 ]
+    pos [ -205 -280 -7.62939e-06 ]
     nhpr [ -0 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -3811,7 +3789,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_trashcan" ]
    anim [ "tt_a_ara_dod_trashcan_idle1" ]
    cell_id [ 0 ]
-   pos [ -192.07 -276.861 -7.62939e-006 ]
+   pos [ -192.07 -276.861 -7.62939e-06 ]
    nhpr [ -180 0 -0 ]
   ]
  ]
@@ -4008,7 +3986,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_5_models_char__ttc_hydrant" ]
    anim [ "tt_a_ara_ttc_hydrant_fightIdle" ]
    cell_id [ 0 ]
-   pos [ -155.107 -246.037 1.52588e-005 ]
+   pos [ -155.107 -246.037 1.52588e-05 ]
    nhpr [ 0 0 0 ]
   ]
  ]
@@ -4326,7 +4304,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_full_corner_DNARoot" [
     code [ "street_full_corner" ]
-    pos [ -135 -390 3.8147e-006 ]
+    pos [ -135 -390 3.8147e-06 ]
     nhpr [ 90 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -4545,7 +4523,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_mailbox" ]
    anim [ "tt_a_ara_dod_mailbox_fightBoost" ]
    cell_id [ 0 ]
-   pos [ -171.468 -365.37 3.8147e-006 ]
+   pos [ -171.468 -365.37 3.8147e-06 ]
    nhpr [ 90 0 -0 ]
   ]
  ]
@@ -4563,7 +4541,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_40x40_DNARoot" [
     code [ "street_40x40" ]
-    pos [ -135 -390 -8.01086e-005 ]
+    pos [ -135 -390 -8.01086e-05 ]
     nhpr [ -0 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -4777,7 +4755,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_trashcan" ]
    anim [ "tt_a_ara_dod_trashcan_idle1" ]
    cell_id [ 0 ]
-   pos [ -108.52 -354.844 6.86646e-005 ]
+   pos [ -108.52 -354.844 6.86646e-05 ]
    nhpr [ -0 0 -0 ]
   ]
  ]
@@ -5270,7 +5248,7 @@ group "donaldsDock" [
   ]
   street "street_full_corner_DNARoot" [
    code [ "street_full_corner" ]
-   pos [ 5.00001 -350 3.8147e-006 ]
+   pos [ 5.00001 -350 3.8147e-06 ]
    nhpr [ -180 0 -0 ]
    texture [ "street_street_DD_tex" ]
    texture [ "street_sidewalk_DD_tex" ]
@@ -5287,7 +5265,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_trashcan" ]
    anim [ "tt_a_ara_dod_trashcan_idle1" ]
    cell_id [ 0 ]
-   pos [ -18.6762 -388.332 3.8147e-006 ]
+   pos [ -18.6762 -388.332 3.8147e-06 ]
    nhpr [ -180 0 -0 ]
   ]
  ]
@@ -5313,7 +5291,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_40x40_DNARoot" [
     code [ "street_40x40" ]
-    pos [ 5 -350 -5.34058e-005 ]
+    pos [ 5 -350 -5.34058e-05 ]
     nhpr [ 90 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -5543,7 +5521,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_trashcan" ]
    anim [ "tt_a_ara_dod_trashcan_idle1" ]
    cell_id [ 0 ]
-   pos [ 1.71206 -328.602 -5.34058e-005 ]
+   pos [ 1.71206 -328.602 -5.34058e-05 ]
    nhpr [ -90 0 -0 ]
   ]
  ]
@@ -5565,7 +5543,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_full_corner_DNARoot" [
     code [ "street_full_corner" ]
-    pos [ -35 -270 2.28882e-005 ]
+    pos [ -35 -270 2.28882e-05 ]
     nhpr [ -90 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -5845,7 +5823,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_5_models_char__ttc_hydrant" ]
    anim [ "tt_a_ara_ttc_hydrant_firstMoveArmUp2" ]
    cell_id [ 0 ]
-   pos [ 0.248627 -283.114 2.67029e-005 ]
+   pos [ 0.248627 -283.114 2.67029e-05 ]
    nhpr [ -90 0 0 ]
   ]
  ]
@@ -6174,7 +6152,7 @@ group "donaldsDock" [
   group "streets" [
    street "street_40x40_DNARoot" [
     code [ "street_40x40" ]
-    pos [ -45 -270 1.52588e-005 ]
+    pos [ -45 -270 1.52588e-05 ]
     nhpr [ 90 0 -0 ]
     texture [ "street_street_DD_tex" ]
     texture [ "street_sidewalk_DD_tex" ]
@@ -6366,7 +6344,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_5_models_char__ttc_hydrant" ]
    anim [ "tt_a_ara_ttc_hydrant_firstMoveArmUp3" ]
    cell_id [ 0 ]
-   pos [ -51.235 -242.162 2.28882e-005 ]
+   pos [ -51.235 -242.162 2.28882e-05 ]
    nhpr [ -90 0 -0 ]
   ]
  ]
@@ -6937,7 +6915,7 @@ group "donaldsDock" [
     ]
     prop "prop_2ftdockpiling_DNARoot" [
      code [ "prop_2ftdockpiling" ]
-     pos [ 11 -8.99992 2.28882e-005 ]
+     pos [ 11 -8.99992 2.28882e-05 ]
      nhpr [ -0 0 -0 ]
     ]
     prop "prop_palm_tree_topflat_DNARoot" [
@@ -7074,7 +7052,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_5_models_char__ttc_hydrant" ]
    anim [ "tt_a_ara_ttc_hydrant_firstMoveArmUp1" ]
    cell_id [ 0 ]
-   pos [ -121.468 -163.021 -3.8147e-006 ]
+   pos [ -121.468 -163.021 -3.8147e-06 ]
    nhpr [ 165 0 0 ]
   ]
  ]
@@ -7431,7 +7409,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_trashcan" ]
    anim [ "tt_a_ara_dod_trashcan_idle1" ]
    cell_id [ 0 ]
-   pos [ -154.598 -166.009 2.28882e-005 ]
+   pos [ -154.598 -166.009 2.28882e-05 ]
    nhpr [ 180 0 -0 ]
   ]
   prop "prop_tt_m_ara_gen_tunnelAheadSign_DNARoot" [
@@ -7454,7 +7432,7 @@ group "donaldsDock" [
   battle_cell [ 20 20 -355.07 -429.771 -0.5 ]
   street "street_40x40_DNARoot" [
    code [ "street_40x40" ]
-   pos [ -375 -450 -7.62939e-006 ]
+   pos [ -375 -450 -7.62939e-06 ]
    nhpr [ -0 0 -0 ]
    texture [ "street_street_DD_tex" ]
    texture [ "street_sidewalk_DD_tex" ]
@@ -7735,7 +7713,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_trashcan" ]
    anim [ "tt_a_ara_dod_trashcan_idle1" ]
    cell_id [ 0 ]
-   pos [ -350.353 -446.923 -7.62939e-006 ]
+   pos [ -350.353 -446.923 -7.62939e-06 ]
    nhpr [ -180 0 -0 ]
   ]
  ]
@@ -7782,7 +7760,7 @@ group "donaldsDock" [
    ]
    prop "prop_2ftdockpiling_DNARoot" [
     code [ "prop_2ftdockpiling" ]
-    pos [ 9.86997 -8.71999 -7.62939e-006 ]
+    pos [ 9.86997 -8.71999 -7.62939e-06 ]
     nhpr [ 90 0 -0 ]
    ]
    prop "prop_palm_tree_topflat_DNARoot" [
@@ -7816,7 +7794,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_5_models_char__ttc_hydrant" ]
    anim [ "tt_a_ara_ttc_hydrant_firstMoveArmUp3" ]
    cell_id [ 0 ]
-   pos [ -381.178 -357.986 3.8147e-005 ]
+   pos [ -381.178 -357.986 3.8147e-05 ]
    nhpr [ -90 0 -0 ]
   ]
  ]
@@ -8095,7 +8073,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_5_models_char__ttc_hydrant" ]
    anim [ "tt_a_ara_ttc_hydrant_firstMoveArmUp2" ]
    cell_id [ 0 ]
-   pos [ -209.984 -301.305 -1.52588e-005 ]
+   pos [ -209.984 -301.305 -1.52588e-05 ]
    nhpr [ -90 0 0 ]
   ]
  ]
@@ -8264,7 +8242,7 @@ group "donaldsDock" [
   battle_cell [ 20 20 -74.9791 -370.153 -0.5 ]
   street "street_40x40_DNARoot" [
    code [ "street_40x40" ]
-   pos [ -95 -390 -8.01086e-005 ]
+   pos [ -95 -390 -8.01086e-05 ]
    nhpr [ -0 0 -0 ]
    texture [ "street_street_DD_tex" ]
    texture [ "street_sidewalk_DD_tex" ]
@@ -8360,7 +8338,7 @@ group "donaldsDock" [
    ]
    prop "prop_crate_DNARoot" [
     code [ "prop_crate" ]
-    pos [ 16.9999 -3.00002 3.8147e-006 ]
+    pos [ 16.9999 -3.00002 3.8147e-06 ]
     nhpr [ 30 0 -0 ]
    ]
   ]
@@ -8506,7 +8484,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_5_models_char__ttc_hydrant" ]
    anim [ "tt_a_ara_ttc_hydrant_firstMoveArmUp3" ]
    cell_id [ 0 ]
-   pos [ -82.2333 -384.189 -8.01086e-005 ]
+   pos [ -82.2333 -384.189 -8.01086e-05 ]
    nhpr [ 165 0 0 ]
   ]
  ]
@@ -8521,7 +8499,7 @@ group "donaldsDock" [
   battle_cell [ 20 20 -45.0107 -369.955 -0.5 ]
   street "street_20x40_DNARoot" [
    code [ "street_20x40" ]
-   pos [ -55 -390 3.05176e-005 ]
+   pos [ -55 -390 3.05176e-05 ]
    nhpr [ -0 0 -0 ]
    texture [ "street_street_DD_tex" ]
    texture [ "street_sidewalk_DD_tex" ]
@@ -8560,7 +8538,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_mailbox" ]
    anim [ "tt_a_ara_dod_mailbox_fightBoost" ]
    cell_id [ 0 ]
-   pos [ -53.1211 -385.402 3.05176e-005 ]
+   pos [ -53.1211 -385.402 3.05176e-05 ]
    nhpr [ 180 0 -0 ]
   ]
  ]
@@ -8577,7 +8555,7 @@ group "donaldsDock" [
   battle_cell [ 20 20 -65.0211 -209.808 -0.5 ]
   street "street_40x40_DNARoot" [
    code [ "street_40x40" ]
-   pos [ -45 -230 1.52588e-005 ]
+   pos [ -45 -230 1.52588e-05 ]
    nhpr [ 90 0 -0 ]
    texture [ "street_street_DD_tex" ]
    texture [ "street_sidewalk_DD_tex" ]
@@ -8834,7 +8812,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_mailbox" ]
    anim [ "tt_a_ara_dod_mailbox_fightBoost" ]
    cell_id [ 0 ]
-   pos [ -81.3821 -214.935 1.52588e-005 ]
+   pos [ -81.3821 -214.935 1.52588e-05 ]
    nhpr [ 90 0 -0 ]
   ]
  ]
@@ -8849,7 +8827,7 @@ group "donaldsDock" [
   battle_cell [ 20 20 -65.1622 -179.809 -0.5 ]
   street "street_20x40_DNARoot" [
    code [ "street_20x40" ]
-   pos [ -45 -190 -1.14441e-005 ]
+   pos [ -45 -190 -1.14441e-05 ]
    nhpr [ 90 0 -0 ]
    texture [ "street_street_DD_tex" ]
    texture [ "street_sidewalk_DD_tex" ]
@@ -8940,7 +8918,7 @@ group "donaldsDock" [
    code [ "interactive_prop_phase_6_models_char__dod_trashcan" ]
    anim [ "tt_a_ara_dod_trashcan_idle1" ]
    cell_id [ 0 ]
-   pos [ -49.4738 -179.039 -1.14441e-005 ]
+   pos [ -49.4738 -179.039 -1.14441e-05 ]
    nhpr [ -90 0 -0 ]
   ]
  ]
