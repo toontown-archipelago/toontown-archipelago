@@ -12,8 +12,6 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
 
     def __init__(self, cr, subId=1):
         DistributedNPCToonBase.__init__(self, cr)
-        self.isLocalToon = 0
-        self.av = None
         self.button = None
         self.popupInfo = None
         self.petshopGui = None
@@ -35,8 +33,7 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
         if self.petshopGui:
             self.petshopGui.destroy()
             self.petshopGui = None
-        self.av = None
-        if self.isLocalToon:
+        if self.isBusyWithLocalToon():
             base.localAvatar.posCamera(0, 0)
         DistributedNPCToonBase.disable(self)
         return
@@ -65,18 +62,12 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
             place.fsm.request('walk')
 
     def handleCollisionSphereEnter(self, collEntry):
-        if self.allowedToEnter():
-            base.cr.playGame.getPlace().fsm.request('purchase')
-            self.sendUpdate('avatarEnter', [])
-        else:
-            place = base.cr.playGame.getPlace()
-            if place:
-                place.fsm.request('stopped')
-            self.dialog = TeaserPanel.TeaserPanel(pageName='tricks', doneFunc=self.handleOkTeaser)
+        base.cr.playGame.getPlace().fsm.request('purchase')
+        self.sendUpdate('avatarEnter', [])
+        self.setBusyWithLocalToon(True)
 
     def __handleUnexpectedExit(self):
         self.notify.warning('unexpected exit')
-        self.av = None
         return
 
     def resetPetshopClerk(self):
@@ -92,10 +83,11 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
         self.startLookAround()
         self.detectAvatars()
         self.clearMat()
-        if self.isLocalToon:
+        if self.isBusyWithLocalToon():
             self.freeAvatar()
         self.petSeeds = None
         self.waitingForPetSeeds = False
+        self.setBusyWithLocalToon(False)
         return Task.done
 
     def ignoreEventDict(self):
@@ -113,17 +105,20 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
         self.subId = subId
 
     def setMovie(self, mode, npcId, avId, extraArgs, timestamp):
+        isLocalToon = avId == base.localAvatar.doId
+        # Under no circumstances, if this movie was sent from someone else and we are currently busy with this NPC stop
+        if self.isBusyWithLocalToon() and not isLocalToon:
+            return
         timeStamp = ClockDelta.globalClockDelta.localElapsedTime(timestamp)
         self.remain = NPCToons.CLERK_COUNTDOWN_TIME - timeStamp
         self.npcId = npcId
-        self.isLocalToon = avId == base.localAvatar.doId
         if mode == NPCToons.SELL_MOVIE_CLEAR:
             return
         if mode == NPCToons.SELL_MOVIE_TIMEOUT:
             if self.cameraLerp:
                 self.cameraLerp.finish()
                 self.cameraLerp = None
-            if self.isLocalToon:
+            if isLocalToon:
                 self.ignoreEventDict()
                 if self.popupInfo:
                     self.popupInfo.reparentTo(hidden)
@@ -133,18 +128,18 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
             self.setChatAbsolute(TTLocalizer.STOREOWNER_TOOKTOOLONG, CFSpeech | CFTimeout)
             self.resetPetshopClerk()
         elif mode == NPCToons.SELL_MOVIE_START:
-            self.av = base.cr.doId2do.get(avId)
-            if self.av is None:
+            av = base.cr.doId2do.get(avId)
+            if av is None:
                 self.notify.warning('Avatar %d not found in doId' % avId)
                 return
             else:
-                self.accept(self.av.uniqueName('disable'), self.__handleUnexpectedExit)
-            self.setupAvatars(self.av)
-            if self.isLocalToon:
+                self.accept(av.uniqueName('disable'), self.__handleUnexpectedExit)
+            self.setupAvatars(av)
+            if isLocalToon:
                 camera.wrtReparentTo(render)
                 self.cameraLerp = LerpPosQuatInterval(camera, 1, Point3(-5, 9, base.localAvatar.getHeight() - 0.5), Point3(-150, -2, 0), other=self, blendType='easeOut', name=self.uniqueName('lerpCamera'))
                 self.cameraLerp.start()
-            if self.isLocalToon:
+            if isLocalToon:
                 taskMgr.doMethodLater(1.0, self.popupPetshopGUI, self.uniqueName('popupPetshopGUI'))
         elif mode == NPCToons.SELL_MOVIE_COMPLETE:
             self.setChatAbsolute(TTLocalizer.STOREOWNER_THANKSFISH_PETSHOP, CFSpeech | CFTimeout)
@@ -162,8 +157,8 @@ class DistributedNPCPetclerk(DistributedNPCToonBase):
             self.setChatAbsolute(TTLocalizer.STOREOWNER_ALREADYCHECKED, CFSpeech | CFTimeout)
             self.resetPetshopClerk()
         elif mode == NPCToons.SELL_MOVIE_TROPHY:
-            self.av = base.cr.doId2do.get(avId)
-            if self.av is None:
+            av = base.cr.doId2do.get(avId)
+            if av is None:
                 self.notify.warning('Avatar %d not found in doId' % avId)
                 return
             else:
