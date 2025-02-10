@@ -22,7 +22,7 @@ from toontown.archipelago.util import net_utils, global_text_properties
 from toontown.archipelago.util.data_package import DataPackage, GlobalDataPackage
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart, get_raw_formatted_string
 from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
-from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color, item_flag_to_string, NetworkPlayer
+from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color, item_flag_to_string, NetworkPlayer, item_flag_to_star
 from toontown.archipelago.packets import packet_registry
 from toontown.archipelago.packets.archipelago_packet_base import ArchipelagoPacketBase
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
@@ -420,10 +420,13 @@ class ArchipelagoClient(DirectObject):
         # Let's make the string pretty
         name_color = 'flatgreen' if someone_elses else 'magenta'
         item_color = item_flag_to_color(item_flag)
+        item_stars = item_flag_to_star(item_flag)
         item_display_string = global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("AP Reward: ", color='salmon'),
             MinimalJsonMessagePart(owner_name, color=name_color),
-            MinimalJsonMessagePart(item_name, color=item_color)
+            MinimalJsonMessagePart(item_stars[0], color=item_color),
+            MinimalJsonMessagePart(item_name, color=item_color),
+            MinimalJsonMessagePart(item_stars[1], color=item_color),
         ])
 
         self.location_scouts_cache.put(our_location_id, item_display_string)
