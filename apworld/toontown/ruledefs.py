@@ -447,7 +447,7 @@ def TierOneCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.TierFourCogs, 4, None)
 @rule(Rule.TierFourSellbot, 4, ToontownRegionName.SBHQ)
 @rule(Rule.TierFourCashbot, 4, ToontownRegionName.CBHQ)
-@rule(Rule.TierFourLawbot,  4, ToontownRegionName.LBHQ)
+@rule(Rule.TierFourLawbot,  4, None)
 @rule(Rule.TierFourBossbot, 4, None)
 @rule(Rule.TierFiveCogs, 5, None)
 @rule(Rule.TierFiveSellbot, 5, ToontownRegionName.SBHQ)
