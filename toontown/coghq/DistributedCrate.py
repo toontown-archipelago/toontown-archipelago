@@ -133,7 +133,7 @@ class DistributedCrate(DistributedCrushableEntity.DistributedCrushableEntity):
         offsetVec.normalize()
         offsetDot = offsetVec[0] * worldVec[0] + offsetVec[1] * worldVec[1]
         self.notify.debug('offsetDot = %s, world = %s, rel = %s' % (offsetDot, worldVec, offsetVec))
-        if relativeVec.getY() < -0.7 and offsetDot > 0.9 and offsetVec.getZ() < 0.05:
+        if relativeVec.getY() < -0.5 and offsetDot > .7 and offsetVec.getZ() < .1:
             self.getCrateSide(crateNormal)
             self.tContact = globalClock.getFrameTime()
             self.__listenForCollisions(0)

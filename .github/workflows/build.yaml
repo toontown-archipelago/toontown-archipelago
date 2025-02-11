@@ -58,6 +58,10 @@ jobs:
       - name: Copy Astron
         run: |
           Copy-Item -Path "astron" -Destination "release\game" -Recurse
+          # delete the unix files, keep the exe and dlls
+          Get-ChildItem -Path release\game\astron -File | Where-Object { $_.Extension -notin '.exe', '.dll' } | Remove-Item -Force
+         
+         
 
       - name: Compress Release
         run: |
