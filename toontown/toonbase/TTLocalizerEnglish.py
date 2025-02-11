@@ -10000,6 +10000,7 @@ OptionNames = {
     "music-volume": "Music Volume",
     "sfx-volume": "Sound Effects Volume",
     "toon-chat-sounds": "Toon Chat Sounds",
+    'refresh-audio': "Refresh Audio",
 }
 
 OptionAntiAlias = {

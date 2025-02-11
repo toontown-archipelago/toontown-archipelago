@@ -68,21 +68,21 @@
       "mm-4300-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
       "mm-4300-activity": "phase_6/audio/bgm/MM_SZ_activity.ogg",
 
-      "br-sz": "phase_8/audio/bgm/BR_nbrhood.ogg",
+      "br-sz": "phase_8/audio/bgm/TB_nbrhood.ogg",
       "br-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
-      "br-sz-activity": "phase_8/audio/bgm/BR_SZ_activity.ogg",
+      "br-sz-activity": "phase_8/audio/bgm/TB_SZ_activity.ogg",
 
-      "br-3100": "phase_8/audio/bgm/BR_SZ.ogg",
+      "br-3100": "phase_8/audio/bgm/TB_nbrhood.ogg",
       "br-3100-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
-      "br-3100-activity": "phase_8/audio/bgm/BR_SZ_activity.ogg",
+      "br-3100-activity": "phase_8/audio/bgm/TB_SZ_activity.ogg",
 
-      "br-3200": "phase_8/audio/bgm/BR_SZ.ogg",
+      "br-3200": "phase_8/audio/bgm/TB_SZ.ogg",
       "br-3200-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
-      "br-3200-activity": "phase_8/audio/bgm/BR_SZ_activity.ogg",
+      "br-3200-activity": "phase_8/audio/bgm/TB_SZ_activity.ogg",
 
-      "br-3300": "phase_8/audio/bgm/BR_SZ.ogg",
+      "br-3300": "phase_8/audio/bgm/TB_SZ.ogg",
       "br-3300-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
-      "br-3300-activity": "phase_8/audio/bgm/BR_SZ_activity.ogg",
+      "br-3300-activity": "phase_8/audio/bgm/TB_SZ_activity.ogg",
 
       "dl-sz": "phase_8/audio/bgm/DL_nbrhood.ogg",
       "dl-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",

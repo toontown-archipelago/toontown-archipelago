@@ -720,3 +720,47 @@ class ToonBase(OTPBase.OTPBase):
                 screenSizes.append(size)
 
         return sorted(screenSizes)
+
+    def refreshAudio(self):
+        """
+        This function is used to reload the output device for audio.
+        """
+        self.notify.info("Refreshing audio devices...")
+        # Store the currently playing music, and the time
+        currentMusic = {}
+        currentMusicInfo = {}
+        musicJson = {}
+        if getattr(self, "musicManager", None):
+            currentMusic = self.contentPackMusicManager.getCurMusic() # this will return a dict with the current music, the value of each being the object of the music
+            currentMusicInfo = self.contentPackMusicManager.getCurMusicInfo() # this will return a dict with the current music, the value of each being data like looping, volume, etc.
+            musicJson = self.contentPackMusicManager.musicJson
+            # Stop all sounds
+            for music in currentMusic:
+                self.musicManager.shutdown()
+            for sfxManager in self.sfxManagerList:
+                sfxManager.shutdown()
+            self.sfxManagerList = []
+        # stop in contentPackMusicManager
+        self.contentPackMusicManager.stopMusic()
+        # Reinitialize audio managers
+        base.createBaseAudioManagers()
+        # Apply previous volume settings
+        musicVol = self.settings.get("music-volume")
+        sfxVol = self.settings.get("sfx-volume")
+        self.musicManager.setVolume(musicVol ** 2)
+        for sfm in self.sfxManagerList:
+            sfm.setVolume(sfxVol ** 2)
+        # Play the music again
+        if musicJson:
+            for json_code in musicJson['global_music'].keys():
+                if json_code not in currentMusic.keys():
+                    continue
+                musicInfo = currentMusicInfo[json_code]
+                looping = musicInfo.get("looping", True)
+                volume = musicInfo.get("volume", 1.0) ** 2
+                time = musicInfo.get("time", 0.0)
+                self.notify.info(f"Playing music {json_code} with looping={looping}, volume={volume}, time={time}")
+                self.contentPackMusicManager.playMusic(json_code, looping, volume, time)
+        else:
+            self.notify.warning("No music was playing before the audio devices were refreshed.")
+        self.notify.info("Audio devices refreshed.")
