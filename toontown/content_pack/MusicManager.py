@@ -17,15 +17,15 @@ class MusicManager:
         if json_code in self.musicJson['global_music']:
             json_code_path = self.musicJson['global_music'][json_code]
             self.currentMusic[json_code] = base.loader.loadMusic(json_code_path)
-            self.currentMusic[json_code].setLoop(looping)
-            self.currentMusic[json_code].setVolume(volume)
-            if interrupt:
-                self.currentMusic[json_code].play()
+            self.currentMusic.setLoop(looping)
+            self.currentMusic.setVolume(volume)
+            self.currentMusic.play()
     
-    def stopMusic(self):        
-        for music in list(self.currentMusic.keys()):
-            self.currentMusic[music].stop()
-        self.currentMusic = {}
+    def stopMusic(self):
+        if self.currentMusicFile is not None:
+            for music in list(self.currentMusic.keys()):
+                self.currentMusic[music].stop()
+            self.currentMusic = {}
 
     def stopSpecificMusic(self, json_code):
         if json_code in list(self.currentMusic.keys()):
@@ -34,8 +34,10 @@ class MusicManager:
             self.currentMusic.pop(json_code, None)
 
     def setVolume(self, volume=1.0):
-        for music in list(self.currentMusic.keys()):
-            self.currentMusic[music].setVolume(volume)
+        if self.currentMusicFile is not None:
+            for music in list(self.currentMusic.keys()):
+                self.currentMusic[music].setVolume(volume)
+            self.currentMusic = {}
 
     def setSpecificVolume(self, json_code, volume=1.0):
         if json_code in list(self.currentMusic.keys()):
