@@ -230,7 +230,7 @@ class DistributedPairingGame(DistributedMinigame):
 
     def enterPlay(self):
         self.notify.debug('enterPlay')
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.9)
         orthoDrive = OrthoDrive(self.TOON_SPEED, maxFrameMove=self.MAX_FRAME_MOVE, customCollisionCallback=self.__doPairingGameCollisions)
         self.orthoWalk = OrthoWalk(orthoDrive, broadcast=not self.isSinglePlayer())
         self.orthoWalk.start()

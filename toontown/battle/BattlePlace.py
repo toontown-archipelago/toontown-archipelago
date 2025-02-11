@@ -38,7 +38,7 @@ class BattlePlace(Place.Place):
         if base.config.GetBool('want-qa-regression', 0):
             self.notify.info('QA-REGRESSION: COGBATTLE: Enter Battle')
         self.loader.music.stop()
-        base.playMusic(self.loader.battleMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.loader.battleMusic, looping=1, volume=0.9)
         self.enterTownBattle(event)
         self.enterFLM()
         base.localAvatar.b_setAnimState('off', 1)
@@ -52,7 +52,7 @@ class BattlePlace(Place.Place):
     def exitBattle(self):
         self.loader.townBattle.exit()
         self.loader.battleMusic.stop()
-        base.playMusic(self.loader.music, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.loader.music, looping=1, volume=0.8)
         base.localAvatar.cantLeaveGame = 0
         base.localAvatar.setTeleportAvailable(0)
         self.ignore('teleportQuery')

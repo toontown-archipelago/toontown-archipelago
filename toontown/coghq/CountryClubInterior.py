@@ -102,7 +102,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.playMusic(self.music, looping=1, volume=0.8)
+            base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.8)
             base.transitions.irisIn()
             CountryClub = bboard.get(DistributedCountryClub.DistributedCountryClub.ReadyPost)
             self.loader.hood.spawnTitleText(CountryClub.countryClubId, CountryClub.floorNum)
@@ -175,7 +175,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         CountryClubInterior.notify.debug('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
         self.loader.music.stop()
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.8)
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)

@@ -1174,7 +1174,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.toMovieMode()
         camera.reparentTo(self.elevatorModel)
         camera.setPosHpr(0, 30, 8, 180, 0, 0)
-        base.playMusic(self.elevatorMusic, looping=1, volume=1.0)
+        base.audioPlaybackManager.playSong(self.elevatorMusic, looping=1, volume=1.0)
         ival = Sequence(ElevatorUtils.getRideElevatorInterval(self.elevatorType), ElevatorUtils.getRideElevatorInterval(self.elevatorType), self.openDoors, Func(camera.wrtReparentTo, render), Func(self.__doneElevator))
         intervalName = 'ElevatorMovie'
         ival.start()
@@ -1227,7 +1227,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.toonsToBattlePosition(self.toonsA, self.battleANode)
         self.toonsToBattlePosition(self.toonsB, self.battleBNode)
         self.releaseToons()
-        base.playMusic(self.battleOneMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.battleOneMusic, looping=1, volume=0.9)
 
     def exitBattleOne(self):
         self.cleanupBattles()

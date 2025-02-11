@@ -1088,7 +1088,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.midVault.unstash()
         self.__showResistanceToon(True)
         
-        base.playMusic(self.stingMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.stingMusic, looping=1, volume=0.9)
         
         DistributedBossCog.DistributedBossCog.enterIntroduction(self)
 
@@ -1210,7 +1210,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.generateHealthBar()
         self.updateHealthBar()
         
-        base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.battleThreeMusic, looping=1, volume=0.9)
         
         # It is important to make sure this task runs immediately
         # before the collisionLoop of ShowBase.  That will fix up the
@@ -1308,7 +1308,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.storeInterval(seq, intervalName)
         self.bossHealthBar.deinitialize()
         if self.oldState != 'BattleThree':
-            base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
+            base.audioPlaybackManager.playSong(self.battleThreeMusic, looping=1, volume=0.9)
         self.bossSpeedrunTimer.stop_updating()
         self.__showSpectators()
 
@@ -1360,7 +1360,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         ival.start()
         self.storeInterval(ival, intervalName)
         if self.oldState != 'Victory':
-            base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
+            base.audioPlaybackManager.playSong(self.battleThreeMusic, looping=1, volume=0.9)
 
     def __doneReward(self):
         self.doneBarrier('Reward')
@@ -1437,7 +1437,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.accept("nextChatPage", self.__epilogueChatNext)
         self.accept("doneChatPage", self.__epilogueChatDone)
 
-        base.playMusic(self.epilogueMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.epilogueMusic, looping=1, volume=0.9)
 
     def __epilogueChatNext(self, pageNumber, elapsed):
         if pageNumber == 1:

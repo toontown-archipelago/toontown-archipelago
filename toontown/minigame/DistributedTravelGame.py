@@ -388,7 +388,7 @@ class DistributedTravelGame(DistributedMinigame):
 
         base.transitions.irisIn(0.4)
         base.setBackgroundColor(0.1875, 0.7929, 0)
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.9)
         self.introMovie.start()
 
     def offstage(self):

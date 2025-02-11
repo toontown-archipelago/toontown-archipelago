@@ -63,6 +63,7 @@ OptionToType = {
     "music-volume": OptionTypes.SLIDER,
     "sfx-volume": OptionTypes.SLIDER,
     "toon-chat-sounds": OptionTypes.BUTTON,
+    "refresh-audio": OptionTypes.BUTTON
 }
 
 # All control options are naturally going to be of the CONTROL option type,
@@ -161,6 +162,7 @@ class OptionsTabPage(DirectFrame, FSM):
         ],
         "Audio": [
             "music", "sfx", "music-volume", "sfx-volume", "toon-chat-sounds",
+            "refresh-audio"
         ],
     }
 
@@ -553,6 +555,8 @@ class OptionElement(DirectFrame):
             if self.optionType == OptionTypes.CONTROL:
                 self.checkForDuplicates()
                 self.accept("controls_findDuplicates", self.checkForDuplicates)
+            if self.optionName == 'refresh-audio':
+                self.optionModifier["text"] = TTLocalizer.OptionNames['refresh-audio'] # This is a special case where there is no setting to display.
         # Make the slider which will appear on the right-hand side of
         # the page.
         elif self.optionType == OptionTypes.SLIDER:
@@ -709,7 +713,10 @@ class OptionElement(DirectFrame):
             messenger.send("disable-hotkeys")
             self.accept(self.controlTask, self.registerKey)
             return
-
+        elif self.optionName == 'refresh-audio':
+            base.refreshAudio()
+            self.optionModifier["text"] = TTLocalizer.OptionNames['refresh-audio']
+            return
         elif self.optionType == OptionTypes.BUTTON_SPEEDCHAT:
             # Increment the speedchat index.
             current = base.localAvatar.getSpeedChatStyleIndex()

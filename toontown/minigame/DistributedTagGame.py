@@ -159,7 +159,7 @@ class DistributedTagGame(DistributedMinigame):
         self.timer.posInTopRightCorner()
         self.timer.setTime(self.DURATION)
         self.timer.countdown(self.DURATION, self.timerExpired)
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.9)
         base.localAvatar.setIdealCameraPos(Point3(0, -24, 8))
 
     def exitPlay(self):

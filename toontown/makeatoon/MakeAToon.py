@@ -97,7 +97,7 @@ class MakeAToon(StateData.StateData):
             self.notify.info('QA-REGRESSION: MAKEATOON: Starting Make A Toon')
         base.cr.centralLogger.writeClientEvent('MAT - startingMakeAToon')
         base.camLens.setFov(ToontownGlobals.MakeAToonCameraFov)
-        base.playMusic(self.music, looping=1)
+        base.audioPlaybackManager.playSong(self.music, looping=1)
         camera.setPosHpr(-5.7, -12.3501, 2.15, -24.8499, 2.73, 0)
         if self.warp:
             if self.toon.style.torso[1] == 's':

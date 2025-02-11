@@ -94,7 +94,7 @@ class MintInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.playMusic(self.music, looping=1, volume=0.8)
+            base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.8)
             base.transitions.irisIn()
             mint = bboard.get(DistributedMint.DistributedMint.ReadyPost)
             self.loader.hood.spawnTitleText(mint.mintId, mint.floorNum)
@@ -162,7 +162,7 @@ class MintInterior(BattlePlace.BattlePlace):
         MintInterior.notify.debug('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
         self.loader.music.stop()
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.8)
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)

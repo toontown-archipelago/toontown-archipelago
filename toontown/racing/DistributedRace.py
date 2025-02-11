@@ -107,7 +107,7 @@ class DistributedRace(DistributedObject.DistributedObject):
         DistributedObject.DistributedObject.announceGenerate(self)
         musicFile = self.BGM_BaseDir + RaceGlobals.TrackDict[self.trackId][7]
         self.raceMusic = base.loader.loadMusic(musicFile)
-        base.playMusic(self.raceMusic, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.raceMusic, looping=1, volume=0.8)
         camera.reparentTo(render)
         if self.trackId in (RaceGlobals.RT_Urban_1,
          RaceGlobals.RT_Urban_1_rev,

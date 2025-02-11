@@ -207,7 +207,7 @@ class Playground(BattlePlace):
         messenger.send('enterPlayground')
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)
-        base.playMusic(self.loader.music, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.loader.music, looping=1, volume=0.8)
         self.loader.geom.reparentTo(render)
         for i in self.loader.nodeList:
             self.loader.enterAnimatedProps(i)

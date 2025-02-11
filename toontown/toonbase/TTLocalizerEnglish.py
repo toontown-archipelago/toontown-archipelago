@@ -9961,6 +9961,7 @@ OptionNames = {
     "color-blind-mode": "Colorblind Mode",
     "want-legacy-models": "Toggle TTO Species Models*",
     'laff-display': "Toggle Overhead Laff Meter",
+    'refresh-audio': "Refresh Audio",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",

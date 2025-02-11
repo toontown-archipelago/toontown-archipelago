@@ -541,7 +541,7 @@ class DistributedVineGame(DistributedMinigame):
         self.timer.posInTopRightCorner()
         self.timer.setTime(VineGameGlobals.GameDuration)
         self.timer.countdown(VineGameGlobals.GameDuration, self.timerExpired)
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.9)
         self.__spawnUpdateLocalToonTask()
 
     def exitPlay(self):

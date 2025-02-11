@@ -663,7 +663,7 @@ class DistributedTargetGame(DistributedMinigame):
         self.__spawnUpdateShadowsTask()
         self.__spawnUpdateLocalToonTask()
         if self.music:
-            base.playMusic(self.music, looping=1, volume=0.8)
+            base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.8)
         if None != self.sndAmbience:
             base.playSfx(self.sndAmbience, looping=1, volume=0.8)
         return

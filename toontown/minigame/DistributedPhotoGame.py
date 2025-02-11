@@ -254,7 +254,7 @@ class DistributedPhotoGame(DistributedMinigame, PhotoGameBase.PhotoGameBase):
         self.__setupSubjects()
         self.__startIntro()
         base.transitions.irisIn()
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.8)
         orgFov = base.camLens.getFov()
         self.outFov = orgFov.getX()
         self.zoomFov = orgFov.getX() * ZOOMRATIO

@@ -203,7 +203,7 @@ class DistributedGolfCourse(DistributedObject.DistributedObject, FSM, DelayDelet
 
     def onstage(self):
         self.notify.debug('GOLF COURSE: onstage')
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.9)
 
     def avExited(self, avId):
         self.exitedAvIdList.append(avId)

@@ -499,7 +499,7 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
         camera.setH(180)
         camera.setP(0)
         camera.setPos(0, 14, 4)
-        base.playMusic(self.elevatorMusic, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.elevatorMusic, looping=1, volume=0.8)
         track = Sequence(Func(base.transitions.noTransitions), ElevatorUtils.getRideElevatorInterval(ELEVATOR_NORMAL), ElevatorUtils.getOpenInterval(self, self.leftDoorIn, self.rightDoorIn, self.openSfx, None, type=ELEVATOR_NORMAL), Func(camera.wrtReparentTo, render))
         for toon in self.toons:
             track.append(Func(toon.wrtReparentTo, render))
@@ -595,7 +595,7 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
             if self._wantBarrelRoom:
                 self.acceptOnce('localToonLeft', self.__handleLocalToonLeftBarrelRoom)
                 self.barrelRoom.activate()
-                base.playMusic(self.waitMusic, looping=1, volume=0.7)
+                base.audioPlaybackManager.playSong(self.waitMusic, looping=1, volume=0.7)
 
     def exitCollectBarrels(self):
         if self._wantBarrelRoom and not self.isBossFloor(self.currentFloor):
@@ -697,7 +697,7 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
         self._setAvPosFDC = FrameDelayedCall('setAvPos', self._setAvPosToExit)
         if self._wantBarrelRoom:
             self.barrelRoom.showBattleAreaLight(True)
-        base.playMusic(self.waitMusic, looping=1, volume=0.7)
+        base.audioPlaybackManager.playSong(self.waitMusic, looping=1, volume=0.7)
         self.__closeInElevator()
         self._haveEntranceElevator.set(False)
         self._stashEntranceElevator.set(False)

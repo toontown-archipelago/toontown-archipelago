@@ -209,7 +209,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
                 self.music.setLoop(1)
                 self.music.setVolume(base.settings.get("music-volume") ** 2)
                 self.music.play()
-        base.playMusic(self.music, looping=1, volume=base.settings.get("music-volume") ** 2, interrupt=None)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=base.settings.get("music-volume") ** 2, interrupt=None)
         self.handler = self.handleMessageType
         self.avChoiceDoneEvent = 'avatarChooserDone'
         self.avChoice = AvatarChooser.AvatarChooser(avList, self.loginFSM, self.avChoiceDoneEvent)

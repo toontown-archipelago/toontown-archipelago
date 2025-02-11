@@ -136,7 +136,7 @@ class Estate(Place.Place):
                 self.startAprilFoolsControls()
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)
-        base.playMusic(self.loader.music, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.loader.music, looping=1, volume=0.8)
         self.fsm.request(requestStatus['how'], [requestStatus])
 
     def startAprilFoolsControls(self):

@@ -30,6 +30,7 @@ import time
 import toontown.archipelago.util.global_text_properties as global_text_properties
 from .ErrorTrackingService import ErrorTrackingService, SentryErrorTrackingService, ServiceType
 from ..settings.Settings import Settings, ControlSettings
+from toontown.audio.AudioPlaybackManager import AudioPlaybackManager
 
 if typing.TYPE_CHECKING:
     from toontown.toonbase.ToonBaseGlobals import *
@@ -94,6 +95,7 @@ class ToonBase(OTPBase.OTPBase):
         camera.setPosHpr(0, 0, 0, 0, 0, 0)
         self.camLens.setMinFov(ToontownGlobals.DefaultCameraFov / (4. / 3.))
         self.camLens.setNearFar(ToontownGlobals.DefaultCameraNear, ToontownGlobals.DefaultCameraFar)
+        self.audioPlaybackManager = AudioPlaybackManager(self.musicManager)
         self.musicManager.setVolume(musicVol ** 2)
         for sfm in self.sfxManagerList:
             sfm.setVolume(sfxVol ** 2)
@@ -717,3 +719,39 @@ class ToonBase(OTPBase.OTPBase):
                 screenSizes.append(size)
 
         return sorted(screenSizes)
+    
+    def refreshAudio(self):
+        """
+        This function is used to reload the output device for audio.
+        """
+        self.notify.info("Refreshing audio devices...")
+        # Store the currently playing music, and the time
+        currentMusic = None
+        if self.musicManager:
+            currentMusic = self.audioPlaybackManager.getSong()
+        # Stop all sounds
+        if self.musicManager:
+            self.musicManager.stopAllSounds()
+        
+        for sfm in self.sfxManagerList:
+            sfm.stopAllSounds()
+
+        # destroy audio managers
+        self.musicManager = None
+        self.sfxManagerList = []
+        # Reinitialize audio managers
+        base.createBaseAudioManagers()
+
+        # Apply previous volume settings
+        musicVol = self.settings.get("music-volume")
+        sfxVol = self.settings.get("sfx-volume")
+        self.musicManager.setVolume(musicVol ** 2)
+        for sfm in self.sfxManagerList:
+            sfm.setVolume(sfxVol ** 2)
+        # Play the music again
+        if currentMusic:
+             # just assume the song loops as most songs in tt loop
+             # and if ur in settings you probably are in a location
+             #  with looping music
+             self.audioPlaybackManager.playSong(currentMusic, looping=1)
+        self.notify.info("Audio devices refreshed.")

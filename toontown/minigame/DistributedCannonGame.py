@@ -238,7 +238,7 @@ class DistributedCannonGame(DistributedMinigame):
         base.camLens.setFar(FAR_PLANE_DIST)
         self.__startIntro()
         base.transitions.irisIn(0.4)
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.8)
 
     def offstage(self):
         self.notify.debug('offstage')

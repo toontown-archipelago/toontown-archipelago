@@ -248,7 +248,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         if not self.resistanceToonOnstage:
             self.__showResistanceToon(True)
         DistributedBossCog.DistributedBossCog.enterIntroduction(self)
-        base.playMusic(self.promotionMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.promotionMusic, looping=1, volume=0.9)
 
     def exitIntroduction(self):
         DistributedBossCog.DistributedBossCog.exitIntroduction(self)
@@ -304,7 +304,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         seq.start()
         seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
-        base.playMusic(self.betweenPhaseMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.betweenPhaseMusic, looping=1, volume=0.9)
 
     def makePrepareBattleTwoMovie(self, delayDeletes):
         for toonId in self.involvedToons:
@@ -426,7 +426,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.servingTimer = ToontownTimer.ToontownTimer()
         self.servingTimer.posInTopRightCorner()
         self.servingTimer.countdown(ToontownGlobals.BossbotBossServingDuration)
-        base.playMusic(self.phaseTwoMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.phaseTwoMusic, looping=1, volume=0.9)
         base.localAvatar.obscureFriendsListButton(1)
 
     def exitBattleTwo(self):
@@ -546,7 +546,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         seq.start()
         seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
-        base.playMusic(self.betweenPhaseMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.betweenPhaseMusic, looping=1, volume=0.9)
 
     def calcNotDeadList(self):
         if not self.notDeadList:
@@ -606,7 +606,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.toonsToBattlePosition(self.toonsA, self.battleANode)
         self.toonsToBattlePosition(self.toonsB, self.battleBNode)
         self.releaseToons()
-        base.playMusic(self.battleOneMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.battleOneMusic, looping=1, volume=0.9)
 
     def cleanupIntervals(self):
         super().cleanupIntervals()
@@ -632,7 +632,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         seq.start()
         seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
-        base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.phaseFourMusic, looping=1, volume=0.9)
 
     def exitPrepareBattleFour(self):
         self.disableSkipCutscene()
@@ -693,7 +693,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.updateHealthBar()
         self.resetAndShowScoreboard()
         self.startTimer()
-        base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.phaseFourMusic, looping=1, volume=0.9)
 
 
     def exitBattleFour(self):
@@ -742,7 +742,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         seq.setPlayRate(3.0)
         self.bossHealthBar.deinitialize()
         self.storeInterval(seq, intervalName)
-        base.playMusic(self.phaseFourMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.phaseFourMusic, looping=1, volume=0.9)
         self.bossSpeedrunTimer.stop_updating()
 
     def __continueVictory(self):
@@ -812,7 +812,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         ival.delayDeletes = delayDeletes
         ival.start()
         self.storeInterval(ival, intervalName)
-        base.playMusic(self.betweenPhaseMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.betweenPhaseMusic, looping=1, volume=0.9)
 
     def __doneReward(self):
         self.notify.debug('----- __doneReward')
@@ -849,7 +849,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         seq.start()
         self.storeInterval(seq, intervalName)
         self.accept('doneChatPage', self.__doneEpilogue)
-        base.playMusic(self.epilogueMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.epilogueMusic, looping=1, volume=0.9)
 
     def __doneEpilogue(self, elapsedTime = 0):
         self.notify.debug('----- __doneEpilogue')

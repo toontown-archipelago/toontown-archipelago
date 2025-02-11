@@ -92,7 +92,7 @@ class ToonInterior(Place.Place):
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)
         volume = requestStatus.get('musicVolume', 0.7)
-        base.playMusic(self.loader.activityMusic, looping=1, volume=volume)
+        base.audioPlaybackManager.playSong(self.loader.activityMusic, looping=1, volume=volume)
         self._telemLimiter = TLGatherAllAvs('ToonInterior', RotationLimitToH)
         NametagGlobals.setMasterArrowsOn(1)
         self.fsm.request(requestStatus['how'], [requestStatus])

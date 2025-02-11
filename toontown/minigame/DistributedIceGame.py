@@ -206,7 +206,7 @@ class DistributedIceGame(DistributedMinigame.DistributedMinigame, DistributedIce
         self.__placeToon(self.localAvId)
         self.moveCameraToTop()
         self.scorePanels = []
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.8)
 
     def offstage(self):
         self.notify.debug('offstage')

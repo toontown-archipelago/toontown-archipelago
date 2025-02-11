@@ -50,7 +50,7 @@ class FireworkShowMixin:
         if self.timestamp:
             self.getLoader().music.stop()
             t = globalClockDelta.localElapsedTime(self.timestamp) - self.startDelay
-            base.playMusic(self.showMusic, 0, 1, 0.8, max(0, t))
+            base.audioPlaybackManager.playSong(self.showMusic, 0, 1, 0.8, max(0, t))
 
     def shootFirework(self, x, y, z, style, color1, color2):
         amp = 5
@@ -129,7 +129,7 @@ class FireworkShowMixin:
             return
 
         if self.__checkHoodValidity() and hasattr(base.cr.playGame, 'hood') and base.cr.playGame.hood and hasattr(base.cr.playGame.hood, 'sky') and base.cr.playGame.hood.sky:
-            preShow = Sequence(Func(base.localAvatar.setSystemMessage, 0, startMessage), Parallel(LerpColorScaleInterval(base.cr.playGame.hood.sky, 2.5, Vec4(0.0, 0.0, 0.0, 1.0)), LerpColorScaleInterval(base.cr.playGame.hood.loader.geom, 2.5, Vec4(0.25, 0.25, 0.35, 1)), LerpColorScaleInterval(base.localAvatar, 2.5, Vec4(0.85, 0.85, 0.85, 1)), Func(__lightDecorationOn__)), Func(base.setBackgroundColor, Vec4(0, 0, 0, 1)), Func(self.__checkDDFog), Func(base.camLens.setFar, 1000.0), Func(base.cr.playGame.hood.sky.hide), Func(base.localAvatar.setSystemMessage, 0, instructionMessage), Func(self.getLoader().music.stop), Wait(2.0), Func(base.playMusic, self.showMusic, 0, 1, 0.8, max(0, startT)))
+            preShow = Sequence(Func(base.localAvatar.setSystemMessage, 0, startMessage), Parallel(LerpColorScaleInterval(base.cr.playGame.hood.sky, 2.5, Vec4(0.0, 0.0, 0.0, 1.0)), LerpColorScaleInterval(base.cr.playGame.hood.loader.geom, 2.5, Vec4(0.25, 0.25, 0.35, 1)), LerpColorScaleInterval(base.localAvatar, 2.5, Vec4(0.85, 0.85, 0.85, 1)), Func(__lightDecorationOn__)), Func(base.setBackgroundColor, Vec4(0, 0, 0, 1)), Func(self.__checkDDFog), Func(base.camLens.setFar, 1000.0), Func(base.cr.playGame.hood.sky.hide), Func(base.localAvatar.setSystemMessage, 0, instructionMessage), Func(self.getLoader().music.stop), Wait(2.0), Func(base.audioPlaybackManager.playSong, self.showMusic, 0, 1, 0.8, max(0, startT)))
             return preShow
         return None
 
@@ -158,7 +158,7 @@ class FireworkShowMixin:
             postShow = Sequence(Func(base.cr.playGame.hood.sky.show), Parallel(LerpColorScaleInterval(base.cr.playGame.hood.sky, 2.5, Vec4(1, 1, 1, 1)), LerpColorScaleInterval(base.cr.playGame.hood.loader.geom, 2.5, Vec4(1, 1, 1, 1)), LerpColorScaleInterval(base.localAvatar, 2.5, Vec4(1, 1, 1, 1))), Func(self.__restoreDDFog), Func(self.restoreCameraLens), Func(base.setBackgroundColor, DefaultBackgroundColor), Func(self.showMusic.stop), Func(base.localAvatar.setSystemMessage, 0, endMessage))
         if self.restorePlaygroundMusic:
             postShow.append(Wait(2.0))
-            postShow.append(Func(base.playMusic, self.getLoader().music, 1, 1, 0.8))
+            postShow.append(Func(base.audioPlaybackManager.playSong, self.getLoader().music, 1, 1, 0.8))
         return postShow
 
     def createFireworkShow(self):

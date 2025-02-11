@@ -543,7 +543,7 @@ class DistributedDivingGame(DistributedMinigame):
 
     def enterSwim(self):
         self.notify.debug('enterSwim')
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.9)
         self.localLerp = Sequence()
         self.timer = ToontownTimer.ToontownTimer()
         self.timer.posInTopRightCorner()

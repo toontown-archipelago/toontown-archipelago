@@ -697,7 +697,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.rampB.request('extended')
         self.rampC.request('retracted')
         self.setCageIndex(0)
-        base.playMusic(self.promotionMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.promotionMusic, looping=1, volume=0.9)
 
     def exitIntroduction(self):
         DistributedBossCog.DistributedBossCog.exitIntroduction(self)
@@ -743,7 +743,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         seq.start()
         seq.setPlayRate(self.cutsceneSpeed)
         self.storeInterval(seq, intervalName)
-        base.playMusic(self.betweenBattleMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.betweenBattleMusic, looping=1, volume=0.9)
         self.__showEasyBarrels()
         taskMgr.doMethodLater(0.5, self.enableToonCollision, 'enableToonCollision')
 
@@ -788,7 +788,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.hide()
         self.acceptOnce('doneChatPage', self.__onToBattleTwo)
         self.cagedToon.setLocalPageChat(TTLocalizer.CagedToonPrepareBattleTwo, 1)
-        base.playMusic(self.stingMusic, looping=0, volume=1.0)
+        base.audioPlaybackManager.playSong(self.stingMusic, looping=0, volume=1.0)
         taskMgr.doMethodLater(0.5, self.enableToonCollision, 'enableToonCollision')
 
     def __onToBattleTwo(self, elapsed):
@@ -821,7 +821,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         else:
             cageIndex = 2
         self.setCageIndex(cageIndex)
-        base.playMusic(self.battleTwoMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.battleTwoMusic, looping=1, volume=0.9)
         return
 
     def exitBattleTwo(self):
@@ -846,7 +846,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.hide()
         self.acceptOnce('doneChatPage', self.__onToBattleThree)
         self.cagedToon.setLocalPageChat(TTLocalizer.CagedToonPrepareBattleThree, 1)
-        base.playMusic(self.betweenBattleMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.betweenBattleMusic, looping=1, volume=0.9)
 
     def __onToBattleThree(self, elapsed):
         self.doneBarrier('PrepareBattleThree')
@@ -890,7 +890,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossMaxDamage = min(vpMaxHp, ToontownGlobals.SellbotBossMaxDamage)
         self.bossDamageToMovie = self.bossDamageMovie.getDuration() / self.bossMaxDamage
         self.bossDamageMovie.setT(self.bossDamage * self.bossDamageToMovie)
-        base.playMusic(self.battleThreeMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.battleThreeMusic, looping=1, volume=0.9)
         self.bossHealthBar.initialize(self.bossMaxDamage - self.bossDamage, self.bossMaxDamage)
         self.resetAndShowScoreboard()
         self.startTimer()
@@ -945,7 +945,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.forward = 1
         self.doAnimate()
         self.setDizzy(1)
-        base.playMusic(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
+        base.audioPlaybackManager.playSong(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
 
     def exitNearVictory(self):
         self.ignore('enterCage')
@@ -979,7 +979,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.doAnimate('Fb_fall', now=1)
         self.bossHealthBar.deinitialize()
         self.acceptOnce(self.animDoneEvent, self.__continueVictory)
-        base.playMusic(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
+        base.audioPlaybackManager.playSong(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
 
     def __continueVictory(self):
         self.stopAnimate()
@@ -1020,7 +1020,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         ival.delayDeletes = delayDeletes
         ival.start()
         self.storeInterval(ival, intervalName)
-        base.playMusic(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
+        base.audioPlaybackManager.playSong(self.battleThreeMusic, looping=1, volume=0.9, time=self.battleThreeMusicTime)
 
     def __doneReward(self):
         self.doneBarrier('Reward')
@@ -1057,7 +1057,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.storeInterval(seq, intervalName)
         self.accept('nextChatPage', self.__epilogueChatNext)
         self.accept('doneChatPage', self.__epilogueChatDone)
-        base.playMusic(self.epilogueMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.epilogueMusic, looping=1, volume=0.9)
 
     def __epilogueChatNext(self, pageNumber, elapsed):
         if pageNumber == 2:

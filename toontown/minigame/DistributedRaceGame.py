@@ -362,7 +362,7 @@ class DistributedRaceGame(DistributedMinigame):
     def onstage(self):
         self.notify.debug('onstage')
         DistributedMinigame.onstage(self)
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=0.8)
         self.raceBoard.reparentTo(render)
         camera.reparentTo(render)
         p = self.cameraTopView

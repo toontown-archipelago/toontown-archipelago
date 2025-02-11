@@ -117,7 +117,7 @@ class ToonBlitzAssetMgr(DirectObject):
 
     def onstage(self):
         self.world.reparentTo(render)
-        base.playMusic(self.gameMusic, looping=1, volume=0.9)
+        base.audioPlaybackManager.playSong(self.gameMusic, looping=1, volume=0.9)
 
     def offstage(self):
         self.world.hide()

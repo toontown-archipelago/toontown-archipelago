@@ -290,7 +290,7 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
         camera.reparentTo(self.elevatorModelIn)
         camera.setH(180)
         camera.setPos(0, 14, 4)
-        base.playMusic(self.elevatorMusic, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.elevatorMusic, looping=1, volume=0.8)
         track = Sequence(ElevatorUtils.getRideElevatorInterval(ELEVATOR_NORMAL), ElevatorUtils.getOpenInterval(self, self.leftDoorIn, self.rightDoorIn, self.openSfx, None, type=ELEVATOR_NORMAL), Func(camera.wrtReparentTo, render))
         for toon in self.toons:
             track.append(Func(toon.wrtReparentTo, render))
@@ -372,7 +372,7 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
         return None
 
     def enterResting(self, ts = 0):
-        base.playMusic(self.waitMusic, looping=1, volume=0.7)
+        base.audioPlaybackManager.playSong(self.waitMusic, looping=1, volume=0.7)
         self.__closeInElevator()
 
     def exitResting(self):

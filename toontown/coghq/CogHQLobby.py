@@ -47,7 +47,7 @@ class CogHQLobby(Place.Place):
         base.discord.setZone(self.zoneId)
         Place.Place.enter(self)
         self.fsm.enterInitialState()
-        base.playMusic(self.loader.music, looping=1, volume=0.8)
+        base.audioPlaybackManager.playSong(self.loader.music, looping=1, volume=0.8)
         self.loader.geom.reparentTo(render)
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)

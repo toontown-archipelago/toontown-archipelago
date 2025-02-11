@@ -271,7 +271,7 @@ class DistributedPatternGame(DistributedMinigame):
             self.arrowDict['m'][k].setScale(4)
             self.arrowDict['m'][k].setPos(0, 0, 1.7)
 
-        base.playMusic(self.music, looping=1, volume=1)
+        base.audioPlaybackManager.playSong(self.music, looping=1, volume=1)
 
     def offstage(self):
         self.notify.debug('offstage')
