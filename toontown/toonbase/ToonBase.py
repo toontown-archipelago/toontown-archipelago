@@ -762,5 +762,5 @@ class ToonBase(OTPBase.OTPBase):
                 self.notify.info(f"Playing music {json_code} with looping={looping}, volume={volume}, time={time}")
                 self.contentPackMusicManager.playMusic(json_code, looping, volume, time)
         else:
-            self.notify.warning("No music was playing before the audio devices were refreshed.")
+            self.notify.warning("No json data found for music, skipping.")
         self.notify.info("Audio devices refreshed.")
