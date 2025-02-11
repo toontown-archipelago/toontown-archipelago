@@ -1,6 +1,8 @@
 from typing import List
 
 from apworld.toontown.fish import can_av_fish_at_zone
+from apworld.toontown import locations
+from toontown.quest import Quests
 from . import ShtikerPage
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import PythonUtil
@@ -8,9 +10,8 @@ from toontown.hood import ZoneUtil
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.toonbase import TTLocalizer
-from .QuestsAvailablePoster import QuestsAvailablePoster, FishAvailablePoster, TreasureAvailablePoster, PetsAvailablePoster
+from .QuestsAvailablePoster import QuestsAvailablePoster, FishAvailablePoster, TreasureAvailablePoster, PetsAvailablePoster, CanRacePoster, CanGolfPoster
 from ..building import FADoorCodes
-from ..quest.Quests import getRewardIdsFromHood
 
 
 class MapPage(ShtikerPage.ShtikerPage):
@@ -75,6 +76,8 @@ class MapPage(ShtikerPage.ShtikerPage):
         self.fishAvailableIcons: List[FishAvailablePoster] = []
         self.treasureAvailableIcons: List[TreasureAvailablePoster] = []
         self.petsAvailableIcons: List[PetsAvailablePoster] = []
+        self.raceIcons: List[CanRacePoster] = []
+        self.golfIcons: List[CanGolfPoster] = []
 
         guiButton = loader.loadModel('phase_3/models/gui/quit_button')
         buttonLoc = (0.45, 0, - 0.74)
@@ -143,8 +146,10 @@ class MapPage(ShtikerPage.ShtikerPage):
             self.fishAvailableIcons.append(FishAvailablePoster(hood, parent=label, pos=(0.19, 0, 0.08), scale=.1, sortOrder=1))
             self.treasureAvailableIcons.append(TreasureAvailablePoster(hood, parent=label, pos=(-0.06, 0, 0.09), scale=.1, sortOrder=1))
             self.petsAvailableIcons.append(PetsAvailablePoster(hood, parent=label, pos=(-0.16, 0, 0.09), scale=.1, sortOrder=1))
+            self.raceIcons.append(CanRacePoster(hood, parent=label, pos=(0.06, 0, 0.09), scale=.1, sortOrder=1))
+            self.golfIcons.append(CanGolfPoster(hood, parent=label, pos=(0.06, 0, 0.09), scale=.1, sortOrder=1))
             label.bind(DGG.WITHIN, self.showTasksAvailableFrame, extraArgs=[hood, hoodIndex])
-            label.bind(DGG.WITHOUT, self.hideTasksAvailableFrame, extraArgs=[hood,hoodIndex])
+            label.bind(DGG.WITHOUT, self.hideTasksAvailableFrame, extraArgs=[hood, hoodIndex])
             self.labels.append(label)
             hoodClouds = []
             for cloudScale, cloudPos in zip(self.cloudScaleList[hoodIndex], self.cloudPosList[hoodIndex]):
@@ -167,11 +172,15 @@ class MapPage(ShtikerPage.ShtikerPage):
 
     def showTasksAvailableFrame(self, hood, hoodIndex, pos):
         self.__hoverCallback(1, hoodIndex, pos)
-        for questPoster, fishPoster, treasurePoster, petPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons):
+        for questPoster, fishPoster, treasurePoster, petPoster, racePoster, golfPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons, self.raceIcons, self.golfIcons):
             if hood == questPoster.getHoodId():
                 treasurePoster.show()
                 # Only show if we need to.
-                if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
+                if hood == ToontownGlobals.OutdoorZone and base.localAvatar.slotData.get("golfing_logic"):
+                    golfPoster.show()
+                if hood == ToontownGlobals.GoofySpeedway and base.localAvatar.slotData.get("racing_logic"):
+                    racePoster.show()
+                if hood in FADoorCodes.PLAYGROUND_ZONES:
                     questPoster.show()
                     fishPoster.show()
                     petPoster.show()
@@ -180,11 +189,15 @@ class MapPage(ShtikerPage.ShtikerPage):
 
     def hideTasksAvailableFrame(self, hood, hoodIndex, pos):
         self.__hoverCallback(0, hoodIndex, pos)
-        for questPoster, fishPoster, treasurePoster, petPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons):
+        for questPoster, fishPoster, treasurePoster, petPoster, racePoster, golfPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons, self.raceIcons, self.golfIcons):
             if hood == questPoster.getHoodId():
                 treasurePoster.hide()
                 # Only hide if we need to.
-                if hood in FADoorCodes.ZONE_TO_ACCESS_CODE:
+                if hood == ToontownGlobals.OutdoorZone and base.localAvatar.slotData.get("golfing_logic"):
+                    golfPoster.hide()
+                if hood == ToontownGlobals.GoofySpeedway and base.localAvatar.slotData.get("racing_logic"):
+                    racePoster.hide()
+                if hood in FADoorCodes.PLAYGROUND_ZONES:
                     questPoster.hide()
                     fishPoster.hide()
                     petPoster.hide()
@@ -194,49 +207,53 @@ class MapPage(ShtikerPage.ShtikerPage):
     def updateTasksAvailableFrames(self):
 
         # Loop through all the posters
-        for questPoster, fishPoster, treasurePoster, petPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons):
+        for questPoster, fishPoster, treasurePoster, petPoster, racePoster, golfPoster in zip(self.questsAvailableIcons, self.fishAvailableIcons, self.treasureAvailableIcons, self.petsAvailableIcons, self.raceIcons, self.golfIcons):
             treasurePoster.hide()
             questPoster.hide()
             fishPoster.hide()
             petPoster.hide()
+            racePoster.hide()
+            golfPoster.hide()
             hoodId = questPoster.getHoodId()
 
             treasurePoster.update(base.localAvatar)
+            golfPoster.update(base.localAvatar)
+            racePoster.update(base.localAvatar)
 
             # Are there pets here?
             if petPoster.hoodId in ToontownGlobals.ZONE_TO_ID_TO_CHECK.keys():
                 petPoster.update(base.localAvatar)
 
             # Can we fish here?
-            if not fishPoster.isVisible(base.localAvatar):
-                fishPoster.hide()
-            elif not can_av_fish_at_zone(base.localAvatar, hoodId):
+            if not can_av_fish_at_zone(base.localAvatar, hoodId):
                 fishPoster.showLocked()
             else:
-                fishPoster.update(base.localAvatar)
+                fishPoster.update(base.localAvatar, hoodId)
 
             # Do we not have access to this hood?
-            if hoodId in FADoorCodes.ZONE_TO_ACCESS_CODE:
+            if hoodId in FADoorCodes.PLAYGROUND_ZONES:
                 if FADoorCodes.ZONE_TO_ACCESS_CODE[hoodId] not in base.localAvatar.getAccessKeys():
                     questPoster.showLocked()
                 else:
                     # Get the reward IDs from this playground
-                    rewardIds = getRewardIdsFromHood(hoodId)
+                    rewardIds = Quests.getRewardIdsFromHood(hoodId)
+                    rewardIdCopy = rewardIds.copy()
 
                     # Filter out the rewards we can't get bc we already earned them
-                    tier, rewardHistory = base.localAvatar.getRewardHistory()
-                    for earnedReward in rewardHistory:
-                        if earnedReward in rewardIds:
-                            rewardIds.remove(earnedReward)
+                    for reward in rewardIds:
+                        apLocation = Quests.RewardDict.get(reward)[1]
+                        if apLocation is not None:
+                            if locations.LOCATION_NAME_TO_ID[apLocation] in base.localAvatar.getCheckedLocations():
+                                rewardIdCopy.remove(reward)
 
                     # Now filter out the rewards we are working on
                     for quest in base.localAvatar.quests:
                         questId, fromNpcId, toNpcId, rewardId, toonProgress = quest
-                        if rewardId in rewardIds:
-                            rewardIds.remove(rewardId)
+                        if rewardId in rewardIdCopy:
+                            rewardIdCopy.remove(rewardId)
 
                     # Now we have a number that tells us how many quests this person can learn here
-                    questPoster.showNumAvailable(len(rewardIds))
+                    questPoster.showNumAvailable(len(rewardIdCopy))
 
     def unload(self):
         for labelButton in self.labels:

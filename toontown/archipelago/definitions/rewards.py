@@ -7,6 +7,7 @@ from typing import List, Tuple
 
 from apworld.toontown import ToontownItemName, get_item_def_from_id
 from apworld.toontown.fish import LICENSE_TO_ACCESS_CODE
+from apworld.toontown.options import GagTrainingFrameBehavior
 from otp.otpbase.OTPLocalizerEnglish import EmoteFuncDict
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
@@ -77,6 +78,7 @@ class LaffBoostReward(APReward):
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxHp(av.maxHp + self.amount)
         av.toonUp(self.amount)
+        av.checkWinCondition()
 
 
 class GagCapacityReward(APReward):
@@ -145,13 +147,13 @@ class GagTrainingFrameReward(APReward):
     }
 
     TRACK_TO_COLOR = {
-        TOONUP: 'slateblue',
+        TOONUP: 'plum',
         TRAP: 'yellow',
         LURE: 'green',
-        SOUND: 'plum',
+        SOUND: 'blue',
         THROW: 'yellow',  #  todo add a gold text property
         SQUIRT: 'slateblue',  # todo add a pinkish text property
-        DROP: 'cyan'
+        DROP: 'lightblue'
     }
 
     TRACK_TO_ICON = {
@@ -188,33 +190,46 @@ class GagTrainingFrameReward(APReward):
 
     def get_image_path(self) -> str:
         level = base.localAvatar.getTrackAccessLevel(self.track)
-        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(level, 7))
+        ap_icon = self.TRACK_TO_ICON[(self.track)] % str(min(max(level, 1), 7))
         return f'phase_14/maps/gags/{ap_icon}.png'
 
     def apply(self, av: "DistributedToonAI"):
+        
+        # Store option for behavior
+        behaviorMode = av.slotData.get("gag_frame_item_behavior", 0)
 
         # Increment track access level by 1
         oldLevel = av.getTrackAccessLevel(self.track)
         newLevel = oldLevel + 1
 
         # Before we do anything, we need to see if they were capped before this so we can award them gags later
-        wasCapped = av.experience.getExp(self.track) == av.experience.getExperienceCapForTrack(self.track)
-        # Edge case, we were not technically capped if we are unlocking the "overflow xp" mechanic
-        if newLevel >= 8:
-            wasCapped = False
+        curExp = av.experience.getExp(self.track)
+        wasCapped = curExp == av.experience.getExperienceCapForTrack(self.track)
 
-        # Otherwise increment the gag level allowed and make sure it is not organic
+        # Otherwise increment the gag level allowed
         av.setTrackAccessLevel(self.track, newLevel)
 
+        # Edge case, nothing else should happen if we are unlocking the "overflow xp" mechanic
+        if newLevel >= 8:
+            return
+
+        # Max the gag and give the new gag if the behavior mode is to max gags 
+        elif behaviorMode == GagTrainingFrameBehavior.option_trained:
+            av.experience.setExp(self.track, av.experience.getExperienceCapForTrack(track=self.track)) # max the gag exp.
+            av.ap_setExperience(av.experience.getCurrentExperience())
+            av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
+            av.b_setInventory(av.inventory.makeNetString())
         # Consider the case where we just learned a new gag track, we should give them as many of them as possible
-        if newLevel == 1:
+        elif newLevel == 1:
             av.inventory.addItemsWithListMax([(self.track, 0)])
             av.b_setInventory(av.inventory.makeNetString())
         # Now consider the case where we were maxed previously and want to upgrade by giving 1 xp and giving new gags
         # This will also trigger the new gag check to unlock :3
-        elif wasCapped:
-            av.experience.addExp(track=self.track, amount=1)  # Give them enough xp to learn the gag :)
-            av.b_setExperience(av.experience.getCurrentExperience())
+        elif (wasCapped and behaviorMode == GagTrainingFrameBehavior.option_vanilla
+            or behaviorMode == GagTrainingFrameBehavior.option_unlock):
+            toNext = av.experience.getNextExpValue(track=self.track, curSkill=curExp)
+            av.experience.setExp(track=self.track, exp=toNext)  # Give them enough xp to learn the gag :)
+            av.ap_setExperience(av.experience.getCurrentExperience())
             av.inventory.addItemsWithListMax([(self.track, newLevel-1)])  # Give the new gags!!
             av.b_setInventory(av.inventory.makeNetString())
 
@@ -238,13 +253,13 @@ class GagUpgradeReward(APReward):
     }
 
     TRACK_TO_COLOR = {
-        TOONUP: 'slateblue',
+        TOONUP: 'plum',
         TRAP: 'yellow',
         LURE: 'green',
-        SOUND: 'plum',
+        SOUND: 'blue',
         THROW: 'yellow',  #  todo add a gold text property
         SQUIRT: 'slateblue',  # todo add a pinkish text property
-        DROP: 'cyan'
+        DROP: 'lightblue'
     }
 
     TRACK_TO_ICON = {
@@ -300,6 +315,32 @@ class GagTrainingMultiplierReward(APReward):
         oldMultiplier = av.getBaseGagSkillMultiplier()
         newMultiplier = oldMultiplier + self.amount
         av.b_setBaseGagSkillMultiplier(newMultiplier)
+
+
+class GolfPutterReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Get ready to go mini-golfing\nwith your new "),
+            MinimalJsonMessagePart("Golf Putter", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.addAccessKey(ToontownGlobals.PUTTER_KEY)
+
+
+class GoKartReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Get ready to go racing\nwith your new "),
+            MinimalJsonMessagePart("Go-Kart", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.b_setKartBodyType(1)
 
 
 class FishingRodUpgradeReward(APReward):
@@ -365,6 +406,8 @@ class AccessKeyReward(APReward):
         GOOFY_SPEEDWAY: ToontownItemName.GS_ACCESS,
     }
 
+    COG_ZONES = (SELLBOT_HQ, CASHBOT_HQ,  LAWBOT_HQ, BOSSBOT_HQ)
+
     def __init__(self, playground: int):
         self.playground: int = playground
 
@@ -376,6 +419,12 @@ class AccessKeyReward(APReward):
             if get_item_def_from_id(item_id).name == self.ZONE_TO_ACCESS_ITEM.get(self.playground, ToontownGlobals.ToontownCentral):
                 accessCount += 1
         if accessCount >= 2:
+            if self.playground in self.COG_ZONES:
+                return global_text_properties.get_raw_formatted_string([
+                    MinimalJsonMessagePart("You may now infiltrate facilities\nin "),
+                    MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+                    MinimalJsonMessagePart("!"),
+                    ])
             return global_text_properties.get_raw_formatted_string([
                 MinimalJsonMessagePart("You may now complete ToonTasks\nin "),
                 MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
@@ -389,7 +438,7 @@ class AccessKeyReward(APReward):
             ])
 
     def apply(self, av: "DistributedToonAI"):
-        # Apply TP before HQ
+        # Apply TP before HQ or facilities
         if not av.hasTeleportAccess(self.playground):
             av.addTeleportAccess(self.playground)
             for pg in self.LINKED_PGS.get(self.playground, []):
@@ -513,7 +562,7 @@ class JellybeanReward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.addMoney(self.amount)
+        av.ap_setMoney(av.getMoney() + self.amount)
 
 
 class UberTrapAward(APReward):
@@ -569,14 +618,14 @@ class BeanTaxTrapAward(APReward):
 
         if self.getPassed(avMoney):
             av.b_setHasPaidTaxes(True)
-            av.takeMoney(self.tax, bUseBank=False)
+            av.ap_setMoney(max(avMoney - self.tax, 0))
             av.playSound('phase_4/audio/sfx/tax_paid.ogg')
             av.d_broadcastHpString("TAXES PAID!", (.35, .7, .35))
             av.d_playEmote(EmoteFuncDict['Happy'], 1)
         else:
             av.b_setHasPaidTaxes(False)
             if av.getMoney() >= 100:
-                av.b_setMoney(100)
+                av.ap_setMoney(100)
             damage = av.getHp() - 1
             if av.getHp() > 0:
                 av.takeDamage(damage)
@@ -672,7 +721,7 @@ class GagExpBundleAward(APReward):
             currentCap = min(av.experience.getExperienceCapForTrack(index), ToontownBattleGlobals.regMaxSkill)
             exptoAdd = math.ceil(currentCap * (self.amount/100))
             av.experience.addExp(index, exptoAdd)
-        av.b_setExperience(av.experience.getCurrentExperience())
+        av.ap_setExperience(av.experience.getCurrentExperience())
         # now check for win condition since we have one for maxxed gags
         av.checkWinCondition()
 
@@ -711,32 +760,40 @@ class BossRewardAward(APReward):
 
 
 class ProofReward(APReward):
-    class ProofType(IntEnum):
-        SellbotBossFirstTime = 0
-        CashbotBossFirstTime = 1
-        LawbotBossFirstTime = 2
-        BossbotBossFirstTime = 3
+    numToBoss = {
+        0: "VP",
+        1: "CFO",
+        2: "CJ",
+        3: "CEO"
+    }
 
-        def to_display(self):
-            return {
-                self.SellbotBossFirstTime: "First VP Defeated",
-                self.CashbotBossFirstTime: "First CFO Defeated",
-                self.LawbotBossFirstTime: "First CJ Defeated",
-                self.BossbotBossFirstTime: "First CEO Defeated"
-            }.get(self, f"Unknown Proof ({self.value})")
-
-    def __init__(self, proofType: ProofType):
-        self.proofType: ProofReward.ProofType = proofType
+    def __init__(self, proof: int):
+        self.proof = proof
 
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("Proof Obtained!\n", color='green'),
-            MinimalJsonMessagePart(f"{self.proofType.to_display()}"),
+            MinimalJsonMessagePart(f"Proof of the {self.numToBoss[self.proof]}'s defeat!"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
         # todo keep track of these
         pass
+
+
+class BountyReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Bounty Obtained!\n", color='green'),
+            MinimalJsonMessagePart(f"Proof of a difficult task completed!"),
+        ])
+
+    def get_image_path(self) -> str:
+        return f'phase_14/maps/bounty.png'
+
+    def apply(self, av: "DistributedToonAI"):
+        av.checkWinCondition()
 
 
 class VictoryReward(APReward):
@@ -813,6 +870,8 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.TB_FISHING.value: FishingLicenseReward(FishingLicenseReward.THE_BRRRGH),
     ToontownItemName.DDL_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DREAMLAND),
     ToontownItemName.FISH.value: IgnoreReward(),
+    ToontownItemName.GOLF_PUTTER.value: GolfPutterReward(),
+    ToontownItemName.GO_KART.value: GoKartReward(),
     ToontownItemName.FRONT_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
     ToontownItemName.SIDE_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.SIDE_FACTORY_ACCESS_MISSING),
     ToontownItemName.COIN_MINT_ACCESS.value: FacilityAccessReward(FADoorCodes.COIN_MINT_ACCESS_MISSING),
@@ -845,6 +904,11 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.BEAN_TAX_TRAP_1250.value: BeanTaxTrapAward(1250),
     ToontownItemName.DRIP_TRAP.value: DripTrapAward(),
     ToontownItemName.GAG_SHUFFLE_TRAP.value: GagShuffleAward(),
+    ToontownItemName.VP.value: ProofReward(0),
+    ToontownItemName.CFO.value: ProofReward(1),
+    ToontownItemName.CJ.value: ProofReward(2),
+    ToontownItemName.CEO.value: ProofReward(3),
+    ToontownItemName.BOUNTY.value: BountyReward(),
 }
 
 

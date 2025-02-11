@@ -2469,19 +2469,27 @@ def isValidAccessory(itemIdx, textureIdx, colorIdx, which):
 
 class ToonDNA(AvatarDNA.AvatarDNA):
 
-    def __init__(self, str = None, type = None, dna = None, r = None, b = None, g = None):
-        if str != None:
-            self.makeFromNetString(str)
-        elif type != None:
-            if type == 't':
-                if dna == None:
+    def __init__(self, dnastring: bytes = None, dna_type: str = None, dna=None, r=None, b=None, g=None):
+
+        if dnastring is not None:
+
+
+            self.makeFromNetString(dnastring)
+            self.cache = ()
+            return
+
+        if dna_type is not None:
+            if dna_type == 't':
+                if dna is None:
                     self.newToonRandom(r, g, b)
                 else:
                     self.newToonFromProperties(*dna.asTuple())
-        else:
-            self.type = 'u'
+
+            self.cache = ()
+            return
+
+        self.type = 'u'
         self.cache = ()
-        return
 
     def __str__(self):
         string = 'type = toon\n'
@@ -2588,12 +2596,7 @@ class ToonDNA(AvatarDNA.AvatarDNA):
             return False
         return True
 
-    def makeFromNetString(self, string):
-
-        # Py 2->3 fix, toon DNA must use bytes.
-        if isinstance(string, str):
-            string = bytes(string, 'utf-8')
-
+    def makeFromNetString(self, string: bytes):
         dg = PyDatagram(string)
         dgi = PyDatagramIterator(dg)
         self.type = dgi.getFixedString(1)

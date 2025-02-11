@@ -314,9 +314,9 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
         self.crowdApplauseSfx = []
         self.crowdMissSfx = []
         for i in range(4):
-            self.crowdBuildupSfx.append(loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Buildup.ogg'))
-            self.crowdApplauseSfx.append(loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
-            self.crowdMissSfx.append(loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Miss.ogg'))
+            self.crowdBuildupSfx.append(None)
+            self.crowdApplauseSfx.append(None)
+            self.crowdMissSfx.append(None)
 
         self.bumpHardSfx = loader.loadSfx('phase_6/audio/sfx/Golf_Hit_Barrier_3.ogg')
         self.bumpMoverSfx = loader.loadSfx('phase_4/audio/sfx/Golf_Hit_Barrier_2.ogg')
@@ -918,28 +918,29 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
         sfxInterval.append(ballHitInterval)
         if self.ballWillGoInHole:
             ballRattle = Sequence()
-            timeToPlayBallRest = adjustedPlaybackEndTime - self.ballGoesToRestSfx.length()
+            timeToPlayBallRest = adjustedPlaybackEndTime
             if adjustedBallFirstTouchedHoleTime < timeToPlayBallRest:
                 diffTime = timeToPlayBallRest - adjustedBallFirstTouchedHoleTime
-                if self.ballGoesInStartSfx.length() < diffTime:
+                if 0 < diffTime:
                     ballRattle.append(Wait(adjustedBallFirstTouchedHoleTime))
                     ballRattle.append(SoundInterval(self.ballGoesInStartSfx))
-                    timeToPlayLoop = adjustedBallFirstTouchedHoleTime + self.ballGoesInStartSfx.length()
+                    timeToPlayLoop = adjustedBallFirstTouchedHoleTime
                     loopTime = timeToPlayBallRest - timeToPlayLoop
-                    if self.ballGoesInLoopSfx.length() == 0.0:
+                    if 0 == 0.0:
                         numLoops = 0
                     else:
-                        numLoops = int(loopTime / self.ballGoesInLoopSfx.length())
+                        numLoops = int(loopTime / 1)
                     self.notify.debug('numLoops=%d loopTime=%f' % (numLoops, loopTime))
                     if loopTime > 0:
-                        ballRattle.append(SoundInterval(self.ballGoesInLoopSfx, loop=1, duration=loopTime, seamlessLoop=True))
+                        pass
+                        # ballRattle.append(SoundInterval(self.ballGoesInLoopSfx, loop=1, duration=loopTime, seamlessLoop=True))
                     ballRattle.append(SoundInterval(self.ballGoesToRestSfx))
                     self.notify.debug('playing full rattling')
                 else:
                     self.notify.debug('playing abbreviated rattling')
                     timeToPlayBallGoesIn = adjustedBallFirstTouchedHoleTime
                     ballRattle.append(Wait(timeToPlayBallGoesIn))
-                    startTime = self.ballGoesInStartSfx.length() - diffTime
+                    startTime = 0
                     self.notify.debug('adjustedBallDropTime=%s diffTime=%s starTime=%s' % (adjustedBallDropTime, diffTime, startTime))
                     ballRattle.append(SoundInterval(self.ballGoesInStartSfx, startTime=startTime))
                     ballRattle.append(SoundInterval(self.ballGoesToRestSfx))
@@ -947,7 +948,7 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
                 self.notify.debug('playing abbreviated ball goes to rest')
                 ballRattle.append(Wait(adjustedBallFirstTouchedHoleTime))
                 diffTime = adjustedPlaybackEndTime - adjustedBallFirstTouchedHoleTime
-                startTime = self.ballGoesToRestSfx.length() - diffTime
+                startTime = 0
                 self.notify.debug('adjustedBallDropTime=%s diffTime=%s starTime=%s' % (adjustedBallDropTime, diffTime, startTime))
                 ballRattle.append(SoundInterval(self.ballGoesToRestSfx, startTime=startTime))
             sfxInterval.append(ballRattle)
@@ -956,7 +957,7 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
         crowdMissSfx = self.crowdMissSfx[self.avIdList.index(self.currentGolfer)]
         if self.ballWillGoInHole:
             crowdIval = Sequence()
-            buildupLength = crowdBuildupSfx.length()
+            buildupLength = 0
             self.notify.debug('buildupLength=%s' % buildupLength)
             diffTime = adjustedBallFirstTouchedHoleTime - buildupLength
             if diffTime > 0:
@@ -971,7 +972,7 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
             sfxInterval.append(crowdIval)
         elif self.ballFirstTouchedHoleTime:
             crowdIval = Sequence()
-            buildupLength = crowdBuildupSfx.length()
+            buildupLength = 0
             self.notify.debug('touched but not going in buildupLength=%s' % buildupLength)
             diffTime = adjustedBallFirstTouchedHoleTime - buildupLength
             if diffTime > 0:
@@ -1174,7 +1175,10 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
                 return
         self.projLength = self.destFrame[0] - self.sourceFrame[0]
         self.projPen = self.destFrame[0] - self.playbackFrameNum
-        propSource = float(self.projPen) / float(self.projLength)
+        if self.projLength > 0:
+            propSource = float(self.projPen) / float(self.projLength)
+        else:
+            propSource = 0
         propDest = 1.0 - propSource
         projX = self.sourceFrame[1] * propSource + self.destFrame[1] * propDest
         projY = self.sourceFrame[2] * propSource + self.destFrame[2] * propDest
@@ -1191,7 +1195,10 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
                 newAV = Vec3(self.aVSourceFrame[1], self.aVSourceFrame[2], self.aVSourceFrame[3])
         self.projLength = self.aVDestFrame[0] - self.aVSourceFrame[0]
         self.projPen = self.aVDestFrame[0] - self.playbackFrameNum
-        propSource = float(self.projPen) / float(self.projLength)
+        if self.projLength > 0:
+            propSource = float(self.projPen) / float(self.projLength)
+        else:
+            propSource = 0
         propDest = 1.0 - propSource
         projX = self.aVSourceFrame[1] * propSource + self.aVDestFrame[1] * propDest
         projY = self.aVSourceFrame[2] * propSource + self.aVDestFrame[2] * propDest
@@ -1213,7 +1220,7 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
              self.destFrame[0],
              self.destFrameNum,
              newPos))
-        self.playbackFrameNum += 1
+        self.playbackFrameNum = min(self.playbackFrameNum + GolfGlobals.SHOT_PLAYBACK_RATE, lastFrame)
 
     def enterCleanup(self):
         taskMgr.remove('update task')
@@ -1541,7 +1548,7 @@ class DistributedGolfHole(DistributedPhysicsWorld.DistributedPhysicsWorld, FSM, 
             childNodePath.removeNode()
 
         self.flyOverJoint = flyOverJoint
-        self.flyOverInterval = Sequence(Func(base.camera.reparentTo, flyOverJoint), Func(base.camera.clearTransform), Func(self.titleLabel.show), ActorInterval(self.flyOverActor, 'camera'), Func(base.camera.reparentTo, self.ballFollow), Func(base.camera.setPos, self.camPosBallFollow), Func(base.camera.setHpr, self.camHprBallFollow))
+        self.flyOverInterval = Sequence(Func(base.camera.reparentTo, flyOverJoint), Func(base.camera.clearTransform), Func(self.titleLabel.show), ActorInterval(self.flyOverActor, 'camera', playRate=GolfGlobals.INTRO_PLAYBACK_RATE), Func(base.camera.reparentTo, self.ballFollow), Func(base.camera.setPos, self.camPosBallFollow), Func(base.camera.setHpr, self.camHprBallFollow))
         if avId == localAvatar.doId:
             self.flyOverInterval.append(Func(self.setCamera2Ball))
             self.flyOverInterval.append(Func(self.safeRequestToState, 'ChooseTee'))

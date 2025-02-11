@@ -240,14 +240,14 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
     def generateSuits(self, battleNumber):
         if self.nerfed:
             if battleNumber == 1:
-                return self.invokeSuitPlanner(15, 0)
+                return self.invokeSuitPlanner(6, 0)
             else:
-                return self.invokeSuitPlanner(16, 1)
+                return self.invokeSuitPlanner(7, 1)
         else:
             if battleNumber == 1:
-                return self.invokeSuitPlanner(9, 0)
+                return self.invokeSuitPlanner(0, 0)
             else:
-                return self.invokeSuitPlanner(10, 1)
+                return self.invokeSuitPlanner(1, 1)
 
     def removeToon(self, avId, died=False):
         toon = simbase.air.doId2do.get(avId)
@@ -341,6 +341,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.ignoreBarrier(self.barrier)
 
     def enterBattleThree(self):
+        self.divideToons()
         self.battleThreeTimeStarted = globalClock.getFrameTime()
         self.resetBattles()
         self.setPieType()
@@ -431,15 +432,14 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                bundleCount = toon.slotData.get('checks_per_boss', 4)
-                bundle = [locations.ToontownLocationName.SELLBOT_PROOF_1.value,
-                          locations.ToontownLocationName.SELLBOT_PROOF_2.value,
-                          locations.ToontownLocationName.SELLBOT_PROOF_3.value,
-                          locations.ToontownLocationName.SELLBOT_PROOF_4.value,
-                          locations.ToontownLocationName.SELLBOT_PROOF_5.value]
-                if bundleCount:
-                    for checkNum in range(bundleCount):
-                        toon.addCheckedLocation(ap_location_name_to_id(bundle[checkNum]))
+                toon.addCheckedLocations([ap_location_name_to_id(location) for location in [
+                    locations.ToontownLocationName.SELLBOT_PROOF_1.value,
+                    locations.ToontownLocationName.SELLBOT_PROOF_2.value,
+                    locations.ToontownLocationName.SELLBOT_PROOF_3.value,
+                    locations.ToontownLocationName.SELLBOT_PROOF_4.value,
+                    locations.ToontownLocationName.SELLBOT_PROOF_5.value,
+                    locations.ToontownLocationName.FIGHT_VP.value
+                ]])
 
                 configMax = simbase.config.GetInt('max-sos-cards', 16)
                 if configMax == 8:

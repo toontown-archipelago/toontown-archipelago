@@ -82,12 +82,12 @@ class DistributedStageRoomAI(DistributedLevelAI.DistributedLevelAI, StageRoomBas
 
     def getCogLevel(self):
         levelAdjustment = 0
-        if self.stageId == ToontownGlobals.LawbotStageIntA:
-            levelAdjustment -= 3
-        elif self.stageId == ToontownGlobals.LawbotStageIntB:
-            levelAdjustment -= 2
+        if self.stageId == ToontownGlobals.LawbotStageIntB:
+            levelAdjustment += 2
         elif self.stageId == ToontownGlobals.LawbotStageIntC:
-            levelAdjustment -= 1
+            levelAdjustment += 4
+        elif self.stageId == ToontownGlobals.LawbotStageIntD:
+            levelAdjustment += 6
 
         if 1 < self.numPlayers < 4:
             levelAdjustment += 1

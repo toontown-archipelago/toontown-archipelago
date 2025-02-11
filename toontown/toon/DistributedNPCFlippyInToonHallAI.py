@@ -20,15 +20,13 @@ class DistributedNPCFlippyInToonHallAI(DistributedNPCToonAI):
             return
 
         # If they have not beat their game, reject them
-        hasWon = toon.getWinCondition().satisfied()
-        if not hasWon:
-            return self.rejectAvatar(avId)
-
-        self.doAvatarVictory(toon)
+        if toon.getWinCondition().satisfied():
+            self.doAvatarVictory(toon)
+        else:
+            self.rejectAvatar(avId)
 
     # We reject the avatar when their completion condition isn't met
     def rejectAvatar(self, avId):
-        self.busy = avId
         self.sendUpdate('setMovie',
                         [
                             NPCToons.QUEST_MOVIE_AP_WIN_CONDITION_NOT_MET,

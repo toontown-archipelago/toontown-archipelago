@@ -2,6 +2,7 @@ from direct.gui.DirectGui import *
 from panda3d.core import *
 
 from apworld.toontown.fish import FishLocation, get_catchable_fish_no_rarity, FishProgression
+from apworld.toontown import ToontownItemName, get_item_def_from_id
 from toontown.toonbase import ToontownGlobals
 from toontown.archipelago.definitions import util
 
@@ -75,7 +76,7 @@ class FishAvailablePoster(QuestsAvailablePoster):
             return False
         return True
 
-    def update(self, av):
+    def update(self, av, hoodId):
         # How many fish are present?
         location = FishLocation(av.slotData.get('fish_locations', 1))
         if location == FishLocation.Vanilla:
@@ -83,7 +84,7 @@ class FishAvailablePoster(QuestsAvailablePoster):
             location = FishLocation.Playgrounds
 
         fishRemaining = 0
-        for genus, species in get_catchable_fish_no_rarity(self.hoodId, av.fishingRod, location):
+        for genus, species in get_catchable_fish_no_rarity(hoodId, av.fishingRod, location):
             if not av.fishCollection.hasFish(genus, species):
                 fishRemaining += 1
 
@@ -129,6 +130,7 @@ class TreasureAvailablePoster(QuestsAvailablePoster):
         # Show num available.
         self.showNumAvailable(treasuresRemaining)
 
+
 class PetsAvailablePoster(QuestsAvailablePoster):
     def __init__(self, hoodId, **kw):
         QuestsAvailablePoster.__init__(self, hoodId=hoodId, **kw)
@@ -164,3 +166,101 @@ class PetsAvailablePoster(QuestsAvailablePoster):
 
         # Show num available.
         self.showNumAvailable(petsRemaining)
+
+
+class CanRacePoster(QuestsAvailablePoster):
+    def __init__(self, hoodId, **kw):
+        QuestsAvailablePoster.__init__(self, hoodId=hoodId, **kw)
+
+        optiondefs = (
+            ('parent', kw['parent'], None),
+            ('relief', None, None),
+            ('image', None, None),
+            ('image_scale', None, None),
+            ('state', DGG.NORMAL, None)
+        )
+        self.defineoptions(kw, optiondefs)
+
+        self.initialiseoptions(TreasureAvailablePoster)
+        self.numQuestsAvailableLabel['text_scale'] = 0.55
+        self.setImage(self.getImageNode())
+        self.setTransparency(TransparencyAttrib.MAlpha)
+        self['image_scale'] = (0.55, 0.55, 0.55)
+        self.setScale(self.getScale() * 1.4)
+
+    def getImageNode(self):
+        iconModels = loader.loadModel('phase_3.5/models/gui/sos_textures')
+        iconGeom = iconModels.find('**/kartIcon')
+        iconModels.detachNode()
+        return iconGeom
+
+    def update(self, av):
+        haveItem = False
+        items = av.getReceivedItems()
+        for item in items:
+            index_received, item_id = item
+            if get_item_def_from_id(item_id).name == ToontownItemName.GO_KART:
+                haveItem = True
+                break
+
+        # Show if available.
+        self.displayStatus(haveItem)
+
+    def displayStatus(self, status):
+        if status:
+            self.showUnlocked()
+        else:
+            self.showLocked()
+
+    def showUnlocked(self):
+        self.numQuestsAvailableLabel['text'] = '!'
+        self.numQuestsAvailableLabel['text_fg'] = (0, 1, 0, 1)
+
+
+class CanGolfPoster(QuestsAvailablePoster):
+    def __init__(self, hoodId, **kw):
+        QuestsAvailablePoster.__init__(self, hoodId=hoodId, **kw)
+
+        optiondefs = (
+            ('parent', kw['parent'], None),
+            ('relief', None, None),
+            ('image', None, None),
+            ('image_scale', None, None),
+            ('state', DGG.NORMAL, None)
+        )
+        self.defineoptions(kw, optiondefs)
+
+        self.initialiseoptions(TreasureAvailablePoster)
+        self.numQuestsAvailableLabel['text_scale'] = 0.55
+        self.setImage(self.getImageNode())
+        self.setTransparency(TransparencyAttrib.MAlpha)
+        self['image_scale'] = (0.55, 0.55, 0.55)
+        self.setScale(self.getScale() * 1.4)
+
+    def getImageNode(self):
+        iconModels = loader.loadModel('phase_6/models/golf/golf_gui')
+        iconGeom = iconModels.find('**/score_card_icon')
+        iconModels.detachNode()
+        return iconGeom
+
+    def update(self, av):
+        haveItem = False
+        items = av.getReceivedItems()
+        for item in items:
+            index_received, item_id = item
+            if get_item_def_from_id(item_id).name == ToontownItemName.GOLF_PUTTER:
+                haveItem = True
+                break
+
+        # Show if available.
+        self.displayStatus(haveItem)
+
+    def displayStatus(self, status):
+        if status:
+            self.showUnlocked()
+        else:
+            self.showLocked()
+
+    def showUnlocked(self):
+        self.numQuestsAvailableLabel['text'] = '!'
+        self.numQuestsAvailableLabel['text_fg'] = (0, 1, 0, 1)

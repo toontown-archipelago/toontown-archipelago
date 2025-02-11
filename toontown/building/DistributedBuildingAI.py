@@ -112,7 +112,7 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
         if not self.isToonBlock():
             return
         self.updateSavedBy(None)
-        difficulty = min(difficulty, len(SuitBuildingGlobals.SuitBuildingInfo) - 1)
+        difficulty = max(0, min(difficulty, (len(SuitBuildingGlobals.SuitBuildingInfo) - 1)))
         minFloors, maxFloors = self._getMinMaxFloors(difficulty)
         if buildingHeight == None:
             numFloors = random.randint(minFloors, maxFloors)

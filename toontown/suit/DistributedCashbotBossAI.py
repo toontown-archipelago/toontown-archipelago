@@ -254,8 +254,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.initializeBattles(1, ToontownGlobals.CashbotBossBattleOnePosHpr)
 
     def generateSuits(self, battleNumber):
-        cogs = self.invokeSuitPlanner(11, 0)
-        skelecogs = self.invokeSuitPlanner(12, 1)
+        cogs = self.invokeSuitPlanner(2, 0)
+        skelecogs = self.invokeSuitPlanner(3, 1)
 
         # Now combine the lists of suits together, so that they all
         # come out mix-and-match.
@@ -966,6 +966,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     ##### BattleThree state #####
     def enterBattleThree(self):
+        self.divideToons()
         # Calculate the max hp of the boss
         cfoMaxHp = self.ruleset.CFO_MAX_HP + self.ruleset.HP_PER_EXTRA * (len(self.involvedToons) - 1)
         self.bossMaxDamage = min(self.ruleset.get_max_allowed_hp(), cfoMaxHp)
@@ -1124,15 +1125,14 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         for toonId in self.involvedToons:
             toon = self.air.doId2do.get(toonId)
             if toon:
-                bundleCount = toon.slotData.get('checks_per_boss', 4)
-                bundle = [locations.ToontownLocationName.CASHBOT_PROOF_1.value,
-                          locations.ToontownLocationName.CASHBOT_PROOF_2.value,
-                          locations.ToontownLocationName.CASHBOT_PROOF_3.value,
-                          locations.ToontownLocationName.CASHBOT_PROOF_4.value,
-                          locations.ToontownLocationName.CASHBOT_PROOF_5.value]
-                if bundleCount:
-                    for checkNum in range(bundleCount):
-                        toon.addCheckedLocation(ap_location_name_to_id(bundle[checkNum]))
+                toon.addCheckedLocations([ap_location_name_to_id(location) for location in [
+                    locations.ToontownLocationName.CASHBOT_PROOF_1.value,
+                    locations.ToontownLocationName.CASHBOT_PROOF_2.value,
+                    locations.ToontownLocationName.CASHBOT_PROOF_3.value,
+                    locations.ToontownLocationName.CASHBOT_PROOF_4.value,
+                    locations.ToontownLocationName.CASHBOT_PROOF_5.value,
+                    locations.ToontownLocationName.FIGHT_CFO.value
+                ]])
                 toon.b_promote(self.deptIndex)
 
                 for rewardId in rewards:

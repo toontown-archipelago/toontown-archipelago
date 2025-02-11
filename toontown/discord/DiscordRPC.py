@@ -1,16 +1,18 @@
-import time 
+import time
 from ctypes import *
-from direct.task import Task 
+from direct.task import Task
 from pypresence import Presence
+from pypresence.exceptions import PipeClosed, ServerError
 from pypresence.exceptions import PyPresenceException
 from direct.directnotify import DirectNotifyGlobal
-
+from direct.task import Task
+import threading
 clientId  = "1255381622128377998"
 LOGO = "https://avatars.githubusercontent.com/u/164748629"
 
 class DiscordRPC(object):
     notify = DirectNotifyGlobal.directNotify.newCategory('DiscordRPC')
-    zone2imgdesc = { # A dict of ZoneID -> An image and a description
+    zone2imgdesc = {  # A dict of ZoneID -> An image and a description
         1000: ["https://static.wikia.nocookie.net/toontown/images/6/65/Donalds_Dock.png", "In Donald's Dock"],
         1100: ["https://static.wikia.nocookie.net/toontown/images/e/e7/Barnacle_Boulevard_Tunnel.jpg", "On Barnacle Boulevard"],
         1200: ["https://static.wikia.nocookie.net/toontown/images/9/91/Seaweed_Street_Tunnel.jpg", "On Seaweed Street"],
@@ -77,7 +79,6 @@ class DiscordRPC(object):
 
     }
 
-
     def __init__(self):
         self.discordRPC = None
         if base.wantRichPresence:
@@ -85,13 +86,14 @@ class DiscordRPC(object):
         else:
             self.disable()
         self.updateTask = None
-        self.details = "Loading" # text next to photo
+        self.details = "Loading"  # text next to photo
         self.image = LOGO
-        self.imageTxt = 'Toontown Archipelago' #Hover text for main image 
-        self.state = '   ' #Displayed underneath details, used for boarding groups
+        self.imageTxt = 'Toontown Archipelago'  #Hover text for main image
+        self.state = '   '  #Displayed underneath details, used for boarding groups
         self.smallTxt = 'Loading'
         self.partySize = 1
         self.maxParty = 1
+        self.discordTask = None
 
     def stopBoarding(self):
         if not base.wantRichPresence:
@@ -103,7 +105,7 @@ class DiscordRPC(object):
 
     def allowBoarding(self, size):
         if not base.wantRichPresence:
-            return 
+            return
         self.state = 'In a boarding group'
         self.partySize = 1
         self.maxParty = size
@@ -111,7 +113,7 @@ class DiscordRPC(object):
 
     def setBoarding(self, size):
         if not base.wantRichPresence:
-            return 
+            return
         self.PartySize = size
         self.setData()
 
@@ -129,21 +131,41 @@ class DiscordRPC(object):
         party = self.partySize
         maxSize = self.maxParty
         if self.discordRPC is not None:
-            self.discordRPC.update(state=state,details=details , large_image=image, large_text=imageTxt, small_text=smallTxt, party_size=[party, maxSize])
-    
+            try:
+                self.discordRPC.update(state=state, details=details, large_image=image, large_text=imageTxt,
+                                       small_text=smallTxt, party_size=[party, maxSize])
+            except (PipeClosed, BrokenPipeError, ServerError):
+                # schedule a task to try to reconnect to the discord
+                self.discordRPC = None
+                self.notify.warning('Discord RPC connection lost, trying to reconnect in 30 seconds.')
+                self.discordTask = threading.Timer(30, self.reconnectDiscord)
+                self.discordTask.start()
+
+    def reconnectDiscord(self):
+        self.enable()
+        # timer is done
+        self.discordTask = None
+
+
     def setLaff(self, hp, maxHp):
         if not base.wantRichPresence:
             return
         self.state = '{0}: {1}/{2}'.format(base.localAvatar.getName(), hp, maxHp)
         self.setData()
 
-    def updateTasks(self, task):
-        if not base.wantRichPresence:
-            return 
-        self.updateTask = True
+    def updateTasks(self):
+        try:
+            if not base.wantRichPresence:
+                return
+        except NameError: # If the base is not defined, then the game is shutting down
+            # cancel the task
+            self.updateTask.cancel()
+            return
         self.setData()
-        return task.again
-    
+        # schedule the next update
+        self.updateTask = threading.Timer(10, self.updateTasks)
+        self.updateTask.start()
+
     def avChoice(self):
         if not base.wantRichPresence:
             return
@@ -161,7 +183,7 @@ class DiscordRPC(object):
 
     def making(self):
         if not base.wantRichPresence:
-            return  
+            return
         self.image = LOGO
         self.details = 'Making a Toon.'
         self.setData()
@@ -169,9 +191,8 @@ class DiscordRPC(object):
     def startTasks(self):
         if not base.wantRichPresence:
             return
-        taskMgr.doMethodLater(10, self.updateTasks, 'UpdateTask')
-
-
+        self.updateTask = threading.Timer(10, self.updateTasks)
+        self.updateTask.start()
 
     def vp(self):
         if not base.wantRichPresence:
@@ -194,18 +215,17 @@ class DiscordRPC(object):
         self.image = 'https://static.wikia.nocookie.net/toontown/images/e/e4/CeoPic.png'
         self.details = 'Fighting the CEO.'
 
-    def setZone(self,zone): # Set image and text based on the zone
+    def setZone(self, zone):  # Set image and text based on the zone
         if not isinstance(zone, int):
             return
         zone -= zone % 100
-        data = self.zone2imgdesc.get(zone,None)
+        data = self.zone2imgdesc.get(zone, None)
         if data:
             self.image = data[0]
             self.details = data[1]
             self.setData()
         else:
             self.notify.warning(f'Could not find image and description for zone {zone % 100}.')
-        
 
     def enable(self):
         clientId = "1255381622128377998"
@@ -217,6 +237,13 @@ class DiscordRPC(object):
                 except PermissionError as e:
                     self.notify.warning(f"Failed to connect to Discord RPC: {e}")
                     self.discordRPC = None
+                except ConnectionError:
+                    self.notify.debug("Failed to connect to Discord RPC: Connection Error, trying to reconnect in 30 seconds.")
+                    self.discordRPC = None
+                    # schedule a task to try again later
+                    self.discordTask = threading.Timer(30, self.reconnectDiscord)
+                    self.discordTask.start()
+
         except PyPresenceException:
             self.notify.warning("Discord not found for this client.")
             self.discordRPC = None
@@ -230,4 +257,10 @@ class DiscordRPC(object):
             except PyPresenceException:
                 self.notify.warning('Discord not open or invalid client id')
             self.discordRPC = None
-            self.updateTask = None
+            if self.updateTask is not None:
+                self.updateTask.cancel()
+                self.updateTask = None
+            if self.discordTask is not None:
+                self.discordTask.cancel()
+                self.discordTask = None
+

@@ -19,11 +19,8 @@ class ReceivedItemsPacket(ClientBoundPacketBase):
 
     def handle(self, client):
 
-        av_indeces_already_received = []
-        items_received: List[Tuple[int, int]] = client.av.getReceivedItems().copy()
-        for item in items_received:
-            index_received, item_id = item
-            av_indeces_already_received.append(index_received)
+        items_received: List[Tuple[int, int]] = client.av.getReceivedItems()
+        av_indeces_already_received = set(item[0] for item in items_received)
 
         new_items: List[Tuple[int, int]] = []
 
@@ -35,7 +32,7 @@ class ReceivedItemsPacket(ClientBoundPacketBase):
 
             # If we need to apply it go ahead and keep track on the toon that we applied this specific reward
             if not_applied_yet:
-                itemName = client.get_item_info(item.item)
+                itemName = client.get_item_name(item.item, client.get_local_slot())
                 fromName = client.get_slot_info(item.player).name
                 ap_reward_definition: APReward = get_ap_reward_from_id(item.item)
                 reward: EarnedAPReward = EarnedAPReward(client.av, ap_reward_definition, reward_index, item.item, fromName, item.player == client.slot)

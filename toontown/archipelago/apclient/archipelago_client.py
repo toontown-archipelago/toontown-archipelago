@@ -2,29 +2,36 @@ import ssl
 import time
 import traceback
 
+from warnings import warn
 import urllib.parse
 
 from _socket import gaierror
 from direct.showbase.DirectObject import DirectObject
 from direct.stdpy import threading
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
 import certifi
 from websockets import ConnectionClosed, InvalidURI, InvalidMessage
 from websockets.sync.client import connect, ClientConnection
 
+from apworld.toontown import locations
+from apworld.toontown.options import RewardDisplayOption
+
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.util import net_utils, global_text_properties
-from toontown.archipelago.util.data_package import DataPackage
+from toontown.archipelago.util.data_package import DataPackage, GlobalDataPackage
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart, get_raw_formatted_string
 from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
-from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color, NetworkPlayer
+from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color, item_flag_to_string, NetworkPlayer, item_flag_to_star
 from toontown.archipelago.packets import packet_registry
 from toontown.archipelago.packets.archipelago_packet_base import ArchipelagoPacketBase
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
 from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacket
 from toontown.archipelago.packets.serverbound.serverbound_packet_base import ServerBoundPacketBase
 from toontown.archipelago.util.utils import cache_argsless
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from toontown.toon.DistributedToonAI import DistributedToonAI
 
 # TODO find dynamic way to do this
 DEFAULT_ARCHIPELAGO_SERVER_ADDRESS = "localhost"
@@ -57,52 +64,73 @@ class ArchipelagoClient(DirectObject):
         self.socket: ClientConnection = None
 
         # Store some identification
-        self.av = av  # DistributedToonAI that owns this client
+        self.av: "DistributedToonAI" = av  # DistributedToonAI that owns this client
         self.slot: int = -1  # Our slot ID given when we connect
         self.team: int = 999
-        self.uuid: str = ''  # not sure how important this is atm but just generating something in udpate_id method
+        self.uuid: str = av.getUUID() # not sure how important this is atm but just generating something in update_id method
 
         # Actually defines correct values for variables above
         self.update_identification(slot_name, password)
 
         # Store information for retrieval later that we received from packets
         self.slot_id_to_slot_name: Dict[int, NetworkSlot] = {}
-        self.data_packages: Dict[str, DataPackage] = {}
-        self.global_data_package: DataPackage = DataPackage()
+        self.global_data_package: GlobalDataPackage = GlobalDataPackage()
         self.location_scouts_cache: LocationScoutsCache = LocationScoutsCache()
 
-        self.slotInfo: dict[int, NetworkPlayer] = None
+    def has_slot_info(self, slot_id: int) -> bool:
+        return slot_id in self.slot_id_to_slot_name
 
-    def setSlotInfo(self, slotInfo):
-        self.slotInfo = {int(slot): data for slot, data in slotInfo.items()}
-
-    def getPlayerName(self, player: int):
-        if player not in self.slotInfo:
-            return "Someone"
-        return self.slotInfo[player].name
-
-    # Given a slot number (as string or int, doesn't matter but must be a number) return the NetworkSlot as cached
-    def get_slot_info(self, slot: Union[str, int]) -> NetworkSlot:
+    def get_slot_info(self, slot: str | int) -> NetworkSlot:
+        """
+        Given a slot number (as string or int) return the cached NetworkSlot for that player slot.
+        Raises KeyError if slot is invalid.
+        """
         return self.slot_id_to_slot_name[int(slot)]
 
-    # Returns the local slot ID (int) that this client belongs to
     def get_local_slot(self) -> int:
+        """
+        Returns the local Archipelago slot ID (int) that this client belongs to.
+        """
         return self.slot
 
-    # Given the ID of an item, find a display name for the item using our data package
-    def get_item_name(self, item_id: Union[str, int]) -> str:
-        return self.global_data_package.get_item_from_id(item_id)
+    # 
+    def get_player_name(self, slot_id: int) -> str:
+        """
+        Given a slot, retrieve the name of the player in that Archipelago slot.
+        """
+        try:
+            return self.get_slot_info(slot_id).name
+        except KeyError:
+            return f"??? (player {slot_id})"
 
-    # Given the ID of location, find a display name for the location using our data package
-    def get_location_name(self, location_id: Union[str, int]) -> str:
-        return self.global_data_package.get_location_from_id(location_id)
+
+    def get_item_name(self, item_id: Union[str, int], slot: str | int) -> str:
+        """
+        Given the ID of an item and a slot number, return a display name for an item.
+        """
+        try:
+            return self.global_data_package.get_item(self.get_slot_info(slot).game, item_id)
+        except (KeyError, TypeError): # no slot info for the given slot, or slot was None
+            warn("Invalid slot for fetching item name.", UserWarning, 2) # print to log with where we were called.
+            return f'Unknown Item[{item_id}]'
+
+    def get_location_name(self, location_id: Union[str, int], slot: str | int) -> str:
+        """
+        Given the ID of a location and a slot number, return a display name for an item.
+        """
+        try:
+            return self.global_data_package.get_location(self.get_slot_info(slot).game, location_id)
+        except (KeyError, TypeError): # no slot info for the given slot, or slot was None.
+            warn("Invalid slot for fetching location name.", UserWarning, 2) # print to log with where we were called.
+            return f'Unknown Item[{location_id}]'
 
     def __get_packet_handle_event_name(self):
         return self.av.uniqueName(f'incoming-ap-packet')
 
-    # Starts up the socket thread
     def start(self):
-
+        """
+        Starts up the socket thread
+        """
         # If we are not disconnected we aren't allowed to do this
         if self.state != APClientEnums.DISCONNECTED:
             raise Exception("You are already connected!")
@@ -112,9 +140,10 @@ class ArchipelagoClient(DirectObject):
         thread = threading.Thread(target=self.__socket_thread, daemon=True)
         thread.start()
 
-    # Attempt to use the socket to send a ConnectPacket
     def connect(self):
-
+        """
+        Attempt to use the socket to send a ConnectPacket
+        """
         # If we aren't connected yet, estabilish a connection
         if self.state == APClientEnums.DISCONNECTED:
             return self.start()
@@ -199,7 +228,7 @@ class ArchipelagoClient(DirectObject):
 
         # Attempt to connect to the server, if we get refused then !connect must be run to try again
         try:
-            with connect(address, ssl_context=get_ssl_context() if address.startswith("wss://") else None) as socket:
+            with connect(address, ssl_context=get_ssl_context() if address.startswith("wss://") else None, max_size=16*1024*1024) as socket:
 
                 self.av.d_sendArchipelagoMessage(f"[AP Client Thread] Estabilished socket connection with archipelago server at {address}")
                 self.socket = socket
@@ -266,11 +295,13 @@ class ArchipelagoClient(DirectObject):
         if len(password) > 0:
             self.password = password
 
-        self.uuid = f"toontown-player-{slot_name}"  # todo make sure this is correct
+        self.uuid = self.av.getUUID()
 
     # Constructs a ConnectPacket to authenticate with the server
     def send_connect_packet(self):
-        # When we are given this packet, we should connect this player to the server
+        """
+        Constructs a ConnectPacket to authenticate with the server.  
+        """
         connect_packet = ConnectPacket()
         connect_packet.game = net_utils.ARCHIPELAGO_GAME_NAME
         connect_packet.name = self.slot_name
@@ -278,11 +309,14 @@ class ArchipelagoClient(DirectObject):
         connect_packet.uuid = self.uuid
         connect_packet.version = net_utils.ARCHIPELAGO_CLIENT_VERSION
         connect_packet.items_handling = ConnectPacket.ITEMS_HANDLING_ALL_FLAGS
-        connect_packet.tags = [ConnectPacket.TAG_DEATHLINK]
+        connect_packet.tags = []
         connect_packet.slot_data = True
         self.send_packet(connect_packet)
 
     def handle_message_from_server(self, message):
+        """
+        Handles incoming packets and sends them off to be handled by the packet definition.
+        """
 
         # self.notify.info(f"{message}")
         # Retrieve the type of packet receieved from the server
@@ -308,11 +342,16 @@ class ArchipelagoClient(DirectObject):
             json.dump(json_data, f, indent=4)
 
     def send_packet(self, packet: ServerBoundPacketBase):
+        """
+        Send a single, constructed packet to Archipelago.
+        """
         # Packets need to be in a list anyway so just call the other method and construct a list with the packet
         self.send_packets([packet])
 
     def send_packets(self, packets: List[ServerBoundPacketBase]):
-
+        """
+        Send a list of constructed packets to Archipelago.
+        """
         if self.state == APClientEnums.DISCONNECTED:
             self.av.d_sendArchipelagoMessage("You cannot send packets unless you are connected to archipelago!")
             return
@@ -325,39 +364,69 @@ class ArchipelagoClient(DirectObject):
 
         try:
             self.socket.send(encode(raw_packets))
-        except Exception as e:
+        except (ConnectionClosed, RuntimeError, TypeError) as e:
             self.av.d_sendArchipelagoMessage(f"Failed to communicate with the server ({e})")
             traceback.print_exc()
 
-    def get_item_info(self, item_id):
-        return self.global_data_package.id_to_item_name.get(int(item_id), f'Unknown Item[{item_id}]')
-
-    def get_location_info(self, location_id):
-        return self.global_data_package.id_to_location_name.get(int(location_id), f'Unknown Location[{location_id}]')
 
     def set_connect_url(self, server_url: str):
         self.address = server_url
 
-    # Caches an item ID at some location. We do all the conversion in this method necessary to store it how we please
-    # our_location_id: The location that we own, that stores some item
-    # owning_player_id: The ID of the player that owns the item stored at the location
-    # item_id: The ID of the item
     def cache_location_and_item(self, our_location_id: int, owning_player_id: int, item_id: int, item_flag: int = 0):
+        """
+        # Caches an item ID at some location. We do all the conversion in this method necessary to store it how we please
+        # our_location_id: The location that we own, that stores some item
+        # owning_player_id: The ID of the player that owns the item stored at the location
+        # item_id: The ID of the item
+        """
+        # We don't need to do this if it's already in our cache. it shouldn't have changed.
+        if self.location_scouts_cache.get(our_location_id) is not None:
+            return
 
         # Stolen from the JSON parser
 
         someone_elses = owning_player_id != self.slot
 
         owner_name = self.get_slot_info(owning_player_id).name + "'s " if someone_elses else "Your "
-        item_name = self.get_item_info(item_id)
+        item_name = self.get_item_name(item_id, owning_player_id)
+
+        # Handle settings for displaying location rewards.
+        # Task Reward Locations.
+        if self.get_location_name(our_location_id, self.slot) in [loc.value for loc in locations.ALL_TASK_LOCATIONS]:
+            display_option = self.av.slotData.get("task_reward_display")
+            if display_option == RewardDisplayOption.option_class:
+                item_name = item_flag_to_string(item_flag)
+            elif display_option == RewardDisplayOption.option_owner:
+                item_name = "Item"
+                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+            elif display_option == RewardDisplayOption.option_hidden:
+                owner_name = "" # hide owner name.
+                item_name = self.get_location_name(our_location_id, self.slot)
+                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+        # Pet Shop Locations.
+        elif self.get_location_name(our_location_id, self.slot) in [loc.value for loc in locations.SHOP_LOCATIONS]:
+            display_option = self.av.slotData.get("pet_shop_display")
+            if display_option == RewardDisplayOption.option_class:
+                item_name = item_flag_to_string(item_flag)
+            elif display_option == RewardDisplayOption.option_owner:
+                item_name = "Item"
+                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+            elif display_option == RewardDisplayOption.option_hidden:
+                owner_name = "" # hide owner name.
+                item_name = self.get_location_name(our_location_id, self.slot)
+                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+
 
         # Let's make the string pretty
-        name_color = 'green' if someone_elses else 'magenta'
+        name_color = 'flatgreen' if someone_elses else 'magenta'
         item_color = item_flag_to_color(item_flag)
+        item_stars = item_flag_to_star(item_flag)
         item_display_string = global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("AP Reward: ", color='salmon'),
             MinimalJsonMessagePart(owner_name, color=name_color),
-            MinimalJsonMessagePart(item_name, color=item_color)
+            MinimalJsonMessagePart(item_stars[0], color=item_color),
+            MinimalJsonMessagePart(item_name, color=item_color),
+            MinimalJsonMessagePart(item_stars[1], color=item_color),
         ])
 
         self.location_scouts_cache.put(our_location_id, item_display_string)

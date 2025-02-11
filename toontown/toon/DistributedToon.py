@@ -53,6 +53,7 @@ from toontown.parties.PartyReplyInfo import PartyReplyInfoBase
 from toontown.parties.SimpleMailBase import SimpleMailBase
 from toontown.parties import PartyGlobals
 from toontown.friends import FriendHandle
+from toontown.archipelago.util import win_condition
 import time
 import operator
 from direct.interval.IntervalGlobal import Sequence, Wait, Func, Parallel, SoundInterval
@@ -67,8 +68,8 @@ from ..archipelago.definitions import color_profile
 from ..archipelago.definitions.color_profile import ColorProfile
 from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.util import win_condition
-from ..archipelago.util.win_condition import WinCondition
 from ..util.astron.AstronDict import AstronDict
+from apworld.toontown import ToontownRegionName, ToontownItemName, get_item_def_from_id, ITEM_NAME_TO_ID, TPSanity
 
 
 if base.wantKarts:
@@ -217,12 +218,17 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.receivedItemIDs: set[int] = set()
         self.checkedLocations: List[int] = []
         self.hintPoints = 0
+        self.hintCost = 0
 
         self.slotData = {}
-        self.winCondition: WinCondition = win_condition.NoWinCondition(self)
+        self.winCondition = win_condition.NoWinCondition(self)
+        self.ConfirmedWinConditionError = False
         self.rewardHistory = []
         self.rewardTier = 0
         self.alreadyNotified = False
+        self.fishCollection = FishCollection.FishCollection()
+        # empty collection
+        self.setFishCollection([], [], [])
         return
 
     def disable(self):
@@ -299,20 +305,26 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
             self.setColorProfile(colorProfile)
 
     def setHp(self, hitPoints):
-        if not self.overheadLaffMeter:
+        if not self.overheadLaffMeter and base.laffMeterDisplay:
             self.makeOverheadLaffMeter()
+        # we do have one but we don't have the display enabled, destroy it.
+        elif self.overheadLaffMeter and not base.laffMeterDisplay:
+            self.destroyOverheadLaffMeter()
         super().setHp(hitPoints)
 
     def setMaxHp(self, hitPoints):
-        if not self.overheadLaffMeter:
+        if not self.overheadLaffMeter and base.laffMeterDisplay:
             self.makeOverheadLaffMeter()
+        # we do have one but we don't have the display enabled, destroy it.
+        elif self.overheadLaffMeter and not base.laffMeterDisplay:
+            self.destroyOverheadLaffMeter()
         super().setMaxHp(hitPoints)
 
     def makeOverheadLaffMeter(self):
 
         self.destroyOverheadLaffMeter()
 
-        if self.maxHp and self.hp:
+        if self.maxHp and self.hp and base.laffMeterDisplay:
             self.overheadLaffMeter = LaffMeter(self.style, self.hp, self.maxHp)
             self.overheadLaffMeter.setAvatar(self)
             self.overheadLaffMeter.reparentTo(self.nametag.getNameIcon())
@@ -819,10 +831,11 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def b_setTunnelIn(self, endX, tunnelOrigin):
         timestamp = globalClockDelta.getFrameNetworkTime()
-        pos = tunnelOrigin.getPos(render)
-        h = tunnelOrigin.getH(render)
-        self.setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
-        self.d_setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
+        if not tunnelOrigin.isEmpty():
+            pos = tunnelOrigin.getPos(render)
+            h = tunnelOrigin.getH(render)
+            self.setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
+            self.d_setTunnelIn(timestamp, endX, pos[0], pos[1], pos[2], h)
 
     def d_setTunnelIn(self, timestamp, endX, x, y, z, h):
         self.sendUpdate('setTunnelIn', [timestamp,
@@ -2846,9 +2859,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
         self.receivedItems = receivedItems
         self.receivedItemIDs = set(x[1] for x in receivedItems)
-        if self.isLocal():
-            if hasattr(base.localAvatar, 'checkPage'):
-                base.localAvatar.checkPage.regenerateScrollList()
 
     # Get a list of item IDs this toon has received via AP
     def getReceivedItems(self) -> List[Tuple[int, int]]:
@@ -2876,8 +2886,47 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def d_setDeathReason(self, reason: DeathReason):
         pass
 
-    def hintPointResp(self, pts):
+    def count(self, item, player):
+        count = 0
+        for receivedItem in self.getReceivedItems():
+            if ITEM_NAME_TO_ID[item] == receivedItem[1]:
+                count += 1
+        return count
+
+    def has(self, item, player, wantedCount=1):
+        count = 0
+        for receivedItem in self.getReceivedItems():
+            if ITEM_NAME_TO_ID[item] == receivedItem[1]:
+                count += 1
+        return count >= wantedCount
+
+    def can_reach(self, region, filler, player):
+        region_to_tp_item = {
+            ToontownRegionName.TTC.value: ToontownItemName.TTC_ACCESS,
+            ToontownRegionName.DD.value: ToontownItemName.DD_ACCESS,
+            ToontownRegionName.DG.value: ToontownItemName.DG_ACCESS,
+            ToontownRegionName.MML.value: ToontownItemName.MML_ACCESS,
+            ToontownRegionName.TB.value: ToontownItemName.TB_ACCESS,
+            ToontownRegionName.DDL.value: ToontownItemName.DDL_ACCESS,
+            ToontownRegionName.GS.value: ToontownItemName.GS_ACCESS,
+            ToontownRegionName.AA.value: ToontownItemName.AA_ACCESS,
+            ToontownRegionName.SBHQ.value: ToontownItemName.SBHQ_ACCESS,
+            ToontownRegionName.CBHQ.value: ToontownItemName.CBHQ_ACCESS,
+            ToontownRegionName.LBHQ.value: ToontownItemName.LBHQ_ACCESS,
+            ToontownRegionName.BBHQ.value: ToontownItemName.BBHQ_ACCESS,
+        }
+        # The only time we actually need to check access is when the sanity is keys,
+        # since we can reach everywhere by default otherwise
+        if base.localAvatar.slotData.get("tpsanity", 0) != TPSanity.option_keys:
+            return True
+        for item in self.getReceivedItems():
+            if region_to_tp_item[region] == get_item_def_from_id(item[1]).name:
+                return True
+        return False
+
+    def hintPointResp(self, pts, cost):
         self.hintPoints = pts
+        self.hintCost = cost
         if self.isLocal:
             base.localAvatar.checkPage.updateHintPointText()
 
@@ -2893,28 +2942,26 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         return bool(self.slotData)
 
     def updateWinCondition(self) -> None:
-        condition = win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self)
-        self.winCondition = condition
+        self.winCondition = win_condition.generate_win_condition(self.getSlotData().get('win_condition', -2), self)
         # check if we have previously met the win condition on login
         # if we have, send a system message to the player that they can complete their run and talk to flippy
         self.checkWinCondition()
 
     def checkWinCondition(self):
-        if self.getWinCondition().satisfied():
-            if not self.alreadyNotified:
-                self.setSystemMessage(0, TTLocalizer.WinConditionMet)
-                # play the golf victory sound so they dont miss it
-                 # check if its localtoon to potentially fix a bug with this playing for unknown reasons 
-                if self == base.localAvatar:
-                    base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
-                self.alreadyNotified = True
+        if (self == base.localAvatar  # Ensure local toon, prevents a bug (Audio plays for other toons' goals)
+            and not self.alreadyNotified # Only alert the toon once.
+            and self.getWinCondition().satisfied()):
+            self.setSystemMessage(0, TTLocalizer.WinConditionMet)
+            # play the golf victory sound so they dont miss it
+            base.playSfx(base.loader.loadSfx('phase_6/audio/sfx/Golf_Crowd_Applause.ogg'))
+            self.alreadyNotified = True
 
-    def getWinCondition(self) -> WinCondition:
+    def getWinCondition(self) -> win_condition.WinCondition:
         return self.winCondition
-                
-    """
-    Methods for managing Color Profiles and Nametags.
-    """
+
+    ###
+    ### Methods for managing Color Profiles and Nametags.
+    ###
 
     # Removes the custom color functionality for this toon's nametags.
     # Reverts the behavior of deciding colors back to vanilla libotp.

@@ -5,7 +5,7 @@ from __future__ import annotations
 import typing
 import enum
 from copy import deepcopy
-
+from BaseClasses import ItemClassification as IC
 from json import JSONEncoder, JSONDecoder
 
 from toontown.archipelago.util.utils import Version, ByValue
@@ -183,32 +183,57 @@ class JSONTypes(str, enum.Enum):
 
 
 # A class that parses a list of JSONMessagePart instances and modifies them to have colors defined and IDs replaced
-def item_flag_to_color(flag: int):
+def item_flag_to_color(flag: int | IC):
     # 0b001 = logical advancement, 0b010 = useful, 0b100 = trap
-    if flag & 0b001:
+    if IC.progression & flag:
         return 'plum'
 
-    if flag & 0b010:
-        return 'slateblue'
+    if IC.useful & flag:
+        return 'blue'
 
-    if flag & 0b100:
+    if IC.trap & flag:
         return 'salmon'
 
-    return 'cyan'
+    return 'lightblue'
 
+# A class that parses a list of JSONMessagePart instances and modifies them to have colors defined and IDs replaced
+def item_flag_to_star(flag: int | IC):
+    # 0b001 = logical advancement, 0b010 = useful, 0b100 = trap
+    if IC.progression & flag:
+        return ["*", "*"]
+
+    if IC.useful & flag:
+        return ["", "*"]
+
+    return ["", ""]
+
+def item_flag_to_string(flag: int | IC):
+    
+    if IC.progression & flag:
+        return 'Progression Item'
+
+    if IC.useful & flag:
+        return 'Useful Item'
+
+    if IC.trap & flag:
+        return 'Trap'
+    
+    return 'Filler'
 
 class JSONPartFormatter:
 
     COLOR_BLACK = (0, 0, 0, 1)
     COLOR_RED = (.93, 0, 0, 1)
     COLOR_GREEN = (0, 1, .5, 1)
+    COLOR_FLAT_GREEN = (0, 0.9, 0.49, 1)
     COLOR_YELLOW = (.98, .98, .82, 1)
     COLOR_BLUE = (.4, .58, .93, 1)
+    COLOR_LIGHT_BLUE = (0, .8, .94, 1)
     COLOR_MAGENTA = (.93, 0, .93, 1)
     COLOR_CYAN = (0, .93, .93, 1)
     COLOR_WHITE = (1, 1, 1, 1)
 
-    COLOR_PLUM = (.69, .6, .93, 1)
+    COLOR_PLUM = (.67, .55, .86, 1)
     COLOR_SLATEBLUE = (.43, .54, .9, 1)
     COLOR_SALMON = (.97, .5, .45, 1)
 
@@ -223,7 +248,9 @@ class JSONPartFormatter:
         'white': COLOR_WHITE,
         'plum': COLOR_PLUM,
         'slateblue': COLOR_SLATEBLUE,
-        'salmon': COLOR_SALMON
+        'salmon': COLOR_SALMON,
+        'flatgreen': COLOR_FLAT_GREEN,
+        'lightblue': COLOR_LIGHT_BLUE
     }
 
     def __init__(self, parts: typing.List[JSONMessagePart], client):
@@ -246,21 +273,22 @@ class JSONPartFormatter:
             part_type = part['type'] if 'type' in part else 'default'
 
             # Switch statement basically on how we should handle the types of parts
-            if part_type in ('player_id', 'player_name'):
-                self.handle_player_part(new_part)
-            elif part_type in ('item_id', 'item_name'):
-                self.handle_item_part(new_part)
-            elif part_type in ('location_id', 'location_name'):
-                self.handle_location_part(new_part)
-            elif part_type == 'entrance_name':
-                self.handle_entrance_part(new_part)
-            elif part_type in ('default', 'text'):
-                self.handle_default_part(new_part)
-            elif part_type == 'color':  # No need to do anything, color is already defined
-                pass
-            else:
-                print(f"Unknown JSONMessagePart type: {part_type}, reverting to default part behavior")
-                self.handle_default_part(new_part)
+            match part_type:
+                case 'player_id' | 'player_name':
+                    self.handle_player_part(new_part)
+                case 'item_id' | 'item_name':
+                    self.handle_item_part(new_part)
+                case 'location_id' | 'location_name':
+                    self.handle_location_part(new_part)
+                case 'entrance_name':
+                    self.handle_entrance_part(new_part)
+                case 'default' | 'text':
+                    self.handle_default_part(new_part)
+                case 'color':  # No need to do anything, color is already defined
+                    pass
+                case _:
+                    print(f"Unknown JSONMessagePart type: {part_type}, reverting to default part behavior")
+                    self.handle_default_part(new_part)
 
             new_parts.append(new_part)
 
@@ -292,7 +320,7 @@ class JSONPartFormatter:
 
         # If we were given the ID, override the text
         if part['type'] == 'item_id':
-            part['text'] = self.client.get_item_name(item)
+            part['text'] = self.client.get_item_name(item, part['player'])
 
         # If we were given name, instead of ID, do same thing basically
         elif part['type'] == 'item_name':
@@ -308,7 +336,7 @@ class JSONPartFormatter:
 
         # If we were given the ID, override the text
         if part['type'] == 'location_id':
-            part['text'] = self.client.get_location_name(location)
+            part['text'] = self.client.get_location_name(location, part['player'])
 
         # If we were given name, instead of ID, do same thing basically
         elif part['type'] == 'location_name':
@@ -337,9 +365,11 @@ class JSONtoTextParser(metaclass=HandlerMeta):
         "magenta": "EE00EE",
         "cyan": "00EEEE",
         "slateblue": "6D8BE8",
-        "plum": "AF99EF",
+        "plum": "AA8CDC",
         "salmon": "FA8072",
-        "white": "FFFFFF"
+        "white": "FFFFFF",
+        'flatgreen': "00E67D",
+        'lightblue': "00C8F0",
     }
 
     def __init__(self, client):
@@ -375,7 +405,7 @@ class JSONtoTextParser(metaclass=HandlerMeta):
     def _handle_item_name(self, node: JSONMessagePart):
         flags = node.get("flags", 0)
         if flags == 0:
-            node["color"] = 'cyan'
+            node["color"] = 'lightblue'
         elif flags & 0b001:  # advancement
             node["color"] = 'plum'
         elif flags & 0b010:  # useful
@@ -383,12 +413,12 @@ class JSONtoTextParser(metaclass=HandlerMeta):
         elif flags & 0b100:  # trap
             node["color"] = 'salmon'
         else:
-            node["color"] = 'cyan'
+            node["color"] = 'lightblue'
         return self._handle_color(node)
 
     def _handle_item_id(self, node: JSONMessagePart):
         item_id = int(node["text"])
-        node["text"] = self.client.get_item_name(item_id)
+        node["text"] = self.client.get_item_name(item_id, node['player'])
         return self._handle_item_name(node)
 
     def _handle_location_name(self, node: JSONMessagePart):
@@ -397,7 +427,7 @@ class JSONtoTextParser(metaclass=HandlerMeta):
 
     def _handle_location_id(self, node: JSONMessagePart):
         item_id = int(node["text"])
-        node["text"] = self.client.get_location_name(item_id)
+        node["text"] = self.client.get_location_name(item_id, node['player'])
         return self._handle_location_name(node)
 
     def _handle_entrance_name(self, node: JSONMessagePart):

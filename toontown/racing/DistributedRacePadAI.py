@@ -43,7 +43,7 @@ class DistributedRacePadAI(DistributedKartPadAI, FSM):
                 return
 
         if self.trackInfo[1] in (RaceGlobals.ToonBattle, RaceGlobals.Circuit):
-            if len(self.avIds) < 2:
+            if len(self.avIds) < 1:
                 for block in self.startingBlocks:
                     if block.avId != 0:
                         block.normalExit()
@@ -66,10 +66,10 @@ class DistributedRacePadAI(DistributedKartPadAI, FSM):
         pass
 
     def enterWaitEmpty(self):
-        taskMgr.doMethodLater(RaceGlobals.TrackSignDuration, self.changeTrack, self.uniqueName('changeTrack'))
+        pass
 
     def exitWaitEmpty(self):
-        taskMgr.remove(self.uniqueName('changeTrack'))
+        pass
 
     def changeTrack(self, task):
         trackInfo = RaceGlobals.getNextRaceInfo(self.trackInfo[0], self.genre, self.index)

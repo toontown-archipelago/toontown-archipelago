@@ -63,7 +63,7 @@ class CogPageManagerAI:
                     pass
 
         toon.b_setCogStatus(cogStatus)
-        toon.b_setCogCount(cogCount)
+        toon.ap_setCogCount(cogCount)
 
         self.updateRadar(toon)
 

@@ -108,7 +108,7 @@ class TTOffMagicWordManagerAI(DistributedObjectAI.DistributedObjectAI):
             #     continue
 
         if len(targetIds) == 0:
-            self.generateResponse(avId=avId, responseType = "NoAccessToTarget")
+            self.generateResponse(avId=avId, responseType="NoAccessToTarget")
 
         magicWord, args = (magicWord.split(' ', 1) + [''])[:2]
         magicWord = magicWord.lower()
@@ -120,16 +120,20 @@ class TTOffMagicWordManagerAI(DistributedObjectAI.DistributedObjectAI):
             return
 
         if affectRange not in magicWordInfo['affectRange']:
-            self.generateResponse(avId=avId, responseType = "RestrictionOther")
+            self.generateResponse(avId=avId, responseType="RestrictionOther")
             return
 
         if toon.getAccessLevel() < OTPGlobals.AccessLevelName2Int.get(magicWordInfo['access'], 0):
-            self.generateResponse(avId=avId, responseType = "NoAccess")
+            if toon.getAccessLevel() == OTPGlobals.AccessLevelName2Int.get("NO_ACCESS") and \
+               OTPGlobals.AccessLevelName2Int.get(magicWordInfo['access'], 0) == OTPGlobals.AccessLevelName2Int.get("USER"):
+                self.generateResponse(avId=avId, responseType="NoCheatAccess")
+                return
+            self.generateResponse(avId=avId, responseType="NoAccess")
             return
 
         if self.air.defaultAccessLevel == 'NO_ACCESS':
             if not magicWordInfo['administrative']:
-                self.generateResponse(avId=avId, responseType = "LegitServer")
+                self.generateResponse(avId=avId, responseType="LegitServer")
                 return
         
         commandArgs = magicWordInfo['args']

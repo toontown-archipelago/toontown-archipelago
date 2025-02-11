@@ -515,7 +515,7 @@ QuestsItemDict = {1: ['Pair of Glasses', 'Pairs of Glasses', 'a '],
  5010: ['Sprocket', 'Sprockets', 'a '],
  5011: ['Salad', 'Salads', 'a '],
  5012: ['Key to ' + lDaisyGardens, 'Keys to ' + lDaisyGardens, 'a '],
- 5013: [lSellbotHQ + ' Blueprints', lSellbotHQ + ' HQ Blueprints', 'some '],
+ 5013: [lSellbotHQ + ' Blueprints', lSellbotHQ + ' Blueprints', 'some '],
  5014: [lSellbotHQ + ' Memo', lSellbotHQ + ' Memos', 'a '],
  5015: [lSellbotHQ + ' Memo', lSellbotHQ + ' Memos', 'a '],
  5016: [lSellbotHQ + ' Memo', lSellbotHQ + ' Memos', 'a '],
@@ -3170,6 +3170,13 @@ FADoorCodes_MM_FISHING_MISSING  = "The Fisherman gives you a stern look.\n\nIn o
 FADoorCodes_TB_FISHING_MISSING  = "The Fisherman gives you a stern look.\n\nIn order to fish here, you'll need The Brrrgh Fishing License."
 FADoorCodes_DDL_FISHING_MISSING = "The Fisherman gives you a stern look.\n\nIn order to fish here, you'll need a Donald's Dreamland Fishing License."
 
+FADoorCodes_GOLF_PUTTER_MISSING = "What are you going to do, kick the ball?\nTo play minigolf here, you'll need a Golf Putter."
+
+FADoorCodes_SELLBOT_FACILTIES_MISSING = "No access!\n\nIn order to access this elevator, you need another SBHQ Access Key."
+FADoorCodes_CASHBOT_FACILTIES_MISSING = "No access!\n\nIn order to access this elevator, you need another CBHQ Access Key."
+FADoorCodes_LAWBOT_FACILTIES_MISSING  = "No access!\n\nIn order to access this elevator, you need another LBHQ Access Key."
+FADoorCodes_BOSSBOT_FACILTIES_MISSING = "No access!\n\nIn order to access this elevator, you need another BBHQ Access Key."
+
 KnockKnockContestJokes = {2100: ['Wally', "Wally's not looking, hit him with a pie!"],
  2200: {28: ['Biscuit', 'Biscuit out of here the Cogs are coming!'],
         41: ['Dewey', 'Dewey want to go defeat some more Cogs?'],
@@ -4931,8 +4938,9 @@ KartShtikerDecal = 'Decal'
 KartShtikerDefault = 'Default %s'
 KartShtikerNo = 'No %s Accessory'
 CheckPageTitle = 'Items'
+LocationPageTitle = 'Tracker'
 CheckPageScrollTitle = 'Item            Status'
-HintPointsTitle = 'Hint Points: %s'
+HintPointsTitle = 'Hint Points: %s                    Cost: %s'
 QuestChoiceGuiCancel = lCancel
 TrackChoiceGuiChoose = 'Choose'
 TrackChoiceGuiCancel = lCancel
@@ -8783,7 +8791,7 @@ KartView_Right = 'Right'
 KartView_Left = 'Left'
 StartingBlock_NotEnoughTickets = "You don't have enough tickets! Try a practice race instead."
 StartingBlock_NoBoard = 'Boarding has ended for this race. Please wait for the next race to begin.'
-StartingBlock_NoKart = 'You need a kart first! Try asking one of the clerks in the Kart Shop.'
+StartingBlock_NoKart = "You're not planning to run a marathon are you? You need a Go-Kart to be able to race!"
 StartingBlock_Occupied = 'This block is currently occupied! Please try another spot.'
 StartingBlock_TrackClosed = 'Sorry, this track is closed for remodeling.'
 StartingBlock_EnterPractice = 'Would you like to enter a practice race?'
@@ -9949,7 +9957,10 @@ OptionNames = {
     "speedchat-style": "Speedchat Color",
     'discord-rich-presence': 'Discord Rich Presence',
     "archipelago-textsize": "Archipelago Log Text Size",
+    "archipelago-log-bg": "Archipelago Log Background",
     "color-blind-mode": "Colorblind Mode",
+    "want-legacy-models": "Toggle TTO Species Models*",
+    'laff-display': "Toggle Overhead Laff Meter",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",

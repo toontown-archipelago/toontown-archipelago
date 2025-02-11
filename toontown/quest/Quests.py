@@ -3,6 +3,7 @@ from typing import Dict, NamedTuple, List
 from otp.otpbase import OTPGlobals
 from apworld.toontown import locations
 from toontown.archipelago.definitions import util
+from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.toonbase import ToontownGlobals
 from toontown.battle import SuitBattleGlobals
@@ -14,6 +15,7 @@ from toontown.hood import ZoneUtil
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import TTLocalizer
 from direct.showbase import PythonUtil
+from apworld.toontown.options import RewardDisplayOption
 import time, types, random
 notify = DirectNotifyGlobal.directNotify.newCategory('Quests')
 ItemDict = TTLocalizer.QuestsItemDict
@@ -2368,11 +2370,11 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     # Location Check #9 (MML) Defeat a level 9 cog
     18080: APQuestDefinition((CogLevelQuest, Anywhere, 1, 9), 5044),
 
-    # Location Check #10 (MML) Defeat x amount of level y cogs in MML
-    18090: APQuestDefinition((CogLevelQuest, ToontownGlobals.MinniesMelodyland, 5, 6), 5045),
-    18091: APQuestDefinition((CogLevelQuest, ToontownGlobals.MinniesMelodyland, 5, 5), 5045),
-    18092: APQuestDefinition((CogLevelQuest, ToontownGlobals.MinniesMelodyland, 6, 6), 5045),
-    18093: APQuestDefinition((CogLevelQuest, ToontownGlobals.MinniesMelodyland, 6, 5), 5045),
+    # Location Check #10 (MML) Defeat x amount of level y cogs anywhere
+    18090: APQuestDefinition((CogLevelQuest, Anywhere, 5, 6), 5045),
+    18091: APQuestDefinition((CogLevelQuest, Anywhere, 5, 5), 5045),
+    18092: APQuestDefinition((CogLevelQuest, Anywhere, 6, 6), 5045),
+    18093: APQuestDefinition((CogLevelQuest, Anywhere, 6, 5), 5045),
 
     # Location Check #11 (MML) Random Quests
     18100: APQuestDefinition((CogLevelQuest, Anywhere, 10, 3), 5046),
@@ -2511,7 +2513,7 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     20102: APQuestDefinition((CogQuest, ToontownGlobals.DonaldsDreamland, 3, 'bc'), 5070),
 
     # Location Check #12 (DDL) Recover Hard Pillows from level 9s in DDL (very low drop chance)
-    20110: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 2, 7006, VeryHard, 9, "level"), 5071),
+    20110: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 2, 7006, Hard, 9, "level"), 5071),
     20111: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 4, 7006, Medium, 9, "level"), 5071),
 
 }
@@ -2666,6 +2668,13 @@ def chooseBestQuests(currentNpc, av, excludeRewards: List[int], seed=None):
     taskLocationEnd = taskLocationOffset + 3
     # Splice the list to choose 3 tasks we want, this should splice like so: 0-2, 3-5, 6-8, 9-11
     locationsWeOffer = allHoodTaskLocationNames[taskLocationOffset:taskLocationEnd]
+
+    # Optionally, Hint the locally available tasks
+    if av.slotData.get("task_reward_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint:
+        packet = LocationScoutsPacket()
+        packet.create_as_hint = 2 # only announce new hints
+        packet.locations = [util.ap_location_name_to_id(loc) for loc in locationsWeOffer]
+        av.archipelago_session.client.send_packet(packet)
 
     # Now convert these AP locations into base Toontown quest reward items
     rewardsFromLocation = []

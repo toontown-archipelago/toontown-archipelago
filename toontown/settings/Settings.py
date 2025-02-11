@@ -1,9 +1,9 @@
 from dataclasses import asdict, dataclass
 import json
 from typing import Union, Any
+from pathlib import Path
 
 from direct.showbase.MessengerGlobal import messenger
-
 # Valid types for a setting.
 ControlSetting = dict[str, str]
 Setting = Union[str, int, bool, list, float, ControlSetting]
@@ -59,22 +59,25 @@ class Settings:
         "camSensitivityX": 0.25,
         "camSensitivityY": 0.1,
         "fps-limit": 0,
+        'laff-display': True,
+        "archipelago-textsize": 0.5,
+        "archipelago-log-bg": False,
         # Options below this comment will not be exposed by OptionsPage
         # They can still be configurable by the end user
         "want-legacy-models": False,
         "experimental-multithreading": False,
         'discord-rich-presence': False,
-        "archipelago-textsize": 0.5,
         "color-blind-mode": False,
     }
+    settingsFile = Path.home() / "Documents" / "Toontown Archipelago" / "settings.json"
 
-    settingsFile = "settings.json"
 
     def __init__(self) -> None:
         try:
-            with open(self.settingsFile) as f:
+            with self.settingsFile.open(encoding='utf-8') as f:
                 self._settings = json.load(f)
         except FileNotFoundError:
+            self.settingsFile.parent.mkdir(parents=True, exist_ok=True)
             self._settings = self.defaultSettings.copy()
         except Exception as e:
             raise e
@@ -110,7 +113,7 @@ class Settings:
         self.set("controls", asdict(self.controls))
 
     def write(self) -> None:
-        with open(self.settingsFile, "w") as _settings:
+        with self.settingsFile.open("w", encoding='utf-8') as _settings:
             # Clean the settings dictionary before saving it to the file.
             self.clean()
             json.dump(self._settings, _settings, sort_keys=True, indent=4)
