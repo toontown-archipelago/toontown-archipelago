@@ -657,7 +657,7 @@ class ToontownWorld(World):
         randomized = win_conditions.count("randomized")
         choices = list(self.options.win_condition.valid_keys)
         choices.remove("randomized") # not a valid random choice
-        result = [i for i in win_conditions if i != "randomized"]
+        result = [i for i in set(win_conditions) if i != "randomized"]
         rng = self.multiworld.random
         for i in result:
             choices.remove(i)

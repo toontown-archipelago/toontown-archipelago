@@ -60,20 +60,15 @@ class ToontownWinCondition(IntFlag):
     def from_options(cls, options):
         """expects archipelago world options."""
         win_conditions = cls(0)
+        lookup = {
+            "cog-bosses": cls.cog_bosses,
+            "total-tasks": cls.total_tasks,
+            "hood-tasks": cls.hood_tasks,
+            "gag-tracks": cls.gag_tracks,
+            "fish-species": cls.fish_species,
+            "laff-o-lympics": cls.laff_o_lympics,
+            "bounties": cls.bounty
+        }
         for i in options.win_condition.value:
-            match i:
-                case "cog-bosses":
-                    win_conditions = win_conditions | ToontownWinCondition.cog_bosses
-                case "total-tasks":
-                    win_conditions = win_conditions | ToontownWinCondition.total_tasks
-                case "hood-tasks":
-                    win_conditions = win_conditions | ToontownWinCondition.hood_tasks
-                case "gag-tracks":
-                    win_conditions = win_conditions | ToontownWinCondition.gag_tracks
-                case "fish-species":
-                    win_conditions = win_conditions | ToontownWinCondition.fish_species
-                case "laff-o-lympics":
-                    win_conditions = win_conditions | ToontownWinCondition.laff_o_lympics
-                case "bounties":
-                    win_conditions = win_conditions | ToontownWinCondition.bounty
+            win_conditions = win_conditions | lookup.get(i, cls(0))
         return win_conditions
