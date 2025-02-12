@@ -155,7 +155,7 @@ class Street(BattlePlace.BattlePlace):
         newsManager = base.cr.newsManager
         NametagGlobals.setMasterArrowsOn(0)
         self.loader.hood.stopSky()
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopMusic()
         base.localAvatar.setGeom(render)
         base.localAvatar.setOnLevelGround(0)
 

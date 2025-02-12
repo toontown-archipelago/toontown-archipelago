@@ -265,7 +265,7 @@ class Playground(BattlePlace):
             self.loader.exitAnimatedProps(i)
 
         self.loader.hood.stopSky()
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopMusic()
 
     def load(self):
         Place.Place.load(self)

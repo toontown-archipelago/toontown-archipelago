@@ -56,25 +56,16 @@ class TownLoader(StateData.StateData):
         self.canonicalBranchZone = ZoneUtil.getCanonicalBranchZone(zoneId)
         self.townBattle = TownBattle.TownBattle(self.townBattleDoneEvent)
         self.townBattle.load()
-        
+
+        # we set our music keys here
         hoodAlisis = MusicManagerGlobals.safeZonetoAlis[self.hood.id] + '-'
-        self.musicCode = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['music']
-        self.battleMusicCode = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['battleMusic']
-        self.activityMusicCode = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['activityMusic']
-
-        # we add in are area music here
-        base.contentPackMusicManager.playMusic(self.musicCode, looping=1, volume=0.8, interrupt=False)
-        self.music = base.contentPackMusicManager.currentMusic[self.musicCode]
-        self.music.stop()
+        self.music = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['music']
+        self.battleMusic = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['battleMusic']
+        self.activityMusic = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['activityMusic']
         
-        # we add in our battle music here
-        base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=False)
-        self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
-        self.battleMusic.stop()
 
-        base.contentPackMusicManager.playMusic(self.activityMusicCode, looping=1, volume=0.9, interrupt=False)
-        self.activityMusic = base.contentPackMusicManager.currentMusic[self.activityMusicCode]
-        self.activityMusic.stop()
+
+
 
     def unload(self):
         self.unloadBattleAnims()

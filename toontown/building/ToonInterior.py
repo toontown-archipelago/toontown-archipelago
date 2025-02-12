@@ -92,7 +92,7 @@ class ToonInterior(Place.Place):
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)
         volume = requestStatus.get('musicVolume', 0.7)
-        base.contentPackMusicManager.playMusic(self.loader.activityMusicCode, looping=1, volume=volume)
+        base.contentPackMusicManager.playMusic(self.loader.activityMusic, looping=1, volume=volume)
         self._telemLimiter = TLGatherAllAvs('ToonInterior', RotationLimitToH)
         NametagGlobals.setMasterArrowsOn(1)
         self.fsm.request(requestStatus['how'], [requestStatus])
@@ -103,7 +103,7 @@ class ToonInterior(Place.Place):
         self._telemLimiter.destroy()
         del self._telemLimiter
         NametagGlobals.setMasterArrowsOn(0)
-        self.loader.activityMusic.stop()
+        base.contentPackMusicManager.stopMusic()
 
     def setState(self, state):
         self.fsm.request(state)

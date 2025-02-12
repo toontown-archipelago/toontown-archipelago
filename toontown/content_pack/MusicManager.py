@@ -10,7 +10,6 @@ class MusicManager:
         self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         self.currentMusic = {}
         self.currentMusicInfo = {}
-
     
     def playMusic(self, json_code, looping=True, volume=1.0, interrupt=True, time=0.0):
         """
@@ -34,6 +33,7 @@ class MusicManager:
                                                  "time": time}
             base.playMusic(self.currentMusic[json_code], looping=looping, interrupt=interrupt, volume=volume, time=time
                             )
+
     def stopMusic(self):        
         for music in list(self.currentMusic.keys()):
             self.currentMusic[music].stop()

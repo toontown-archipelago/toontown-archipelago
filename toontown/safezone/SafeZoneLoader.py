@@ -45,23 +45,10 @@ class SafeZoneLoader(StateData.StateData):
         self.createSafeZone(self.dnaFile)
         self.parentFSMState.addChild(self.fsm)
 
-        self.musicCode = MusicManagerGlobals.GLOBALS[self.hood.id]['music']
-        self.battleMusicCode = MusicManagerGlobals.GLOBALS[self.hood.id]['battleMusic']
-        self.activityMusicCode = MusicManagerGlobals.GLOBALS[self.hood.id]['activityMusic']
-
-
-
-        # we add in are area music here
-        base.contentPackMusicManager.playMusic(self.musicCode, looping=1, volume=0.8)
-        self.music = base.contentPackMusicManager.currentMusic[self.musicCode]
-        self.music.stop()
-        # we add in our battle music here
-        base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=False)
-        self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
-        self.battleMusic.stop()
-        base.contentPackMusicManager.playMusic(self.activityMusicCode, looping=1, volume=0.9, interrupt=False)
-        self.activityMusic = base.contentPackMusicManager.currentMusic[self.activityMusicCode]
-        self.activityMusic.stop()
+        # we set our music keys here
+        self.music = MusicManagerGlobals.GLOBALS[self.hood.id]['music']
+        self.battleMusic = MusicManagerGlobals.GLOBALS[self.hood.id]['battleMusic']
+        self.activityMusic = MusicManagerGlobals.GLOBALS[self.hood.id]['activityMusic']
 
     def unload(self):
         self.parentFSMState.removeChild(self.fsm)
