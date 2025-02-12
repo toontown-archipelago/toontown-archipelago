@@ -55,19 +55,18 @@ class SafeZoneLoader(StateData.StateData):
         self.activityMusicCode = MusicManagerGlobals.GLOBALS[self.hood.id]['activityMusic']
 
 
-        """
+
         # we add in are area music here
         base.contentPackMusicManager.playMusic(self.musicCode, looping=1, volume=0.8)
         self.music = base.contentPackMusicManager.currentMusic[self.musicCode]
-        
-        # we add in our battle music here
-        base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=False)
-        self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
-        """
+        self.music.stop()
+        # # we add in our battle music here
+        # base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=False)
+        # self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
 
-        base.contentPackMusicManager.playMusic(self.activityMusicCode, looping=1, volume=0.9)
-        self.activityMusic = base.contentPackMusicManager.currentMusic[self.activityMusicCode]
-        self.activityMusic.stop()
+        # base.contentPackMusicManager.playMusic(self.musi, looping=1, volume=0.9)
+        # self.activityMusic = base.contentPackMusicManager.currentMusic[self.activityMusicCode]
+        # self.activityMusic.stop()
 
     def unload(self):
         self.parentFSMState.removeChild(self.fsm)

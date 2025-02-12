@@ -760,7 +760,7 @@ class ToonBase(OTPBase.OTPBase):
                 volume = musicInfo.get("volume", 1.0) ** 2
                 time = musicInfo.get("time", 0.0)
                 interrupt = musicInfo.get("interrupt", True)
-                self.notify.info(f"Playing music {json_code} with looping={looping}, volume={volume}, time={time}")
+                self.notify.debug(f"Playing music {json_code} with looping={looping}, volume={volume}, time={time}")
                 self.contentPackMusicManager.playMusic(json_code, looping, volume, interrupt, time)
         else:
             self.notify.warning("No json data found for music, skipping.")
