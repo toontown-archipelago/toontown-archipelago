@@ -75,6 +75,7 @@ class MakeAToon(StateData.StateData):
              COLORSHOP,
              CLOTHESSHOP]
         self.music = None
+        self.musicCode = None
         self.soundBack = None
         self.fsm.enterInitialState()
         self.hprDelta = -1
@@ -97,7 +98,7 @@ class MakeAToon(StateData.StateData):
             self.notify.info('QA-REGRESSION: MAKEATOON: Starting Make A Toon')
         base.cr.centralLogger.writeClientEvent('MAT - startingMakeAToon')
         base.camLens.setFov(ToontownGlobals.MakeAToonCameraFov)
-        base.playMusic(self.music, looping=1)
+        base.contentPackMusicManager.playMusic(self.musicCode, looping=1)
         camera.setPosHpr(-5.7, -12.3501, 2.15, -24.8499, 2.73, 0)
         if self.warp:
             if self.toon.style.torso[1] == 's':
@@ -261,7 +262,10 @@ class MakeAToon(StateData.StateData):
         self.cos.load()
         self.cls.load()
         self.ns.load()
-        self.music = base.loader.loadMusic('phase_3/audio/bgm/create_a_toon.ogg')
+        self.musicCode = "create-a-toon"
+        base.contentPackMusicManager.playMusic(self.musicCode)
+        self.music = base.contentPackMusicManager.currentMusic[self.musicCode]
+        self.music.stop()
         self.soundBack = base.loader.loadSfx('phase_3/audio/sfx/GUI_create_toon_back.ogg')
         self.crashSounds = []
         self.crashSounds.append(base.loader.loadSfx('phase_3/audio/sfx/tt_s_ara_mat_crash_boing.ogg'))

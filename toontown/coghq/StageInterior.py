@@ -100,7 +100,7 @@ class StageInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.playMusic(self.loader.music, looping=1, volume=0.8)
+            base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
             base.transitions.irisIn()
             stage = bboard.get(DistributedStage.DistributedStage.ReadyPost)
             self.loader.hood.spawnTitleText(stage.stageId)
@@ -165,7 +165,7 @@ class StageInterior(BattlePlace.BattlePlace):
     def exitBattle(self):
         StageInterior.notify.debug('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
-        base.playMusic(self.loader.music, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)

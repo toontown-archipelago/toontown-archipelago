@@ -76,13 +76,13 @@ class FactoryInterior(BattlePlace.BattlePlace):
         self.loader.battleMusicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
 
         # we add in are area music here
-        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8, interrupt=False)
         self.loader.music = base.contentPackMusicManager.currentMusic[self.loader.musicCode]
-        
+        self.loader.music.stop()
         # we add in our battle music here
         base.contentPackMusicManager.playMusic(self.loader.battleMusicCode, looping=1, volume=0.9, interrupt=False)
         self.loader.battleMusic = base.contentPackMusicManager.currentMusic[self.loader.battleMusicCode]
-
+        self.loader.battleMusic.stop()
     def unload(self):
         self.parentFSM.getStateNamed('factoryInterior').removeChild(self.fsm)
         del self.fsm
@@ -97,7 +97,7 @@ class FactoryInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.playMusic(self.loader.music, looping=1, volume=0.8)
+            base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
             base.transitions.irisIn()
 
         if hasattr(base, 'factoryReady'):
@@ -162,7 +162,7 @@ class FactoryInterior(BattlePlace.BattlePlace):
     def exitBattle(self):
         FactoryInterior.notify.info('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
-        base.playMusic(self.loader.music, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)

@@ -32,9 +32,8 @@ class MusicManager:
             self.currentMusic[json_code].setTime(time)
             self.currentMusicInfo[json_code] = {"looping": looping, "volume": volume, "interrupt": interrupt, 
                                                  "time": time}
-            if interrupt:
-                self.currentMusic[json_code].play()
-    
+            base.playMusic(self.currentMusic[json_code], looping=looping, interrupt=interrupt, volume=volume, time=time
+                            )
     def stopMusic(self):        
         for music in list(self.currentMusic.keys()):
             self.currentMusic[music].stop()

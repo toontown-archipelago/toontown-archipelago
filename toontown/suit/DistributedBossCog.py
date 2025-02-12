@@ -1086,7 +1086,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         stateCode = BossCogGlobals.BOSSDEPT_2_PACK_ALISIS[self.style.dept] + state
         if self.music != None and self.currentMusicCode != None:
             base.contentPackMusicManager.stopSpecificMusic(self.currentMusicCode)
-        base.contentPackMusicManager.playMusic(stateCode, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(stateCode, looping=1, interrupt=1, volume=0.8)
         self.music = base.contentPackMusicManager.currentMusic[stateCode]
         self.currentMusicCode = stateCode
 

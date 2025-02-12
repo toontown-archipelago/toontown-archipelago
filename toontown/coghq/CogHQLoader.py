@@ -24,6 +24,8 @@ class CogHQLoader(StateData.StateData):
         self.musicCode = 'sellbot-courtyard'
         self.battleMusicCode = 'sellbot-courtyard-battle'
 
+        self.music = None
+        self.battleMusic = None
         self.fsm = ClassicFSM.ClassicFSM('CogHQLoader', [State.State('start', None, None, ['quietZone', 'cogHQExterior', 'factoryInterior', 'cogHQBossBattle']),
          State.State('cogHQExterior', self.enterCogHQExterior, self.exitCogHQExterior, ['quietZone', 'cogHQLobby']),
          State.State('cogHQLobby', self.enterCogHQLobby, self.exitCogHQLobby, ['quietZone', 'cogHQExterior', 'cogHQBossBattle']),
@@ -39,13 +41,14 @@ class CogHQLoader(StateData.StateData):
         self.townBattle.load()
         Suit.loadSuits(3)
         self.loadPlaceGeom(zoneId)
-
-        # these will be defined in it's parent class later
-        #self.music = base.loader.loadMusic(self.musicFile)
-        #self.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
-        
         self.musicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
+        base.contentPackMusicManager.playMusic(self.musicCode, interrupt=False)
+        self.music = base.contentPackMusicManager.currentMusic[self.musicCode]
+        self.music.stop()
         self.battleMusicCode = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
+        base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=False)
+        self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
+        self.battleMusic.stop()
 
     def loadPlaceGeom(self, zoneId):
         pass

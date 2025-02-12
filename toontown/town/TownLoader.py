@@ -40,7 +40,6 @@ class TownLoader(StateData.StateData):
         self.placeDoneEvent = 'placeDone'
         self.townBattleDoneEvent = 'town-battle-done'
         fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(musicJsonFilePath, True))
         return
 
     def loadBattleAnims(self):
@@ -63,18 +62,19 @@ class TownLoader(StateData.StateData):
         self.battleMusicCode = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['battleMusic']
         self.activityMusicCode = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['activityMusic']
 
-        """"
         # we add in are area music here
-        base.contentPackMusicManager.playMusic(self.musicCode, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.musicCode, looping=1, volume=0.8, interrupt=False)
         self.music = base.contentPackMusicManager.currentMusic[self.musicCode]
+        self.music.stop()
         
         # we add in our battle music here
         base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=False)
         self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
-        """
+        self.battleMusic.stop()
 
         base.contentPackMusicManager.playMusic(self.activityMusicCode, looping=1, volume=0.9, interrupt=False)
         self.activityMusic = base.contentPackMusicManager.currentMusic[self.activityMusicCode]
+        self.activityMusic.stop()
 
     def unload(self):
         self.unloadBattleAnims()

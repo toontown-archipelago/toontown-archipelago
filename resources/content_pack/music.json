@@ -1,5 +1,7 @@
 {
     "global_music": {
+      "tt-theme": "phase_3/audio/bgm/tt_theme.ogg",
+      "create-a-toon": "phase_3/audio/bgm/create_a_toon.ogg",
       "none": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
       "none_battle": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
       "none_activity": "phase_9/audio/bgm/encntr_head_suit_theme.ogg",
@@ -99,14 +101,17 @@
       "dl-9300": "phase_8/audio/bgm/DL_SZ.ogg",
       "dl-9300-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
       "dl-9300-activity": "phase_8/audio/bgm/DL_SZ_activity.ogg",
-
+      "ff-sz": "phase_4/audio/bgm/FF_safezone.ogg",
       "oz-sz": "phase_6/audio/bgm/OZ_SZ.ogg",
       "oz-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
       "oz-sz-activity": "phase_6/audio/bgm/OZ_SZ.ogg",
       "gz-sz": "phase_6/audio/bgm/GZ_SZ.ogg",
+      "gz-playgolf": "phase_6/audio/bgm/GZ_PlayGolf.ogg",
       "gz-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
       "gz-sz-activity": "phase_6/audio/bgm/GZ_SZ.ogg",
-
+      "estate-sz": "phase_5.5/audio/bgm/estate_SZ.ogg",
+      "estate-sz-battle": "phase_3.5/audio/bgm/encntr_general_bg.ogg",
+      "estate-sz-activity": "phase_5.5/audio/bgm/estate_SZ.ogg",
 
       "sellbot-courtyard": "phase_9/audio/bgm/encntr_suit_HQ_nbrhood.ogg",
       "sellbot-courtyard-battle": "phase_9/audio/bgm/encntr_suit_winning.ogg",
@@ -218,6 +223,16 @@
 
       "BOSSES" : "s = vp, m = cfo, l = cj, c = ceo",
       "boss-c-two": "phase_12/audio/bgm/BossBot_CEO_v1.ogg",
-      "boss-c-four": "phase_12/audio/bgm/BossBot_CEO_v2.ogg"
+      "boss-c-four": "phase_12/audio/bgm/BossBot_CEO_v2.ogg",
+
+      "suit-building": "phase_7/audio/bgm/encntr_general_bg_indoor.ogg",
+      "suit-building-boss": "phase_7/audio/bgm/encntr_suit_winning_indoor.ogg",
+      "suit-building-wait": "phase_7/audio/bgm/encntr_toon_winning_indoor.ogg",
+      "suit-building-elevator": "phase_7/audio/bgm/tt_elevator.ogg",
+
+      "firework-july4": "phase_4/audio/bgm/tt_party2",
+      "fireworks-newyears": "phase_4/audio/bgm/tt_s_ara_gen_fireworks_auldLangSyne.ogg",
+      "fireworks-summer": "phase_4/audio/bgm/tt_summer.ogg"
+
     }
   }

@@ -82,8 +82,12 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
         self.penthouseOutroTrack = None
         self.penthouseOutroChatDoneTrack = None
         self.penthouseIntroTrack = None
-        self.waitMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_toon_winning_indoor.ogg')
-        self.elevatorMusic = base.loader.loadMusic('phase_7/audio/bgm/tt_elevator.ogg')
+        self.waitMusicCode = "suit-building-wait"
+        base.contentPackMusicManager.playMusic(self.waitMusicCode, looping=1, volume=0.8)
+        self.waitMusic = base.contentPackMusicManager.currentMusic[self.waitMusicCode]
+        self.elevatorMusicCode = "suit-building-wait"
+        base.contentPackMusicManager.playMusic(self.elevatorMusicCode, looping=1, volume=0.8)
+        self.elevatorMusic = base.contentPackMusicManager.currentMusic[self.elevatorMusicCode]
         self.fsm = ClassicFSM.ClassicFSM('DistributedCogdoInterior', [State.State('WaitForAllToonsInside', self.enterWaitForAllToonsInside, self.exitWaitForAllToonsInside, ['Elevator']),
          State.State('Elevator', self.enterElevator, self.exitElevator, ['Game']),
          State.State('Game', self.enterGame, self.exitGame, ['Resting', 'Failed', 'BattleIntro']),
@@ -499,7 +503,7 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
         camera.setH(180)
         camera.setP(0)
         camera.setPos(0, 14, 4)
-        base.playMusic(self.elevatorMusic, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.elevatorMusicCode, looping=1, volume=0.8)
         track = Sequence(Func(base.transitions.noTransitions), ElevatorUtils.getRideElevatorInterval(ELEVATOR_NORMAL), ElevatorUtils.getOpenInterval(self, self.leftDoorIn, self.rightDoorIn, self.openSfx, None, type=ELEVATOR_NORMAL), Func(camera.wrtReparentTo, render))
         for toon in self.toons:
             track.append(Func(toon.wrtReparentTo, render))
@@ -595,7 +599,7 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
             if self._wantBarrelRoom:
                 self.acceptOnce('localToonLeft', self.__handleLocalToonLeftBarrelRoom)
                 self.barrelRoom.activate()
-                base.playMusic(self.waitMusic, looping=1, volume=0.7)
+                base.contentPackMusicManager.playMusic(self.waitMusicCode, looping=1, volume=0.8)
 
     def exitCollectBarrels(self):
         if self._wantBarrelRoom and not self.isBossFloor(self.currentFloor):
@@ -697,7 +701,7 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
         self._setAvPosFDC = FrameDelayedCall('setAvPos', self._setAvPosToExit)
         if self._wantBarrelRoom:
             self.barrelRoom.showBattleAreaLight(True)
-        base.playMusic(self.waitMusic, looping=1, volume=0.7)
+        base.contentPackMusicManager.playMusic(self.waitMusicCode, looping=1, volume=0.8)
         self.__closeInElevator()
         self._haveEntranceElevator.set(False)
         self._stashEntranceElevator.set(False)

@@ -64,7 +64,7 @@ class FactoryExterior(BattlePlace.BattlePlace):
         base.discord.setZone(self.zoneId)
         BattlePlace.BattlePlace.enter(self)
         self.fsm.enterInitialState()
-        base.playMusic(self.loader.music, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
         self.loader.geom.reparentTo(render)
         self.nodeList = [self.loader.geom]
         self.loader.hood.startSky()

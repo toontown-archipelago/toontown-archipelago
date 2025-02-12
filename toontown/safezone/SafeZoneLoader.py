@@ -19,7 +19,6 @@ from toontown.toonbase.ToontownGlobals import *
 from toontown.building import ToonInterior
 from toontown.hood import QuietZoneState
 from toontown.content_pack import MusicManagerGlobals
-import json
 
 class SafeZoneLoader(StateData.StateData):
     notify = DirectNotifyGlobal.directNotify.newCategory('SafeZoneLoader')
@@ -40,15 +39,11 @@ class SafeZoneLoader(StateData.StateData):
 
         self.townBattle = TownBattle('town-battle-done')
         fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         return
 
     def load(self):
-        self.music = base.loader.loadMusic(self.musicFile)
-        self.activityMusic = base.loader.loadMusic(self.activityMusicFile)
         self.createSafeZone(self.dnaFile)
         self.parentFSMState.addChild(self.fsm)
-        self.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
 
         self.musicCode = MusicManagerGlobals.GLOBALS[self.hood.id]['music']
         self.battleMusicCode = MusicManagerGlobals.GLOBALS[self.hood.id]['battleMusic']
@@ -60,13 +55,13 @@ class SafeZoneLoader(StateData.StateData):
         base.contentPackMusicManager.playMusic(self.musicCode, looping=1, volume=0.8)
         self.music = base.contentPackMusicManager.currentMusic[self.musicCode]
         self.music.stop()
-        # # we add in our battle music here
-        # base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=False)
-        # self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
-
-        # base.contentPackMusicManager.playMusic(self.musi, looping=1, volume=0.9)
-        # self.activityMusic = base.contentPackMusicManager.currentMusic[self.activityMusicCode]
-        # self.activityMusic.stop()
+        # we add in our battle music here
+        base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=False)
+        self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
+        self.battleMusic.stop()
+        base.contentPackMusicManager.playMusic(self.activityMusicCode, looping=1, volume=0.9, interrupt=False)
+        self.activityMusic = base.contentPackMusicManager.currentMusic[self.activityMusicCode]
+        self.activityMusic.stop()
 
     def unload(self):
         self.parentFSMState.removeChild(self.fsm)

@@ -30,6 +30,9 @@ class DistributedBattleBldg(DistributedBattleBase.DistributedBattleBase):
         offState.addTransition('BuildingReward')
         playMovieState = self.fsm.getStateNamed('PlayMovie')
         playMovieState.addTransition('BuildingReward')
+        self.battleMusic = None
+        self.battleMusicCode = None
+        self.bossBattle = 0
 
     def generate(self):
         DistributedBattleBase.DistributedBattleBase.generate(self)
@@ -37,10 +40,12 @@ class DistributedBattleBldg(DistributedBattleBase.DistributedBattleBase):
     def setBossBattle(self, value):
         self.bossBattle = value
         if self.bossBattle:
-            self.battleMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_suit_winning_indoor.ogg')
+            self.battleMusicCode = 'suit-building-boss'
         else:
-            self.battleMusic = base.loader.loadMusic('phase_7/audio/bgm/encntr_general_bg_indoor.ogg')
-        base.playMusic(self.battleMusic, looping=1, volume=0.9)
+            self.battleMusicCode = 'suit-building'
+        base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=True)
+        self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
+        # self.battleMusic.stop()
 
     def getBossBattleTaunt(self):
         return TTLocalizer.BattleBldgBossTaunt

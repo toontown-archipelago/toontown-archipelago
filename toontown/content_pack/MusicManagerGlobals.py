@@ -98,7 +98,8 @@ safeZones = [ToontownCentral,
              DonaldsDreamland,
              GoofySpeedway,
              GolfZone,
-             OutdoorZone]
+             OutdoorZone,
+                MyEstate]
 
 safeZonetoAlis = {
     ToontownCentral: 'tt',
@@ -110,6 +111,7 @@ safeZonetoAlis = {
     GoofySpeedway: 'gs',
     OutdoorZone: 'oz',
     GolfZone: 'gz',
+    MyEstate: 'estate',
 }
 
 for safeZone in safeZones:
@@ -119,7 +121,8 @@ for safeZone in safeZones:
         'activityMusic': safeZonetoAlis[safeZone] + '-sz-activity'
     }
     if safeZone not in [GolfZone,
-                        OutdoorZone]:
+                        OutdoorZone,
+                        MyEstate]:
         safeHierarchy = HoodHierarchyMusicManager[safeZone]
         for hood in safeHierarchy:
             GLOBALS[safeZonetoAlis[safeZone] + '-' + str(hood)] = {

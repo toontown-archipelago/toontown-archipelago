@@ -102,7 +102,7 @@ class Street(BattlePlace.BattlePlace):
         teleportDebug(requestStatus, 'Street.enter(%s)' % (requestStatus,))
         self._ttfToken = None
         self.fsm.enterInitialState()
-        base.playMusic(self.loader.music, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.loader.music, looping=True, interrupt=True, volume=0.8)
         self.loader.geom.reparentTo(render)
         if visibilityFlag:
             self.visibilityOn()
