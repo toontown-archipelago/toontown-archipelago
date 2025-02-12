@@ -58,10 +58,18 @@ class MusicManager:
             self.currentMusicInfo[json_code]["volume"] = volume
 
     def getTime(self, json_code):
+        # We need to update the current time for this music
+        self.updateTime(json_code)
         return self.currentMusicInfo[json_code]["time"]
+
+    def updateTime(self, json_code):
+        self.currentMusicInfo[json_code]["time"] = self.currentMusic[json_code].getTime()
         
     def getCurMusic(self):
         return self.currentMusic
     
     def getCurMusicInfo(self):
+        # We need to update the current times for all music
+        for code in list(self.currentMusicInfo.keys()):
+            self.updateTime(code)
         return self.currentMusicInfo
