@@ -578,12 +578,14 @@ class ToontownWorld(World):
         choices = ALL.copy()
 
         starting_random_gags = starting_gags.count("randomized")
-        starting_gag_items = [gag_to_item[item] for item in starting_gags if item in gag_to_item]
+        starting_gag_items = [gag_to_item[item] for item in set(starting_gags) if item in gag_to_item]
 
         for i in starting_gag_items:
             choices.remove(i)
 
         for i in range(starting_random_gags):
+            if len(choices) == 0:
+                break
             if len(starting_gag_items) == 0: #first gag always should be offensive.
                 chosen = rng.choice(OFFENSIVE)
                 starting_gag_items.append(chosen)
