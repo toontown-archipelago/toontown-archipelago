@@ -557,7 +557,7 @@ class OptionElement(DirectFrame):
                 self.accept("controls_findDuplicates", self.checkForDuplicates)
             
             if self.optionName == 'refresh-audio':
-                self.optionModifier["text"] = TTLocalizer.OptionNames['refresh-audio'] # This is a special case where there is no setting to display.
+                self.optionModifier["text"] = TTLocalizer.OptionRefresh # This is a special case where there is no setting to display.
         
         # Make the slider which will appear on the right-hand side of
         # the page.
@@ -718,7 +718,7 @@ class OptionElement(DirectFrame):
         
         elif self.optionName == 'refresh-audio':
             base.refreshAudio()
-            self.optionModifier["text"] = TTLocalizer.OptionNames['refresh-audio']
+            self.optionModifier["text"] = TTLocalizer.OptionRefresh
             return
 
         elif self.optionType == OptionTypes.BUTTON_SPEEDCHAT:
