@@ -51,8 +51,8 @@ class BossbotCogHQLoader(CogHQLoader.CogHQLoader):
         if zoneId == ToontownGlobals.BossbotHQ:
             self.geom = loader.loadModel(self.cogHQExteriorModelPath)
 
-            self.musicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
-            self.battleMusicCode = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
 
             gzLinkTunnel = self.geom.find('**/LinkTunnel1')
             gzLinkTunnel.setName('linktunnel_gz_17000_DNARoot')
@@ -66,8 +66,8 @@ class BossbotCogHQLoader(CogHQLoader.CogHQLoader):
             self.notify.debug('cogHQLobbyModelPath = %s' % self.cogHQLobbyModelPath)
             self.geom = loader.loadModel(self.cogHQLobbyModelPath)
 
-            self.musicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
-            self.battleMusicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['music']
 
         else:
             self.notify.warning('loadPlaceGeom: unclassified zone %s' % zoneId)

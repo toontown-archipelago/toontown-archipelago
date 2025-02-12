@@ -43,8 +43,8 @@ class CashbotCogHQLoader(CogHQLoader.CogHQLoader):
         if zoneId == ToontownGlobals.CashbotHQ:
             self.geom = loader.loadModel(self.cogHQExteriorModelPath)
 
-            self.musicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
-            self.battleMusicCode = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
 
             ddLinkTunnel = self.geom.find('**/LinkTunnel1')
             ddLinkTunnel.setName('linktunnel_dl_9252_DNARoot')
@@ -59,8 +59,8 @@ class CashbotCogHQLoader(CogHQLoader.CogHQLoader):
                 self.notify.info('QA-REGRESSION: COGHQ: Visit CashbotLobby')
             self.geom = loader.loadModel(self.cogHQLobbyModelPath)
 
-            self.musicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
-            self.battleMusicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['music']
 
             buildings = self.geom.findAllMatches('**/BGBuildings2')
             sky = self.geom.find('**/SkyBox')

@@ -73,16 +73,10 @@ class StageInterior(BattlePlace.BattlePlace):
         BattlePlace.BattlePlace.load(self)
         fileSystem = VirtualFileSystem.getGlobalPtr()
 
-        self.loader.musicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
-        self.loader.battleMusicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
+        self.loader.music = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
+        self.loader.battleMusic = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
 
-        # we add in are area music here
-        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
-        self.loader.music = base.contentPackMusicManager.currentMusic[self.loader.musicCode]
-        
-        # we add in our battle music here
-        base.contentPackMusicManager.playMusic(self.loader.battleMusicCode, looping=1, volume=0.9, interrupt=False)
-        self.loader.battleMusic = base.contentPackMusicManager.currentMusic[self.loader.battleMusicCode]
+ 
 
     def unload(self):
         self.parentFSM.getStateNamed('stageInterior').removeChild(self.fsm)
@@ -100,7 +94,7 @@ class StageInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+            base.contentPackMusicManager.playMusic(self.loader.music, looping=1, volume=0.8)
             base.transitions.irisIn()
             stage = bboard.get(DistributedStage.DistributedStage.ReadyPost)
             self.loader.hood.spawnTitleText(stage.stageId)
@@ -125,7 +119,7 @@ class StageInterior(BattlePlace.BattlePlace):
         base.cr.forbidCheesyEffects(0)
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopMusic()
         self.ignoreAll()
         del self.stageReadyWatcher
 
@@ -152,7 +146,7 @@ class StageInterior(BattlePlace.BattlePlace):
 
     def enterBattle(self, event):
         StageInterior.notify.debug('enterBattle')
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopMusic()
         BattlePlace.BattlePlace.enterBattle(self, event)
         self.ignore('teleportQuery')
         base.localAvatar.setTeleportAvailable(0)
@@ -165,7 +159,7 @@ class StageInterior(BattlePlace.BattlePlace):
     def exitBattle(self):
         StageInterior.notify.debug('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
-        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.loader.music, looping=1, volume=0.8)
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)

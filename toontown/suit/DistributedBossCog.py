@@ -72,7 +72,6 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.scoreboard.hide()
         self.cutsceneSpeed = 1.0
         self.music = None
-        self.currentMusicCode = None
         return
 
     def announceGenerate(self):
@@ -1084,11 +1083,10 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
 
     def playBossMusic(self, state):
         stateCode = BossCogGlobals.BOSSDEPT_2_PACK_ALISIS[self.style.dept] + state
-        if self.music != None and self.currentMusicCode != None:
-            base.contentPackMusicManager.stopSpecificMusic(self.currentMusicCode)
+        if self.music != None:
+            base.contentPackMusicManager.stopSpecificMusic(self.music)
         base.contentPackMusicManager.playMusic(stateCode, looping=1, interrupt=1, volume=0.8)
-        self.music = base.contentPackMusicManager.currentMusic[stateCode]
-        self.currentMusicCode = stateCode
+        self.music = stateCode
 
     def announceAreaAttack(self):
         if not getattr(localAvatar.controlManager.currentControls, 'isAirborne', 0):
@@ -1100,7 +1098,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
 
     def unloadEnvironment(self):
         if self.music != None:
-            base.contentPackMusicManager.stopSpecificMusic(self.currentMusicCode)
+            base.contentPackMusicManager.stopMusic()
             self.music = None
 
     def enterOff(self):

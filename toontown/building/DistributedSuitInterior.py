@@ -53,14 +53,8 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
          120,
          12,
          38]
-        self.waitMusicCode = 'suit-building-wait'
-        self.elevatorMusicCode = 'suit-building-elevator'
-        base.contentPackMusicManager.playMusic(self.waitMusicCode, looping=1, volume=0.7)
-        self.waitMusic = base.contentPackMusicManager.currentMusic[self.waitMusicCode]
-        self.waitMusic.stop()
-        base.contentPackMusicManager.playMusic(self.elevatorMusicCode, looping=1, volume=0.8)
-        self.elevatorMusic = base.contentPackMusicManager.currentMusic[self.elevatorMusicCode]
-        self.elevatorMusic.stop()
+        self.waitMusic = 'suit-building-wait'
+        self.elevatorMusic = 'suit-building-elevator'
         self.fsm = ClassicFSM.ClassicFSM('DistributedSuitInterior', [State.State('WaitForAllToonsInside', self.enterWaitForAllToonsInside, self.exitWaitForAllToonsInside, ['Elevator']),
          State.State('Elevator', self.enterElevator, self.exitElevator, ['Battle']),
          State.State('Battle', self.enterBattle, self.exitBattle, ['Resting', 'Reward', 'ReservesJoining']),
@@ -296,7 +290,7 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
         camera.reparentTo(self.elevatorModelIn)
         camera.setH(180)
         camera.setPos(0, 14, 4)
-        base.contentPackMusicManager.playMusic(self.elevatorMusicCode, looping=1, volume=0.8, interrupt=True)
+        base.contentPackMusicManager.playMusic(self.elevatorMusic, looping=1, volume=0.8, interrupt=True)
         track = Sequence(ElevatorUtils.getRideElevatorInterval(ELEVATOR_NORMAL), ElevatorUtils.getOpenInterval(self, self.leftDoorIn, self.rightDoorIn, self.openSfx, None, type=ELEVATOR_NORMAL), Func(camera.wrtReparentTo, render))
         for toon in self.toons:
             track.append(Func(toon.wrtReparentTo, render))
@@ -322,7 +316,7 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
         self.d_elevatorDone()
 
     def exitElevator(self):
-        self.elevatorMusic.stop()
+        base.contentPackMusicManager.stopMusic()
         self.__finishInterval(self.elevatorName)
         return None
 
@@ -378,11 +372,11 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
         return None
 
     def enterResting(self, ts = 0):
-        base.contentPackMusicManager.playMusic(self.waitMusicCode, looping=1, volume=0.7)
+        base.contentPackMusicManager.playMusic(self.waitMusic, looping=1, volume=0.7)
         self.__closeInElevator()
 
     def exitResting(self):
-        self.waitMusic.stop()
+        base.contentPackMusicManager.stopMusic()
 
     def enterReward(self, ts = 0):
         base.localAvatar.b_setParent(ToontownGlobals.SPHidden)

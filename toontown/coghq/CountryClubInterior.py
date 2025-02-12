@@ -75,17 +75,9 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         BattlePlace.BattlePlace.load(self)
         fileSystem = VirtualFileSystem.getGlobalPtr()
 
-        self.loader.musicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
-        self.loader.battleMusicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
+        self.loader.music = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
+        self.loader.battleMusic = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
 
-        # we add in are area music here
-        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8, interrupt=False)
-        self.loader.music = base.contentPackMusicManager.currentMusic[self.loader.musicCode]
-        self.loader.music.stop()
-        # we add in our battle music here
-        base.contentPackMusicManager.playMusic(self.loader.battleMusicCode, looping=1, volume=0.9, interrupt=False)
-        self.loader.battleMusic = base.contentPackMusicManager.currentMusic[self.loader.battleMusicCode]
-        self.loader.battleMusic.stop()
     def unload(self):
         self.parentFSM.getStateNamed('countryClubInterior').removeChild(self.fsm)
         del self.fsm
@@ -102,7 +94,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+            base.contentPackMusicManager.playMusic(self.loader.music, looping=1, volume=0.8)
             base.transitions.irisIn()
             CountryClub = bboard.get(DistributedCountryClub.DistributedCountryClub.ReadyPost)
             self.loader.hood.spawnTitleText(CountryClub.countryClubId, CountryClub.floorNum)
@@ -127,7 +119,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         base.cr.forbidCheesyEffects(0)
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopMusic()
         self.ignoreAll()
         del self.CountryClubReadyWatcher
 
@@ -162,7 +154,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         BattlePlace.BattlePlace.enterBattle(self, event)
         self.ignore('teleportQuery')
         base.localAvatar.setTeleportAvailable(0)
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopMusic()
 
     def enterTownBattle(self, event):
         mult = ToontownBattleGlobals.getCountryClubCreditMultiplier(self.zoneId)

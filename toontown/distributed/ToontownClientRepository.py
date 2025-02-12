@@ -204,13 +204,8 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
         self.sendSetAvatarIdMsg(0)
         self.clearFriendState()
         if self.music is None and base.musicManagerIsValid:
-            self.musicCode = 'tt-theme'
-            base.contentPackMusicManager.playMusic(self.musicCode, looping=1, volume=base.settings.get("music-volume") ** 2, interrupt=None)
-            self.music = base.contentPackMusicManager.currentMusic[self.musicCode]
-            if self.music:
-                self.music.setLoop(1)
-                self.music.setVolume(base.settings.get("music-volume") ** 2)
-                self.music.play()
+            self.music = 'tt-theme'
+            base.contentPackMusicManager.playMusic(self.music, looping=1, volume=base.settings.get("music-volume") ** 2, interrupt=None)
         self.handler = self.handleMessageType
         self.avChoiceDoneEvent = 'avatarChooserDone'
         self.avChoice = AvatarChooser.AvatarChooser(avList, self.loginFSM, self.avChoiceDoneEvent)
@@ -286,7 +281,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
 
     def enterCreateAvatar(self, avList, index, newDNA = None):
         if self.music:
-            self.music.stop()
+            base.contentPackMusicManager.stopMusic()
             self.music = None
         if newDNA != None:
             self.newPotAv = PotentialAvatar.PotentialAvatar('deleteMe', ['',

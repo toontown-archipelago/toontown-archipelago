@@ -70,17 +70,10 @@ class MintInterior(BattlePlace.BattlePlace):
         self.parentFSM.getStateNamed('mintInterior').addChild(self.fsm)
         BattlePlace.BattlePlace.load(self)
 
-        self.loader.musicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
-        self.loader.battleMusicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
+        self.loader.music = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
+        self.loader.battleMusic = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
 
-        # we add in are area music here
-        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
-        self.loader.music = base.contentPackMusicManager.currentMusic[self.loader.musicCode]
-        
-        # we add in our battle music here
-        base.contentPackMusicManager.playMusic(self.loader.battleMusicCode, looping=1, volume=0.9, interrupt=False)
-        self.loader.battleMusic = base.contentPackMusicManager.currentMusic[self.loader.battleMusicCode]
-
+   
     def unload(self):
         self.parentFSM.getStateNamed('mintInterior').removeChild(self.fsm)
         del self.loader.music
@@ -98,7 +91,7 @@ class MintInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+            base.contentPackMusicManager.playMusic(self.loader.music, looping=1, volume=0.8)
             base.transitions.irisIn()
             mint = bboard.get(DistributedMint.DistributedMint.ReadyPost)
             self.loader.hood.spawnTitleText(mint.mintId, mint.floorNum)
@@ -123,7 +116,7 @@ class MintInterior(BattlePlace.BattlePlace):
         base.cr.forbidCheesyEffects(0)
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopMusic()
         self.ignoreAll()
         del self.mintReadyWatcher
 
@@ -150,7 +143,7 @@ class MintInterior(BattlePlace.BattlePlace):
 
     def enterBattle(self, event):
         MintInterior.notify.debug('enterBattle')
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopMusic()
         BattlePlace.BattlePlace.enterBattle(self, event)
         self.ignore('teleportQuery')
         base.localAvatar.setTeleportAvailable(0)
@@ -163,7 +156,7 @@ class MintInterior(BattlePlace.BattlePlace):
     def exitBattle(self):
         MintInterior.notify.debug('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
-        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.loader.music, looping=1, volume=0.8)
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)

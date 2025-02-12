@@ -48,8 +48,8 @@ class CogHQLobby(BattlePlace.BattlePlace):
         base.discord.setZone(self.zoneId)
         BattlePlace.BattlePlace.enter(self)
         self.fsm.enterInitialState()
-        self.loader.musicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
-        self.loader.battleMusicCode = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
+        self.loader.music = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
+        self.loader.music = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
         self.loader.geom.reparentTo(render)
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)

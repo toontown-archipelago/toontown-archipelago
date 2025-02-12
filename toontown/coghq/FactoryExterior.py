@@ -64,7 +64,7 @@ class FactoryExterior(BattlePlace.BattlePlace):
         base.discord.setZone(self.zoneId)
         BattlePlace.BattlePlace.enter(self)
         self.fsm.enterInitialState()
-        base.contentPackMusicManager.playMusic(self.loader.musicCode, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.loader.music, looping=1, volume=0.8)
         self.loader.geom.reparentTo(render)
         self.nodeList = [self.loader.geom]
         self.loader.hood.startSky()
@@ -82,7 +82,7 @@ class FactoryExterior(BattlePlace.BattlePlace):
         del self._telemLimiter
         self.loader.hood.stopSky()
         self.fsm.requestFinalState()
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopMusic()
         for node in self.tunnelOriginList:
             node.removeNode()
 

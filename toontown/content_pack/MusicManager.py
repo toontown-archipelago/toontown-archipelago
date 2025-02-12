@@ -73,3 +73,35 @@ class MusicManager:
         for code in list(self.currentMusicInfo.keys()):
             self.updateTime(code)
         return self.currentMusicInfo
+    
+    def setLoop(self, value):
+        """
+        Set the looping value for all current music tracks.
+        """
+        for music in list(self.currentMusic.keys()):
+            self.currentMusic[music].setLoop(value)
+            self.currentMusicInfo[music]["looping"] = value
+    
+    def setSpecificLoop(self, json_code, value):
+        """
+        Set the looping value for a specific music track.
+        """
+        if json_code in list(self.currentMusic.keys()):
+            self.currentMusic[json_code].setLoop(value)
+            self.currentMusicInfo[json_code]["looping"] = value
+
+    def setVolume(self, volume):
+        """
+        Set the volume for all current music tracks.
+        """
+        for music in list(self.currentMusic.keys()):
+            self.currentMusic[music].setVolume(volume)
+            self.currentMusicInfo[music]["volume"] = volume
+
+    def setSpecificVolume(self, json_code, volume):
+        """
+        Set the volume for a specific music track.
+        """
+        if json_code in list(self.currentMusic.keys()):
+            self.currentMusic[json_code].setVolume(volume)
+            self.currentMusicInfo[json_code]["volume"] = volume

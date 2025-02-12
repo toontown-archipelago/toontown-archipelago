@@ -21,8 +21,8 @@ class CogHQLoader(StateData.StateData):
         self.townBattleDoneEvent = 'town-battle-done'
 
         # fail safe
-        self.musicCode = 'sellbot-courtyard'
-        self.battleMusicCode = 'sellbot-courtyard-battle'
+        self.music = 'sellbot-courtyard'
+        self.battleMusic = 'sellbot-courtyard-battle'
 
         self.music = None
         self.battleMusic = None
@@ -41,14 +41,8 @@ class CogHQLoader(StateData.StateData):
         self.townBattle.load()
         Suit.loadSuits(3)
         self.loadPlaceGeom(zoneId)
-        self.musicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
-        base.contentPackMusicManager.playMusic(self.musicCode, interrupt=False)
-        self.music = base.contentPackMusicManager.currentMusic[self.musicCode]
-        self.music.stop()
-        self.battleMusicCode = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
-        base.contentPackMusicManager.playMusic(self.battleMusicCode, looping=1, volume=0.9, interrupt=False)
-        self.battleMusic = base.contentPackMusicManager.currentMusic[self.battleMusicCode]
-        self.battleMusic.stop()
+        self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+        self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
 
     def loadPlaceGeom(self, zoneId):
         pass

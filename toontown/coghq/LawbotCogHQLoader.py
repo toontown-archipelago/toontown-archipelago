@@ -56,8 +56,8 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
             self.geom.setY(0)
             self.geom.setX(0)
 
-            self.musicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
-            self.battleMusicCode = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
 
             ug = self.geom.find('**/underground')
             ug.setBin('ground', -10)
@@ -68,8 +68,8 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
             self.geom.setY(120)
             self.geom.setX(-50)
 
-            self.musicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
-            self.battleMusicCode = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
             
             ug = self.geom.find('**/underground')
             ug.setBin('ground', -10)
@@ -81,8 +81,8 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
             self.geom.setY(0)
             self.geom.setX(0)
 
-            self.musicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
-            self.battleMusicCode = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['music']
 
             buildings = self.geom.findAllMatches('**/CH_BGBuildings*')
             sky = self.geom.findAllMatches('**/CH_Sky*')
