@@ -735,8 +735,6 @@ class ToonBase(OTPBase.OTPBase):
             currentMusicInfo = self.contentPackMusicManager.getCurMusicInfo() # this will return a dict with the current music, the value of each being data like looping, volume, etc.
             musicJson = self.contentPackMusicManager.musicJson
             # Stop all sounds
-            for music in currentMusic:
-                self.musicManager.shutdown()
             for sfxManager in self.sfxManagerList:
                 sfxManager.shutdown()
             self.sfxManagerList = []
@@ -750,6 +748,19 @@ class ToonBase(OTPBase.OTPBase):
         self.musicManager.setVolume(musicVol ** 2)
         for sfm in self.sfxManagerList:
             sfm.setVolume(sfxVol ** 2)
+        if hasattr(self, 'localAvatar'):
+            DirectGuiGlobals.setDefaultRolloverSound(base.loader.loadSfx('phase_3/audio/sfx/GUI_rollover.ogg'))
+            DirectGuiGlobals.setDefaultClickSound(base.loader.loadSfx('phase_3/audio/sfx/GUI_create_toon_fwd.ogg'))
+            DirectGuiGlobals.setDefaultDialogGeom(loader.loadModel('phase_3/models/gui/dialog_box_gui'))
+            self.localAvatar.soundRun = base.loader.loadSfx('phase_3.5/audio/sfx/AV_footstep_runloop.ogg')
+            self.localAvatar.soundWalk = base.loader.loadSfx('phase_3.5/audio/sfx/AV_footstep_walkloop.ogg')
+            self.localAvatar.soundWhisper = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_whisper_3.ogg')
+            self.localAvatar.soundPhoneRing = base.loader.loadSfx('phase_3.5/audio/sfx/telephone_ring.ogg')
+            self.localAvatar.soundSystemMessage = base.loader.loadSfx('phase_3/audio/sfx/clock03.ogg')
+            self.localAvatar.refreshDialog()
+            self.localAvatar.book.openSound = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_stickerbook_open.ogg')
+            self.localAvatar.book.closeSound = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_stickerbook_delete.ogg')
+            self.localAvatar.book.pageSound = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_stickerbook_turn.ogg')
         # Play the music again
         if musicJson:
             for json_code in musicJson['global_music'].keys():
