@@ -735,6 +735,7 @@ class ToonBase(OTPBase.OTPBase):
             currentMusicInfo = self.contentPackMusicManager.getCurMusicInfo() # this will return a dict with the current music, the value of each being data like looping, volume, etc.
             musicJson = self.contentPackMusicManager.musicJson
             # Stop all sounds
+            self.musicManager.shutdown()
             for sfxManager in self.sfxManagerList:
                 sfxManager.shutdown()
             self.sfxManagerList = []
