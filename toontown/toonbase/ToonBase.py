@@ -757,7 +757,7 @@ class ToonBase(OTPBase.OTPBase):
                     continue
                 musicInfo = currentMusicInfo[json_code]
                 looping = musicInfo.get("looping", True)
-                volume = musicInfo.get("volume", 1.0) ** 2
+                volume = musicInfo.get("volume", 1.0)
                 time = musicInfo.get("time", 0.0)
                 interrupt = musicInfo.get("interrupt", True)
                 self.notify.debug(f"Playing music {json_code} with looping={looping}, volume={volume}, time={time}")
