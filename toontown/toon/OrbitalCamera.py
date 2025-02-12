@@ -10,6 +10,7 @@ from direct.task import Task
 from direct.task.TaskManagerGlobal import taskMgr
 
 from otp.otpbase import OTPGlobals
+from toontown.toon.CamRunner import CamRunner
 from toontown.toon.ParamObj import ParamObj
 
 
@@ -53,6 +54,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.initializeCollisions()
         self.firstPerson = False
         self.ignoreRMB = False
+        self.runner = CamRunner()
 
     def destroy(self):
         self.destroyCollisions()
@@ -147,6 +149,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
             self._startMouseControlTasks()
         
         self.setCursor(True)
+        self.runner.startInput()
 
         self.subject.controlManager.setTurn(0)
 
@@ -169,6 +172,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
                 0, int(self.origMousePos[0]), int(self.origMousePos[1])
             )
             self.setCursor(False)
+            self.runner.stopInput()
 
         self.subject.controlManager.setTurn(1)
     
