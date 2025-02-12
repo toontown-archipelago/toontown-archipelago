@@ -2,10 +2,11 @@ import time
 from ctypes import *
 from direct.task import Task
 from pypresence import Presence
-from pypresence.exceptions import PipeClosed
+from pypresence.exceptions import PipeClosed, ServerError
 from pypresence.exceptions import PyPresenceException
 from direct.directnotify import DirectNotifyGlobal
 from direct.task import Task
+import threading
 clientId  = "1255381622128377998"
 LOGO = "https://avatars.githubusercontent.com/u/164748629"
 
@@ -80,14 +81,10 @@ class DiscordRPC(object):
 
     def __init__(self):
         self.discordRPC = None
-
-        # Delete this line when restoring discord rich presence.
-        self.disable()
-        # Uncomment this line when we want rich presence back and can verify it is working again.
-        # if base.wantRichPresence:
-        #     self.enable()
-        # else:
-        #     self.disable()
+        if base.wantRichPresence:
+            self.enable()
+        else:
+            self.disable()
         self.updateTask = None
         self.details = "Loading"  # text next to photo
         self.image = LOGO
@@ -96,6 +93,7 @@ class DiscordRPC(object):
         self.smallTxt = 'Loading'
         self.partySize = 1
         self.maxParty = 1
+        self.discordTask = None
 
     def stopBoarding(self):
         if not base.wantRichPresence:
@@ -136,15 +134,18 @@ class DiscordRPC(object):
             try:
                 self.discordRPC.update(state=state, details=details, large_image=image, large_text=imageTxt,
                                        small_text=smallTxt, party_size=[party, maxSize])
-            except (PipeClosed, BrokenPipeError):
+            except (PipeClosed, BrokenPipeError, ServerError):
                 # schedule a task to try to reconnect to the discord
                 self.discordRPC = None
                 self.notify.warning('Discord RPC connection lost, trying to reconnect in 30 seconds.')
-                taskMgr.doMethodLater(30, self.reconnectDiscord, 'DiscordTask')
+                self.discordTask = threading.Timer(30, self.reconnectDiscord)
+                self.discordTask.start()
 
-    def reconnectDiscord(self, task):
+    def reconnectDiscord(self):
         self.enable()
-        return task.done
+        # timer is done
+        self.discordTask = None
+
 
     def setLaff(self, hp, maxHp):
         if not base.wantRichPresence:
@@ -152,12 +153,18 @@ class DiscordRPC(object):
         self.state = '{0}: {1}/{2}'.format(base.localAvatar.getName(), hp, maxHp)
         self.setData()
 
-    def updateTasks(self, task):
-        if not base.wantRichPresence:
+    def updateTasks(self):
+        try:
+            if not base.wantRichPresence:
+                return
+        except NameError: # If the base is not defined, then the game is shutting down
+            # cancel the task
+            self.updateTask.cancel()
             return
-        self.updateTask = True
         self.setData()
-        return task.again
+        # schedule the next update
+        self.updateTask = threading.Timer(10, self.updateTasks)
+        self.updateTask.start()
 
     def avChoice(self):
         if not base.wantRichPresence:
@@ -184,7 +191,8 @@ class DiscordRPC(object):
     def startTasks(self):
         if not base.wantRichPresence:
             return
-        taskMgr.doMethodLater(10, self.updateTasks, 'UpdateTask')
+        self.updateTask = threading.Timer(10, self.updateTasks)
+        self.updateTask.start()
 
     def vp(self):
         if not base.wantRichPresence:
@@ -220,7 +228,6 @@ class DiscordRPC(object):
             self.notify.warning(f'Could not find image and description for zone {zone % 100}.')
 
     def enable(self):
-        return  # Delete this line when enabling rich presence again.
         clientId = "1255381622128377998"
         try:
             if self.discordRPC is None:
@@ -234,7 +241,8 @@ class DiscordRPC(object):
                     self.notify.debug("Failed to connect to Discord RPC: Connection Error, trying to reconnect in 30 seconds.")
                     self.discordRPC = None
                     # schedule a task to try again later
-                    taskMgr.doMethodLater(30, self.reconnectDiscord, 'DiscordTask')
+                    self.discordTask = threading.Timer(30, self.reconnectDiscord)
+                    self.discordTask.start()
 
         except PyPresenceException:
             self.notify.warning("Discord not found for this client.")
@@ -249,4 +257,10 @@ class DiscordRPC(object):
             except PyPresenceException:
                 self.notify.warning('Discord not open or invalid client id')
             self.discordRPC = None
-            self.updateTask = None
+            if self.updateTask is not None:
+                self.updateTask.cancel()
+                self.updateTask = None
+            if self.discordTask is not None:
+                self.discordTask.cancel()
+                self.discordTask = None
+

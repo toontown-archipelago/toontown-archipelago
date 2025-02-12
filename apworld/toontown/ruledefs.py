@@ -443,53 +443,83 @@ def PlaygroundCountRule(state: CollectionState, locentr: LocEntrDef, world: Mult
 def TierOneCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     return passes_rule(Rule.HasLevelOneOffenseGag, state, locentr, world, player, options)
 
-@rule(Rule.TierThreeCogs)
-def TierThreeCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
-    return passes_rule(Rule.HasLevelTwoOffenseGag, state, locentr, world, player, options)
-
-
-@rule(Rule.TierFourCogs)
-@rule(Rule.TierFiveCogs)
-def TierFiveCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
-    pgs = [
-        ToontownRegionName.DD,
-        ToontownRegionName.DG,
-        ToontownRegionName.MML,
-        ToontownRegionName.TB,
-        ToontownRegionName.DDL,
-    ]
+@rule(Rule.TierThreeCogs, 3, None)
+@rule(Rule.TierFourCogs, 4, None)
+@rule(Rule.TierFourSellbot, 4, ToontownRegionName.SBHQ)
+@rule(Rule.TierFourCashbot, 4, ToontownRegionName.CBHQ)
+@rule(Rule.TierFourLawbot,  4, None)
+@rule(Rule.TierFourBossbot, 4, None)
+@rule(Rule.TierFiveCogs, 5, None)
+@rule(Rule.TierFiveSellbot, 5, ToontownRegionName.SBHQ)
+@rule(Rule.TierFiveCashbot, 5, ToontownRegionName.CBHQ)
+@rule(Rule.TierFiveLawbot,  5, ToontownRegionName.LBHQ)
+@rule(Rule.TierFiveBossbot, 5, ToontownRegionName.BBHQ)
+@rule(Rule.TierSixCogs, 6, None)
+@rule(Rule.TierSixSellbot, 6, ToontownRegionName.SBHQ)
+@rule(Rule.TierSixCashbot, 6, ToontownRegionName.CBHQ)
+@rule(Rule.TierSixLawbot,  6, ToontownRegionName.LBHQ)
+@rule(Rule.TierSixBossbot, 6, ToontownRegionName.BBHQ)
+@rule(Rule.TierEightSellbot, 8, ToontownRegionName.SBHQ)
+@rule(Rule.TierEightCashbot, 8, ToontownRegionName.CBHQ)
+@rule(Rule.TierEightLawbot,  8, ToontownRegionName.LBHQ)
+@rule(Rule.TierEightBossbot, 8, ToontownRegionName.BBHQ)
+def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    tier_to_info = {
+        3: {
+            "pgs": [
+                ToontownRegionName.DD,
+                ToontownRegionName.DG,
+                ToontownRegionName.MML,
+                ToontownRegionName.TB
+            ],
+            "gag_rule": Rule.HasLevelTwoOffenseGag
+        },
+        4: {
+            "pgs": [
+                ToontownRegionName.DD,
+                ToontownRegionName.DG,
+                ToontownRegionName.MML,
+                ToontownRegionName.TB,
+                ToontownRegionName.DDL,
+            ],
+            "gag_rule": Rule.HasLevelThreeOffenseGag
+        },
+        5: {
+            "pgs": [
+                ToontownRegionName.DG,
+                ToontownRegionName.MML,
+                ToontownRegionName.TB,
+                ToontownRegionName.DDL,
+            ],
+            "gag_rule": Rule.HasLevelThreeOffenseGag
+        },
+        6: {
+            "pgs": [
+                ToontownRegionName.MML,
+                ToontownRegionName.TB,
+                ToontownRegionName.DDL,
+            ],
+            "gag_rule": Rule.HasLevelFourOffenseGag
+        },
+        8: {
+            "pgs": [  # We rely on tier 7s and 8s to be found in HQs only, added separately
+            ],
+            "gag_rule": Rule.HasLevelFourOffenseGag
+        },
+    }
+    tier = argument[0]
+    tier_info = tier_to_info[tier]
+    pgs = tier_info["pgs"]
+    gag_rule = tier_info["gag_rule"]
+    # Add the respective cog HQ to logical areas to locate tier
+    if argument[1] is not None:
+        pgs.append(argument[1])
+    if tier == 8:  # Tier is 7/8, need to check laff too
+        return any(state.can_reach(pg.value, None, player) for pg in pgs) \
+               and passes_rule(gag_rule, state, locentr, world, player, options) \
+               and passes_rule(Rule.Has20PercentMax, state, locentr, world, player, options)
     return any(state.can_reach(pg.value, None, player) for pg in pgs) \
-           and passes_rule(Rule.HasLevelThreeOffenseGag, state, locentr, world, player, options)
-
-
-@rule(Rule.TierSixCogs)
-def ReachPastDD(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
-    pgs = [
-        ToontownRegionName.DG,
-        ToontownRegionName.MML,
-        ToontownRegionName.TB,
-        ToontownRegionName.DDL,
-    ]
-    return any(state.can_reach(pg.value, None, player) for pg in pgs) \
-           and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options)
-
-
-@rule(Rule.TierEightSellbot, ToontownRegionName.SBHQ)
-@rule(Rule.TierEightCashbot, ToontownRegionName.CBHQ)
-@rule(Rule.TierEightLawbot,  ToontownRegionName.LBHQ)
-@rule(Rule.TierEightBossbot, ToontownRegionName.BBHQ)
-def TierEightCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
-    pgs = [
-        # ToontownRegionName.MML,
-        # ToontownRegionName.TB,
-        # ToontownRegionName.DDL,
-    ]
-    if argument:
-        pgs.append(argument[0])
-    return any(state.can_reach(pg.value, None, player) for pg in pgs) \
-           and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
-           and passes_rule(Rule.Has20PercentMax, state, locentr, world, player, options)
-
+           and passes_rule(gag_rule, state, locentr, world, player, options)
 
 @rule(Rule.OneStory, 1)
 @rule(Rule.TwoStory, 2)
@@ -611,16 +641,14 @@ def CanFightCFO(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 def CanFightCJ(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachLBHQ, *args) and passes_rule(Rule.LawbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSevenOffenseGag, *args) and passes_rule(Rule.CanFightVP, *args) \
-            and passes_rule(Rule.CanFightCFO, *args) and passes_rule(Rule.Has60PercentMax, *args)
+            and passes_rule(Rule.HasLevelSevenOffenseGag, *args) and passes_rule(Rule.Has60PercentMax, *args)
 
 
 @rule(Rule.CanFightCEO)
 def CanFightCEO(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     return passes_rule(Rule.CanReachBBHQ, *args) and passes_rule(Rule.BossbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelEightOffenseGag, *args) and passes_rule(Rule.CanFightVP, *args) \
-            and passes_rule(Rule.CanFightCFO, *args) and passes_rule(Rule.Has80PercentMax, *args)
+            and passes_rule(Rule.HasLevelEightOffenseGag, *args) and passes_rule(Rule.Has80PercentMax, *args)
 
 
 @rule(Rule.AllBossesDefeated)
