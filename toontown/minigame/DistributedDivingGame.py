@@ -113,7 +113,7 @@ class DistributedDivingGame(DistributedMinigame):
         hitSoundName = 'diving_game_hit.ogg'
         hitSoundPath = 'phase_4/audio/sfx/%s' % hitSoundName
         self.hitSound = loader.loadSfx(hitSoundPath)
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_Target.ogg')
+        self.music = "mg-target-game"
         self.addSound('dropGold', 'diving_treasure_drop_off.ogg', 'phase_4/audio/sfx/')
         self.addSound('getGold', 'diving_treasure_pick_up.ogg', 'phase_4/audio/sfx/')
         self.swimSound = loader.loadSfx('phase_4/audio/sfx/diving_swim_loop.ogg')
@@ -543,7 +543,7 @@ class DistributedDivingGame(DistributedMinigame):
 
     def enterSwim(self):
         self.notify.debug('enterSwim')
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.9)
         self.localLerp = Sequence()
         self.timer = ToontownTimer.ToontownTimer()
         self.timer.posInTopRightCorner()
@@ -955,7 +955,7 @@ class DistributedDivingGame(DistributedMinigame):
         return Task.cont
 
     def exitSwim(self):
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         self.ignore('resetClock')
         self.__killUpdateLocalToonTask()
         self.__killCrabTask()

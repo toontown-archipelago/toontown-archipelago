@@ -232,7 +232,17 @@
 
       "firework-july4": "phase_4/audio/bgm/tt_party2",
       "fireworks-newyears": "phase_4/audio/bgm/tt_s_ara_gen_fireworks_auldLangSyne.ogg",
-      "fireworks-summer": "phase_4/audio/bgm/tt_summer.ogg"
+      "fireworks-summer": "phase_4/audio/bgm/tt_summer.ogg",
 
+      "mg-cannon-game": "phase_4/audio/bgm/MG_cannon_game.ogg",
+      "mg-tag-game": "phase_4/audio/bgm/MG_toontag.ogg",
+      "mg-cogthief-game": "phase_4/audio/bgm/MG_CogThief.ogg",
+      "mg-target-game": "phase_4/audio/bgm/MG_Target.ogg",
+      "mg-ice-game" : "phase_4/audio/bgm/MG_IceGame.ogg",
+      "mg-maze-game": "phase_4/audio/bgm/MG_toontag.ogg",
+      "mg-pairing-game": "phase_4/audio/bgm/MG_Pairing.ogg",
+      "mg-pattern-game": "phase_4/audio/bgm/m_match_bg1.ogg",
+      "mg-photo-game": "phase_4/audio/bgm/MG_cannon_game.ogg",
+      "mg-race-game" : "phase_4/audio/bgm/minigame_race.ogg"
     }
   }
