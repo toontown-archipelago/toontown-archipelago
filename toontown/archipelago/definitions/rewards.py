@@ -341,6 +341,7 @@ class GoKartReward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         av.b_setKartBodyType(1)
+        av.b_setTickets(99999)
 
 
 class FishingRodUpgradeReward(APReward):
