@@ -96,7 +96,7 @@ class DistributedVineGame(DistributedMinigame):
         self.notify.debug('load')
         DistributedMinigame.load(self)
         self.defineConstants()
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_Vine.ogg')
+        self.music = "mg-vine-game"
         self.gameAssets = loader.loadModel('phase_4/models/minigames/vine_game')
         self.gameBoard = self.gameAssets.find('**/background')
         self.gameBoard.reparentTo(render)
@@ -541,7 +541,7 @@ class DistributedVineGame(DistributedMinigame):
         self.timer.posInTopRightCorner()
         self.timer.setTime(VineGameGlobals.GameDuration)
         self.timer.countdown(VineGameGlobals.GameDuration, self.timerExpired)
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.9)
         self.__spawnUpdateLocalToonTask()
 
     def exitPlay(self):
@@ -557,7 +557,7 @@ class DistributedVineGame(DistributedMinigame):
             del ival
 
         self.batIvals = []
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
 
     def enterWaitShowScores(self):
         self.notify.debug('enterWaitShowScores')

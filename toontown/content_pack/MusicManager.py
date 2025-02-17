@@ -77,6 +77,8 @@ class MusicManager:
     def setLoop(self, value):
         """
         Set the looping value for all current music tracks.
+        
+        :param value: The value to set.
         """
         for music in list(self.currentMusic.keys()):
             self.currentMusic[music].setLoop(value)
@@ -85,23 +87,54 @@ class MusicManager:
     def setSpecificLoop(self, json_code, value):
         """
         Set the looping value for a specific music track.
+        
+        :param json_code: The json code for the music track.
+        :param value: The value to set.
         """
         if json_code in list(self.currentMusic.keys()):
             self.currentMusic[json_code].setLoop(value)
-            self.currentMusicInfo[json_code]["looping"] = value
-
-    def setVolume(self, volume):
+            self.currentMusicInfo[json_code]["looping"] = value            
+            
+    def getVolume(self):
         """
-        Set the volume for all current music tracks.
+        Retrieve the volume of the current music track.
         """
-        for music in list(self.currentMusic.keys()):
-            self.currentMusic[music].setVolume(volume)
-            self.currentMusicInfo[music]["volume"] = volume
-
-    def setSpecificVolume(self, json_code, volume):
+        return self.currentMusic[list(self.currentMusic.keys())[0]].getVolume()
+    
+    def getSpecifcVolume(self, json_code):
         """
-        Set the volume for a specific music track.
+        Get the volume of a specific music track.
+        
+        :param json_code: The json code for the music track.
         """
         if json_code in list(self.currentMusic.keys()):
-            self.currentMusic[json_code].setVolume(volume)
-            self.currentMusicInfo[json_code]["volume"] = volume
+            return self.currentMusic[json_code].getVolume()
+        return None
+    
+    def getSpecifcPlayRate(self, json_code):
+        """
+        Get the play rate of a specific music track.
+        
+        :param json_code: The json code for the music track.
+        """
+        if json_code in list(self.currentMusic.keys()):
+            return self.currentMusic[json_code].getPlayRate()
+        return None
+
+            
+    def setSpecifcPlayRate(self, json_code, rate):
+        """
+        Set the play rate of a specific music track.
+        """
+        if json_code in list(self.currentMusic.keys()):
+            self.currentMusic[json_code].setPlayRate(rate)
+            self.currentMusicInfo[json_code]["rate"] = rate
+            
+    
+    def setPlayRate(self, rate):
+        """
+        Set the play rate of the current music.
+        """
+        for music in list(self.currentMusic.keys()):
+            self.currentMusic[music].setPlayRate(rate)
+            self.currentMusicInfo[music]["rate"] = rate
