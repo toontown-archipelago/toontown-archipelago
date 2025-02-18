@@ -1,7 +1,7 @@
 from toontown.toonbase import ToontownGlobals
 from panda3d.core import DecalEffect, VirtualFileSystem
 import json
-
+import random
 
 class MusicManager:
 
@@ -24,7 +24,7 @@ class MusicManager:
         if self.currentMusic and interrupt:
             self.stopMusic()
         if json_code in self.musicJson['global_music']:
-            json_code_path = self.musicJson['global_music'][json_code]
+            json_code_path = random.choice(self.musicJson['global_music'][json_code])
             self.currentMusic[json_code] = base.loader.loadMusic(json_code_path)
             self.currentMusic[json_code].setLoop(looping)
             self.currentMusic[json_code].setVolume(volume)
