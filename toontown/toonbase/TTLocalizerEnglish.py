@@ -10031,3 +10031,4 @@ OptionEnabled = "Enabled"
 OptionDisabled = "Disabled"
 OptionRefresh = "Refresh"
 WinConditionMet = 'Congratulations, you have completed your goal! You may now talk to Flippy to redeem your reward!'
+RefreshDialogMsg = "Refreshing audio devices..."
