@@ -221,7 +221,7 @@ class ArchipelagoClient(DirectObject):
         try:
             address = self.parse_url(self.address)
         except ValueError as e:
-            self.av.d_sendArchipelagoMessage(f"Error parsing url! {e}", color='red')
+            self.av.d_sendArchipelagoMessage(f"Error parsing url! {e}")
             return
 
         self.av.d_sendArchipelagoMessage(f"[AP Client Thread] Attempting connection with archipelago server at {address}...")
