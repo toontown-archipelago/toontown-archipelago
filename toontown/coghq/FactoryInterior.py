@@ -116,7 +116,7 @@ class FactoryInterior(BattlePlace.BattlePlace):
             del base.factoryReady
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
-        base.contentpackMusicManager.stopMusic()
+        base.contentPackMusicManager.stopMusic()
         self.ignoreAll()
 
     def enterWalk(self, teleportIn = 0):

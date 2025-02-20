@@ -249,7 +249,7 @@ class DistributedPairingGame(DistributedMinigame):
             base.localAvatar.laffMeter.stop()
 
     def exitPlay(self):
-        base.contentpackMusicManager.stopMusic()
+        base.contentPackMusicManager.stopMusic()
         self.orthoWalk.stop()
         self.orthoWalk.destroy()
         del self.orthoWalk
