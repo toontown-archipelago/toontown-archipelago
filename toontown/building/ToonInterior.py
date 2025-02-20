@@ -92,7 +92,14 @@ class ToonInterior(Place.Place):
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)
         volume = requestStatus.get('musicVolume', 0.7)
-        base.playMusic(self.loader.activityMusic, looping=1, volume=volume)
+        if ZoneUtil.isGagShop(self.zoneId):
+            self.gagShopMusic = base.loader.loadMusic("phase_4/audio/bgm/FF_safezone.ogg")
+            base.playMusic(self.gagShopMusic, looping=1, volume=volume)
+        elif self.zoneId == 2513: # Toon Hall
+            self.gagShopMusic = base.loader.loadMusic("phase_3.5/audio/bgm/toon_hall_bg.ogg")
+            base.playMusic(self.gagShopMusic, looping=1, volume=volume)
+        else:
+            base.playMusic(self.loader.activityMusic, looping=1, volume=volume)
         self._telemLimiter = TLGatherAllAvs('ToonInterior', RotationLimitToH)
         NametagGlobals.setMasterArrowsOn(1)
         self.fsm.request(requestStatus['how'], [requestStatus])
