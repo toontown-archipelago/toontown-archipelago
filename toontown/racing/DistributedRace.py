@@ -1205,16 +1205,14 @@ class DistributedRace(DistributedObject.DistributedObject):
     def fadeOutMusic(self):
         if self.musicTrack:
             self.musicTrack.finish()
-        curVol = base.contentPackMusicManager.getSpecifcVolume(self.raceMusic)
-        interval = LerpFunctionInterval(base.contentPackMusicManager.setVolume, fromData=curVol, toData=0, duration=3)
+        interval = base.contentPackMusicManager.lerpVolume(self.raceMusic, 0, 3)
         self.musicTrack = Sequence(interval)
         self.musicTrack.start()
 
     def changeMusicTempo(self, newPR):
         if self.musicTrack:
             self.musicTrack.finish()
-        curPR = base.contentPackMusicManager.getSpecifcPlayRate(self.raceMusic)
-        interval = LerpFunctionInterval(base.contentPackMusicManager.setPlayRate, fromData=curPR, toData=newPR, duration=3)
+        interval = base.contentPackMusicManager.lerpPlayRate(self.raceMusic, newPR, 3)
         self.musicTrack = Sequence(interval)
         self.musicTrack.start()
 

@@ -1,5 +1,6 @@
 from toontown.toonbase import ToontownGlobals
 from panda3d.core import DecalEffect, VirtualFileSystem
+from direct.interval.IntervalGlobal import *
 import json
 import random
 
@@ -144,7 +145,6 @@ class MusicManager:
         if json_code in list(self.currentMusic.keys()):
             return self.currentMusic[json_code].getPlayRate()
         return None
-
             
     def setSpecifcPlayRate(self, json_code, rate):
         """
@@ -153,7 +153,6 @@ class MusicManager:
         if json_code in list(self.currentMusic.keys()):
             self.currentMusic[json_code].setPlayRate(rate)
             self.currentMusicInfo[json_code]["rate"] = rate
-            
     
     def setPlayRate(self, rate):
         """
@@ -162,3 +161,15 @@ class MusicManager:
         for music in list(self.currentMusic.keys()):
             self.currentMusic[music].setPlayRate(rate)
             self.currentMusicInfo[music]["rate"] = rate
+
+    def lerpPlayRate(self, json_key, to_data, duration):
+        if base.randomMusic:
+            json_key = self.randomMusicInfo[json_key]
+        self.currentMusicInfo[json_key]["rate"] = to_data
+        return LerpFunctionInterval(self.currentMusic[json_key].setPlayRate, fromData=self.getSpecifcPlayRate(json_key), toData=to_data, duration=duration)
+
+    def lerpVolume(self, json_key, to_data, duration):
+        if base.randomMusic:
+            json_key = self.randomMusicInfo[json_key]
+        self.currentMusicInfo[json_key]["volume"] = to_data
+        return LerpFunctionInterval(self.currentMusic[json_key].setVolume, fromData=self.getVolume(), toData=to_data, duration=duration)
