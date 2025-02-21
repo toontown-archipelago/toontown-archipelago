@@ -532,7 +532,6 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
         self.d_elevatorDone()
 
     def exitElevator(self):
-        base.contentPackMusicManager.stopMusic()
         if self._movie:
             self._movie.end()
             self.__cleanupPenthouseIntro()
@@ -601,7 +600,6 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
         if self._wantBarrelRoom and not self.isBossFloor(self.currentFloor):
             self.ignore('localToonLeft')
             self.barrelRoom.deactivate()
-            base.contentPackMusicManager.stopMusic()
 
     def __brRewardDone(self, task = None):
         self.notify.info('Toon finished watching the barrel room reward.')
@@ -709,7 +707,6 @@ class DistributedCogdoInterior(DistributedObject.DistributedObject):
 
     def exitResting(self):
         self._setAvPosFDC.destroy()
-        base.contentPackMusicManager.stopMusic()
 
     def enterReward(self, ts = 0):
         if self.isBossFloor(self.currentFloor):

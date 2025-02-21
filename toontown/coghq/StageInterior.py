@@ -119,7 +119,6 @@ class StageInterior(BattlePlace.BattlePlace):
         base.cr.forbidCheesyEffects(0)
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
-        base.contentPackMusicManager.stopMusic()
         self.ignoreAll()
         del self.stageReadyWatcher
 
@@ -146,7 +145,6 @@ class StageInterior(BattlePlace.BattlePlace):
 
     def enterBattle(self, event):
         StageInterior.notify.debug('enterBattle')
-        base.contentPackMusicManager.stopMusic()
         BattlePlace.BattlePlace.enterBattle(self, event)
         self.ignore('teleportQuery')
         base.localAvatar.setTeleportAvailable(0)

@@ -49,7 +49,6 @@ class DistributedBattleBldg(DistributedBattleBase.DistributedBattleBase):
 
     def disable(self):
         DistributedBattleBase.DistributedBattleBase.disable(self)
-        base.contentPackMusicManager.stopMusic()
 
     def delete(self):
         DistributedBattleBase.DistributedBattleBase.delete(self)

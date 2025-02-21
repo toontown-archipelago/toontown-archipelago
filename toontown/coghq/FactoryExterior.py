@@ -82,7 +82,6 @@ class FactoryExterior(BattlePlace.BattlePlace):
         del self._telemLimiter
         self.loader.hood.stopSky()
         self.fsm.requestFinalState()
-        base.contentPackMusicManager.stopMusic()
         for node in self.tunnelOriginList:
             node.removeNode()
 

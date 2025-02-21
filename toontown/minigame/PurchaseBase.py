@@ -114,7 +114,6 @@ class PurchaseBase(StateData.StateData):
         self.fsm.request('purchase')
 
     def exit(self):
-        base.contentPackMusicManager.stopMusic()
         self.fsm.request('done')
 
     def enterPurchase(self):

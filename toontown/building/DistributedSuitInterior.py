@@ -316,7 +316,6 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
         self.d_elevatorDone()
 
     def exitElevator(self):
-        base.contentPackMusicManager.stopMusic()
         self.__finishInterval(self.elevatorName)
         return None
 
@@ -372,11 +371,11 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
         return None
 
     def enterResting(self, ts = 0):
-        base.contentPackMusicManager.playMusic(self.waitMusic, looping=1, volume=0.7)
+        base.contentPackMusicManager.playMusic(self.waitMusic, looping=1, volume=0.7, interrupt=True)
         self.__closeInElevator()
 
     def exitResting(self):
-        base.contentPackMusicManager.stopMusic()
+        pass
 
     def enterReward(self, ts = 0):
         base.localAvatar.b_setParent(ToontownGlobals.SPHidden)

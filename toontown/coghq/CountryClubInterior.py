@@ -119,7 +119,6 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         base.cr.forbidCheesyEffects(0)
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
-        base.contentPackMusicManager.stopMusic()
         self.ignoreAll()
         del self.CountryClubReadyWatcher
 
@@ -154,7 +153,6 @@ class CountryClubInterior(BattlePlace.BattlePlace):
         BattlePlace.BattlePlace.enterBattle(self, event)
         self.ignore('teleportQuery')
         base.localAvatar.setTeleportAvailable(0)
-        base.contentPackMusicManager.stopMusic()
 
     def enterTownBattle(self, event):
         mult = ToontownBattleGlobals.getCountryClubCreditMultiplier(self.zoneId)

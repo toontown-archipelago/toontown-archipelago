@@ -86,7 +86,6 @@ class CogHQExterior(BattlePlace.BattlePlace):
         self.fsm.requestFinalState()
         self._telemLimiter.destroy()
         del self._telemLimiter
-        base.contentPackMusicManager.stopMusic()
         for node in self.tunnelOriginList:
             node.removeNode()
 

@@ -109,6 +109,7 @@
       "oz-sz-battle": ["phase_3.5/audio/bgm/encntr_general_bg.ogg"],
       "oz-sz-activity": ["phase_6/audio/bgm/OZ_SZ.ogg"],
       "gz-playgolf": ["phase_6/audio/bgm/GZ_PlayGolf.ogg"],
+      "gz-sz": ["phase_6/audio/bgm/GZ_SZ.ogg"],
       "gz-sz-battle": ["phase_3.5/audio/bgm/encntr_general_bg.ogg"],
       "gz-sz-activity": ["phase_6/audio/bgm/GZ_SZ.ogg"],
       "estate-sz": ["phase_5.5/audio/bgm/estate_SZ.ogg"],

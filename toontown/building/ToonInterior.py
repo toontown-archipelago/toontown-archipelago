@@ -103,7 +103,6 @@ class ToonInterior(Place.Place):
         self._telemLimiter.destroy()
         del self._telemLimiter
         NametagGlobals.setMasterArrowsOn(0)
-        base.contentPackMusicManager.stopMusic()
 
     def setState(self, state):
         self.fsm.request(state)
