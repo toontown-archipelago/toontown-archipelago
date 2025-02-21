@@ -767,62 +767,60 @@ class ToonBase(OTPBase.OTPBase):
         """
         This function is used to reload the output device for audio.
         """
-        # GUI popup displaying "Refreshing audio devices..."
-        self.audioRefreshDialog = TTDialog.TTGlobalDialog(message=TTLocalizer.RefreshDialogMsg, doneEvent="audioRefreshDialogDone")
-        self.audioRefreshDialog.show()
-        self.accept("audioRefreshDialogDone", self.destroyRefreshAudioDialog)
+        # # GUI popup displaying "Refreshing audio devices..."
+        # self.audioRefreshDialog = TTDialog.TTGlobalDialog(message=TTLocalizer.RefreshDialogMsg, doneEvent="audioRefreshDialogDone")
+        # self.audioRefreshDialog.show()
+        # self.accept("audioRefreshDialogDone", self.destroyRefreshAudioDialog)
         self.notify.debug("Refreshing audio devices...")
-        def refreshAudioThread():
 
-            # Store the currently playing music, and the time
-            currentMusic = {}
-            currentMusicInfo = {}
-            musicJson = {}
-            if getattr(self, "musicManager", None):
-                currentMusic = self.contentPackMusicManager.getCurMusic() # this will return a dict with the current music, the value of each being the object of the music
-                currentMusicInfo = self.contentPackMusicManager.getCurMusicInfo() # this will return a dict with the current music, the value of each being data like looping, volume, etc.
-                musicJson = self.contentPackMusicManager.musicJson
-                # Stop all sounds
-                self.musicManager.shutdown()
-                for sfxManager in self.sfxManagerList:
-                    sfxManager.shutdown()
-                self.sfxManagerList = []
-            # stop in contentPackMusicManager
-            self.contentPackMusicManager.stopMusic()
-            # Reinitialize audio managers
-            base.createBaseAudioManagers()
-            # Apply previous volume settings
-            musicVol = self.settings.get("music-volume")
-            sfxVol = self.settings.get("sfx-volume")
-            self.musicManager.setVolume(musicVol ** 2)
-            for sfm in self.sfxManagerList:
-                sfm.setVolume(sfxVol ** 2)
-            if hasattr(self, 'localAvatar'):
-                DirectGuiGlobals.setDefaultRolloverSound(base.loader.loadSfx('phase_3/audio/sfx/GUI_rollover.ogg'))
-                DirectGuiGlobals.setDefaultClickSound(base.loader.loadSfx('phase_3/audio/sfx/GUI_create_toon_fwd.ogg'))
-                DirectGuiGlobals.setDefaultDialogGeom(loader.loadModel('phase_3/models/gui/dialog_box_gui'))
-                self.localAvatar.soundRun = base.loader.loadSfx('phase_3.5/audio/sfx/AV_footstep_runloop.ogg')
-                self.localAvatar.soundWalk = base.loader.loadSfx('phase_3.5/audio/sfx/AV_footstep_walkloop.ogg')
-                self.localAvatar.soundWhisper = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_whisper_3.ogg')
-                self.localAvatar.soundPhoneRing = base.loader.loadSfx('phase_3.5/audio/sfx/telephone_ring.ogg')
-                self.localAvatar.soundSystemMessage = base.loader.loadSfx('phase_3/audio/sfx/clock03.ogg')
-                self.localAvatar.refreshDialog()
-                self.localAvatar.book.openSound = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_stickerbook_open.ogg')
-                self.localAvatar.book.closeSound = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_stickerbook_delete.ogg')
-                self.localAvatar.book.pageSound = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_stickerbook_turn.ogg')
-            # Play the music again
-            if musicJson:
-                for musicKey in list(currentMusic.keys()):
-                    musicInfo = currentMusicInfo[musicKey]
-                    looping = musicInfo.get("looping", True)
-                    volume = musicInfo.get("volume", 1.0)
-                    interrupt = musicInfo.get("interrupt", True)
-                    time = musicInfo.get("time", 0.0)
-                    self.notify.debug(f"Playing music {musicKey} with looping={looping}, volume={volume}, time={time}")
-                    self.contentPackMusicManager.playMusic(musicKey, looping, volume, interrupt, time, refresh=True)
-            else:
-                self.notify.warning("No json data found for music, skipping.")
-            messenger.send("audioRefreshDialogDone")
-            self.notify.debug("Audio devices refreshed.")
+        # Store the currently playing music, and the time
+        currentMusic = {}
+        currentMusicInfo = {}
+        musicJson = {}
+        if getattr(self, "musicManager", None):
+            currentMusic = self.contentPackMusicManager.getCurMusic() # this will return a dict with the current music, the value of each being the object of the music
+            currentMusicInfo = self.contentPackMusicManager.getCurMusicInfo() # this will return a dict with the current music, the value of each being data like looping, volume, etc.
+            musicJson = self.contentPackMusicManager.musicJson
+            # Stop all sounds
+            self.musicManager.shutdown()
+            for sfxManager in self.sfxManagerList:
+                sfxManager.shutdown()
+            self.sfxManagerList = []
+        # stop in contentPackMusicManager
+        self.contentPackMusicManager.stopMusic()
+        # Reinitialize audio managers
+        base.createBaseAudioManagers()
+        # Apply previous volume settings
+        musicVol = self.settings.get("music-volume")
+        sfxVol = self.settings.get("sfx-volume")
+        self.musicManager.setVolume(musicVol ** 2)
+        for sfm in self.sfxManagerList:
+            sfm.setVolume(sfxVol ** 2)
+        if hasattr(self, 'localAvatar'):
+            DirectGuiGlobals.setDefaultRolloverSound(base.loader.loadSfx('phase_3/audio/sfx/GUI_rollover.ogg'))
+            DirectGuiGlobals.setDefaultClickSound(base.loader.loadSfx('phase_3/audio/sfx/GUI_create_toon_fwd.ogg'))
+            DirectGuiGlobals.setDefaultDialogGeom(loader.loadModel('phase_3/models/gui/dialog_box_gui'))
+            self.localAvatar.soundRun = base.loader.loadSfx('phase_3.5/audio/sfx/AV_footstep_runloop.ogg')
+            self.localAvatar.soundWalk = base.loader.loadSfx('phase_3.5/audio/sfx/AV_footstep_walkloop.ogg')
+            self.localAvatar.soundWhisper = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_whisper_3.ogg')
+            self.localAvatar.soundPhoneRing = base.loader.loadSfx('phase_3.5/audio/sfx/telephone_ring.ogg')
+            self.localAvatar.soundSystemMessage = base.loader.loadSfx('phase_3/audio/sfx/clock03.ogg')
+            self.localAvatar.refreshDialog()
+            self.localAvatar.book.openSound = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_stickerbook_open.ogg')
+            self.localAvatar.book.closeSound = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_stickerbook_delete.ogg')
+            self.localAvatar.book.pageSound = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_stickerbook_turn.ogg')
+        # Play the music again
+        if musicJson:
+            for musicKey in list(currentMusic.keys()):
+                musicInfo = currentMusicInfo[musicKey]
+                looping = musicInfo.get("looping", True)
+                volume = musicInfo.get("volume", 1.0)
+                interrupt = musicInfo.get("interrupt", True)
+                time = musicInfo.get("time", 0.0)
+                self.notify.debug(f"Playing music {musicKey} with looping={looping}, volume={volume}, time={time}")
+                self.contentPackMusicManager.playMusic(musicKey, looping, volume, interrupt, time, refresh=True)
+        else:
+            self.notify.warning("No json data found for music, skipping.")
+        # messenger.send("audioRefreshDialogDone")
+        self.notify.debug("Audio devices refreshed.")
 
-        threading.Thread(target=refreshAudioThread).start()
