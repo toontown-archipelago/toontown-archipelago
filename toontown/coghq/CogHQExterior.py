@@ -8,6 +8,7 @@ from panda3d.core import *
 from panda3d.toontown import *
 from libotp import *
 from otp.distributed.TelemetryLimiter import RotationLimitToH, TLGatherAllAvs
+from toontown.content_pack import MusicManagerGlobals
 
 class CogHQExterior(BattlePlace.BattlePlace):
     notify = DirectNotifyGlobal.directNotify.newCategory('CogHQExterior')
@@ -70,6 +71,9 @@ class CogHQExterior(BattlePlace.BattlePlace):
         base.discord.setZone(self.zoneId)
         BattlePlace.BattlePlace.enter(self)
         self.fsm.enterInitialState()
+        if not hasattr(self.loader, "music"):
+            self.loader.music = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
+            self.loader.battleMusic = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
         base.contentPackMusicManager.playMusic(self.loader.music, looping=1, volume=0.8)
         self.loader.geom.reparentTo(render)
         self.nodeList = [self.loader.geom]

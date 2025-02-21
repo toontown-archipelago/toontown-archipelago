@@ -222,7 +222,6 @@
       "boss-none-sting": ["phase_9/audio/bgm/encntr_sting_announce.ogg"],
       "boss-none-jury": ["phase_9/audio/bgm/encntr_hall_of_fame.ogg"],
 
-      "BOSSES" : "s = vp, m = cfo, l = cj, c = ceo",
       "boss-c-two": ["phase_12/audio/bgm/BossBot_CEO_v1.ogg"],
       "boss-c-four": ["phase_12/audio/bgm/BossBot_CEO_v2.ogg"],
 
