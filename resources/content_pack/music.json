@@ -226,7 +226,10 @@
       "boss-c-two": ["phase_12/audio/bgm/BossBot_CEO_v1.ogg"],
       "boss-c-four": ["phase_12/audio/bgm/BossBot_CEO_v2.ogg"],
 
-      "suit-building": ["phase_7/audio/bgm/encntr_general_bg_indoor.ogg"],
+      "suit-building-1": ["phase_7/audio/bgm/encntr_general_bg_indoor.ogg"],
+      "suit-building-2": ["phase_7/audio/bgm/encntr_general_bg_indoor.ogg"],
+      "suit-building-3": ["phase_7/audio/bgm/encntr_general_bg_indoor.ogg"],
+      "suit-building-4": ["phase_7/audio/bgm/encntr_general_bg_indoor.ogg"],
       "suit-building-boss": ["phase_7/audio/bgm/encntr_suit_winning_indoor.ogg"],
       "suit-building-wait": ["phase_7/audio/bgm/encntr_toon_winning_indoor.ogg"],
       "suit-building-elevator": ["phase_7/audio/bgm/tt_elevator.ogg"],

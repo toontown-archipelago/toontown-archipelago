@@ -38,11 +38,6 @@ class DistributedBattleBldg(DistributedBattleBase.DistributedBattleBase):
 
     def setBossBattle(self, value):
         self.bossBattle = value
-        if self.bossBattle:
-            self.battleMusic = 'suit-building-boss'
-        else:
-            self.battleMusic = 'suit-building'
-        base.contentPackMusicManager.playMusic(self.battleMusic, looping=1, volume=0.9, interrupt=True)
 
     def getBossBattleTaunt(self):
         return TTLocalizer.BattleBldgBossTaunt

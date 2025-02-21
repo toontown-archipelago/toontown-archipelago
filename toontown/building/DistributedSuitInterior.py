@@ -249,6 +249,9 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
     def __playElevator(self, ts, name, callback):
         SuitHs = []
         SuitPositions = []
+        self.battleMusic = f'suit-building-{(self.currentFloor + 1)}'
+        if self.currentFloor == self.numFloors - 1:
+            self.battleMusic = f'suit-building-boss'
         if self.floorModel:
             self.floorModel.removeNode()
         if self.currentFloor == 0:
@@ -317,6 +320,7 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
 
     def exitElevator(self):
         self.__finishInterval(self.elevatorName)
+        base.contentPackMusicManager.stopMusic()
         return None
 
     def __playCloseElevatorOut(self, name):
@@ -329,6 +333,8 @@ class DistributedSuitInterior(DistributedObject.DistributedObject):
             self.__playCloseElevatorOut(self.uniqueName('close-out-elevator'))
             camera.setPos(0, -15, 6)
             camera.headsUp(self.elevatorModelOut)
+
+        base.contentPackMusicManager.playMusic(self.battleMusic, looping=1, volume=0.9, interrupt=True)
         return None
 
     def exitBattle(self):
