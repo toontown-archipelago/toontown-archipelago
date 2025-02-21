@@ -48,8 +48,8 @@ class CogHQLobby(BattlePlace.BattlePlace):
         base.discord.setZone(self.zoneId)
         BattlePlace.BattlePlace.enter(self)
         self.fsm.enterInitialState()
-        self.loader.music = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
-        self.loader.music = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
+        self.music = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
+        self.battleMusic = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
         self.loader.geom.reparentTo(render)
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)
@@ -57,6 +57,7 @@ class CogHQLobby(BattlePlace.BattlePlace):
         how = requestStatus['how']
         self.fsm.request(how, [requestStatus])
         self._telemLimiter = TLGatherAllAvs('CogHQLobby', RotationLimitToH)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.8, interrupt=True)
 
     def exit(self):
         self._telemLimiter.destroy()
