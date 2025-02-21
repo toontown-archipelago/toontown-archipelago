@@ -10000,6 +10000,7 @@ OptionNames = {
     "music-volume": "Music Volume",
     "sfx-volume": "Sound Effects Volume",
     "toon-chat-sounds": "Toon Chat Sounds",
+    "random-music": "Randomize Music",
     'refresh-audio': "Refresh Audio",
 }
 

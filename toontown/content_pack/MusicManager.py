@@ -10,8 +10,10 @@ class MusicManager:
         self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         self.currentMusic = {}
         self.currentMusicInfo = {}
+        self.randomMusicInfo = {}
+        self.storedMusicInfo = {}
     
-    def playMusic(self, json_code, looping=True, volume=1.0, interrupt=True, time=0.0):
+    def playMusic(self, json_code, looping=True, volume=1.0, interrupt=True, time=0.0, refresh=False):
         """
         Play a music track from the music json file.
         :param json_code: The json code for the music track.
@@ -20,9 +22,16 @@ class MusicManager:
         :param interrupt: Whether to interrupt the current music.
         :param time: The time to start the music at.
         """
+        old_code = json_code
         # we've got music and we're interrupting, kill
         if self.currentMusic and interrupt:
             self.stopMusic()
+        if json_code in list(self.randomMusicInfo.keys()) and base.randomMusic and not refresh:
+            json_code = self.randomMusicInfo[json_code]
+            # Storing the info for normal music for an area, so we have reference when disabling music rando
+            self.storedMusicInfo = {}
+            self.storedMusicInfo[old_code] = {"looping": looping, "volume": volume, "interrupt": interrupt,
+                                                "time": time}
         if json_code in self.musicJson['global_music']:
             json_code_path = random.choice(self.musicJson['global_music'][json_code])
             self.currentMusic[json_code] = base.loader.loadMusic(json_code_path)
@@ -33,6 +42,21 @@ class MusicManager:
                                                  "time": time}
             base.playMusic(self.currentMusic[json_code], looping=looping, interrupt=interrupt, volume=volume, time=time
                             )
+
+    # Used when we are disabling music randomizer
+    def getNormalMusicInfo(self):
+        if self.storedMusicInfo:
+            return self.storedMusicInfo
+        return None
+
+    # Used on launch to set random music for the session
+    def setRandomizedMusic(self):
+        music_keys = list(self.musicJson['global_music'].keys())
+        music_keys_copy = music_keys.copy()
+        for key in music_keys:
+            new_key = random.choice(music_keys_copy)
+            music_keys_copy.remove(new_key)
+            self.randomMusicInfo[key] = new_key
 
     def stopMusic(self):        
         for music in list(self.currentMusic.keys()):

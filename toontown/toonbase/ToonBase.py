@@ -53,6 +53,7 @@ class ToonBase(OTPBase.OTPBase):
         self.audioRefreshDialog = None
 
         self.contentPackMusicManager = MusicManager.MusicManager()
+        self.contentPackMusicManager.setRandomizedMusic()
 
         os.environ['WANT_ERROR_REPORTING'] = 'true' if self.settings.get('report-errors') else 'false'
 
@@ -205,6 +206,7 @@ class ToonBase(OTPBase.OTPBase):
         self.colorBlindMode = self.settings.get('color-blind-mode')
         # do they want laff meter on or off?
         self.laffMeterDisplay = self.settings.get('laff-display')
+        self.randomMusic = self.settings.get("random-music")
         self.discord = DiscordRPC()
         self.discord.launching()
         self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {version}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)
@@ -731,7 +733,35 @@ class ToonBase(OTPBase.OTPBase):
         if hasattr(self, "audioRefreshDialog"):
             self.audioRefreshDialog.cleanup()
             del self.audioRefreshDialog
-            
+
+    def refreshRandomMusic(self):
+        currentMusic = {}
+        currentMusicInfo = {}
+        normalMusicInfo = {}
+        musicJson = {}
+        if getattr(self, "musicManager", None):
+            currentMusic = self.contentPackMusicManager.getCurMusic()  # this will return a dict with the current music, the value of each being the object of the music
+            currentMusicInfo = self.contentPackMusicManager.getCurMusicInfo()  # this will return a dict with the current music, the value of each being data like looping, volume, etc.
+            normalMusicInfo = self.contentPackMusicManager.getNormalMusicInfo()
+            musicJson = self.contentPackMusicManager.musicJson
+        # Play the music again
+        if musicJson:
+            self.contentPackMusicManager.stopMusic()
+            if self.randomMusic:
+                for musicKey in list(currentMusic.keys()):
+                    musicInfo = currentMusicInfo[musicKey]
+                    looping = musicInfo.get("looping", True)
+                    volume = musicInfo.get("volume", 1.0)
+                    interrupt = musicInfo.get("interrupt", True)
+                    self.contentPackMusicManager.playMusic(musicKey, looping, volume, interrupt)
+            else:
+                for musicKey in list(normalMusicInfo.keys()):
+                    musicInfo = normalMusicInfo[musicKey]
+                    looping = musicInfo.get("looping", True)
+                    volume = musicInfo.get("volume", 1.0)
+                    interrupt = musicInfo.get("interrupt", True)
+                    self.contentPackMusicManager.playMusic(musicKey, looping, volume, interrupt)
+
 
     def refreshAudio(self):
         """
@@ -782,16 +812,14 @@ class ToonBase(OTPBase.OTPBase):
                 self.localAvatar.book.pageSound = base.loader.loadSfx('phase_3.5/audio/sfx/GUI_stickerbook_turn.ogg')
             # Play the music again
             if musicJson:
-                for json_code in musicJson['global_music'].keys():
-                    if json_code not in currentMusic.keys():
-                        continue
-                    musicInfo = currentMusicInfo[json_code]
+                for musicKey in list(currentMusic.keys()):
+                    musicInfo = currentMusicInfo[musicKey]
                     looping = musicInfo.get("looping", True)
                     volume = musicInfo.get("volume", 1.0)
-                    time = musicInfo.get("time", 0.0)
                     interrupt = musicInfo.get("interrupt", True)
-                    self.notify.debug(f"Playing music {json_code} with looping={looping}, volume={volume}, time={time}")
-                    self.contentPackMusicManager.playMusic(json_code, looping, volume, interrupt, time)
+                    time = musicInfo.get("time", 0.0)
+                    self.notify.debug(f"Playing music {musicKey} with looping={looping}, volume={volume}, time={time}")
+                    self.contentPackMusicManager.playMusic(musicKey, looping, volume, interrupt, time, refresh=True)
             else:
                 self.notify.warning("No json data found for music, skipping.")
             messenger.send("audioRefreshDialogDone")

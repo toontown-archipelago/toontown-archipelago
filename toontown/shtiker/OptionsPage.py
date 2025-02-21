@@ -63,6 +63,7 @@ OptionToType = {
     "music-volume": OptionTypes.SLIDER,
     "sfx-volume": OptionTypes.SLIDER,
     "toon-chat-sounds": OptionTypes.BUTTON,
+    "random-music": OptionTypes.BUTTON,
     "refresh-audio": OptionTypes.BUTTON
 }
 
@@ -162,7 +163,7 @@ class OptionsTabPage(DirectFrame, FSM):
         ],
         "Audio": [
             "music", "sfx", "music-volume", "sfx-volume", "toon-chat-sounds",
-            "refresh-audio"
+            "random-music", "refresh-audio"
         ],
     }
 
@@ -557,7 +558,7 @@ class OptionElement(DirectFrame):
                 self.accept("controls_findDuplicates", self.checkForDuplicates)
             
             if self.optionName == 'refresh-audio':
-                self.optionModifier["text"] = TTLocalizer.OptionRefresh # This is a special case where there is no setting to display.
+                self.optionModifier["text"] = TTLocalizer.OptionRefresh  # This is a special case where there is no setting to display.
         
         # Make the slider which will appear on the right-hand side of
         # the page.
@@ -784,6 +785,9 @@ class OptionElement(DirectFrame):
             base.WANT_LEGACY_MODELS = newSetting
         elif self.optionName == "laff-display":
             base.laffMeterDisplay = newSetting
+        elif self.optionName == "random-music":
+            base.randomMusic = newSetting
+            base.refreshRandomMusic()
 
         # Update the button text with the new setting.
         self.optionModifier["text"] = self.formatSetting(newSetting)
