@@ -199,29 +199,27 @@
       "lawbot-office-c-battle": ["phase_9/audio/bgm/encntr_suit_winning.ogg"],
       "lawbot-office-d-battle": ["phase_9/audio/bgm/encntr_suit_winning.ogg"],
 
-      "bossbot-courtyard": ["phase_12/audio/bgm/Bossbot_Entry_v1.ogg"],
+      "bossbot-courtyard": ["phase_12/audio/bgm/Bossbot_Entry_v1.ogg", "phase_12/audio/bgm/Bossbot_Entry_v2.ogg", "phase_12/audio/bgm/Bossbot_Entry_v3.ogg"],
       "bossbot-courtyard-battle": ["phase_9/audio/bgm/encntr_suit_winning.ogg"],
       
-      "front-one": ["phase_12/audio/bgm/Bossbot_Factory_v1.ogg"],
-      "middle-two": ["phase_12/audio/bgm/Bossbot_Factory_v2.ogg"],
-      "back-three": ["phase_12/audio/bgm/Bossbot_Factory_v3.ogg"],
+      "front-one": ["phase_12/audio/bgm/Bossbot_Factory_v1.ogg", "phase_12/audio/bgm/Bossbot_Factory_v2.ogg", "phase_12/audio/bgm/Bossbot_Factory_v3.ogg"],
+      "middle-two": ["phase_12/audio/bgm/Bossbot_Factory_v1.ogg", "phase_12/audio/bgm/Bossbot_Factory_v2.ogg", "phase_12/audio/bgm/Bossbot_Factory_v3.ogg"],
+      "back-three": ["phase_12/audio/bgm/Bossbot_Factory_v1.ogg", "phase_12/audio/bgm/Bossbot_Factory_v2.ogg", "phase_12/audio/bgm/Bossbot_Factory_v3.ogg"],
       "front-one-battle": ["phase_9/audio/bgm/encntr_suit_winning.ogg"],
       "middle-two-battle": ["phase_9/audio/bgm/encntr_suit_winning.ogg"],
       "back-three-battle": ["phase_9/audio/bgm/encntr_suit_winning.ogg"],
 
-      "bossbot-lobby": ["phase_12/audio/bgm/Bossbot_Entry_v3.ogg"],
-      
-      
+      "bossbot-lobby": ["phase_12/audio/bgm/Bossbot_Entry_v1.ogg", "phase_12/audio/bgm/Bossbot_Entry_v2.ogg", "phase_12/audio/bgm/Bossbot_Entry_v3.ogg"],
 
-      "boss-none-elevator": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
-      "boss-none-one": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
-      "boss-none-two": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
-      "boss-none-three": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
-      "boss-none-four": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
+      "boss-none-elevator": ["phase_7/audio/bgm/tt_elevator.ogg"],
+      "boss-none-one": ["phase_3.5/audio/bgm/encntr_general_bg.ogg"],
+      "boss-none-two": ["phase_7/audio/bgm/encntr_suit_winning_indoor.ogg"],
+      "boss-none-three": ["phase_9/audio/bgm/encntr_toon_winning.ogg"],
+      "boss-none-four": ["phase_7/audio/bgm/encntr_suit_winning_indoor.ogg"],
       "boss-none-promotion": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
       "boss-none-epilogue": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
-      "boss-none-sting": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
-      "boss-none-jury": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
+      "boss-none-sting": ["phase_9/audio/bgm/encntr_sting_announce.ogg"],
+      "boss-none-jury": ["phase_9/audio/bgm/encntr_hall_of_fame.ogg"],
 
       "BOSSES" : "s = vp, m = cfo, l = cj, c = ceo",
       "boss-c-two": ["phase_12/audio/bgm/BossBot_CEO_v1.ogg"],
@@ -232,7 +230,7 @@
       "suit-building-wait": ["phase_7/audio/bgm/encntr_toon_winning_indoor.ogg"],
       "suit-building-elevator": ["phase_7/audio/bgm/tt_elevator.ogg"],
 
-      "firework-july4": ["phase_4/audio/bgm/tt_party2"],
+      "firework-july4": ["phase_4/audio/bgm/tt_party2.ogg"],
       "fireworks-newyears": ["phase_4/audio/bgm/tt_s_ara_gen_fireworks_auldLangSyne.ogg"],
       "fireworks-summer": ["phase_4/audio/bgm/tt_summer.ogg"],
 
@@ -253,7 +251,7 @@
       "mg-vine-game": ["phase_4/audio/bgm/MG_Vine.ogg"],
       "mg-twoD-game": ["phase_4/audio/bgm/MG_TwoDGame.ogg"],
 
-      "gs-race-cc": ["phase_6/audio/bgm/GS_Race_SS.ogg"],
+      "gs-race-cc": ["phase_6/audio/bgm/GS_Race_CC.ogg"],
       "gs-race-rr": ["phase_6/audio/bgm/GS_Race_RR.ogg"],
       "gs-race-ss": ["phase_6/audio/bgm/GS_Race_SS.ogg"]
     }
