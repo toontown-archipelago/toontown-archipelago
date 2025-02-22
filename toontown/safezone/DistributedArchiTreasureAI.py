@@ -25,7 +25,7 @@ class DistributedArchiTreasureAI(DistributedSZTreasureAI.DistributedSZTreasureAI
         return False
 
     def isValidHp(self, av):
-        return (av.hp > 0 and av.hp < av.maxHp)
+        return av.hp < av.maxHp
 
     def d_setGrab(self, avId, archiCode):
         self.notify.debug('d_setGrab %s' % avId)

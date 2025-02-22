@@ -91,7 +91,7 @@ UnpaidMaxSkills = [Levels[0][1] - 1,
                    Levels[6][1] - 1]
 ExperienceCap = 99999
 
-MaxToonAcc = 95
+MaxToonAcc = 100
 StartingLevel = 0
 CarryLimits = (
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 10, 5, 2, 1)),

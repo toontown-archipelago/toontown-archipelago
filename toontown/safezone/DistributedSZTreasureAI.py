@@ -12,7 +12,7 @@ class DistributedSZTreasureAI(DistributedTreasureAI.DistributedTreasureAI):
             self.healAmount = 0.10
 
     def validAvatar(self, av):
-        return av.hp > 0 and av.hp < av.maxHp
+        return av.hp < av.maxHp
 
     def d_setGrab(self, avId):
         DistributedTreasureAI.DistributedTreasureAI.d_setGrab(self, avId)
