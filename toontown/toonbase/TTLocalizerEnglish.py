@@ -10000,6 +10000,8 @@ OptionNames = {
     "music-volume": "Music Volume",
     "sfx-volume": "Sound Effects Volume",
     "toon-chat-sounds": "Toon Chat Sounds",
+    "random-music": "Randomize Music",
+    'refresh-audio': "Refresh Audio",
 }
 
 OptionAntiAlias = {
@@ -10028,4 +10030,6 @@ OptionFPSLimit = {
 
 OptionEnabled = "Enabled"
 OptionDisabled = "Disabled"
+OptionRefresh = "Refresh"
 WinConditionMet = 'Congratulations, you have completed your goal! You may now talk to Flippy to redeem your reward!'
+RefreshDialogMsg = "Refreshing audio devices..."

@@ -23,7 +23,7 @@ class DistributedPatternGame(DistributedMinigame):
      phase4snd + 'm_match_guitar.ogg',
      phase4snd + 'm_match_drums.ogg',
      phase4snd + 'm_match_piano.ogg')
-    bgm = 'phase_4/audio/bgm/m_match_bg1.ogg'
+    bgm = "mg-pattern-game"
     strWatch = TTLocalizer.PatternGameWatch
     strGo = TTLocalizer.PatternGameGo
     strRight = TTLocalizer.PatternGameRight
@@ -91,7 +91,7 @@ class DistributedPatternGame(DistributedMinigame):
         self.incorrectSound = base.loader.loadSfx('phase_4/audio/sfx/MG_neg_buzzer.ogg')
         self.perfectSound = base.loader.loadSfx('phase_4/audio/sfx/MG_win.ogg')
         self.fallSound = base.loader.loadSfx('phase_4/audio/sfx/MG_Tag_A.ogg')
-        self.music = base.loader.loadMusic(self.bgm)
+        self.music = self.bgm
         self.waitingText = DirectLabel(text=self.strPleaseWait, text_fg=(0.9, 0.9, 0.9, 1.0), frameColor=(1, 1, 1, 0), text_font=ToontownGlobals.getSignFont(), pos=(0, 0, -.78), scale=0.12)
         self.roundText = DirectLabel(text=self.strRound % 1, text_fg=self.normalTextColor, frameColor=(1, 1, 1, 0), text_font=ToontownGlobals.getSignFont(), pos=(0.014, 0, -.84), scale=0.12)
         self.roundText.hide()
@@ -271,12 +271,12 @@ class DistributedPatternGame(DistributedMinigame):
             self.arrowDict['m'][k].setScale(4)
             self.arrowDict['m'][k].setPos(0, 0, 1.7)
 
-        base.playMusic(self.music, looping=1, volume=1)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=1)
 
     def offstage(self):
         self.notify.debug('offstage')
         DistributedMinigame.offstage(self)
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         base.camLens.setMinFov(ToontownGlobals.DefaultCameraFov / (4. / 3.))
         NametagGlobals.setGlobalNametagScale(1.0)
         self.arrowKeys.destroy()

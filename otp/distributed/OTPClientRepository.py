@@ -1362,7 +1362,7 @@ class OTPClientRepository(ClientRepositoryBase):
     @report(types=['args', 'deltaStamp'], dConfigParam='teleport')
     def enterPlayGame(self, hoodId, zoneId, avId):
         if self.music:
-            self.music.stop()
+            base.contentPackMusicManager.stopMusic()
             self.music = None
         self.garbageLeakLogger = GarbageLeakServerEventAggregator(self)
         self.handler = self.handlePlayGame

@@ -266,7 +266,7 @@ class DistributedTargetGame(DistributedMinigame):
          score3Label,
          score4Label]
         self.scoreboard.hide()
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_Diving.ogg')
+        self.music = "mg-target-game" 
         self.sndAmbience = None
         self.skyListLow = []
         self.skyListMid = []
@@ -663,7 +663,7 @@ class DistributedTargetGame(DistributedMinigame):
         self.__spawnUpdateShadowsTask()
         self.__spawnUpdateLocalToonTask()
         if self.music:
-            base.playMusic(self.music, looping=1, volume=0.8)
+            base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.8)
         if None != self.sndAmbience:
             base.playSfx(self.sndAmbience, looping=1, volume=0.8)
         return
@@ -694,7 +694,7 @@ class DistributedTargetGame(DistributedMinigame):
         self.notify.debug('offstage')
         DistributedMinigame.offstage(self)
         if self.music:
-            self.music.stop()
+            base.contentPackMusicManager.stopMusic()
         if None != self.sndAmbience:
             self.sndAmbience.stop()
         self.__killUpdateLocalToonTask()

@@ -99,7 +99,7 @@ class ToonInterior(Place.Place):
             self.toonHallMusic = base.loader.loadMusic("phase_3.5/audio/bgm/toon_hall_bg.ogg")
             base.playMusic(self.toonHallMusic, looping=1, volume=volume)
         else:
-            base.playMusic(self.loader.activityMusic, looping=1, volume=volume)
+            base.contentPackMusicManager.playMusic(self.loader.activityMusic, looping=1, volume=volume)
         self._telemLimiter = TLGatherAllAvs('ToonInterior', RotationLimitToH)
         NametagGlobals.setMasterArrowsOn(1)
         self.fsm.request(requestStatus['how'], [requestStatus])
@@ -110,11 +110,7 @@ class ToonInterior(Place.Place):
         self._telemLimiter.destroy()
         del self._telemLimiter
         NametagGlobals.setMasterArrowsOn(0)
-        self.loader.activityMusic.stop()
-        if hasattr(self, "gagShopMusic"):
-            self.gagShopMusic.stop()
-        if hasattr(self, "toonHallMusic"):
-            self.toonHallMusic.stop()
+        base.contentPackMusicManager.stopMusic()
 
     def setState(self, state):
         self.fsm.request(state)

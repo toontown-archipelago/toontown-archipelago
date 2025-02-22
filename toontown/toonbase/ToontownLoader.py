@@ -20,6 +20,7 @@ class ToontownLoader(Loader.Loader):
         Loader.Loader.destroy(self)
 
     def beginBulkLoad(self, name, label, range, gui, tipCategory):
+        base.contentPackMusicManager.stopMusic()
         self._loadStartT = globalClock.getRealTime()
         Loader.Loader.notify.info("starting bulk load of block '%s'" % name)
         if self.inBulkBlock:

@@ -81,7 +81,7 @@ class DistributedRingGame(DistributedMinigame):
         self.notify.debug('load')
         DistributedMinigame.load(self)
         self.defineConstants()
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_toontag.ogg')
+        self.music = "mg-ring-game"
         self.sndAmbience = base.loader.loadSfx('phase_4/audio/sfx/AV_ambient_water.ogg')
         self.sndPerfect = base.loader.loadSfx('phase_4/audio/sfx/ring_perfect.ogg')
         loadBase = 'phase_4/models/minigames/'
@@ -181,7 +181,7 @@ class DistributedRingGame(DistributedMinigame):
     def offstage(self):
         self.notify.debug('offstage')
         DistributedMinigame.offstage(self)
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         if None != self.sndAmbience:
             self.sndAmbience.stop()
         self.__killUpdateLocalToonTask()
@@ -284,7 +284,7 @@ class DistributedRingGame(DistributedMinigame):
         self.notify.debug('setGameStart')
         DistributedMinigame.setGameStart(self, timestamp)
         self.gameFSM.request('swim')
-        base.playMusic(self.music, looping=0, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.music, looping=0, volume=0.8)
 
     def enterOff(self):
         self.notify.debug('enterOff')

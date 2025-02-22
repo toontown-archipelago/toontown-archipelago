@@ -13,7 +13,7 @@ from . import FactoryInterior
 from . import SellbotHQExterior
 from . import SellbotHQBossBattle
 from panda3d.core import DecalEffect, VirtualFileSystem
-import json
+from toontown.content_pack import MusicManagerGlobals
 aspectSF = 0.7227
 
 class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
@@ -33,8 +33,6 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
             state.addTransition('factoryInterior')
             state.addTransition('factoryInteriorSide')
 
-        fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         self.musicFile = 'phase_9/audio/bgm/encntr_suit_HQ_nbrhood.ogg'
         self.cogHQExteriorModelPath = 'phase_9/models/cogHQ/SellbotHQExterior'
         self.cogHQLobbyModelPath = 'phase_9/models/cogHQ/SellbotHQLobby'
@@ -45,11 +43,6 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
     def load(self, zoneId):
         CogHQLoader.CogHQLoader.load(self, zoneId)
         Toon.loadSellbotHQAnims()
-
-        if str(zoneId) in self.musicJson['global_music']:
-            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(zoneId)])
-            if (str(zoneId) + '_battle') in self.musicJson['global_music']:
-                self.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(zoneId) + '_battle')])
 
     def unloadPlaceGeom(self):
         if self.geom:
@@ -63,6 +56,10 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
         zoneId = zoneId - zoneId % 100
         if zoneId == ToontownGlobals.SellbotHQ:
             self.geom = loader.loadModel(self.cogHQExteriorModelPath)
+
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
+
             dgLinkTunnel = self.geom.find('**/Tunnel1')
             dgLinkTunnel.setName('linktunnel_dg_5316_DNARoot')
             factoryLinkTunnel = self.geom.find('**/Tunnel2')
@@ -100,6 +97,10 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
 
         elif zoneId == ToontownGlobals.SellbotFactoryExt:
             self.geom = loader.loadModel(self.factoryExteriorModelPath)
+
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
+
             factoryLinkTunnel = self.geom.find('**/tunnel_group2')
             factoryLinkTunnel.setName('linktunnel_sellhq_11000_DNARoot')
             factoryLinkTunnel.find('**/tunnel_sphere').setName('tunnel_trigger')
@@ -134,6 +135,10 @@ class SellbotCogHQLoader(CogHQLoader.CogHQLoader):
             if base.config.GetBool('want-qa-regression', 0):
                 self.notify.info('QA-REGRESSION: COGHQ: Visit SellbotLobby')
             self.geom = loader.loadModel(self.cogHQLobbyModelPath)
+
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['music']
+
             front = self.geom.find('**/frontWall')
             front.node().setEffect(DecalEffect.make())
             door = self.geom.find('**/door_0')
