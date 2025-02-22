@@ -208,5 +208,11 @@ class ConnectedPacket(ClientBoundPacketBase):
             update_packet.tags = [ConnectPacket.TAG_DEATHLINK]
             client.send_packet(update_packet)
 
+        # Update RinkLink Tag.
+        if self.slot_data.get('ring_link', False):
+            update_packet = ConnectUpdatePacket()
+            update_packet.tags = [ConnectPacket.TAG_RINGLINK]
+            client.send_packet(update_packet)
+
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)

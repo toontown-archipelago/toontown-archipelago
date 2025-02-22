@@ -298,6 +298,11 @@ Toontown:
   # If another player in your game with this setting enabled dies for whatever reason, you will also go sad.
   death_link: 'false'
 
+  # Enable/disable the RingLink mechanic.
+  # When you gain or lose money in game, other players with this setting enabled have their currencies changed at a 10% rate.
+  # If another player gains or loses money, you will also gain or lose that money.
+  ring_link: 'false'
+
   # Starting hints for Cog Disguises
   start_hints:
     - Cog Disguises
