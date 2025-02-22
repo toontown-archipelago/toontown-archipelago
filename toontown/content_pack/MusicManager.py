@@ -9,6 +9,7 @@ class MusicManager:
     def __init__(self):
         fileSystem = VirtualFileSystem.getGlobalPtr()
         self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
+        self.previousMusic = None
         self.currentMusic = {}
         self.currentMusicInfo = {}
         self.randomMusicInfo = {}
@@ -23,15 +24,20 @@ class MusicManager:
         :param interrupt: Whether to interrupt the current music.
         :param time: The time to start the music at.
         """
-        old_code = json_code
+
+        # we're trying to play the exact same key that was already playing, don't
+        # this mainly only matters for cog building battles, but a good catch all
+        if self.previousMusic == json_code:
+            return
         # we've got music and we're interrupting, kill
         if self.currentMusic and interrupt:
             self.stopMusic()
+        self.previousMusic = json_code
         if json_code in list(self.randomMusicInfo.keys()) and base.randomMusic and not refresh:
             json_code = self.randomMusicInfo[json_code]
             # Storing the info for normal music for an area, so we have reference when disabling music rando
             self.storedMusicInfo = {}
-            self.storedMusicInfo[old_code] = {"looping": looping, "volume": volume, "interrupt": interrupt,
+            self.storedMusicInfo[self.previousMusic] = {"looping": looping, "volume": volume, "interrupt": interrupt,
                                                 "time": time}
         if json_code in self.musicJson['global_music']:
             json_code_path = random.choice(self.musicJson['global_music'][json_code])
