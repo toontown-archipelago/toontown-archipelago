@@ -74,6 +74,7 @@ class ArchipelagoClient(DirectObject):
 
         # Store information for retrieval later that we received from packets
         self.slot_id_to_slot_name: Dict[int, NetworkSlot] = {}
+        self.slot_name_to_slot_alias: Dict[str: str] = {}
         self.global_data_package: GlobalDataPackage = GlobalDataPackage()
         self.location_scouts_cache: LocationScoutsCache = LocationScoutsCache()
 
@@ -86,6 +87,17 @@ class ArchipelagoClient(DirectObject):
         Raises KeyError if slot is invalid.
         """
         return self.slot_id_to_slot_name[int(slot)]
+
+    def get_slot_alias(self, slot: str | int) -> str:
+        return self.slot_name_to_slot_alias[self.get_slot_info(slot).name]
+
+    def set_slot_aliases(self, players):
+        for slot in list(self.slot_id_to_slot_name.keys()):
+            for player in players:
+                if self.get_slot_info(slot).name in player.alias:
+                    self.slot_name_to_slot_alias[self.get_slot_info(slot).name] = player.alias
+                continue
+            continue
 
     def get_local_slot(self) -> int:
         """
@@ -221,7 +233,7 @@ class ArchipelagoClient(DirectObject):
         try:
             address = self.parse_url(self.address)
         except ValueError as e:
-            self.av.d_sendArchipelagoMessage(f"Error parsing url! {e}", color='red')
+            self.av.d_sendArchipelagoMessage(f"Error parsing url! {e}")
             return
 
         self.av.d_sendArchipelagoMessage(f"[AP Client Thread] Attempting connection with archipelago server at {address}...")

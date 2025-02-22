@@ -3,7 +3,7 @@ from typing import Dict, List
 from apworld.toontown.locations import LOCATION_ID_TO_NAME
 from . import ShtikerPage
 import random
-from apworld.toontown import ToontownItemName, ToontownItemDefinition, get_item_def_from_id
+from apworld.toontown import ToontownItemName, ToontownItemDefinition, get_item_def_from_id, TPSanity, FacilityLocking
 from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
 from panda3d.core import *
@@ -330,9 +330,14 @@ class CheckPage(ShtikerPage.ShtikerPage):
             playgroundKeys = [ToontownItemName.TTC_ACCESS.value, ToontownItemName.DD_ACCESS.value,
                               ToontownItemName.DG_ACCESS.value,  ToontownItemName.MML_ACCESS.value,
                               ToontownItemName.TB_ACCESS.value,  ToontownItemName.DDL_ACCESS.value]
+            cogKeys = [ToontownItemName.SBHQ_ACCESS.value, ToontownItemName.CBHQ_ACCESS.value,
+                       ToontownItemName.LBHQ_ACCESS.value, ToontownItemName.BBHQ_ACCESS.value]
+            if base.localAvatar.slotData.get("tpsanity", 0) == TPSanity.option_none:
+                if itemName in playgroundKeys:
+                    quantity = 2
+                if itemName in cogKeys and base.localAvatar.slotData.get("facility_locking", 0) == FacilityLocking.option_access:
+                    quantity = 2
             button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
-            if itemName in playgroundKeys:
-                quantity = 2
             if itemName == "Bounty":
                 bounties.append(button[0])
                 continue
