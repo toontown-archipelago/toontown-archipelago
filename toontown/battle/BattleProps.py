@@ -198,12 +198,14 @@ Props = ((5, 'partyBall', 'partyBall'),
 CreampieColor = VBase4(250.0 / 255.0, 241.0 / 255.0, 24.0 / 255.0, 1.0)
 FruitpieColor = VBase4(55.0 / 255.0, 40.0 / 255.0, 148.0 / 255.0, 1.0)
 BirthdayCakeColor = VBase4(253.0 / 255.0, 119.0 / 255.0, 220.0 / 255.0, 1.0)
+WeddingCakeColor = VBase4(1.0, 182.0 / 255.0, 193.0 / 255.0, 1.0)
 Splats = {'tart': (0.3, FruitpieColor),
  'fruitpie-slice': (0.5, FruitpieColor),
  'creampie-slice': (0.5, CreampieColor),
  'fruitpie': (0.7, FruitpieColor),
  'creampie': (0.7, CreampieColor),
- 'birthday-cake': (0.9, BirthdayCakeColor)}
+ 'birthday-cake': (0.9, BirthdayCakeColor),
+ 'wedding-cake': (0.9, WeddingCakeColor)}
 Variants = ('tart',
  'fruitpie',
  'splat-tart',
@@ -215,6 +217,7 @@ Variants = ('tart',
  'splat-fruitpie',
  'splat-creampie',
  'splat-birthday-cake',
+ 'splat-wedding-cake',
  'splash-from-splat',
  'clip-on-tie',
  'lips',
