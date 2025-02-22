@@ -643,6 +643,15 @@ class DeathLinkOption(Toggle):
     display_name = "Death Link"
     default = False
 
+
+class RingLinkOption(Toggle):
+    """
+    Enable to turn on the "RingLink" mechanic in Archipelago.
+    """
+
+    display_name = "Ring Link"
+    default = False
+
 @dataclass
 class ToontownOptions(PerGameCommonOptions):
     start_inventory_from_pool: StartInventoryPool
@@ -702,6 +711,7 @@ class ToontownOptions(PerGameCommonOptions):
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
     death_link: DeathLinkOption
+    ring_link: RingLinkOption
     pet_shop_display: PetShopRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
 
@@ -714,7 +724,8 @@ toontown_option_groups: list[OptionGroup] = [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
         StartGagOption,BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
         DamageMultiplierRange, OverflowModRange, StartMoneyOption, 
-        StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption
+        StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
+        RingLinkOption
     ]),
     OptionGroup("Win Condition", [
         WinConditionCogBosses, CogBossesRequired,

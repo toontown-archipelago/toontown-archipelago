@@ -18,6 +18,8 @@ class ConnectPacket(ServerBoundPacketBase):
     TAG_AP = "AP"
     # Client participates in the DeathLink mechanic, therefore will send and receive DeathLink bounce packets
     TAG_DEATHLINK = "DeathLink"
+    # Client participates in the RingLink mechanic, therefore will send and receive RingLink bounce packets
+    TAG_RINGLINK = "RingLink"
     # Tells the server that this client will not send locations and is actually a Tracker. When specified and used with
     # empty or null game in Connect, game and game's version validation will be skipped.
     TAG_TRACKER = "Tracker"
