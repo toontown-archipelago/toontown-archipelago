@@ -162,7 +162,7 @@ class CountryClubInterior(BattlePlace.BattlePlace):
     def exitBattle(self):
         CountryClubInterior.notify.debug('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
-        self.loader.music.start()
+        base.contentPackMusicManager.playMusic(self.loader.music)
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)
