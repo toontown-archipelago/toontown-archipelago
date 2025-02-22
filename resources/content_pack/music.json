@@ -5,10 +5,12 @@
       "none": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
       "none_battle": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
       "none_activity": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
+      "gag-shop": ["phase_4/audio/bgm/FF_safezone.ogg"],
 
       "tt-sz": ["phase_4/audio/bgm/TC_nbrhood.ogg"],
       "tt-sz-battle": ["phase_3.5/audio/bgm/encntr_general_bg.ogg"],
       "tt-sz-activity": ["phase_3.5/audio/bgm/TC_SZ_activity.ogg"],
+      "toon-hall": ["phase_3.5/audio/bgm/toon_hall_bg.ogg"],
 
       "tt-2100": ["phase_3.5/audio/bgm/TC_SZ.ogg"],
       "tt-2100-battle": ["phase_3.5/audio/bgm/encntr_general_bg.ogg"],
