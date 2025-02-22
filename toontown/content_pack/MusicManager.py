@@ -15,7 +15,7 @@ class MusicManager:
         self.randomMusicInfo = {}
         self.storedMusicInfo = {}
     
-    def playMusic(self, json_code, looping=True, volume=1.0, interrupt=True, time=0.0, refresh=False):
+    def playMusic(self, json_code, looping=True, volume=1.0, interrupt=True, time=0.0, refresh=False, randomToggle=False):
         """
         Play a music track from the music json file.
         :param json_code: The json code for the music track.
@@ -27,7 +27,7 @@ class MusicManager:
 
         # we're trying to play the exact same key that was already playing, don't
         # this mainly only matters for cog building battles, but a good catch all
-        if self.previousMusic == json_code:
+        if self.previousMusic == json_code and not randomToggle:
             return
         # we've got music and we're interrupting, kill
         if self.currentMusic and interrupt:

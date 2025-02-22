@@ -753,14 +753,14 @@ class ToonBase(OTPBase.OTPBase):
                     looping = musicInfo.get("looping", True)
                     volume = musicInfo.get("volume", 1.0)
                     interrupt = musicInfo.get("interrupt", True)
-                    self.contentPackMusicManager.playMusic(musicKey, looping, volume, interrupt)
+                    self.contentPackMusicManager.playMusic(musicKey, looping, volume, interrupt, randomToggle=True)
             else:
                 for musicKey in list(normalMusicInfo.keys()):
                     musicInfo = normalMusicInfo[musicKey]
                     looping = musicInfo.get("looping", True)
                     volume = musicInfo.get("volume", 1.0)
                     interrupt = musicInfo.get("interrupt", True)
-                    self.contentPackMusicManager.playMusic(musicKey, looping, volume, interrupt)
+                    self.contentPackMusicManager.playMusic(musicKey, looping, volume, interrupt, randomToggle=True)
 
 
     def refreshAudio(self):
