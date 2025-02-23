@@ -34,15 +34,14 @@ Toontown:
   # Range: 0 to 30
   max_global_gag_xp: 30
 
-  starting_gags:
-    # The gags to have when starting a new game. using "randomized" instead of a gag will replace with a random extra gag.
-    # you cannot start with gags above level 1, duplicate values other than "randomized" will be ignored.
-    # 
-    # valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
-    # ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks
-    # ex. ["sound"] will start you with only sound as a starting track
-    # An empty list will start you with no gag tracks
-    ['randomized', 'randomized']
+  # The gags to have when starting a new game. using "randomized" instead of a gag will replace with a random extra gag.
+  # you cannot start with gags above level 1, duplicate values other than "randomized" will be ignored.
+  # 
+  # valid keys: ["randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"]
+  # ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks
+  # ex. ["sound"] will start you with only sound as a starting track
+  # An empty list will start you with no gag tracks
+  starting_gags: ['randomized', 'randomized']
 
   # The percentage of damage that will be done when battling Cogs.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
@@ -75,12 +74,23 @@ Toontown:
   ### Completion Settings ###
 
   # Determines the condition required before being able to talk to Flippy to complete the game.
-  # at least one of these should be enabled.
+  # At least one of these should be enabled.
+
   # valid keys: ["cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
-  # "fish-species", "laff_o_lympics", "randomized"]
-  # "randomized" will be replaced with one of the other options, if possible, and is valid multiple times.
-  # for a description for the other options, see all the options below ending in '_required'.
-  win_condition: [ "cog-bosses" ]
+  #              "fish-species", "laff-o-lympics", "randomized"]
+
+  # "cog-bosses" - Player must defeat enough bosses (determined by cog_bosses_required)
+  # "bounties" - Player must collect enough bounties in their own world (determined by bounties_required, total_bounties)
+  # "total-tasks" - Player must complete enough ToonTasks (determined by total_tasks_required)
+  # "hood-tasks" - Player must complete enough ToonTasks in each Playground (determined by hood_tasks_required)
+  # "gag-tracks" - Player must max enough Gag Tracks (determined by gag_tracks_required)
+  # "fish-species" - Player must catch enough fish species (determined by fish_species_required)
+  # "laff-o-lympics" - Player must reach a certain amount of laff (determined by laff_points_required)
+  #                    NOTE: Replaces ALL Laff Boosts with +1 Laff Boosts
+  # "randomized" - Will choose a random not-yet chosen goal as one of your goals.
+  #                NOTE: Can be input into the below list multiple times for multiple random goals
+  # Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
+  win_condition: ["cog-bosses"]
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game
   # Unused if win_condition is not cog-bosses
