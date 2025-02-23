@@ -140,6 +140,11 @@ class DiscordRPC(object):
                 self.notify.warning('Discord RPC connection lost, trying to reconnect in 30 seconds.')
                 self.discordTask = threading.Timer(30, self.reconnectDiscord)
                 self.discordTask.start()
+            except RuntimeError as e:
+                if str(e) == "This event loop is already running":
+                    self.notify.warning("This event loop is already running")
+                else:
+                    self.notify.warning(f"Runtime Error: {e}")
 
     def reconnectDiscord(self):
         self.enable()

@@ -96,7 +96,7 @@ class DistributedCatchGame(DistributedMinigame):
                 model.setZ(-self.ObjRadius)
             model.flattenMedium()
 
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_toontag.ogg')
+        self.music = "mg-tag-game"
         self.sndGoodCatch = base.loader.loadSfx('phase_4/audio/sfx/SZ_DD_treasure.ogg')
         self.sndOof = base.loader.loadSfx('phase_4/audio/sfx/MG_cannon_hit_dirt.ogg')
         self.sndAnvilLand = base.loader.loadSfx('phase_4/audio/sfx/AA_drop_anvil_miss.ogg')
@@ -505,7 +505,7 @@ class DistributedCatchGame(DistributedMinigame):
         self.timer.countdown(CatchGameGlobals.GameDuration, self.timerExpired)
         self.timer.setTransparency(1)
         self.timer.setColorScale(1, 1, 1, 0.75)
-        base.playMusic(self.music, looping=0, volume=0.9)
+        base.contentPackMusicManager.playMusic(self.music, looping=0, volume=0.9)
 
     def exitPlay(self):
         self.stopDropTask()
@@ -516,7 +516,7 @@ class DistributedCatchGame(DistributedMinigame):
         self.timer.stop()
         self.timer.destroy()
         del self.timer
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         for suit in self.suits:
             self.ignore(self.uniqueName('enter' + suit.collSphereName))
             suit.collNodePath.removeNode()

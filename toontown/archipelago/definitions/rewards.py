@@ -563,7 +563,7 @@ class JellybeanReward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.ap_setMoney(av.getMoney() + self.amount)
+        av.addMoney(self.amount)
 
 
 class UberTrapAward(APReward):
@@ -619,14 +619,15 @@ class BeanTaxTrapAward(APReward):
 
         if self.getPassed(avMoney):
             av.b_setHasPaidTaxes(True)
-            av.ap_setMoney(max(avMoney - self.tax, 0))
+            av.takeMoney(self.tax)
             av.playSound('phase_4/audio/sfx/tax_paid.ogg')
             av.d_broadcastHpString("TAXES PAID!", (.35, .7, .35))
             av.d_playEmote(EmoteFuncDict['Happy'], 1)
         else:
             av.b_setHasPaidTaxes(False)
             if av.getMoney() >= 100:
-                av.ap_setMoney(100)
+                av.takeMoney(self.tax)
+                av.addMoney(100)
             damage = av.getHp() - 1
             if av.getHp() > 0:
                 av.takeDamage(damage)

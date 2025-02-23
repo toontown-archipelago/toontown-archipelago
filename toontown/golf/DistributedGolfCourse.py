@@ -53,6 +53,7 @@ class DistributedGolfCourse(DistributedObject.DistributedObject, FSM, DelayDelet
         self.scoreBoard = None
         self.exit = False
         self.drivingToons = []
+        self.music = None
         return
 
     def generate(self):
@@ -98,7 +99,7 @@ class DistributedGolfCourse(DistributedObject.DistributedObject, FSM, DelayDelet
 
             self.toonPanels = None
         self.scores = None
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         self.music = None
         for avId in self.avIdList:
             av = base.cr.doId2do.get(avId)
@@ -108,7 +109,7 @@ class DistributedGolfCourse(DistributedObject.DistributedObject, FSM, DelayDelet
         return
 
     def load(self):
-        self.music = base.loader.loadMusic('phase_6/audio/bgm/GZ_PlayGolf.ogg')
+        self.music = "gz-playgolf"
 
     def setCourseReady(self, numHoles, holeIds, coursePar):
         self.notify.debug('GOLF COURSE: received setCourseReady')
@@ -203,7 +204,7 @@ class DistributedGolfCourse(DistributedObject.DistributedObject, FSM, DelayDelet
 
     def onstage(self):
         self.notify.debug('GOLF COURSE: onstage')
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.9)
 
     def avExited(self, avId):
         self.exitedAvIdList.append(avId)

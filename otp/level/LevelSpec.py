@@ -1,3 +1,4 @@
+from toontown.coghq.SpecImports import *
 from panda3d.core import HashVal
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.PythonUtil import list2dict, uniqueElements
@@ -96,9 +97,8 @@ class LevelSpec:
             if not isClient():
                 print('EXECWARNING LevelSpec exec: %s' % self.getSpecImportsModuleName())
                 printStack()
-        exec('from %s import *' % self.getSpecImportsModuleName())
-        for key in spec.keys():
-            specCopy[key] = eval(repr(spec[key]))
+        for key in list(spec.keys()):
+            specCopy[key] = str(repr(spec[key]))
 
         return specCopy
 
@@ -379,7 +379,7 @@ class LevelSpec:
                 if not isClient():
                     print('EXECWARNING LevelSpec exec 2: %s' % prettyString)
                     printStack()
-            exec(prettyString)
+            #exec(prettyString)
             if self._recurKeyTest(levelSpec, self.specDict):
                 return 1
             return

@@ -152,7 +152,7 @@ def HasEnoughLaff(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
         base_hp = options.starting_laff.value
         max_hp = options.max_laff.value
         goal_laff = options.laff_points_required.value
-        laff_o = options.win_condition_laff_o_lympics
+        laff_o = "laff-o-lympics" in options.win_condition
         if laff_o:
             max_hp = max(max_hp, goal_laff)
     else:
@@ -680,8 +680,8 @@ def AllFishCaught(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
 @rule(Rule.TaskedAllHoods)
 def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
-        total_tasks = options.win_condition_total_tasks
-        hood_tasks = options.win_condition_hood_tasks
+        total_tasks = "total-tasks" in options.win_condition
+        hood_tasks = "hood-tasks" in options.win_condition
         tasks_required = options.total_tasks_required.value
     else:
         total_tasks = options.get("win_condition", 0) & ToontownWinCondition.total_tasks

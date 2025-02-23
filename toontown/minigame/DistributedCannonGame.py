@@ -1,3 +1,5 @@
+import builtins
+
 from direct.directnotify import DirectNotifyGlobal
 from panda3d.core import *
 from libotp import *
@@ -106,7 +108,7 @@ class DistributedCannonGame(DistributedMinigame):
         self.jarImage.reparentTo(hidden)
         self.rewardPanel = DirectLabel(parent=hidden, relief=None, pos=(-0.173, 0.0, -0.55), scale=0.65, text='', text_scale=0.2, text_fg=(0.95, 0.95, 0, 1), text_pos=(0, -.13), text_font=ToontownGlobals.getSignFont(), image=self.jarImage)
         self.rewardPanelTitle = DirectLabel(parent=self.rewardPanel, relief=None, pos=(0, 0, 0.06), scale=0.08, text=TTLocalizer.CannonGameReward, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1))
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_cannon_game.ogg')
+        self.music = "mg-cannon-game"
         self.sndCannonMove = base.loader.loadSfx('phase_4/audio/sfx/MG_cannon_adjust.ogg')
         self.sndCannonFire = base.loader.loadSfx('phase_4/audio/sfx/MG_cannon_fire_alt.ogg')
         self.sndHitGround = base.loader.loadSfx('phase_4/audio/sfx/MG_cannon_hit_dirt.ogg')
@@ -238,7 +240,7 @@ class DistributedCannonGame(DistributedMinigame):
         base.camLens.setFar(FAR_PLANE_DIST)
         self.__startIntro()
         base.transitions.irisIn(0.4)
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.8)
 
     def offstage(self):
         self.notify.debug('offstage')
@@ -452,7 +454,7 @@ class DistributedCannonGame(DistributedMinigame):
 
     def enterCleanup(self):
         self.notify.debug('enterCleanup')
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         self.__killRewardCountdown()
         if hasattr(self, 'jarIval'):
             self.jarIval.finish()
@@ -709,7 +711,7 @@ class DistributedCannonGame(DistributedMinigame):
 
         # wtf is this LMFAOOOOOOO
         for key in flightResults:
-            exec("%s = flightResults['%s']" % (key, key))
+            setattr(builtins, key, flightResults[key])
 
         # Do the above but like an actual human
         startPos = flightResults['startPos']

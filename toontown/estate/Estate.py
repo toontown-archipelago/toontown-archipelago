@@ -136,7 +136,7 @@ class Estate(Place.Place):
                 self.startAprilFoolsControls()
         self.accept('doorDoneEvent', self.handleDoorDoneEvent)
         self.accept('DistributedDoor_doorTrigger', self.handleDoorTrigger)
-        base.playMusic(self.loader.music, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.loader.music, looping=1, volume=0.8)
         self.fsm.request(requestStatus['how'], [requestStatus])
 
     def startAprilFoolsControls(self):
@@ -162,7 +162,7 @@ class Estate(Place.Place):
             self.loader.exitAnimatedProps(i)
 
         self.loader.hood.stopSky()
-        self.loader.music.stop()
+        base.contentPackMusicManager.stopMusic()
         render.setFogOff()
         base.cr.cache.flush()
 

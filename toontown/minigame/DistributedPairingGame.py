@@ -120,7 +120,7 @@ class DistributedPairingGame(DistributedMinigame):
         self.__textGen.setAlign(TextNode.ACenter)
         self.sndPerfect = base.loader.loadSfx('phase_4/audio/sfx/MG_pairing_all_matched.ogg')
         self.calcBonusTraversal()
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_Pairing.ogg')
+        self.music = "mg-pairing-game"
         self.matchSfx = base.loader.loadSfx('phase_4/audio/sfx/MG_pairing_match.ogg')
         self.matchWithBonusSfx = base.loader.loadSfx('phase_4/audio/sfx/MG_pairing_match_bonus_both.ogg')
         self.signalSfx = []
@@ -230,7 +230,7 @@ class DistributedPairingGame(DistributedMinigame):
 
     def enterPlay(self):
         self.notify.debug('enterPlay')
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.9)
         orthoDrive = OrthoDrive(self.TOON_SPEED, maxFrameMove=self.MAX_FRAME_MOVE, customCollisionCallback=self.__doPairingGameCollisions)
         self.orthoWalk = OrthoWalk(orthoDrive, broadcast=not self.isSinglePlayer())
         self.orthoWalk.start()
@@ -249,7 +249,7 @@ class DistributedPairingGame(DistributedMinigame):
             base.localAvatar.laffMeter.stop()
 
     def exitPlay(self):
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         self.orthoWalk.stop()
         self.orthoWalk.destroy()
         del self.orthoWalk

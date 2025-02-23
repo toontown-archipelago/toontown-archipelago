@@ -34,17 +34,15 @@ Toontown:
   # Range: 0 to 30
   max_global_gag_xp: 30
 
-  starting_gags:
-    # The gags to have when starting a new game.
-    # ["randomized"] will ensure you have 2 tracks, at least one being a usable offensive track.
-    # If you select two other tracks here, "randomized" will do nothing.
-    # 
-    # valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
-    # ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks
-    # ex. ["sound"] will start you with only sound as a starting track
-    # An empty list will start you with no gag tracks
-    ['randomized']
-  
+  # The gags to have when starting a new game. using "randomized" instead of a gag will replace with a random extra gag.
+  # you cannot start with gags above level 1, duplicate values other than "randomized" will be ignored.
+  # 
+  # valid keys: ["randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"]
+  # ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks
+  # ex. ["sound"] will start you with only sound as a starting track
+  # An empty list will start you with no gag tracks
+  starting_gags: ['randomized', 'randomized']
+
   # The percentage of damage that will be done when battling Cogs.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
   # Range: 25 to 500
@@ -75,51 +73,52 @@ Toontown:
 
   ### Completion Settings ###
 
-  # The Following Settings determines the conditions required before being able to talk to Flippy to complete the game.
-  # At least one of these should be enabled, otherwise the game will immediately complete.
-  # - (Default) Player must defeat a number of cog bosses to complete the game (determined by cog_bosses_required).
-  win_condition_cog_bosses: "true"
-  # - Player must reach a certain number of bounty checks to complete the game (determined by bounties_required, total_bounties)
-  # - Bounties can be on late/challenging checks such as max fishing, each cog boss, maxing gags, etc.
-  win_condition_bounty: 'false'
-  # - Player must complete a total number of tasks to complete the game (determined by total_tasks_required).
-  win_condition_total_tasks: "false"
-  # - Player must complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required).
-  win_condition_hood_tasks: "false"
-  # - Player must max a certain amount of gag tracks to complete the game (determined by gag_tracks_required).
-  win_condition_gag_tracks: "false"
-  # - Player must catch a certain amount of fish species to complete the game (determined by fish_species_required).
-  win_condition_fish_species: "false"
-  # - Player must reach a certain amount of laff to complete the game (determined by laff_points_required).
-  # - - NOTE: laff_o_lympics replaces ALL laff boost items with only +1 Laff Boosts
-  win_condition_laff_o_lympics: "false"
+  # Determines the condition required before being able to talk to Flippy to complete the game.
+  # At least one of these should be enabled.
 
-  # How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
+  # valid keys: ["cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
+  #              "fish-species", "laff-o-lympics", "randomized"]
+
+  # "cog-bosses" - Player must defeat enough bosses (determined by cog_bosses_required)
+  # "bounties" - Player must collect enough bounties in their own world (determined by bounties_required, total_bounties)
+  # "total-tasks" - Player must complete enough ToonTasks (determined by total_tasks_required)
+  # "hood-tasks" - Player must complete enough ToonTasks in each Playground (determined by hood_tasks_required)
+  # "gag-tracks" - Player must max enough Gag Tracks (determined by gag_tracks_required)
+  # "fish-species" - Player must catch enough fish species (determined by fish_species_required)
+  # "laff-o-lympics" - Player must reach a certain amount of laff (determined by laff_points_required)
+  #                    NOTE: Replaces ALL Laff Boosts with +1 Laff Boosts
+  # "randomized" - Will choose a random not-yet chosen goal as one of your goals.
+  #                NOTE: Can be input into the below list multiple times for multiple random goals
+  # Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
+  win_condition: ["cog-bosses"]
+
+  # How many cog bosses must be defeated before being able to talk to Flippy to complete the game
+  # Unused if win_condition is not cog-bosses
   # Range: 0 to 4
   cog_bosses_required: 4
   
   # How many total tasks must be finished before being able to talk to Flippy to complete the game.
-  # Unused if win_condition is not total_tasks.
+  # Unused if win_condition is not total-tasks.
   # Range: 0 to 72
   total_tasks_required: 48
   
   # How many tasks must be finished in each neighborhood before being able to talk to Flippy to complete the game.
-  # Unused if win_condition is not hood_tasks.
+  # Unused if win_condition is not hood-tasks.
   # Range: 0 to 12
   hood_tasks_required: 8
   
   # How many gag tracks must be maxxed before being able to talk to Flippy to complete the game
-  # Unused if win_condition is not total_gag_tracks
+  # Unused if win_condition is not gag-tracks
   # Range 0 to 7
   gag_tracks_required: 5
 
   # How many fish species must be caught before being able to talk to Flippy to complete the game
-  # Unused if win_condition is not total_fish_species
+  # Unused if win_condition is not fish-species
   # Range 0 to 70
   fish_species_required: 70
 
   # How many laff points we must have before being able to talk to Flippy to complete the game
-  # Unused if win_condition is not laff_o_lympics
+  # Unused if win_condition is not laff-o-lympics
   # Setting must be below or equal to max_laff setting
   # Range 0 to 150
   laff_points_required: 120
@@ -127,12 +126,12 @@ Toontown:
   # BOUNTY SETTINGS #
 
   # How many bounties we must have before being able to talk to Flippy to complete the game
-  # Unused if win_condition is not bounty
+  # Unused if win_condition is not bounties
   # Range 0 to 32
   bounties_required: 10
 
   # How many bounties are in the pool.
-  # Unused if win_condition is not bounty
+  # Unused if win_condition is not bounties
   # Must be equal to or above bounties_required
   # Range 1 to 32
   total_bounties: 20
@@ -297,6 +296,11 @@ Toontown:
   # When you go sad in game, other players with this setting enabled for their game will also die.
   # If another player in your game with this setting enabled dies for whatever reason, you will also go sad.
   death_link: 'false'
+
+  # Enable/disable the RingLink mechanic.
+  # When you gain or lose money in game, other players with this setting enabled have their currencies changed at a 10% rate.
+  # If another player gains or loses money, you will also gain or lose that money.
+  ring_link: 'false'
 
   # Starting hints for Cog Disguises
   start_hints:

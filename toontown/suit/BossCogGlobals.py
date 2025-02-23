@@ -9,3 +9,10 @@ POINTS_PENALTY_SAD = -50
 PENALTY_GO_SAD_TEXT = "DIED!"
 
 DEFAULT_COMBO_LENGTH = 2.0
+
+BOSSDEPT_2_PACK_ALISIS = {
+    's': 'sellbot-boss-',
+    'm': 'cashbot-boss-',
+    'l': 'lawbot-boss-',
+    'c': 'bossbot-boss-'
+}

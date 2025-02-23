@@ -114,7 +114,7 @@ class Party(Place.Place):
 
     def playMusic(self):
         if not hasattr(base, 'partyHasJukebox') or not base.partyHasJukebox:
-            base.playMusic(self.loader.music, looping=1, volume=1)
+            base.contentPackMusicManager.playMusic(self.loader.music, looping=True, volume=1)
 
     def exit(self):
         base.localAvatar.stopChat()

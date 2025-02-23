@@ -2425,14 +2425,16 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def getMaxMoney(self):
         return self.maxMoney
 
-    def addMoney(self, deltaMoney):
+    def addMoney(self, deltaMoney, isLocalChange=True):
         money = deltaMoney + self.money
         pocketMoney = min(money, self.maxMoney)
+        self.archipelago_session.toon_change_money(deltaMoney, isLocalChange)
         self.ap_addMoney(deltaMoney)
         self.b_setMoney(pocketMoney)
 
-    def takeMoney(self, deltaMoney, bUseBank=False):
+    def takeMoney(self, deltaMoney, isLocalChange=True):
         totalMoney = self.money
+        self.archipelago_session.toon_change_money(deltaMoney, isLocalChange)
         if deltaMoney > totalMoney:
             self.notify.warning('Not enough money! AvId: %s Has:%s Charged:%s' % (self.doId, totalMoney, deltaMoney))
             return False
@@ -2460,7 +2462,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         return self.money
 
     def getTotalMoney(self):
-        return self.money # Bank is unused, leave it out of any purchase calculations.
+        return self.money  # Bank is unused, leave it out of any purchase calculations.
 
     def b_setMaxBankMoney(self, maxMoney):
         self.d_setMaxBankMoney(maxMoney)

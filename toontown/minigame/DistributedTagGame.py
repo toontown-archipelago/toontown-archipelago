@@ -50,7 +50,7 @@ class DistributedTagGame(DistributedMinigame):
         self.itText.hide()
         self.sky = loader.loadModel('phase_3.5/models/props/TT_sky')
         self.ground = loader.loadModel('phase_4/models/minigames/tag_arena')
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_toontag.ogg')
+        self.music = "mg-tag-game"
         self.tagSfx = base.loader.loadSfx('phase_4/audio/sfx/MG_Tag_C.ogg')
         self.itPointer = loader.loadModel('phase_4/models/minigames/bboard-pointer')
         self.tracks = []
@@ -159,7 +159,7 @@ class DistributedTagGame(DistributedMinigame):
         self.timer.posInTopRightCorner()
         self.timer.setTime(self.DURATION)
         self.timer.countdown(self.DURATION, self.timerExpired)
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.9)
         base.localAvatar.setIdealCameraPos(Point3(0, -24, 8))
 
     def exitPlay(self):
@@ -175,7 +175,7 @@ class DistributedTagGame(DistributedMinigame):
                 toon.rescaleToon()
 
         self.walkStateData.exit()
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         self.timer.destroy()
         del self.timer
         for panel in self.scorePanels:

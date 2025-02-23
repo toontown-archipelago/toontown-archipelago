@@ -59,6 +59,23 @@ class BouncedPacket(ClientBoundPacketBase):
         ])
         toon.d_sendArchipelagoMessage(msg)
 
+    def handle_ringlink(self, client):
+        for _ in range(20):
+            print("RINGLINK")
+
+        self.debug("Received ringlink packet")
+
+        # At this point we are assuming that this packet IS a ringlink packet and that our client has it enabled.
+        amount: int = self.data["amount"]
+        source: str = self.data["source"]
+        toon = client.av
+
+        # All checks passed, change the currency.
+        self.debug("Changing beans via ringlink.")
+        if amount >= 0:
+            toon.addMoney(amount, isLocalChange=False)
+        else:
+            toon.takeMoney((amount*-1), isLocalChange=False)
 
     def handle(self, client):
         self.debug("Handling packet")
@@ -75,4 +92,9 @@ class BouncedPacket(ClientBoundPacketBase):
         # Is this a deathlink packet?
         if isinstance(self.tags, list) and ConnectPacket.TAG_DEATHLINK in self.tags:
             self.handle_deathlink(client)
+            return
+
+        # Is this a ringlink packet?
+        if isinstance(self.tags, list) and ConnectPacket.TAG_RINGLINK in self.tags:
+            self.handle_ringlink(client)
             return
