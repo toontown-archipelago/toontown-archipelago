@@ -472,7 +472,7 @@ class FishChecks(Choice):
     option_all_gallery_and_genus = 1
     option_all_gallery = 2
     option_none = 3
-    default = 1
+    default = 0
 
 
 class FishProgression(Choice):
