@@ -426,7 +426,7 @@ class MaxedCogGalleryQuota(Range):
     The amount of Cogs required to reach its maxed Cog Gallery.
     """
     display_name = "Maxed Cog Gallery Quota"
-    range_start = 0
+    range_start = 1
     range_end = 10
     default = 3
 

@@ -193,7 +193,7 @@ Toontown:
   logical_maxed_cog_gallery: 'true'
 
   # The amount of Cogs required to reach its maxed Cog Gallery.
-  # Range: 0 to 10
+  # Range: 1 to 10
   maxed_cog_gallery_quota: 3
 
   ### Facility Settings ###
