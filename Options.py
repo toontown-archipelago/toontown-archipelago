@@ -39,6 +39,8 @@ class Toggle(Option):
 
 class OptionSet(Option):
     pass
+class OptionList(Option):
+    pass
 
 #Used by the APWorld for supporting OptionGroups for display on the website. 
 class OptionGroup():
