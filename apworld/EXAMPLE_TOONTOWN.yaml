@@ -127,7 +127,7 @@ Toontown:
 
   # How many bounties we must have before being able to talk to Flippy to complete the game
   # Unused if win_condition is not bounties
-  # Range 0 to 32
+  # Range 0 to 33
   bounties_required: 10
 
   # How many bounties are in the pool.

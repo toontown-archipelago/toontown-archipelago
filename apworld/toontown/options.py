@@ -284,11 +284,11 @@ class BountiesRequired(Range):
     """
     How many bounties we must have before being able to talk to Flippy to complete the game
     Unused if win_condition is not bounty
-    Range 0 to 32
+    Range 0 to 33
     """
     display_name = "Bounties Required"
     range_start = 0
-    range_end = 32
+    range_end = 33
     default = 10
 
 class TotalBounties(Range):
