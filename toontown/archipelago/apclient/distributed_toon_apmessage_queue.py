@@ -23,7 +23,6 @@ class DistributedToonAPMessageQueue:
 
     # Call to forcibly send all messages in the queue
     def finish(self):
-        self.toon.d_sendArchipelagoMessages(self._queue)
         self._queue.clear()
 
     def start(self):
