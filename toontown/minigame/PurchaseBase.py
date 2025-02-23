@@ -22,7 +22,7 @@ class PurchaseBase(StateData.StateData):
     def load(self, purchaseModels = None):
         if purchaseModels == None:
             purchaseModels = loader.loadModel('phase_4/models/gui/purchase_gui')
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/FF_safezone.ogg')
+        self.music = "ff-sz"
         self.jarImage = purchaseModels.find('**/Jar')
         self.jarImage.reparentTo(hidden)
         self.frame = DirectFrame(relief=None)
@@ -114,7 +114,6 @@ class PurchaseBase(StateData.StateData):
         self.fsm.request('purchase')
 
     def exit(self):
-        self.music.stop()
         self.fsm.request('done')
 
     def enterPurchase(self):

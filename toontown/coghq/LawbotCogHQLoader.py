@@ -11,7 +11,7 @@ from . import LawbotHQExterior
 from . import LawbotHQBossBattle
 from . import LawbotOfficeExterior
 from panda3d.core import Fog, VirtualFileSystem
-import json
+from toontown.content_pack import MusicManagerGlobals
 aspectSF = 0.7227
 
 class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
@@ -29,8 +29,6 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
             state = self.fsm.getStateNamed(stateName)
             state.addTransition('factoryExterior')
 
-        fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         self.musicFile = 'phase_11/audio/bgm/LB_courtyard.ogg'
         self.cogHQExteriorModelPath = 'phase_11/models/lawbotHQ/LawbotPlaza'
         self.factoryExteriorModelPath = 'phase_11/models/lawbotHQ/LB_DA_Lobby'
@@ -41,11 +39,6 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
     def load(self, zoneId):
         CogHQLoader.CogHQLoader.load(self, zoneId)
         Toon.loadSellbotHQAnims()
-
-        if str(zoneId) in self.musicJson['global_music']:
-            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(zoneId)])
-            if (str(zoneId) + '_battle') in self.musicJson['global_music']:
-                self.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(zoneId) + '_battle')])
 
     def unloadPlaceGeom(self):
         if self.geom:
@@ -62,6 +55,10 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
             self.geom = loader.loadModel(self.cogHQExteriorModelPath)
             self.geom.setY(0)
             self.geom.setX(0)
+
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
+
             ug = self.geom.find('**/underground')
             ug.setBin('ground', -10)
             brLinkTunnel = self.geom.find('**/TunnelEntrance1')
@@ -70,6 +67,10 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
             self.geom = loader.loadModel(self.factoryExteriorModelPath)
             self.geom.setY(120)
             self.geom.setX(-50)
+
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['battleMusic']
+            
             ug = self.geom.find('**/underground')
             ug.setBin('ground', -10)
         elif zoneId == ToontownGlobals.LawbotLobby:
@@ -79,6 +80,9 @@ class LawbotCogHQLoader(CogHQLoader.CogHQLoader):
             self.geom = loader.loadModel(self.cogHQLobbyModelPath)
             self.geom.setY(0)
             self.geom.setX(0)
+
+            self.music = MusicManagerGlobals.GLOBALS[zoneId]['music']
+            self.battleMusic = MusicManagerGlobals.GLOBALS[zoneId]['music']
 
             buildings = self.geom.findAllMatches('**/CH_BGBuildings*')
             sky = self.geom.findAllMatches('**/CH_Sky*')

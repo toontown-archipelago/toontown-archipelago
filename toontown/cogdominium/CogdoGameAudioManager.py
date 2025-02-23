@@ -62,7 +62,7 @@ class CogdoGameAudioManager:
 
     def stopMusic(self):
         if self.currentMusic is not None:
-            self.currentMusic.stop()
+            base.contentPackMusicManager.stopMusic()
         return
 
     def playMusic(self, name, loop = True, swap = False):

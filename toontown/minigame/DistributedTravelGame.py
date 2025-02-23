@@ -234,7 +234,7 @@ class DistributedTravelGame(DistributedMinigame):
         turnTable.removeNode()
         self.loadGui()
         self.introMovie = self.getIntroMovie()
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_Travel.ogg')
+        self.music = "mg-travel-game"
         self.flashWinningBeansTrack = None
         return
 
@@ -388,7 +388,7 @@ class DistributedTravelGame(DistributedMinigame):
 
         base.transitions.irisIn(0.4)
         base.setBackgroundColor(0.1875, 0.7929, 0)
-        base.playMusic(self.music, looping=1, volume=0.9)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.9)
         self.introMovie.start()
 
     def offstage(self):
@@ -413,7 +413,7 @@ class DistributedTravelGame(DistributedMinigame):
         DistributedMinigame.offstage(self)
         if base.localAvatar.laffMeter:
             base.localAvatar.laffMeter.start()
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
 
     def setGameReady(self):
         if not self.hasLocalToon:

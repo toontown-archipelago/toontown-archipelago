@@ -299,7 +299,7 @@ class DistributedRaceGame(DistributedMinigame):
          self.dice2,
          self.dice3,
          self.dice4]
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/minigame_race.ogg')
+        self.music = "mg-race-game"
         self.posBuzzer = base.loader.loadSfx('phase_4/audio/sfx/MG_pos_buzzer.ogg')
         self.negBuzzer = base.loader.loadSfx('phase_4/audio/sfx/MG_neg_buzzer.ogg')
         self.winSting = base.loader.loadSfx('phase_4/audio/sfx/MG_win.ogg')
@@ -362,7 +362,7 @@ class DistributedRaceGame(DistributedMinigame):
     def onstage(self):
         self.notify.debug('onstage')
         DistributedMinigame.onstage(self)
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.8)
         self.raceBoard.reparentTo(render)
         camera.reparentTo(render)
         p = self.cameraTopView
@@ -373,7 +373,7 @@ class DistributedRaceGame(DistributedMinigame):
     def offstage(self):
         self.notify.debug('offstage')
         DistributedMinigame.offstage(self)
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         base.setBackgroundColor(ToontownGlobals.DefaultBackgroundColor)
         self.raceBoard.reparentTo(hidden)
         self.chanceCard.reparentTo(hidden)

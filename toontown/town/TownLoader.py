@@ -20,6 +20,7 @@ from toontown.building import ToonInterior
 from toontown.hood import QuietZoneState
 from toontown.hood import ZoneUtil
 from direct.interval.IntervalGlobal import *
+from toontown.content_pack import MusicManagerGlobals
 import json
 
 class TownLoader(StateData.StateData):
@@ -39,7 +40,6 @@ class TownLoader(StateData.StateData):
         self.placeDoneEvent = 'placeDone'
         self.townBattleDoneEvent = 'town-battle-done'
         fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(musicJsonFilePath, True))
         return
 
     def loadBattleAnims(self):
@@ -54,18 +54,18 @@ class TownLoader(StateData.StateData):
         self.loadBattleAnims()
         self.branchZone = ZoneUtil.getBranchZone(zoneId)
         self.canonicalBranchZone = ZoneUtil.getCanonicalBranchZone(zoneId)
-        self.music = base.loader.loadMusic(self.musicFile)
-        self.activityMusic = base.loader.loadMusic(self.activityMusicFile)
-        self.battleMusic = base.loader.loadMusic('phase_3.5/audio/bgm/encntr_general_bg.ogg')
         self.townBattle = TownBattle.TownBattle(self.townBattleDoneEvent)
         self.townBattle.load()
 
-        if str(self.branchZone) in self.musicJson['global_music']:
-            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.branchZone)])
-            if (str(self.branchZone) + '_activity') in self.musicJson['global_music']:
-                self.activityMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.branchZone) + '_activity')])
-            if (str(self.branchZone) + '_battle') in self.musicJson['global_music']:
-                self.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.branchZone) + '_battle')])
+        # we set our music keys here
+        hoodAlisis = MusicManagerGlobals.safeZonetoAlis[self.hood.id] + '-'
+        self.music = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['music']
+        self.battleMusic = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['battleMusic']
+        self.activityMusic = MusicManagerGlobals.GLOBALS[hoodAlisis + str(self.branchZone)]['activityMusic']
+        
+
+
+
 
     def unload(self):
         self.unloadBattleAnims()

@@ -105,9 +105,8 @@ class DistributedRace(DistributedObject.DistributedObject):
     def announceGenerate(self):
         self.notify.debug('announceGenerate: %s' % self.doId)
         DistributedObject.DistributedObject.announceGenerate(self)
-        musicFile = self.BGM_BaseDir + RaceGlobals.TrackDict[self.trackId][7]
-        self.raceMusic = base.loader.loadMusic(musicFile)
-        base.playMusic(self.raceMusic, looping=1, volume=0.8)
+        self.raceMusic = RaceGlobals.TrackDict[self.trackId][7]
+        base.contentPackMusicManager.playMusic(self.raceMusic, looping=1, volume=0.8)
         camera.reparentTo(render)
         if self.trackId in (RaceGlobals.RT_Urban_1,
          RaceGlobals.RT_Urban_1_rev,
@@ -141,7 +140,7 @@ class DistributedRace(DistributedObject.DistributedObject):
         self.notify.debug('disable %s' % self.doId)
         if self.musicTrack:
             self.musicTrack.finish()
-        self.raceMusic.stop()
+        base.contentPackMusicManager.stopMusic()
         self.stopSky()
         if self.sky is not None:
             self.sky.removeNode()
@@ -1206,16 +1205,14 @@ class DistributedRace(DistributedObject.DistributedObject):
     def fadeOutMusic(self):
         if self.musicTrack:
             self.musicTrack.finish()
-        curVol = self.raceMusic.getVolume()
-        interval = LerpFunctionInterval(self.raceMusic.setVolume, fromData=curVol, toData=0, duration=3)
+        interval = base.contentPackMusicManager.lerpVolume(self.raceMusic, 0, 3)
         self.musicTrack = Sequence(interval)
         self.musicTrack.start()
 
     def changeMusicTempo(self, newPR):
         if self.musicTrack:
             self.musicTrack.finish()
-        curPR = self.raceMusic.getPlayRate()
-        interval = LerpFunctionInterval(self.raceMusic.setPlayRate, fromData=curPR, toData=newPR, duration=3)
+        interval = base.contentPackMusicManager.lerpPlayRate(self.raceMusic, newPR, 3)
         self.musicTrack = Sequence(interval)
         self.musicTrack.start()
 
