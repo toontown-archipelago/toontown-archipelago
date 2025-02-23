@@ -1,4 +1,3 @@
-from pickle import loads, dumps
 from direct.distributed import DistributedObject
 from direct.directnotify import DirectNotifyGlobal
 notify = DirectNotifyGlobal.directNotify.newCategory('AvatarManager')
@@ -27,8 +26,7 @@ class OtpAvatarManager(DistributedObject.DistributedObject):
         messenger.send('avatarListFailed', [result])
 
     def avatarListResponse(self, pickleData):
-        avatars = loads(pickleData)
-        messenger.send('avatarList', [avatars])
+        pass
 
     def rejectCreateAvatar(self, result):
         messenger.send('createdNewAvatarFailed', [result])

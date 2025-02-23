@@ -1,3 +1,5 @@
+import builtins
+
 from direct.directnotify import DirectNotifyGlobal
 from panda3d.core import *
 from libotp import *
@@ -709,7 +711,7 @@ class DistributedCannonGame(DistributedMinigame):
 
         # wtf is this LMFAOOOOOOO
         for key in flightResults:
-            exec("%s = flightResults['%s']" % (key, key))
+            setattr(builtins, key, flightResults[key])
 
         # Do the above but like an actual human
         startPos = flightResults['startPos']

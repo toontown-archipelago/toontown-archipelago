@@ -1,3 +1,4 @@
+import builtins
 import math
 from panda3d.core import *
 from direct.distributed.ClockDelta import *
@@ -268,7 +269,7 @@ class DistributedPartyCannonActivity(DistributedPartyActivity):
                     print('EXECWARNING DistributedPartyCannonActivity: %s' % flightResults)
                     printStack()
             for key in flightResults:
-                exec("%s = flightResults['%s']" % (key, key))
+                setattr(builtins, key, flightResults[key])
 
             self.notify.debug('start position: ' + str(startPos))
             self.notify.debug('start velocity: ' + str(startVel))

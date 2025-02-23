@@ -1,3 +1,5 @@
+import builtins
+
 from panda3d.core import *
 from libotp import *
 from toontown.toonbase.ToonBaseGlobal import *
@@ -786,7 +788,7 @@ class DistributedCannon(DistributedObject.DistributedObject):
                 print('EXECWARNING DistributedCannon: %s' % flightResults)
                 printStack()
         for key in flightResults:
-            exec("%s = flightResults['%s']" % (key, key))
+            setattr(builtins, key, flightResults[key])
 
         self.notify.debug('start position: ' + str(startPos))
         self.notify.debug('start velocity: ' + str(startVel))
