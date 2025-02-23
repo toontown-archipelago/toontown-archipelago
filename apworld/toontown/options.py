@@ -157,7 +157,25 @@ class MaxTaskCapacityOption(Range):
     default = 4
 
 class WinConditions(OptionList):
-    """Win Conditions, options are explained in the settings ending with _required"""
+    """
+    Determines the condition required before being able to talk to Flippy to complete the game.
+    At least one of these should be enabled.
+
+    valid keys: ["cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
+                 "fish-species", "laff-o-lympics", "randomized"]
+
+    "cog-bosses" - Player must defeat enough bosses (determined by cog_bosses_required)
+    "bounties" - Player must collect enough bounties in their own world (determined by bounties_required, total_bounties)
+    "total-tasks" - Player must complete enough ToonTasks (determined by total_tasks_required)
+    "hood-tasks" - Player must complete enough ToonTasks in each Playground (determined by hood_tasks_required)
+    "gag-tracks" - Player must max enough Gag Tracks (determined by gag_tracks_required)
+    "fish-species" - Player must catch enough fish species (determined by fish_species_required)
+    "laff-o-lympics" - Player must reach a certain amount of laff (determined by laff_points_required)
+                       NOTE: Replaces ALL Laff Boosts with +1 Laff Boosts
+    "randomized" - Will choose a random not-yet chosen goal as one of your goals.
+                   NOTE: Can be input into the below list multiple times for multiple random goals
+    Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
+    """
     display_name = "Win Conditions"
     valid_keys = {
         "randomized",
