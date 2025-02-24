@@ -61,6 +61,9 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.slot_id_to_slot_name.clear()
         for id_string, network_slot in self.slot_info.items():
             client.slot_id_to_slot_name[int(id_string)] = network_slot
+            for player in self.players:
+                if network_slot.name == player.name:
+                    client.slot_name_to_slot_alias[network_slot.name] = player.alias
 
         # If there wasn't a "console player", add it, this is so when we cheat items in we don't crash the socket thread
         if 0 not in client.slot_id_to_slot_name:
@@ -206,6 +209,12 @@ class ConnectedPacket(ClientBoundPacketBase):
         if self.slot_data.get('death_link', False):
             update_packet = ConnectUpdatePacket()
             update_packet.tags = [ConnectPacket.TAG_DEATHLINK]
+            client.send_packet(update_packet)
+
+        # Update RinkLink Tag.
+        if self.slot_data.get('ring_link', False):
+            update_packet = ConnectUpdatePacket()
+            update_packet.tags = [ConnectPacket.TAG_RINGLINK]
             client.send_packet(update_packet)
 
         # Finally at the very send, tell the AP DOG that there is some info to sync

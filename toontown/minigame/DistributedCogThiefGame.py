@@ -60,7 +60,7 @@ class DistributedCogThiefGame(DistributedMinigame):
     def load(self):
         self.notify.debug('load')
         DistributedMinigame.load(self)
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_CogThief.ogg')
+        self.music = "mg-cogthief-game"
         self.initCogInfo()
         for barrelIndex in range(CTGG.NumBarrels):
             barrel = loader.loadModel('phase_4/models/minigames/cogthief_game_gagTank')
@@ -190,7 +190,7 @@ class DistributedCogThiefGame(DistributedMinigame):
             self.sndTable['hitBySuit'][i] = base.loader.loadSfx('phase_4/audio/sfx/MG_Tag_C.ogg')
             self.sndTable['falling'][i] = base.loader.loadSfx('phase_4/audio/sfx/MG_cannon_whizz.ogg')
 
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.8)
         self.introTrack = self.getIntroTrack()
         self.introTrack.start()
         return
@@ -198,7 +198,7 @@ class DistributedCogThiefGame(DistributedMinigame):
     def offstage(self):
         self.notify.debug('offstage')
         self.gameBoard.hide()
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         for barrel in self.barrels:
             barrel.hide()
 

@@ -196,6 +196,17 @@ def item_flag_to_color(flag: int | IC):
 
     return 'lightblue'
 
+# A class that parses a list of JSONMessagePart instances and modifies them to have colors defined and IDs replaced
+def item_flag_to_star(flag: int | IC):
+    # 0b001 = logical advancement, 0b010 = useful, 0b100 = trap
+    if IC.progression & flag:
+        return ["*", "*"]
+
+    if IC.useful & flag:
+        return ["", "*"]
+
+    return ["", ""]
+
 def item_flag_to_string(flag: int | IC):
     
     if IC.progression & flag:
@@ -291,7 +302,11 @@ class JSONPartFormatter:
             pid = int(part['text'])
             # If this is us, set color to magenta otherwise yellow
             part['color'] = 'magenta' if pid == self.client.slot else 'yellow'
-            part['text'] = self.client.get_slot_info(pid).name
+            alias = self.client.get_slot_alias(pid)
+            text = self.client.get_slot_info(pid).name
+            if alias:
+                text = alias
+            part['text'] = text
 
         # If we were given name, instead of ID, do same thing basically
         elif part['type'] == 'player_name':

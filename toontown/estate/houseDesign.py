@@ -1408,7 +1408,7 @@ class ObjectManager(NodePath, DirectObject):
         self.regenerateAtticPicker()
 
     def setGridSpacingString(self, spacingStr):
-        spacing = eval(spacingStr)
+        spacing = float(spacingStr)
         self.setGridSpacing(spacing)
 
     def setGridSpacing(self, gridSpacing):

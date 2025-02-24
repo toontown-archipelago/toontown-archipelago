@@ -12,7 +12,7 @@ class BattleEffectHandlerAI(BattleCalculationObjectAI):
         self.av = av
     
     def addEffect(self, className):
-        effect = eval(className)(self.battle, self.av, self)
+        effect = globals()[className](self.battle, self.av, self)
         self.addChild(effect.children['name'], effect)
     
     def removeEffect(self, name):

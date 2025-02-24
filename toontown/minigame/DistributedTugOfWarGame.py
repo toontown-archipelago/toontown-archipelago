@@ -24,7 +24,7 @@ from . import MinigamePowerMeter
 from direct.task.Task import Task
 
 class DistributedTugOfWarGame(DistributedMinigame):
-    bgm = 'phase_4/audio/bgm/MG_tug_o_war.ogg'
+    bgm = 'mg-tug-o-war-game'
     toonAnimNames = ['neutral',
      'tug-o-war',
      'slip-forward',
@@ -124,7 +124,7 @@ class DistributedTugOfWarGame(DistributedMinigame):
         self.correctSound = base.loader.loadSfx('phase_4/audio/sfx/MG_pos_buzzer.ogg')
         self.sndHitWater = base.loader.loadSfx('phase_4/audio/sfx/MG_cannon_splash.ogg')
         self.whistleSound = base.loader.loadSfx('phase_4/audio/sfx/AA_sound_whistle.ogg')
-        self.music = base.loader.loadMusic(self.bgm)
+        self.music = self.bgm
         self.roundText = DirectLabel(text='     ', text_fg=(0, 1, 0, 1), frameColor=(1, 1, 1, 0), text_font=ToontownGlobals.getSignFont(), pos=(0.014, 0, -.84), scale=0.2)
         self.powerMeter = MinigamePowerMeter.MinigamePowerMeter(17)
         self.powerMeter.reparentTo(aspect2d)
@@ -264,7 +264,7 @@ class DistributedTugOfWarGame(DistributedMinigame):
         self.dropShadow.setBin('fixed', 0, 1)
         self.splash.reparentTo(render)
         self.suitSplash.reparentTo(render)
-        base.playMusic(self.music, looping=1, volume=1)
+        base.contentPackMusicManager.playMusic(self.bgm, looping=1, volume=1)
         for x in range(len(self.arrows)):
             self.arrows[x].show()
 
@@ -274,7 +274,7 @@ class DistributedTugOfWarGame(DistributedMinigame):
     def offstage(self):
         self.notify.debug('offstage')
         DistributedMinigame.offstage(self)
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         if self.introTrack:
             self.introTrack.finish()
             del self.introTrack

@@ -532,7 +532,7 @@ class DistributedMazeGame(DistributedMinigame):
         model.removeNode()
         self.treasureModel.setScale(1.6)
         self.treasureModel.setP(-90)
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_toontag.ogg')
+        self.music = "mg-maze-game"
         self.toonHitTracks = {}
         self.scorePanels = []
 
@@ -714,7 +714,7 @@ class DistributedMazeGame(DistributedMinigame):
         self.timer.setTime(MazeGameGlobals.GAME_DURATION)
         self.timer.countdown(MazeGameGlobals.GAME_DURATION, self.timerExpired)
         self.accept('resetClock', self.__resetClock)
-        base.playMusic(self.music, looping=0, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.music, looping=0, volume=0.8)
 
     def exitPlay(self):
         self.notify.debug('exitPlay')

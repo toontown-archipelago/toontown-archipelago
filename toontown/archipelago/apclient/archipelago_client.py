@@ -22,7 +22,7 @@ from toontown.archipelago.util import net_utils, global_text_properties
 from toontown.archipelago.util.data_package import DataPackage, GlobalDataPackage
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart, get_raw_formatted_string
 from toontown.archipelago.util.location_scouts_cache import LocationScoutsCache
-from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color, item_flag_to_string, NetworkPlayer
+from toontown.archipelago.util.net_utils import encode, decode, NetworkSlot, item_flag_to_color, item_flag_to_string, NetworkPlayer, item_flag_to_star
 from toontown.archipelago.packets import packet_registry
 from toontown.archipelago.packets.archipelago_packet_base import ArchipelagoPacketBase
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
@@ -74,6 +74,7 @@ class ArchipelagoClient(DirectObject):
 
         # Store information for retrieval later that we received from packets
         self.slot_id_to_slot_name: Dict[int, NetworkSlot] = {}
+        self.slot_name_to_slot_alias: Dict[str: str] = {}
         self.global_data_package: GlobalDataPackage = GlobalDataPackage()
         self.location_scouts_cache: LocationScoutsCache = LocationScoutsCache()
 
@@ -86,6 +87,17 @@ class ArchipelagoClient(DirectObject):
         Raises KeyError if slot is invalid.
         """
         return self.slot_id_to_slot_name[int(slot)]
+
+    def get_slot_alias(self, slot: str | int) -> str:
+        return self.slot_name_to_slot_alias[self.get_slot_info(slot).name]
+
+    def set_slot_aliases(self, players):
+        for slot in list(self.slot_id_to_slot_name.keys()):
+            for player in players:
+                if self.get_slot_info(slot).name in player.alias:
+                    self.slot_name_to_slot_alias[self.get_slot_info(slot).name] = player.alias
+                continue
+            continue
 
     def get_local_slot(self) -> int:
         """
@@ -221,7 +233,7 @@ class ArchipelagoClient(DirectObject):
         try:
             address = self.parse_url(self.address)
         except ValueError as e:
-            self.av.d_sendArchipelagoMessage(f"Error parsing url! {e}", color='red')
+            self.av.d_sendArchipelagoMessage(f"Error parsing url! {e}")
             return
 
         self.av.d_sendArchipelagoMessage(f"[AP Client Thread] Attempting connection with archipelago server at {address}...")
@@ -420,10 +432,13 @@ class ArchipelagoClient(DirectObject):
         # Let's make the string pretty
         name_color = 'flatgreen' if someone_elses else 'magenta'
         item_color = item_flag_to_color(item_flag)
+        item_stars = item_flag_to_star(item_flag)
         item_display_string = global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("AP Reward: ", color='salmon'),
             MinimalJsonMessagePart(owner_name, color=name_color),
-            MinimalJsonMessagePart(item_name, color=item_color)
+            MinimalJsonMessagePart(item_stars[0], color=item_color),
+            MinimalJsonMessagePart(item_name, color=item_color),
+            MinimalJsonMessagePart(item_stars[1], color=item_color),
         ])
 
         self.location_scouts_cache.put(our_location_id, item_display_string)

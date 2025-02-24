@@ -779,7 +779,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         return
 
     def attemptTeleportGreetFriend(self, avId, retry=False):
-
         self.ignore(f"{avId}-postGenerate")
         taskMgr.remove('avTeleportGreetRetry')
 

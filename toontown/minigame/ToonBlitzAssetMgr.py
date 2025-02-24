@@ -45,7 +45,7 @@ class ToonBlitzAssetMgr(DirectObject):
         dropPlane.addSolid(plane)
         dropPlane.setCollideMask(ToontownGlobals.FloorBitmask)
         self.world.attachNewNode(dropPlane)
-        self.gameMusic = base.loader.loadMusic('phase_4/audio/bgm/MG_TwoDGame.ogg')
+        self.gameMusic = "mg-twoD-game"
         self.treasureGrabSound = loader.loadSfx('phase_4/audio/sfx/SZ_DD_treasure.ogg')
         self.sndOof = base.loader.loadSfx('phase_4/audio/sfx/MG_cannon_hit_dirt.ogg')
         self.soundJump = base.loader.loadSfx('phase_4/audio/sfx/MG_sfx_vine_game_jump.ogg')
@@ -117,11 +117,11 @@ class ToonBlitzAssetMgr(DirectObject):
 
     def onstage(self):
         self.world.reparentTo(render)
-        base.playMusic(self.gameMusic, looping=1, volume=0.9)
+        base.contentPackMusicManager.playMusic(self.gameMusic, looping=1, volume=0.9)
 
     def offstage(self):
         self.world.hide()
-        self.gameMusic.stop()
+        base.contentPackMusicManager.stopMusic()
 
     def enterPlay(self):
         pass

@@ -10,6 +10,7 @@ from panda3d.core import *
 from direct.showbase import DirectObject
 
 from libotp import CFSpeech, CFTimeout
+from libotp.nametag import _constants
 from . import BlinkingArrows
 from toontown.toon import ToonHeadFrame
 from toontown.char import CharDNA
@@ -85,18 +86,18 @@ def getLineOfTokens(gen):
     if token[0] == tokenize.ENDMARKER:
         return None
     while token[0] != tokenize.NEWLINE and token[0] != tokenize.NL:
-        if token[0] in (tokenize.COMMENT, tokenize.ENCODING):
+        if token[0] == tokenize.COMMENT:
             pass
         elif token[0] == tokenize.OP and token[1] == '-':
             nextNeg = 1
         elif token[0] == tokenize.NUMBER:
             if nextNeg:
-                tokens.append(-eval(token[1]))
+                tokens.append(-float(token[1]))
                 nextNeg = 0
             else:
-                tokens.append(eval(token[1]))
+                tokens.append(float(token[1]))
         elif token[0] == tokenize.STRING:
-            tokens.append(eval(token[1]))
+            tokens.append(str(token[1]))
         elif token[0] == tokenize.NAME:
             tokens.append(token[1])
         else:
@@ -650,7 +651,7 @@ class NPCMoviePlayer(DirectObject.DirectObject):
         toonId = self.toon.getDoId()
         avatarName = line[1]
         avatar = self.getVar(avatarName)
-        chatString = eval('TTLocalizer.' + line[2])
+        chatString = getattr(TTLocalizer, line[2])
         chatFlags = CFSpeech | CFTimeout
         quitButton, extraChatFlags, dialogueList = self.parseExtraChatArgs(line[3:])
         if extraChatFlags:
@@ -677,7 +678,7 @@ class NPCMoviePlayer(DirectObject.DirectObject):
                 quitButton = arg
             elif type(arg) == type(''):
                 if len(arg) > 2 and arg[:2] == 'CF':
-                    extraChatFlags = eval(arg)
+                    extraChatFlags = getattr(_constants, str(arg))
                 else:
                     dialogueList.append(self.getVar(arg))
             else:
@@ -690,7 +691,7 @@ class NPCMoviePlayer(DirectObject.DirectObject):
         toonId = self.toon.getDoId()
         avatarName = line[1]
         avatar = self.getVar(avatarName)
-        chatString = eval('TTLocalizer.' + line[2])
+        chatString = getattr(TTLocalizer, line[2])
         quitButton, extraChatFlags, dialogueList = self.parseExtraChatArgs(line[3:])
         return Func(avatar.setPageChat, toonId, 0, chatString, quitButton, extraChatFlags, dialogueList)
 
@@ -698,7 +699,7 @@ class NPCMoviePlayer(DirectObject.DirectObject):
         lineLength = len(line)
         avatarName = line[1]
         avatar = self.getVar(avatarName)
-        chatString = eval('TTLocalizer.' + line[2])
+        chatString = getattr(TTLocalizer, line[2])
         quitButton, extraChatFlags, dialogueList = self.parseExtraChatArgs(line[3:])
         return Func(avatar.setLocalPageChat, chatString, quitButton, extraChatFlags, dialogueList)
 
@@ -706,7 +707,7 @@ class NPCMoviePlayer(DirectObject.DirectObject):
         lineLength = len(line)
         avatarName = line[1]
         avatar = self.getVar(avatarName)
-        chatString = eval('TTLocalizer.' + line[2])
+        chatString = getattr(TTLocalizer, line[2])
         quitButton, extraChatFlags, dialogueList = self.parseExtraChatArgs(line[3:])
         if len(dialogueList) > 0:
             dialogue = dialogueList[0]
@@ -721,8 +722,8 @@ class NPCMoviePlayer(DirectObject.DirectObject):
         toAvatarKey = line[2]
         toAvatar = self.getVar(toAvatarKey)
         localizerAvatarName = toAvatar.getName().capitalize()
-        toAvatarName = eval('TTLocalizer.' + localizerAvatarName)
-        chatString = eval('TTLocalizer.' + line[3])
+        toAvatarName = getattr(TTLocalizer, localizerAvatarName)
+        chatString = getattr(TTLocalizer, line[3])
         chatString = chatString.replace('%s', toAvatarName)
         quitButton, extraChatFlags, dialogueList = self.parseExtraChatArgs(line[4:])
         return Func(avatar.setLocalPageChat, chatString, quitButton, extraChatFlags, dialogueList)
@@ -732,9 +733,9 @@ class NPCMoviePlayer(DirectObject.DirectObject):
         avatarName = line[1]
         avatar = self.getVar(avatarName)
         if self.toon.getStyle().gender == 'm':
-            chatString = eval('TTLocalizer.' + line[2] % 'Mickey')
+            chatString = getattr(TTLocalizer, (line[2] % 'Mickey').replace('"', ""))
         else:
-            chatString = eval('TTLocalizer.' + line[2] % 'Minnie')
+            chatString = getattr(TTLocalizer, (line[2] % 'Minnie').replace('"', ""))
         quitButton, extraChatFlags, dialogueList = self.parseExtraChatArgs(line[3:])
         return Func(avatar.setLocalPageChat, chatString, quitButton, extraChatFlags, dialogueList)
 
@@ -745,11 +746,11 @@ class NPCMoviePlayer(DirectObject.DirectObject):
         toAvatarKey = line[2]
         toAvatar = self.getVar(toAvatarKey)
         localizerAvatarName = toAvatar.getName().capitalize()
-        toAvatarName = eval('TTLocalizer.' + localizerAvatarName)
+        toAvatarName = getattr(TTLocalizer, localizerAvatarName)
         if self.toon.getStyle().gender == 'm':
-            chatString = eval('TTLocalizer.' + line[3] % 'Mickey')
+            chatString = getattr(TTLocalizer, (line[3] % 'Mickey').replace('"', ""))
         else:
-            chatString = eval('TTLocalizer.' + line[3] % 'Minnie')
+            chatString = getattr(TTLocalizer, (line[3] % 'Minnie').replace('"', ""))
         chatString = chatString.replace('%s', toAvatarName)
         quitButton, extraChatFlags, dialogueList = self.parseExtraChatArgs(line[4:])
         return Func(avatar.setLocalPageChat, chatString, quitButton, extraChatFlags, dialogueList)
@@ -866,9 +867,18 @@ class NPCMoviePlayer(DirectObject.DirectObject):
 
     def parseFunction(self, line):
         token, objectName, functionName = line
+        objectName = objectName.replace('"', "")
+        functionName = functionName.replace('"', "")
         object = self.getVar(objectName)
-        cfunc = compile('object' + '.' + functionName, '<string>', 'eval')
-        return Func(eval(cfunc))
+        # This is hacky, but it works.
+        if "questPage" in functionName:
+            if "showQuestsOnscreenTutorial" in functionName:
+                return Func(base.localAvatar.questPage.showQuestsOnscreenTutorial)
+            elif "hideQuestsOnscreenTutorial" in functionName:
+                return Func(base.localAvatar.questPage.hideQuestsOnscreenTutorial)
+        else:
+            cfunc = getattr(object, functionName)
+            return Func(cfunc)
 
     def parseAddLaffMeter(self, line):
         token, maxHpDelta = line

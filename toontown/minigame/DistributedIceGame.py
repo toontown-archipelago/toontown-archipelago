@@ -114,7 +114,7 @@ class DistributedIceGame(DistributedMinigame.DistributedMinigame, DistributedIce
     def load(self):
         self.notify.debug('load')
         DistributedMinigame.DistributedMinigame.load(self)
-        self.music = base.loader.loadMusic('phase_4/audio/bgm/MG_IceGame.ogg')
+        self.music = "mg-ice-game"
         self.gameBoard = loader.loadModel('phase_4/models/minigames/ice_game_icerink')
         background = loader.loadModel('phase_4/models/minigames/ice_game_2d')
         background.reparentTo(self.gameBoard)
@@ -206,11 +206,11 @@ class DistributedIceGame(DistributedMinigame.DistributedMinigame, DistributedIce
         self.__placeToon(self.localAvId)
         self.moveCameraToTop()
         self.scorePanels = []
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.music, looping=1, volume=0.8)
 
     def offstage(self):
         self.notify.debug('offstage')
-        self.music.stop()
+        base.contentPackMusicManager.stopMusic()
         self.gameBoard.hide()
         self.infoLabel.hide()
         for avId in self.tireDict:
