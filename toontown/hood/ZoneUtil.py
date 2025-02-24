@@ -73,6 +73,13 @@ def isPetshop(zoneId):
         return True
     return False
 
+def isGagShop(zoneId):
+    buildingType = TTLocalizer.zone2TitleDict.get(zoneId)
+    try:
+        return buildingType[0] == "Gag Shop"
+    except:
+        return False
+
 
 def getWhereName(zoneId, isToon):
     if tutorialDict:

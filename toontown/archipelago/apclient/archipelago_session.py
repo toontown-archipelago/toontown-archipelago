@@ -1,4 +1,5 @@
 # Represents a gameplay session attached to toon players, handles rewarding and sending items through the multiworld
+import math
 import os
 from typing import List, TYPE_CHECKING, Any
 
@@ -164,6 +165,21 @@ class ArchipelagoSession:
             MinimalJsonMessagePart(f"{death_component}", color='salmon')
         ])
         self.avatar.d_sendArchipelagoMessage(msg)
+
+    def toon_change_money(self, amount, isLocalChange=True):
+
+        # If ringlink is off don't do anything
+        if not self.avatar.slotData.get('ring_link', False):
+            return
+
+        # We don't need to do ringlink packets if change is from another
+        if not isLocalChange:
+            return
+
+        # Create a deathlink packet
+        ringlink_packet = BouncePacket()
+        ringlink_packet.add_ringlink_data(self.avatar, math.ceil(amount/10))
+        self.client.send_packet(ringlink_packet)
 
     # Store data - optionally specific to this slot.
     def store_data(self, data: dict[str,Any], private=True):

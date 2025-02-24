@@ -1,3 +1,5 @@
+import builtins
+
 from otp.distributed.OtpDoGlobals import *
 from direct.showbase.PythonUtil import invertDictLossless
 OTP_SERVER_ROOT_DO_ID = 4007
@@ -76,8 +78,8 @@ if config.GetBool('isclient-check', False):
     if not isClient():
         print('EXECWARNING AIMsgTypes: %s' % AIMsgName2Id)
         printStack()
-for name, value in AIMsgName2Id.items():
-    exec('%s = %s' % (name, value))
+for name, value in list(AIMsgName2Id.items()):
+    setattr(builtins, name, value)
 
 del name
 del value

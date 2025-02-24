@@ -31,6 +31,7 @@ from direct.controls.SwimWalker import SwimWalker
 from direct.controls.TwoDWalker import TwoDWalker
 from otp.avatar import ToontownControlManager
 from toontown.toon.OrbitalCamera import OrbitalCamera
+from toontown.toon import Toon
 
 class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.DistributedSmoothNode):
     notify = DirectNotifyGlobal.directNotify.newCategory('LocalAvatar')
@@ -127,6 +128,10 @@ class LocalAvatar(DistributedAvatar.DistributedAvatar, DistributedSmoothNode.Dis
 
         self.lastForwardPress = 0
         self.listenForSprint()
+
+    def refreshDialog(self):
+        Toon.unloadDialog()
+        Toon.loadDialog()
 
     def updateMovementMode(self):
         move_setting = base.settings.get('movement_mode')

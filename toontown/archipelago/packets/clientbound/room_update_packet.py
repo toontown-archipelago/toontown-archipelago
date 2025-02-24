@@ -1,6 +1,6 @@
 from typing import List
 
-from toontown.archipelago.util.net_utils import NetworkPlayer
+from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot
 from toontown.archipelago.packets.clientbound.connected_packet import ConnectedPacket
 from toontown.archipelago.packets.clientbound.room_info_packet import RoomInfoPacket
 
@@ -43,11 +43,16 @@ class RoomUpdatePacket(RoomInfoPacket, ConnectedPacket):
         
         av.receiveCheckedLocations(self.checked_locations)
 
+    def update_aliases(self, client):
+        if self.players is not None:
+            client.set_slot_aliases(self.players)
+
     def handle(self, client):
 
         self.debug("Handling packet")
 
         # Attempt to handle a hint point update if this packet contains one
+        self.update_aliases(client)
         self.handle_hint_points_update(client.av)
         self.handle_checked_locations_update(client.av)
 

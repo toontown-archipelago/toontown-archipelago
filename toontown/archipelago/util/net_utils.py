@@ -302,7 +302,11 @@ class JSONPartFormatter:
             pid = int(part['text'])
             # If this is us, set color to magenta otherwise yellow
             part['color'] = 'magenta' if pid == self.client.slot else 'yellow'
-            part['text'] = self.client.get_slot_info(pid).name
+            alias = self.client.get_slot_alias(pid)
+            text = self.client.get_slot_info(pid).name
+            if alias:
+                text = alias
+            part['text'] = text
 
         # If we were given name, instead of ID, do same thing basically
         elif part['type'] == 'player_name':

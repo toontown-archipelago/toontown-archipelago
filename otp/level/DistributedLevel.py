@@ -100,7 +100,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
             def setSpecBlob(specBlob, blobSender = blobSender, self = self):
                 blobSender.sendAck()
                 from .LevelSpec import LevelSpec
-                spec = eval(specBlob)
+                spec = bytes(specBlob)
                 if spec is None:
                     spec = self.candidateSpec
                 del self.candidateSpec
@@ -480,7 +480,7 @@ class DistributedLevel(DistributedObject.DistributedObject, Level.Level):
     if __dev__:
 
         def setAttribChange(self, entId, attribName, valueStr, username):
-            value = eval(valueStr)
+            value = str(valueStr)
             self.levelSpec.setAttribChange(entId, attribName, value, username)
 
     def spawnTitleText(self):

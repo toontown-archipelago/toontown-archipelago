@@ -940,12 +940,12 @@ QuestDialogDict = {160: {GREETING: '',
  4206: {QUEST: "Hmmm, very interesting.\x07Now we are getting somewhere.\x07Ok, the last inventory is Fifi's._where_"},
  4207: {QUEST: "Inventory?\x07How can I do an inventory if I don't have the form?\x07Go see Cleff and see if he has one for me._where_",
         INCOMPLETE_PROGRESS: 'Any sign of that form yet?'},
- 4208: {QUEST: "Sure I got an inventory form, mon!\x07But dey ain't free, you know.\x07I'll tell you woht. I trade you for a whole cream pie.",
-        GREETING: 'Hey, mon!',
-        LEAVING: 'Cool runnings...',
-        INCOMPLETE_PROGRESS: "A slice won't do.\x07I be hungry, mon. I need de WHOLE pie."},
+ 4208: {QUEST: "Yeah, dude. I've for sure got an inventory form.\x07But like, I can't give these totally tubular forms out for free, my dude.\x07I'll make you a deal, broseph. I'll trade you for one of those radical Whole Cream Pies.",
+        GREETING: '',
+        LEAVING: 'Duuude...',
+        INCOMPLETE_PROGRESS: "Just one slice won't do, man.\x07I'm totes starving. I need like, one whole gnarly pie, my dude."},
  4209: {GREETING: '',
-        QUEST: 'Mmmm...\x07Dem mighty nice!\x07Here be your form for Fifi._where_'},
+        QUEST: 'Mmmm...\x07That pie was like, totally bodacious!\x07Here\'s that form for Fifi, my dude._where_'},
  4210: {GREETING: '',
         QUEST: "Thank you. That's a big help.\x07Let's see...Fiddles: 2\x07All done! Off you go!_where_",
         COMPLETE: "Great work, _avName_.\x07I'm sure I'll get to the bottom of these thefts now.\x07Why don't you get to the bottom of this!"},
@@ -7864,7 +7864,7 @@ zone2TitleDict = {2513: ('Toon Hall', ''),
  1628: ('Piano Tuna', ''),
  1629: ('', ''),
  1701: ('Buoys and Gulls Nursery School', ''),
- 1703: ('Wok the Plank Chinese Food', ''),
+ 1703: ('Over-Seas Security Service', ''),
  1705: ('Sails for Sale', ''),
  1706: ('Peanut Butter and Jellyfish', ''),
  1707: ('Gifts With a Porpoise', ''),
@@ -8025,7 +8025,7 @@ zone2TitleDict = {2513: ('Toon Hall', ''),
  4862: ("Quentin's Quintessen\x03tial Quadrilles", ''),
  4867: ("Mr. Costello's Yellow Cellos", ''),
  4868: ('', ''),
- 4870: ("Ziggy's Zoo of Zigeuner\x03musik", ''),
+ 4870: ("Ziggy's Zeitlose Zukunftsmusik", ''),
  4871: ("Harry's House of Harmonious Humbuckers", ''),
  4872: ("Fast Freddie's Fretless Fingerboards", ''),
  4873: ('', ''),
@@ -10000,6 +10000,8 @@ OptionNames = {
     "music-volume": "Music Volume",
     "sfx-volume": "Sound Effects Volume",
     "toon-chat-sounds": "Toon Chat Sounds",
+    "random-music": "Randomize Music",
+    'refresh-audio': "Refresh Audio",
 }
 
 OptionAntiAlias = {
@@ -10028,4 +10030,6 @@ OptionFPSLimit = {
 
 OptionEnabled = "Enabled"
 OptionDisabled = "Disabled"
+OptionRefresh = "Refresh"
 WinConditionMet = 'Congratulations, you have completed your goal! You may now talk to Flippy to redeem your reward!'
+RefreshDialogMsg = "Refreshing audio devices..."

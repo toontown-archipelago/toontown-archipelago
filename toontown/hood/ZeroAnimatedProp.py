@@ -142,7 +142,7 @@ class ZeroAnimatedProp(GenericAnimatedProp.GenericAnimatedProp, FSM.FSM):
         if base.cr.newsManager.isHolidayRunning(self.holidayId):
             zeroMgrString = '%sZeroMgr' % self.propString
             if hasattr(base.cr, zeroMgrString):
-                zeroMgr = eval('base.cr.%s' % zeroMgrString)
+                zeroMgr = getattr(base.cr, zeroMgrString)
                 if not zeroMgr.isDisabled():
                     enoughInfoToRun = True
                 else:

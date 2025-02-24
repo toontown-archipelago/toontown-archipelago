@@ -82,7 +82,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 extraArgs = []
             self.d_setMovie(avId, movieType, extraArgs)
             self.transactionType = 'fish'
-        self.sendClearMovie(None)
+        self.sendClearMovie(avId)
         return
 
     def petAdopted(self, petNum, nameIndex):

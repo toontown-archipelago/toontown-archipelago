@@ -14,6 +14,7 @@ from toontown.toontowngui import TTDialog
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.coghq import DistributedStage
 from toontown.building import Elevator
+from toontown.content_pack import MusicManagerGlobals
 import json
 
 class StageInterior(BattlePlace.BattlePlace):
@@ -71,18 +72,14 @@ class StageInterior(BattlePlace.BattlePlace):
         self.parentFSM.getStateNamed('stageInterior').addChild(self.fsm)
         BattlePlace.BattlePlace.load(self)
         fileSystem = VirtualFileSystem.getGlobalPtr()
-        self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
 
-        if str(self.zoneId) in self.musicJson['global_music']:
-            self.music = base.loader.loadMusic(self.musicJson['global_music'][str(self.zoneId)])
-            if (str(self.zoneId) + '_battle') in self.musicJson['global_music']:
-                self.loader.battleMusic = base.loader.loadMusic(self.musicJson['global_music'][(str(self.zoneId) + '_battle')])
-        else:
-            self.music = base.loader.loadMusic('phase_9/audio/bgm/CHQ_FACT_bg.ogg')
+        self.loader.music = MusicManagerGlobals.GLOBALS[self.zoneId]['music']
+        self.loader.battleMusic = MusicManagerGlobals.GLOBALS[self.zoneId]['battleMusic']
+
+ 
 
     def unload(self):
         self.parentFSM.getStateNamed('stageInterior').removeChild(self.fsm)
-        del self.music
         del self.fsm
         del self.parentFSM
         BattlePlace.BattlePlace.unload(self)
@@ -97,7 +94,7 @@ class StageInterior(BattlePlace.BattlePlace):
         def commence(self = self):
             NametagGlobals.setMasterArrowsOn(1)
             self.fsm.request(requestStatus['how'], [requestStatus])
-            base.playMusic(self.music, looping=1, volume=0.8)
+            base.contentPackMusicManager.playMusic(self.loader.music, looping=1, volume=0.8)
             base.transitions.irisIn()
             stage = bboard.get(DistributedStage.DistributedStage.ReadyPost)
             self.loader.hood.spawnTitleText(stage.stageId)
@@ -122,11 +119,8 @@ class StageInterior(BattlePlace.BattlePlace):
         base.cr.forbidCheesyEffects(0)
         base.localAvatar.inventory.setRespectInvasions(1)
         self.fsm.requestFinalState()
-        self.loader.music.stop()
-        self.music.stop()
         self.ignoreAll()
         del self.stageReadyWatcher
-        self.loader.battleMusic = base.loader.loadMusic('phase_9/audio/bgm/encntr_suit_winning.ogg')
 
     def enterWalk(self, teleportIn = 0):
         BattlePlace.BattlePlace.enterWalk(self, teleportIn)
@@ -151,7 +145,6 @@ class StageInterior(BattlePlace.BattlePlace):
 
     def enterBattle(self, event):
         StageInterior.notify.debug('enterBattle')
-        self.music.stop()
         BattlePlace.BattlePlace.enterBattle(self, event)
         self.ignore('teleportQuery')
         base.localAvatar.setTeleportAvailable(0)
@@ -164,8 +157,7 @@ class StageInterior(BattlePlace.BattlePlace):
     def exitBattle(self):
         StageInterior.notify.debug('exitBattle')
         BattlePlace.BattlePlace.exitBattle(self)
-        self.loader.music.stop()
-        base.playMusic(self.music, looping=1, volume=0.8)
+        base.contentPackMusicManager.playMusic(self.loader.music, looping=1, volume=0.8)
 
     def enterStickerBook(self, page = None):
         BattlePlace.BattlePlace.enterStickerBook(self, page)

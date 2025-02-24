@@ -1219,6 +1219,7 @@ BOUNTY_LOCATIONS = [
     ToontownLocationName.CLEAR_D_OFFICE, ToontownLocationName.CLEAR_FRONT_ONE, ToontownLocationName.CLEAR_MIDDLE_TWO, ToontownLocationName.CLEAR_BACK_THREE,  # Facility bounty locations (3)
     ToontownLocationName.TOONUP_HIGHDIVE_UNLOCKED, ToontownLocationName.TRAP_TRAIN_UNLOCKED, ToontownLocationName.LURE_PRESENTATION_UNLOCKED, ToontownLocationName.SOUND_OPERA_UNLOCKED,  # Gag bounty locations (1)
     ToontownLocationName.THROW_WEDDING_UNLOCKED, ToontownLocationName.SQUIRT_GEYSER_UNLOCKED, ToontownLocationName.DROP_BOAT_UNLOCKED,  # Gag bounty locations (2)
+    ToontownLocationName.FIVE_STORY,  # Building bounty locations
 ]
 
 def get_location_def_from_name(name: ToontownLocationName) -> ToontownLocationDefinition:

@@ -60,6 +60,7 @@ class Settings:
         "camSensitivityY": 0.1,
         "fps-limit": 0,
         'laff-display': True,
+        'random-music': False,
         "archipelago-textsize": 0.5,
         "archipelago-log-bg": False,
         # Options below this comment will not be exposed by OptionsPage

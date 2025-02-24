@@ -35,6 +35,12 @@ class BouncePacket(ServerBoundPacketBase):
         # Checking the AP discord confirms that in implementation, this is only used to verify if it was yourself.
         self.data['source'] = toon.getUUID()
 
+    def add_ringlink_data(self, toon, amount=0):
+        self.tags.append(ConnectPacket.TAG_RINGLINK)
+        self.data['source'] = toon.getUUID()
+        self.data['amount'] = amount
+
+
     def build(self) -> Dict[str, Any]:
         # Return all attributes
         return {

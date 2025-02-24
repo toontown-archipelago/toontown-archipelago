@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import PerGameCommonOptions, Range, Choice, Toggle, OptionGroup, ProgressionBalancing, Accessibility, OptionSet, StartInventoryPool, Visibility
+from Options import PerGameCommonOptions, Range, Choice, Toggle, OptionGroup, ProgressionBalancing, Accessibility, OptionList, OptionSet, StartInventoryPool, Visibility
 
 
 class TeamOption(Range):
@@ -22,11 +22,10 @@ class StartLaffOption(Range):
     default = 20
 
 
-class StartGagOption(OptionSet):
+class StartGagOption(OptionList):
     """
-    The gags to have when starting a new game.
-    ["randomized"] will ensure you have 2 tracks, at least one being a usable offensive track.
-    if you select two other tracks here, "Randomized" will do nothing
+    The gags to have when starting a new game. "randomized" will be replaced with a valid track.
+    you cannot start with gags above level 1, duplicate values other than "randomized" will be ignored.
 
     valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
     ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks.
@@ -44,8 +43,35 @@ class StartGagOption(OptionSet):
         "squirt",
         "drop"
     }
-    default = {"randomized"}
-    visibility = ~Visibility.simple_ui  # Everywhere other than simple ui (web's options page)
+    default = ["randomized", "randomized"]
+    visibility = ~(Visibility.simple_ui|Visibility.complex_ui)
+
+class StartGagOptionWeb(OptionSet):
+    """
+    The gags to have when starting a new game.
+    """
+    display_name = "Starting Gags"
+    valid_keys = {
+        "toonup",
+        "trap",
+        "lure",
+        "sound",
+        "throw",
+        "squirt",
+        "drop"
+    }
+    default = []
+    visibility = Visibility.simple_ui|Visibility.complex_ui
+
+class StartGagRandomWeb(Range):
+    """
+    Randomized starting gag count, this will add to the list of starting gags above.
+    """
+    display_name = "Starting Gags"
+    range_start = 0
+    range_end = 7
+    default = 2
+    visibility = Visibility.simple_ui|Visibility.complex_ui
 
 
 class MaxLaffOption(Range):
@@ -130,10 +156,46 @@ class MaxTaskCapacityOption(Range):
     range_end = 6
     default = 4
 
-class WinConditionCogBosses(Toggle):
+class WinConditions(OptionList):
+    """
+    Determines the condition required before being able to talk to Flippy to complete the game.
+    At least one of these should be enabled.
+
+    valid keys: ["cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
+                 "fish-species", "laff-o-lympics", "randomized"]
+
+    "cog-bosses" - Player must defeat enough bosses (determined by cog_bosses_required)
+    "bounties" - Player must collect enough bounties in their own world (determined by bounties_required, total_bounties)
+    "total-tasks" - Player must complete enough ToonTasks (determined by total_tasks_required)
+    "hood-tasks" - Player must complete enough ToonTasks in each Playground (determined by hood_tasks_required)
+    "gag-tracks" - Player must max enough Gag Tracks (determined by gag_tracks_required)
+    "fish-species" - Player must catch enough fish species (determined by fish_species_required)
+    "laff-o-lympics" - Player must reach a certain amount of laff (determined by laff_points_required)
+                       NOTE: Replaces ALL Laff Boosts with +1 Laff Boosts
+    "randomized" - Will choose a random not-yet chosen goal as one of your goals.
+                   NOTE: Can be input into the below list multiple times for multiple random goals
+    Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
+    """
+    display_name = "Win Conditions"
+    valid_keys = {
+        "randomized",
+        "cog-bosses",
+        "total-tasks",
+        "hood-tasks",
+        "gag-tracks",
+        "fish-species",
+        "laff-o-lympics",
+        "bounties"
+    }
+    default = ["cog-bosses"]
+    visibility = ~(Visibility.simple_ui|Visibility.complex_ui)
+
+
+class WinConditionCogBossesWeb(Toggle):
     """Defeat a number of cog bosses to complete the game (determined by cog_bosses_required)."""
     display_name = "Cog Bosses"
     default = True
+    visibility = Visibility.simple_ui|Visibility.complex_ui
 
 class CogBossesRequired(Range):
     """
@@ -145,10 +207,11 @@ class CogBossesRequired(Range):
     range_end = 4
     default = 4
 
-class WinConditionTotalTasks(Toggle):
+class WinConditionTotalTasksWeb(Toggle):
     """Complete a total number of tasks to complete the game (determined by total_tasks_required)."""
     display_name = "Total Tasks"
     default = False
+    visibility = Visibility.simple_ui|Visibility.complex_ui
 
 class TotalTasksRequired(Range):
     """
@@ -161,10 +224,11 @@ class TotalTasksRequired(Range):
     range_end = 72
     default = 48
 
-class WinConditionHoodTasks(Toggle):
+class WinConditionHoodTasksWeb(Toggle):
     """Complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required)."""
     display_name = "Hood Tasks"
     default = False
+    visibility = Visibility.simple_ui|Visibility.complex_ui
 
 class HoodTasksRequired(Range):
     """
@@ -177,10 +241,11 @@ class HoodTasksRequired(Range):
     range_end = 12
     default = 8
 
-class WinConditionTotalGagTracks(Toggle):
+class WinConditionTotalGagTracksWeb(Toggle):
     """Max a certain number of gag tracks to complete the game (determined by gag_tracks_required)."""
     display_name = "Gag Tracks Maxed"
     default = False
+    visibility = Visibility.simple_ui|Visibility.complex_ui
 
 class GagTracksRequired(Range):
     """
@@ -193,10 +258,11 @@ class GagTracksRequired(Range):
     range_end = 7
     default = 5
 
-class WinConditionFishSpecies(Toggle):
+class WinConditionFishSpeciesWeb(Toggle):
     """Catch a certain amount of fish species to complete the game (determined by fish_species_required)."""
     display_name = "Fish Species"
     default = False
+    visibility = Visibility.simple_ui|Visibility.complex_ui
 
 class FishSpeciesRequired(Range):
     """
@@ -209,10 +275,11 @@ class FishSpeciesRequired(Range):
     range_end = 70
     default = 70
 
-class WinConditionLaffOLympics(Toggle):
+class WinConditionLaffOLympicsWeb(Toggle):
     """Reach a certain amount of laff to complete the game (determined by laff_points_required)."""
     display_name = "Laff o lympics"
     default = False
+    visibility = Visibility.simple_ui|Visibility.complex_ui
 
 class LaffPointsRequired(Range):
     """
@@ -225,20 +292,21 @@ class LaffPointsRequired(Range):
     range_end = 150
     default = 120
 
-class WinConditionBounty(Toggle):
+class WinConditionBountyWeb(Toggle):
     """Player must reach a certain number of bounty checks to complete the game (determined by bounties_required, total_bounties)"""
     display_name = "Bounty"
     default = False
+    visibility = Visibility.simple_ui|Visibility.complex_ui
 
 class BountiesRequired(Range):
     """
     How many bounties we must have before being able to talk to Flippy to complete the game
     Unused if win_condition is not bounty
-    Range 0 to 32
+    Range 0 to 33
     """
     display_name = "Bounties Required"
     range_start = 0
-    range_end = 32
+    range_end = 33
     default = 10
 
 class TotalBounties(Range):
@@ -246,17 +314,29 @@ class TotalBounties(Range):
     How many bounties are in the pool.
     Unused if win_condition is not bounty
     Must be equal to or above bounties_required
-    Range 1 to 32
+    Range 1 to 33
     """
     display_name = "Total Bounties"
     range_start = 1
-    range_end = 32
+    range_end = 33
     default = 20
 
 class BountiesHinted(Toggle):
     """Should bounties be hinted from the beginning of the run?"""
     display_name = "Hinted Bounties"
     default = False
+
+class WinConditionRandomizedWeb(Range, Toggle):
+    """
+    How many Win Conditions will be selected for goal
+    if 0 or equal or larger than selected win condition count, all selected win conditions will be active.
+    """
+    display_name = "Randomized Win Conditions"
+    range_start = 0
+    range_end = len(WinConditions.valid_keys)
+    default = 0
+    visibility = ~(Visibility.simple_ui|Visibility.complex_ui)
+
 
 class TPSanity(Choice):
     """
@@ -364,7 +444,7 @@ class MaxedCogGalleryQuota(Range):
     The amount of Cogs required to reach its maxed Cog Gallery.
     """
     display_name = "Maxed Cog Gallery Quota"
-    range_start = 0
+    range_start = 1
     range_end = 10
     default = 3
 
@@ -410,7 +490,7 @@ class FishChecks(Choice):
     option_all_gallery_and_genus = 1
     option_all_gallery = 2
     option_none = 3
-    default = 1
+    default = 0
 
 
 class FishProgression(Choice):
@@ -643,6 +723,15 @@ class DeathLinkOption(Toggle):
     display_name = "Death Link"
     default = False
 
+
+class RingLinkOption(Toggle):
+    """
+    Enable to turn on the "RingLink" mechanic in Archipelago.
+    """
+
+    display_name = "Ring Link"
+    default = False
+
 @dataclass
 class ToontownOptions(PerGameCommonOptions):
     start_inventory_from_pool: StartInventoryPool
@@ -650,6 +739,8 @@ class ToontownOptions(PerGameCommonOptions):
     max_laff: MaxLaffOption
     starting_laff: StartLaffOption
     starting_gags: StartGagOption
+    web_starting_gags: StartGagOptionWeb
+    web_random_gags: StartGagRandomWeb
     base_global_gag_xp: BaseGlobalGagXPRange
     max_global_gag_xp: MaxGlobalGagXPRange
     damage_multiplier: DamageMultiplierRange
@@ -657,13 +748,15 @@ class ToontownOptions(PerGameCommonOptions):
     starting_money: StartMoneyOption
     starting_task_capacity: StartingTaskCapacityOption
     max_task_capacity: MaxTaskCapacityOption
-    win_condition_cog_bosses: WinConditionCogBosses
-    win_condition_total_tasks: WinConditionTotalTasks
-    win_condition_hood_tasks: WinConditionHoodTasks
-    win_condition_gag_tracks: WinConditionTotalGagTracks
-    win_condition_fish_species: WinConditionFishSpecies
-    win_condition_laff_o_lympics: WinConditionLaffOLympics
-    win_condition_bounty: WinConditionBounty
+    win_condition: WinConditions
+    web_win_condition_cog_bosses: WinConditionCogBossesWeb
+    web_win_condition_total_tasks: WinConditionTotalTasksWeb
+    web_win_condition_hood_tasks: WinConditionHoodTasksWeb
+    web_win_condition_gag_tracks: WinConditionTotalGagTracksWeb
+    web_win_condition_fish_species: WinConditionFishSpeciesWeb
+    web_win_condition_laff_o_lympics: WinConditionLaffOLympicsWeb
+    web_win_condition_bounty: WinConditionBountyWeb
+    web_win_condition_randomized: WinConditionRandomizedWeb
     cog_bosses_required: CogBossesRequired
     total_tasks_required: TotalTasksRequired
     hood_tasks_required: HoodTasksRequired
@@ -702,6 +795,7 @@ class ToontownOptions(PerGameCommonOptions):
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
     death_link: DeathLinkOption
+    ring_link: RingLinkOption
     pet_shop_display: PetShopRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
 
@@ -712,18 +806,21 @@ toontown_option_groups: list[OptionGroup] = [
     ]),
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
-        StartGagOption,BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
+        StartGagOption, StartGagOptionWeb, StartGagRandomWeb,
+        BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
         DamageMultiplierRange, OverflowModRange, StartMoneyOption, 
-        StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption
+        StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
+        RingLinkOption
     ]),
     OptionGroup("Win Condition", [
-        WinConditionCogBosses, CogBossesRequired,
-        WinConditionTotalTasks, TotalTasksRequired,
-        WinConditionHoodTasks, HoodTasksRequired,
-        WinConditionTotalGagTracks, GagTracksRequired,
-        WinConditionFishSpecies, FishSpeciesRequired,
-        WinConditionLaffOLympics, LaffPointsRequired,
-        WinConditionBounty, BountiesRequired,
+        WinConditions, WinConditionRandomizedWeb,
+        WinConditionCogBossesWeb, CogBossesRequired,
+        WinConditionTotalTasksWeb, TotalTasksRequired,
+        WinConditionHoodTasksWeb, HoodTasksRequired,
+        WinConditionTotalGagTracksWeb, GagTracksRequired,
+        WinConditionFishSpeciesWeb, FishSpeciesRequired,
+        WinConditionLaffOLympicsWeb, LaffPointsRequired,
+        WinConditionBountyWeb, BountiesRequired,
         ], False),
     OptionGroup("Check/Item Behavior", [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,

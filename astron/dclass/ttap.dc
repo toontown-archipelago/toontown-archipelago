@@ -2555,6 +2555,7 @@ dclass DistributedNPCKartClerk : DistributedNPCToonBase {
 };
 
 dclass DistributedKnockKnockDoor : DistributedAnimatedProp {
+  healToon(uint32) airecv clsend;
 };
 
 dclass DistributedElevator : DistributedObject {
