@@ -314,11 +314,11 @@ class TotalBounties(Range):
     How many bounties are in the pool.
     Unused if win_condition is not bounty
     Must be equal to or above bounties_required
-    Range 1 to 32
+    Range 1 to 33
     """
     display_name = "Total Bounties"
     range_start = 1
-    range_end = 32
+    range_end = 33
     default = 20
 
 class BountiesHinted(Toggle):
