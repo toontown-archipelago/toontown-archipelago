@@ -33,6 +33,7 @@ Credits:
 * Polygon for making the Corporate Clash toon models
 * [Open Toontown](https://github.com/open-toontown) for providing a great reference for a Toontown codebase ported to Python 3 and the HD Mickey Font
 * Toontown Infinite for Bossbot HQ suit paths
+* [The Toontown Event Horizon Team](https://github.com/Toontown-Event-Horizon)] For providing their BytestringParser
 * [Astron](https://github.com/Astron/Astron)
 * [Panda3D](https://github.com/panda3d/panda3d)  (More specifically, [Open Toontown's fork of Panda3D](https://github.com/open-toontown/panda3d))
 * [libotp-nametags](https://github.com/loblao/libotp-nametags)
