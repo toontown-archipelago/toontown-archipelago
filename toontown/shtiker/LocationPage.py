@@ -156,7 +156,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 obj.add_location(location_data.name.value)
 
             elif location_data.region in [locations.ToontownRegionName.FISHING]:
-                name = location_data.type.name.title()
+                name = location_data.type.name.replace("_", " ").title()
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 

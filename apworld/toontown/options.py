@@ -157,7 +157,25 @@ class MaxTaskCapacityOption(Range):
     default = 4
 
 class WinConditions(OptionList):
-    """Win Conditions, options are explained in the settings ending with _required"""
+    """
+    Determines the condition required before being able to talk to Flippy to complete the game.
+    At least one of these should be enabled.
+
+    valid keys: ["cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
+                 "fish-species", "laff-o-lympics", "randomized"]
+
+    "cog-bosses" - Player must defeat enough bosses (determined by cog_bosses_required)
+    "bounties" - Player must collect enough bounties in their own world (determined by bounties_required, total_bounties)
+    "total-tasks" - Player must complete enough ToonTasks (determined by total_tasks_required)
+    "hood-tasks" - Player must complete enough ToonTasks in each Playground (determined by hood_tasks_required)
+    "gag-tracks" - Player must max enough Gag Tracks (determined by gag_tracks_required)
+    "fish-species" - Player must catch enough fish species (determined by fish_species_required)
+    "laff-o-lympics" - Player must reach a certain amount of laff (determined by laff_points_required)
+                       NOTE: Replaces ALL Laff Boosts with +1 Laff Boosts
+    "randomized" - Will choose a random not-yet chosen goal as one of your goals.
+                   NOTE: Can be input into the below list multiple times for multiple random goals
+    Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
+    """
     display_name = "Win Conditions"
     valid_keys = {
         "randomized",
@@ -284,11 +302,11 @@ class BountiesRequired(Range):
     """
     How many bounties we must have before being able to talk to Flippy to complete the game
     Unused if win_condition is not bounty
-    Range 0 to 32
+    Range 0 to 33
     """
     display_name = "Bounties Required"
     range_start = 0
-    range_end = 32
+    range_end = 33
     default = 10
 
 class TotalBounties(Range):
@@ -296,11 +314,11 @@ class TotalBounties(Range):
     How many bounties are in the pool.
     Unused if win_condition is not bounty
     Must be equal to or above bounties_required
-    Range 1 to 32
+    Range 1 to 33
     """
     display_name = "Total Bounties"
     range_start = 1
-    range_end = 32
+    range_end = 33
     default = 20
 
 class BountiesHinted(Toggle):
@@ -426,7 +444,7 @@ class MaxedCogGalleryQuota(Range):
     The amount of Cogs required to reach its maxed Cog Gallery.
     """
     display_name = "Maxed Cog Gallery Quota"
-    range_start = 0
+    range_start = 1
     range_end = 10
     default = 3
 
@@ -472,7 +490,7 @@ class FishChecks(Choice):
     option_all_gallery_and_genus = 1
     option_all_gallery = 2
     option_none = 3
-    default = 1
+    default = 0
 
 
 class FishProgression(Choice):
