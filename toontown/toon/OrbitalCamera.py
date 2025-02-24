@@ -55,6 +55,7 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         self.firstPerson = False
         self.ignoreRMB = False
         self.runner = CamRunner()
+        self.cam_toggled = False
 
     def destroy(self):
         self.destroyCollisions()
@@ -99,6 +100,10 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
         del self.camFloorRayNode
 
     def enterActive(self):
+        if self.cam_toggled:
+            self.cam_toggled = False
+        else:
+            self.cam_toggled = True
         self.enableInput()
 
         base.camNode.setLodCenter(self.subject)
@@ -124,16 +129,17 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
 
         self.disableInput()
 
-    def enableMouseControl(self, pressed):
-        if not pressed or self.ignoreRMB:
-            return
+    def enableMouseControl(self, pressed, toggle=False):
+        if not toggle:
+            if not pressed or self.ignoreRMB:
+                return
 
         if not base.CAM_TOGGLE_LOCK:
-            # FIXME: Unless the user interacts with anything that untoggles mouse control
-            # (i.e. hopping onto a crane, taking damage, opening book), 
-            # the user is permanently stuck in this state            
             self.ignore("InputState-RMB")
             self.accept("InputState-RMB", self.disableMouseControl)
+        else:
+            self.ignore("InputState-RMB")
+            self.accept("InputState-RMB", self.toggleMouseControl)
 
         if self.oobeEnabled():
             return
@@ -153,9 +159,19 @@ class OrbitalCamera(FSM, NodePath, ParamObj):
 
         self.subject.controlManager.setTurn(0)
 
+    def toggleMouseControl(self, pressed):
+        if pressed and not self.mouseControl:
+            self.enableMouseControl(True, False)
+        elif pressed and self.mouseControl:
+            self.disableMouseControl(True, True)
+
     def disableMouseControl(self, pressed, disabledByMouse=True):
-        self.ignore("InputState-RMB")
-        self.accept("InputState-RMB", self.enableMouseControl)
+        if not base.CAM_TOGGLE_LOCK:
+            self.ignore("InputState-RMB")
+            self.accept("InputState-RMB", self.enableMouseControl)
+        else:
+            self.ignore("InputState-RMB")
+            self.accept("InputState-RMB", self.toggleMouseControl)
 
         if self.oobeEnabled():
             return
