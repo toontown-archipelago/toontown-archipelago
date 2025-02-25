@@ -1316,3 +1316,17 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
 
         seq.append(suitsOff)
         return seq
+    
+    def showJumpAttackAlert(self):
+        # Display an exclamation mark above the toon's head
+        self.showAlert("!")
+    
+    def showAlert(self, text):
+        self.alertText = OnscreenText(text=text, pos=(0, 0.5), scale=0.25, fg=(1,0,0,1), shadow=(0,0,0,1))
+        taskMgr.doMethodLater(1.0, self.hideAlert, 'hideAlertTask')
+    
+    def hideAlert(self, task):
+        if self.alertText:
+            self.alertText.destroy()
+            self.alertText = None
+        return task.done
