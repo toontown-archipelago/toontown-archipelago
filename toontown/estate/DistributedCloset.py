@@ -251,7 +251,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
             self.closetGUI.showButtons()
             style = self.av.getStyle()
             self.oldStyle = ToonDNA.ToonDNA()
-            self.oldStyle.makeFromNetString(style.makeNetString())
+            self.oldStyle.fromBytestring(style.bytestring)
         return Task.done
 
     def resetCloset(self):
@@ -270,7 +270,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
         self.av = base.localAvatar
         style = self.av.getStyle()
         self.oldStyle = ToonDNA.ToonDNA()
-        self.oldStyle.makeFromNetString(style.makeNetString())
+        self.oldStyle.fromBytestring(style.bytestring)
         self.topDeleted = 0
         self.bottomDeleted = 0
         return Task.done
@@ -280,7 +280,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
 
     def _handleCancel(self):
         if self.oldStyle:
-            self.d_setDNA(self.oldStyle.makeNetString(), 1)
+            self.d_setDNA(self.oldStyle.bytestring, 1)
         else:
             self.notify.info('avoided crash in handleCancel')
             self._handlePurchaseDone()
@@ -318,7 +318,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
         if len(itemList) > 1:
             trashDNA = ToonDNA.ToonDNA()
             trashItem = self.av.getStyle().makeNetString()
-            trashDNA.makeFromNetString(trashItem)
+            trashDNA.fromBytestring(trashItem)
             if trashIndex == 0:
                 swapFunc(1)
             else:
@@ -346,7 +346,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
 
     def _handlePurchaseDone(self, timeout = 0):
         if timeout == 1:
-            self.d_setDNA(self.oldStyle.makeNetString(), 1)
+            self.d_setDNA(self.oldStyle.bytestring, 1)
         else:
             which = 0
             if hasattr(self.closetGUI, 'topChoice') and hasattr(self.closetGUI, 'bottomChoice'):
@@ -365,7 +365,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
             if av:
                 if self.av == base.cr.doId2do[avId]:
                     oldTorso = self.av.style.torso
-                    self.av.style.makeFromNetString(dnaString)
+                    self.av.style.fromBytestring(dnaString)
                     if len(oldTorso) == 2 and len(self.av.style.torso) == 2 and self.av.style.torso[1] != oldTorso[1]:
                         self.av.swapToonTorso(self.av.style.torso, genClothes=0)
                         self.av.loop('neutral', 0)

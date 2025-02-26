@@ -14,7 +14,7 @@ class DistCogdoCraneCogAI(DistributedObjectAI):
         return self._gameId
 
     def getDNAString(self):
-        return self._dna.makeNetString()
+        return self._dna.bytestring
 
     def getSpawnInfo(self):
         return (self._entranceId, globalClockDelta.localToNetworkTime(self._spawnTime))

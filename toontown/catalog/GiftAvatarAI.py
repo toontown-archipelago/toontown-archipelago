@@ -48,7 +48,7 @@ class GiftAvatarAI:
 
     def setDNAString(self, dnaString):
         self.style = ToonDNA.ToonDNA()
-        self.style.makeFromNetString(dnaString.decode('base64'))
+        self.style.fromBytestring(dnaString.decode('base64'))
 
     def setMailboxContents(self, mailboxContents):
         self.mailboxContents = CatalogItemList.CatalogItemList(mailboxContents.decode('base64'),

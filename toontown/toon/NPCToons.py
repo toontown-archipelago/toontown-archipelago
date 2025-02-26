@@ -140,7 +140,7 @@ def createNPC(air, npcId, desc, zoneId, posIndex = 0, questCallback = None):
             rtDnaFile.writelines(rtDNA)
         rtDnaFile.close()
     dna.newToonFromProperties(*dnaList)
-    npc.setDNAString(dna.makeNetString())
+    npc.setDNAString(dna.bytestring)
     npc.setHp(15)
     npc.setMaxHp(15)
     npc.setPositionIndex(posIndex)
@@ -180,7 +180,7 @@ def createLocalNPC(npcId):
     else:
         dnaList = dnaType
     dna.newToonFromProperties(*dnaList)
-    npc.setDNAString(dna.makeNetString())
+    npc.setDNAString(dna.bytestring)
     npc.animFSM.request('neutral')
     return npc
 

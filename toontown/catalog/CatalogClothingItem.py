@@ -422,7 +422,7 @@ class CatalogClothingItem(CatalogItem.CatalogItem):
                 dna.torso = dna.torso[0] + 'd'
             elif dna.torso[1] == 'd' and bottomPair[1] == ToonDNA.SHORTS:
                 dna.torso = dna.torso[0] + 's'
-        avatar.b_setDNAString(dna.makeNetString())
+        avatar.b_setDNAString(dna.bytestring)
         avatar.d_catalogGenClothes()
         return ToontownGlobals.P_ItemAvailable
 

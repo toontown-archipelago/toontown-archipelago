@@ -175,8 +175,9 @@ class CreateAvatarOperation(GameOperation):
             # This index is invalid! Kill the connection.
             self.demand('Kill', 'Invalid index specified!')
             return
-
-        if not ToonDNA().isValidNetString(dna):
+        try:
+            ToonDNA().fromBytestring(dna)
+        except ValueError:
             # This DNA string is invalid! Kill the connection.
             self.demand('Kill', 'Invalid DNA specified!')
             return
@@ -220,7 +221,7 @@ class CreateAvatarOperation(GameOperation):
     def enterCreateAvatar(self):
         # We will now construct a new Toon with the given values.
         dna = ToonDNA()
-        dna.makeFromNetString(self.dna)
+        dna.fromBytestring(self.dna)
         colorString = 'Colorful'
         animalType = TTLocalizer.AnimalToSpecies[dna.getAnimal()]
         name = ' '.join((colorString, animalType))

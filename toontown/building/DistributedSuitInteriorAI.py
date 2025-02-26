@@ -195,7 +195,7 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
             return
         avatar = self.air.doId2do.get(avId)
         if avatar != None:
-            self.savedByMap[avId] = (avatar.getName(), avatar.dna.makeNetString(), avatar.isGM())
+            self.savedByMap[avId] = (avatar.getName(), avatar.dna.bytestring, avatar.isGM())
         self.responses[avId] += 1
         if self.__allToonsResponded():
             self.fsm.request('Elevator')
@@ -458,7 +458,7 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
             if v not in self.savedByMap:
                 continue
 
-            # (avatar.getName(), avatar.dna.makeNetString(), avatar.isGM())
+            # (avatar.getName(), avatar.dna.bytestring, avatar.isGM())
             name, dnaString, isGm = self.savedByMap.get(v)
             dnaTuple = ToonDNA(dnaString).asTuple()
             savedBy.append([v, name, dnaTuple, isGm])

@@ -870,7 +870,7 @@ class NameShop(StateData.StateData):
             self.rejectName(TTLocalizer.NameError)
         if status == 1:
             style = self.toon.getStyle()
-            avDNA = style.makeNetString()
+            avDNA = style.bytestring
             self.notify.debug('pattern name accepted')
             newPotAv = PotentialAvatar.PotentialAvatar(avId, self.names, avDNA, self.index, 0)
             self.avList.append(newPotAv)
@@ -932,7 +932,7 @@ class NameShop(StateData.StateData):
         else:
             if status == 1:
                 style = self.toon.getStyle()
-                avDNA = style.makeNetString()
+                avDNA = style.bytestring
                 self.names[1] = self.nameEntry.get()
                 self.notify.debug('typed name needs approval')
                 newPotAv = PotentialAvatar.PotentialAvatar(avId, self.names, avDNA, self.index, 1)
@@ -948,7 +948,7 @@ class NameShop(StateData.StateData):
     def serverCreateAvatar(self, skipTutorial = True):
         self.notify.debug('serverCreateAvatar')
         style = self.toon.getStyle()
-        self.newDNA = style.makeNetString()
+        self.newDNA = style.bytestring
         if skipTutorial:
             self.requestingSkipTutorial = True
         else:

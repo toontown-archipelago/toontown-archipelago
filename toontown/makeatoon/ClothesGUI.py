@@ -190,7 +190,7 @@ class ClothesGUI(StateData.StateData):
 
     def resetClothes(self, style):
         if self.toon:
-            self.toon.style.makeFromNetString(style.makeNetString())
+            self.toon.style.fromBytestring(style.bytestring)
             if self.swapEvent != None and self.swappedTorso == 1:
                 self.toon.swapToonTorso(self.toon.style.torso, genClothes=0)
                 self.toon.generateToonClothes()

@@ -355,7 +355,7 @@ class DistributedCogdoInteriorAI(DistributedObjectAI.DistributedObjectAI):
             self.air.writeServerEvent('suspicious', avId, 'CogdoInteriorAI.setAvatarJoined: avatar not present')
             return
         else:
-            self.savedByMap[avId] = (avatar.getName(), avatar.dna.makeNetString(), avatar.isGM())
+            self.savedByMap[avId] = (avatar.getName(), avatar.dna.bytestring, avatar.isGM())
         if avId not in self.responses:
             self.air.writeServerEvent('suspicious', avId, 'CogdoInteriorAI.setAvatarJoined: avId not in responses')
             self.notify.warning('CogdoInteriorAI.setAvatarJoined: avId not in responses')

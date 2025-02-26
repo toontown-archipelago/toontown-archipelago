@@ -41,7 +41,7 @@ class DistributedNPCTailorAI(DistributedNPCToonBaseAI):
         self.customerDNA = ToonDNA.ToonDNA()
         self.customerDNA.makeFromNetString(av.getDNAString())
         self.customerId = avId
-        av.b_setDNAString(self.customerDNA.makeNetString())
+        av.b_setDNAString(self.customerDNA.bytestring)
         self.acceptOnce(self.air.getAvatarExitEvent(avId), self.__handleUnexpectedExit, extraArgs=[avId])
         flag = NPCToons.PURCHASE_MOVIE_START_BROWSE
         if self.freeClothes:
@@ -79,7 +79,7 @@ class DistributedNPCTailorAI(DistributedNPCToonBaseAI):
     def sendTimeoutMovie(self, task):
         toon = self.air.doId2do.get(self.customerId)
         if toon != None and self.customerDNA:
-            toon.b_setDNAString(self.customerDNA.makeNetString())
+            toon.b_setDNAString(self.customerDNA.bytestring)
         self.timedOut = 1
         self.sendUpdate('setMovie', [NPCToons.PURCHASE_MOVIE_TIMEOUT,
          self.npcId,
@@ -117,10 +117,12 @@ class DistributedNPCTailorAI(DistributedNPCToonBaseAI):
                 self.air.writeServerEvent('suspicious', avId, 'DistributedNPCTailorAI.setDNA customer is %s' % self.customerId)
                 self.notify.warning('customerId: %s, but got setDNA for: %s' % (self.customerId, avId))
             return
-        testDNA = ToonDNA.ToonDNA()
-        if not testDNA.isValidNetString(blob):
-            self.air.writeServerEvent('suspicious', avId, 'DistributedNPCTailorAI.setDNA: invalid dna: %s' % blob)
+        try:
+            ToonDNA.ToonDNA().fromBytestring(blob)
+        except ValueError:
+            self.air.writeServerEvent('suspicious', avId, 'DistributedNPCTailorAI.setDNA: unable to parse DNA')
             return
+        
         if avId in self.air.doId2do:
             av = self.air.doId2do[avId]
             if finished == 2 and which > 0:
@@ -141,10 +143,10 @@ class DistributedNPCTailorAI(DistributedNPCToonBaseAI):
                     self.air.writeServerEvent('suspicious', avId, 'DistributedNPCTailorAI.setDNA bogus clothing ticket')
                     self.notify.warning('NPCTailor: setDNA() - client tried to purchase with bogus clothing ticket!')
                     if self.customerDNA:
-                        av.b_setDNAString(self.customerDNA.makeNetString())
+                        av.b_setDNAString(self.customerDNA.bytestring)
             elif finished == 1:
                 if self.customerDNA:
-                    av.b_setDNAString(self.customerDNA.makeNetString())
+                    av.b_setDNAString(self.customerDNA.bytestring)
             else:
                 self.sendUpdate('setCustomerDNA', [avId, blob])
         else:
@@ -166,7 +168,7 @@ class DistributedNPCTailorAI(DistributedNPCToonBaseAI):
                 toon = DistributedToonAI.DistributedToonAI(self.air)
                 toon.doId = avId
             if self.customerDNA:
-                toon.b_setDNAString(self.customerDNA.makeNetString())
+                toon.b_setDNAString(self.customerDNA.bytestring)
                 db = DatabaseObject.DatabaseObject(self.air, avId)
                 db.storeObject(toon, ['setDNAString'])
         else:

@@ -1210,7 +1210,7 @@ class SetColor(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
-        dna.makeFromNetString(toon.getDNAString())
+        dna.fromBytestring(toon.getDNAString())
         toonParts = ['all', 'legs', 'arms', 'head']
         toonPart = args[0]
         toonColor = args[1]
@@ -1229,7 +1229,7 @@ class SetColor(MagicWord):
             dna.armColor = toonColor
         elif toonPart == toonParts[3]:
             dna.headColor = toonColor
-        toon.b_setDNAString(dna.makeNetString())
+        toon.b_setDNAString(dna.bytestring)
 
 
 class SetTop(MagicWord):
@@ -1241,14 +1241,14 @@ class SetTop(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
-        dna.makeFromNetString(toon.getDNAString())
+        dna.fromBytestring(toon.getDNAString())
 
         topTex = args[0]
 
         if not 0 <= topTex <= len(ToonDNA.Shirts):
             return "Invalid shirt texture specified!"
         dna.topTex = topTex
-        toon.b_setDNAString(dna.makeNetString())
+        toon.b_setDNAString(dna.bytestring)
 
 
 class SetTopColor(MagicWord):
@@ -1260,14 +1260,14 @@ class SetTopColor(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
-        dna.makeFromNetString(toon.getDNAString())
+        dna.fromBytestring(toon.getDNAString())
 
         topTexColor = args[0]
 
         if not 0 <= topTexColor <= len(ToonDNA.ClothesColors):
             return "Invalid shirt color specified!"
         dna.topTexColor = topTexColor
-        toon.b_setDNAString(dna.makeNetString())
+        toon.b_setDNAString(dna.bytestring)
 
 
 class SetSleeves(MagicWord):
@@ -1279,14 +1279,14 @@ class SetSleeves(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
-        dna.makeFromNetString(toon.getDNAString())
+        dna.fromBytestring(toon.getDNAString())
 
         sleeveTex = args[0]
 
         if not 0 <= sleeveTex <= len(ToonDNA.Sleeves):
             return "Invalid sleeves texture specified!"
         dna.sleeveTex = sleeveTex
-        toon.b_setDNAString(dna.makeNetString())
+        toon.b_setDNAString(dna.bytestring)
 
 
 class SetSleevesColor(MagicWord):
@@ -1298,14 +1298,14 @@ class SetSleevesColor(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
-        dna.makeFromNetString(toon.getDNAString())
+        dna.fromBytestring(toon.getDNAString())
 
         sleeveTexColor = args[0]
 
         if not 0 <= sleeveTexColor <= len(ToonDNA.ClothesColors):
             return "Invalid sleeves color specified!"
         dna.sleeveTexColor = sleeveTexColor
-        toon.b_setDNAString(dna.makeNetString())
+        toon.b_setDNAString(dna.bytestring)
 
 
 class SetBottoms(MagicWord):
@@ -1317,7 +1317,7 @@ class SetBottoms(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
-        dna.makeFromNetString(toon.getDNAString())
+        dna.fromBytestring(toon.getDNAString())
 
         if dna.gender == 'm':
             bottoms = ToonDNA.BoyShorts
@@ -1331,7 +1331,7 @@ class SetBottoms(MagicWord):
         if not 0 <= botTex <= len(bottoms):
             return "Invalid bottoms texture specified!"
         dna.botTex = botTex
-        toon.b_setDNAString(dna.makeNetString())
+        toon.b_setDNAString(dna.bytestring)
 
 
 class SetBottomsColor(MagicWord):
@@ -1343,14 +1343,14 @@ class SetBottomsColor(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
-        dna.makeFromNetString(toon.getDNAString())
+        dna.fromBytestring(toon.getDNAString())
 
         botTexColor = args[0]
 
         if not 0 <= botTexColor <= len(ToonDNA.ClothesColors):
             return "Invalid bottoms color specified!"
         dna.botTexColor = botTexColor
-        toon.b_setDNAString(dna.makeNetString())
+        toon.b_setDNAString(dna.bytestring)
 
 
 class SetHat(MagicWord):
@@ -3292,7 +3292,7 @@ class SetDNA(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         dna = ToonDNA.ToonDNA()
-        dna.makeFromNetString(invoker.getDNAString())
+        dna.fromBytestring(invoker.getDNAString())
 
         part = args[0]
         value = args[1]
@@ -3309,7 +3309,7 @@ class SetDNA(MagicWord):
             if value not in ('m', 'f', 'male', 'female'):
                 return 'Invalid gender: ' + value
             dna.gender = value[0]
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Gender set to: ' + dna.gender
 
         if part in ('head', 'species'):
@@ -3324,7 +3324,7 @@ class SetDNA(MagicWord):
             if value not in ToonDNA.toonSpeciesTypes:
                 return 'Invalid species: ' + value
             dna.head = value + dna.head[1:3]
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Species set to: ' + dna.head[0]
 
         if part == 'headsize':
@@ -3332,7 +3332,7 @@ class SetDNA(MagicWord):
             if not 0 <= value <= len(sizes):
                 return 'Invalid head size index: ' + str(value)
             dna.head = dna.head[0] + sizes[value]
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Head size index set to: ' + dna.head[1:]
 
         if part == 'torso':
@@ -3347,7 +3347,7 @@ class SetDNA(MagicWord):
             if (dna.gender == 'f') and (not 3 <= value <= 8):
                 return 'Female torso index out of range (3-8).'
             dna.torso = ToonDNA.toonTorsoTypes[value]
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Torso set to: ' + dna.torso
 
         if part == 'legs':
@@ -3358,7 +3358,7 @@ class SetDNA(MagicWord):
             if not 0 <= value <= len(ToonDNA.toonLegTypes):
                 return 'Legs index out of range (0-%d).' % len(ToonDNA.toonLegTypes)
             dna.legs = ToonDNA.toonLegTypes[value]
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Legs set to: ' + dna.legs
 
         if part == 'headcolor':
@@ -3369,7 +3369,7 @@ class SetDNA(MagicWord):
             if (dna.gender == 'f') and (value not in ToonDNA.defaultGirlColorList):
                 return 'Invalid female head color index: ' + str(value)
             dna.headColor = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Head color index set to: ' + str(dna.headColor)
 
         if part == 'armcolor':
@@ -3380,7 +3380,7 @@ class SetDNA(MagicWord):
             if (dna.gender == 'f') and (value not in ToonDNA.defaultGirlColorList):
                 return 'Invalid female arm color index: ' + str(value)
             dna.armColor = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Arm color index set to: ' + str(dna.armColor)
 
         if part == 'legcolor':
@@ -3391,7 +3391,7 @@ class SetDNA(MagicWord):
             if (dna.gender == 'f') and (value not in ToonDNA.defaultGirlColorList):
                 return 'Invalid female leg color index: ' + str(value)
             dna.legColor = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Leg color index set to: ' + str(dna.legColor)
 
         if part == 'color':
@@ -3404,7 +3404,7 @@ class SetDNA(MagicWord):
             dna.headColor = value
             dna.armColor = value
             dna.legColor = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Color index set to: ' + str(dna.headColor)
 
         if part == 'gloves':
@@ -3415,35 +3415,35 @@ class SetDNA(MagicWord):
             if value != 0:
                 return 'Invalid glove color: ' + str(value)
             dna.gloveColor = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Glove color set to: ' + str(dna.gloveColor)
 
         if part == 'toptex':
             if not 0 <= value <= len(ToonDNA.Shirts):
                 return 'Top texture index out of range (0-%d).' % len(ToonDNA.Shirts)
             dna.topTex = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Top texture index set to: ' + str(dna.topTex)
 
         if part == 'toptexcolor':
             if not 0 <= value <= len(ToonDNA.ClothesColors):
                 return 'Top texture color index out of range(0-%d).' % len(ToonDNA.ClothesColors)
             dna.topTexColor = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Top texture color index set to: ' + str(dna.topTexColor)
 
         if part == 'sleevetex':
             if not 0 <= value <= len(ToonDNA.Sleeves):
                 return 'Sleeve texture index out of range(0-%d).' % len(ToonDNA.Sleeves)
             dna.sleeveTex = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Sleeve texture index set to: ' + str(dna.sleeveTex)
 
         if part == 'sleevetexcolor':
             if not 0 <= value <= len(ToonDNA.ClothesColors):
                 return 'Sleeve texture color index out of range(0-%d).' % len(ToonDNA.ClothesColors)
             dna.sleeveTexColor = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Sleeve texture color index set to: ' + str(dna.sleeveTexColor)
 
         if part == 'bottex':
@@ -3456,14 +3456,14 @@ class SetDNA(MagicWord):
             if not 0 <= value <= len(bottoms):
                 return 'Bottom texture index out of range (0-%d).' % len(bottoms)
             dna.botTex = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Bottom texture index set to: ' + str(dna.botTex)
 
         if part == 'bottexcolor':
             if not 0 <= value <= len(ToonDNA.ClothesColors):
                 return 'Bottom texture color index out of range(0-%d).' % len(ToonDNA.ClothesColors)
             dna.botTexColor = value
-            invoker.b_setDNAString(dna.makeNetString())
+            invoker.b_setDNAString(dna.bytestring)
             return 'Bottom texture color index set to: ' + str(dna.botTexColor)
 
         # these arguments don't work

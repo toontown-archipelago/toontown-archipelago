@@ -126,7 +126,7 @@ class DistributedNPCTailor(DistributedNPCToonBase):
                 self.accept(self.av.uniqueName('disable'), self.__handleUnexpectedExit)
             style = self.av.getStyle()
             self.oldStyle = ToonDNA.ToonDNA()
-            self.oldStyle.makeFromNetString(style.makeNetString())
+            self.oldStyle.fromBytestring(style.bytestring)
             self.setupAvatars(self.av)
             if self.isLocalToon:
                 camera.wrtReparentTo(render)
@@ -206,7 +206,7 @@ class DistributedNPCTailor(DistributedNPCToonBase):
 
     def __handlePurchaseDone(self, timeout = 0):
         if self.clothesGUI.doneStatus == 'last' or timeout == 1:
-            self.d_setDNA(self.oldStyle.makeNetString(), 1)
+            self.d_setDNA(self.oldStyle.bytestring, 1)
         else:
             which = 0
             if self.clothesGUI.topChoice != -1:
@@ -278,7 +278,7 @@ class DistributedNPCTailor(DistributedNPCToonBase):
         self.popupInfo.reparentTo(hidden)
 
     def __handleConfirmLossCancel(self):
-        self.d_setDNA(self.oldStyle.makeNetString(), 1)
+        self.d_setDNA(self.oldStyle.bytestring, 1)
         self.popupInfo.reparentTo(hidden)
 
     def d_setDNA(self, dnaString, finished, whichItems = ClosetGlobals.SHIRT | ClosetGlobals.SHORTS):
@@ -290,7 +290,7 @@ class DistributedNPCTailor(DistributedNPCToonBase):
             if av:
                 if self.av == av:
                     oldTorso = self.av.style.torso
-                    self.av.style.makeFromNetString(dnaString)
+                    self.av.style.fromBytestring(dnaString)
                     if len(oldTorso) == 2 and len(self.av.style.torso) == 2 and self.av.style.torso[1] != oldTorso[1]:
                         self.av.swapToonTorso(self.av.style.torso, genClothes=0)
                         self.av.loop('neutral', 0)

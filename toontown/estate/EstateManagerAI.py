@@ -32,7 +32,7 @@ class LoadHouseOperation(FSM):
             return
 
         style = ToonDNA.ToonDNA()
-        style.makeFromNetString(self.avatar.get('setDNAString')[0])
+        style.fromBytestring(self.avatar.get('setDNAString')[0])
         self.houseId = self.avatar.get('setHouseId', [0])[0]
         self.gender = style.gender
         if self.houseId == 0:

@@ -251,7 +251,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         dna = ToonDNA.ToonDNA()
         dna.newToonRandom(11237, 'f', 1)
         dna.head = 'pls'
-        npc.setDNAString(dna.makeNetString())
+        npc.setDNAString(dna.bytestring)
         npc.animFSM.request('neutral')
         self.resistanceToon = npc
         self.resistanceToon.setPosHpr(*ToontownGlobals.CashbotRTBattleOneStartPosHpr)

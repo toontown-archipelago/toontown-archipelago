@@ -229,7 +229,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
                 self.notify.info('Chose avatar id: %s' % av.id)
                 self.notify.info('Chose avatar name: %s' % av.name)
                 dna = ToonDNA.ToonDNA()
-                dna.makeFromNetString(av.dna)
+                dna.fromBytestring(av.dna.bytestring)
                 if base.logPrivateInfo:
                     self.notify.info('Chose avatar dna: %s' % (dna.asTuple(),))
                     self.notify.info('Chose avatar position: %s' % av.position)
@@ -287,7 +287,7 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
             self.newPotAv = PotentialAvatar.PotentialAvatar('deleteMe', ['',
              '',
              '',
-             ''], newDNA.makeNetString(), index, 1)
+             ''], newDNA.bytestring, index, 1)
             avList.append(self.newPotAv)
         base.transitions.noFade()
         self.avCreate = MakeAToon.MakeAToon(self.loginFSM, avList, 'makeAToonComplete', index, self.isPaid())

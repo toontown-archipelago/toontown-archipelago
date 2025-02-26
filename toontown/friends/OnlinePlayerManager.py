@@ -61,7 +61,7 @@ class OnlinePlayerManager(DistributedObjectGlobal):
             return False
 
         # New data!
-        self.__cacheOnlineToon(OnlineToon(toon.getDoId(), toon.getName(), toon.style.makeNetString()))
+        self.__cacheOnlineToon(OnlineToon(toon.getDoId(), toon.getName(), toon.style.bytestring))
         return True
 
     """

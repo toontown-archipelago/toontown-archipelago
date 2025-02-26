@@ -740,7 +740,7 @@ class DistributedPhotoGame(DistributedMinigame, PhotoGameBase.PhotoGameBase):
             subject.setPlayerType(NametagGroup.CCNonPlayer)
             dna = ToonDNA.ToonDNA()
             dna.newToonRandom(seed, gender, 1)
-            subject.setDNAString(dna.makeNetString())
+            subject.setDNAString(dna.bytestring)
             subject.animFSM.request('neutral')
             subject.setTag('subjectIndex', '%s' % len(self.subjects))
             self.subjects.append(subject)

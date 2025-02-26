@@ -755,7 +755,7 @@ class ClothingTabPage(DirectFrame):
         if av.style.gender != genderList[self.gender] and self.torsoType != '':
             self.changeBody('gender')
         newDNA = ToonDNA.ToonDNA()
-        newDNA.makeFromNetString(av.style.makeNetString())
+        newDNA.fromBytestring(av.style.bytestring)
         newDNA.torso = av.style.torso[0] + self.torsoType
         newDNA.topTex = self.shirt
         newDNA.topTexColor = self.shirtColor
@@ -763,7 +763,7 @@ class ClothingTabPage(DirectFrame):
         newDNA.botTexColor = self.pantColor
         newDNA.sleeveTex = self.sleeve
         newDNA.sleeveTexColor = self.sleeveColor
-        av.sendUpdate('setMagicDNA', [newDNA.makeNetString()])
+        av.sendUpdate('setMagicDNA', [newDNA.bytestring])
 
     def nakedDetect(self):
         self.enableClothButton(0)

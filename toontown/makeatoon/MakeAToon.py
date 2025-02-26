@@ -249,7 +249,7 @@ class MakeAToon(StateData.StateData):
         self.smoke.hide()
         if self.warp:
             self.dna = ToonDNA.ToonDNA()
-            self.dna.makeFromNetString(self.namelessPotAv.dna)
+            self.dna.fromBytestring(self.namelessPotAv.dna)
             self.toon = Toon.Toon()
             self.toon.setDNA(self.dna)
             self.toon.useLOD(1000)

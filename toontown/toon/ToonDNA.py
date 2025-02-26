@@ -5,6 +5,8 @@ from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 from toontown.util.BytestringParser import BytestringParser, Packers, migration, ValueType
 from toontown.toonbase import TTLocalizer
+from io import BytesIO
+
 notify = directNotify.newCategory('ToonDNA')
 toonSpeciesTypes = ['d',    # Dog
                     'c',    # Cat
@@ -2114,27 +2116,12 @@ def isValidAccessory(itemIdx, textureIdx, colorIdx, which):
         return isValidShoes(itemIdx, textureIdx, colorIdx)
     else:
         return False
-    
-class StringValueType(ValueType):
-    """
-    A ValueType for string values.
-    This will read and write a string from the stream.
-    """
-    def getValue(self, io):
-        length = Packers.uint16.getValue(io)
-        data = io.read(length)
-        return data.decode("utf-8", errors="replace")
-
-    def addValue(self, io, value):
-        encoded = value.encode("utf-8")
-        Packers.uint16.addValue(io, len(encoded))
-        io.write(encoded)
         
 class ToonDNA(BytestringParser, version=1):
-    head = StringValueType
-    torso = StringValueType
-    legs = StringValueType
-    gender = StringValueType
+    head = Packers.string(3) # will be 3 characters
+    torso = Packers.string(2) # can be 1 or 2 characters
+    legs = Packers.string(1) # will be 1 character
+    gender = Packers.string(1) # m or f so 1 character
     topTex = Packers.uint8
     topTexColor = Packers.uint8
     sleeveTex = Packers.uint8
@@ -2151,9 +2138,12 @@ class ToonDNA(BytestringParser, version=1):
                  botTexColor=0, armColor=0, gloveColor=0, legColor=0, 
                  headColor=0):
         self.cache = ()
-        super().__init__(head, torso, legs, gender, topTex, topTexColor, sleeveTex, sleeveTexColor, botTex, botTexColor, armColor, gloveColor, legColor, headColor)
+        super().__init__(head, torso, legs, gender, topTex, 
+                         topTexColor, sleeveTex, sleeveTexColor, botTex,
+                         botTexColor, armColor, gloveColor, legColor, headColor)
         
     def __str__(self):
+        string = ''
         string += f'gender = {self.gender}\n'
         string += f'head = {self.head}, torso = {self.torso}, legs = {self.legs}\n'
         string += f'arm color = {self.armColor}\n'
@@ -2444,3 +2434,35 @@ class ToonDNA(BytestringParser, version=1):
         self.sleeveTexColor = sleeveTextureColor
         self.botTex = bottomTexture
         self.botTexColor = bottomTextureColor
+        
+    def defaultColor(self):
+        return 25
+
+    def __defaultColors(self):
+        color = self.defaultColor()
+        self.armColor = color
+        self.gloveColor = 0
+        self.legColor = color
+        self.headColor = color
+        
+    def newToon(self, dna, color = None):
+        if len(dna) == 4:
+            self.head = dna[0]
+            self.torso = dna[1]
+            self.legs = dna[2]
+            self.gender = dna[3]
+            self.topTex = 0
+            self.topTexColor = 0
+            self.sleeveTex = 0
+            self.sleeveTexColor = 0
+            self.botTex = 0
+            self.botTexColor = 0
+            if color is None:
+                color = self.defaultColor()
+            self.armColor = color
+            self.legColor = color
+            self.headColor = color
+            self.gloveColor = 0
+        else:
+            notify.error("tuple must be in format ('%s', '%s', '%s', '%s')")
+        return

@@ -72,7 +72,7 @@ class DistributedClosetAI(DistributedFurnitureItemAI):
         self.topList = fields['setClothesTopsList'][0]
         self.bottomList = fields['setClothesBottomsList'][0]
         style = ToonDNA.ToonDNA()
-        style.makeFromNetString(fields['setDNAString'][0])
+        style.fromBytestring(fields['setDNAString'][0])
         self.gender = style.gender
 
         # Set the state:
@@ -100,13 +100,12 @@ class DistributedClosetAI(DistributedFurnitureItemAI):
         if av.getLocation() != self.getLocation():
             self.air.writeServerEvent('suspicious', avId, 'av not in same zone as closet!')
             return
-
-        testDNA = ToonDNA.ToonDNA()
-        if not testDNA.isValidNetString(dnaString):
+        try:
+            testDNA = ToonDNA.ToonDNA().fromBytestring(dnaString)
+        except ValueError:
             self.air.writeServerEvent('suspicious', avId, 'DistributedClosetAI.removeItem: invalid dna: %s' % dnaString)
             return
-
-        testDNA.makeFromNetString(dnaString)
+        
         if itemType == ClosetGlobals.SHIRT:
             self.removedShirts.append((testDNA.topTex, testDNA.topTexColor, testDNA.sleeveTex, testDNA.sleeveTexColor))
         elif itemType == ClosetGlobals.SHORTS:
@@ -130,13 +129,12 @@ class DistributedClosetAI(DistributedFurnitureItemAI):
                 self.notify.warning('customerId: %s, but got setDNA for: %s' % (self.customerId, avId))
 
             return
-
-        testDNA = ToonDNA.ToonDNA()
-        if not testDNA.isValidNetString(dnaString):
+        try:
+            testDNA = ToonDNA.ToonDNA().fromBytestring(dnaString)
+        except ValueError:
             self.air.writeServerEvent('suspicious', avId, 'DistributedClosetAI.setDNA: invalid dna: %s' % dnaString)
             return
-
-        testDNA.makeFromNetString(dnaString)
+        
         if finished == 0:
             if not self.__validChange(testDNA):
                 # THAT IS IT NO BODY MODS
@@ -147,7 +145,7 @@ class DistributedClosetAI(DistributedFurnitureItemAI):
             return
         elif finished == 1:
             # Avatar hit the cancel button.
-            av.b_setDNAString(self.customerDNA.makeNetString())
+            av.b_setDNAString(self.customerDNA.bytestring)
             self.customerId = 0
             self.customerDNA = None
             self.gender = ''
@@ -200,7 +198,7 @@ class DistributedClosetAI(DistributedFurnitureItemAI):
 
             av.b_setClothesTopsList(av.getClothesTopsList())
             av.b_setClothesBottomsList(av.getClothesBottomsList())
-            av.b_setDNAString(self.customerDNA.makeNetString())
+            av.b_setDNAString(self.customerDNA.bytestring)
             self.customerId = 0
             self.customerDNA = None
             self.gender = ''

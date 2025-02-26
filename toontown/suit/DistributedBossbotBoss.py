@@ -189,7 +189,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         dna = ToonDNA.ToonDNA()
         dna.newToonRandom(11237, 'm', 1)
         dna.head = 'sls'
-        npc.setDNAString(dna.makeNetString())
+        npc.setDNAString(dna.bytestring)
         npc.animFSM.request('neutral')
         npc.loop('neutral')
         self.resistanceToon = npc
