@@ -71,7 +71,6 @@ class Packers:
     int64 = StructValueType("q")
     float32 = StructValueType("f")
     double64 = StructValueType("d")
-
     tuple = TupleValueType
 
 

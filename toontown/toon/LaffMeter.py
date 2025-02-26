@@ -57,10 +57,7 @@ class LaffMeter(DirectFrame):
         self.maxHp = maxHp
         self.color = None
         self.__obscured = 0
-        if self.style.type == 't':
-            self.isToon = 1
-        else:
-            self.isToon = 0
+        self.isToon = 1
         self.load()
         self.flashName = None
         self.flashIval = None
