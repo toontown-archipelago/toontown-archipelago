@@ -51,7 +51,7 @@ class AvatarChoice(DirectButton):
             else:
                 self.mode = AvatarChoice.MODE_CHOOSE
                 self.name = av.name
-                self.dna = ToonDNA.ToonDNA(av.dna)
+                self.dna = ToonDNA.ToonDNA.fromBytestring(av.dna)
                 self.wantName = av.wantName
                 self.approvedName = av.approvedName
                 self.rejectedName = av.rejectedName

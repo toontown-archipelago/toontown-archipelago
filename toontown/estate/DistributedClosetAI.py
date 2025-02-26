@@ -50,6 +50,7 @@ class DistributedClosetAI(DistributedFurnitureItemAI):
 
         self.customerId = avId
         self.customerDNA = av.dna
+        self.customerDNA = ToonDNA.ToonDNA().fromBytestring(self.customerDNA)
         owner = self.air.doId2do.get(self.ownerId)
         if not owner:
             self.air.dbInterface.queryObject(self.air.dbId, self.ownerId, self.__handleOwnerQuery,

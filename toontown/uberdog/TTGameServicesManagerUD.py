@@ -178,6 +178,7 @@ class CreateAvatarOperation(GameOperation):
         try:
             ToonDNA().fromBytestring(dna)
         except ValueError:
+            self.notify.warning(f'Invalid DNA: {ToonDNA().fromBytestring(dna)}')
             # This DNA string is invalid! Kill the connection.
             self.demand('Kill', 'Invalid DNA specified!')
             return

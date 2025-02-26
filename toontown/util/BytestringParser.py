@@ -58,21 +58,7 @@ class ConstantPacker(ValueType):
 
     def addValue(self, io: BytesIO, value):
         raise RuntimeError("ConstantPacker should not be used to write bytestrings!")
-
-class StringValueType(ValueType):
-    def __init__(self, length):
-        self.length = length
-
-    def getValue(self, io: BytesIO):
-        byteInput = io.read(self.length)
-        assert len(byteInput) == self.length
-        return byteInput.decode('utf-8')
-
-    def addValue(self, io: BytesIO, value):
-        assert len(value) == self.length
-        byteOutput = value.encode('utf-8')
-        io.write(byteOutput)
-
+    
 class Packers:
     uint8 = StructValueType("B")
     int8 = StructValueType("b")
@@ -85,7 +71,26 @@ class Packers:
     float32 = StructValueType("f")
     double64 = StructValueType("d")
     tuple = TupleValueType
-    string = StringValueType
+    string = None
+    
+class StringValueType(ValueType):
+    def __init__(self, length_type=Packers.uint8, encoding='utf-8'):
+        self.length_type = length_type
+        self.encoding = encoding
+
+    def getValue(self, io: BytesIO):
+        length = self.length_type.getValue(io)
+        byte_str = io.read(length)
+        if len(byte_str) != length:
+            raise ValueError("Insufficient bytes to read string")
+        return byte_str.decode(self.encoding)
+
+    def addValue(self, io: BytesIO, value):
+        byte_str = value.encode(self.encoding)
+        self.length_type.addValue(io, len(byte_str))
+        io.write(byte_str)
+        
+Packers.string = StringValueType()
 
 
 @dataclasses.dataclass

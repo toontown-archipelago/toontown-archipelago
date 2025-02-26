@@ -854,8 +854,7 @@ class DistributedCatchGame(DistributedMinigame):
 
         def getIntroToon(toonProperties, parent, pos):
             toon = Toon.Toon()
-            dna = ToonDNA.ToonDNA()
-            dna.newToonFromProperties(*toonProperties)
+            dna = ToonDNA.ToonDNA(*toonProperties)
             toon.setDNA(dna)
             toon.reparentTo(parent)
             toon.setPos(*pos)

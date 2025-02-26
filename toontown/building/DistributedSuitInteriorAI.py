@@ -460,7 +460,7 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
 
             # (avatar.getName(), avatar.dna.bytestring, avatar.isGM())
             name, dnaString, isGm = self.savedByMap.get(v)
-            dnaTuple = ToonDNA(dnaString).asTuple()
+            dnaTuple = ToonDNA().fromBytestring(dnaString).asTuple()
             savedBy.append([v, name, dnaTuple, isGm])
 
         self.bldg.fsm.request('waitForVictors', [victors, savedBy])

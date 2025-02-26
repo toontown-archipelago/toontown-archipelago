@@ -109,7 +109,6 @@ def createNPC(air, npcId, desc, zoneId, posIndex = 0, questCallback = None):
     else:
         print('createNPC() error!!!')
     npc.setName(name)
-    dna = ToonDNA.ToonDNA()
     if dnaType == 'r':
         dnaList = getRandomDNA(npcId, gender)
     else:
@@ -139,7 +138,7 @@ def createNPC(air, npcId, desc, zoneId, posIndex = 0, questCallback = None):
             rtDnaFile = open(RTDNAFile, 'w')
             rtDnaFile.writelines(rtDNA)
         rtDnaFile.close()
-    dna.newToonFromProperties(*dnaList)
+    dna = ToonDNA.ToonDNA(*dnaList)
     npc.setDNAString(dna.bytestring)
     npc.setHp(15)
     npc.setMaxHp(15)
@@ -174,12 +173,11 @@ def createLocalNPC(npcId):
     npc.setName(name)
     npc.setPickable(0)
     npc.setPlayerType(NametagGroup.CCNonPlayer)
-    dna = ToonDNA.ToonDNA()
     if dnaType == 'r':
         dnaList = getRandomDNA(npcId, gender)
     else:
         dnaList = dnaType
-    dna.newToonFromProperties(*dnaList)
+    dna = ToonDNA.ToonDNA(*dnaList)
     npc.setDNAString(dna.bytestring)
     npc.animFSM.request('neutral')
     return npc

@@ -45,8 +45,7 @@ class DistributedToonInteriorAI(DistributedObjectAI.DistributedObjectAI):
 
         toonData = []
         for avId, name, dnaTuple, isGM in self.building.savedBy:
-            dna = ToonDNA()
-            dna.newToonFromProperties(*dnaTuple)
+            dna = ToonDNA(*dnaTuple)
             toonData.append((avId, name, dna.bytestring, isGM))
 
         return toonData

@@ -229,7 +229,9 @@ class ToontownClientRepository(OTPClientRepository.OTPClientRepository):
                 self.notify.info('Chose avatar id: %s' % av.id)
                 self.notify.info('Chose avatar name: %s' % av.name)
                 dna = ToonDNA.ToonDNA()
-                dna.fromBytestring(av.dna.bytestring)
+                # if dna is not already a bytes object
+                if not isinstance(av.dna, bytes):
+                    dna = dna.fromBytestring(av.dna.bytestring)
                 if base.logPrivateInfo:
                     self.notify.info('Chose avatar dna: %s' % (dna.asTuple(),))
                     self.notify.info('Chose avatar position: %s' % av.position)

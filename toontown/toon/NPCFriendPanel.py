@@ -217,8 +217,7 @@ class NPCFriendCard(DirectFrame):
         gender = NPCInfo[3]
         if dnaList == 'r':
             dnaList = NPCToons.getRandomDNA(NPCID, gender)
-        dna = ToonDNA.ToonDNA()
-        dna.newToonFromProperties(*dnaList)
+        dna = ToonDNA.ToonDNA(*dnaList)
         head = ToonHead.ToonHead()
         head.setupHead(dna, forGui=1)
         self.fitGeometry(head, fFlip=1, dimension=dimension)

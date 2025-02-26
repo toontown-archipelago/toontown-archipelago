@@ -2118,10 +2118,10 @@ def isValidAccessory(itemIdx, textureIdx, colorIdx, which):
         return False
         
 class ToonDNA(BytestringParser, version=1):
-    head = Packers.string(3) # will be 3 characters
-    torso = Packers.string(2) # can be 1 or 2 characters
-    legs = Packers.string(1) # will be 1 character
-    gender = Packers.string(1) # m or f so 1 character
+    head = Packers.string
+    torso = Packers.string
+    legs = Packers.string
+    gender = Packers.string
     topTex = Packers.uint8
     topTexColor = Packers.uint8
     sleeveTex = Packers.uint8
@@ -2418,22 +2418,6 @@ class ToonDNA(BytestringParser, version=1):
             self.updateToonProperties(head=cache[0], armColor=cache[1], legColor=cache[2], headColor=cache[3])
             if oldStyle:
                 oldStyle.cache = ()
-
-    def newToonFromProperties(self, head, torso, legs, gender, armColor, gloveColor, legColor, headColor, topTexture, topTextureColor, sleeveTexture, sleeveTextureColor, bottomTexture, bottomTextureColor):
-        self.head = head
-        self.torso = torso
-        self.legs = legs
-        self.gender = gender
-        self.armColor = armColor
-        self.gloveColor = gloveColor
-        self.legColor = legColor
-        self.headColor = headColor
-        self.topTex = topTexture
-        self.topTexColor = topTextureColor
-        self.sleeveTex = sleeveTexture
-        self.sleeveTexColor = sleeveTextureColor
-        self.botTex = bottomTexture
-        self.botTexColor = bottomTextureColor
         
     def defaultColor(self):
         return 25

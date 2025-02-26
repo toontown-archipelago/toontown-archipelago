@@ -567,7 +567,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.sendUpdate('setDNAString', [string])
 
     def setDNAString(self, _string):
-        self.dna = ToonDNA.ToonDNA().fromBytestring(_string)
+        self.dna.fromBytestring(_string)
         if simbase.config.GetBool('adjust-dna', True) and self.verifyDNA() == False:
             logStr = 'AvatarHackWarning! invalid dna colors for %s old: %s new: %s' % (
             self.doId, str(ToonDNA.ToonDNA(_string).asTuple()), str(self.dna.asTuple()))
