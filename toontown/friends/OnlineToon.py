@@ -21,7 +21,7 @@ class OnlineToon:
         return list(fields)
 
     def make_dna(self) -> ToonDNA:
-        return ToonDNA().fromBytestring(self.dna)
+        return ToonDNA.fromBytestring(self.dna)
 
     # Constructs a FriendHandle instance from this instance to be used for the friends list.
     def handle(self) -> FriendHandle:

@@ -754,8 +754,7 @@ class ClothingTabPage(DirectFrame):
         genderList = ['m', 'f']
         if av.style.gender != genderList[self.gender] and self.torsoType != '':
             self.changeBody('gender')
-        newDNA = ToonDNA.ToonDNA()
-        newDNA.fromBytestring(av.style.bytestring)
+        newDNA = ToonDNA.ToonDNA.fromBytestring(av.style.bytestring)
         newDNA.torso = av.style.torso[0] + self.torsoType
         newDNA.topTex = self.shirt
         newDNA.topTexColor = self.shirtColor

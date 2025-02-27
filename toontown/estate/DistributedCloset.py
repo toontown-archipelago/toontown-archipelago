@@ -250,8 +250,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
             self.closetGUI.enter(base.localAvatar)
             self.closetGUI.showButtons()
             style = self.av.getStyle()
-            self.oldStyle = ToonDNA.ToonDNA()
-            self.oldStyle.fromBytestring(style.bytestring)
+            self.oldStyle = ToonDNA.ToonDNA.fromBytestring(style.bytestring)
         return Task.done
 
     def resetCloset(self):
@@ -269,8 +268,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
             del self.av
         self.av = base.localAvatar
         style = self.av.getStyle()
-        self.oldStyle = ToonDNA.ToonDNA()
-        self.oldStyle.fromBytestring(style.bytestring)
+        self.oldStyle = ToonDNA.ToonDNA.fromBytestring(style.bytestring)
         self.topDeleted = 0
         self.bottomDeleted = 0
         return Task.done
@@ -316,9 +314,8 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
                 self.closetGUI.bottomChoice = i
 
         if len(itemList) > 1:
-            trashDNA = ToonDNA.ToonDNA()
             trashItem = self.av.getStyle().makeNetString()
-            trashDNA.fromBytestring(trashItem)
+            trashDNA= ToonDNA.ToonDNA.fromBytestring(trashItem)
             if trashIndex == 0:
                 swapFunc(1)
             else:
@@ -365,7 +362,7 @@ class DistributedCloset(DistributedFurnitureItem.DistributedFurnitureItem):
             if av:
                 if self.av == base.cr.doId2do[avId]:
                     oldTorso = self.av.style.torso
-                    self.av.style.fromBytestring(dnaString)
+                    self.av.style = self.av.style.fromBytestring(dnaString)
                     if len(oldTorso) == 2 and len(self.av.style.torso) == 2 and self.av.style.torso[1] != oldTorso[1]:
                         self.av.swapToonTorso(self.av.style.torso, genClothes=0)
                         self.av.loop('neutral', 0)

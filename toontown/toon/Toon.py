@@ -734,8 +734,7 @@ class Toon(Avatar.Avatar, ToonHead):
         self.__swapToonClothes(newDNA)
 
     def setDNAString(self, dnaString):
-        newDNA = ToonDNA.ToonDNA()
-        newDNA.fromBytestring(dnaString)
+        newDNA = ToonDNA.ToonDNA.fromBytestring(dnaString)
         if len(newDNA.torso) < 2:
             self.sendLogSuspiciousEvent('nakedToonDNA %s was requested' % newDNA.torso)
             newDNA.torso = newDNA.torso + 's'

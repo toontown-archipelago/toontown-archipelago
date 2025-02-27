@@ -176,9 +176,9 @@ class CreateAvatarOperation(GameOperation):
             self.demand('Kill', 'Invalid index specified!')
             return
         try:
-            ToonDNA().fromBytestring(dna)
+            ToonDNA.fromBytestring(dna)
         except ValueError:
-            self.notify.warning(f'Invalid DNA: {ToonDNA().fromBytestring(dna)}')
+            self.notify.warning(f'Invalid DNA: {ToonDNA.fromBytestring(dna)}')
             # This DNA string is invalid! Kill the connection.
             self.demand('Kill', 'Invalid DNA specified!')
             return

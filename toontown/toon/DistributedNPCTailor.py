@@ -125,8 +125,7 @@ class DistributedNPCTailor(DistributedNPCToonBase):
             else:
                 self.accept(self.av.uniqueName('disable'), self.__handleUnexpectedExit)
             style = self.av.getStyle()
-            self.oldStyle = ToonDNA.ToonDNA()
-            self.oldStyle.fromBytestring(style.bytestring)
+            self.oldStyle = ToonDNA.ToonDNA.fromBytestring(style.bytestring)
             self.setupAvatars(self.av)
             if self.isLocalToon:
                 camera.wrtReparentTo(render)
@@ -290,7 +289,7 @@ class DistributedNPCTailor(DistributedNPCToonBase):
             if av:
                 if self.av == av:
                     oldTorso = self.av.style.torso
-                    self.av.style.fromBytestring(dnaString)
+                    self.av.style = self.av.style.fromBytestring(dnaString)
                     if len(oldTorso) == 2 and len(self.av.style.torso) == 2 and self.av.style.torso[1] != oldTorso[1]:
                         self.av.swapToonTorso(self.av.style.torso, genClothes=0)
                         self.av.loop('neutral', 0)

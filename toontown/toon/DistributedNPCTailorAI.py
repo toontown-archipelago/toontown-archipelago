@@ -118,7 +118,7 @@ class DistributedNPCTailorAI(DistributedNPCToonBaseAI):
                 self.notify.warning('customerId: %s, but got setDNA for: %s' % (self.customerId, avId))
             return
         try:
-            ToonDNA.ToonDNA().fromBytestring(blob)
+            ToonDNA.ToonDNA.fromBytestring(blob)
         except ValueError:
             self.air.writeServerEvent('suspicious', avId, 'DistributedNPCTailorAI.setDNA: unable to parse DNA')
             return

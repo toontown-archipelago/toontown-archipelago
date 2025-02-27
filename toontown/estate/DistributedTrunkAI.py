@@ -55,8 +55,7 @@ class DistributedTrunkAI(DistributedClosetAI):
         self.glassesList = fields['setGlassesList'][0]
         self.backpackList = fields['setBackpackList'][0]
         self.shoesList = fields['setShoesList'][0]
-        style = ToonDNA.ToonDNA()
-        style.fromBytestring(fields['setDNAString'][0])
+        style = ToonDNA.ToonDNA.fromBytestring(fields['setDNAString'][0])
         self.gender = style.gender
 
         # Set the state and movie:

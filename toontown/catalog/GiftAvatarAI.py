@@ -47,8 +47,7 @@ class GiftAvatarAI:
         return self.onGiftOrder.getBlob(store=CatalogItem.Customization | CatalogItem.DeliveryDate)
 
     def setDNAString(self, dnaString):
-        self.style = ToonDNA.ToonDNA()
-        self.style.fromBytestring(dnaString.decode('base64'))
+        self.style = ToonDNA.ToonDNA.fromBytestring(dnaString.decode('base64'))
 
     def setMailboxContents(self, mailboxContents):
         self.mailboxContents = CatalogItemList.CatalogItemList(mailboxContents.decode('base64'),

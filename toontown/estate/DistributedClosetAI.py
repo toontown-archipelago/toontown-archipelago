@@ -50,7 +50,7 @@ class DistributedClosetAI(DistributedFurnitureItemAI):
 
         self.customerId = avId
         self.customerDNA = av.dna
-        self.customerDNA = ToonDNA.ToonDNA().fromBytestring(self.customerDNA)
+        self.customerDNA = ToonDNA.ToonDNA.fromBytestring(self.customerDNA)
         owner = self.air.doId2do.get(self.ownerId)
         if not owner:
             self.air.dbInterface.queryObject(self.air.dbId, self.ownerId, self.__handleOwnerQuery,
@@ -72,8 +72,7 @@ class DistributedClosetAI(DistributedFurnitureItemAI):
     def __handleOwnerQuery(self, dclass, fields):
         self.topList = fields['setClothesTopsList'][0]
         self.bottomList = fields['setClothesBottomsList'][0]
-        style = ToonDNA.ToonDNA()
-        style.fromBytestring(fields['setDNAString'][0])
+        style = ToonDNA.ToonDNA.fromBytestring(fields['setDNAString'][0])
         self.gender = style.gender
 
         # Set the state:
@@ -102,7 +101,7 @@ class DistributedClosetAI(DistributedFurnitureItemAI):
             self.air.writeServerEvent('suspicious', avId, 'av not in same zone as closet!')
             return
         try:
-            testDNA = ToonDNA.ToonDNA().fromBytestring(dnaString)
+            testDNA = ToonDNA.ToonDNA.fromBytestring(dnaString)
         except ValueError:
             self.air.writeServerEvent('suspicious', avId, 'DistributedClosetAI.removeItem: invalid dna: %s' % dnaString)
             return
@@ -131,7 +130,7 @@ class DistributedClosetAI(DistributedFurnitureItemAI):
 
             return
         try:
-            testDNA = ToonDNA.ToonDNA().fromBytestring(dnaString)
+            testDNA = ToonDNA.ToonDNA.fromBytestring(dnaString)
         except ValueError:
             self.air.writeServerEvent('suspicious', avId, 'DistributedClosetAI.setDNA: invalid dna: %s' % dnaString)
             return

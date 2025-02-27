@@ -248,8 +248,7 @@ class MakeAToon(StateData.StateData):
         self.smoke.setScale(1, 1, 0.75)
         self.smoke.hide()
         if self.warp:
-            self.dna = ToonDNA.ToonDNA()
-            self.dna.fromBytestring(self.namelessPotAv.dna)
+            self.dna = ToonDNA.ToonDNA.fromBytestring(self.namelessPotAv.dna)
             self.toon = Toon.Toon()
             self.toon.setDNA(self.dna)
             self.toon.useLOD(1000)

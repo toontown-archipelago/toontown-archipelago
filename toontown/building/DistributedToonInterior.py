@@ -155,7 +155,7 @@ class DistributedToonInterior(DistributedObject.DistributedObject):
 
     def buildFrame(self, name, dnaNetString):
         frame = loader.loadModel('phase_3.5/models/modules/trophy_frame')
-        dna = ToonDNA.ToonDNA().fromBytestring(dnaNetString)
+        dna = ToonDNA.ToonDNA.fromBytestring(dnaNetString)
         head = ToonHead.ToonHead()
         head.setupHead(dna)
         head.setPosHprScale(0, -0.05, -0.05, 180, 0, 0, 0.55, 0.02, 0.55)

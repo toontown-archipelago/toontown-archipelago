@@ -31,8 +31,7 @@ class LoadHouseOperation(FSM):
             taskMgr.doMethodLater(0.0, self.demand, 'makeBlankHouse-%s' % id(self), extraArgs=['MakeBlankHouse'])
             return
 
-        style = ToonDNA.ToonDNA()
-        style.fromBytestring(self.avatar.get('setDNAString')[0])
+        style = ToonDNA.ToonDNA.fromBytestring(self.avatar.get('setDNAString')[0])
         self.houseId = self.avatar.get('setHouseId', [0])[0]
         self.gender = style.gender
         if self.houseId == 0:

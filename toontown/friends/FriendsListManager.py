@@ -140,8 +140,7 @@ class FriendsListManager:
         FriendInviter.showFriendInviter(avId, avName, avDisableName)
 
     def __handleFriendInvitation(self, avId, avName, inviterDna, context):
-        dna = ToonDNA.ToonDNA()
-        dna.fromBytestring(inviterDna)
+        dna = ToonDNA.ToonDNA.fromBytestring(inviterDna)
         if not base.cr.avatarFriendsManager.checkIgnored(avId):
             FriendInvitee.FriendInvitee(avId, avName, dna, context)
 

@@ -1209,8 +1209,7 @@ class SetColor(MagicWord):
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-        dna = ToonDNA.ToonDNA()
-        dna.fromBytestring(toon.getDNAString())
+        dna = ToonDNA.ToonDNA.fromBytestring(toon.getDNAString())
         toonParts = ['all', 'legs', 'arms', 'head']
         toonPart = args[0]
         toonColor = args[1]
@@ -1240,11 +1239,9 @@ class SetTop(MagicWord):
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-        dna = ToonDNA.ToonDNA()
-        dna.fromBytestring(toon.getDNAString())
-
+        dna = ToonDNA.ToonDNA.fromBytestring(toon.getDNAString())
         topTex = args[0]
-
+        
         if not 0 <= topTex <= len(ToonDNA.Shirts):
             return "Invalid shirt texture specified!"
         dna.topTex = topTex
@@ -1259,11 +1256,9 @@ class SetTopColor(MagicWord):
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-        dna = ToonDNA.ToonDNA()
-        dna.fromBytestring(toon.getDNAString())
-
+        dna = ToonDNA.ToonDNA.fromBytestring(toon.getDNAString())
         topTexColor = args[0]
-
+        
         if not 0 <= topTexColor <= len(ToonDNA.ClothesColors):
             return "Invalid shirt color specified!"
         dna.topTexColor = topTexColor
@@ -1278,11 +1273,9 @@ class SetSleeves(MagicWord):
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-        dna = ToonDNA.ToonDNA()
-        dna.fromBytestring(toon.getDNAString())
-
+        dna = ToonDNA.ToonDNA.fromBytestring(toon.getDNAString())
         sleeveTex = args[0]
-
+        
         if not 0 <= sleeveTex <= len(ToonDNA.Sleeves):
             return "Invalid sleeves texture specified!"
         dna.sleeveTex = sleeveTex
@@ -1297,9 +1290,7 @@ class SetSleevesColor(MagicWord):
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-        dna = ToonDNA.ToonDNA()
-        dna.fromBytestring(toon.getDNAString())
-
+        dna = ToonDNA.ToonDNA.fromBytestring(toon.getDNAString())
         sleeveTexColor = args[0]
 
         if not 0 <= sleeveTexColor <= len(ToonDNA.ClothesColors):
@@ -1316,8 +1307,7 @@ class SetBottoms(MagicWord):
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-        dna = ToonDNA.ToonDNA()
-        dna.fromBytestring(toon.getDNAString())
+        dna = ToonDNA.ToonDNA.fromBytestring(toon.getDNAString())
 
         if dna.gender == 'm':
             bottoms = ToonDNA.BoyShorts
@@ -1342,8 +1332,7 @@ class SetBottomsColor(MagicWord):
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-        dna = ToonDNA.ToonDNA()
-        dna.fromBytestring(toon.getDNAString())
+        dna = ToonDNA.ToonDNA.fromBytestring(toon.getDNAString())
 
         botTexColor = args[0]
 
@@ -3291,8 +3280,7 @@ class SetDNA(MagicWord):
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-        dna = ToonDNA.ToonDNA()
-        dna.fromBytestring(invoker.getDNAString())
+        dna = ToonDNA.ToonDNA.fromBytestring(toon.getDNAString())
 
         part = args[0]
         value = args[1]
