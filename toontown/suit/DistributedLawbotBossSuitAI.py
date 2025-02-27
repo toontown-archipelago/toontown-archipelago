@@ -102,6 +102,7 @@ class DistributedLawbotBossSuitAI(DistributedSuitBaseAI.DistributedSuitBaseAI):
             if not toon:
                 self.doProsecute()
                 return
+            lawbotBoss.sendUpdateToAvatarId(toonToAttackId, 'showSingleAttackAlert', [])
             toonPos = toon.getPos()
             z2 = toonPos[2] + 1.3
             toonPos = Point3(toonPos.getX(), toonPos.getY(), 0)
