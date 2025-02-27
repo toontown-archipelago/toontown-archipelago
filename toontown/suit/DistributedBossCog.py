@@ -72,6 +72,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.scoreboard.hide()
         self.cutsceneSpeed = 1.0
         self.music = None
+        self.alertText = OnscreenText(text='', pos=(0, 0.65), scale=0.25, fg=(1,0,0,1), shadow=(0,0,0,1))
+        self.alertText.hide()
         return
 
     def announceGenerate(self):
@@ -240,6 +242,10 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bossHealthBar.cleanup()
         self.bossSpeedrunTimer.cleanup()
         self.scoreboard.cleanup()
+        if self.alertText:
+            self.alertText.destroy()
+            self.alertText = None
+
         return
 
     def delete(self):
@@ -1322,11 +1328,21 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.showAlert("!")
     
     def showAlert(self, text):
-        self.alertText = OnscreenText(text=text, pos=(0, 0.5), scale=0.25, fg=(1,0,0,1), shadow=(0,0,0,1))
-        taskMgr.doMethodLater(1.0, self.hideAlert, 'hideAlertTask')
-    
-    def hideAlert(self, task):
-        if self.alertText:
-            self.alertText.destroy()
-            self.alertText = None
-        return task.done
+        # lets make a lerp to make the text show and hide
+        self.alertText.setText(text)
+        self.alertText.show()
+        self.alertText.setAlphaScale(0)
+        # fade in and pulse after
+        fadeIn = Sequence(LerpFunctionInterval(self.fadeFunc, duration=0.5, fromData=0, toData=1),
+                         LerpScaleInterval(self.alertText, duration=0.5, scale=0.75, startScale=0.25))
+        fadeIn.start()
+        # hide the alert
+        fadeOut = Sequence(Wait(2), LerpFunctionInterval(self.fadeFunc, duration=0.5, fromData=1, toData=0))
+        fadeOut.start()
+        
+    def fadeFunc(self, alpha):
+        """
+        This function will be used to fade the alert text in and out
+        """
+        self.alertText.setAlphaScale(alpha)
+        
