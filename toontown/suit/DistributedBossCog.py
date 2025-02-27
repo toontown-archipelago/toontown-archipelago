@@ -72,6 +72,9 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.scoreboard.hide()
         self.cutsceneSpeed = 1.0
         self.music = None
+        self.alertText = OnscreenText(parent=base.localAvatar.nametag.getNameIcon(), align=TextNode.ACenter, text='',
+                                      fg=(0.9, 0, 0, 1), scale=4, pos=Vec3(0, 5.75, 0), mayChange=True)
+        self.alertText.hide()
         return
 
     def announceGenerate(self):
@@ -240,6 +243,10 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bossHealthBar.cleanup()
         self.bossSpeedrunTimer.cleanup()
         self.scoreboard.cleanup()
+        if self.alertText:
+            self.alertText.destroy()
+            self.alertText = None
+
         return
 
     def delete(self):
@@ -1320,11 +1327,21 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.showAlert("!")
     
     def showAlert(self, text):
-        self.alertText = OnscreenText(text=text, pos=(0, 0.5), scale=0.25, fg=(1,0,0,1), shadow=(0,0,0,1))
-        taskMgr.doMethodLater(1.0, self.hideAlert, 'hideAlertTask')
-    
-    def hideAlert(self, task):
-        if self.alertText:
-            self.alertText.destroy()
-            self.alertText = None
-        return task.done
+        # lets make a lerp to make the text show and hide
+        self.alertText['text'] = text
+        self.alertText.show()
+        self.alertText.setAlphaScale(0)
+        # fade in, pulse, fade out after
+        fadeIn = LerpFunctionInterval(self.fadeFunc, duration=0.3, fromData=0, toData=1)
+        pulse = Sequence(LerpColorScaleInterval(self.alertText, duration=0.25, colorScale=(0.5, 0.05, 0.05, 1), startColorScale=(0.9, 0, 0, 1)),
+                         LerpColorScaleInterval(self.alertText, duration=0.25, colorScale=(0.9, 0, 0, 1), startColorScale=(0.5, 0.05, 0.05, 1)))
+        fadeOut = LerpFunctionInterval(self.fadeFunc, duration=0.3, fromData=1, toData=0)
+        alert = Sequence(Parallel(fadeIn, Sequence(Wait(0.3), pulse, pulse), Sequence(Wait(1.5), fadeOut)))
+        alert.start()
+
+    def fadeFunc(self, alpha):
+        """
+        This function will be used to fade the alert text in and out
+        """
+        self.alertText.setAlphaScale(alpha)
+        
