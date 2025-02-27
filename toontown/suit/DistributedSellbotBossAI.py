@@ -177,6 +177,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         if self.nearToons:
             toonId = random.choice(self.nearToons)
             self.b_setAttackCode(ToontownGlobals.BossCogDirectedAttack, toonId)
+            self.sendUpdateToAvatarId(toonId, 'showSingleAttackAlert', [])
         else:
             self.__doAreaAttack()
 

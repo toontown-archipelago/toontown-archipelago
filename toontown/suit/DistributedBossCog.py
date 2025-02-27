@@ -72,9 +72,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.scoreboard.hide()
         self.cutsceneSpeed = 1.0
         self.music = None
-        self.alertText = OnscreenText(parent=base.localAvatar.nametag.getNameIcon(), align=TextNode.ACenter, text='',
-                                      fg=(0.9, 0, 0, 1), scale=4, pos=Vec3(0, 5.75, 0), mayChange=True)
-        self.alertText.hide()
+        self.alertText = None
         return
 
     def announceGenerate(self):
@@ -1323,18 +1321,25 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         return seq
     
     def showJumpAttackAlert(self):
-        # Display an exclamation mark above the toon's head
-        self.showAlert("!")
+        # Display a red exclamation mark above the toon's head
+        self.showAlert("!", Vec4(0.8, 0, 0, 1), Vec4(0.5, 0.05, 0.05, 1))
+
+    def showSingleAttackAlert(self):
+        # Display a blue exclamation mark above the toon's head
+        self.showAlert("!", Vec4(0, 0, 0.8, 1), Vec4(0.05, 0.05, 0.5, 1))
     
-    def showAlert(self, text):
+    def showAlert(self, text, color, lerpColor):
+        if not base.localAvatar.wantAlerts:
+            return
         # lets make a lerp to make the text show and hide
-        self.alertText['text'] = text
+        self.alertText = OnscreenText(parent=base.localAvatar.nametag.getNameIcon(), align=TextNode.ACenter, text=text,
+                     fg=color, scale=4, pos=Vec3(0, 5.75, 0), mayChange=True)
         self.alertText.show()
         self.alertText.setAlphaScale(0)
         # fade in, pulse, fade out after
         fadeIn = LerpFunctionInterval(self.fadeFunc, duration=0.3, fromData=0, toData=1)
-        pulse = Sequence(LerpColorScaleInterval(self.alertText, duration=0.25, colorScale=(0.5, 0.05, 0.05, 1), startColorScale=(0.9, 0, 0, 1)),
-                         LerpColorScaleInterval(self.alertText, duration=0.25, colorScale=(0.9, 0, 0, 1), startColorScale=(0.5, 0.05, 0.05, 1)))
+        pulse = Sequence(LerpColorScaleInterval(self.alertText, duration=0.25, colorScale=lerpColor, startColorScale=color),
+                         LerpColorScaleInterval(self.alertText, duration=0.25, colorScale=color, startColorScale=lerpColor))
         fadeOut = LerpFunctionInterval(self.fadeFunc, duration=0.3, fromData=1, toData=0)
         alert = Sequence(Parallel(fadeIn, Sequence(Wait(0.3), pulse, pulse), Sequence(Wait(1.5), fadeOut)))
         alert.start()

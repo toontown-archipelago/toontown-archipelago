@@ -1293,6 +1293,7 @@ dclass DistributedBossCog : DistributedNode {
   timesUp() broadcast ram;
   teamWiped() broadcast ram;
   showJumpAttackAlert() broadcast;
+  showSingleAttackAlert() broadcast;
 };
 
 dclass DistributedSellbotBoss : DistributedBossCog {
