@@ -247,6 +247,8 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
 
     def __doAreaAttack(self):
         self.b_setAttackCode(ToontownGlobals.BossCogAreaAttack)
+        for toon in self.involvedToons:
+            self.sendUpdateToAvatarId(toon, 'showJumpAttackAlert', [])
 
     def __doDirectedAttack(self):
         if self.nearToons:

@@ -63,6 +63,7 @@ class Settings:
         'random-music': False,
         "archipelago-textsize": 0.5,
         "archipelago-log-bg": False,
+        'boss-alerts': True,
         # Options below this comment will not be exposed by OptionsPage
         # They can still be configurable by the end user
         "want-legacy-models": False,

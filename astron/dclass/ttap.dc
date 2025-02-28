@@ -1292,6 +1292,8 @@ dclass DistributedBossCog : DistributedNode {
   awardCombo(uint32 avId, uint8, int32) broadcast ram;
   timesUp() broadcast ram;
   teamWiped() broadcast ram;
+  showJumpAttackAlert() broadcast;
+  showSingleAttackAlert() broadcast;
 };
 
 dclass DistributedSellbotBoss : DistributedBossCog {

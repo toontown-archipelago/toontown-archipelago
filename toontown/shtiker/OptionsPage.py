@@ -36,6 +36,7 @@ OptionToType = {
     'sprint_mode': OptionTypes.BUTTON,
     'fovEffects': OptionTypes.BUTTON,
     'cam-toggle-lock': OptionTypes.BUTTON,
+    'boss-alerts': OptionTypes.BUTTON,
     'speedchat-style': OptionTypes.BUTTON_SPEEDCHAT,
     'discord-rich-presence': OptionTypes.BUTTON,
     'archipelago-textsize': OptionTypes.SLIDER,
@@ -143,6 +144,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'sprint_mode',
             'fovEffects',
             'cam-toggle-lock',
+            'boss-alerts',
             'speedchat-style',
             'discord-rich-presence',
             'archipelago-textsize',
@@ -764,6 +766,8 @@ class OptionElement(DirectFrame):
             base.localAvatar.wantCompetitiveBossScoring = newSetting
         elif self.optionName == 'archipelago-log-bg':
             base.localAvatar.wantLogBg = newSetting
+        elif self.optionName == 'boss-alerts':
+            base.localAvatar.wantAlerts = newSetting
         elif self.optionName == 'report-errors':
             os.environ['WANT_ERROR_REPORTING'] = 'true' if newSetting else 'false'
         elif self.optionName in ("borderless", "vertical-sync"):

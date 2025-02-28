@@ -419,6 +419,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             return self.__doDirectedAttack()  # next toon
 
         # we have a toon to attack
+        self.sendUpdateToAvatarId(toonToAttack, 'showSingleAttackAlert', [])
         self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonToAttack)
 
     def __doAreaAttack(self):
