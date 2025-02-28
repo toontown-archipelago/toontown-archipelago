@@ -50,7 +50,7 @@ GLOBALS = {
     },
     LawbotOfficeExt: {
         'music': 'lawbot-district-attorney-lobby',
-        'battleMusic': 'lawbot-district-attorney-office-lobby-battle',
+        'battleMusic': 'lawbot-district-attorney-lobby-battle',
     },
     LawbotStageIntA: {
         'music': 'lawbot-office-a',
