@@ -326,16 +326,15 @@ class BountiesHinted(Toggle):
     display_name = "Hinted Bounties"
     default = False
 
-class WinConditionRandomizedWeb(Range, Toggle):
+class WinConditionRandomizedWeb(Range):
     """
-    How many Win Conditions will be selected for goal
-    if 0 or equal or larger than selected win condition count, all selected win conditions will be active.
+    How many additional random Win Conditions will be selected for goal?
     """
     display_name = "Randomized Win Conditions"
     range_start = 0
     range_end = len(WinConditions.valid_keys)
     default = 0
-    visibility = ~(Visibility.simple_ui|Visibility.complex_ui)
+    visibility = Visibility.simple_ui|Visibility.complex_ui
 
 
 class TPSanity(Choice):

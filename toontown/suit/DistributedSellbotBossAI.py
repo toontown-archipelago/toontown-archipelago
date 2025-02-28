@@ -169,11 +169,15 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             newRecoverRate = 2
         now = globalClock.getFrameTime()
         self.b_setBossDamage(self.getBossDamage(), newRecoverRate, now)
+        # notify toons about the jump attack
+        for toon in self.involvedToons:
+            self.sendUpdateToAvatarId(toon, 'showJumpAttackAlert', [])
 
     def __doDirectedAttack(self):
         if self.nearToons:
             toonId = random.choice(self.nearToons)
             self.b_setAttackCode(ToontownGlobals.BossCogDirectedAttack, toonId)
+            self.sendUpdateToAvatarId(toonId, 'showSingleAttackAlert', [])
         else:
             self.__doAreaAttack()
 

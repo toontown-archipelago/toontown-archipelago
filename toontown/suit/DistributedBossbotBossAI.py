@@ -739,6 +739,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             threatToSubtract = max(toonThreat, 10)
             self.subtractThreat(toonId, threatToSubtract)
             if self.isToonRoaming(toonId):
+                self.sendUpdateToAvatarId(toonId, 'showSingleAttackAlert', [])
                 self.b_setAttackCode(ToontownGlobals.BossCogGolfAttack, toonId)
                 self.numGolfAttacks += 1
             elif self.isToonOnTable(toonId):
@@ -751,12 +752,15 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     self.notify.debug('moveAttack is not allowed, doing gearDirectedAttack')
                     chanceToShoot = 1.0
                 if random.random() < chanceToShoot:
+                    self.sendUpdateToAvatarId(toonId, 'showSingleAttackAlert', [])
                     self.b_setAttackCode(ToontownGlobals.BossCogGearDirectedAttack, toonId)
                     self.numGearAttacks += 1
                 else:
                     tableIndex = self.getToonTableIndex(toonId)
+                    self.sendUpdateToAvatarId(toonId, 'showSingleAttackAlert', [])
                     self.doMoveAttack(tableIndex)
             else:
+                self.sendUpdateToAvatarId(toonId, 'showSingleAttackAlert', [])
                 self.b_setAttackCode(ToontownGlobals.BossCogGolfAttack, toonId)
         else:
             uprightTables = self.getUprightTables()
@@ -792,6 +796,8 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         maxThreat = 0
         maxToons = []
         for toonId in self.threatDict:
+            if not hasattr(self.air, 'doId2do'):
+                return
             toon = self.air.doId2do.get(toonId)
             if toon and toon.getHp() <= 0:
                 continue
@@ -921,6 +927,8 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def __doGolfAreaAttack(self):
         self.numGolfAreaAttacks += 1
+        for toon in self.involvedToons:
+            self.sendUpdateToAvatarId(toon, 'showJumpAttackAlert', [])
         self.b_setAttackCode(ToontownGlobals.BossCogGolfAreaAttack)
 
     def hitToon(self, toonId):
