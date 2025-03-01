@@ -510,11 +510,13 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             dmg *= 1.5
             dmg = int(math.ceil(dmg))
         elif dmg >= self.STUN_THRESHOLD:
-            self.b_setAttackCode(ToontownGlobals.BossCogDizzyNow)
-            self.movingToTable = False
-            self.hitCount = 0
-            self.d_stunBonus(avId, BossCogGlobals.POINTS_STUN_CEO)
-            self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 7.0))
+            stunChance = (100 - self.progressValue(0, 40))
+            if random.randint(1, 100) <= stunChance:
+                self.b_setAttackCode(ToontownGlobals.BossCogDizzyNow)
+                self.movingToTable = False
+                self.hitCount = 0
+                self.d_stunBonus(avId, BossCogGlobals.POINTS_STUN_CEO)
+                self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 7.0))
 
         self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 3.0))
         self.d_damageDealt(avId, dmg)

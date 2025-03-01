@@ -913,7 +913,7 @@ TOT_REWARD_END_OFFSET_AMOUNT = 0
 
 LawbotBossMaxDamage = 2700
 LawbotBossWinningTilt = 40
-LawbotBossInitialDamage = 1350
+LawbotBossInitialDamage = 1700
 LawbotBossBattleOnePosHpr = (-2.798,
  -60,
  0,
@@ -1132,11 +1132,11 @@ LawbotBossLawyerPosHprs = [(-57,
   -180,
   0,
   0)]
-LawbotBossLawyerCycleTime = 6
+LawbotBossLawyerCycleTime = 9
 LawbotBossLawyerToPanTime = 2.5
 LawbotBossLawyerChanceToAttack = 50
 LawbotBossLawyerHeal = 2
-LawbotBossLawyerStunTime = 5
+LawbotBossLawyerStunTime = 9
 
 # indeces mean the following:
 # ammo, numgavels, numlawyers, toonup, allowbonusweight, basebonusweightsubtract
@@ -1283,7 +1283,7 @@ LawbotBossJuryBoxStartPos = (94, -8, 5)
 LawbotBossJuryBoxRelativeEndPos = (30, 0, 12.645)
 LawbotBossJuryBoxMoveTime = 70
 LawbotBossJurorsForBalancedScale = 8
-LawbotBossDamagePerJuror = 68
+LawbotBossDamagePerJuror = 60
 LawbotBossCogJurorFlightTime = 10
 LawbotBossCogJurorDistance = 75
 LawbotBossBaseJurorNpcId = 2001

@@ -22,7 +22,7 @@ from ..archipelago.definitions.util import ap_location_name_to_id
 
 class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedSellbotBossAI')
-    limitHitCount = 6
+    limitHitCount = 8
     numPies = ToontownGlobals.FullPies
 
     def __init__(self, air):
