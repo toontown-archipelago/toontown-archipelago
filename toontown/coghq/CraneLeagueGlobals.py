@@ -117,10 +117,10 @@ class CFORuleset:
         self.TIMER_MODE = False  # When true, the cfo is timed and ends when time is up, when false, acts as a stopwatch
         self.TIMER_MODE_TIME_LIMIT = 15 * 60  # How many seconds do we give the CFO crane round if TIMER_MODE is active?
 
-        self.CFO_MAX_HP = 400  # How much HP should the CFO have?
+        self.CFO_MAX_HP = 350  # How much HP should the CFO have?
         self.HP_PER_EXTRA = 150  # How much HP should the CFO increase by per toon?
-        self.CFO_STUN_THRESHOLD = 15  # How much damage should a goon do to stun?
-        self.SIDECRANE_IMPACT_STUN_THRESHOLD = 0.8  # How much impact should a side crane hit need to register a stun
+        self.CFO_STUN_THRESHOLD = 10  # How much damage should a goon do to stun?
+        self.SIDECRANE_IMPACT_STUN_THRESHOLD = 0.5  # How much impact should a side crane hit need to register a stun
 
         self.WANT_BACKWALL = False
         self.WANT_SIDECRANES = True
@@ -162,8 +162,8 @@ class CFORuleset:
         self.GOON_SPEED_MULTIPLIER = 1.0  # How fast should goons move?
 
         # How many goons should we allow to spawn? This will scale up towards the end of the fight to the 2nd var
-        self.MAX_GOON_AMOUNT_START = 6
-        self.MAX_GOON_AMOUNT_END = 12
+        self.MAX_GOON_AMOUNT_START = 4
+        self.MAX_GOON_AMOUNT_END = 6
 
         # Should goons get stunned instead of die on hit?
         self.SAFES_STUN_GOONS = False
