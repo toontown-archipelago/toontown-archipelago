@@ -1331,6 +1331,11 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def showAlert(self, text, color, lerpColor):
         if not base.localAvatar.wantAlerts:
             return
+        # Destroy any currently active alerts (really only a problem in ceo where attacks can happen faster than interval)
+        if self.alertText:
+            self.alertText.destroy()
+            self.alertText = None
+
         # lets make a lerp to make the text show and hide
         self.alertText = OnscreenText(parent=base.localAvatar.nametag.getNameIcon(), align=TextNode.ACenter, text=text,
                      fg=color, scale=4, pos=Vec3(0, 5.75, 0), mayChange=True)
