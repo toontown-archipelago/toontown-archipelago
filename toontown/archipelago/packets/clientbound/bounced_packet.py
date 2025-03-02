@@ -60,9 +60,6 @@ class BouncedPacket(ClientBoundPacketBase):
         toon.d_sendArchipelagoMessage(msg)
 
     def handle_ringlink(self, client):
-        for _ in range(20):
-            print("RINGLINK")
-
         self.debug("Received ringlink packet")
 
         # At this point we are assuming that this packet IS a ringlink packet and that our client has it enabled.
