@@ -33,13 +33,13 @@ class BouncePacket(ServerBoundPacketBase):
 
         # Documentation specifices this to either be slot name or name from a mp game.
         # Checking the AP discord confirms that in implementation, this is only used to verify if it was yourself.
-        self.data['source'] = toon.getUUID()
+        self.data['source'] = abs(int(hash(toon.getUUID())/10000000000))
 
     def add_ringlink_data(self, toon, amount=0):
         self.tags.append(ConnectPacket.TAG_RINGLINK)
-        self.data['source'] = toon.getUUID()
+        self.data['time'] = globalClock.getRealTime()
+        self.data['source'] = abs(int(hash(toon.getUUID())/10000000000))
         self.data['amount'] = amount
-
 
     def build(self) -> Dict[str, Any]:
         # Return all attributes

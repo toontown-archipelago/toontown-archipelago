@@ -205,16 +205,17 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Request synced data and subscribe to changes.
         client.av.request_default_ap_data()
-        # Update Deathlink Tag.
-        if self.slot_data.get('death_link', False):
+        # Update Link Tags.
+        death_link = self.slot_data.get('death_link', False)
+        ring_link = self.slot_data.get('ring_link', False)
+        if death_link or ring_link:
             update_packet = ConnectUpdatePacket()
-            update_packet.tags = [ConnectPacket.TAG_DEATHLINK]
-            client.send_packet(update_packet)
-
-        # Update RinkLink Tag.
-        if self.slot_data.get('ring_link', False):
-            update_packet = ConnectUpdatePacket()
-            update_packet.tags = [ConnectPacket.TAG_RINGLINK]
+            tags = []
+            if death_link:
+                tags.append(ConnectPacket.TAG_DEATHLINK)
+            if ring_link:
+                tags.append(ConnectPacket.TAG_RINGLINK)
+            update_packet.tags = tags
             client.send_packet(update_packet)
 
         # Finally at the very send, tell the AP DOG that there is some info to sync

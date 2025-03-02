@@ -63,7 +63,8 @@ class BouncedPacket(ClientBoundPacketBase):
         self.debug("Received ringlink packet")
 
         # At this point we are assuming that this packet IS a ringlink packet and that our client has it enabled.
-        amount: int = self.data["amount"]
+        timestamp = self.data['time']
+        amount: int = self.data.get("amount", 0)
         source: str = self.data["source"]
         toon = client.av
 
