@@ -176,9 +176,11 @@ class ArchipelagoSession:
         if not isLocalChange:
             return
 
+        amount = int(math.ceil(amount/10))
+
         # Create a deathlink packet
         ringlink_packet = BouncePacket()
-        ringlink_packet.add_ringlink_data(self.avatar, math.ceil(amount/10))
+        ringlink_packet.add_ringlink_data(self.avatar, amount)
         self.client.send_packet(ringlink_packet)
 
     # Store data - optionally specific to this slot.
@@ -189,7 +191,7 @@ class ArchipelagoSession:
         for k,v in data.items():
             packet = SetPacket()
             packet.operations.append(DataStorageOperation(operation="replace", value=v))
-            packet.key= k
+            packet.key=k
             packets.append(packet)
         self.client.send_packets(packets)
 
