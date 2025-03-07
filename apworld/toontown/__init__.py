@@ -261,69 +261,63 @@ class ToontownWorld(World):
                 pool.append(self.create_item(item.name.value))
 
         # Handle facility key generation
-        if self.options.facility_locking == FacilityLocking.option_keys:
+        if self.options.facility_locking.value == FacilityLocking.option_keys:
             for itemName in FACILITY_KEY_ITEMS:
-                item = self.create_item(itemName.value)
-                pool.append(item)
+                pool.append(self.create_item(itemName.value))
 
         # Handle teleport access item generation.
         if self.options.tpsanity.value in (TPSanity.option_keys, TPSanity.option_shuffle):
             for itemName in TELEPORT_ACCESS_ITEMS:
-                item = self.create_item(itemName.value)
                 # Handle giving out access based on our starting PG
                 if itemName == self.startingAccess:
                     if self.startingAccess == ToontownItemName.TTC_ACCESS:
-                        self.multiworld.push_precollected(item)
+                        self.multiworld.push_precollected(self.create_item(itemName.value))
                     else:
                         for _ in range(2):
-                            self.multiworld.push_precollected(item)
+                            self.multiworld.push_precollected(self.create_item(itemName.value))
                 else:
                     # We have our facility keys set to access, make 2 of each of those
                     if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS) \
-                                and self.options.facility_locking == FacilityLocking.option_access:
+                                and self.options.facility_locking.value == FacilityLocking.option_access:
                         for _ in range(2):
-                            pool.append(item)
+                            pool.append(self.create_item(itemName.value))
                     else:
-                        pool.append(item)
+                        pool.append(self.create_item(itemName.value))
         # handle task carry capacity item generation.
         # the amount to give will be based on the starting capacity defined by the yaml
-        item = self.create_item(ToontownItemName.TASK_CAPACITY.value)
         for _ in range(max(0, self.options.max_task_capacity.value - self.options.starting_task_capacity.value)):
-            pool.append(item)
+            pool.append(self.create_item(ToontownItemName.TASK_CAPACITY.value))
 
         # Automatically apply teleport access across the board so hq access can be gotten from an item
         if self.options.tpsanity.value == TPSanity.option_none:
             for itemName in TELEPORT_ACCESS_ITEMS:
-                item = self.create_item(itemName.value)
                 # Our starting HQ isn't TTC, don't make an extra TTC access and actually add one to the pool
                 if self.startingAccess != ToontownItemName.TTC_ACCESS and itemName == ToontownItemName.TTC_ACCESS:
-                    pool.append(item)
+                    pool.append(item = self.create_item(itemName.value))
                     continue
                 # Make 2 for any starting access that isn't TTC
                 if itemName == self.startingAccess and self.startingAccess != ToontownItemName.TTC_ACCESS:
                     for _ in range(2):
-                        self.multiworld.push_precollected(item)
+                        self.multiworld.push_precollected(item = self.create_item(itemName.value))
                 else:
                     # We have our facility keys set to access, make an extra of each
                     if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS) \
-                                and self.options.facility_locking == FacilityLocking.option_access:
-                        pool.append(item)
-                    self.multiworld.push_precollected(item)
+                                and self.options.facility_locking.value == FacilityLocking.option_access:
+                        pool.append(item = self.create_item(itemName.value))
+                    self.multiworld.push_precollected(item = self.create_item(itemName.value))
 
         # Automatically give both keys at the start for treasure TP sanity
         if self.options.tpsanity.value == TPSanity.option_treasure:
-            item = self.create_item(self.startingAccess.value)
             if self.startingAccess == ToontownItemName.TTC_ACCESS:
-                self.multiworld.push_precollected(item)
+                self.multiworld.push_precollected(self.create_item(self.startingAccess.value))
             else:
                 for _ in range(2):
-                    self.multiworld.push_precollected(item)
+                    self.multiworld.push_precollected(self.create_item(self.startingAccess.value))
             # We have our facility keys set to access, make an extra of each
-            if self.options.facility_locking == FacilityLocking.option_access:
+            if self.options.facility_locking.value == FacilityLocking.option_access:
                 for itemName in TELEPORT_ACCESS_ITEMS:
-                    item = self.create_item(itemName.value)
                     if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS):
-                        pool.append(item)
+                        pool.append(self.create_item(itemName.value))
 
         # Dynamically generate laff boosts.
         max_laff = self.options.max_laff.value
