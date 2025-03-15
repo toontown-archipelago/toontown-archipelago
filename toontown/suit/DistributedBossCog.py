@@ -241,9 +241,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bossHealthBar.cleanup()
         self.bossSpeedrunTimer.cleanup()
         self.scoreboard.cleanup()
-        if self.alertText:
-            self.alertText.destroy()
-            self.alertText = None
+        self.destroyAlert()
 
         return
 
@@ -1327,14 +1325,18 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
     def showSingleAttackAlert(self):
         # Display a blue exclamation mark above the toon's head
         self.showAlert("!", Vec4(0, 0, 0.8, 1), Vec4(0.05, 0.05, 0.5, 1))
+
+    def destroyAlert(self):
+        # Destroy any currently active alerts
+        if self.alertText:
+            self.alertText.destroy()
+            self.alertText = None
     
     def showAlert(self, text, color, lerpColor):
         if not base.localAvatar.wantAlerts:
             return
         # Destroy any currently active alerts (really only a problem in ceo where attacks can happen faster than interval)
-        if self.alertText:
-            self.alertText.destroy()
-            self.alertText = None
+        self.destroyAlert()
 
         # lets make a lerp to make the text show and hide
         self.alertText = OnscreenText(parent=base.localAvatar.nametag.getNameIcon(), align=TextNode.ACenter, text=text,

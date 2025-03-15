@@ -14,7 +14,7 @@ from toontown.safezone.DistributedFishingSpotAI import DistributedFishingSpotAI
 
 
 # How much pity to add per rod (.01) = 1%
-FISHING_ROD_PITY = (0.10, 0.12, 0.15, 0.18, 0.20)
+FISHING_ROD_PITY = 0.25
 
 
 class FishManagerAI:
@@ -78,16 +78,11 @@ class FishManagerAI:
         return rng < threshold
 
     def addNewSpeciesPity(self, av):
-
-        rod = av.getFishingRod()  # Value from 0-4 representing how good our fishing rod is
-        # clamp to length of pity
-        rod = min(len(FISHING_ROD_PITY), rod)
-        rod = max(0, rod)
-        pity = FISHING_ROD_PITY[rod]
+        pity = FISHING_ROD_PITY
 
         # Add the pity
         oldPity = self.newSpeciesPity.get(av.doId, 0)
-        self.newSpeciesPity[av.doId] = oldPity + pity
+        self.newSpeciesPity[av.doId] = min(1, oldPity + pity)
 
     def getAvPity(self, av) -> float:
         return self.newSpeciesPity.get(av.doId, 0)
