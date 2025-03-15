@@ -1020,6 +1020,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def enterEpilogue(self):
         base.localAvatar.checkWinCondition()
+        self.destroyAlert()
         self.cleanupIntervals()
         self.clearChat()
         self.cagedToon.clearChat()

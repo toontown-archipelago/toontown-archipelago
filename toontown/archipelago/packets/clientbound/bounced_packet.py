@@ -67,6 +67,11 @@ class BouncedPacket(ClientBoundPacketBase):
         amount: int = self.data.get("amount", 0)
         source: str = self.data["source"]
         toon = client.av
+        toonId = abs(int(hash(toon.getUUID()) / 10000000000))
+
+        # If our source is the same as the UUID eval, stop
+        if source == toonId:
+            return
 
         # All checks passed, change the currency.
         self.debug("Changing beans via ringlink.")
