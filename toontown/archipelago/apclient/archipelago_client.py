@@ -77,6 +77,7 @@ class ArchipelagoClient(DirectObject):
         self.slot_name_to_slot_alias: Dict[str: str] = {}
         self.global_data_package: GlobalDataPackage = GlobalDataPackage()
         self.location_scouts_cache: LocationScoutsCache = LocationScoutsCache()
+        self.all_locations = []
 
     def has_slot_info(self, slot_id: int) -> bool:
         return slot_id in self.slot_id_to_slot_name

@@ -69,6 +69,9 @@ class ConnectedPacket(ClientBoundPacketBase):
         if 0 not in client.slot_id_to_slot_name:
             client.slot_id_to_slot_name[0] = NetworkSlot("Console", "No game", SlotType.spectator, [])
 
+        # Store this so we don't later ask archipelago about non-existent locations (likely caused by bugs in any apworld in the multiworld)
+        client.all_locations = self.missing_locations + self.checked_locations
+
         # Cache this successful connection on the ai
         slot_info = self.get_slot_info(self.slot)
         simbase.air.cacheArchipelagoConnectInformation(client.av.doId, slot_info.name, client.address)

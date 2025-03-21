@@ -128,7 +128,12 @@ class ArchipelagoSession:
 
         locationIDs = []
         for location in locations:
-            locationIDs.append(util.ap_location_name_to_id(location))
+            location_id = util.ap_location_name_to_id(location)
+            if location_id in self.client.all_locations:
+                locationIDs.append(location_id)
+            else:
+                self.avatar.d_setSystemMessage(0, f'DEBUG: {location.value} is missing, this is likely a generation bug caused by another apworld.')
+                self.avatar.d_setSystemMessage(0, 'DEBUG: Please inform your host to check the generation log for a warning.')
 
         scout_packet = LocationScoutsPacket()
         scout_packet.locations = locationIDs
