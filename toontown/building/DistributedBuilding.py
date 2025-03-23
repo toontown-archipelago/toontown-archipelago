@@ -102,6 +102,16 @@ class DistributedBuilding(DistributedObject.DistributedObject):
     def setBlock(self, block, interiorZoneId):
         self.block = block
         self.interiorZoneId = interiorZoneId
+        self.refreshDNAStore(self.block)
+
+    def refreshDNAStore(self, block):
+        # Clearing any active building markers, they'll be updated properly later
+        dnaStore = self.cr.playGame.dnaStore
+        zoneId = dnaStore.getZoneFromBlockNumber(block)
+        zoneId = ZoneUtil.getTrueZoneId(zoneId, self.interiorZoneId)
+        zoneIdBlock = zoneId + block
+        if dnaStore.isSuitBlock(zoneIdBlock):
+            dnaStore.removeSuitBlock(zoneIdBlock)
 
     def setSuitData(self, suitTrack, difficulty, numFloors):
         self.track = suitTrack
@@ -585,6 +595,7 @@ class DistributedBuilding(DistributedObject.DistributedObject):
 
     def animToToon(self, timeStamp):
         self.stopTransition()
+        self.refreshDNAStore(self.block)
         if self.mode != 'suit':
             self.setToSuit()
         self.loadAnimToToonSfx()
