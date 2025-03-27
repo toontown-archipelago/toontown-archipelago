@@ -494,6 +494,7 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "team": self.options.team.value,
+            "game_version": "v0.15.7",
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "max_laff": self.options.max_laff.value,

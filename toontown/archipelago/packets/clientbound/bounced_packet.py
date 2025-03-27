@@ -29,9 +29,9 @@ class BouncedPacket(ClientBoundPacketBase):
     # Used to check if a received DeathLink Bounced packet was caused by us.
     # Check BouncePacket.add_deathlink_data() (self.data['source']) to see what you're supposed to check
     # to prevent infinite deathlink packets
-    def caused_by_toon(self, toon) -> bool:
+    def caused_by_toon(self, source, toon) -> bool:
         # Check the source of the deathlink, if there was a toon ID match then this toon caused the deathlink
-        return self.data.get('source') == toon.getUUID()
+        return source == toon
 
     # Helper method to handle the packet if this is a deathlink packet
     def handle_deathlink(self, client):
@@ -43,6 +43,11 @@ class BouncedPacket(ClientBoundPacketBase):
         cause: str = self.data.get("cause")
         source: str = self.data['source']
         toon = client.av
+        toonId = str(abs(int(hash(toon.getUUID()) / 10000000000)))
+
+        # If our source is the same as the UUID eval, stop
+        if self.caused_by_toon(source, toonId):
+            return
 
         # All checks passed, kill the toon
         self.debug("Killing toon via deathlink.")
@@ -70,7 +75,7 @@ class BouncedPacket(ClientBoundPacketBase):
         toonId = abs(int(hash(toon.getUUID()) / 10000000000))
 
         # If our source is the same as the UUID eval, stop
-        if source == toonId:
+        if self.caused_by_toon(source, toonId):
             return
 
         # All checks passed, change the currency.
@@ -86,10 +91,6 @@ class BouncedPacket(ClientBoundPacketBase):
         # Had a weird crash in the caused_by_toon check of self.data being NoneType, while connected alone. Who's sending empty bounce packets?
         if not isinstance(self.data, dict):
             self.debug("BouncePacket Recieved seems to be empty. Ignoring.")
-            return
-
-        if self.caused_by_toon(client.av):
-            self.debug("Packet seems to have been sent by us. Skip handling this packet")
             return
 
         # Is this a deathlink packet?

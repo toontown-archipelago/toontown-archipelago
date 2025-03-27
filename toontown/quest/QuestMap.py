@@ -170,8 +170,6 @@ class QuestMap(DirectFrame):
     def updateBuildingInfo(self):
         for marker in self.buildingMarkers:
             marker.destroy()
-        for marker in self.buildingMarkers:
-            marker.destroy()
 
         self.buildingMarkers = []
         dnaStore = base.cr.playGame.dnaStore
@@ -186,12 +184,14 @@ class QuestMap(DirectFrame):
             if dnaStore.isSuitBlock(zoneIdBlock) and (zoneIdBlock in range(streetId, streetId+99)):
                 # grab the number of floors for the building
                 numFloors = dnaStore.getNumFloors(zoneIdBlock)
+                track = dnaStore.getSuitBlockTrack(zoneIdBlock)
                 
                 self.putBuildingMarker(
                     dnaStore.getDoorPosHprFromBlockNumber(blockNumber).getPos(),
                     zoneIdBlock,
-                    track=dnaStore.getSuitBlockTrack(zoneIdBlock),
+                    track=track,
                     floorNumber=numFloors)
+            else:
                 continue
 
     def transformAvPos(self, pos):
@@ -286,6 +286,7 @@ class QuestMap(DirectFrame):
 
     def toggle(self):
         if self.isHidden():
+            self.updateMap()
             self.show()
         else:
             self.hide()
