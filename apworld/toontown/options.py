@@ -363,6 +363,16 @@ class TreasuresPerLocation(Range):
     default = 4
 
 
+class JokesPerStreet(Range):
+    """
+    The amount of archipelago treasures that'll have items in each location
+    """
+    display_name = "Knock Knock Jokes Per Street"
+    range_start = 0
+    range_end = 10
+    default = 3
+
+
 class ChecksPerBoss(Range):
     """
     How many checks you will receive from a cog boss upon completion.
@@ -767,6 +777,7 @@ class ToontownOptions(PerGameCommonOptions):
     hint_bounties: BountiesHinted
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
+    jokes_per_street: JokesPerStreet
     checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
     gag_frame_item_behavior: GagTrainingFrameBehavior

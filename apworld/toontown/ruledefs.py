@@ -200,6 +200,16 @@ def HasEnoughBeanCapacity(state: CollectionState, locentr: LocEntrDef, world: Mu
     return (state.count(ToontownItemName.MONEY_CAP_1000.value, player) > argument[0])
 
 
+@rule(Rule.HasTTCBook, ToontownItemName.TTC_JOKE_BOOK)
+@rule(Rule.HasDDBook, ToontownItemName.DD_JOKE_BOOK)
+@rule(Rule.HasDGBook, ToontownItemName.DG_JOKE_BOOK)
+@rule(Rule.HasMMLBook, ToontownItemName.MML_JOKE_BOOK)
+@rule(Rule.HasTBBook, ToontownItemName.TB_JOKE_BOOK)
+@rule(Rule.HasDDLBook, ToontownItemName.DDL_JOKE_BOOK)
+def CanLaughAtJoke(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    return state.has(argument[0].value, player)
+
+
 @rule(Rule.TunnelCanBeUsed)
 def TunnelCanBeUsed(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):

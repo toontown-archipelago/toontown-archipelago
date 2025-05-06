@@ -10,7 +10,7 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
     ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS, get_item_groups
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
-    TREASURE_LOCATION_TYPES, BOSS_LOCATION_TYPES, BOSS_EVENT_DEFINITIONS, get_location_groups
+    TREASURE_LOCATION_TYPES, KNOCK_KNOCK_LOCATION_TYPES, BOSS_LOCATION_TYPES, BOSS_EVENT_DEFINITIONS, get_location_groups
 from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
@@ -186,7 +186,6 @@ class ToontownWorld(World):
             self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.startingTracks[0])
             self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.startingTracks[1])
 
-
         # Force bounty placements
         if "bounties" in self.options.win_condition.value:
             total_bounties = self.options.total_bounties.value
@@ -221,7 +220,6 @@ class ToontownWorld(World):
             self._force_item_placement(ToontownLocationName.FIGHT_CFO,  ToontownItemName.CFO)
             self._force_item_placement(ToontownLocationName.FIGHT_CJ,  ToontownItemName.CJ)
             self._force_item_placement(ToontownLocationName.FIGHT_CEO,  ToontownItemName.CEO)
-
 
         # Do we have force teleport access? if so place our tps
         if self.options.tpsanity.value == TPSanity.option_treasure:
@@ -287,6 +285,20 @@ class ToontownWorld(World):
         # the amount to give will be based on the starting capacity defined by the yaml
         for _ in range(max(0, self.options.max_task_capacity.value - self.options.starting_task_capacity.value)):
             pool.append(self.create_item(ToontownItemName.TASK_CAPACITY.value))
+
+        # handle joke book item generation
+        joke_books = [
+            ToontownItemName.TTC_JOKE_BOOK.value,
+            ToontownItemName.DD_JOKE_BOOK.value,
+            ToontownItemName.DG_JOKE_BOOK.value,
+            ToontownItemName.MML_JOKE_BOOK.value,
+            ToontownItemName.TB_JOKE_BOOK.value,
+            ToontownItemName.DDL_JOKE_BOOK.value
+        ]
+        # we only want joke books if we have jokes on
+        if self.options.jokes_per_street.value > 0:
+            for book in joke_books:
+                pool.append(self.create_item(book))
 
         # Automatically apply teleport access across the board so hq access can be gotten from an item
         if self.options.tpsanity.value == TPSanity.option_none:
@@ -543,6 +555,7 @@ class ToontownWorld(World):
             "tpsanity": self.options.tpsanity.value,
             "treasures_per_location": self.options.treasures_per_location.value,
             "checks_per_boss": self.options.checks_per_boss.value,
+            "jokes_per_street": self.options.jokes_per_street.value,
             "start_gag_xp": self.options.base_global_gag_xp.value,
             "max_gag_xp": self.options.max_global_gag_xp.value
         }
@@ -690,6 +703,11 @@ class ToontownWorld(World):
             tpl = self.options.treasures_per_location.value
         rev_locs = TREASURE_LOCATION_TYPES[::-1]
         for i in range(len(rev_locs) - tpl):
+            forbidden_location_types.add(rev_locs[i])
+
+        kkps = self.options.jokes_per_street.value
+        rev_locs = KNOCK_KNOCK_LOCATION_TYPES[::-1]
+        for i in range(len(rev_locs) - kkps):
             forbidden_location_types.add(rev_locs[i])
 
         cpb = self.options.checks_per_boss.value
