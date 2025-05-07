@@ -296,7 +296,7 @@ class ToontownWorld(World):
             ToontownItemName.DDL_JOKE_BOOK.value
         ]
         # we only want joke books if we have jokes on
-        if self.options.jokes_per_street.value > 0:
+        if self.options.jokes_per_street.value > 0 and self.options.joke_books.value:
             for book in joke_books:
                 pool.append(self.create_item(book))
 
@@ -556,6 +556,7 @@ class ToontownWorld(World):
             "treasures_per_location": self.options.treasures_per_location.value,
             "checks_per_boss": self.options.checks_per_boss.value,
             "jokes_per_street": self.options.jokes_per_street.value,
+            "joke_books": self.options.joke_books.value,
             "start_gag_xp": self.options.base_global_gag_xp.value,
             "max_gag_xp": self.options.max_global_gag_xp.value
         }

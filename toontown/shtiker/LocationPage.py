@@ -145,8 +145,9 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 priorityMissingLocations.update({location_data.name.value:obj})
                 continue
             # Locations that are identical with only a number appended.
-            if location_data.type in locations.TREASURE_LOCATION_TYPES + locations.TASK_LOCATION_TYPES:
+            if location_data.type in locations.TREASURE_LOCATION_TYPES + locations.TASK_LOCATION_TYPES + locations.KNOCK_KNOCK_LOCATION_TYPES:
                 name = location_data.name.value.rsplit(" ", 1)[0]
+                name = name.replace("Knock Knock", "Street")
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
@@ -217,6 +218,11 @@ class LocationPage(ShtikerPage.ShtikerPage):
         tpl = base.localAvatar.slotData.get('treasures_per_location', 4)
         rev_locs = locations.TREASURE_LOCATION_TYPES[::-1]
         for i in range(len(rev_locs) - tpl):
+            forbidden_location_types.add(rev_locs[i])
+
+        kkps = base.localAvatar.slotData.get('jokes_per_street', 3)
+        rev_locs = locations.KNOCK_KNOCK_LOCATION_TYPES[::-1]
+        for i in range(len(rev_locs) - kkps):
             forbidden_location_types.add(rev_locs[i])
 
         # Differs from the apworld for special implementation here.

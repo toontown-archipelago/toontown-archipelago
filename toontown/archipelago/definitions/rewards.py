@@ -330,6 +330,38 @@ class GolfPutterReward(APReward):
         av.addAccessKey(ToontownGlobals.PUTTER_KEY)
 
 
+class JokeBookReward(APReward):
+    TOONTOWN_CENTRAL = ToontownGlobals.ToontownCentral
+    DONALDS_DOCK = ToontownGlobals.DonaldsDock
+    DAISYS_GARDENS = ToontownGlobals.DaisyGardens
+    MINNIES_MELODYLAND = ToontownGlobals.MinniesMelodyland
+    THE_BRRRGH = ToontownGlobals.TheBrrrgh
+    DONALDS_DREAMLAND = ToontownGlobals.DonaldsDreamland
+
+    ZONE_TO_DISPLAY_NAME = {
+        TOONTOWN_CENTRAL: "Toontown Central",
+        DONALDS_DOCK: "Donald's Dock",
+        DAISYS_GARDENS: "Daisy Gardens",
+        MINNIES_MELODYLAND: "Minnie's Melodyland",
+        THE_BRRRGH: "The Brrrgh",
+        DONALDS_DREAMLAND: "Donald's Dreamland",
+    }
+    def __init__(self, playground: int):
+        self.playground: int = playground
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You can now laugh at jokes in\n"),
+            MinimalJsonMessagePart(f"{self.ZONE_TO_DISPLAY_NAME.get(self.playground, 'unknown zone: ' + str(self.playground))}", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        if self.playground in list(FADoorCodes.ZONE_TO_JOKE_CODE.keys()):
+            key = FADoorCodes.ZONE_TO_JOKE_CODE[self.playground]
+            av.addAccessKey(key)
+
+
 class GoKartReward(APReward):
 
     def formatted_header(self) -> str:
@@ -865,6 +897,12 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.BBHQ_ACCESS.value: AccessKeyReward(AccessKeyReward.BOSSBOT_HQ),
     ToontownItemName.AA_ACCESS.value: AccessKeyReward(AccessKeyReward.ACORN_ACRES),
     ToontownItemName.GS_ACCESS.value: AccessKeyReward(AccessKeyReward.GOOFY_SPEEDWAY),
+    ToontownItemName.TTC_JOKE_BOOK.value: JokeBookReward(JokeBookReward.TOONTOWN_CENTRAL),
+    ToontownItemName.DD_JOKE_BOOK.value: JokeBookReward(JokeBookReward.DONALDS_DOCK),
+    ToontownItemName.DG_JOKE_BOOK.value: JokeBookReward(JokeBookReward.DAISYS_GARDENS),
+    ToontownItemName.MML_JOKE_BOOK.value: JokeBookReward(JokeBookReward.MINNIES_MELODYLAND),
+    ToontownItemName.TB_JOKE_BOOK.value: JokeBookReward(JokeBookReward.THE_BRRRGH),
+    ToontownItemName.DDL_JOKE_BOOK.value: JokeBookReward(JokeBookReward.DONALDS_DREAMLAND),
     ToontownItemName.TTC_FISHING.value: FishingLicenseReward(FishingLicenseReward.TOONTOWN_CENTRAL),
     ToontownItemName.DD_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DOCK),
     ToontownItemName.DG_FISHING.value: FishingLicenseReward(FishingLicenseReward.DAISYS_GARDENS),

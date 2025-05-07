@@ -8,6 +8,7 @@ from direct.directnotify import DirectNotifyGlobal
 from direct.fsm import ClassicFSM
 from . import DistributedAnimatedProp
 from toontown.distributed import DelayDelete
+from toontown.building import FADoorCodes
 from toontown.toonbase import TTLocalizer
 from toontown.hood import ZoneUtil
 from direct.task.Task import Task
@@ -58,12 +59,11 @@ class DistributedKnockKnockDoor(DistributedAnimatedProp.DistributedAnimatedProp)
 
     def setCooldown(self):
         self.cooldown = True
-        taskMgr.doMethodLater(60, self.resetCooldown, self.uniqueName('knockKnock-cooldown'))
+        taskMgr.doMethodLater(10, self.resetCooldown, self.uniqueName('knockKnock-cooldown'))
 
     def resetCooldown(self, task):
         self.cooldown = False
         return Task.done
-
 
     def knockKnockTrack(self, avatar, duration):
         if avatar == None:
@@ -106,14 +106,26 @@ class DistributedKnockKnockDoor(DistributedAnimatedProp.DistributedAnimatedProp)
         pos = doorNP.node().getSolid(0).getCenter()
         self.nametagNP.setPos(pos + Vec3(0, 0, avatar.getHeight() + 2))
         d = duration * 0.125
-        track = Sequence(Parallel(Sequence(Wait(d * 0.5), SoundInterval(self.knockSfx)), Func(self.nametag.setChat, TTLocalizer.DoorKnockKnock, CFSpeech), Wait(d)), Func(avatar.setChatAbsolute, TTLocalizer.DoorWhosThere, CFSpeech | CFTimeout, openEnded=0), Wait(d), Func(self.nametag.setChat, joke[0], CFSpeech), Wait(d), Func(avatar.setChatAbsolute, joke[0] + TTLocalizer.DoorWhoAppendix, CFSpeech | CFTimeout, openEnded=0), Wait(d), Func(self.nametag.setChat, joke[1], CFSpeech), Parallel(SoundInterval(self.rimshot, startTime=2.0), Wait(d * 4)), Func(self.cleanupTrack), Func(self.healToon, avatar), Func(self.setCooldown))
+        track = Sequence(Parallel(Sequence(Wait(d * 0.5), SoundInterval(self.knockSfx)), Func(self.nametag.setChat, TTLocalizer.DoorKnockKnock, CFSpeech), Wait(d)), Func(avatar.setChatAbsolute, TTLocalizer.DoorWhosThere, CFSpeech | CFTimeout, openEnded=0), Wait(d), Func(self.nametag.setChat, joke[0], CFSpeech), Wait(d), Func(avatar.setChatAbsolute, joke[0] + TTLocalizer.DoorWhoAppendix, CFSpeech | CFTimeout, openEnded=0), Wait(d), Func(self.nametag.setChat, joke[1], CFSpeech), Parallel(SoundInterval(self.rimshot, startTime=2.0), Func(self.toonInteracted, avatar), Wait(d * 4)), Func(self.cleanupTrack))
         track.delayDelete = DelayDelete.DelayDelete(avatar, 'knockKnockTrack')
         return track
     
-    def healToon(self, avatar):
+    def toonInteracted(self, avatar):
+        if avatar != base.localAvatar:
+            return
         if self.cooldown:
             return
-        self.sendUpdate('healToon', [avatar.doId])
+        else:
+            self.setCooldown()
+        self.sendUpdate('healToon', [])
+        place = base.cr.playGame.getPlace()
+        zone = place.getZoneId()
+        streetId = ZoneUtil.getBranchZone(zone)
+        pgId = ZoneUtil.getCanonicalHoodId(base.localAvatar.getZoneId())
+        if base.localAvatar.slotData.get("joke_books", True) and FADoorCodes.ZONE_TO_JOKE_CODE[pgId] in base.localAvatar.getAccessKeys():
+            self.sendUpdate('knockKnockCheck', [streetId])
+        if not base.localAvatar.slotData.get("joke_books", True):
+            self.sendUpdate('knockKnockCheck', [streetId])
         
     def cleanupTrack(self):
         avatar = self.cr.doId2do.get(self.avatarId, None)
@@ -134,7 +146,7 @@ class DistributedKnockKnockDoor(DistributedAnimatedProp.DistributedAnimatedProp)
         DistributedAnimatedProp.DistributedAnimatedProp.enterPlaying(self, ts)
         if self.avatarId:
             avatar = self.cr.doId2do.get(self.avatarId, None)
-            track = self.knockKnockTrack(avatar, 8)
+            track = self.knockKnockTrack(avatar, 3)
             if track != None:
                 track.start(ts)
                 self.avatarTracks.append(track)

@@ -207,7 +207,14 @@ def HasEnoughBeanCapacity(state: CollectionState, locentr: LocEntrDef, world: Mu
 @rule(Rule.HasTBBook, ToontownItemName.TB_JOKE_BOOK)
 @rule(Rule.HasDDLBook, ToontownItemName.DDL_JOKE_BOOK)
 def CanLaughAtJoke(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
-    return state.has(argument[0].value, player)
+    if isinstance(options, ToontownOptions):
+        books = options.joke_books.value
+    else:
+        books = options.get("joke_books", True)
+    if books:
+        return state.has(argument[0].value, player)
+    else:
+        return True
 
 
 @rule(Rule.TunnelCanBeUsed)
