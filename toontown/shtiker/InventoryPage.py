@@ -28,6 +28,7 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         self.trackProgress.hide()
         jarGui = loader.loadModel('phase_3.5/models/gui/jar_gui')
         self.moneyDisplay = DirectLabel(parent=self, relief=None, pos=(0.55, 0, -0.5), scale=0.8, text=str(base.localAvatar.getMoney()), text_scale=0.18, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.1, 0), image=jarGui.find('**/Jar'), text_font=ToontownGlobals.getSignFont())
+        self.maxMoneyDisplay = DirectLabel(parent=self, relief=None, pos=(0.57, 0, -0.6), scale=0.4, text="/ "+str(base.localAvatar.getMaxMoney()), text_scale=0.18, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.1, 0), text_font=ToontownGlobals.getSignFont())
         jarGui.removeNode()
         return
 
@@ -37,6 +38,8 @@ class InventoryPage(ShtikerPage.ShtikerPage):
 
     def __moneyChange(self, money):
         self.moneyDisplay['text'] = str(money)
+        self.maxMoneyDisplay['text'] = '/ '+str(base.localAvatar.getMaxMoney())
+
 
     def enter(self):
         ShtikerPage.ShtikerPage.enter(self)
@@ -44,6 +47,7 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         base.localAvatar.inventory.show()
         base.localAvatar.inventory.reparentTo(self)
         self.moneyDisplay['text'] = str(base.localAvatar.getMoney())
+        self.maxMoneyDisplay['text'] = '/ '+str(base.localAvatar.getMaxMoney())
         self.accept('enterBookDelete', self.enterDeleteMode)
         self.accept('exitBookDelete', self.exitDeleteMode)
         self.accept('enterTrackFrame', self.updateTrackInfo)
@@ -140,6 +144,7 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         base.localAvatar.inventory.show()
         base.localAvatar.inventory.reparentTo(self)
         self.moneyDisplay['text'] = str(base.localAvatar.getMoney())
+        self.maxMoneyDisplay['text'] = '/ '+str(base.localAvatar.getMaxMoney())
         self.accept('enterTrackFrame', self.updateTrackInfo)
         self.accept('exitTrackFrame', self.clearTrackInfo)
         self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
