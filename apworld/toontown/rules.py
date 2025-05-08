@@ -56,6 +56,15 @@ class Rule(Enum):
     HasTBHQAccess  = auto()
     HasDDLHQAccess = auto()
 
+    ### Joke Access ###
+
+    HasTTCBook = auto()
+    HasDDBook  = auto()
+    HasDGBook  = auto()
+    HasMMLBook = auto()
+    HasTBBook  = auto()
+    HasDDLBook = auto()
+
     ### Building Access ###
 
     OneStory      = auto()

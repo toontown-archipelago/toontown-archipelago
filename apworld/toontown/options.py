@@ -363,6 +363,26 @@ class TreasuresPerLocation(Range):
     default = 4
 
 
+class JokeBookToggle(Toggle):
+    """
+    Add joke books to the item pool to lock knock knock jokes behind them
+    NOTE: If jokes_per_street is set to 0 books will not be added to the pool
+    """
+    display_name = "Joke Book Toggle"
+    default = True
+
+
+class JokesPerStreet(Range):
+    """
+    The amount of knock knock doors that'll have checks on each street
+    A setting above 0 will add per-playground joke books to the item pool, if enabled
+    """
+    display_name = "Knock Knock Jokes Per Street"
+    range_start = 0
+    range_end = 10
+    default = 3
+
+
 class ChecksPerBoss(Range):
     """
     How many checks you will receive from a cog boss upon completion.
@@ -767,6 +787,8 @@ class ToontownOptions(PerGameCommonOptions):
     hint_bounties: BountiesHinted
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
+    jokes_per_street: JokesPerStreet
+    joke_books: JokeBookToggle
     checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
     gag_frame_item_behavior: GagTrainingFrameBehavior

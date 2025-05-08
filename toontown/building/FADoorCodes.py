@@ -54,6 +54,22 @@ CASHBOT_FACILTIES_MISSING = 40
 LAWBOT_FACILTIES_MISSING = 41
 BOSSBOT_FACILTIES_MISSING = 42
 
+TTC_JOKE_BOOK = 43
+DD_JOKE_BOOK = 44
+DG_JOKE_BOOK = 45
+MML_JOKE_BOOK = 46
+TB_JOKE_BOOK = 47
+DDL_JOKE_BOOK = 48
+
+ZONE_TO_JOKE_CODE = {
+    ToontownGlobals.ToontownCentral: TTC_JOKE_BOOK,
+    ToontownGlobals.DonaldsDock: DD_JOKE_BOOK,
+    ToontownGlobals.DaisyGardens: DG_JOKE_BOOK,
+    ToontownGlobals.MinniesMelodyland: MML_JOKE_BOOK,
+    ToontownGlobals.TheBrrrgh: TB_JOKE_BOOK,
+    ToontownGlobals.DonaldsDreamland: DDL_JOKE_BOOK,
+}
+
 ZONE_TO_ACCESS_CODE = {
     ToontownGlobals.ToontownCentral: TTC_ACCESS_MISSING,
     ToontownGlobals.DonaldsDock: DD_ACCESS_MISSING,
