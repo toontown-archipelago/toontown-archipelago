@@ -140,8 +140,12 @@ class LocationPage(ShtikerPage.ShtikerPage):
 
             # Boss checks, combine the rewards into this location for the tracker.
             if location_data.type == locations.ToontownLocationType.BOSS_META:
-                obj = LocationCategory(location_data.name.value, 
-                                     [x.value for x in locations.REGION_TO_BOSS_LOCATIONS.get(location_data.region)])
+                cpb = base.localAvatar.slotData.get('checks_per_boss', 4)
+                boss_locations = locations.REGION_TO_BOSS_LOCATIONS.get(location_data.region)
+                enabled_locations = []
+                for x in range(cpb):
+                    enabled_locations.append(boss_locations[x].value)
+                obj = LocationCategory(location_data.name.value, enabled_locations)
                 priorityMissingLocations.update({location_data.name.value:obj})
                 continue
             # Locations that are identical with only a number appended.
@@ -229,6 +233,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
         forbidden_location_types.update(locations.BOSS_LOCATION_TYPES)
         wc = base.localAvatar.slotData.get('win_condition', ToontownWinCondition.cog_bosses)
         cpb = base.localAvatar.slotData.get('checks_per_boss', 4)
+
         if not ToontownWinCondition.cog_bosses in ToontownWinCondition(wc) and cpb <= 0:
             forbidden_location_types.add(locations.ToontownLocationType.BOSS_META)
 
