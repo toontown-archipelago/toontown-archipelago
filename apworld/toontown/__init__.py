@@ -52,6 +52,8 @@ class ToontownWorld(World):
     location_name_groups = get_location_groups()
     item_descriptions = ITEM_DESCRIPTIONS
     item_name_groups = get_item_groups()
+    valid_bounties = list()
+    inserted_bounties = list()
 
     def __init__(self, world, player):
         super(ToontownWorld, self).__init__(world, player)
@@ -96,7 +98,6 @@ class ToontownWorld(World):
         if self.options.win_condition.value == self.options.win_condition.default:
             self.options.win_condition.value = self.convert_web_win_conditions()
 
-
         # Calculate what our starting gag tracks should be
         startingTracks = self.calculate_starting_tracks(self.options.starting_gags.value)
 
@@ -119,6 +120,64 @@ class ToontownWorld(World):
         # If our starting PG is random, figure out which one to use
         if self.options.starting_task_playground.value == StartingTaskOption.option_randomized:
             self.startingAccess = startingOptionToAccess.get(random.choice(list(startingOptionToAccess.keys())), StartingTaskOption.option_ttc)
+
+    def calculate_bounties(self):
+        required_bounties = self.options.bounties_required.value
+        total_bounties = self.options.total_bounties.value
+        self.valid_bounties.extend(locations.BOUNTY_LOCATIONS)
+
+        # Fishing settings to remove specific bounties
+        # Non-species logic
+        if self.options.fish_checks.value in [1, 2]:
+            for bounty in locations.FISH_SPECIES_BOUNTIES:
+                self.valid_bounties.remove(bounty)
+        # Species logic
+        if self.options.fish_checks.value == 0:
+            for bounty in locations.FISH_ALBUM_BOUNTIES:
+                self.valid_bounties.remove(bounty)
+        # No fishing
+        if self.options.fish_checks.value == 3:
+            for bounty in locations.ALL_FISH_BOUNTIES:
+                self.valid_bounties.remove(bounty)
+
+        # No racing
+        if not self.options.racing_logic.value:
+            for bounty in locations.RACE_BOUNTIES:
+                self.valid_bounties.remove(bounty)
+
+        # No golfing
+        if not self.options.minigolf_logic.value:
+            for bounty in locations.GOLF_BOUNTIES:
+                self.valid_bounties.remove(bounty)
+
+        # No boss checks
+        if self.options.checks_per_boss.value == 0:
+            for bounty in locations.BOSS_BOUNTIES:
+                self.valid_bounties.remove(bounty)
+
+        # No gag checks
+        if self.options.gag_training_check_behavior.value == 2:
+            for bounty in locations.GAG_BOUNTIES:
+                self.valid_bounties.remove(bounty)
+
+        # Remove bounties that are excluded
+        valid_copy = self.valid_bounties.copy()
+        for bounty in valid_copy:
+            if bounty.value in self.options.exclude_locations.value:
+                self.valid_bounties.remove(bounty)
+        gen_bounties = len(self.valid_bounties)
+
+        # If we want more bounties than our settings allow, overwrite values to prevent errors
+        if total_bounties > gen_bounties:
+            logging.warning(f"WARNING: [{self.multiworld.player_name[self.player]}] had too many bounties ({total_bounties}). Setting to {gen_bounties}.")
+            self.options.total_bounties.value = gen_bounties
+            total_bounties = self.options.total_bounties.value
+
+        # If we want more bounties required than we have, overwrite values to prevent errors
+        if required_bounties > total_bounties:
+            logging.warning(
+                f"WARNING: [{self.multiworld.player_name[self.player]}] had too many bounties required ({required_bounties}). Setting to {total_bounties}.")
+            self.options.bounties_required.value = total_bounties
 
     def create_regions(self) -> None:
         player = self.player
@@ -188,28 +247,26 @@ class ToontownWorld(World):
 
         # Force bounty placements
         if "bounties" in self.options.win_condition.value:
-            total_bounties = self.options.total_bounties.value
-            required_bounties = self.options.bounties_required.value
-            valid_bounties = []
-            for location in self.created_locations:
-                if location.name in locations.BOUNTY_LOCATIONS and location.progress_type != LocationProgressType.EXCLUDED:
-                    valid_bounties.append(location.name)
-            gen_bounties = len(valid_bounties)
+            self.calculate_bounties()
 
-            # If we want more bounties than our settings allow, overwrite values to prevent errors
-            if total_bounties > gen_bounties:
-                self.options.total_bounties.value = gen_bounties
-                total_bounties = self.options.total_bounties.value
-
-            # If we want more bounties than we have, overwrite values to prevent errors
-            if required_bounties > total_bounties:
-                self.options.bounties_required.value = total_bounties
+            # These bounties are priority placements, guaranteed to have bounties if we have enough room
+            priority_bounties = []
+            for bounty in self.valid_bounties:
+                if bounty.value in self.options.priority_locations.value:
+                    priority_bounties.append(bounty)
 
             # Finally place our bounties
-            for created_bounty in range(total_bounties):
-                bounty_choice = random.choice(valid_bounties)
-                valid_bounties.remove(bounty_choice)
-                self._force_item_placement(bounty_choice, ToontownItemName.BOUNTY)
+            for created_bounty in range(self.options.total_bounties.value):
+                if priority_bounties:
+                    bounty_choice = random.choice(priority_bounties)
+                    priority_bounties.remove(bounty_choice)
+                else:
+                    bounty_choice = random.choice(self.valid_bounties)
+                self.valid_bounties.remove(bounty_choice)
+                self.inserted_bounties.append(bounty_choice)
+
+            for bounty in self.inserted_bounties:
+                self._force_item_placement(bounty, ToontownItemName.BOUNTY)
 
             if self.options.hint_bounties.value:
                 self.options.start_hints.value.add(ToontownItemName.BOUNTY.value)

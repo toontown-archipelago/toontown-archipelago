@@ -1612,6 +1612,15 @@ BOUNTY_LOCATIONS = [
     ToontownLocationName.FIVE_STORY,  # Building bounty locations
 ]
 
+BOSS_BOUNTIES = [ToontownLocationName.SELLBOT_PROOF_1, ToontownLocationName.CASHBOT_PROOF_1, ToontownLocationName.LAWBOT_PROOF_1, ToontownLocationName.BOSSBOT_PROOF_1]
+RACE_BOUNTIES = [ToontownLocationName.URBAN_2_QUALIFY]
+GOLF_BOUNTIES = [ToontownLocationName.HARD_GOLF_9]
+FISH_SPECIES_BOUNTIES = [ToontownLocationName.DOG_FISH_1]
+FISH_ALBUM_BOUNTIES = [ToontownLocationName.FISHING_COMPLETE_ALBUM]
+ALL_FISH_BOUNTIES = [ToontownLocationName.DOG_FISH_1, ToontownLocationName.FISHING_COMPLETE_ALBUM]
+GAG_BOUNTIES = [ToontownLocationName.TOONUP_HIGHDIVE_UNLOCKED, ToontownLocationName.TRAP_TRAIN_UNLOCKED, ToontownLocationName.LURE_PRESENTATION_UNLOCKED, ToontownLocationName.SOUND_OPERA_UNLOCKED,
+                ToontownLocationName.THROW_WEDDING_UNLOCKED, ToontownLocationName.SQUIRT_GEYSER_UNLOCKED, ToontownLocationName.DROP_BOAT_UNLOCKED]
+
 def get_location_def_from_name(name: ToontownLocationName) -> ToontownLocationDefinition:
     return LOCATION_NAME_TO_DEFINITION[name]
 
