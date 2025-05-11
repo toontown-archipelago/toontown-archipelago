@@ -102,6 +102,34 @@ class Rule(Enum):
     TierEightLawbot  = auto()
     TierEightBossbot = auto()
 
+    CanMaxTierOneCogs = auto()
+    CanMaxTierTwoCogs = auto()
+
+    CanMaxTierThreeSellbot = auto()
+    CanMaxTierThreeCashbot = auto()
+    CanMaxTierThreeLawbot = auto()
+    CanMaxTierThreeBossbot = auto()
+
+    CanMaxTierFourSellbot = auto()
+    CanMaxTierFourCashbot = auto()
+    CanMaxTierFourLawbot = auto()
+    CanMaxTierFourBossbot = auto()
+
+    CanMaxTierFiveSellbot = auto()
+    CanMaxTierFiveCashbot = auto()
+    CanMaxTierFiveLawbot = auto()
+    CanMaxTierFiveBossbot = auto()
+
+    CanMaxTierSixSellbot = auto()
+    CanMaxTierSixCashbot = auto()
+    CanMaxTierSixLawbot = auto()
+    CanMaxTierSixBossbot = auto()
+
+    CanMaxTierEightSellbot = auto()
+    CanMaxTierEightCashbot = auto()
+    CanMaxTierEightLawbot = auto()
+    CanMaxTierEightBossbot = auto()
+
     ### Facility Keys ###
 
     FrontFactoryKey = auto()
