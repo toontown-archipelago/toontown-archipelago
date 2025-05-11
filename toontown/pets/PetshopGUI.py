@@ -228,6 +228,7 @@ class PetshopGUI(DirectObject):
             #self.petModel.setH(130)
             #self.petModel.enterNeutralHappy()
             self.moneyDisplay = DirectLabel(parent=self, relief=None, text=str(base.localAvatar.getTotalMoney()), text_scale=0.075, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.225, 0.33), text_font=ToontownGlobals.getSignFont())
+            self.maxMoneyDisplay = DirectLabel(parent=self, relief=None, text="/ "+str(base.localAvatar.getMaxMoney()), text_scale=0.035, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.25, 0.3), text_font=ToontownGlobals.getSignFont())
             self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
             self.accept(localAvatar.uniqueName('bankMoneyChange'), self.__moneyChange)
             okImageList = (model.find('**/CheckButtonUp'), model.find('**/CheckButtonDown'), model.find('**/CheckButtonRollover'))
@@ -246,6 +247,7 @@ class PetshopGUI(DirectObject):
 
         def __moneyChange(self, money):
             self.moneyDisplay['text'] = str(base.localAvatar.getTotalMoney())
+            self.maxMoneyDisplay['text'] = "/ "+str(base.localAvatar.getMaxMoney())
 
     class ReturnPetDlg(DirectFrame):
         notify = DirectNotifyGlobal.directNotify.newCategory('PetshopGUI.ReturnPetDlg')
@@ -316,6 +318,7 @@ class PetshopGUI(DirectObject):
             self.pawRButton = DirectButton(parent=self, relief=None, image=pawRImageList, geom=pawRArrowImageList, scale=modelScale, pressEffect=False, command=lambda : self.__handlePetChange(1))
             self.okButton = DirectButton(parent=self, relief=None, image=adoptImageList, image3_color=disabledImageColor, scale=modelScale, text=TTLocalizer.PetshopAdopt, text_scale=TTLocalizer.PGUIokButton, text_pos=TTLocalizer.PGUIokButtonPos, text0_fg=text0Color, text1_fg=text1Color, text2_fg=text2Color, text3_fg=text3Color, pressEffect=False, command=lambda : messenger.send(doneEvent, [self.curPet]))
             self.moneyDisplay = DirectLabel(parent=self, relief=None, text=str(base.localAvatar.getTotalMoney()), text_scale=0.1, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.34, 0.12), text_font=ToontownGlobals.getSignFont())
+            self.maxMoneyDisplay = DirectLabel(parent=self, relief=None, text="/ "+str(base.localAvatar.getMaxMoney()), text_scale=0.05, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.36, 0.08), text_font=ToontownGlobals.getSignFont())
             self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
             self.accept(localAvatar.uniqueName('bankMoneyChange'), self.__moneyChange)
             self.petView = self.attachNewNode('petView')
@@ -417,6 +420,7 @@ class PetshopGUI(DirectObject):
 
         def __moneyChange(self, money):
             self.moneyDisplay['text'] = str(base.localAvatar.getTotalMoney())
+            self.maxMoneyDisplay['text'] = "/ "+str(base.localAvatar.getMaxMoney())
 
     def __init__(self, eventDict, petSeeds, subId):
         self.eventDict = eventDict

@@ -20,8 +20,6 @@ class ToontownItemName(enum.Enum):
     ### Task Carry Capacity ###
     TASK_CAPACITY = "Progressive Task Capacity"
 
-
-
     ### Fishing ###
     FISHING_ROD_UPGRADE = "Progressive Fishing Rod"
     TTC_FISHING = "TTC Fishing License"
@@ -70,9 +68,16 @@ class ToontownItemName(enum.Enum):
     CBHQ_ACCESS = "CBHQ Access Key"
     LBHQ_ACCESS = "LBHQ Access Key"
     BBHQ_ACCESS = "BBHQ Access Key"
-
     AA_ACCESS = "AA Access Key"
     GS_ACCESS = 'GS Access Key'
+
+    ### Joke Books ###
+    TTC_JOKE_BOOK = "TTC Joke Book"
+    DD_JOKE_BOOK = "DD Joke Book"
+    DG_JOKE_BOOK = "DG Joke Book"
+    MML_JOKE_BOOK = "MML Joke Book"
+    TB_JOKE_BOOK = "TB Joke Book"
+    DDL_JOKE_BOOK = "DDL Joke Book"
 
     ### Facility Keys ###
     FRONT_FACTORY_ACCESS = "Front Factory Key"
@@ -208,6 +213,14 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.BBHQ_ACCESS, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.AA_ACCESS,   ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.GS_ACCESS,   ItemClassification.progression),
+    # endregion
+    # region Joke Books
+    ToontownItemDefinition(ToontownItemName.TTC_JOKE_BOOK,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DD_JOKE_BOOK,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DG_JOKE_BOOK,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.MML_JOKE_BOOK,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.TB_JOKE_BOOK,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DDL_JOKE_BOOK,  ItemClassification.progression),
     # endregion
     # region Facility Access
     ToontownItemDefinition(ToontownItemName.FRONT_FACTORY_ACCESS, ItemClassification.progression),

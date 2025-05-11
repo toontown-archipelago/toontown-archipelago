@@ -56,6 +56,15 @@ class Rule(Enum):
     HasTBHQAccess  = auto()
     HasDDLHQAccess = auto()
 
+    ### Joke Access ###
+
+    HasTTCBook = auto()
+    HasDDBook  = auto()
+    HasDGBook  = auto()
+    HasMMLBook = auto()
+    HasTBBook  = auto()
+    HasDDLBook = auto()
+
     ### Building Access ###
 
     OneStory      = auto()
@@ -92,6 +101,34 @@ class Rule(Enum):
     TierEightCashbot = auto()
     TierEightLawbot  = auto()
     TierEightBossbot = auto()
+
+    CanMaxTierOneCogs = auto()
+    CanMaxTierTwoCogs = auto()
+
+    CanMaxTierThreeSellbot = auto()
+    CanMaxTierThreeCashbot = auto()
+    CanMaxTierThreeLawbot = auto()
+    CanMaxTierThreeBossbot = auto()
+
+    CanMaxTierFourSellbot = auto()
+    CanMaxTierFourCashbot = auto()
+    CanMaxTierFourLawbot = auto()
+    CanMaxTierFourBossbot = auto()
+
+    CanMaxTierFiveSellbot = auto()
+    CanMaxTierFiveCashbot = auto()
+    CanMaxTierFiveLawbot = auto()
+    CanMaxTierFiveBossbot = auto()
+
+    CanMaxTierSixSellbot = auto()
+    CanMaxTierSixCashbot = auto()
+    CanMaxTierSixLawbot = auto()
+    CanMaxTierSixBossbot = auto()
+
+    CanMaxTierEightSellbot = auto()
+    CanMaxTierEightCashbot = auto()
+    CanMaxTierEightLawbot = auto()
+    CanMaxTierEightBossbot = auto()
 
     ### Facility Keys ###
 

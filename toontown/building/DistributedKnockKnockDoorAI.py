@@ -6,7 +6,8 @@ from . import DistributedAnimatedPropAI
 from direct.task.Task import Task
 from direct.fsm import State
 from toontown.hood import ZoneUtil
-from toontown.safezone import  TreasureGlobals
+from toontown.safezone import TreasureGlobals
+from toontown.toonbase import ToontownGlobals
 
 class DistributedKnockKnockDoorAI(DistributedAnimatedPropAI.DistributedAnimatedPropAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedKnockKnockDoorAI')
@@ -16,19 +17,10 @@ class DistributedKnockKnockDoorAI(DistributedAnimatedPropAI.DistributedAnimatedP
         self.fsm.setName('DistributedKnockKnockDoor')
         self.propId = propId
         self.doLaterTask = None
-        self.cooldown = False
         return
     
     def attractTask(self, task):
         self.fsm.request('attract')
-    
-    def setCooldown(self):
-        self.cooldown = True
-        taskMgr.doMethodLater(60, self.resetCooldown, self.uniqueName('knockKnock-cooldown'))
-
-    def resetCooldown(self, task):
-        self.cooldown = False
-        return Task.done
 
     def enterPlaying(self):
         DistributedAnimatedPropAI.DistributedAnimatedPropAI.enterPlaying(self)
@@ -40,13 +32,26 @@ class DistributedKnockKnockDoorAI(DistributedAnimatedPropAI.DistributedAnimatedP
         self.doLaterTask = None
         return
 
-    def healToon(self, avId):
-        if self.cooldown:
-            return
+    def healToon(self):
+        avId = self.air.getAvatarIdFromSender()
         av = self.air.doId2do.get(avId)
         zoneId = ZoneUtil.getCanonicalHoodId(av.zoneId)
         self.notify.debug(f'zoneId: {zoneId}')
         healAmount = TreasureGlobals.healAmounts[zoneId]
         if av:
             av.toonUp(healAmount * av.getMaxHp())
-            self.setCooldown()
+
+    def knockKnockCheck(self, streetId):
+        avId = self.air.getAvatarIdFromSender()
+        av = self.air.doId2do.get(avId)
+        if av:
+            jokeCount = av.slotData.get('jokes_per_street', 3)
+            for joke in range(jokeCount):
+                if self.getLocationFromStreedId(streetId, joke) in av.getCheckedLocations():
+                    continue
+                else:
+                    av.addCheckedLocation(self.getLocationFromStreedId(streetId, joke))
+                    break
+
+    def getLocationFromStreedId(self, streetId, index):
+        return ToontownGlobals.KNOCK_CODE_TO_LOCATION[streetId][index]

@@ -154,6 +154,17 @@ Toontown:
   # Range: 0 to 6
   treasures_per_location: 4
 
+  ### Knock Knock Settings ###
+
+  # Add joke books to the item pool to lock knock knock jokes behind them
+  # NOTE: If jokes_per_street is set to 0, books will not be added to the pool
+  joke_books: 'true'
+
+  # The amount of knock knock doors that'll have checks on each street
+  # A setting above 0 will add per-playground joke books to the item pool, if enabled
+  # Range: 0 to 10
+  jokes_per_street: 3
+
   ### Gag Training Settings ###
 
   # Behavior of how gag experience check locations are handled.

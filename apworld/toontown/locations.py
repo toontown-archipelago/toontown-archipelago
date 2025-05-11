@@ -417,6 +417,176 @@ class ToontownLocationName(Enum):
     BBHQ_TREASURE_4 =                           "Bossbot HQ AP Treasure 4"
     BBHQ_TREASURE_5 =                           "Bossbot HQ AP Treasure 5"
     BBHQ_TREASURE_6 =                           "Bossbot HQ AP Treasure 6"
+    LOOPY_JOKE_1 =                              "Loopy Lane Knock Knock Joke 1"
+    LOOPY_JOKE_2 =                              "Loopy Lane Knock Knock Joke 2"
+    LOOPY_JOKE_3 =                              "Loopy Lane Knock Knock Joke 3"
+    LOOPY_JOKE_4 =                              "Loopy Lane Knock Knock Joke 4"
+    LOOPY_JOKE_5 =                              "Loopy Lane Knock Knock Joke 5"
+    LOOPY_JOKE_6 =                              "Loopy Lane Knock Knock Joke 6"
+    LOOPY_JOKE_7 =                              "Loopy Lane Knock Knock Joke 7"
+    LOOPY_JOKE_8 =                              "Loopy Lane Knock Knock Joke 8"
+    LOOPY_JOKE_9 =                              "Loopy Lane Knock Knock Joke 9"
+    LOOPY_JOKE_10 =                             "Loopy Lane Knock Knock Joke 10"
+    PUNCHLINE_JOKE_1 =                          "Punchline Place Knock Knock Joke 1"
+    PUNCHLINE_JOKE_2 =                          "Punchline Place Knock Knock Joke 2"
+    PUNCHLINE_JOKE_3 =                          "Punchline Place Knock Knock Joke 3"
+    PUNCHLINE_JOKE_4 =                          "Punchline Place Knock Knock Joke 4"
+    PUNCHLINE_JOKE_5 =                          "Punchline Place Knock Knock Joke 5"
+    PUNCHLINE_JOKE_6 =                          "Punchline Place Knock Knock Joke 6"
+    PUNCHLINE_JOKE_7 =                          "Punchline Place Knock Knock Joke 7"
+    PUNCHLINE_JOKE_8 =                          "Punchline Place Knock Knock Joke 8"
+    PUNCHLINE_JOKE_9 =                          "Punchline Place Knock Knock Joke 9"
+    PUNCHLINE_JOKE_10 =                         "Punchline Place Knock Knock Joke 10"
+    SILLY_JOKE_1 =                              "Silly Street Knock Knock Joke 1"
+    SILLY_JOKE_2 =                              "Silly Street Knock Knock Joke 2"
+    SILLY_JOKE_3 =                              "Silly Street Knock Knock Joke 3"
+    SILLY_JOKE_4 =                              "Silly Street Knock Knock Joke 4"
+    SILLY_JOKE_5 =                              "Silly Street Knock Knock Joke 5"
+    SILLY_JOKE_6 =                              "Silly Street Knock Knock Joke 6"
+    SILLY_JOKE_7 =                              "Silly Street Knock Knock Joke 7"
+    SILLY_JOKE_8 =                              "Silly Street Knock Knock Joke 8"
+    SILLY_JOKE_9 =                              "Silly Street Knock Knock Joke 9"
+    SILLY_JOKE_10 =                             "Silly Street Knock Knock Joke 10"
+    BARNACLE_JOKE_1 =                           "Barnacle Boulevard Knock Knock Joke 1"
+    BARNACLE_JOKE_2 =                           "Barnacle Boulevard Knock Knock Joke 2"
+    BARNACLE_JOKE_3 =                           "Barnacle Boulevard Knock Knock Joke 3"
+    BARNACLE_JOKE_4 =                           "Barnacle Boulevard Knock Knock Joke 4"
+    BARNACLE_JOKE_5 =                           "Barnacle Boulevard Knock Knock Joke 5"
+    BARNACLE_JOKE_6 =                           "Barnacle Boulevard Knock Knock Joke 6"
+    BARNACLE_JOKE_7 =                           "Barnacle Boulevard Knock Knock Joke 7"
+    BARNACLE_JOKE_8 =                           "Barnacle Boulevard Knock Knock Joke 8"
+    BARNACLE_JOKE_9 =                           "Barnacle Boulevard Knock Knock Joke 9"
+    BARNACLE_JOKE_10 =                          "Barnacle Boulevard Knock Knock Joke 10"
+    SEAWEED_JOKE_1 =                            "Seaweed Street Knock Knock Joke 1"
+    SEAWEED_JOKE_2 =                            "Seaweed Street Knock Knock Joke 2"
+    SEAWEED_JOKE_3 =                            "Seaweed Street Knock Knock Joke 3"
+    SEAWEED_JOKE_4 =                            "Seaweed Street Knock Knock Joke 4"
+    SEAWEED_JOKE_5 =                            "Seaweed Street Knock Knock Joke 5"
+    SEAWEED_JOKE_6 =                            "Seaweed Street Knock Knock Joke 6"
+    SEAWEED_JOKE_7 =                            "Seaweed Street Knock Knock Joke 7"
+    SEAWEED_JOKE_8 =                            "Seaweed Street Knock Knock Joke 8"
+    SEAWEED_JOKE_9 =                            "Seaweed Street Knock Knock Joke 9"
+    SEAWEED_JOKE_10 =                           "Seaweed Street Knock Knock Joke 10"
+    LIGHTHOUSE_JOKE_1 =                         "Lighthouse Lane Knock Knock Joke 1"
+    LIGHTHOUSE_JOKE_2 =                         "Lighthouse Lane Knock Knock Joke 2"
+    LIGHTHOUSE_JOKE_3 =                         "Lighthouse Lane Knock Knock Joke 3"
+    LIGHTHOUSE_JOKE_4 =                         "Lighthouse Lane Knock Knock Joke 4"
+    LIGHTHOUSE_JOKE_5 =                         "Lighthouse Lane Knock Knock Joke 5"
+    LIGHTHOUSE_JOKE_6 =                         "Lighthouse Lane Knock Knock Joke 6"
+    LIGHTHOUSE_JOKE_7 =                         "Lighthouse Lane Knock Knock Joke 7"
+    LIGHTHOUSE_JOKE_8 =                         "Lighthouse Lane Knock Knock Joke 8"
+    LIGHTHOUSE_JOKE_9 =                         "Lighthouse Lane Knock Knock Joke 9"
+    LIGHTHOUSE_JOKE_10 =                        "Lighthouse Lane Knock Knock Joke 10"
+    ELM_JOKE_1 =                                "Elm Street Knock Knock Joke 1"
+    ELM_JOKE_2 =                                "Elm Street Knock Knock Joke 2"
+    ELM_JOKE_3 =                                "Elm Street Knock Knock Joke 3"
+    ELM_JOKE_4 =                                "Elm Street Knock Knock Joke 4"
+    ELM_JOKE_5 =                                "Elm Street Knock Knock Joke 5"
+    ELM_JOKE_6 =                                "Elm Street Knock Knock Joke 6"
+    ELM_JOKE_7 =                                "Elm Street Knock Knock Joke 7"
+    ELM_JOKE_8 =                                "Elm Street Knock Knock Joke 8"
+    ELM_JOKE_9 =                                "Elm Street Knock Knock Joke 9"
+    ELM_JOKE_10 =                               "Elm Street Knock Knock Joke 10"
+    MAPLE_JOKE_1 =                              "Maple Street Knock Knock Joke 1"
+    MAPLE_JOKE_2 =                              "Maple Street Knock Knock Joke 2"
+    MAPLE_JOKE_3 =                              "Maple Street Knock Knock Joke 3"
+    MAPLE_JOKE_4 =                              "Maple Street Knock Knock Joke 4"
+    MAPLE_JOKE_5 =                              "Maple Street Knock Knock Joke 5"
+    MAPLE_JOKE_6 =                              "Maple Street Knock Knock Joke 6"
+    MAPLE_JOKE_7 =                              "Maple Street Knock Knock Joke 7"
+    MAPLE_JOKE_8 =                              "Maple Street Knock Knock Joke 8"
+    MAPLE_JOKE_9 =                              "Maple Street Knock Knock Joke 9"
+    MAPLE_JOKE_10 =                             "Maple Street Knock Knock Joke 10"
+    OAK_JOKE_1 =                                "Oak Street Knock Knock Joke 1"
+    OAK_JOKE_2 =                                "Oak Street Knock Knock Joke 2"
+    OAK_JOKE_3 =                                "Oak Street Knock Knock Joke 3"
+    OAK_JOKE_4 =                                "Oak Street Knock Knock Joke 4"
+    OAK_JOKE_5 =                                "Oak Street Knock Knock Joke 5"
+    OAK_JOKE_6 =                                "Oak Street Knock Knock Joke 6"
+    OAK_JOKE_7 =                                "Oak Street Knock Knock Joke 7"
+    OAK_JOKE_8 =                                "Oak Street Knock Knock Joke 8"
+    OAK_JOKE_9 =                                "Oak Street Knock Knock Joke 9"
+    OAK_JOKE_10 =                               "Oak Street Knock Knock Joke 10"
+    ALTO_JOKE_1 =                               "Alto Avenue Knock Knock Joke 1"
+    ALTO_JOKE_2 =                               "Alto Avenue Knock Knock Joke 2"
+    ALTO_JOKE_3 =                               "Alto Avenue Knock Knock Joke 3"
+    ALTO_JOKE_4 =                               "Alto Avenue Knock Knock Joke 4"
+    ALTO_JOKE_5 =                               "Alto Avenue Knock Knock Joke 5"
+    ALTO_JOKE_6 =                               "Alto Avenue Knock Knock Joke 6"
+    ALTO_JOKE_7 =                               "Alto Avenue Knock Knock Joke 7"
+    ALTO_JOKE_8 =                               "Alto Avenue Knock Knock Joke 8"
+    ALTO_JOKE_9 =                               "Alto Avenue Knock Knock Joke 9"
+    ALTO_JOKE_10 =                              "Alto Avenue Knock Knock Joke 10"
+    BARITONE_JOKE_1 =                           "Baritone Boulevard Knock Knock Joke 1"
+    BARITONE_JOKE_2 =                           "Baritone Boulevard Knock Knock Joke 2"
+    BARITONE_JOKE_3 =                           "Baritone Boulevard Knock Knock Joke 3"
+    BARITONE_JOKE_4 =                           "Baritone Boulevard Knock Knock Joke 4"
+    BARITONE_JOKE_5 =                           "Baritone Boulevard Knock Knock Joke 5"
+    BARITONE_JOKE_6 =                           "Baritone Boulevard Knock Knock Joke 6"
+    BARITONE_JOKE_7 =                           "Baritone Boulevard Knock Knock Joke 7"
+    BARITONE_JOKE_8 =                           "Baritone Boulevard Knock Knock Joke 8"
+    BARITONE_JOKE_9 =                           "Baritone Boulevard Knock Knock Joke 9"
+    BARITONE_JOKE_10 =                          "Baritone Boulevard Knock Knock Joke 10"
+    TENOR_JOKE_1 =                              "Tenor Terrace Knock Knock Joke 1"
+    TENOR_JOKE_2 =                              "Tenor Terrace Knock Knock Joke 2"
+    TENOR_JOKE_3 =                              "Tenor Terrace Knock Knock Joke 3"
+    TENOR_JOKE_4 =                              "Tenor Terrace Knock Knock Joke 4"
+    TENOR_JOKE_5 =                              "Tenor Terrace Knock Knock Joke 5"
+    TENOR_JOKE_6 =                              "Tenor Terrace Knock Knock Joke 6"
+    TENOR_JOKE_7 =                              "Tenor Terrace Knock Knock Joke 7"
+    TENOR_JOKE_8 =                              "Tenor Terrace Knock Knock Joke 8"
+    TENOR_JOKE_9 =                              "Tenor Terrace Knock Knock Joke 9"
+    TENOR_JOKE_10 =                             "Tenor Terrace Knock Knock Joke 10"
+    SLEET_JOKE_1 =                              "Sleet Street Knock Knock Joke 1"
+    SLEET_JOKE_2 =                              "Sleet Street Knock Knock Joke 2"
+    SLEET_JOKE_3 =                              "Sleet Street Knock Knock Joke 3"
+    SLEET_JOKE_4 =                              "Sleet Street Knock Knock Joke 4"
+    SLEET_JOKE_5 =                              "Sleet Street Knock Knock Joke 5"
+    SLEET_JOKE_6 =                              "Sleet Street Knock Knock Joke 6"
+    SLEET_JOKE_7 =                              "Sleet Street Knock Knock Joke 7"
+    SLEET_JOKE_8 =                              "Sleet Street Knock Knock Joke 8"
+    SLEET_JOKE_9 =                              "Sleet Street Knock Knock Joke 9"
+    SLEET_JOKE_10 =                             "Sleet Street Knock Knock Joke 10"
+    WALRUS_JOKE_1 =                             "Walrus Way Knock Knock Joke 1"
+    WALRUS_JOKE_2 =                             "Walrus Way Knock Knock Joke 2"
+    WALRUS_JOKE_3 =                             "Walrus Way Knock Knock Joke 3"
+    WALRUS_JOKE_4 =                             "Walrus Way Knock Knock Joke 4"
+    WALRUS_JOKE_5 =                             "Walrus Way Knock Knock Joke 5"
+    WALRUS_JOKE_6 =                             "Walrus Way Knock Knock Joke 6"
+    WALRUS_JOKE_7 =                             "Walrus Way Knock Knock Joke 7"
+    WALRUS_JOKE_8 =                             "Walrus Way Knock Knock Joke 8"
+    WALRUS_JOKE_9 =                             "Walrus Way Knock Knock Joke 9"
+    WALRUS_JOKE_10 =                            "Walrus Way Knock Knock Joke 10"
+    POLAR_JOKE_1 =                              "Polar Place Knock Knock Joke 1"
+    POLAR_JOKE_2 =                              "Polar Place Knock Knock Joke 2"
+    POLAR_JOKE_3 =                              "Polar Place Knock Knock Joke 3"
+    POLAR_JOKE_4 =                              "Polar Place Knock Knock Joke 4"
+    POLAR_JOKE_5 =                              "Polar Place Knock Knock Joke 5"
+    POLAR_JOKE_6 =                              "Polar Place Knock Knock Joke 6"
+    POLAR_JOKE_7 =                              "Polar Place Knock Knock Joke 7"
+    POLAR_JOKE_8 =                              "Polar Place Knock Knock Joke 8"
+    POLAR_JOKE_9 =                              "Polar Place Knock Knock Joke 9"
+    POLAR_JOKE_10 =                             "Polar Place Knock Knock Joke 10"
+    LULLABY_JOKE_1 =                            "Lullaby Lane Knock Knock Joke 1"
+    LULLABY_JOKE_2 =                            "Lullaby Lane Knock Knock Joke 2"
+    LULLABY_JOKE_3 =                            "Lullaby Lane Knock Knock Joke 3"
+    LULLABY_JOKE_4 =                            "Lullaby Lane Knock Knock Joke 4"
+    LULLABY_JOKE_5 =                            "Lullaby Lane Knock Knock Joke 5"
+    LULLABY_JOKE_6 =                            "Lullaby Lane Knock Knock Joke 6"
+    LULLABY_JOKE_7 =                            "Lullaby Lane Knock Knock Joke 7"
+    LULLABY_JOKE_8 =                            "Lullaby Lane Knock Knock Joke 8"
+    LULLABY_JOKE_9 =                            "Lullaby Lane Knock Knock Joke 9"
+    LULLABY_JOKE_10 =                           "Lullaby Lane Knock Knock Joke 10"
+    PAJAMA_JOKE_1 =                             "Pajama Place Knock Knock Joke 1"
+    PAJAMA_JOKE_2 =                             "Pajama Place Knock Knock Joke 2"
+    PAJAMA_JOKE_3 =                             "Pajama Place Knock Knock Joke 3"
+    PAJAMA_JOKE_4 =                             "Pajama Place Knock Knock Joke 4"
+    PAJAMA_JOKE_5 =                             "Pajama Place Knock Knock Joke 5"
+    PAJAMA_JOKE_6 =                             "Pajama Place Knock Knock Joke 6"
+    PAJAMA_JOKE_7 =                             "Pajama Place Knock Knock Joke 7"
+    PAJAMA_JOKE_8 =                             "Pajama Place Knock Knock Joke 8"
+    PAJAMA_JOKE_9 =                             "Pajama Place Knock Knock Joke 9"
+    PAJAMA_JOKE_10 =                            "Pajama Place Knock Knock Joke 10"
     FRONT_FACTORY_BARREL_1 =                    "Front Factory West Silo Barrel"
     FRONT_FACTORY_BARREL_2 =                    "Front Factory East Silo Barrel"
     FRONT_FACTORY_BARREL_3 =                    "Front Factory Warehouse Barrel"
@@ -499,7 +669,6 @@ class ToontownLocationName(Enum):
     SAVED_TOONTOWN =                            "Save Toontown"
 
 
-
 class ToontownLocationType(IntEnum):
     STARTER         = auto()  # Location that is considered a "starting" check on login, typically we force checks here
     GALLERY         = auto()  # Locations for discovering cogs in the gallery
@@ -531,7 +700,16 @@ class ToontownLocationType(IntEnum):
     MML_TASKS       = auto()  # Locations for MML tasks
     TB_TASKS        = auto()  # Locations for TB tasks
     DDL_TASKS       = auto()  # Locations for DDL tasks
-
+    JOKE_1          = auto()  # Locations for knock knock jokes
+    JOKE_2          = auto()  # Locations for knock knock jokes
+    JOKE_3          = auto()  # Locations for knock knock jokes
+    JOKE_4          = auto()  # Locations for knock knock jokes
+    JOKE_5          = auto()  # Locations for knock knock jokes
+    JOKE_6          = auto()  # Locations for knock knock jokes
+    JOKE_7          = auto()  # Locations for knock knock jokes
+    JOKE_8          = auto()  # Locations for knock knock jokes
+    JOKE_9          = auto()  # Locations for knock knock jokes
+    JOKE_10          = auto()  # Locations for knock knock jokes
 
     MISC = auto()
 
@@ -648,7 +826,6 @@ REGION_TO_TREASURE_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName
     ],
 }
 
-
 TREASURE_LOCATION_TYPES: list[ToontownLocationType] = [
     ToontownLocationType.PLAYGROUND_1,
     ToontownLocationType.PLAYGROUND_2,
@@ -681,7 +858,220 @@ TREASURE_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     )
 ]
 # endregion
+# region Knock Knock Location Definitions
+REGION_TO_KNOCK_KNOCK_LOCATIONS = {
+    ToontownRegionName.TTC: [
+        [ToontownLocationName.LOOPY_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.LOOPY_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.LOOPY_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.LOOPY_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.LOOPY_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.LOOPY_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.LOOPY_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.LOOPY_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.LOOPY_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.LOOPY_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.PUNCHLINE_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.PUNCHLINE_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.PUNCHLINE_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.PUNCHLINE_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.PUNCHLINE_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.PUNCHLINE_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.PUNCHLINE_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.PUNCHLINE_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.PUNCHLINE_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.PUNCHLINE_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.SILLY_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.SILLY_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.SILLY_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.SILLY_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.SILLY_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.SILLY_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.SILLY_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.SILLY_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.SILLY_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.SILLY_JOKE_10, ToontownLocationType.JOKE_10],
+    ],
+    ToontownRegionName.DD:   [
+        [ToontownLocationName.BARNACLE_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.BARNACLE_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.BARNACLE_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.BARNACLE_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.BARNACLE_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.BARNACLE_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.BARNACLE_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.BARNACLE_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.BARNACLE_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.BARNACLE_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.SEAWEED_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.SEAWEED_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.SEAWEED_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.SEAWEED_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.SEAWEED_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.SEAWEED_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.SEAWEED_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.SEAWEED_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.SEAWEED_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.SEAWEED_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.LIGHTHOUSE_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.LIGHTHOUSE_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.LIGHTHOUSE_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.LIGHTHOUSE_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.LIGHTHOUSE_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.LIGHTHOUSE_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.LIGHTHOUSE_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.LIGHTHOUSE_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.LIGHTHOUSE_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.LIGHTHOUSE_JOKE_10, ToontownLocationType.JOKE_10],
+    ],
+    ToontownRegionName.DG:   [
+        [ToontownLocationName.ELM_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.ELM_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.ELM_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.ELM_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.ELM_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.ELM_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.ELM_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.ELM_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.ELM_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.ELM_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.MAPLE_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.MAPLE_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.MAPLE_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.MAPLE_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.MAPLE_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.MAPLE_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.MAPLE_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.MAPLE_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.MAPLE_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.MAPLE_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.OAK_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.OAK_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.OAK_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.OAK_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.OAK_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.OAK_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.OAK_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.OAK_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.OAK_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.OAK_JOKE_10, ToontownLocationType.JOKE_10],
+    ],
+    ToontownRegionName.MML:  [
+        [ToontownLocationName.ALTO_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.ALTO_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.ALTO_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.ALTO_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.ALTO_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.ALTO_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.ALTO_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.ALTO_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.ALTO_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.ALTO_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.BARITONE_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.BARITONE_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.BARITONE_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.BARITONE_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.BARITONE_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.BARITONE_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.BARITONE_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.BARITONE_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.BARITONE_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.BARITONE_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.TENOR_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.TENOR_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.TENOR_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.TENOR_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.TENOR_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.TENOR_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.TENOR_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.TENOR_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.TENOR_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.TENOR_JOKE_10, ToontownLocationType.JOKE_10],
+    ],
+    ToontownRegionName.TB:   [
+        [ToontownLocationName.SLEET_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.SLEET_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.SLEET_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.SLEET_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.SLEET_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.SLEET_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.SLEET_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.SLEET_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.SLEET_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.SLEET_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.WALRUS_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.WALRUS_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.WALRUS_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.WALRUS_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.WALRUS_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.WALRUS_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.WALRUS_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.WALRUS_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.WALRUS_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.WALRUS_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.POLAR_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.POLAR_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.POLAR_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.POLAR_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.POLAR_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.POLAR_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.POLAR_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.POLAR_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.POLAR_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.POLAR_JOKE_10, ToontownLocationType.JOKE_10],
+    ],
+    ToontownRegionName.DDL:  [
+        [ToontownLocationName.LULLABY_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.LULLABY_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.LULLABY_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.LULLABY_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.LULLABY_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.LULLABY_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.LULLABY_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.LULLABY_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.LULLABY_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.LULLABY_JOKE_10, ToontownLocationType.JOKE_10],
+        [ToontownLocationName.PAJAMA_JOKE_1,  ToontownLocationType.JOKE_1],
+        [ToontownLocationName.PAJAMA_JOKE_2,  ToontownLocationType.JOKE_2],
+        [ToontownLocationName.PAJAMA_JOKE_3,  ToontownLocationType.JOKE_3],
+        [ToontownLocationName.PAJAMA_JOKE_4,  ToontownLocationType.JOKE_4],
+        [ToontownLocationName.PAJAMA_JOKE_5,  ToontownLocationType.JOKE_5],
+        [ToontownLocationName.PAJAMA_JOKE_6,  ToontownLocationType.JOKE_6],
+        [ToontownLocationName.PAJAMA_JOKE_7,  ToontownLocationType.JOKE_7],
+        [ToontownLocationName.PAJAMA_JOKE_8,  ToontownLocationType.JOKE_8],
+        [ToontownLocationName.PAJAMA_JOKE_9,  ToontownLocationType.JOKE_9],
+        [ToontownLocationName.PAJAMA_JOKE_10, ToontownLocationType.JOKE_10],
+    ],
+}
 
+KNOCK_KNOCK_LOCATION_TYPES: list[ToontownLocationType] = [
+    ToontownLocationType.JOKE_1,
+    ToontownLocationType.JOKE_2,
+    ToontownLocationType.JOKE_3,
+    ToontownLocationType.JOKE_4,
+    ToontownLocationType.JOKE_5,
+    ToontownLocationType.JOKE_6,
+    ToontownLocationType.JOKE_7,
+    ToontownLocationType.JOKE_8,
+    ToontownLocationType.JOKE_9,
+    ToontownLocationType.JOKE_10,
+]
+
+REGION_TO_KNOCK_KNOCK_RULES: dict[ToontownRegionName, list[Rule]] = {
+    ToontownRegionName.TTC:  [Rule.CanReachTTC, Rule.HasTTCBook],
+    ToontownRegionName.DD:   [Rule.CanReachDD, Rule.HasDDBook],
+    ToontownRegionName.DG:   [Rule.CanReachDG, Rule.HasDGBook],
+    ToontownRegionName.MML:  [Rule.CanReachMML, Rule.HasMMLBook],
+    ToontownRegionName.TB:   [Rule.CanReachTB, Rule.HasTBBook],
+    ToontownRegionName.DDL:  [Rule.CanReachDDL, Rule.HasDDLBook]
+}
+
+KNOCK_KNOCK_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = []
+for region_name in REGION_TO_KNOCK_KNOCK_LOCATIONS.keys():
+    for location_info in REGION_TO_KNOCK_KNOCK_LOCATIONS[region_name]:
+        location = ToontownLocationDefinition(location_info[0],  location_info[1], region_name, REGION_TO_KNOCK_KNOCK_RULES.get(region_name))
+        KNOCK_KNOCK_LOCATION_DEFINITIONS.append(location)
+# endregion
 # region Boss Check Definitions
 REGION_TO_BOSS_LOCATIONS: dict[ToontownRegionName, list[ToontownLocationName]] = {
     ToontownRegionName.SBHQ: [
@@ -791,38 +1181,38 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.BIG_CHEESE_DEFEATED,        ToontownLocationType.GALLERY,     ToontownRegionName.GALLERY, [Rule.TierEightBossbot]),
     # endregion
     # region Cog Gallery Maxing
-    ToontownLocationDefinition(ToontownLocationName.COLD_CALLER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierOneCogs]),
-    ToontownLocationDefinition(ToontownLocationName.SHORT_CHANGE_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierOneCogs]),
-    ToontownLocationDefinition(ToontownLocationName.BOTTOM_FEEDER_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierOneCogs]),
-    ToontownLocationDefinition(ToontownLocationName.FLUNKY_MAXED,               ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierOneCogs]),
-    ToontownLocationDefinition(ToontownLocationName.TELEMARKETER_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierTwoCogs]),
-    ToontownLocationDefinition(ToontownLocationName.PENNY_PINCHER_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierTwoCogs]),
-    ToontownLocationDefinition(ToontownLocationName.BLOODSUCKER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierTwoCogs]),
-    ToontownLocationDefinition(ToontownLocationName.PENCIL_PUSHER_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierTwoCogs]),
-    ToontownLocationDefinition(ToontownLocationName.NAME_DROPPER_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierThreeCogs]),
-    ToontownLocationDefinition(ToontownLocationName.TIGHTWAD_MAXED,             ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierThreeCogs]),
-    ToontownLocationDefinition(ToontownLocationName.DOUBLE_TALKER_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierThreeCogs]),
-    ToontownLocationDefinition(ToontownLocationName.YESMAN_MAXED,               ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierThreeCogs]),
-    ToontownLocationDefinition(ToontownLocationName.GLAD_HANDER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierFourSellbot]),
-    ToontownLocationDefinition(ToontownLocationName.BEAN_COUNTER_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierFourCashbot]),
-    ToontownLocationDefinition(ToontownLocationName.AMBULANCE_CHASER_MAXED,     ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierFourLawbot]),
-    ToontownLocationDefinition(ToontownLocationName.MICROMANAGER_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierFourBossbot]),
-    ToontownLocationDefinition(ToontownLocationName.MOVER_AND_SHAKER_MAXED,     ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierFiveSellbot]),
-    ToontownLocationDefinition(ToontownLocationName.NUMBER_CRUNCHER_MAXED,      ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierFiveCashbot]),
-    ToontownLocationDefinition(ToontownLocationName.BACKSTABBER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierFiveLawbot]),
-    ToontownLocationDefinition(ToontownLocationName.DOWNSIZER_MAXED,            ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierFiveBossbot]),
-    ToontownLocationDefinition(ToontownLocationName.TWO_FACE_MAXED,             ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSixSellbot]),
-    ToontownLocationDefinition(ToontownLocationName.MONEY_BAGS_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSixCashbot]),
-    ToontownLocationDefinition(ToontownLocationName.SPIN_DOCTOR_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSixLawbot]),
-    ToontownLocationDefinition(ToontownLocationName.HEAD_HUNTER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierSixBossbot]),
-    ToontownLocationDefinition(ToontownLocationName.MINGLER_MAXED,              ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightSellbot]),
-    ToontownLocationDefinition(ToontownLocationName.LOAN_SHARK_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightCashbot]),
-    ToontownLocationDefinition(ToontownLocationName.LEGAL_EAGLE_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightLawbot]),
-    ToontownLocationDefinition(ToontownLocationName.CORPORATE_RAIDER_MAXED,     ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightBossbot]),
-    ToontownLocationDefinition(ToontownLocationName.MR_HOLLYWOOD_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightSellbot]),
-    ToontownLocationDefinition(ToontownLocationName.ROBBER_BARRON_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightCashbot]),
-    ToontownLocationDefinition(ToontownLocationName.BIG_WIG_MAXED,              ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightLawbot]),
-    ToontownLocationDefinition(ToontownLocationName.BIG_CHEESE_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.TierEightBossbot]),
+    ToontownLocationDefinition(ToontownLocationName.COLD_CALLER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierOneCogs]),
+    ToontownLocationDefinition(ToontownLocationName.SHORT_CHANGE_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierOneCogs]),
+    ToontownLocationDefinition(ToontownLocationName.BOTTOM_FEEDER_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierOneCogs]),
+    ToontownLocationDefinition(ToontownLocationName.FLUNKY_MAXED,               ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierOneCogs]),
+    ToontownLocationDefinition(ToontownLocationName.TELEMARKETER_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierTwoCogs]),
+    ToontownLocationDefinition(ToontownLocationName.PENNY_PINCHER_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierTwoCogs]),
+    ToontownLocationDefinition(ToontownLocationName.BLOODSUCKER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierTwoCogs]),
+    ToontownLocationDefinition(ToontownLocationName.PENCIL_PUSHER_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierTwoCogs]),
+    ToontownLocationDefinition(ToontownLocationName.NAME_DROPPER_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierThreeSellbot]),
+    ToontownLocationDefinition(ToontownLocationName.TIGHTWAD_MAXED,             ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierThreeCashbot]),
+    ToontownLocationDefinition(ToontownLocationName.DOUBLE_TALKER_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierThreeLawbot]),
+    ToontownLocationDefinition(ToontownLocationName.YESMAN_MAXED,               ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierThreeBossbot]),
+    ToontownLocationDefinition(ToontownLocationName.GLAD_HANDER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierFourSellbot]),
+    ToontownLocationDefinition(ToontownLocationName.BEAN_COUNTER_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierFourCashbot]),
+    ToontownLocationDefinition(ToontownLocationName.AMBULANCE_CHASER_MAXED,     ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierFourLawbot]),
+    ToontownLocationDefinition(ToontownLocationName.MICROMANAGER_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierFourBossbot]),
+    ToontownLocationDefinition(ToontownLocationName.MOVER_AND_SHAKER_MAXED,     ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierFiveSellbot]),
+    ToontownLocationDefinition(ToontownLocationName.NUMBER_CRUNCHER_MAXED,      ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierFiveCashbot]),
+    ToontownLocationDefinition(ToontownLocationName.BACKSTABBER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierFiveLawbot]),
+    ToontownLocationDefinition(ToontownLocationName.DOWNSIZER_MAXED,            ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierFiveBossbot]),
+    ToontownLocationDefinition(ToontownLocationName.TWO_FACE_MAXED,             ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierSixSellbot]),
+    ToontownLocationDefinition(ToontownLocationName.MONEY_BAGS_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierSixCashbot]),
+    ToontownLocationDefinition(ToontownLocationName.SPIN_DOCTOR_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierSixLawbot]),
+    ToontownLocationDefinition(ToontownLocationName.HEAD_HUNTER_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierSixBossbot]),
+    ToontownLocationDefinition(ToontownLocationName.MINGLER_MAXED,              ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierEightSellbot]),
+    ToontownLocationDefinition(ToontownLocationName.LOAN_SHARK_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierEightCashbot]),
+    ToontownLocationDefinition(ToontownLocationName.LEGAL_EAGLE_MAXED,          ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierEightLawbot]),
+    ToontownLocationDefinition(ToontownLocationName.CORPORATE_RAIDER_MAXED,     ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierEightBossbot]),
+    ToontownLocationDefinition(ToontownLocationName.MR_HOLLYWOOD_MAXED,         ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierEightSellbot]),
+    ToontownLocationDefinition(ToontownLocationName.ROBBER_BARRON_MAXED,        ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierEightCashbot]),
+    ToontownLocationDefinition(ToontownLocationName.BIG_WIG_MAXED,              ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierEightLawbot]),
+    ToontownLocationDefinition(ToontownLocationName.BIG_CHEESE_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierEightBossbot]),
     # endregion
     # region racing
     ToontownLocationDefinition(ToontownLocationName.SPEEDWAY_1_CLEAR,           ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
@@ -1056,7 +1446,7 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.FOUR_STORY,                 ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag,   Rule.FourStory]),
     ToontownLocationDefinition(ToontownLocationName.FIVE_STORY,                 ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
     # endregion
-] + TREASURE_LOCATION_DEFINITIONS + [
+] + TREASURE_LOCATION_DEFINITIONS + KNOCK_KNOCK_LOCATION_DEFINITIONS + [
     # region Facilities
     ToontownLocationDefinition(ToontownLocationName.FRONT_FACTORY_BARREL_1, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFourOffenseGag, Rule.Has40PercentMax]),
     ToontownLocationDefinition(ToontownLocationName.FRONT_FACTORY_BARREL_2, ToontownLocationType.FACILITIES, ToontownRegionName.SBHQ, [Rule.FrontFactoryKey, Rule.HasLevelFourOffenseGag, Rule.Has40PercentMax]),
@@ -1221,6 +1611,15 @@ BOUNTY_LOCATIONS = [
     ToontownLocationName.THROW_WEDDING_UNLOCKED, ToontownLocationName.SQUIRT_GEYSER_UNLOCKED, ToontownLocationName.DROP_BOAT_UNLOCKED,  # Gag bounty locations (2)
     ToontownLocationName.FIVE_STORY,  # Building bounty locations
 ]
+
+BOSS_BOUNTIES = [ToontownLocationName.SELLBOT_PROOF_1, ToontownLocationName.CASHBOT_PROOF_1, ToontownLocationName.LAWBOT_PROOF_1, ToontownLocationName.BOSSBOT_PROOF_1]
+RACE_BOUNTIES = [ToontownLocationName.URBAN_2_QUALIFY]
+GOLF_BOUNTIES = [ToontownLocationName.HARD_GOLF_9]
+FISH_SPECIES_BOUNTIES = [ToontownLocationName.DOG_FISH_1]
+FISH_ALBUM_BOUNTIES = [ToontownLocationName.FISHING_COMPLETE_ALBUM]
+ALL_FISH_BOUNTIES = [ToontownLocationName.DOG_FISH_1, ToontownLocationName.FISHING_COMPLETE_ALBUM]
+GAG_BOUNTIES = [ToontownLocationName.TOONUP_HIGHDIVE_UNLOCKED, ToontownLocationName.TRAP_TRAIN_UNLOCKED, ToontownLocationName.LURE_PRESENTATION_UNLOCKED, ToontownLocationName.SOUND_OPERA_UNLOCKED,
+                ToontownLocationName.THROW_WEDDING_UNLOCKED, ToontownLocationName.SQUIRT_GEYSER_UNLOCKED, ToontownLocationName.DROP_BOAT_UNLOCKED]
 
 def get_location_def_from_name(name: ToontownLocationName) -> ToontownLocationDefinition:
     return LOCATION_NAME_TO_DEFINITION[name]
