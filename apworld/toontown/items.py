@@ -376,11 +376,9 @@ GAG_UPGRADES = (
     ToontownItemName.SQUIRT_UPGRADE,
     ToontownItemName.DROP_UPGRADE
 )
+
+
 def get_item_groups():
-
-
-    
-
     GAG_CAPACITY = (
         ToontownItemName.GAG_CAPACITY_5,
         ToontownItemName.GAG_CAPACITY_10,
@@ -448,6 +446,15 @@ def get_item_groups():
         ToontownItemName.TASK_CAPACITY,
     )
 
+    JOKE_BOOKS = (
+        ToontownItemName.TTC_JOKE_BOOK,
+        ToontownItemName.DD_JOKE_BOOK,
+        ToontownItemName.DG_JOKE_BOOK,
+        ToontownItemName.MML_JOKE_BOOK,
+        ToontownItemName.TB_JOKE_BOOK,
+        ToontownItemName.DDL_JOKE_BOOK,
+    )
+
     ITEM_NAME_GROUPS_OBJECT = {
         "Cog Disguises": COG_DISGUISES,
         "Facility Keys": FACILITY_KEY_ITEMS,
@@ -465,6 +472,7 @@ def get_item_groups():
         "Jellybeans": JELLYBEANS,
         "Gag Exp Reward": GAG_EXP,
         "Traps": TRAPS,
+        "Joke Books": JOKE_BOOKS
     }
 
     return {k:[i.value for i in v] for k,v in ITEM_NAME_GROUPS_OBJECT.items()}

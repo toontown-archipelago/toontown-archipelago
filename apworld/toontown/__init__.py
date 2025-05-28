@@ -52,12 +52,12 @@ class ToontownWorld(World):
     location_name_groups = get_location_groups()
     item_descriptions = ITEM_DESCRIPTIONS
     item_name_groups = get_item_groups()
-    valid_bounties = list()
-    inserted_bounties = list()
 
     def __init__(self, world, player):
         super(ToontownWorld, self).__init__(world, player)
         self.created_locations: list[ToontownLocationDefinition] = []
+        self.valid_bounties = list()
+        self.inserted_bounties = list()
 
     def set_rules(self):
         # Add location rules.
@@ -563,7 +563,7 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "team": self.options.team.value,
-            "game_version": "v0.16.0",
+            "game_version": "v0.16.1",
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "max_laff": self.options.max_laff.value,
