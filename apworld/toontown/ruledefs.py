@@ -457,8 +457,6 @@ def PlaygroundCountRule(state: CollectionState, locentr: LocEntrDef, world: Mult
 
 @rule(Rule.TierOneCogs)
 @rule(Rule.TierTwoCogs)
-@rule(Rule.CanMaxTierOneCogs)
-@rule(Rule.CanMaxTierTwoCogs)
 def TierOneCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     return passes_rule(Rule.HasLevelOneOffenseGag, state, locentr, world, player, options)
 
@@ -540,9 +538,17 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
     return any(state.can_reach(pg.value, None, player) for pg in pgs) \
            and passes_rule(gag_rule, state, locentr, world, player, options)
 
+@rule(Rule.CanMaxTierOneSellbot, 1, ToontownRegionName.SBHQ, Rule.TierOneCogs)
+@rule(Rule.CanMaxTierOneCashbot, 1, ToontownRegionName.CBHQ, Rule.TierOneCogs)
+@rule(Rule.CanMaxTierOneLawbot,  1, ToontownRegionName.LBHQ, Rule.TierOneCogs)
+@rule(Rule.CanMaxTierOneBossbot, 1, ToontownRegionName.BBHQ, Rule.TierOneCogs)
+@rule(Rule.CanMaxTierTwoSellbot, 2, ToontownRegionName.SBHQ, Rule.TierTwoCogs)
+@rule(Rule.CanMaxTierTwoCashbot, 2, ToontownRegionName.CBHQ, Rule.TierTwoCogs)
+@rule(Rule.CanMaxTierTwoLawbot,  2, ToontownRegionName.LBHQ, Rule.TierTwoCogs)
+@rule(Rule.CanMaxTierTwoBossbot, 2, ToontownRegionName.BBHQ, Rule.TierTwoCogs)
 @rule(Rule.CanMaxTierThreeSellbot, 3, ToontownRegionName.SBHQ, Rule.TierThreeCogs)
 @rule(Rule.CanMaxTierThreeCashbot, 3, ToontownRegionName.CBHQ, Rule.TierThreeCogs)
-@rule(Rule.CanMaxTierThreeLawbot, 3, ToontownRegionName.LBHQ, Rule.TierThreeCogs)
+@rule(Rule.CanMaxTierThreeLawbot,  3, ToontownRegionName.LBHQ, Rule.TierThreeCogs)
 @rule(Rule.CanMaxTierThreeBossbot, 3, ToontownRegionName.BBHQ, Rule.TierThreeCogs)
 @rule(Rule.CanMaxTierFourSellbot, 4, ToontownRegionName.SBHQ, Rule.TierFourSellbot)
 @rule(Rule.CanMaxTierFourCashbot, 4, ToontownRegionName.CBHQ, Rule.TierFourCashbot)
@@ -606,6 +612,7 @@ def CanMaxCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
     CanBackThree = passes_rule(Rule.BackThreeKey, state, locentr, world, player, options) \
                    and passes_rule(Rule.HasLevelSevenOffenseGag, state, locentr, world, player, options) \
                    and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanOneStory = passes_rule(Rule.OneStory, state, locentr, world, player, options)
     CanTwoStory = passes_rule(Rule.TwoStory, state, locentr, world, player, options)
     CanThreeStory = passes_rule(Rule.ThreeStory, state, locentr, world, player, options)
     CanFourStory = passes_rule(Rule.FourStory, state, locentr, world, player, options)
@@ -616,6 +623,53 @@ def CanMaxCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
     CanCEO = passes_rule(Rule.CanFightCEO, state, locentr, world, player, options)
 
     tier_to_info = {
+        1: {
+            "generic-rules": [
+                CanOneStory,
+                CanTwoStory,
+                CanThreeStory
+            ],
+            ToontownRegionName.SBHQ: [
+                CanFrontFactory,
+                CanSideFactory,
+                CanVP
+            ],
+            ToontownRegionName.CBHQ: [
+                CanCoin,
+                CanDollar,
+            ],
+            ToontownRegionName.LBHQ: [
+                CanAOffice,
+                CanBOffice,
+            ],
+            ToontownRegionName.BBHQ: [
+            ],
+        },
+        2: {
+            "generic-rules": [
+                CanOneStory,
+                CanTwoStory,
+                CanThreeStory
+            ],
+            ToontownRegionName.SBHQ: [
+                CanFrontFactory,
+                CanSideFactory,
+                CanVP
+            ],
+            ToontownRegionName.CBHQ: [
+                CanCoin,
+                CanDollar,
+                CanBullion,
+            ],
+            ToontownRegionName.LBHQ: [
+                CanAOffice,
+                CanBOffice,
+                CanCOffice
+            ],
+            ToontownRegionName.BBHQ: [
+                CanFrontOne
+            ],
+        },
         3: {
             "generic-rules": [
                 CanTwoStory,
@@ -740,7 +794,8 @@ def CanMaxCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
     tier_info = tier_to_info[tier]
     rules = tier_info["generic-rules"]
     # Add area/dept specific rules
-    rules.extend(tier_info[argument[1]])
+    if argument[1]:
+        rules.extend(tier_info[argument[1]])
     return passes_rule(argument[2], state, locentr, world, player, options) and any(rules)
 
 @rule(Rule.OneStory, 1)

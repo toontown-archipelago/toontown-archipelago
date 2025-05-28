@@ -102,8 +102,15 @@ class Rule(Enum):
     TierEightLawbot  = auto()
     TierEightBossbot = auto()
 
-    CanMaxTierOneCogs = auto()
-    CanMaxTierTwoCogs = auto()
+    CanMaxTierOneSellbot = auto()
+    CanMaxTierOneCashbot = auto()
+    CanMaxTierOneLawbot = auto()
+    CanMaxTierOneBossbot = auto()
+
+    CanMaxTierTwoSellbot = auto()
+    CanMaxTierTwoCashbot = auto()
+    CanMaxTierTwoLawbot = auto()
+    CanMaxTierTwoBossbot = auto()
 
     CanMaxTierThreeSellbot = auto()
     CanMaxTierThreeCashbot = auto()
