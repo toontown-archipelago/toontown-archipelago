@@ -41,7 +41,7 @@ class ToontownWorld(World):
     game = "Toontown"
     web = ToontownWeb()
 
-    required_client_version = (0, 4, 4)
+    required_client_version = (0, 6, 1)
     options_dataclass = ToontownOptions
     options: ToontownOptions
 

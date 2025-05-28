@@ -11,7 +11,7 @@ from json import JSONEncoder, JSONDecoder
 from toontown.archipelago.util.utils import Version, ByValue
 
 ARCHIPELAGO_GAME_NAME = "Toontown"
-ARCHIPELAGO_CLIENT_VERSION = Version(0, 4, 4)
+ARCHIPELAGO_CLIENT_VERSION = Version(0, 6, 1)
 
 
 class JSONMessagePart(typing.TypedDict, total=False):
