@@ -95,7 +95,7 @@ class BaseGlobalGagXPRange(Range):
     display_name = "Base Global Gag XP"
     range_start = 1
     range_end = 10
-    default = 2
+    default = 5
 
 
 class MaxGlobalGagXPRange(Range):
@@ -107,7 +107,7 @@ class MaxGlobalGagXPRange(Range):
     display_name = "Max Global Gag XP"
     range_start = 0
     range_end = 30
-    default = 15
+    default = 30
 
 
 class DamageMultiplierRange(Range):
@@ -848,7 +848,8 @@ class ToontownOptions(PerGameCommonOptions):
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
         ProgressionBalancing, Accessibility, SyncJellybeans, 
-        SyncGagExp, PetShopRewardDisplayOption, TaskRewardDisplayOption
+        SyncGagExp, PetShopRewardDisplayOption, TaskRewardDisplayOption,
+        TrapPercentOption
     ]),
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
@@ -866,16 +867,19 @@ toontown_option_groups: list[OptionGroup] = [
         WinConditionTotalGagTracksWeb, GagTracksRequired,
         WinConditionFishSpeciesWeb, FishSpeciesRequired,
         WinConditionLaffOLympicsWeb, LaffPointsRequired,
-        WinConditionBountyWeb, BountiesRequired,
+        WinConditionBountyWeb, BountiesRequired, TotalBounties, BountiesHinted
         ], False),
     OptionGroup("Check/Item Behavior", [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, FishChecks, FishLocations,
-        FishProgression, RacingOption, GolfingOption, SeedGenerationTypeOption
+        FishProgression, RacingOption, GolfingOption, SeedGenerationTypeOption,
+        JokesPerStreet, JokeBookToggle
     ], False),
-    OptionGroup("Weights", [
-        TrapPercentOption, UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption,
+    OptionGroup("Junk Weights", [
         BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption
+    ], True),
+    OptionGroup("Trap Weights", [
+        UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption
     ], True)
 ]
