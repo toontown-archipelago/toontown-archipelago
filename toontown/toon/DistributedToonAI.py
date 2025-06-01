@@ -16,6 +16,7 @@ from toontown.quest import Quests
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.battle import SuitBattleGlobals
 from direct.task import Task
+from direct.showbase.PythonUtil import union
 from toontown.catalog import CatalogItemList
 from toontown.catalog import CatalogItem
 from direct.distributed.ClockDelta import *
