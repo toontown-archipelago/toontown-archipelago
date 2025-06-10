@@ -544,6 +544,11 @@ class ToontownWorld(World):
             if location.address and location.item and location.item.code and location.item.player == self.player
         ]
 
+        local_locations = [
+            location.name
+            for location in self.created_locations
+        ]
+
         win_condition = ToontownWinCondition.from_options(self.options)
 
         # TODO: if actually removing tasks becomes implemented,
@@ -609,6 +614,7 @@ class ToontownWorld(World):
             "pet_shop_display": self.options.pet_shop_display.value,
             "task_reward_display": self.options.task_reward_display.value,
             "local_itempool": local_itempool,
+            "local_locations": local_locations,
             "tpsanity": self.options.tpsanity.value,
             "treasures_per_location": self.options.treasures_per_location.value,
             "checks_per_boss": self.options.checks_per_boss.value,

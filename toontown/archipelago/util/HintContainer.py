@@ -130,6 +130,16 @@ class HintContainer:
                 hints.append(hint)
         return hints
 
+    def getHintsForLocationAndSlot(self, location_id: int, slot: int) -> List[HintedItem]:
+        """
+        A combination of getHintsForSlot and getHintsForItem
+        """
+        hints = []
+        for hint in self.hints:
+            if hint.item.location == location_id and hint.destination == slot:
+                hints.append(hint)
+        return hints
+
     def __str__(self):
         return f"HintContainer<avId={self.avId}, hints=[{self.hints}]>"
 

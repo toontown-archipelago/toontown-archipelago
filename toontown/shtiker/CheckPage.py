@@ -20,6 +20,7 @@ class HintNode(DirectFrame):
 
         self.title = DirectLabel(parent=self, scale=0.07, pos=(0, 0, -0.08), text="Select an Item", textMayChange=True, relief=None)
         self.scrollList = None
+        self.externalHint = False
 
         gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
         quitHover = gui.find('**/QuitBtn_UP')
@@ -43,7 +44,7 @@ class HintNode(DirectFrame):
         gui.removeNode()
 
     def askForHint(self):
-        if self.hintName is None:
+        if self.hintName is None or self.externalHint:
             base.talkAssistant.sendOpenTalk("!hint")
             return
         base.talkAssistant.sendOpenTalk("!hint " + self.hintName.value)
@@ -81,7 +82,10 @@ class HintNode(DirectFrame):
         questionMarkIcon = model.find('**/questionMark')
 
         hintContainer: HintContainer = self.getHintContainer()
-        hints: List[HintedItem] = hintContainer.getHintsForItemAndSlot(checkDef.unique_id, localToonInformation.slotId)
+        if self.externalHint:
+            pass
+        else:
+            hints: List[HintedItem] = hintContainer.getHintsForItemAndSlot(checkDef.unique_id, localToonInformation.slotId)
 
         # Using our hints we have so far, start constructing text to show that
         foundHints = []
@@ -203,6 +207,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.hintNode.setPos(0.42, 0, 0.5)
         self.hintNode.hide()
         self.viewingHint: bool | tuple = False
+        self.externalHints = False
 
     def load(self):
         main_text_scale = 0.06
@@ -252,7 +257,10 @@ class CheckPage(ShtikerPage.ShtikerPage):
         selectedIndex = 0
         if self.scrollList:
             selectedIndex = self.scrollList.getSelectedIndex()
-            self.updateCheckButtons()
+            if self.externalHints:
+                pass
+            else:
+                self.updateCheckButtons()
             self.scrollList.destroy()
             self.scrollList = None
 
@@ -299,24 +307,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
             del button
         self.checkButtons = []
 
-        # Maps item ids to the quantity that we have
-        itemsAndCount: Dict[int, int] = {}
-        for item in base.localAvatar.getReceivedItems():
-            index_received, item_id = item
-            itemsAndCount[item_id] = itemsAndCount.get(item_id, 0) + 1
-
-        # Count total items in item pool
-        allItems: dict[ToontownItemDefinition, int] = {}
-        for item_id in sorted(base.localAvatar.slotData.get("local_itempool", [])):
-            allItems.setdefault(item_id, 0)
-            allItems[item_id] += 1
-
-        # Container Lists for Item Classes
-        bounties = []
-        keyItems = []
-        progressionItems = []
-        usefulItems = []
-        junkItems = []
         # Generate new buttons
         model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         for item_id, quantity in allItems.items():
@@ -388,9 +378,94 @@ class CheckPage(ShtikerPage.ShtikerPage):
         del x
         return (checkButtonParent, checkButtonR, checkButtonL)
 
+    def updateExternalHintButtons(self):
+        # Cleanup buttons
+        for button in self.checkButtons:
+            button.detachNode()
+            del button
+        self.checkButtons = []
+
+        # All local locations for the seed
+        allLocations = base.localAvatar.slotData.get("local_itempool", [])
+
+        # Generate new buttons
+        model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
+        for location in allLocations:
+            itemDef = get_item_def_from_id(item_id)
+            if itemDef is None:
+                print("ALERT I DON'T KNOW WHAT %s IS -- ENRAGE AT MICA" % item_id)
+                continue
+            itemName = itemDef.name.value
+            if itemName.startswith("Defeated "):
+                continue
+            playgroundKeys = [ToontownItemName.TTC_ACCESS.value, ToontownItemName.DD_ACCESS.value,
+                              ToontownItemName.DG_ACCESS.value,  ToontownItemName.MML_ACCESS.value,
+                              ToontownItemName.TB_ACCESS.value,  ToontownItemName.DDL_ACCESS.value]
+            cogKeys = [ToontownItemName.SBHQ_ACCESS.value, ToontownItemName.CBHQ_ACCESS.value,
+                       ToontownItemName.LBHQ_ACCESS.value, ToontownItemName.BBHQ_ACCESS.value]
+            if base.localAvatar.slotData.get("tpsanity", 0) == TPSanity.option_none:
+                if itemName in playgroundKeys:
+                    quantity = 2
+                if itemName in cogKeys and base.localAvatar.slotData.get("facility_locking", 0) == FacilityLocking.option_access:
+                    quantity = 2
+            button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
+            if itemName == "Bounty":
+                bounties.append(button[0])
+                continue
+            if "Key" in itemName or "Disguise" in itemName:
+                if "Access" in itemName:
+                    progressionItems.append(button[0])
+                    continue
+                keyItems.append(button[0])
+                continue
+            if itemDef.classification == 0b0001:  # Progression Items
+                if button[0] not in (progressionItems + keyItems):  # Make sure item isn't already in one of these
+                    progressionItems.append(button[0])
+            elif itemDef.classification == 0b0010:  # Useful Items
+                usefulItems.append(button[0])
+            else:
+                junkItems.append(button[0])
+        model.removeNode()
+        del model
+        self.checkButtons = bounties + keyItems + progressionItems + usefulItems + junkItems
+
+    def _makeExternalHintButton(self, model, itemDef, checkCount, checkMax):
+        """
+        model: loader.loadModel(loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI') # avoiding loading this many times.
+        """
+        locationName = itemDef.name
+        command = lambda: self.setHint(checkName, itemDef, checkMax)
+        checkButtonParent = DirectFrame()
+        checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=checkName.value, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
+        check = model.find('**/checkmark')
+        x = model.find('**/x')
+        hinted = model.find('**/questionMark')
+
+        # Check if this item has been hinted safely
+        isHinted = False
+        if base.cr.archipelagoManager is not None and (localToonInformation := base.cr.archipelagoManager.getLocalInformation()) is not None:
+            isHinted = any(hint.found for hint in base.localAvatar.getHintContainer().getHintsForItemAndSlot(itemDef.unique_id, localToonInformation.slotId))
+        if checkCount >= checkMax:
+            geomToUse = check
+        elif isHinted:
+            geomToUse = hinted
+        else:
+            geomToUse = x
+        checkButtonR = DirectButton(parent=checkButtonParent, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text=str(checkCount) + '/' + str(checkMax), text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
+        # checkButtonR.bind(DirectGuiGlobals.ENTER, lambda t: self.setHint(checkName, itemDef, checkMax, hintLocations))
+        # checkButtonR.bind(DirectGuiGlobals.EXIT, lambda t: self.clearHintIf(checkName))
+        del check
+        del hinted
+        del x
+        return (checkButtonParent, checkButtonR, checkButtonL)
+
+
     def setHint(self, checkName, checkDef, checkMax):
         self.viewingHint = (checkName, checkDef, checkMax)
         self.hintNode.hintName = checkName
         self.hintNode.hintButton['state'] = DGG.NORMAL
         self.hintNode.show()
-        self.hintNode.updateHintDisplays(checkDef, checkMax)
+        if self.externalHints:
+            self.hintNode.updateHintDisplays(checkDef, checkMax, externalhints=True)
+        else:
+            self.hintNode.updateHintDisplays(checkDef, checkMax)
