@@ -113,11 +113,11 @@ class MaxGlobalGagXPRange(Range):
 class DamageMultiplierRange(Range):
     """
     The percentage of damage that will be done when battling Cogs.
-    50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
+    75 -> 75%/0.75x damage, 200 -> 200%/2x damage, etc.
     """
     display_name = "Damage Multiplier"
-    range_start = 25
-    range_end = 500
+    range_start = 70
+    range_end = 200
     default = 100
 
 

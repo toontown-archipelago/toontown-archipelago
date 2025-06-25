@@ -45,7 +45,7 @@ Toontown:
 
   # The percentage of damage that will be done when battling Cogs.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
-  # Range: 25 to 500
+  # Range: 70 to 200
   damage_multiplier: 100
 
   # The percentage multiplier that will be applied to the exp overflow rate.
