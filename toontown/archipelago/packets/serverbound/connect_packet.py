@@ -69,7 +69,7 @@ class ConnectPacket(ServerBoundPacketBase):
 # connect_packet.game = "Toontown"
 # connect_packet.name = "devvydontTT"
 # connect_packet.uuid = 'blabhlablhba'
-# connect_packet.version = Version(0, 4, 4)
+# connect_packet.version = Version(0, 6, 1)
 # connect_packet.items_handling = ConnectPacket.ITEMS_HANDLING_ALL_FLAGS
 # connect_packet.tags = [ConnectPacket.TAG_DEATHLINK]
 # connect_packet.slot_data = True

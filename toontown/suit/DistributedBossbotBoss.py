@@ -813,6 +813,7 @@ class DistributedBossbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def enterEpilogue(self):
         base.localAvatar.checkWinCondition()
+        self.destroyAlert()
         self.cleanupIntervals()
         self.clearChat()
         self.resistanceToon.clearChat()

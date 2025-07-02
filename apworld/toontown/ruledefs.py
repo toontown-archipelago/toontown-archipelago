@@ -203,6 +203,23 @@ def HasEnoughBeanCapacity(state: CollectionState, locentr: LocEntrDef, world: Mu
     return (state.count(ToontownItemName.MONEY_CAP_1000.value, player) > argument[0])
 
 
+@rule(Rule.HasTTCBook, ToontownItemName.TTC_JOKE_BOOK)
+@rule(Rule.HasDDBook, ToontownItemName.DD_JOKE_BOOK)
+@rule(Rule.HasDGBook, ToontownItemName.DG_JOKE_BOOK)
+@rule(Rule.HasMMLBook, ToontownItemName.MML_JOKE_BOOK)
+@rule(Rule.HasTBBook, ToontownItemName.TB_JOKE_BOOK)
+@rule(Rule.HasDDLBook, ToontownItemName.DDL_JOKE_BOOK)
+def CanLaughAtJoke(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        books = options.joke_books.value
+    else:
+        books = options.get("joke_books", True)
+    if books:
+        return state.has(argument[0].value, player)
+    else:
+        return True
+
+
 @rule(Rule.TunnelCanBeUsed)
 def TunnelCanBeUsed(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
@@ -523,6 +540,266 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
                and passes_rule(Rule.Has20PercentMax, state, locentr, world, player, options)
     return any(state.can_reach(pg.value, None, player) for pg in pgs) \
            and passes_rule(gag_rule, state, locentr, world, player, options)
+
+@rule(Rule.CanMaxTierOneSellbot, 1, ToontownRegionName.SBHQ, Rule.TierOneCogs)
+@rule(Rule.CanMaxTierOneCashbot, 1, ToontownRegionName.CBHQ, Rule.TierOneCogs)
+@rule(Rule.CanMaxTierOneLawbot,  1, ToontownRegionName.LBHQ, Rule.TierOneCogs)
+@rule(Rule.CanMaxTierOneBossbot, 1, ToontownRegionName.BBHQ, Rule.TierOneCogs)
+@rule(Rule.CanMaxTierTwoSellbot, 2, ToontownRegionName.SBHQ, Rule.TierTwoCogs)
+@rule(Rule.CanMaxTierTwoCashbot, 2, ToontownRegionName.CBHQ, Rule.TierTwoCogs)
+@rule(Rule.CanMaxTierTwoLawbot,  2, ToontownRegionName.LBHQ, Rule.TierTwoCogs)
+@rule(Rule.CanMaxTierTwoBossbot, 2, ToontownRegionName.BBHQ, Rule.TierTwoCogs)
+@rule(Rule.CanMaxTierThreeSellbot, 3, ToontownRegionName.SBHQ, Rule.TierThreeCogs)
+@rule(Rule.CanMaxTierThreeCashbot, 3, ToontownRegionName.CBHQ, Rule.TierThreeCogs)
+@rule(Rule.CanMaxTierThreeLawbot,  3, ToontownRegionName.LBHQ, Rule.TierThreeCogs)
+@rule(Rule.CanMaxTierThreeBossbot, 3, ToontownRegionName.BBHQ, Rule.TierThreeCogs)
+@rule(Rule.CanMaxTierFourSellbot, 4, ToontownRegionName.SBHQ, Rule.TierFourSellbot)
+@rule(Rule.CanMaxTierFourCashbot, 4, ToontownRegionName.CBHQ, Rule.TierFourCashbot)
+@rule(Rule.CanMaxTierFourLawbot,  4, ToontownRegionName.LBHQ, Rule.TierFourLawbot)
+@rule(Rule.CanMaxTierFourBossbot, 4, ToontownRegionName.BBHQ, Rule.TierFourBossbot)
+@rule(Rule.CanMaxTierFiveSellbot, 5, ToontownRegionName.SBHQ, Rule.TierFiveSellbot)
+@rule(Rule.CanMaxTierFiveCashbot, 5, ToontownRegionName.CBHQ, Rule.TierFiveCashbot)
+@rule(Rule.CanMaxTierFiveLawbot,  5, ToontownRegionName.LBHQ, Rule.TierFiveLawbot)
+@rule(Rule.CanMaxTierFiveBossbot, 5, ToontownRegionName.BBHQ, Rule.TierFiveBossbot)
+@rule(Rule.CanMaxTierSixSellbot, 6, ToontownRegionName.SBHQ, Rule.TierSixSellbot)
+@rule(Rule.CanMaxTierSixCashbot, 6, ToontownRegionName.CBHQ, Rule.TierSixCashbot)
+@rule(Rule.CanMaxTierSixLawbot,  6, ToontownRegionName.LBHQ, Rule.TierSixLawbot)
+@rule(Rule.CanMaxTierSixBossbot, 6, ToontownRegionName.BBHQ, Rule.TierSixBossbot)
+@rule(Rule.CanMaxTierEightSellbot, 8, ToontownRegionName.SBHQ, Rule.TierEightSellbot)
+@rule(Rule.CanMaxTierEightCashbot, 8, ToontownRegionName.CBHQ, Rule.TierEightCashbot)
+@rule(Rule.CanMaxTierEightLawbot,  8, ToontownRegionName.LBHQ, Rule.TierEightLawbot)
+@rule(Rule.CanMaxTierEightBossbot, 8, ToontownRegionName.BBHQ, Rule.TierEightBossbot)
+def CanMaxCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        max_gallery = options.maxed_cog_gallery_quota.value
+    else:
+        max_gallery = options.get("maxed_cog_gallery_quota", 3)
+
+    # Our gallery is only one, we don't need special max gallery logic
+    if max_gallery == 1:
+        return passes_rule(argument[2], state, locentr, world, player, options)
+
+    CanFrontFactory = passes_rule(Rule.FrontFactoryKey, state, locentr, world, player, options) \
+                      and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
+                      and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanSideFactory = passes_rule(Rule.SideFactoryKey, state, locentr, world, player, options) \
+                     and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                     and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanCoin = passes_rule(Rule.CoinMintKey, state, locentr, world, player, options) \
+              and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
+              and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanDollar = passes_rule(Rule.DollarMintKey, state, locentr, world, player, options) \
+                and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanBullion = passes_rule(Rule.BullionMintKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanAOffice = passes_rule(Rule.OfficeAKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanBOffice = passes_rule(Rule.OfficeBKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanCOffice = passes_rule(Rule.OfficeCKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanDOffice = passes_rule(Rule.OfficeDKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelSevenOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanFrontOne = passes_rule(Rule.FrontOneKey, state, locentr, world, player, options) \
+                  and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                  and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanMiddleTwo = passes_rule(Rule.MiddleTwoKey, state, locentr, world, player, options) \
+                   and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
+                   and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanBackThree = passes_rule(Rule.BackThreeKey, state, locentr, world, player, options) \
+                   and passes_rule(Rule.HasLevelSevenOffenseGag, state, locentr, world, player, options) \
+                   and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanOneStory = passes_rule(Rule.OneStory, state, locentr, world, player, options)
+    CanTwoStory = passes_rule(Rule.TwoStory, state, locentr, world, player, options)
+    CanThreeStory = passes_rule(Rule.ThreeStory, state, locentr, world, player, options)
+    CanFourStory = passes_rule(Rule.FourStory, state, locentr, world, player, options)
+    CanFiveStory = passes_rule(Rule.FiveStory, state, locentr, world, player, options)
+    CanVP = passes_rule(Rule.CanFightVP, state, locentr, world, player, options)
+    CanCFO = passes_rule(Rule.CanFightCFO, state, locentr, world, player, options)
+    CanCJ = passes_rule(Rule.CanFightCJ, state, locentr, world, player, options)
+    CanCEO = passes_rule(Rule.CanFightCEO, state, locentr, world, player, options)
+
+    tier_to_info = {
+        1: {
+            "generic-rules": [
+                CanOneStory,
+                CanTwoStory,
+                CanThreeStory
+            ],
+            ToontownRegionName.SBHQ: [
+                CanFrontFactory,
+                CanSideFactory,
+                CanVP
+            ],
+            ToontownRegionName.CBHQ: [
+                CanCoin,
+                CanDollar,
+            ],
+            ToontownRegionName.LBHQ: [
+                CanAOffice,
+                CanBOffice,
+            ],
+            ToontownRegionName.BBHQ: [
+            ],
+        },
+        2: {
+            "generic-rules": [
+                CanOneStory,
+                CanTwoStory,
+                CanThreeStory
+            ],
+            ToontownRegionName.SBHQ: [
+                CanFrontFactory,
+                CanSideFactory,
+                CanVP
+            ],
+            ToontownRegionName.CBHQ: [
+                CanCoin,
+                CanDollar,
+                CanBullion,
+            ],
+            ToontownRegionName.LBHQ: [
+                CanAOffice,
+                CanBOffice,
+                CanCOffice
+            ],
+            ToontownRegionName.BBHQ: [
+                CanFrontOne
+            ],
+        },
+        3: {
+            "generic-rules": [
+                CanTwoStory,
+                CanThreeStory,
+                CanFourStory
+            ],
+            ToontownRegionName.SBHQ: [
+                CanFrontFactory,
+                CanSideFactory,
+                CanVP
+            ],
+            ToontownRegionName.CBHQ: [
+                CanCoin,
+                CanDollar,
+                CanBullion,
+                CanCFO
+            ],
+            ToontownRegionName.LBHQ: [
+                CanAOffice,
+                CanBOffice,
+                CanCOffice
+            ],
+            ToontownRegionName.BBHQ: [
+                CanFrontOne
+            ],
+        },
+        4: {
+            "generic-rules": [
+                CanThreeStory,
+                CanFourStory,
+                CanFiveStory
+            ],
+            ToontownRegionName.SBHQ: [
+                CanSideFactory,
+                CanVP
+            ],
+            ToontownRegionName.CBHQ: [
+                CanDollar,
+                CanBullion,
+                CanCFO
+            ],
+            ToontownRegionName.LBHQ: [
+                CanBOffice,
+                CanCOffice,
+                CanDOffice,
+                CanCJ
+            ],
+            ToontownRegionName.BBHQ: [
+                CanFrontOne,
+                CanMiddleTwo
+            ],
+        },
+        5: {
+            "generic-rules": [
+                CanThreeStory,
+                CanFourStory,
+                CanFiveStory
+            ],
+            ToontownRegionName.SBHQ: [
+                CanVP
+            ],
+            ToontownRegionName.CBHQ: [
+                CanBullion,
+                CanCFO
+            ],
+            ToontownRegionName.LBHQ: [
+                CanCOffice,
+                CanDOffice,
+                CanCJ
+            ],
+            ToontownRegionName.BBHQ: [
+                CanFrontOne,
+                CanMiddleTwo,
+                CanBackThree,
+                CanCEO
+            ],
+        },
+        6: {
+            "generic-rules": [
+                CanFourStory,
+                CanFiveStory
+            ],
+            ToontownRegionName.SBHQ: [
+                CanVP
+            ],
+            ToontownRegionName.CBHQ: [
+                CanBullion,
+                CanCFO
+            ],
+            ToontownRegionName.LBHQ: [
+                CanCOffice,
+                CanDOffice,
+                CanCJ
+            ],
+            ToontownRegionName.BBHQ: [
+                CanMiddleTwo,
+                CanBackThree,
+                CanCEO
+            ],
+        },
+        8: {
+            "generic-rules": [
+                CanFiveStory
+            ],
+            ToontownRegionName.SBHQ: [  # No good tier 7/8 sources in HQ, outside of factory areas
+            ],
+            ToontownRegionName.CBHQ: [
+                CanBullion,
+                CanCFO
+            ],
+            ToontownRegionName.LBHQ: [
+                CanDOffice,
+                CanCJ
+            ],
+            ToontownRegionName.BBHQ: [
+                CanBackThree,
+                CanCEO
+            ],
+        },
+    }
+    tier = argument[0]
+    tier_info = tier_to_info[tier]
+    rules = tier_info["generic-rules"]
+    # Add area/dept specific rules
+    if argument[1]:
+        rules.extend(tier_info[argument[1]])
+    return passes_rule(argument[2], state, locentr, world, player, options) and any(rules)
 
 @rule(Rule.OneStory, 1)
 @rule(Rule.TwoStory, 2)

@@ -128,7 +128,12 @@ class ArchipelagoSession:
 
         locationIDs = []
         for location in locations:
-            locationIDs.append(util.ap_location_name_to_id(location))
+            location_id = util.ap_location_name_to_id(location)
+            if location_id in self.client.all_locations:
+                locationIDs.append(location_id)
+            else:
+                self.avatar.d_setSystemMessage(0, f'DEBUG: {location.value} is missing, this is likely a generation bug caused by another apworld.')
+                self.avatar.d_setSystemMessage(0, 'DEBUG: Please inform your host to check the generation log for a warning.')
 
         scout_packet = LocationScoutsPacket()
         scout_packet.locations = locationIDs
@@ -176,9 +181,11 @@ class ArchipelagoSession:
         if not isLocalChange:
             return
 
+        amount = int(math.ceil(amount/10))
+
         # Create a deathlink packet
         ringlink_packet = BouncePacket()
-        ringlink_packet.add_ringlink_data(self.avatar, math.ceil(amount/10))
+        ringlink_packet.add_ringlink_data(self.avatar, amount)
         self.client.send_packet(ringlink_packet)
 
     # Store data - optionally specific to this slot.
@@ -189,7 +196,7 @@ class ArchipelagoSession:
         for k,v in data.items():
             packet = SetPacket()
             packet.operations.append(DataStorageOperation(operation="replace", value=v))
-            packet.key= k
+            packet.key=k
             packets.append(packet)
         self.client.send_packets(packets)
 
