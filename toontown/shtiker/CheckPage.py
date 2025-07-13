@@ -53,7 +53,7 @@ class HintNode(DirectFrame):
         return base.localAvatar.getHintContainer()
 
     def __createHintDisplay(self, text, icon, yOffset) -> DirectLabel:
-        return DirectLabel(
+        return DirectButton(
             parent=self, relief=None, image=icon, image_scale=(1.25, 1.25, 1.25),
             pos=(0, 0, 0), text=text, text_scale=0.032,
             text_align=TextNode.ALeft, text_pos=(0.03, -0.0125), text_fg=Vec4(0, 0, 0, 1),
@@ -126,7 +126,7 @@ class HintNode(DirectFrame):
                 lostHints.append(node)
         self.hintNodes = foundHints + lostHints + notHinted
 
-        self.regenScrollList()
+        self.regenerateScrollList()
 
         # If we know where everything is, allow refreshing to check status
         if len(hints) >= checkMax:
@@ -137,7 +137,8 @@ class HintNode(DirectFrame):
 
         model.removeNode()
 
-    def regenScrollList(self):
+    def regenerateScrollList(self):
+        selectedIndex = 0
         if self.scrollList:
             self.scrollList.hide()
             self.scrollList.destroy()
@@ -176,6 +177,8 @@ class HintNode(DirectFrame):
             itemFrame_borderWidth=(0.01, 0.01), numItemsVisible=13, forceHeight=0.06, items=self.hintNodes
         )
         make_dsl_scrollable(self.scrollList)
+        self.scrollList.scrollTo(selectedIndex)
+        return
 
     def update_title_text(self, text):
         title_scale = 0.07
@@ -210,7 +213,7 @@ class HintNode(DirectFrame):
         self.hintButton['state'] = DGG.NORMAL
         defaultNode = self.__createDefaultDisplay(label, 0)
         self.hintNodes.append(defaultNode)
-        self.regenScrollList()
+        self.regenerateScrollList()
 
 
 class CheckPage(ShtikerPage.ShtikerPage):
@@ -336,7 +339,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         # If we were viewing a hint, force the button command to execute as if we clicked it to refresh the page
         if self.viewingHint and isinstance(self.viewingHint, tuple):
             self.setHint(*self.viewingHint)
-
         return
 
     def updateHintPointText(self):
@@ -390,21 +392,21 @@ class CheckPage(ShtikerPage.ShtikerPage):
                     quantity = 2
             button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
             if itemName == "Bounty":
-                bounties.append(button[0])
+                bounties.append(button[2])
                 continue
             if "Key" in itemName or "Disguise" in itemName:
                 if "Access" in itemName:
-                    progressionItems.append(button[0])
+                    progressionItems.append(button[2])
                     continue
-                keyItems.append(button[0])
+                keyItems.append(button[2])
                 continue
             if itemDef.classification == 0b0001:  # Progression Items
-                if button[0] not in (progressionItems + keyItems):  # Make sure item isn't already in one of these
-                    progressionItems.append(button[0])
+                if button[2] not in (progressionItems + keyItems):  # Make sure item isn't already in one of these
+                    progressionItems.append(button[2])
             elif itemDef.classification == 0b0010:  # Useful Items
-                usefulItems.append(button[0])
+                usefulItems.append(button[2])
             else:
-                junkItems.append(button[0])
+                junkItems.append(button[2])
         model.removeNode()
         del model
         self.checkButtons = bounties + keyItems + progressionItems + usefulItems + junkItems
@@ -432,7 +434,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
             geomToUse = x
         if checkCount >= checkMax:
             geomToUse = check
-        checkButtonR = DirectButton(parent=checkButtonParent, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text=str(checkCount) + '/' + str(checkMax), text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
+        checkButtonR = DirectButton(parent=checkButtonL, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text=str(checkCount) + '/' + str(checkMax), text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
         # checkButtonR.bind(DirectGuiGlobals.ENTER, lambda t: self.setHint(checkName, itemDef, checkMax, hintLocations))
         # checkButtonR.bind(DirectGuiGlobals.EXIT, lambda t: self.clearHintIf(checkName))
         del check
@@ -458,7 +460,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
             button = self._makeExternalHintButton(model, location[1], location[0])
             # only make the button for locations that have hints on them
             if button:
-                self.checkButtons.append(button[0])
+                self.checkButtons.append(button[2])
         model.removeNode()
         del model
 
@@ -491,7 +493,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
             locationText = locationName
         checkButtonParent = DirectFrame()
         checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=locationText, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
-        checkButtonR = DirectButton(parent=checkButtonParent, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text="", text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
+        checkButtonR = DirectButton(parent=checkButtonL, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text="", text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
         del check
         del hinted
         return (checkButtonParent, checkButtonR, checkButtonL)
