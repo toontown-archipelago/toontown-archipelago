@@ -18,7 +18,7 @@ class HintNode(DirectFrame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.title = DirectLabel(parent=self, scale=0.07, pos=(0, 0, -0.08), text="Select an Item", textMayChange=True, relief=None)
+        self.title = DirectLabel(parent=self, scale=0.07, pos=(0.02, 0, -0.08), text="Select an Item", textMayChange=True, relief=None)
         self.scrollList = None
         self.externalHint = False
 
@@ -30,7 +30,7 @@ class HintNode(DirectFrame):
             command=self.askForHint,
             text_scale=0.05,
             parent=self,
-            pos=(0, 0, -0.16),
+            pos=(0.02, 0, -0.16),
             relief=None,
             image=(quitHover, quitHover, quitHover),
             image_scale=0.85,
@@ -60,13 +60,11 @@ class HintNode(DirectFrame):
             text_wordwrap=24
         )
 
-    def updateHintDisplays(self, checkDef, checkMax):
+    def updateHintDisplays(self, checkDef, checkMax, externalHints, checkName):
         # Clear the old hint lines
         for h in self.hintNodes:
             h.destroy()
         self.hintNodes.clear()
-
-        self.title["text"] = checkDef.name.value
 
         # If the archipelago manager is not defined we cannot continue
         if base.cr.archipelagoManager is None:
@@ -82,9 +80,13 @@ class HintNode(DirectFrame):
         questionMarkIcon = model.find('**/questionMark')
 
         hintContainer: HintContainer = self.getHintContainer()
-        if self.externalHint:
-            pass
+        if externalHints:
+            self.update_title_text(checkName)
+            self.externalHint = True
+            hints: List[HintedItem] = hintContainer.getHintForLocationById(checkDef)
         else:
+            self.update_title_text(checkDef.name.value)
+            self.externalHint = False
             hints: List[HintedItem] = hintContainer.getHintsForItemAndSlot(checkDef.unique_id, localToonInformation.slotId)
 
         # Using our hints we have so far, start constructing text to show that
@@ -92,7 +94,6 @@ class HintNode(DirectFrame):
         lostHints = []
         notHinted = []
         for labelIndex in range(checkMax):
-
             # If we do not have a hint for this, set defaults
             if labelIndex >= len(hints):
                 text = random.choice(["Where is it?", "Looking for me?", "Has to be somewhere...", "Got Hints? TM", "Wasted your hint points, didn't you?",
@@ -104,11 +105,19 @@ class HintNode(DirectFrame):
 
             # We have a hint! Set up the text to tell the player where it is
             hint: HintedItem = hints[labelIndex]
-            text = get_raw_formatted_string([
-                MinimalJsonMessagePart(hint.player_name, color='magenta'),
-                MinimalJsonMessagePart('\'s ', color='black'),
-                MinimalJsonMessagePart(hint.location_name, color='green'),
-            ])
+            if self.externalHint:
+                text = get_raw_formatted_string([
+                    MinimalJsonMessagePart(hint.asking_name, color='magenta'),
+                    MinimalJsonMessagePart('\'s ', color='black'),
+                    MinimalJsonMessagePart(hint.item_name, color='blue'),
+                    MinimalJsonMessagePart(' is here.', color='black'),
+                ])
+            else:
+                text = get_raw_formatted_string([
+                    MinimalJsonMessagePart(hint.player_name, color='magenta'),
+                    MinimalJsonMessagePart('\'s ', color='black'),
+                    MinimalJsonMessagePart(hint.location_name, color='green'),
+                ])
             icon = checkIcon if hint.found else questionMarkIcon
             node = self.__createHintDisplay(text, icon, labelIndex)
             if hint.found:
@@ -121,9 +130,9 @@ class HintNode(DirectFrame):
 
         # If we know where everything is, allow refreshing to check status
         if len(hints) >= checkMax:
-            self.hintButton['text'] = "Refresh hints?"
+            self.hintButton['text'] = "Refresh Hints?"
         else:
-            self.hintButton['text'] = "Give me a hint"
+            self.hintButton['text'] = "Give me a Hint"
         self.hintButton['state'] = DGG.NORMAL
 
         model.removeNode()
@@ -168,6 +177,14 @@ class HintNode(DirectFrame):
         )
         make_dsl_scrollable(self.scrollList)
 
+    def update_title_text(self, text):
+        title_scale = 0.07
+        small_title_scale = 0.05
+        self.title["text"] = text
+        if len(text) > 25:
+            self.title.setScale(small_title_scale)
+        else:
+            self.title.setScale(title_scale)
 
     def __createDefaultDisplay(self, text, yOffset) -> DirectLabel:
         return DirectLabel(
@@ -177,15 +194,18 @@ class HintNode(DirectFrame):
             text_wordwrap=24
         )
 
-    def showDefaultDisplay(self):
+    def showDefaultDisplay(self, externalHint=False):
         # Clear the old lines (needed for re-entering the page)
         for h in self.hintNodes:
             h.destroy()
         self.hintNodes.clear()
         self.hintName = None
 
-        label = "Select an item to view hints for it."
-        self.title["text"] = 'Select an Item'
+        label = "Select an item to view hints."
+        if externalHint:
+            self.update_title_text("Select a Location")
+        else:
+            self.update_title_text("Select an Item")
         self.hintButton["text"] = 'Refresh Hints?'
         self.hintButton['state'] = DGG.NORMAL
         defaultNode = self.__createDefaultDisplay(label, 0)
@@ -229,7 +249,20 @@ class CheckPage(ShtikerPage.ShtikerPage):
                                             text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None,
                                             pos=(0, 0, 0.525))
         scrollTitle = DirectFrame(parent=self.scrollList, text=TTLocalizer.ShardPageScrollTitle, text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None, pos=(self.buttonXstart, 0, self.itemFrameZorigin + 0.127))
-
+        gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
+        quitHover = gui.find('**/QuitBtn_UP')
+        self.hintTypeButton = DirectButton(
+            text=('Toggle Local/Non-Local', 'Toggle Local/Non-Local', 'Toggle Local/Non-Local', 'Toggle Local/Non-Local'),
+            command=self.toggleHintType,
+            text_scale=0.04,
+            parent=self,
+            pos=(-0.65, 0, 0.65),
+            relief=None,
+            image=(quitHover, quitHover, quitHover),
+            image_scale=1,
+            text_pos=(0, -0.015),
+        )
+        gui.removeNode()
         return
 
     def enter(self):
@@ -250,6 +283,15 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.ignore('archipelago-hints-updated')
         self.viewingHint = False
 
+    def toggleHintType(self):
+        if self.externalHints:
+            self.externalHints = False
+        else:
+            self.externalHints = True
+        self.viewingHint = None
+        self.regenerateScrollList()
+        self.hintNode.showDefaultDisplay(self.externalHints)
+
     def __handleHintsUpdated(self, _=None):
         self.regenerateScrollList()
 
@@ -258,7 +300,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
         if self.scrollList:
             selectedIndex = self.scrollList.getSelectedIndex()
             if self.externalHints:
-                pass
+                self.updateExternalHintButtons()
             else:
                 self.updateCheckButtons()
             self.scrollList.destroy()
@@ -307,12 +349,31 @@ class CheckPage(ShtikerPage.ShtikerPage):
             del button
         self.checkButtons = []
 
+        # Maps item ids to the quantity that we have
+        itemsAndCount: Dict[int, int] = {}
+        for item in base.localAvatar.getReceivedItems():
+            index_received, item_id = item
+            itemsAndCount[item_id] = itemsAndCount.get(item_id, 0) + 1
+
+        # Count total items in item pool
+        allItems: dict[ToontownItemDefinition, int] = {}
+        for item_id in sorted(base.localAvatar.slotData.get("local_itempool", [])):
+            allItems.setdefault(item_id, 0)
+            allItems[item_id] += 1
+
+        # Container Lists for Item Classes
+        bounties = []
+        keyItems = []
+        progressionItems = []
+        usefulItems = []
+        junkItems = []
+
         # Generate new buttons
         model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         for item_id, quantity in allItems.items():
             itemDef = get_item_def_from_id(item_id)
             if itemDef is None:
-                print("ALERT I DON'T KNOW WHAT %s IS -- ENRAGE AT MICA" % item_id)
+                print("ALERT I DON'T KNOW WHAT %s IS -- ENRAGE AT TURKEY" % item_id)
                 continue
             itemName = itemDef.name.value
             if itemName.startswith("Defeated "):
@@ -363,13 +424,14 @@ class CheckPage(ShtikerPage.ShtikerPage):
         # Check if this item has been hinted safely
         isHinted = False
         if base.cr.archipelagoManager is not None and (localToonInformation := base.cr.archipelagoManager.getLocalInformation()) is not None:
-            isHinted = any(hint.found for hint in base.localAvatar.getHintContainer().getHintsForItemAndSlot(itemDef.unique_id, localToonInformation.slotId))
-        if checkCount >= checkMax:
-            geomToUse = check
-        elif isHinted:
+            if len(base.localAvatar.getHintContainer().getHintsForItemAndSlot(itemDef.unique_id, localToonInformation.slotId)) >= 1:
+                isHinted = True
+        if isHinted:
             geomToUse = hinted
         else:
             geomToUse = x
+        if checkCount >= checkMax:
+            geomToUse = check
         checkButtonR = DirectButton(parent=checkButtonParent, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text=str(checkCount) + '/' + str(checkMax), text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
         # checkButtonR.bind(DirectGuiGlobals.ENTER, lambda t: self.setHint(checkName, itemDef, checkMax, hintLocations))
         # checkButtonR.bind(DirectGuiGlobals.EXIT, lambda t: self.clearHintIf(checkName))
@@ -386,86 +448,57 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.checkButtons = []
 
         # All local locations for the seed
-        allLocations = base.localAvatar.slotData.get("local_itempool", [])
+        allLocations = base.localAvatar.slotData.get("local_locations", [])
 
         # Generate new buttons
         model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         for location in allLocations:
-            itemDef = get_item_def_from_id(item_id)
-            if itemDef is None:
-                print("ALERT I DON'T KNOW WHAT %s IS -- ENRAGE AT MICA" % item_id)
+            if "Create a" in location[1]:
                 continue
-            itemName = itemDef.name.value
-            if itemName.startswith("Defeated "):
-                continue
-            playgroundKeys = [ToontownItemName.TTC_ACCESS.value, ToontownItemName.DD_ACCESS.value,
-                              ToontownItemName.DG_ACCESS.value,  ToontownItemName.MML_ACCESS.value,
-                              ToontownItemName.TB_ACCESS.value,  ToontownItemName.DDL_ACCESS.value]
-            cogKeys = [ToontownItemName.SBHQ_ACCESS.value, ToontownItemName.CBHQ_ACCESS.value,
-                       ToontownItemName.LBHQ_ACCESS.value, ToontownItemName.BBHQ_ACCESS.value]
-            if base.localAvatar.slotData.get("tpsanity", 0) == TPSanity.option_none:
-                if itemName in playgroundKeys:
-                    quantity = 2
-                if itemName in cogKeys and base.localAvatar.slotData.get("facility_locking", 0) == FacilityLocking.option_access:
-                    quantity = 2
-            button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
-            if itemName == "Bounty":
-                bounties.append(button[0])
-                continue
-            if "Key" in itemName or "Disguise" in itemName:
-                if "Access" in itemName:
-                    progressionItems.append(button[0])
-                    continue
-                keyItems.append(button[0])
-                continue
-            if itemDef.classification == 0b0001:  # Progression Items
-                if button[0] not in (progressionItems + keyItems):  # Make sure item isn't already in one of these
-                    progressionItems.append(button[0])
-            elif itemDef.classification == 0b0010:  # Useful Items
-                usefulItems.append(button[0])
-            else:
-                junkItems.append(button[0])
+            button = self._makeExternalHintButton(model, location[1], location[0])
+            # only make the button for locations that have hints on them
+            if button:
+                self.checkButtons.append(button[0])
         model.removeNode()
         del model
-        self.checkButtons = bounties + keyItems + progressionItems + usefulItems + junkItems
 
-    def _makeExternalHintButton(self, model, itemDef, checkCount, checkMax):
+    def _makeExternalHintButton(self, model, locationName, locationId):
         """
         model: loader.loadModel(loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI') # avoiding loading this many times.
         """
-        locationName = itemDef.name
-        command = lambda: self.setHint(checkName, itemDef, checkMax)
-        checkButtonParent = DirectFrame()
-        checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=checkName.value, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
         check = model.find('**/checkmark')
-        x = model.find('**/x')
         hinted = model.find('**/questionMark')
-
-        # Check if this item has been hinted safely
+        # Check if this location has been hinted safely
         isHinted = False
         if base.cr.archipelagoManager is not None and (localToonInformation := base.cr.archipelagoManager.getLocalInformation()) is not None:
-            isHinted = any(hint.found for hint in base.localAvatar.getHintContainer().getHintsForItemAndSlot(itemDef.unique_id, localToonInformation.slotId))
-        if checkCount >= checkMax:
+            if len(base.localAvatar.getHintContainer().getHintForLocationByName(locationName)) >= 1:
+                isHinted = True
+        # Check if this hint is for ourselves
+        if isHinted:
+            for hint in base.localAvatar.getHintContainer().getHintForLocationByName(locationName):
+                if hint.destination == localToonInformation.slotId:
+                    return False
+        if locationId in base.localAvatar.getCheckedLocations():
             geomToUse = check
         elif isHinted:
             geomToUse = hinted
         else:
-            geomToUse = x
-        checkButtonR = DirectButton(parent=checkButtonParent, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text=str(checkCount) + '/' + str(checkMax), text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
-        # checkButtonR.bind(DirectGuiGlobals.ENTER, lambda t: self.setHint(checkName, itemDef, checkMax, hintLocations))
-        # checkButtonR.bind(DirectGuiGlobals.EXIT, lambda t: self.clearHintIf(checkName))
+            return False
+        command = lambda: self.setHint(locationName, locationId, 1)
+        if len(locationName) > 26:
+            locationText = locationName[:26] + "..."
+        else:
+            locationText = locationName
+        checkButtonParent = DirectFrame()
+        checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=locationText, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
+        checkButtonR = DirectButton(parent=checkButtonParent, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text="", text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
         del check
         del hinted
-        del x
         return (checkButtonParent, checkButtonR, checkButtonL)
-
 
     def setHint(self, checkName, checkDef, checkMax):
         self.viewingHint = (checkName, checkDef, checkMax)
         self.hintNode.hintName = checkName
         self.hintNode.hintButton['state'] = DGG.NORMAL
         self.hintNode.show()
-        if self.externalHints:
-            self.hintNode.updateHintDisplays(checkDef, checkMax, externalhints=True)
-        else:
-            self.hintNode.updateHintDisplays(checkDef, checkMax)
+        self.hintNode.updateHintDisplays(checkDef, checkMax, self.externalHints, checkName)

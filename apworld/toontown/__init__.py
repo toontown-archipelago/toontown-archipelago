@@ -545,7 +545,7 @@ class ToontownWorld(World):
         ]
 
         local_locations = [
-            location.name
+            [location.unique_id, location.name.value]
             for location in self.created_locations
         ]
 

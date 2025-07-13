@@ -3968,6 +3968,8 @@ struct ArchipelagoHint {
     string player_name;
     string location_name;
     bool found;
+    string item_name;
+    string asking_name;
 };
 
 dclass DistributedArchipelagoManager : DistributedObject {
