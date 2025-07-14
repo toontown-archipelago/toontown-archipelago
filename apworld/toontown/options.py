@@ -668,7 +668,7 @@ class UberWeightOption(Range):
     display_name = "Uber Trap Weight"
     range_start = 0
     range_end = 100
-    default = 100
+    default = 80
 
 
 class DripWeightOption(Range):
@@ -699,6 +699,17 @@ class ShuffleWeightOption(Range):
     """
 
     display_name = "Gag Shuffle Weight"
+    range_start = 0
+    range_end = 100
+    default = 80
+
+
+class DamageWeightOption(Range):
+    """
+    Weight of damage items in the trap pool.
+    """
+
+    display_name = "Damage Trap Weight"
     range_start = 0
     range_end = 100
     default = 100
@@ -754,6 +765,17 @@ class FireWeightOption(Range):
     """
 
     display_name = "Pink Slip Weight"
+    range_start = 0
+    range_end = 100
+    default = 65
+
+
+class HealWeightOption(Range):
+    """
+    Weight of healing items in the junk pool.
+    """
+
+    display_name = "Healing Junk Weight"
     range_start = 0
     range_end = 100
     default = 65
@@ -835,11 +857,13 @@ class ToontownOptions(PerGameCommonOptions):
     drip_trap_weight: DripWeightOption
     bean_tax_weight: TaxWeightOption
     gag_shuffle_weight: ShuffleWeightOption
+    damage_trap_weight: DamageWeightOption
     bean_weight: BeanWeightOption
     exp_weight: GagExpWeightOption
     sos_weight: SOSWeightOption
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
+    heal_weight: HealWeightOption
     death_link: DeathLinkOption
     ring_link: RingLinkOption
     pet_shop_display: PetShopRewardDisplayOption

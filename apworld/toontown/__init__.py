@@ -509,7 +509,9 @@ class ToontownWorld(World):
             ToontownItemName.BEAN_TAX_TRAP_750.value: (self.options.bean_tax_weight/3),
             ToontownItemName.BEAN_TAX_TRAP_1000.value: (self.options.bean_tax_weight/3),
             ToontownItemName.BEAN_TAX_TRAP_1250.value: (self.options.bean_tax_weight/3),
-            ToontownItemName.GAG_SHUFFLE_TRAP.value: self.options.gag_shuffle_weight
+            ToontownItemName.GAG_SHUFFLE_TRAP.value: self.options.gag_shuffle_weight,
+            ToontownItemName.DAMAGE_15.value: (self.options.damage_trap_weight/2),
+            ToontownItemName.DAMAGE_25.value: (self.options.damage_trap_weight/2),
         }
         trap_items = list(trap_weights.keys())
         return random.choices(trap_items, weights=[trap_weights[i] for i in trap_items])[0]
@@ -531,6 +533,8 @@ class ToontownWorld(World):
             ToontownItemName.UNITE_REWARD_GAG.value: (self.options.unite_weight/2),
             ToontownItemName.UNITE_REWARD_TOONUP.value: (self.options.unite_weight/2),
             ToontownItemName.PINK_SLIP_REWARD.value: self.options.fire_weight,
+            ToontownItemName.HEAL_10.value: (self.options.heal_weight/2),
+            ToontownItemName.HEAL_20.value: (self.options.heal_weight/2),
         }
         junk_items = list(junk_weights.keys())
         return random.choices(junk_items, weights=[junk_weights[i] for i in junk_items])[0]
@@ -623,7 +627,9 @@ class ToontownWorld(World):
             "jokes_per_street": self.options.jokes_per_street.value,
             "joke_books": self.options.joke_books.value,
             "start_gag_xp": self.options.base_global_gag_xp.value,
-            "max_gag_xp": self.options.max_global_gag_xp.value
+            "max_gag_xp": self.options.max_global_gag_xp.value,
+            "damage_trap_weight": self.options.damage_trap_weight.value,
+            "heal_weight": self.options.heal_weight.value
         }
 
     def calculate_starting_tracks(self, starting_gags: list):
@@ -731,7 +737,7 @@ class ToontownWorld(World):
     def randomize_win_condition(self, win_conditions: list) -> list:
         randomized = win_conditions.count("randomized")
         choices = list(self.options.win_condition.valid_keys)
-        choices.remove("randomized") # not a valid random choice
+        choices.remove("randomized")  # not a valid random choice
         result = [i for i in set(win_conditions) if i != "randomized"]
         rng = self.multiworld.random
         for i in result:

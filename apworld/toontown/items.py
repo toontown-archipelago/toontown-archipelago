@@ -126,7 +126,11 @@ class ToontownItemName(enum.Enum):
     SOS_REWARD_5       = "Random 5-Star SOS Card"
     UNITE_REWARD_GAG   = "Random Gag Unite"
     UNITE_REWARD_TOONUP = "Random Toon-Up Unite"
-    PINK_SLIP_REWARD = "Pink Slip Bundle"
+    PINK_SLIP_REWARD = "Pink Slip"
+
+    ### Healing Items ###
+    HEAL_10 = "10% Toon-Up"
+    HEAL_20 = "20% Toon-Up"
 
     ### Traps ###
     UBER_TRAP = "Uber Trap"
@@ -135,6 +139,8 @@ class ToontownItemName(enum.Enum):
     BEAN_TAX_TRAP_1250 = "1250 Bean Tax"
     DRIP_TRAP = "Drip Trap"
     GAG_SHUFFLE_TRAP = "Gag Shuffle Trap"
+    DAMAGE_15 = "15% Damage Trap"
+    DAMAGE_25 = "25% Damage Trap"
 
     ### META ###
     VP = "Defeated Sellbot VP"
@@ -267,6 +273,8 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.UNITE_REWARD_GAG,     ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.UNITE_REWARD_TOONUP,  ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD,     ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.HEAL_10,              ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.HEAL_20,              ItemClassification.filler),
     # endregion
     # region Traps
     ToontownItemDefinition(ToontownItemName.UBER_TRAP,             ItemClassification.trap),
@@ -275,6 +283,8 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.BEAN_TAX_TRAP_1250,    ItemClassification.trap),
     ToontownItemDefinition(ToontownItemName.DRIP_TRAP,             ItemClassification.trap),
     ToontownItemDefinition(ToontownItemName.GAG_SHUFFLE_TRAP,      ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.DAMAGE_15,             ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.DAMAGE_25,             ItemClassification.trap),
     # endregion
     # region BossDefeatItems
     ToontownItemDefinition(ToontownItemName.VP,                   ItemClassification.progression_skip_balancing),
@@ -418,13 +428,20 @@ def get_item_groups():
         ToontownItemName.PINK_SLIP_REWARD
     )
 
+    HEALS = (
+        ToontownItemName.HEAL_10,
+        ToontownItemName.HEAL_20
+    )
+
     TRAPS = (
         ToontownItemName.DRIP_TRAP,
         ToontownItemName.UBER_TRAP,
         ToontownItemName.BEAN_TAX_TRAP_1000,
         ToontownItemName.BEAN_TAX_TRAP_1250,
         ToontownItemName.BEAN_TAX_TRAP_750,
-        ToontownItemName.GAG_SHUFFLE_TRAP
+        ToontownItemName.GAG_SHUFFLE_TRAP,
+        ToontownItemName.DAMAGE_15,
+        ToontownItemName.DAMAGE_25,
     )
 
     COG_DISGUISES = (
@@ -478,6 +495,7 @@ def get_item_groups():
         "Task Capacity": TASK_CAPACITY,
         "Laff Boosts": LAFF_BOOSTS,
         "Reward Bundles": REWARD_BUNDLES,
+        "Heals": HEALS,
         "Jellybeans": JELLYBEANS,
         "Gag Exp Reward": GAG_EXP,
         "Traps": TRAPS,

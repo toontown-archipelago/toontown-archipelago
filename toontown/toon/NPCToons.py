@@ -11802,7 +11802,11 @@ def getNPCName(npcId):
 
 
 def npcFriendsMinMaxStars(minStars, maxStars):
-    return [ id for id in list(npcFriends.keys()) if getNPCTrackLevelHpRarity(id)[3] >= minStars and getNPCTrackLevelHpRarity(id)[3] <= maxStars ]
+    return [id for id in list(npcFriends.keys()) if getNPCTrackLevelHpRarity(id)[3] >= minStars and getNPCTrackLevelHpRarity(id)[3] <= maxStars]
+
+
+def npcFriendsWithStars(stars):
+    return [id for id in list(npcFriends.keys()) if npcFriends[id][3] == stars]
 
 
 def getNPCTrack(npcId):

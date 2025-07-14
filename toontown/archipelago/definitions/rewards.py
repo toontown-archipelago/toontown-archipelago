@@ -20,6 +20,7 @@ from toontown.toonbase import ToontownBattleGlobals
 from toontown.toonbase import ToontownGlobals
 from toontown.toon import NPCToons
 from toontown.chat import ResistanceChat
+from toontown.archipelago.definitions.death_reason import DeathReason
 
 # Typing hack, can remove later
 TYPING = False
@@ -598,6 +599,34 @@ class JellybeanReward(APReward):
         av.addMoney(self.amount)
 
 
+class DamageTrapAward(APReward):
+
+    def __init__(self, amount: int):
+        self.amount: int = amount
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart(f"{self.amount}% DAMAGE TRAP\n", color='salmon'),
+            MinimalJsonMessagePart(f"That'll leave a mark!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        amountPercent = self.amount/100
+        # Deal at least 1 damage
+        damage = max(1, math.floor(amountPercent * av.getMaxHp()))
+        if damage >= av.getHp():
+            # Means we won't kill the player unless we're already at 1 HP
+            damage = max(1, (av.getHp()-1))
+        if av.getHp() > 0:
+            # If we're at 1, we die
+            if av.getHp() == 1:
+                av.setDeathReason(DeathReason.DAMAGE_TRAP)
+            av.takeDamage(damage)
+        av.playSound('phase_4/audio/sfx/oof.ogg')
+        av.d_broadcastHpString("EMOTIONAL DAMAGE!", (.78, .29, .29))
+        av.d_playEmote(EmoteFuncDict['Banana Peel'], 1)
+
+
 class UberTrapAward(APReward):
 
     def formatted_header(self) -> str:
@@ -666,7 +695,6 @@ class BeanTaxTrapAward(APReward):
             av.playSound('phase_4/audio/sfx/tax_evasion.ogg')
             av.d_broadcastHpString("EVASION ATTEMPTED!", (.3, .5, .8))
             av.d_playEmote(EmoteFuncDict['Belly Flop'], 1)
-
 
 
 class DripTrapAward(APReward):
@@ -756,8 +784,26 @@ class GagExpBundleAward(APReward):
             exptoAdd = math.ceil(currentCap * (self.amount/100))
             av.experience.addExp(index, exptoAdd)
         av.ap_setExperience(av.experience.getCurrentExperience())
-        # now check for win condition since we have one for maxxed gags
+        # now check for win condition since we have one for maxed gags
         av.checkWinCondition()
+
+
+class HealAward(APReward):
+
+    def __init__(self, amount: int):
+        self.amount: int = amount
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You were healed for\n"),
+            MinimalJsonMessagePart(f"{self.amount}%", color='cyan'),
+            MinimalJsonMessagePart(" of your Laff!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        amountPercent = self.amount/100
+        heal = math.ceil(amountPercent * av.getMaxHp())
+        av.toonUp(heal)
 
 
 class BossRewardAward(APReward):
@@ -771,7 +817,7 @@ class BossRewardAward(APReward):
               5: "5-Star SOS Card"},
         UNITE: {1: "Toon-Up Unite",
                 2: "Gag-Up Unite"},
-        PINK_SLIP: "pink slip",
+        PINK_SLIP: "Pink Slip",
     }
 
     def __init__(self, reward: int, type: int):
@@ -782,31 +828,35 @@ class BossRewardAward(APReward):
         if self.reward in [BossRewardAward.SOS, BossRewardAward.UNITE]:
             return global_text_properties.get_raw_formatted_string([
                 MinimalJsonMessagePart("You were given a\nrandom "),
-                MinimalJsonMessagePart(f"{self.REWARD_TO_DISPLAY_STR[self.reward[self.type]]}", color='cyan'),
+                MinimalJsonMessagePart(f"{self.REWARD_TO_DISPLAY_STR[self.reward][self.type]}", color='cyan'),
                 MinimalJsonMessagePart("!"),
             ])
         else:
             return global_text_properties.get_raw_formatted_string([
-                MinimalJsonMessagePart("You were given a\n"),
+                MinimalJsonMessagePart("You were given\na "),
                 MinimalJsonMessagePart(f"{self.REWARD_TO_DISPLAY_STR[self.reward]}", color='cyan'),
                 MinimalJsonMessagePart("!"),
             ])
 
     def apply(self, av: "DistributedToonAI"):
         if self.reward == BossRewardAward.SOS:
-            if type == 3:
-                av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 3)))
-            elif type == 4:
-                av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(4, 4)))
-            elif type == 5:
-                av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(5, 5)))
+            if self.type == 3:
+                print(NPCToons.npcFriendsWithStars(5))
+                av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsWithStars(3)))
+            elif self.type == 4:
+                print(NPCToons.npcFriendsWithStars(5))
+                av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsWithStars(4)))
+            elif self.type == 5:
+                print(NPCToons.npcFriendsWithStars(5))
+                av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsWithStars(5)))
             # This should realistically never happen but, just in case
             else:
+                print("This happened.")
                 av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 5)))
         elif self.reward == BossRewardAward.UNITE:
-            if type == 1:
+            if self.type == 1:
                 uniteType = ResistanceChat.RESISTANCE_TOONUP
-            elif type == 2:
+            elif self.type == 2:
                 uniteType = ResistanceChat.RESISTANCE_RESTOCK
             # This should realistically never happen but, just in case
             else:
@@ -965,12 +1015,16 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.UNITE_REWARD_TOONUP.value: BossRewardAward(BossRewardAward.UNITE, 1),
     ToontownItemName.UNITE_REWARD_GAG.value: BossRewardAward(BossRewardAward.UNITE, 2),
     ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP, 0),
+    ToontownItemName.HEAL_10.value: HealAward(10),
+    ToontownItemName.HEAL_20.value: HealAward(20),
     ToontownItemName.UBER_TRAP.value: UberTrapAward(),
     ToontownItemName.BEAN_TAX_TRAP_750.value: BeanTaxTrapAward(750),
     ToontownItemName.BEAN_TAX_TRAP_1000.value: BeanTaxTrapAward(1000),
     ToontownItemName.BEAN_TAX_TRAP_1250.value: BeanTaxTrapAward(1250),
     ToontownItemName.DRIP_TRAP.value: DripTrapAward(),
     ToontownItemName.GAG_SHUFFLE_TRAP.value: GagShuffleAward(),
+    ToontownItemName.DAMAGE_15.value: DamageTrapAward(15),
+    ToontownItemName.DAMAGE_25.value: DamageTrapAward(25),
     ToontownItemName.VP.value: ProofReward(0),
     ToontownItemName.CFO.value: ProofReward(1),
     ToontownItemName.CJ.value: ProofReward(2),
