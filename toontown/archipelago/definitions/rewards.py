@@ -766,31 +766,55 @@ class BossRewardAward(APReward):
     PINK_SLIP = 2
 
     REWARD_TO_DISPLAY_STR = {
-        SOS: "SOS Card",
-        UNITE: "Unite",
-        PINK_SLIP: "amount of Pink Slips",
+        SOS: {3: "3-Star SOS Card",
+              4: "4-Star SOS Card",
+              5: "5-Star SOS Card"},
+        UNITE: {1: "Toon-Up Unite",
+                2: "Gag-Up Unite"},
+        PINK_SLIP: "pink slip",
     }
 
-    def __init__(self, reward: int):
+    def __init__(self, reward: int, type: int):
         self.reward: int = reward
+        self.type: int = type
 
     def formatted_header(self) -> str:
-        return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("You were given a\nrandom "),
-            MinimalJsonMessagePart(f"{self.REWARD_TO_DISPLAY_STR[self.reward]}", color='cyan'),
-            MinimalJsonMessagePart("!"),
-        ])
+        if self.reward in [BossRewardAward.SOS, BossRewardAward.UNITE]:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("You were given a\nrandom "),
+                MinimalJsonMessagePart(f"{self.REWARD_TO_DISPLAY_STR[self.reward[self.type]]}", color='cyan'),
+                MinimalJsonMessagePart("!"),
+            ])
+        else:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("You were given a\n"),
+                MinimalJsonMessagePart(f"{self.REWARD_TO_DISPLAY_STR[self.reward]}", color='cyan'),
+                MinimalJsonMessagePart("!"),
+            ])
 
     def apply(self, av: "DistributedToonAI"):
         if self.reward == BossRewardAward.SOS:
-            av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 5)))
+            if type == 3:
+                av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 3)))
+            elif type == 4:
+                av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(4, 4)))
+            elif type == 5:
+                av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(5, 5)))
+            # This should realistically never happen but, just in case
+            else:
+                av.attemptAddNPCFriend(random.choice(NPCToons.npcFriendsMinMaxStars(3, 5)))
         elif self.reward == BossRewardAward.UNITE:
-            uniteType = random.choice([ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK])
+            if type == 1:
+                uniteType = ResistanceChat.RESISTANCE_TOONUP
+            elif type == 2:
+                uniteType = ResistanceChat.RESISTANCE_RESTOCK
+            # This should realistically never happen but, just in case
+            else:
+                uniteType = random.choice([ResistanceChat.RESISTANCE_TOONUP, ResistanceChat.RESISTANCE_RESTOCK])
             uniteChoice = random.choice(ResistanceChat.getItems(uniteType))
             av.addResistanceMessage(ResistanceChat.encodeId(uniteType, uniteChoice))
         elif self.reward == BossRewardAward.PINK_SLIP:
-            slipAmount = random.randint(1, 2)
-            av.addPinkSlips(slipAmount)
+            av.addPinkSlips(1)
 
 
 class ProofReward(APReward):
@@ -935,9 +959,12 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.XP_10.value: GagExpBundleAward(10),
     ToontownItemName.XP_15.value: GagExpBundleAward(15),
     ToontownItemName.XP_20.value: GagExpBundleAward(20),
-    ToontownItemName.SOS_REWARD.value: BossRewardAward(BossRewardAward.SOS),
-    ToontownItemName.UNITE_REWARD.value: BossRewardAward(BossRewardAward.UNITE),
-    ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP),
+    ToontownItemName.SOS_REWARD_3.value: BossRewardAward(BossRewardAward.SOS, 3),
+    ToontownItemName.SOS_REWARD_4.value: BossRewardAward(BossRewardAward.SOS, 4),
+    ToontownItemName.SOS_REWARD_5.value: BossRewardAward(BossRewardAward.SOS, 5),
+    ToontownItemName.UNITE_REWARD_TOONUP.value: BossRewardAward(BossRewardAward.UNITE, 1),
+    ToontownItemName.UNITE_REWARD_GAG.value: BossRewardAward(BossRewardAward.UNITE, 2),
+    ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP, 0),
     ToontownItemName.UBER_TRAP.value: UberTrapAward(),
     ToontownItemName.BEAN_TAX_TRAP_750.value: BeanTaxTrapAward(750),
     ToontownItemName.BEAN_TAX_TRAP_1000.value: BeanTaxTrapAward(1000),

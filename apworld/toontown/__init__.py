@@ -520,14 +520,16 @@ class ToontownWorld(World):
             ToontownItemName.MONEY_400.value: (self.options.bean_weight/4),
             ToontownItemName.MONEY_700.value: (self.options.bean_weight/4),
             ToontownItemName.MONEY_1000.value: (self.options.bean_weight/4),
-            # money_weight = 100
 
             ToontownItemName.XP_10.value: (self.options.exp_weight*0.47),
             ToontownItemName.XP_15.value: (self.options.exp_weight*0.33),
             ToontownItemName.XP_20.value: (self.options.exp_weight*0.2),
 
-            ToontownItemName.SOS_REWARD.value: self.options.sos_weight,
-            ToontownItemName.UNITE_REWARD.value: self.options.unite_weight,
+            ToontownItemName.SOS_REWARD_3.value: (self.options.sos_weight*0.4),
+            ToontownItemName.SOS_REWARD_4.value: (self.options.sos_weight*0.3),
+            ToontownItemName.SOS_REWARD_5.value: (self.options.sos_weight*0.3),
+            ToontownItemName.UNITE_REWARD_GAG.value: (self.options.unite_weight/2),
+            ToontownItemName.UNITE_REWARD_TOONUP.value: (self.options.unite_weight/2),
             ToontownItemName.PINK_SLIP_REWARD.value: self.options.fire_weight,
         }
         junk_items = list(junk_weights.keys())

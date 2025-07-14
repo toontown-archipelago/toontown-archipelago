@@ -792,8 +792,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if npcFriend in self.NPCFriendsDict:
             self.NPCFriendsDict[npcFriend] += numCalls
         elif npcFriend in npcFriends:
+            # This means our SOS page is full, lets give a random SOS we have instead
             if len(self.NPCFriendsDict.keys()) >= self.maxNPCFriends:
-                return 0
+                npcFriend = random.choice(list(self.NPCFriendsDict.keys()))
+                self.NPCFriendsDict[npcFriend] += numCalls
             self.NPCFriendsDict[npcFriend] = numCalls
         else:
             self.notify.warning('invalid NPC: %d' % npcFriend)

@@ -121,8 +121,11 @@ class ToontownItemName(enum.Enum):
     BOUNTY = "Bounty"
 
     ### Reward Bundles ###
-    SOS_REWARD       = "Random SOS Card"
-    UNITE_REWARD     = "Random Unite"
+    SOS_REWARD_3       = "Random 3-Star SOS Card"
+    SOS_REWARD_4       = "Random 4-Star SOS Card"
+    SOS_REWARD_5       = "Random 5-Star SOS Card"
+    UNITE_REWARD_GAG   = "Random Gag Unite"
+    UNITE_REWARD_TOONUP = "Random Toon-Up Unite"
     PINK_SLIP_REWARD = "Pink Slip Bundle"
 
     ### Traps ###
@@ -251,16 +254,19 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # endregion
     # region Filler Items
     # TODO - remember to account for the Fish filler when implementing weights here
-    ToontownItemDefinition(ToontownItemName.MONEY_150,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_400,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_700,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_10,            ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_15,            ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_20,            ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.SOS_REWARD,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.UNITE_REWARD,     ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD, ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_150,            ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_400,            ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_700,            ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_1000,           ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_10,                ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_15,                ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_20,                ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.SOS_REWARD_3,         ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.SOS_REWARD_4,         ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.SOS_REWARD_5,         ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.UNITE_REWARD_GAG,     ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.UNITE_REWARD_TOONUP,  ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD,     ItemClassification.filler),
     # endregion
     # region Traps
     ToontownItemDefinition(ToontownItemName.UBER_TRAP,             ItemClassification.trap),
@@ -272,9 +278,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # endregion
     # region BossDefeatItems
     ToontownItemDefinition(ToontownItemName.VP,                   ItemClassification.progression_skip_balancing),
-    ToontownItemDefinition(ToontownItemName.CFO,                   ItemClassification.progression_skip_balancing),
+    ToontownItemDefinition(ToontownItemName.CFO,                  ItemClassification.progression_skip_balancing),
     ToontownItemDefinition(ToontownItemName.CJ,                   ItemClassification.progression_skip_balancing),
-    ToontownItemDefinition(ToontownItemName.CEO,                   ItemClassification.progression_skip_balancing),
+    ToontownItemDefinition(ToontownItemName.CEO,                  ItemClassification.progression_skip_balancing),
     # endregion
 ]
 
@@ -404,8 +410,11 @@ def get_item_groups():
     )
 
     REWARD_BUNDLES = (
-        ToontownItemName.SOS_REWARD,
-        ToontownItemName.UNITE_REWARD,
+        ToontownItemName.SOS_REWARD_3,
+        ToontownItemName.SOS_REWARD_4,
+        ToontownItemName.SOS_REWARD_5,
+        ToontownItemName.UNITE_REWARD_TOONUP,
+        ToontownItemName.UNITE_REWARD_GAG,
         ToontownItemName.PINK_SLIP_REWARD
     )
 
