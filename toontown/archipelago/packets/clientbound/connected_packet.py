@@ -11,6 +11,7 @@ from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacke
 from toontown.archipelago.packets.serverbound.connect_update_packet import ConnectUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
+from apworld.toontown.options import DeathLinkOption
 from toontown.fishing import FishGlobals
 from otp.otpbase import OTPGlobals
 from toontown.toonbase import ToontownGlobals
@@ -209,12 +210,12 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Request synced data and subscribe to changes.
         client.av.request_default_ap_data()
         # Update Link Tags.
-        death_link = self.slot_data.get('death_link', False)
+        death_link = self.slot_data.get('death_link', DeathLinkOption.option_off)
         ring_link = self.slot_data.get('ring_link', False)
-        if death_link or ring_link:
+        if death_link != DeathLinkOption.option_off or ring_link:
             update_packet = ConnectUpdatePacket()
             tags = []
-            if death_link:
+            if death_link != DeathLinkOption.option_off:
                 tags.append(ConnectPacket.TAG_DEATHLINK)
             if ring_link:
                 tags.append(ConnectPacket.TAG_RINGLINK)

@@ -307,8 +307,12 @@ Toontown:
 
   # Enable/disable the DeathLink mechanic.
   # When you go sad in game, other players with this setting enabled for their game will also die.
-  # If another player in your game with this setting enabled dies for whatever reason, you will also go sad.
-  death_link: 'false'
+  # If another player in your game with this setting enabled dies for whatever reason, you will be affected based on setting.
+  # "full": You die when someone else dies, simple.
+  # "drain": Laff drains over time from your current amount to 0, potentially recoverable.
+  # "one": Laff is set to 1 when someone else dies, potentially recoverable.
+  # "off": (default) Deathlink is disabled.
+  death_link: 'off'
 
   # Enable/disable the RingLink mechanic.
   # When you gain or lose money in game, other players with this setting enabled have their currencies changed at a 10% rate.

@@ -781,13 +781,21 @@ class HealWeightOption(Range):
     default = 65
 
 
-class DeathLinkOption(Toggle):
+class DeathLinkOption(Choice):
     """
     Enable to turn on the "DeathLink" mechanic in Archipelago.
+    "full": You die when someone else dies, simple.
+    "drain": Laff drains over time from your current amount to 0, potentially recoverable.
+    "one": Laff is set to 1 when someone else dies, potentially recoverable.
+    "off": (default) Deathlink is disabled.
     """
 
     display_name = "Death Link"
-    default = False
+    option_full = 0
+    option_drain = 1
+    option_one = 2
+    option_off = 3
+    default = 3
 
 
 class RingLinkOption(Toggle):
@@ -901,9 +909,9 @@ toontown_option_groups: list[OptionGroup] = [
         JokesPerStreet, JokeBookToggle
     ], False),
     OptionGroup("Junk Weights", [
-        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption
+        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption, HealWeightOption
     ], True),
     OptionGroup("Trap Weights", [
-        UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption
+        UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption, DamageWeightOption
     ], True)
 ]
