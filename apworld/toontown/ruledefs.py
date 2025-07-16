@@ -190,14 +190,22 @@ def HasItemCountRule(state: CollectionState, locentr: LocEntrDef, world: MultiWo
     return state.count(argument[0].value, player) >= 2
 
 
-@rule(Rule.CanBuyTTCDoodle, 0)
-@rule(Rule.CanBuyDDDoodle, 1)
-@rule(Rule.CanBuyDGDoodle, 1)
-@rule(Rule.CanBuyMMLDoodle, 2)
-@rule(Rule.CanBuyTBDoodle, 3)
-@rule(Rule.CanBuyDDLDoodle, 4)
+@rule(Rule.CanBuyTTCDoodle, 1)
+@rule(Rule.CanBuyDDDoodle, 2)
+@rule(Rule.CanBuyDGDoodle, 3)
+@rule(Rule.CanBuyMMLDoodle, 4)
+@rule(Rule.CanBuyTBDoodle, 5)
+@rule(Rule.CanBuyDDLDoodle, 6)
 def HasEnoughBeanCapacity(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
-    return (state.count(ToontownItemName.MONEY_CAP_1000.value, player) > argument[0])
+    if isinstance(options, ToontownOptions):
+        random_price = options.random_prices.value
+    else:
+        random_price = options.get("random_prices", False)
+    # We expect one more jar boost logically just in-case we get a high-roll on increase
+    if random_price:
+        return (state.count(ToontownItemName.MONEY_CAP_1000.value, player) >= (argument[0] + 1))
+    else:
+        return (state.count(ToontownItemName.MONEY_CAP_1000.value, player) >= argument[0])
 
 
 @rule(Rule.HasTTCBook, ToontownItemName.TTC_JOKE_BOOK)

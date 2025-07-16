@@ -19,6 +19,7 @@ from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.HintContainer import HintContainer
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
 from toontown.archipelago.util.net_utils import ClientStatus
+from apworld.toontown.options import DeathLinkOption
 
 if TYPE_CHECKING:
     from toontown.toon.DistributedToonAI import DistributedToonAI
@@ -150,7 +151,7 @@ class ArchipelagoSession:
     def toon_died(self):
 
         # If deathlink is off don't do anything
-        if not self.avatar.slotData.get('death_link', False):
+        if self.avatar.slotData.get('death_link', DeathLinkOption.option_off) == DeathLinkOption.option_off:
             return
 
         # If our cause of death is a deathlink event from another player, don't continue

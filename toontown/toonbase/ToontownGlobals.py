@@ -6,7 +6,7 @@ from direct.showbase.PythonUtil import invertDict
 from panda3d.core import BitMask32, Vec4, Filename
 import collections
 
-GameVersion = "v0.16.1"
+GameVersion = "v0.17.0"
 MapHotkey = 'MapHotkey'
 AccountDatabaseChannelId = 4008
 ToonDatabaseChannelId = 4021
@@ -1651,12 +1651,12 @@ PUTTER_KEY = 38
 from ..archipelago.definitions import util
 from apworld.toontown import locations
 ZONE_TO_CHECK_COST = {
-    ToontownCentral: 750,
-    DonaldsDock: 1250,
-    DaisyGardens: 2000,
-    MinniesMelodyland: 2750,
-    TheBrrrgh: 3500,
-    DonaldsDreamland: 4250
+    ToontownCentral: 600,
+    DonaldsDock: 1600,
+    DaisyGardens: 2600,
+    MinniesMelodyland: 3600,
+    TheBrrrgh: 4600,
+    DonaldsDreamland: 5600
 }
 ZONE_TO_ID_TO_CHECK = {
         ToontownCentral: {1: locations.ToontownLocationName.TTC_SHOP_1.value,

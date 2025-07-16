@@ -71,6 +71,9 @@ class DeathReason(Enum):
     MOLES = "%s forgot to step on the red moles in a Bossbot Cog Golf Course and went sad."
     GOLFGAME = "%s skill issued in the Golf Game in a Bossbot Cog Golf Course and went sad."
 
+    # Traps
+    DAMAGE_TRAP = "%s went sad from unfortunate timing."
+
     # Commands
     SPELLBOOK = "%s went sad from abusing the spellbook."
 
