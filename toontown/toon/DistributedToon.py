@@ -323,10 +323,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     # Sets a seed value to use for any RNG elements that want to be determined by the AP seed
     def setSeed(self, seed):
-        try:
-            self.seed = int(seed)
-        except ValueError as e:
-            self.seed = seed
+        self.seed = seed
 
     # Gets this toon's current AP seed, used for task generation mainly
     def getSeed(self):

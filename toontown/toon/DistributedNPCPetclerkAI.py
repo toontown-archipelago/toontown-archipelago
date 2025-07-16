@@ -98,7 +98,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
             baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
             if av.slotData.get('random_prices', False):
                 rng = random.Random()
-                rng.seed(av.getSeed() + self.subId)
+                rng.seed(f"{av.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting
                 cost = rng.randint((baseCost - 500), (baseCost + 1000))
             else:

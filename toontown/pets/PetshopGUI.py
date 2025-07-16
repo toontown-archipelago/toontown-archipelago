@@ -217,7 +217,7 @@ class PetshopGUI(DirectObject):
             baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
             if base.localAvatar.slotData.get('random_prices', False):
                 rng = random.Random()
-                rng.seed(base.localAvatar.getSeed()+self.subId)
+                rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting
                 cost = rng.randint((baseCost-500), (baseCost+1000))
             else:
@@ -351,7 +351,7 @@ class PetshopGUI(DirectObject):
             baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
             if base.localAvatar.slotData.get('random_prices', False):
                 rng = random.Random()
-                rng.seed(base.localAvatar.getSeed() + self.subId)
+                rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting
                 cost = rng.randint((baseCost - 500), (baseCost + 1250))
             else:

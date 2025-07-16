@@ -117,7 +117,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # No change
         if option == option_global:
-            return seed
+            return str(seed)
 
         # Use slot name
         if option == option_slot_name:
@@ -129,7 +129,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Make something up
         if option == option_wild:
-            return random.randint(1, 2**32)
+            return str(random.randint(1, 2**32))
 
         # An incorrect value was given, default to global
         return self.handle_seed_generation_type(av, seed, option_global)
