@@ -629,7 +629,8 @@ class ToontownWorld(World):
             "start_gag_xp": self.options.base_global_gag_xp.value,
             "max_gag_xp": self.options.max_global_gag_xp.value,
             "damage_trap_weight": self.options.damage_trap_weight.value,
-            "heal_weight": self.options.heal_weight.value
+            "heal_weight": self.options.heal_weight.value,
+            "random_prices": self.options.random_prices.value
         }
 
     def calculate_starting_tracks(self, starting_gags: list):

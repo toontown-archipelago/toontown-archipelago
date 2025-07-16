@@ -140,7 +140,7 @@ class ConnectedPacket(ClientBoundPacketBase):
         new_seed = self.slot_data.get('seed', random.randint(1, 2**32))
         rng_option = self.slot_data.get('seed_generation_type', 'global')
         new_seed = self.handle_seed_generation_type(av, new_seed, rng_option)
-        av.setSeed(new_seed)
+        av.b_setSeed(new_seed)
         
         # Get damage multiplier
         damageMultiplier = self.slot_data.get('damage_multiplier', 100)

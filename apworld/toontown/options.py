@@ -632,6 +632,16 @@ class PetShopRewardDisplayOption(RewardDisplayOption):
     display_name = "Pet Shop Rewards"
 
 
+class RandomShopCostToggle(Toggle):
+    """
+    Enable to turn on the pet shop price randomization.
+    Logic accounts for the random price range if enabled.
+    """
+
+    display_name = "Randomize Pet Shop Prices"
+    default = False
+
+
 class SeedGenerationTypeOption(Choice):
     """
     Type of seeding to use when RNG checks happen in game.
@@ -876,6 +886,7 @@ class ToontownOptions(PerGameCommonOptions):
     ring_link: RingLinkOption
     pet_shop_display: PetShopRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
+    random_prices: RandomShopCostToggle
 
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
@@ -889,7 +900,7 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
         DamageMultiplierRange, OverflowModRange, StartMoneyOption, 
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption
+        RingLinkOption, RandomShopCostToggle
     ]),
     OptionGroup("Win Condition", [
         WinConditions, WinConditionRandomizedWeb,

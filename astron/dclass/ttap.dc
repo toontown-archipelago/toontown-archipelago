@@ -1040,6 +1040,7 @@ dclass DistributedToon : DistributedPlayer {
   reqSCResistance(uint16, uint32 []) ownsend airecv;
   setSCResistance(uint16, uint32 []) broadcast ownrecv;
   setSpeedChatStyleIndex(uint8 = 1) required ownsend broadcast db;
+  setSeed(string) required ownrecv db;
   setTrophyScore(uint16) broadcast ownrecv ram;
   setTeleportAccess(uint32[] = []) required ownrecv db;
   checkTeleportAccess(uint16) airecv ownsend;

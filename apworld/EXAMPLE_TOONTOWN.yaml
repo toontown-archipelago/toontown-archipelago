@@ -260,6 +260,10 @@ Toontown:
   pet_shop_display: 'shown'
   task_reward_display: 'shown'
 
+  # Enable to turn on the pet shop price randomization.
+  # Logic accounts for the random price range if enabled.
+  random_prices: 'false'
+
   ### Activity Settings ###
 
   # Determines if racing locations are enabled

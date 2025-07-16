@@ -9,6 +9,7 @@ from apworld.toontown.options import RewardDisplayOption
 from toontown.archipelago.definitions import util
 from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.hood import ZoneUtil
+import random
 
 class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
 
@@ -94,7 +95,14 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 self.air.writeServerEvent('suspicious', avId, 'DistributedNPCPetshopAI.petAdopted and no such pet!')
                 self.notify.warning('somebody called petAdopted on a non-existent pet! avId: %s' % avId)
                 return
-            cost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            if av.slotData.get('random_prices', False):
+                rng = random.Random()
+                rng.seed(av.getSeed() + self.subId)
+                # This price will be consistent based on our archi rng setting
+                cost = rng.randint((baseCost - 500), (baseCost + 1000))
+            else:
+                cost = baseCost
             if cost > av.getMoney():
                 self.air.writeServerEvent('suspicious', avId, "DistributedNPCPetshopAI.petAdopted and toon doesn't have enough money!")
                 self.notify.warning("somebody called petAdopted and didn't have enough money to adopt! avId: %s" % avId)

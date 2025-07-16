@@ -226,6 +226,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.rewardHistory = []
         self.rewardTier = 0
         self.alreadyNotified = False
+        self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
         self.fishCollection = FishCollection.FishCollection()
         # empty collection
         self.setFishCollection([], [], [])
@@ -319,6 +320,17 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         elif self.overheadLaffMeter and not base.laffMeterDisplay:
             self.destroyOverheadLaffMeter()
         super().setMaxHp(hitPoints)
+
+    # Sets a seed value to use for any RNG elements that want to be determined by the AP seed
+    def setSeed(self, seed):
+        try:
+            self.seed = int(seed)
+        except ValueError as e:
+            self.seed = seed
+
+    # Gets this toon's current AP seed, used for task generation mainly
+    def getSeed(self):
+        return self.seed
 
     def makeOverheadLaffMeter(self):
 
