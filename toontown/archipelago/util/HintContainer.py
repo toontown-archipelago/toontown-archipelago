@@ -11,9 +11,11 @@ class HintedItem:
     player_name: str    # Display name of the player who needs to check the location
     location_name: str  # Display name to show to the user for the location of the item
     found: bool         # If this item was found or not
+    item_name: str      # The name of the item being hinted
+    asking_name: str    # The name of the player asking for the item
 
     def __str__(self):
-        return f"HintedItem<destination={self.destination}, item={self.item}, player_name={self.player_name}, location_name={self.location_name}, found={self.found}>"
+        return f"HintedItem<destination={self.destination}, item={self.item}, player_name={self.player_name}, location_name={self.location_name}, found={self.found}, item_name={self.item_name}, asking_name{self.asking_name}>"
 
     def similar(self, other: "HintedItem") -> bool:
         return (self.destination == other.destination and
@@ -33,7 +35,7 @@ class HintedItem:
         return NetworkItem(item_id, location_id, self.item.player, self.item.flags)
 
     def to_struct(self):
-        return [self.destination, list(self.__validate_item()), self.player_name, self.location_name, self.found]
+        return [self.destination, list(self.__validate_item()), self.player_name, self.location_name, self.found, self.item_name, self.asking_name]
 
     @staticmethod
     def __validate_number(n: int) -> int:
@@ -127,6 +129,26 @@ class HintContainer:
         hints = []
         for hint in self.hints:
             if hint.item.item == item_id and hint.destination == slot:
+                hints.append(hint)
+        return hints
+
+    def getHintForLocationById(self, location_id: int) -> List[HintedItem]:
+        """
+        Returns the hint for a given location based on id
+        """
+        hints = []
+        for hint in self.hints:
+            if hint.item.location == location_id:
+                hints.append(hint)
+        return hints
+
+    def getHintForLocationByName(self, location_name: str) -> List[HintedItem]:
+        """
+        Returns the hint for a given location based on name
+        """
+        hints = []
+        for hint in self.hints:
+            if hint.location_name == location_name:
                 hints.append(hint)
         return hints
 

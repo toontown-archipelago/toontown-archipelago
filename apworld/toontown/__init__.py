@@ -509,7 +509,9 @@ class ToontownWorld(World):
             ToontownItemName.BEAN_TAX_TRAP_750.value: (self.options.bean_tax_weight/3),
             ToontownItemName.BEAN_TAX_TRAP_1000.value: (self.options.bean_tax_weight/3),
             ToontownItemName.BEAN_TAX_TRAP_1250.value: (self.options.bean_tax_weight/3),
-            ToontownItemName.GAG_SHUFFLE_TRAP.value: self.options.gag_shuffle_weight
+            ToontownItemName.GAG_SHUFFLE_TRAP.value: self.options.gag_shuffle_weight,
+            ToontownItemName.DAMAGE_15.value: (self.options.damage_trap_weight/2),
+            ToontownItemName.DAMAGE_25.value: (self.options.damage_trap_weight/2),
         }
         trap_items = list(trap_weights.keys())
         return random.choices(trap_items, weights=[trap_weights[i] for i in trap_items])[0]
@@ -520,15 +522,19 @@ class ToontownWorld(World):
             ToontownItemName.MONEY_400.value: (self.options.bean_weight/4),
             ToontownItemName.MONEY_700.value: (self.options.bean_weight/4),
             ToontownItemName.MONEY_1000.value: (self.options.bean_weight/4),
-            # money_weight = 100
 
             ToontownItemName.XP_10.value: (self.options.exp_weight*0.47),
             ToontownItemName.XP_15.value: (self.options.exp_weight*0.33),
             ToontownItemName.XP_20.value: (self.options.exp_weight*0.2),
 
-            ToontownItemName.SOS_REWARD.value: self.options.sos_weight,
-            ToontownItemName.UNITE_REWARD.value: self.options.unite_weight,
+            ToontownItemName.SOS_REWARD_3.value: (self.options.sos_weight*0.4),
+            ToontownItemName.SOS_REWARD_4.value: (self.options.sos_weight*0.3),
+            ToontownItemName.SOS_REWARD_5.value: (self.options.sos_weight*0.3),
+            ToontownItemName.UNITE_REWARD_GAG.value: (self.options.unite_weight/2),
+            ToontownItemName.UNITE_REWARD_TOONUP.value: (self.options.unite_weight/2),
             ToontownItemName.PINK_SLIP_REWARD.value: self.options.fire_weight,
+            ToontownItemName.HEAL_10.value: (self.options.heal_weight/2),
+            ToontownItemName.HEAL_20.value: (self.options.heal_weight/2),
         }
         junk_items = list(junk_weights.keys())
         return random.choices(junk_items, weights=[junk_weights[i] for i in junk_items])[0]
@@ -542,6 +548,11 @@ class ToontownWorld(World):
             location.item.code
             for location in self.multiworld.get_locations()
             if location.address and location.item and location.item.code and location.item.player == self.player
+        ]
+
+        local_locations = [
+            [location.unique_id, location.name.value]
+            for location in self.created_locations
         ]
 
         win_condition = ToontownWinCondition.from_options(self.options)
@@ -563,7 +574,7 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "team": self.options.team.value,
-            "game_version": "v0.16.1",
+            "game_version": "v0.17.0",
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "max_laff": self.options.max_laff.value,
@@ -609,13 +620,17 @@ class ToontownWorld(World):
             "pet_shop_display": self.options.pet_shop_display.value,
             "task_reward_display": self.options.task_reward_display.value,
             "local_itempool": local_itempool,
+            "local_locations": local_locations,
             "tpsanity": self.options.tpsanity.value,
             "treasures_per_location": self.options.treasures_per_location.value,
             "checks_per_boss": self.options.checks_per_boss.value,
             "jokes_per_street": self.options.jokes_per_street.value,
             "joke_books": self.options.joke_books.value,
             "start_gag_xp": self.options.base_global_gag_xp.value,
-            "max_gag_xp": self.options.max_global_gag_xp.value
+            "max_gag_xp": self.options.max_global_gag_xp.value,
+            "damage_trap_weight": self.options.damage_trap_weight.value,
+            "heal_weight": self.options.heal_weight.value,
+            "random_prices": self.options.random_prices.value
         }
 
     def calculate_starting_tracks(self, starting_gags: list):
@@ -723,7 +738,7 @@ class ToontownWorld(World):
     def randomize_win_condition(self, win_conditions: list) -> list:
         randomized = win_conditions.count("randomized")
         choices = list(self.options.win_condition.valid_keys)
-        choices.remove("randomized") # not a valid random choice
+        choices.remove("randomized")  # not a valid random choice
         result = [i for i in set(win_conditions) if i != "randomized"]
         rng = self.multiworld.random
         for i in result:

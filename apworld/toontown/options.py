@@ -113,11 +113,11 @@ class MaxGlobalGagXPRange(Range):
 class DamageMultiplierRange(Range):
     """
     The percentage of damage that will be done when battling Cogs.
-    50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
+    75 -> 75%/0.75x damage, 200 -> 200%/2x damage, etc.
     """
     display_name = "Damage Multiplier"
-    range_start = 25
-    range_end = 500
+    range_start = 70
+    range_end = 200
     default = 100
 
 
@@ -632,6 +632,16 @@ class PetShopRewardDisplayOption(RewardDisplayOption):
     display_name = "Pet Shop Rewards"
 
 
+class RandomShopCostToggle(Toggle):
+    """
+    Enable to turn on the pet shop price randomization.
+    Logic accounts for the random price range if enabled.
+    """
+
+    display_name = "Randomize Pet Shop Prices"
+    default = False
+
+
 class SeedGenerationTypeOption(Choice):
     """
     Type of seeding to use when RNG checks happen in game.
@@ -668,7 +678,7 @@ class UberWeightOption(Range):
     display_name = "Uber Trap Weight"
     range_start = 0
     range_end = 100
-    default = 100
+    default = 80
 
 
 class DripWeightOption(Range):
@@ -699,6 +709,17 @@ class ShuffleWeightOption(Range):
     """
 
     display_name = "Gag Shuffle Weight"
+    range_start = 0
+    range_end = 100
+    default = 80
+
+
+class DamageWeightOption(Range):
+    """
+    Weight of damage items in the trap pool.
+    """
+
+    display_name = "Damage Trap Weight"
     range_start = 0
     range_end = 100
     default = 100
@@ -759,13 +780,32 @@ class FireWeightOption(Range):
     default = 65
 
 
-class DeathLinkOption(Toggle):
+class HealWeightOption(Range):
+    """
+    Weight of healing items in the junk pool.
+    """
+
+    display_name = "Healing Junk Weight"
+    range_start = 0
+    range_end = 100
+    default = 65
+
+
+class DeathLinkOption(Choice):
     """
     Enable to turn on the "DeathLink" mechanic in Archipelago.
+    "full": You die when someone else dies, simple.
+    "drain": Laff drains over time from your current amount to 0, potentially recoverable.
+    "one": Laff is set to 1 when someone else dies, potentially recoverable.
+    "off": (default) Deathlink is disabled.
     """
 
     display_name = "Death Link"
-    default = False
+    option_full = 0
+    option_drain = 1
+    option_one = 2
+    option_off = 3
+    default = 3
 
 
 class RingLinkOption(Toggle):
@@ -835,15 +875,18 @@ class ToontownOptions(PerGameCommonOptions):
     drip_trap_weight: DripWeightOption
     bean_tax_weight: TaxWeightOption
     gag_shuffle_weight: ShuffleWeightOption
+    damage_trap_weight: DamageWeightOption
     bean_weight: BeanWeightOption
     exp_weight: GagExpWeightOption
     sos_weight: SOSWeightOption
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
+    heal_weight: HealWeightOption
     death_link: DeathLinkOption
     ring_link: RingLinkOption
     pet_shop_display: PetShopRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
+    random_prices: RandomShopCostToggle
 
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
@@ -857,7 +900,7 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
         DamageMultiplierRange, OverflowModRange, StartMoneyOption, 
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption
+        RingLinkOption, RandomShopCostToggle
     ]),
     OptionGroup("Win Condition", [
         WinConditions, WinConditionRandomizedWeb,
@@ -877,9 +920,9 @@ toontown_option_groups: list[OptionGroup] = [
         JokesPerStreet, JokeBookToggle
     ], False),
     OptionGroup("Junk Weights", [
-        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption
+        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption, HealWeightOption
     ], True),
     OptionGroup("Trap Weights", [
-        UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption
+        UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption, DamageWeightOption
     ], True)
 ]

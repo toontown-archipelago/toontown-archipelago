@@ -6,6 +6,7 @@ from toontown.archipelago.packets.clientbound.clientbound_packet_base import Cli
 from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacket
 from toontown.archipelago.util import global_text_properties
 from toontown.archipelago.util.global_text_properties import MinimalJsonMessagePart
+from apworld.toontown.options import DeathLinkOption
 
 
 # Sent to clients after a client requested this message be sent to them, more info in the Bounce package.
@@ -51,18 +52,54 @@ class BouncedPacket(ClientBoundPacketBase):
 
         # All checks passed, kill the toon
         self.debug("Killing toon via deathlink.")
-        toon.setDeathReason(DeathReason.DEATHLINK)
-        toon.takeDamage(toon.getMaxHp())
-        toon.d_broadcastHpString("DEATHLINKED!", (.8, .35, .35))
-        toon.d_setAnimState("Died", 1)
-
-        death_component = cause if cause is not None else f"{source} died!"
-        msg = global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("[DeathLink] ", color='red'),
-            MinimalJsonMessagePart("You went sad because "),
-            MinimalJsonMessagePart(f"{death_component}", color='salmon')
-        ])
+        deathLinkOption = toon.slotData.get('death_link', DeathLinkOption.option_off)
+        if deathLinkOption in [DeathLinkOption.option_full, DeathLinkOption.option_one]:
+            toon.setDeathReason(DeathReason.DEATHLINK)
+            toon.d_broadcastHpString("DEATHLINKED!", (.8, .35, .35))
+            if deathLinkOption == DeathLinkOption.option_full:
+                toon.takeDamage(toon.getMaxHp())
+                toon.d_setAnimState("Died", 1)
+                death_component = cause if cause is not None else f"{source} died!"
+                msg = global_text_properties.get_raw_formatted_string([
+                    MinimalJsonMessagePart("[DeathLink] ", color='red'),
+                    MinimalJsonMessagePart("You went sad because "),
+                    MinimalJsonMessagePart(f"{death_component}", color='salmon')
+                ])
+            elif deathLinkOption == DeathLinkOption.option_one:
+                toon.takeDamage((toon.getHp() - 1))
+                death_component = cause if cause is not None else f"{source} died!"
+                msg = global_text_properties.get_raw_formatted_string([
+                    MinimalJsonMessagePart("[DeathLink] ", color='red'),
+                    MinimalJsonMessagePart("You're nearing sadness because "),
+                    MinimalJsonMessagePart(f"{death_component}", color='salmon')
+                ])
+        elif deathLinkOption == DeathLinkOption.option_drain:
+            toon.d_broadcastHpString("DEATHLINKED!", (.8, .35, .35))
+            death_component = cause if cause is not None else f"{source} died!"
+            msg = global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("[DeathLink] ", color='red'),
+                MinimalJsonMessagePart("You feel your happiness draining because "),
+                MinimalJsonMessagePart(f"{death_component}", color='salmon')
+            ])
+            self.hpDrained = 0
+            self.startHp = toon.getHp()
+            taskMgr.doMethodLater(0.33, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
+        else:
+            # This should not happen! But just in case.
+            msg = global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("[DeathLink] ", color='red'),
+                MinimalJsonMessagePart("You went sad for mysterious reasons."),
+            ])
         toon.d_sendArchipelagoMessage(msg)
+
+    def handle_link_drain(self, toon, toonId):
+        # This tick is killing the toon, set the death reason to not kill others and break the loop
+        if toon.getHp() == 1:
+            toon.setDeathReason(DeathReason.DEATHLINK)
+        toon.takeDamage(1)
+        self.hpDrained += 1
+        if toon.getHp() > 0 and self.hpDrained != self.startHp:
+            taskMgr.doMethodLater(0.33, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
 
     def handle_ringlink(self, client):
         self.debug("Received ringlink packet")
