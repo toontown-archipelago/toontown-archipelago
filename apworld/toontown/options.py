@@ -82,7 +82,7 @@ class MaxLaffOption(Range):
     Must be above or equal to the starting_laff.
     """
     display_name = "Max Laff"
-    range_start = 1
+    range_start = 34
     range_end = 150
     default = 150
 
