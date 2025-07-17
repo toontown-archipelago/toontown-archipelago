@@ -20,7 +20,7 @@ Toontown:
 
   # The max laff you can get from items throughout the run.
   # Must be above or equal to the starting_laff.
-  # Range: 1 to 150
+  # Range: 34 to 150
   max_laff: 150
 
   # The base global gag experience multiplier when starting a new game.
