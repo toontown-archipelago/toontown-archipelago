@@ -908,32 +908,24 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     return two_powerful_tracks() and sufficient_healing and minimum_lure and can_obtain_exp_required
 
 
-@rule(Rule.CanFightVP)
-def CanFightVP(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+@rule(Rule.CanFightVP,  Rule.CanReachSBHQ, Rule.SellbotDisguise, Rule.HasLevelFiveOffenseGag,  Rule.Has40PercentMax)
+@rule(Rule.CanFightCFO, Rule.CanReachCBHQ, Rule.CashbotDisguise, Rule.HasLevelSixOffenseGag,   Rule.Has60PercentMax)
+@rule(Rule.CanFightCJ,  Rule.CanReachLBHQ, Rule.LawbotDisguise,  Rule.HasLevelSevenOffenseGag, Rule.Has60PercentMax)
+@rule(Rule.CanFightCEO, Rule.CanReachBBHQ, Rule.BossbotDisguise, Rule.HasLevelEightOffenseGag, Rule.Has80PercentMax)
+def CanFightBoss(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        cpb = options.checks_per_boss.value
+        bosses_on = "cog-bosses" in options.win_condition
+    else:
+        cpb = options.get("checks_per_boss", 4)
+        bosses_on = options.get("win_condition", 0) & ToontownWinCondition.cog_bosses
+    # Not normally necessary, but other rules that reference this one shouldn't consider bosses when checks are off
+    # AND we're not wanting bosses for goal
+    if cpb == 0 and not bosses_on:
+        return False
     args = (state, locentr, world, player, options)
-    return passes_rule(Rule.CanReachSBHQ, *args) and passes_rule(Rule.SellbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelFiveOffenseGag, *args) and passes_rule(Rule.Has40PercentMax, *args)
-
-
-@rule(Rule.CanFightCFO)
-def CanFightCFO(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
-    args = (state, locentr, world, player, options)
-    return passes_rule(Rule.CanReachCBHQ, *args) and passes_rule(Rule.CashbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSixOffenseGag, *args) and passes_rule(Rule.Has60PercentMax, *args)
-
-
-@rule(Rule.CanFightCJ)
-def CanFightCJ(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
-    args = (state, locentr, world, player, options)
-    return passes_rule(Rule.CanReachLBHQ, *args) and passes_rule(Rule.LawbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelSevenOffenseGag, *args) and passes_rule(Rule.Has60PercentMax, *args)
-
-
-@rule(Rule.CanFightCEO)
-def CanFightCEO(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
-    args = (state, locentr, world, player, options)
-    return passes_rule(Rule.CanReachBBHQ, *args) and passes_rule(Rule.BossbotDisguise, *args) \
-            and passes_rule(Rule.HasLevelEightOffenseGag, *args) and passes_rule(Rule.Has80PercentMax, *args)
+    return passes_rule(argument[0], *args) and passes_rule(argument[1], *args) \
+           and passes_rule(argument[2], *args) and passes_rule(argument[3], *args)
 
 
 @rule(Rule.AllBossesDefeated)
