@@ -6,7 +6,8 @@ from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVE
 from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, \
     LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION, PlaygroundFishZoneGroups
 from .items import ToontownItemName
-from .options import ToontownOptions, TPSanity, FacilityLocking
+from .options import ToontownOptions, TPSanity, FacilityLocking, GagTrainingFrameBehavior, \
+    GagTrainingCheckBehavior
 from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID, FISH_LOCATIONS, \
     get_location_def_from_name
 from .regions import ToontownEntranceDefinition, ToontownRegionName
@@ -30,13 +31,23 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
     if isinstance(options, ToontownOptions):
         max_xp = options.max_global_gag_xp.value
         start_xp = options.base_global_gag_xp.value
+        gag_training_item = options.gag_frame_item_behavior.value
+        gag_training_check = options.gag_training_check_behavior.value
     else:
         max_xp = options.get("max_gag_xp", 30)
         start_xp = options.get("start_gag_xp", 5)
+        gag_training_item = options.get("gag_frame_item_behavior", 0)
+        gag_training_check = options.get("gag_training_check_behavior", 0)
     # Determines if a given player has collected a sufficient amount of the XP items in the run.
-    # always returns True if the player has a difference of less than 10 mult between start and max (aka, assumes they don't care)
+    # Always returns True if the player has a difference of less than 10 mult between start and max (aka, assumes they don't care)
     xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
     sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if (max_xp - start_xp) >= 10 else True
+    # We aren't even training gags this seed, return true
+    gags_pretrained = gag_training_item == GagTrainingFrameBehavior.option_trained
+    gags_unlocked = gag_training_item == GagTrainingFrameBehavior.option_unlock
+    checks_not_normal = gag_training_check != GagTrainingCheckBehavior.option_trained
+    if gags_pretrained or (gags_unlocked and checks_not_normal):
+        sufficient_xp = True
 
     # Check collected gag capacity items too.
     cap = state.count(ToontownItemName.GAG_CAPACITY_5.value, player) + (

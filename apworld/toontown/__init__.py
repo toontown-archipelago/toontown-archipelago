@@ -11,7 +11,8 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, KNOCK_KNOCK_LOCATION_TYPES, BOSS_LOCATION_TYPES, BOSS_EVENT_DEFINITIONS, get_location_groups
-from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups
+from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups, \
+    GagTrainingFrameBehavior
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
 from .fish import FishProgression, FishChecks
@@ -83,8 +84,11 @@ class ToontownWorld(World):
 
     def create_progression_item(self, name: str) -> ToontownItem:
         item_id: int = self.item_name_to_id[name]
-        item_def: ToontownItemDefinition = get_item_def_from_id(item_id)
         return ToontownItem(name, ItemClassification.progression, item_id, self.player)
+
+    def create_useful_item(self, name: str) -> ToontownItem:
+        item_id: int = self.item_name_to_id[name]
+        return ToontownItem(name, ItemClassification.useful, item_id, self.player)
 
     def create_event(self, event: str) -> ToontownItem:
         return ToontownItem(event, ItemClassification.progression_skip_balancing, None, self.player)
@@ -450,6 +454,11 @@ class ToontownWorld(World):
 
         # Dynamically generate training multipliers.
         GAG_MULTI_TO_GIVE = self.options.max_global_gag_xp.value - self.options.base_global_gag_xp.value
+        gag_training_item = self.options.gag_frame_item_behavior.value
+        gag_training_check = self.options.gag_training_check_behavior.value
+        gags_pretrained = gag_training_item == GagTrainingFrameBehavior.option_trained
+        gags_unlocked = gag_training_item == GagTrainingFrameBehavior.option_unlock
+        checks_not_normal = gag_training_check != GagTrainingCheckBehavior.option_trained
         if GAG_MULTI_TO_GIVE < 0:
             logging.warning(f"[{self.multiworld.player_name[self.player]}] Too low max global gag XP. Setting max global gag XP to base global gag XP.")
             GAG_MULTI_TO_GIVE = 0
@@ -457,9 +466,17 @@ class ToontownWorld(World):
         while TWO_GAG_MULTI_BOOSTS > 0 and GAG_MULTI_TO_GIVE > 2:
             TWO_GAG_MULTI_BOOSTS -= 1
             GAG_MULTI_TO_GIVE -= 2
-            pool.append(self.create_item(ToontownItemName.GAG_MULTIPLIER_2.value))
+            # Settings mean we don't have any logical reason for training, make items useful bc overflow
+            if gags_pretrained or (gags_unlocked and checks_not_normal):
+                pool.append(self.create_useful_item(ToontownItemName.GAG_MULTIPLIER_2.value))
+            else:
+                pool.append(self.create_item(ToontownItemName.GAG_MULTIPLIER_2.value))
         for _ in range(GAG_MULTI_TO_GIVE):
-            pool.append(self.create_item(ToontownItemName.GAG_MULTIPLIER_1.value))
+            # Settings mean we don't have any logical reason for training, make items useful bc overflow
+            if gags_pretrained or (gags_unlocked and checks_not_normal):
+                pool.append(self.create_useful_item(ToontownItemName.GAG_MULTIPLIER_1.value))
+            else:
+                pool.append(self.create_item(ToontownItemName.GAG_MULTIPLIER_1.value))
 
         # Create fishing licenses.
         if self.options.fish_progression.value in (FishProgression.LicensesAndRods, FishProgression.Licenses):
