@@ -20,7 +20,7 @@ class DataPackage:
         return self.id_to_location_name.get(int(location_id), f'Unknown Location[{location_id}]')
 
     @classmethod
-    def load(cls, name: str, data: Dict[str,any]):
+    def load(cls, name: str, data: Dict[str, any]):
         """
         Load and cache a game's datapackage to disk.
         """
@@ -83,7 +83,7 @@ class GlobalDataPackage:
         item_id = int(item_id)
         for game in self._games.values():
             try:
-                return game.items[item_id]
+                return game.id_to_item_name[item_id]
             except KeyError:
                 continue
         return f'Unknown Item[{item_id}]'

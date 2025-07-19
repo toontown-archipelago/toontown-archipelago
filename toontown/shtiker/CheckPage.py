@@ -125,6 +125,9 @@ class HintNode(DirectFrame):
             else:
                 lostHints.append(node)
         self.hintNodes = foundHints + lostHints + notHinted
+        del foundHints
+        del lostHints
+        del notHinted
 
         self.regenerateScrollList()
 
@@ -226,6 +229,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.textDownColor = Vec4(0.5, 0.9, 1, 1)
         self.textDisabledColor = Vec4(0.4, 0.8, 0.4, 1)
         self.checkButtons = []
+        self.iconButtons = []
         self.hintNode = HintNode(self)
         self.hintNode.setPos(0.42, 0, 0.5)
         self.hintNode.hide()
@@ -236,8 +240,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         main_text_scale = 0.06
         title_text_scale = 0.12
         self.title = DirectLabel(parent=self, relief=None, text=TTLocalizer.CheckPageTitle, text_scale=title_text_scale, textMayChange=0, pos=(0, 0, 0.6))
-        #helpText_ycoord = 0.403
-        #self.helpText = DirectLabel(parent=self, relief=None, text='', text_scale=main_text_scale, text_wordwrap=12, text_align=TextNode.ALeft, textMayChange=1, pos=(0.058, 0, helpText_ycoord))
         self.gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
         self.listXorigin = 0.02
         self.listFrameSizeX = 0.7
@@ -247,11 +249,9 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.itemFrameXorigin = -0.237
         self.itemFrameZorigin = 0.365
         self.buttonXstart = self.itemFrameXorigin + 0.425
-        self.regenerateScrollList()
         self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % (0, 0),
                                             text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None,
                                             pos=(0, 0, 0.525))
-        scrollTitle = DirectFrame(parent=self.scrollList, text=TTLocalizer.ShardPageScrollTitle, text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None, pos=(self.buttonXstart, 0, self.itemFrameZorigin + 0.127))
         gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
         quitHover = gui.find('**/QuitBtn_UP')
         self.hintTypeButton = DirectButton(
@@ -272,7 +272,10 @@ class CheckPage(ShtikerPage.ShtikerPage):
         ShtikerPage.ShtikerPage.enter(self)
         # Request our hints
         base.cr.archipelagoManager.d_requestHints()
-        self.regenerateScrollList()
+        if self.externalHints:
+            self.updateExternalHintButtons()
+        else:
+            self.updateCheckButtons()
         base.localAvatar.sendUpdate('requestHintPoints')
 
         self.hintNode.show()
@@ -289,28 +292,27 @@ class CheckPage(ShtikerPage.ShtikerPage):
     def toggleHintType(self):
         if self.externalHints:
             self.externalHints = False
+            self.updateCheckButtons(onToggle=True)
         else:
             self.externalHints = True
+            self.updateExternalHintButtons(onToggle=True)
         self.viewingHint = None
-        self.regenerateScrollList()
         self.hintNode.showDefaultDisplay(self.externalHints)
 
     def __handleHintsUpdated(self, _=None):
-        self.regenerateScrollList()
+        if self.externalHints:
+            self.updateExternalHintButtons()
+        else:
+            self.updateCheckButtons()
 
-    def regenerateScrollList(self):
+    def regenerateScrollList(self, onToggle):
         selectedIndex = 0
         if self.scrollList:
-            selectedIndex = self.scrollList.getSelectedIndex()
-            if self.externalHints:
-                self.updateExternalHintButtons()
-            else:
-                self.updateCheckButtons()
+            if not onToggle:
+                selectedIndex = self.scrollList.getSelectedIndex()
             self.scrollList.destroy()
             self.scrollList = None
 
-        hostUi = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
-        checkmarkGeom = hostUi.find('**/checkmark')
         self.scrollList = DirectScrolledList(
             parent=self, relief=None, pos=(-0.625, 0, 0),
             # scale=0.75,
@@ -337,19 +339,28 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.scrollList.scrollTo(selectedIndex)
 
         # If we were viewing a hint, force the button command to execute as if we clicked it to refresh the page
-        if self.viewingHint and isinstance(self.viewingHint, tuple):
+        if self.viewingHint and isinstance(self.viewingHint, tuple) and not onToggle:
             self.setHint(*self.viewingHint)
         return
 
     def updateHintPointText(self):
         self.hintPointsTitle['text'] = TTLocalizer.HintPointsTitle % (base.localAvatar.hintPoints, base.localAvatar.hintCost)
 
-    def updateCheckButtons(self):
-        # Cleanup buttons
+    def cleanupButtons(self):
         for button in self.checkButtons:
             button.detachNode()
+            button.destroy()
             del button
+        for button in self.iconButtons:
+            button.detachNode()
+            button.destroy()
+            del button
+        self.iconButtons = []
         self.checkButtons = []
+
+    def updateCheckButtons(self, onToggle=False):
+        # Cleanup buttons
+        self.cleanupButtons()
 
         # Maps item ids to the quantity that we have
         itemsAndCount: Dict[int, int] = {}
@@ -392,24 +403,31 @@ class CheckPage(ShtikerPage.ShtikerPage):
                     quantity = 2
             button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
             if itemName == "Bounty":
-                bounties.append(button[2])
+                bounties.append(button[1])
                 continue
             if "Key" in itemName or "Disguise" in itemName:
                 if "Access" in itemName:
-                    progressionItems.append(button[2])
+                    progressionItems.append(button[1])
                     continue
-                keyItems.append(button[2])
+                keyItems.append(button[1])
                 continue
             if itemDef.classification == 0b0001:  # Progression Items
-                if button[2] not in (progressionItems + keyItems):  # Make sure item isn't already in one of these
-                    progressionItems.append(button[2])
+                if button[1] not in (progressionItems + keyItems):  # Make sure item isn't already in one of these
+                    progressionItems.append(button[1])
             elif itemDef.classification == 0b0010:  # Useful Items
-                usefulItems.append(button[2])
+                usefulItems.append(button[1])
             else:
-                junkItems.append(button[2])
+                junkItems.append(button[1])
+            self.iconButtons.append(button[0])
         model.removeNode()
         del model
         self.checkButtons = bounties + keyItems + progressionItems + usefulItems + junkItems
+        del bounties
+        del keyItems
+        del progressionItems
+        del usefulItems
+        del junkItems
+        self.regenerateScrollList(onToggle)
 
     def _makeCheckButton(self, model, itemDef, checkCount, checkMax):
         """
@@ -417,8 +435,8 @@ class CheckPage(ShtikerPage.ShtikerPage):
         """
         checkName = itemDef.name
         command = lambda: self.setHint(checkName, itemDef, checkMax)
-        checkButtonParent = DirectFrame()
-        checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=checkName.value, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
+        #checkButtonParent = DirectFrame()
+        checkButtonL = DirectButton(parent=self, relief=None, text=checkName.value, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
         check = model.find('**/checkmark')
         x = model.find('**/x')
         hinted = model.find('**/questionMark')
@@ -440,14 +458,11 @@ class CheckPage(ShtikerPage.ShtikerPage):
         del check
         del hinted
         del x
-        return (checkButtonParent, checkButtonR, checkButtonL)
+        return (checkButtonR, checkButtonL)
 
-    def updateExternalHintButtons(self):
+    def updateExternalHintButtons(self, onToggle=False):
         # Cleanup buttons
-        for button in self.checkButtons:
-            button.detachNode()
-            del button
-        self.checkButtons = []
+        self.cleanupButtons()
 
         # All local locations for the seed
         allLocations = base.localAvatar.slotData.get("local_locations", [])
@@ -455,14 +470,14 @@ class CheckPage(ShtikerPage.ShtikerPage):
         # Generate new buttons
         model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         for location in allLocations:
-            if "Create a" in location[1]:
-                continue
             button = self._makeExternalHintButton(model, location[1], location[0])
             # only make the button for locations that have hints on them
             if button:
-                self.checkButtons.append(button[2])
+                self.checkButtons.append(button[1])
+                self.iconButtons.append(button[0])
         model.removeNode()
         del model
+        self.regenerateScrollList(onToggle)
 
     def _makeExternalHintButton(self, model, locationName, locationId):
         """
@@ -480,10 +495,10 @@ class CheckPage(ShtikerPage.ShtikerPage):
             for hint in base.localAvatar.getHintContainer().getHintForLocationByName(locationName):
                 if hint.destination == localToonInformation.slotId:
                     return False
-        if locationId in base.localAvatar.getCheckedLocations():
-            geomToUse = check
-        elif isHinted:
+        if isHinted:
             geomToUse = hinted
+        elif isHinted and locationId in base.localAvatar.getCheckedLocations():
+            geomToUse = check
         else:
             return False
         command = lambda: self.setHint(locationName, locationId, 1)
@@ -491,12 +506,12 @@ class CheckPage(ShtikerPage.ShtikerPage):
             locationText = locationName[:26] + "..."
         else:
             locationText = locationName
-        checkButtonParent = DirectFrame()
-        checkButtonL = DirectButton(parent=checkButtonParent, relief=None, text=locationText, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
+        #checkButtonParent = DirectFrame()
+        checkButtonL = DirectButton(parent=self, relief=None, text=locationText, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_fg=self.textDisabledColor, textMayChange=0, command=command)
         checkButtonR = DirectButton(parent=checkButtonL, relief=None, image=geomToUse, image_scale=(1.25, 1.25, 1.25), pos=(0.75, 0, 0.0125), text="", text_scale=0.06, text_align=TextNode.ARight, text_pos=(-0.03, -0.0125), text_fg=Vec4(0, 0, 0, 0), text1_fg=Vec4(0, 0, 0, 0), text2_fg=Vec4(0, 0, 0, 1), text3_fg=Vec4(0, 0, 0, 0), command=command, text_wordwrap=13)
         del check
         del hinted
-        return (checkButtonParent, checkButtonR, checkButtonL)
+        return (checkButtonR, checkButtonL)
 
     def setHint(self, checkName, checkDef, checkMax):
         self.viewingHint = (checkName, checkDef, checkMax)
