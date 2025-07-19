@@ -455,8 +455,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         # Generate new buttons
         model = loader.loadModel('phase_4/models/parties/schtickerbookHostingGUI')
         for location in allLocations:
-            if "Create a" in location[1]:
-                continue
             button = self._makeExternalHintButton(model, location[1], location[0])
             # only make the button for locations that have hints on them
             if button:
@@ -480,10 +478,10 @@ class CheckPage(ShtikerPage.ShtikerPage):
             for hint in base.localAvatar.getHintContainer().getHintForLocationByName(locationName):
                 if hint.destination == localToonInformation.slotId:
                     return False
-        if locationId in base.localAvatar.getCheckedLocations():
-            geomToUse = check
-        elif isHinted:
+        if isHinted:
             geomToUse = hinted
+        elif isHinted and locationId in base.localAvatar.getCheckedLocations():
+            geomToUse = check
         else:
             return False
         command = lambda: self.setHint(locationName, locationId, 1)
