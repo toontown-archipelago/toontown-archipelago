@@ -67,7 +67,7 @@ class ArchipelagoClient(DirectObject):
         self.av: "DistributedToonAI" = av  # DistributedToonAI that owns this client
         self.slot: int = -1  # Our slot ID given when we connect
         self.team: int = 999
-        self.uuid: str = av.getUUID() # not sure how important this is atm but just generating something in update_id method
+        self.uuid: str = av.getUUID()  # not sure how important this is atm but just generating something in update_id method
 
         # Actually defines correct values for variables above
         self.update_identification(slot_name, password)
@@ -95,7 +95,7 @@ class ArchipelagoClient(DirectObject):
     def set_slot_aliases(self, players):
         for slot in list(self.slot_id_to_slot_name.keys()):
             for player in players:
-                if self.get_slot_info(slot).name in player.alias:
+                if slot == player.slot:
                     self.slot_name_to_slot_alias[self.get_slot_info(slot).name] = player.alias
                 continue
             continue
@@ -106,7 +106,6 @@ class ArchipelagoClient(DirectObject):
         """
         return self.slot
 
-    # 
     def get_player_name(self, slot_id: int) -> str:
         """
         Given a slot, retrieve the name of the player in that Archipelago slot.
@@ -116,26 +115,35 @@ class ArchipelagoClient(DirectObject):
         except KeyError:
             return f"??? (player {slot_id})"
 
-
     def get_item_name(self, item_id: Union[str, int], slot: str | int) -> str:
         """
         Given the ID of an item and a slot number, return a display name for an item.
         """
         try:
             return self.global_data_package.get_item(self.get_slot_info(slot).game, item_id)
-        except (KeyError, TypeError): # no slot info for the given slot, or slot was None
-            warn("Invalid slot for fetching item name.", UserWarning, 2) # print to log with where we were called.
+        except (KeyError, TypeError):  # no slot info for the given slot, or slot was None
+            warn("Invalid slot for fetching item name.", UserWarning, 2)  # print to log with where we were called.
+            return f'Unknown Item[{item_id}]'
+
+    def get_item_name_for_hint(self, item_id: Union[str, int]) -> str:
+        """
+        Given the ID of an item and a slot number, return a display name for an item.
+        """
+        try:
+            return self.global_data_package.get_item_from_id(item_id)
+        except (KeyError, TypeError):  # no slot info for the given slot, or slot was None
+            warn("Invalid slot for fetching item name.", UserWarning, 2)  # print to log with where we were called.
             return f'Unknown Item[{item_id}]'
 
     def get_location_name(self, location_id: Union[str, int], slot: str | int) -> str:
         """
-        Given the ID of a location and a slot number, return a display name for an item.
+        Given the ID of a location and a slot number, return a display name for a location.
         """
         try:
             return self.global_data_package.get_location(self.get_slot_info(slot).game, location_id)
-        except (KeyError, TypeError): # no slot info for the given slot, or slot was None.
-            warn("Invalid slot for fetching location name.", UserWarning, 2) # print to log with where we were called.
-            return f'Unknown Item[{location_id}]'
+        except (KeyError, TypeError):  # no slot info for the given slot, or slot was None.
+            warn("Invalid slot for fetching location name.", UserWarning, 2)  # print to log with where we were called.
+            return f'Unknown Location[{location_id}]'
 
     def __get_packet_handle_event_name(self):
         return self.av.uniqueName(f'incoming-ap-packet')
@@ -411,11 +419,11 @@ class ArchipelagoClient(DirectObject):
                 item_name = item_flag_to_string(item_flag)
             elif display_option == RewardDisplayOption.option_owner:
                 item_name = "Item"
-                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+                item_flag = 0  # Override flag to change the item always appear as if it's filler.
             elif display_option == RewardDisplayOption.option_hidden:
-                owner_name = "" # hide owner name.
+                owner_name = ""  # hide owner name.
                 item_name = self.get_location_name(our_location_id, self.slot)
-                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+                item_flag = 0  # Override flag to change the item always appear as if it's filler.
         # Pet Shop Locations.
         elif self.get_location_name(our_location_id, self.slot) in [loc.value for loc in locations.SHOP_LOCATIONS]:
             display_option = self.av.slotData.get("pet_shop_display")
@@ -423,11 +431,11 @@ class ArchipelagoClient(DirectObject):
                 item_name = item_flag_to_string(item_flag)
             elif display_option == RewardDisplayOption.option_owner:
                 item_name = "Item"
-                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+                item_flag = 0  # Override flag to change the item always appear as if it's filler.
             elif display_option == RewardDisplayOption.option_hidden:
-                owner_name = "" # hide owner name.
+                owner_name = ""  # hide owner name.
                 item_name = self.get_location_name(our_location_id, self.slot)
-                item_flag = 0 # Override flag to change the item always appear as if it's filler.
+                item_flag = 0  # Override flag to change the item always appear as if it's filler.
 
 
         # Let's make the string pretty
