@@ -95,7 +95,7 @@ class ArchipelagoClient(DirectObject):
     def set_slot_aliases(self, players):
         for slot in list(self.slot_id_to_slot_name.keys()):
             for player in players:
-                if self.get_slot_info(slot).name in player.alias:
+                if slot == player.slot:
                     self.slot_name_to_slot_alias[self.get_slot_info(slot).name] = player.alias
                 continue
             continue
