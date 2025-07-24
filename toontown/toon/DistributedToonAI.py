@@ -224,8 +224,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.hasPaidTaxes = False
 
         # Archipelago Stuff
-        self.__uuid = None # UUID used to ensure we don't reply to our own packets.
-        self._lastSeedName = "" # The previous room connected to, using ap's seed_name to validate. Might overlap if multiple rooms started from the same seed.
+        self.__uuid = None  # UUID used to ensure we don't reply to our own packets.
+        self._lastSeedName = ""  # The previous room connected to, using ap's seed_name to validate. Might overlap if multiple rooms started from the same seed.
         self.seed = random.randint(1, 2**32)  # Seed to use for various rng elements
         self.baseGagSkillMultiplier = 1  # Multiplicative stacking gag xp multiplier to consider
         self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
@@ -792,8 +792,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if npcFriend in self.NPCFriendsDict:
             self.NPCFriendsDict[npcFriend] += numCalls
         elif npcFriend in npcFriends:
+            # This means our SOS page is full, lets give a random SOS we have instead
             if len(self.NPCFriendsDict.keys()) >= self.maxNPCFriends:
-                return 0
+                npcFriend = random.choice(list(self.NPCFriendsDict.keys()))
+                self.NPCFriendsDict[npcFriend] += numCalls
             self.NPCFriendsDict[npcFriend] = numCalls
         else:
             self.notify.warning('invalid NPC: %d' % npcFriend)
@@ -4668,6 +4670,13 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Gets this toon's current AP seed, used for task generation mainly
     def getSeed(self):
         return self.seed
+
+    def d_setSeed(self, seed: int) -> None:
+        self.sendUpdate('setSeed', [str(seed)])
+
+    def b_setSeed(self, seed) -> None:
+        self.d_setSeed(seed)
+        self.setSeed(seed)
 
     def queueAPReward(self, reward: EarnedAPReward):
         self.apRewardQueue.queue(reward)

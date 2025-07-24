@@ -11,6 +11,7 @@ from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacke
 from toontown.archipelago.packets.serverbound.connect_update_packet import ConnectUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
+from apworld.toontown.options import DeathLinkOption
 from toontown.fishing import FishGlobals
 from otp.otpbase import OTPGlobals
 from toontown.toonbase import ToontownGlobals
@@ -116,7 +117,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # No change
         if option == option_global:
-            return seed
+            return str(seed)
 
         # Use slot name
         if option == option_slot_name:
@@ -128,7 +129,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Make something up
         if option == option_wild:
-            return random.randint(1, 2**32)
+            return str(random.randint(1, 2**32))
 
         # An incorrect value was given, default to global
         return self.handle_seed_generation_type(av, seed, option_global)
@@ -139,7 +140,7 @@ class ConnectedPacket(ClientBoundPacketBase):
         new_seed = self.slot_data.get('seed', random.randint(1, 2**32))
         rng_option = self.slot_data.get('seed_generation_type', 'global')
         new_seed = self.handle_seed_generation_type(av, new_seed, rng_option)
-        av.setSeed(new_seed)
+        av.b_setSeed(new_seed)
         
         # Get damage multiplier
         damageMultiplier = self.slot_data.get('damage_multiplier', 100)
@@ -209,12 +210,12 @@ class ConnectedPacket(ClientBoundPacketBase):
         # Request synced data and subscribe to changes.
         client.av.request_default_ap_data()
         # Update Link Tags.
-        death_link = self.slot_data.get('death_link', False)
+        death_link = self.slot_data.get('death_link', DeathLinkOption.option_off)
         ring_link = self.slot_data.get('ring_link', False)
-        if death_link or ring_link:
+        if death_link != DeathLinkOption.option_off or ring_link:
             update_packet = ConnectUpdatePacket()
             tags = []
-            if death_link:
+            if death_link != DeathLinkOption.option_off:
                 tags.append(ConnectPacket.TAG_DEATHLINK)
             if ring_link:
                 tags.append(ConnectPacket.TAG_RINGLINK)

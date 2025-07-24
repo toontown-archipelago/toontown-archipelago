@@ -141,6 +141,7 @@ class ChatManager(DirectObject.DirectObject):
         if self.__scObscured:
             self.scButton.hide()
             self.apButton.hide()
+            self.apGui.hide()
         self.__normalObscured = normal
         if self.__normalObscured:
             self.normalButton.hide()
@@ -207,6 +208,7 @@ class ChatManager(DirectObject.DirectObject):
     def enterOff(self):
         self.scButton.hide()
         self.apButton.hide()
+        self.apGui.hide()
         self.normalButton.hide()
         self.ignoreAll()
 
@@ -228,6 +230,7 @@ class ChatManager(DirectObject.DirectObject):
     def exitMainMenu(self):
         self.scButton.hide()
         self.apButton.hide()
+        self.apGui.hide()
         self.normalButton.hide()
         self.ignore('enterNormalChat')
 
@@ -379,6 +382,7 @@ class ChatManager(DirectObject.DirectObject):
     def exitSpeedChat(self):
         self.scButton.hide()
         self.apButton.hide()
+        self.apGui.hide()
         self.normalButton.hide()
         self.chatInputSpeedChat.hide()
 

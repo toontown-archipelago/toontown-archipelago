@@ -32,7 +32,6 @@ class ArchipelagoConnectGUI(DirectFrame):
                                         textMayChange=1,
                                         pos=(-0.33, 0, 0), text_align=TextNode.ALeft, backgroundFocus=0,
                                         focusInCommand=self.toggleEntryFocus)
-        self.accept('mouse1', self.toggleEntryFocus, extraArgs=[True, 'slot'])
 
     def loadIpItems(self):
         self.ipBarFrame = DirectFrame(parent=self, relief=None, image=self.cdrGui.find('**/tt_t_gui_sbk_cdrCodeBox'),
@@ -44,7 +43,6 @@ class ArchipelagoConnectGUI(DirectFrame):
                                         textMayChange=1,
                                         pos=(-0.33, 0, 0), text_align=TextNode.ALeft, backgroundFocus=0,
                                         focusInCommand=self.toggleEntryFocus)
-        self.accept('mouse1', self.toggleEntryFocus, extraArgs=[True, 'ip'])
 
     def loadPassItems(self):
         self.passBarFrame = DirectFrame(parent=self, relief=None, image=self.cdrGui.find('**/tt_t_gui_sbk_cdrCodeBox'),
@@ -56,7 +54,6 @@ class ArchipelagoConnectGUI(DirectFrame):
                                         textMayChange=1,
                                         pos=(-0.33, 0, 0), text_align=TextNode.ALeft, backgroundFocus=0,
                                         focusInCommand=self.toggleEntryFocus)
-        self.accept('mouse1', self.toggleEntryFocus, extraArgs=[True, 'pass'])
 
     def loadButtons(self):
         self.connectButton = DirectButton(parent=self, relief=None, image=(self.guiButton.find('**/QuitBtn_UP'),
@@ -92,20 +89,17 @@ class ArchipelagoConnectGUI(DirectFrame):
         base.talkAssistant.sendOpenTalk("~ap clear")
         self.toggleEntryFocus(True)
 
-    def toggleEntryFocus(self, lose=False, type='none'):
+    def toggleEntryFocus(self, lose=False):
+        if not hasattr(base, "localAvatar"):
+            self.ignore('mouse1')
+            return
         if lose:
-            if type == 'slot':
-                self.slotBarEntry['focus'] = 0
-            elif type == 'ip':
-                self.ipBarEntry['focus'] = 0
-            elif type == 'pass':
-                self.passBarEntry['focus'] = 0
-            elif type == 'none':
-                self.slotBarEntry['focus'] = 0
-                self.ipBarEntry['focus'] = 0
-                self.passBarEntry['focus'] = 0
+            self.slotBarEntry['focus'] = 0
+            self.ipBarEntry['focus'] = 0
+            self.passBarEntry['focus'] = 0
             messenger.send("enable-hotkeys")
             base.localAvatar.enableControls()
         else:
             messenger.send("disable-hotkeys")
             base.localAvatar.disableControls()
+            self.acceptOnce('mouse1', self.toggleEntryFocus, extraArgs=[True])

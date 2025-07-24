@@ -210,10 +210,18 @@ class PetshopGUI(DirectObject):
     class AdoptPetDlg(DirectFrame):
         notify = DirectNotifyGlobal.directNotify.newCategory('PetshopGUI.AdoptPetDlg')
 
-        def __init__(self, doneEvent, petSeed, petNameIndex):
+        def __init__(self, doneEvent, petSeed, petNameIndex, subId):
+            self.subId = subId
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
             name, dna, traitSeed = PetUtil.getPetInfoFromSeed(petSeed, zoneId)
-            cost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            if base.localAvatar.slotData.get('random_prices', False):
+                rng = random.Random()
+                rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
+                # This price will be consistent based on our archi rng setting
+                cost = rng.randint((baseCost-500), (baseCost+1000))
+            else:
+                cost = baseCost
             model = loader.loadModel('phase_4/models/gui/AdoptPet')
             modelPos = (0, 0, -0.3)
             modelScale = 0.055
@@ -340,7 +348,14 @@ class PetshopGUI(DirectObject):
             self.petCost = []
             random.seed(self.petSeeds[1])
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
-            cost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            if base.localAvatar.slotData.get('random_prices', False):
+                rng = random.Random()
+                rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
+                # This price will be consistent based on our archi rng setting
+                cost = rng.randint((baseCost - 500), (baseCost + 1250))
+            else:
+                cost = baseCost
             self.petName.append(self.getItemName())
             name, dna, traitSeed = PetUtil.getPetInfoFromSeed(self.petSeeds[1], zoneId)
             traits = PetTraits.PetTraits(traitSeed, zoneId)
@@ -477,7 +492,7 @@ class PetshopGUI(DirectObject):
             self.dialog = self.MainMenuDlg(self.mainMenuDoneEvent)
         elif nDialog == Dialog_AdoptPet:
             self.acceptOnce(self.adoptPetDoneEvent, self.__handleAdoptPetDlg)
-            self.dialog = self.AdoptPetDlg(self.adoptPetDoneEvent, self.petSeeds[self.adoptPetNum], 0)#self.adoptPetNameIndex)
+            self.dialog = self.AdoptPetDlg(self.adoptPetDoneEvent, self.petSeeds[self.adoptPetNum], 0, self.subId)#self.adoptPetNameIndex)
         elif nDialog == Dialog_ChoosePet:
             self.acceptOnce(self.petChooserDoneEvent, self.__handleChoosePetDlg)
             self.dialog = self.ChoosePetDlg(self.petChooserDoneEvent, self.petSeeds, self.subId)

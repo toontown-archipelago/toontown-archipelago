@@ -86,7 +86,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
         self.scrollList = None
         self.textRolloverColor = Vec4(1, 1, 0, 1)
         self.textDownColor = Vec4(0.5, 0.9, 1, 1)
-        self.textDisabledColor = Vec4(0.6, 0.5, 1, 1) # marks selected.
+        self.textDisabledColor = Vec4(0.6, 0.5, 1, 1)  # marks selected.
         self.locationButtons = []
         self.LocationNode = LocationNode(self)
         self.LocationNode.setPos(0.42, 0, 0.5)
