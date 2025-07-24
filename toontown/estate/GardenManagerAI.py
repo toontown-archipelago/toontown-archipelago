@@ -133,7 +133,7 @@ class GardenAI:
                     availableRecipes = GardenGlobals.getAvailableRecipes(shovel, shovelSkill)
                     recipeKey = random.choice(list(availableRecipes.keys()))
                     species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
-                    obj = self.plantFlower(flowerIndex, species, variety, waterLevel=5, lastCheck=0,
+                    obj = self.plantFlower(flowerIndex, species, variety, waterLevel=0, lastCheck=0,
                                           generate=False)
                     zOffset = 1.5
 
