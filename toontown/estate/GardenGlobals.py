@@ -81,7 +81,7 @@ PlantAttributes = {49: {'name': TTLocalizer.FlowerSpeciesNames[49],
       'plantType': FLOWER_TYPE,
       'growthThresholds': (1, 1, 1),
       'maxWaterLevel': getMaxWateringCanPower(),
-      'minWaterLevel': -2,
+      'minWaterLevel': -999,
       'seedlingModel': 'phase_5.5/models/estate/seedling.bam',
       'establishedModel': 'phase_5.5/models/estate/daisy.bam',
       'fullGrownModel': 'phase_5.5/models/estate/daisy.bam',
@@ -101,7 +101,7 @@ PlantAttributes = {49: {'name': TTLocalizer.FlowerSpeciesNames[49],
       'plantType': FLOWER_TYPE,
       'growthThresholds': (1, 1, 1),
       'maxWaterLevel': getMaxWateringCanPower(),
-      'minWaterLevel': -2,
+      'minWaterLevel': -999,
       'seedlingModel': 'phase_5.5/models/estate/seedling.bam',
       'establishedModel': 'phase_5.5/models/estate/tulip.bam',
       'fullGrownModel': 'phase_5.5/models/estate/tulip.bam',
@@ -114,7 +114,7 @@ PlantAttributes = {49: {'name': TTLocalizer.FlowerSpeciesNames[49],
       'plantType': FLOWER_TYPE,
       'growthThresholds': (1, 1, 1),
       'maxWaterLevel': getMaxWateringCanPower(),
-      'minWaterLevel': -2,
+      'minWaterLevel': -999,
       'seedlingModel': 'phase_5.5/models/estate/seedling.bam',
       'establishedModel': 'phase_5.5/models/estate/carnation.bam',
       'fullGrownModel': 'phase_5.5/models/estate/carnation.bam',
@@ -131,7 +131,7 @@ PlantAttributes = {49: {'name': TTLocalizer.FlowerSpeciesNames[49],
       'plantType': FLOWER_TYPE,
       'growthThresholds': (1, 1, 1),
       'maxWaterLevel': getMaxWateringCanPower(),
-      'minWaterLevel': -2,
+      'minWaterLevel': -999,
       'seedlingModel': 'phase_5.5/models/estate/seedling.bam',
       'establishedModel': 'phase_5.5/models/estate/lily.bam',
       'fullGrownModel': 'phase_5.5/models/estate/lily.bam',
@@ -151,7 +151,7 @@ PlantAttributes = {49: {'name': TTLocalizer.FlowerSpeciesNames[49],
       'plantType': FLOWER_TYPE,
       'growthThresholds': (1, 1, 1),
       'maxWaterLevel': getMaxWateringCanPower(),
-      'minWaterLevel': -2,
+      'minWaterLevel': -999,
       'seedlingModel': 'phase_5.5/models/estate/seedling.bam',
       'establishedModel': 'phase_5.5/models/estate/narcissi.bam',
       'fullGrownModel': 'phase_5.5/models/estate/narcissi.bam',
@@ -167,7 +167,7 @@ PlantAttributes = {49: {'name': TTLocalizer.FlowerSpeciesNames[49],
       'plantType': FLOWER_TYPE,
       'growthThresholds': (1, 1, 1),
       'maxWaterLevel': getMaxWateringCanPower(),
-      'minWaterLevel': -2,
+      'minWaterLevel': -999,
       'seedlingModel': 'phase_5.5/models/estate/seedling.bam',
       'establishedModel': 'phase_5.5/models/estate/pansy.bam',
       'fullGrownModel': 'phase_5.5/models/estate/pansy.bam',
@@ -183,7 +183,7 @@ PlantAttributes = {49: {'name': TTLocalizer.FlowerSpeciesNames[49],
       'plantType': FLOWER_TYPE,
       'growthThresholds': (1, 1, 1),
       'maxWaterLevel': getMaxWateringCanPower(),
-      'minWaterLevel': -2,
+      'minWaterLevel': -999,
       'seedlingModel': 'phase_5.5/models/estate/seedling.bam',
       'establishedModel': 'phase_5.5/models/estate/petunia.bam',
       'fullGrownModel': 'phase_5.5/models/estate/petunia.bam',
@@ -196,7 +196,7 @@ PlantAttributes = {49: {'name': TTLocalizer.FlowerSpeciesNames[49],
       'plantType': FLOWER_TYPE,
       'growthThresholds': (1, 1, 1),
       'maxWaterLevel': getMaxWateringCanPower(),
-      'minWaterLevel': -1,
+      'minWaterLevel': -999,
       'seedlingModel': 'phase_5.5/models/estate/seedling.bam',
       'establishedModel': 'phase_5.5/models/estate/rose.bam',
       'fullGrownModel': 'phase_5.5/models/estate/rose.bam',
@@ -619,6 +619,26 @@ def getNumBeansRequired(species, variety):
             retval = len(recipe['beans'])
     return retval
 
+
+def getAvailableRecipes(shovel, shovelSkill):
+    maxBeans = getShovelPower(shovel, shovelSkill)
+    availableRecipes = {}
+    for key, recipe in Recipes.items():
+        if recipe['special'] == -1 and len(recipe['beans']) <= maxBeans:
+            availableRecipes[key] = recipe
+    return availableRecipes
+
+def getFlowerSpeciesName(species):
+    retVal = TTLocalizer.FlowerUnknown
+    if species in list(PlantAttributes.keys()):
+        attrib = PlantAttributes[species]
+        if 'name' in attrib:
+            retVal = attrib['name']
+        else:
+            gardenNotify.warning('warning unknown species %d' % species)
+    else:
+        gardenNotify.warning('warning unknown species %d' % species)
+    return retVal
 
 def validateRecipes(notify):
     uniqueRecipes = []

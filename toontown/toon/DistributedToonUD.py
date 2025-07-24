@@ -324,6 +324,9 @@ class DistributedToonUD(DistributedObjectUD):
 
     def setWateringCanSkill(self, todo0):
         pass
+    
+    def setGardenKit(self, todo0):
+        pass
 
     def promoteShovel(self, todo0):
         pass

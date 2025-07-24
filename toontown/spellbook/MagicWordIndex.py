@@ -1824,6 +1824,17 @@ class MaxDoodle(MagicWord):
         pet.b_setTrickAptitudes([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         return "Maxed your doodle!"
 
+class AwardGardenKit(MagicWord):
+    desc = "Awards the target a new garden kit if they meet the requirements."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.estate.GardenKitManagerAI import GardenKitManagerAI
+        gardenKitManager = GardenKitManagerAI(self.air)
+        gardenKitManager.awardGardenKit(avId)
+        return "Awarded garden kit to %s." % toon.getName()
+
 
 class LeaveRace(MagicWord):
     desc = "Leave the current race you are in."
