@@ -86,7 +86,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
         self.scrollList = None
         self.textRolloverColor = Vec4(1, 1, 0, 1)
         self.textDownColor = Vec4(0.5, 0.9, 1, 1)
-        self.textDisabledColor = Vec4(0.6, 0.5, 1, 1) # marks selected.
+        self.textDisabledColor = Vec4(0.6, 0.5, 1, 1)  # marks selected.
         self.locationButtons = []
         self.LocationNode = LocationNode(self)
         self.LocationNode.setPos(0.42, 0, 0.5)
@@ -140,13 +140,18 @@ class LocationPage(ShtikerPage.ShtikerPage):
 
             # Boss checks, combine the rewards into this location for the tracker.
             if location_data.type == locations.ToontownLocationType.BOSS_META:
-                obj = LocationCategory(location_data.name.value, 
-                                     [x.value for x in locations.REGION_TO_BOSS_LOCATIONS.get(location_data.region)])
+                cpb = base.localAvatar.slotData.get('checks_per_boss', 4)
+                boss_locations = locations.REGION_TO_BOSS_LOCATIONS.get(location_data.region)
+                enabled_locations = []
+                for x in range(cpb):
+                    enabled_locations.append(boss_locations[x].value)
+                obj = LocationCategory(location_data.name.value, enabled_locations)
                 priorityMissingLocations.update({location_data.name.value:obj})
                 continue
             # Locations that are identical with only a number appended.
-            if location_data.type in locations.TREASURE_LOCATION_TYPES + locations.TASK_LOCATION_TYPES:
+            if location_data.type in locations.TREASURE_LOCATION_TYPES + locations.TASK_LOCATION_TYPES + locations.KNOCK_KNOCK_LOCATION_TYPES:
                 name = location_data.name.value.rsplit(" ", 1)[0]
+                name = name.replace("Knock Knock", "Street")
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
@@ -219,10 +224,16 @@ class LocationPage(ShtikerPage.ShtikerPage):
         for i in range(len(rev_locs) - tpl):
             forbidden_location_types.add(rev_locs[i])
 
+        kkps = base.localAvatar.slotData.get('jokes_per_street', 3)
+        rev_locs = locations.KNOCK_KNOCK_LOCATION_TYPES[::-1]
+        for i in range(len(rev_locs) - kkps):
+            forbidden_location_types.add(rev_locs[i])
+
         # Differs from the apworld for special implementation here.
         forbidden_location_types.update(locations.BOSS_LOCATION_TYPES)
         wc = base.localAvatar.slotData.get('win_condition', ToontownWinCondition.cog_bosses)
         cpb = base.localAvatar.slotData.get('checks_per_boss', 4)
+
         if not ToontownWinCondition.cog_bosses in ToontownWinCondition(wc) and cpb <= 0:
             forbidden_location_types.add(locations.ToontownLocationType.BOSS_META)
 

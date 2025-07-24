@@ -247,6 +247,8 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
 
     def __doAreaAttack(self):
         self.b_setAttackCode(ToontownGlobals.BossCogAreaAttack)
+        for toon in self.involvedToons:
+            self.sendUpdateToAvatarId(toon, 'showJumpAttackAlert', [])
 
     def __doDirectedAttack(self):
         if self.nearToons:
@@ -514,7 +516,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
         if self.chairs != None:
             self.calculateWeightPerToon()
         diffSettings = ToontownGlobals.LawbotBossDifficultySettings[self.battleDifficulty]
-        self.ammoCount = diffSettings[0]
+        self.ammoCount = ToontownGlobals.FullPies
         self.numGavels = diffSettings[1]
         if self.numGavels >= len(ToontownGlobals.LawbotBossGavelPosHprs):
             self.numGavels = len(ToontownGlobals.LawbotBossGavelPosHprs)
@@ -966,7 +968,7 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
 
     def calculateWeightPerToon(self):
         for toonId in self.involvedToons:
-            defaultWeight = 1
+            defaultWeight = 3
             bonusWeight = 0
             cannonIndex = self.cannonIndexPerToon.get(toonId)
             if not cannonIndex == None:

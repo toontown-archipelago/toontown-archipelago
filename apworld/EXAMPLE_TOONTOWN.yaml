@@ -20,7 +20,7 @@ Toontown:
 
   # The max laff you can get from items throughout the run.
   # Must be above or equal to the starting_laff.
-  # Range: 1 to 150
+  # Range: 34 to 150
   max_laff: 150
 
   # The base global gag experience multiplier when starting a new game.
@@ -45,7 +45,7 @@ Toontown:
 
   # The percentage of damage that will be done when battling Cogs.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
-  # Range: 25 to 500
+  # Range: 70 to 200
   damage_multiplier: 100
 
   # The percentage multiplier that will be applied to the exp overflow rate.
@@ -154,6 +154,17 @@ Toontown:
   # Range: 0 to 6
   treasures_per_location: 4
 
+  ### Knock Knock Settings ###
+
+  # Add joke books to the item pool to lock knock knock jokes behind them
+  # NOTE: If jokes_per_street is set to 0, books will not be added to the pool
+  joke_books: 'true'
+
+  # The amount of knock knock doors that'll have checks on each street
+  # A setting above 0 will add per-playground joke books to the item pool, if enabled
+  # Range: 0 to 10
+  jokes_per_street: 3
+
   ### Gag Training Settings ###
 
   # Behavior of how gag experience check locations are handled.
@@ -249,6 +260,10 @@ Toontown:
   pet_shop_display: 'shown'
   task_reward_display: 'shown'
 
+  # Enable to turn on the pet shop price randomization.
+  # Logic accounts for the random price range if enabled.
+  random_prices: 'false'
+
   ### Activity Settings ###
 
   # Determines if racing locations are enabled
@@ -277,6 +292,7 @@ Toontown:
   sos_weight: 65
   unite_weight: 65
   fire_weight: 65
+  heal_weight: 65
 
   ### Trap Settings ###
 
@@ -285,17 +301,22 @@ Toontown:
 
   # Weights for all of the various traps (0-100).
   # At least 1 trap must have a value of >0 if trap_percent is >=1.
-  uber_trap_weight: 100
+  uber_trap_weight: 80
   drip_trap_weight: 50
   bean_tax_weight: 42
-  gag_shuffle_weight: 100
+  gag_shuffle_weight: 80
+  damage_trap_weight: 100
 
   ### General Gameplay Settings ###
 
   # Enable/disable the DeathLink mechanic.
   # When you go sad in game, other players with this setting enabled for their game will also die.
-  # If another player in your game with this setting enabled dies for whatever reason, you will also go sad.
-  death_link: 'false'
+  # If another player in your game with this setting enabled dies for whatever reason, you will be affected based on setting.
+  # "full": You die when someone else dies, simple.
+  # "drain": Laff drains over time from your current amount to 0, potentially recoverable.
+  # "one": Laff is set to 1 when someone else dies, potentially recoverable.
+  # "off": (default) Deathlink is disabled.
+  death_link: 'off'
 
   # Enable/disable the RingLink mechanic.
   # When you gain or lose money in game, other players with this setting enabled have their currencies changed at a 10% rate.
@@ -308,5 +329,5 @@ Toontown:
 
 game: Toontown
 requires:
-  version: 0.5.1
+  version: 0.6.1
 description: 'Default Toontown Template'

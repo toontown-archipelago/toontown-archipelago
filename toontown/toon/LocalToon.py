@@ -189,6 +189,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.currentlyInHQ = False
             self.wantCompetitiveBossScoring = base.settings.get('competitive-boss-scoring')
             self.wantLogBg = base.settings.get('archipelago-log-bg')
+            self.wantAlerts = base.settings.get('boss-alerts')
             self.hintContainer: HintContainer = HintContainer(0)
 
             self.accept("disableControls", self.disableControls)

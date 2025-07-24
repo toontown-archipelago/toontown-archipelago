@@ -1020,6 +1020,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
 
     def enterEpilogue(self):
         base.localAvatar.checkWinCondition()
+        self.destroyAlert()
         self.cleanupIntervals()
         self.clearChat()
         self.cagedToon.clearChat()
@@ -1229,7 +1230,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             h = random.uniform(-720, 720)
             gearTrack.append(Sequence(Wait(i * rate), Func(node.show), Parallel(node.posInterval(1, Point3(x, y, 0), fluid=1), node.hprInterval(1, VBase3(h, 0, 0), fluid=1), Sequence(SoundInterval(self.strafeSfx[i], volume=0.2, node=self), duration=0)), Func(node.detachNode)))
 
-        seq = Sequence(Func(door.request, 'open'), Wait(0.7), gearTrack, Func(door.request, 'close'))
+        seq = Sequence(Func(door.request, 'open'), Wait(0.7), gearTrack, Wait(1.4), Func(door.request, 'close'))
         self.__cleanupStrafe()
         self.strafeInterval = seq
         seq.start()

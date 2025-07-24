@@ -72,6 +72,7 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.scoreboard.hide()
         self.cutsceneSpeed = 1.0
         self.music = None
+        self.alertText = None
         return
 
     def announceGenerate(self):
@@ -240,6 +241,8 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.bossHealthBar.cleanup()
         self.bossSpeedrunTimer.cleanup()
         self.scoreboard.cleanup()
+        self.destroyAlert()
+
         return
 
     def delete(self):
@@ -1083,8 +1086,6 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
 
     def playBossMusic(self, state):
         stateCode = BossCogGlobals.BOSSDEPT_2_PACK_ALISIS[self.style.dept] + state
-        if self.music != None:
-            base.contentPackMusicManager.stopSpecificMusic(self.music)
         base.contentPackMusicManager.playMusic(stateCode, looping=1, interrupt=1, volume=0.8)
         self.music = stateCode
 
@@ -1316,3 +1317,43 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
 
         seq.append(suitsOff)
         return seq
+    
+    def showJumpAttackAlert(self):
+        # Display a red exclamation mark above the toon's head
+        self.showAlert("!", Vec4(0.8, 0, 0, 1), Vec4(0.5, 0.05, 0.05, 1))
+
+    def showSingleAttackAlert(self):
+        # Display a blue exclamation mark above the toon's head
+        self.showAlert("!", Vec4(0, 0, 0.8, 1), Vec4(0.05, 0.05, 0.5, 1))
+
+    def destroyAlert(self):
+        # Destroy any currently active alerts
+        if self.alertText:
+            self.alertText.destroy()
+            self.alertText = None
+    
+    def showAlert(self, text, color, lerpColor):
+        if not base.localAvatar.wantAlerts:
+            return
+        # Destroy any currently active alerts (really only a problem in ceo where attacks can happen faster than interval)
+        self.destroyAlert()
+
+        # lets make a lerp to make the text show and hide
+        self.alertText = OnscreenText(parent=base.localAvatar.nametag.getNameIcon(), align=TextNode.ACenter, text=text,
+                     fg=color, scale=4, pos=Vec3(0, 5.75, 0), mayChange=True)
+        self.alertText.show()
+        self.alertText.setAlphaScale(0)
+        # fade in, pulse, fade out after
+        fadeIn = LerpFunctionInterval(self.fadeFunc, duration=0.3, fromData=0, toData=1)
+        pulse = Sequence(LerpColorScaleInterval(self.alertText, duration=0.25, colorScale=lerpColor, startColorScale=color),
+                         LerpColorScaleInterval(self.alertText, duration=0.25, colorScale=color, startColorScale=lerpColor))
+        fadeOut = LerpFunctionInterval(self.fadeFunc, duration=0.3, fromData=1, toData=0)
+        alert = Sequence(Parallel(fadeIn, Sequence(Wait(0.3), pulse, pulse), Sequence(Wait(1.5), fadeOut)))
+        alert.start()
+
+    def fadeFunc(self, alpha):
+        """
+        This function will be used to fade the alert text in and out
+        """
+        self.alertText.setAlphaScale(alpha)
+        

@@ -80,7 +80,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.wantNoStunning = False
 
         self.customSpawnPositions = {}
-        self.goonMinScale = 0.8
+        self.goonMinScale = 1.2
         self.goonMaxScale = 2.4
         self.safesWanted = 5
 
@@ -419,6 +419,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             return self.__doDirectedAttack()  # next toon
 
         # we have a toon to attack
+        self.sendUpdateToAvatarId(toonToAttack, 'showSingleAttackAlert', [])
         self.b_setAttackCode(ToontownGlobals.BossCogSlowDirectedAttack, toonToAttack)
 
     def __doAreaAttack(self):
@@ -429,7 +430,7 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.attackAvId = avId
 
         if attackCode in (ToontownGlobals.BossCogDizzy, ToontownGlobals.BossCogDizzyNow):
-            delayTime = self.progressValue(20, 5)
+            delayTime = self.progressValue(30, 10)
             self.hitCount = 0
         elif attackCode in (ToontownGlobals.BossCogSlowDirectedAttack,):
             delayTime = ToontownGlobals.BossCogAttackTimes.get(attackCode)
@@ -704,7 +705,8 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def __donHelmet(self, task):
 
-        if self.ruleset.DISABLE_SAFE_HELMETS:
+        # CFO won't put on helmets when solo
+        if self.ruleset.DISABLE_SAFE_HELMETS or len(self.involvedToons) == 1:
             return
 
         self.waitingForHelmet = 0

@@ -510,11 +510,13 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             dmg *= 1.5
             dmg = int(math.ceil(dmg))
         elif dmg >= self.STUN_THRESHOLD:
-            self.b_setAttackCode(ToontownGlobals.BossCogDizzyNow)
-            self.movingToTable = False
-            self.hitCount = 0
-            self.d_stunBonus(avId, BossCogGlobals.POINTS_STUN_CEO)
-            self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 7.0))
+            stunChance = (100 - self.progressValue(0, 40))
+            if random.randint(1, 100) <= stunChance:
+                self.b_setAttackCode(ToontownGlobals.BossCogDizzyNow)
+                self.movingToTable = False
+                self.hitCount = 0
+                self.d_stunBonus(avId, BossCogGlobals.POINTS_STUN_CEO)
+                self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 7.0))
 
         self.incrementCombo(avId, int(round(self.getComboLength(avId) / 3.0) + 3.0))
         self.d_damageDealt(avId, dmg)
@@ -739,6 +741,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             threatToSubtract = max(toonThreat, 10)
             self.subtractThreat(toonId, threatToSubtract)
             if self.isToonRoaming(toonId):
+                self.sendUpdateToAvatarId(toonId, 'showSingleAttackAlert', [])
                 self.b_setAttackCode(ToontownGlobals.BossCogGolfAttack, toonId)
                 self.numGolfAttacks += 1
             elif self.isToonOnTable(toonId):
@@ -751,12 +754,15 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                     self.notify.debug('moveAttack is not allowed, doing gearDirectedAttack')
                     chanceToShoot = 1.0
                 if random.random() < chanceToShoot:
+                    self.sendUpdateToAvatarId(toonId, 'showSingleAttackAlert', [])
                     self.b_setAttackCode(ToontownGlobals.BossCogGearDirectedAttack, toonId)
                     self.numGearAttacks += 1
                 else:
                     tableIndex = self.getToonTableIndex(toonId)
+                    self.sendUpdateToAvatarId(toonId, 'showSingleAttackAlert', [])
                     self.doMoveAttack(tableIndex)
             else:
+                self.sendUpdateToAvatarId(toonId, 'showSingleAttackAlert', [])
                 self.b_setAttackCode(ToontownGlobals.BossCogGolfAttack, toonId)
         else:
             uprightTables = self.getUprightTables()
@@ -792,6 +798,8 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         maxThreat = 0
         maxToons = []
         for toonId in self.threatDict:
+            if not hasattr(self.air, 'doId2do'):
+                return
             toon = self.air.doId2do.get(toonId)
             if toon and toon.getHp() <= 0:
                 continue
@@ -921,6 +929,8 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def __doGolfAreaAttack(self):
         self.numGolfAreaAttacks += 1
+        for toon in self.involvedToons:
+            self.sendUpdateToAvatarId(toon, 'showJumpAttackAlert', [])
         self.b_setAttackCode(ToontownGlobals.BossCogGolfAreaAttack)
 
     def hitToon(self, toonId):

@@ -11,6 +11,7 @@ from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacke
 from toontown.archipelago.packets.serverbound.connect_update_packet import ConnectUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
+from apworld.toontown.options import DeathLinkOption
 from toontown.fishing import FishGlobals
 from otp.otpbase import OTPGlobals
 from toontown.toonbase import ToontownGlobals
@@ -69,6 +70,9 @@ class ConnectedPacket(ClientBoundPacketBase):
         if 0 not in client.slot_id_to_slot_name:
             client.slot_id_to_slot_name[0] = NetworkSlot("Console", "No game", SlotType.spectator, [])
 
+        # Store this so we don't later ask archipelago about non-existent locations (likely caused by bugs in any apworld in the multiworld)
+        client.all_locations = self.missing_locations + self.checked_locations
+
         # Cache this successful connection on the ai
         slot_info = self.get_slot_info(self.slot)
         simbase.air.cacheArchipelagoConnectInformation(client.av.doId, slot_info.name, client.address)
@@ -113,7 +117,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # No change
         if option == option_global:
-            return seed
+            return str(seed)
 
         # Use slot name
         if option == option_slot_name:
@@ -125,7 +129,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Make something up
         if option == option_wild:
-            return random.randint(1, 2**32)
+            return str(random.randint(1, 2**32))
 
         # An incorrect value was given, default to global
         return self.handle_seed_generation_type(av, seed, option_global)
@@ -136,7 +140,7 @@ class ConnectedPacket(ClientBoundPacketBase):
         new_seed = self.slot_data.get('seed', random.randint(1, 2**32))
         rng_option = self.slot_data.get('seed_generation_type', 'global')
         new_seed = self.handle_seed_generation_type(av, new_seed, rng_option)
-        av.setSeed(new_seed)
+        av.b_setSeed(new_seed)
         
         # Get damage multiplier
         damageMultiplier = self.slot_data.get('damage_multiplier', 100)
@@ -205,17 +209,24 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Request synced data and subscribe to changes.
         client.av.request_default_ap_data()
-        # Update Deathlink Tag.
-        if self.slot_data.get('death_link', False):
+        # Update Link Tags.
+        death_link = self.slot_data.get('death_link', DeathLinkOption.option_off)
+        ring_link = self.slot_data.get('ring_link', False)
+        if death_link != DeathLinkOption.option_off or ring_link:
             update_packet = ConnectUpdatePacket()
-            update_packet.tags = [ConnectPacket.TAG_DEATHLINK]
+            tags = []
+            if death_link != DeathLinkOption.option_off:
+                tags.append(ConnectPacket.TAG_DEATHLINK)
+            if ring_link:
+                tags.append(ConnectPacket.TAG_RINGLINK)
+            update_packet.tags = tags
             client.send_packet(update_packet)
 
-        # Update RinkLink Tag.
-        if self.slot_data.get('ring_link', False):
-            update_packet = ConnectUpdatePacket()
-            update_packet.tags = [ConnectPacket.TAG_RINGLINK]
-            client.send_packet(update_packet)
+        # Check to warn the player that our game version mismatches the apworld's
+        if ToontownGlobals.GameVersion != self.slot_data.get('game_version', ToontownGlobals.GameVersion):
+            client.av.d_setSystemMessage(0, f"WARNING: Game version doesn't match the APWORLD's!\n"
+                                            f"GAME: {ToontownGlobals.GameVersion}\n"
+                                            f"APWORLD: {self.slot_data.get('game_version', ToontownGlobals.GameVersion)}")
 
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)

@@ -515,6 +515,40 @@ class ToggleInstaKill(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         toon.b_setInstaKill(not toon.getInstaKill())
         return "{} can {} insta-kill Cogs!".format(toon.getName(), "now" if toon.getInstaKill() else "no longer")
+    
+
+class SetDamageMultiplier(MagicWord):
+    aliases = ["damagemult", "mult", "dm"]
+    desc = "Sets the target's damage mult to the given %."
+    arguments = [("damageMult", int, True)]
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        mult = args[0]
+        if mult < 1 or mult > 500:
+            return "Your damage mult must be within the range 1-500!"
+        if invoker != toon:
+            return "You can only set your own damage mult!"
+        toon.b_setDamageMultiplier(mult)
+        return "{}'s damage mult is now at {}%!".format(toon.getName(), str(mult))
+
+
+class SetOverflowMultiplier(MagicWord):
+    aliases = ["overflow", "setoverflow", "om"]
+    desc = "Sets the target's overflow rate to the given %."
+    arguments = [("overflowMult", int, True)]
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        mult = args[0]
+        if mult < 1 or mult > 300:
+            return "Your overflow rate must be within the range 1-300!"
+        if invoker != toon:
+            return "You can only set your own overflow rate!"
+        toon.b_setOverflowMod(mult)
+        return "{}'s overflow rate is now at {}%!".format(toon.getName(), str(mult))
 
 
 class SkipMovie(MagicWord):

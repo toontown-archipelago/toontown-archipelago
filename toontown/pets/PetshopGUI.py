@@ -210,10 +210,18 @@ class PetshopGUI(DirectObject):
     class AdoptPetDlg(DirectFrame):
         notify = DirectNotifyGlobal.directNotify.newCategory('PetshopGUI.AdoptPetDlg')
 
-        def __init__(self, doneEvent, petSeed, petNameIndex):
+        def __init__(self, doneEvent, petSeed, petNameIndex, subId):
+            self.subId = subId
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
             name, dna, traitSeed = PetUtil.getPetInfoFromSeed(petSeed, zoneId)
-            cost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            if base.localAvatar.slotData.get('random_prices', False):
+                rng = random.Random()
+                rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
+                # This price will be consistent based on our archi rng setting
+                cost = rng.randint((baseCost-500), (baseCost+1000))
+            else:
+                cost = baseCost
             model = loader.loadModel('phase_4/models/gui/AdoptPet')
             modelPos = (0, 0, -0.3)
             modelScale = 0.055
@@ -228,6 +236,7 @@ class PetshopGUI(DirectObject):
             #self.petModel.setH(130)
             #self.petModel.enterNeutralHappy()
             self.moneyDisplay = DirectLabel(parent=self, relief=None, text=str(base.localAvatar.getTotalMoney()), text_scale=0.075, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.225, 0.33), text_font=ToontownGlobals.getSignFont())
+            self.maxMoneyDisplay = DirectLabel(parent=self, relief=None, text="/ "+str(base.localAvatar.getMaxMoney()), text_scale=0.035, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.25, 0.3), text_font=ToontownGlobals.getSignFont())
             self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
             self.accept(localAvatar.uniqueName('bankMoneyChange'), self.__moneyChange)
             okImageList = (model.find('**/CheckButtonUp'), model.find('**/CheckButtonDown'), model.find('**/CheckButtonRollover'))
@@ -246,6 +255,7 @@ class PetshopGUI(DirectObject):
 
         def __moneyChange(self, money):
             self.moneyDisplay['text'] = str(base.localAvatar.getTotalMoney())
+            self.maxMoneyDisplay['text'] = "/ "+str(base.localAvatar.getMaxMoney())
 
     class ReturnPetDlg(DirectFrame):
         notify = DirectNotifyGlobal.directNotify.newCategory('PetshopGUI.ReturnPetDlg')
@@ -316,6 +326,7 @@ class PetshopGUI(DirectObject):
             self.pawRButton = DirectButton(parent=self, relief=None, image=pawRImageList, geom=pawRArrowImageList, scale=modelScale, pressEffect=False, command=lambda : self.__handlePetChange(1))
             self.okButton = DirectButton(parent=self, relief=None, image=adoptImageList, image3_color=disabledImageColor, scale=modelScale, text=TTLocalizer.PetshopAdopt, text_scale=TTLocalizer.PGUIokButton, text_pos=TTLocalizer.PGUIokButtonPos, text0_fg=text0Color, text1_fg=text1Color, text2_fg=text2Color, text3_fg=text3Color, pressEffect=False, command=lambda : messenger.send(doneEvent, [self.curPet]))
             self.moneyDisplay = DirectLabel(parent=self, relief=None, text=str(base.localAvatar.getTotalMoney()), text_scale=0.1, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.34, 0.12), text_font=ToontownGlobals.getSignFont())
+            self.maxMoneyDisplay = DirectLabel(parent=self, relief=None, text="/ "+str(base.localAvatar.getMaxMoney()), text_scale=0.05, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.36, 0.08), text_font=ToontownGlobals.getSignFont())
             self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
             self.accept(localAvatar.uniqueName('bankMoneyChange'), self.__moneyChange)
             self.petView = self.attachNewNode('petView')
@@ -337,7 +348,14 @@ class PetshopGUI(DirectObject):
             self.petCost = []
             random.seed(self.petSeeds[1])
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
-            cost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            if base.localAvatar.slotData.get('random_prices', False):
+                rng = random.Random()
+                rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
+                # This price will be consistent based on our archi rng setting
+                cost = rng.randint((baseCost - 500), (baseCost + 1250))
+            else:
+                cost = baseCost
             self.petName.append(self.getItemName())
             name, dna, traitSeed = PetUtil.getPetInfoFromSeed(self.petSeeds[1], zoneId)
             traits = PetTraits.PetTraits(traitSeed, zoneId)
@@ -417,6 +435,7 @@ class PetshopGUI(DirectObject):
 
         def __moneyChange(self, money):
             self.moneyDisplay['text'] = str(base.localAvatar.getTotalMoney())
+            self.maxMoneyDisplay['text'] = "/ "+str(base.localAvatar.getMaxMoney())
 
     def __init__(self, eventDict, petSeeds, subId):
         self.eventDict = eventDict
@@ -473,7 +492,7 @@ class PetshopGUI(DirectObject):
             self.dialog = self.MainMenuDlg(self.mainMenuDoneEvent)
         elif nDialog == Dialog_AdoptPet:
             self.acceptOnce(self.adoptPetDoneEvent, self.__handleAdoptPetDlg)
-            self.dialog = self.AdoptPetDlg(self.adoptPetDoneEvent, self.petSeeds[self.adoptPetNum], 0)#self.adoptPetNameIndex)
+            self.dialog = self.AdoptPetDlg(self.adoptPetDoneEvent, self.petSeeds[self.adoptPetNum], 0, self.subId)#self.adoptPetNameIndex)
         elif nDialog == Dialog_ChoosePet:
             self.acceptOnce(self.petChooserDoneEvent, self.__handleChoosePetDlg)
             self.dialog = self.ChoosePetDlg(self.petChooserDoneEvent, self.petSeeds, self.subId)

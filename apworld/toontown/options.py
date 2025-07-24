@@ -46,6 +46,7 @@ class StartGagOption(OptionList):
     default = ["randomized", "randomized"]
     visibility = ~(Visibility.simple_ui|Visibility.complex_ui)
 
+
 class StartGagOptionWeb(OptionSet):
     """
     The gags to have when starting a new game.
@@ -62,6 +63,7 @@ class StartGagOptionWeb(OptionSet):
     }
     default = []
     visibility = Visibility.simple_ui|Visibility.complex_ui
+
 
 class StartGagRandomWeb(Range):
     """
@@ -80,7 +82,7 @@ class MaxLaffOption(Range):
     Must be above or equal to the starting_laff.
     """
     display_name = "Max Laff"
-    range_start = 1
+    range_start = 34
     range_end = 150
     default = 150
 
@@ -93,7 +95,7 @@ class BaseGlobalGagXPRange(Range):
     display_name = "Base Global Gag XP"
     range_start = 1
     range_end = 10
-    default = 2
+    default = 5
 
 
 class MaxGlobalGagXPRange(Range):
@@ -105,18 +107,19 @@ class MaxGlobalGagXPRange(Range):
     display_name = "Max Global Gag XP"
     range_start = 0
     range_end = 30
-    default = 15
+    default = 30
 
 
 class DamageMultiplierRange(Range):
     """
     The percentage of damage that will be done when battling Cogs.
-    50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
+    75 -> 75%/0.75x damage, 200 -> 200%/2x damage, etc.
     """
     display_name = "Damage Multiplier"
-    range_start = 25
-    range_end = 500
+    range_start = 70
+    range_end = 200
     default = 100
+
 
 class OverflowModRange(Range):
     """
@@ -138,6 +141,7 @@ class StartMoneyOption(Range):
     range_end = 1000
     default = 1000
 
+
 class StartingTaskCapacityOption(Range):
     """
     The starting amount of tasks a toon can hold when starting a new game.
@@ -147,6 +151,7 @@ class StartingTaskCapacityOption(Range):
     range_end = 6
     default = 4
 
+
 class MaxTaskCapacityOption(Range):
     """
     The max amount of tasks a toon can hold.
@@ -155,6 +160,7 @@ class MaxTaskCapacityOption(Range):
     range_start = 1
     range_end = 6
     default = 4
+
 
 class WinConditions(OptionList):
     """
@@ -197,6 +203,7 @@ class WinConditionCogBossesWeb(Toggle):
     default = True
     visibility = Visibility.simple_ui|Visibility.complex_ui
 
+
 class CogBossesRequired(Range):
     """
     How many cog bosses must be defeated before being able to talk to Flippy to complete the game.
@@ -207,11 +214,13 @@ class CogBossesRequired(Range):
     range_end = 4
     default = 4
 
+
 class WinConditionTotalTasksWeb(Toggle):
     """Complete a total number of tasks to complete the game (determined by total_tasks_required)."""
     display_name = "Total Tasks"
     default = False
     visibility = Visibility.simple_ui|Visibility.complex_ui
+
 
 class TotalTasksRequired(Range):
     """
@@ -224,11 +233,13 @@ class TotalTasksRequired(Range):
     range_end = 72
     default = 48
 
+
 class WinConditionHoodTasksWeb(Toggle):
     """Complete a number of tasks from each neighborhood to complete the game (determined by hood_tasks_required)."""
     display_name = "Hood Tasks"
     default = False
     visibility = Visibility.simple_ui|Visibility.complex_ui
+
 
 class HoodTasksRequired(Range):
     """
@@ -241,11 +252,13 @@ class HoodTasksRequired(Range):
     range_end = 12
     default = 8
 
+
 class WinConditionTotalGagTracksWeb(Toggle):
     """Max a certain number of gag tracks to complete the game (determined by gag_tracks_required)."""
     display_name = "Gag Tracks Maxed"
     default = False
     visibility = Visibility.simple_ui|Visibility.complex_ui
+
 
 class GagTracksRequired(Range):
     """
@@ -258,11 +271,13 @@ class GagTracksRequired(Range):
     range_end = 7
     default = 5
 
+
 class WinConditionFishSpeciesWeb(Toggle):
     """Catch a certain amount of fish species to complete the game (determined by fish_species_required)."""
     display_name = "Fish Species"
     default = False
     visibility = Visibility.simple_ui|Visibility.complex_ui
+
 
 class FishSpeciesRequired(Range):
     """
@@ -275,11 +290,13 @@ class FishSpeciesRequired(Range):
     range_end = 70
     default = 70
 
+
 class WinConditionLaffOLympicsWeb(Toggle):
     """Reach a certain amount of laff to complete the game (determined by laff_points_required)."""
     display_name = "Laff o lympics"
     default = False
     visibility = Visibility.simple_ui|Visibility.complex_ui
+
 
 class LaffPointsRequired(Range):
     """
@@ -292,11 +309,13 @@ class LaffPointsRequired(Range):
     range_end = 150
     default = 120
 
+
 class WinConditionBountyWeb(Toggle):
     """Player must reach a certain number of bounty checks to complete the game (determined by bounties_required, total_bounties)"""
     display_name = "Bounty"
     default = False
     visibility = Visibility.simple_ui|Visibility.complex_ui
+
 
 class BountiesRequired(Range):
     """
@@ -308,6 +327,7 @@ class BountiesRequired(Range):
     range_start = 0
     range_end = 33
     default = 10
+
 
 class TotalBounties(Range):
     """
@@ -321,21 +341,22 @@ class TotalBounties(Range):
     range_end = 33
     default = 20
 
+
 class BountiesHinted(Toggle):
     """Should bounties be hinted from the beginning of the run?"""
     display_name = "Hinted Bounties"
     default = False
 
-class WinConditionRandomizedWeb(Range, Toggle):
+
+class WinConditionRandomizedWeb(Range):
     """
-    How many Win Conditions will be selected for goal
-    if 0 or equal or larger than selected win condition count, all selected win conditions will be active.
+    How many additional random Win Conditions will be selected for goal?
     """
     display_name = "Randomized Win Conditions"
     range_start = 0
     range_end = len(WinConditions.valid_keys)
     default = 0
-    visibility = ~(Visibility.simple_ui|Visibility.complex_ui)
+    visibility = Visibility.simple_ui|Visibility.complex_ui
 
 
 class TPSanity(Choice):
@@ -362,6 +383,26 @@ class TreasuresPerLocation(Range):
     range_start = 0
     range_end = 6
     default = 4
+
+
+class JokeBookToggle(Toggle):
+    """
+    Add joke books to the item pool to lock knock knock jokes behind them
+    NOTE: If jokes_per_street is set to 0 books will not be added to the pool
+    """
+    display_name = "Joke Book Toggle"
+    default = True
+
+
+class JokesPerStreet(Range):
+    """
+    The amount of knock knock doors that'll have checks on each street
+    A setting above 0 will add per-playground joke books to the item pool, if enabled
+    """
+    display_name = "Knock Knock Jokes Per Street"
+    range_start = 0
+    range_end = 10
+    default = 3
 
 
 class ChecksPerBoss(Range):
@@ -405,6 +446,7 @@ class GagTrainingFrameBehavior(Choice):
     default = 0
 
     display_name = "Gag Frame Behavior"
+
 
 class LogicalTasksPerPlayground(Range):
     """
@@ -565,6 +607,7 @@ class RewardDisplayOption(Choice):
     option_auto_hint = 4
     default = 3
 
+
 class TaskRewardDisplayOption(RewardDisplayOption):
     """
     Controls Display of ToonTask rewards.
@@ -587,6 +630,17 @@ class PetShopRewardDisplayOption(RewardDisplayOption):
     "auto hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
     """
     display_name = "Pet Shop Rewards"
+
+
+class RandomShopCostToggle(Toggle):
+    """
+    Enable to turn on the pet shop price randomization.
+    Logic accounts for the random price range if enabled.
+    """
+
+    display_name = "Randomize Pet Shop Prices"
+    default = False
+
 
 class SeedGenerationTypeOption(Choice):
     """
@@ -624,7 +678,7 @@ class UberWeightOption(Range):
     display_name = "Uber Trap Weight"
     range_start = 0
     range_end = 100
-    default = 100
+    default = 80
 
 
 class DripWeightOption(Range):
@@ -655,6 +709,17 @@ class ShuffleWeightOption(Range):
     """
 
     display_name = "Gag Shuffle Weight"
+    range_start = 0
+    range_end = 100
+    default = 80
+
+
+class DamageWeightOption(Range):
+    """
+    Weight of damage items in the trap pool.
+    """
+
+    display_name = "Damage Trap Weight"
     range_start = 0
     range_end = 100
     default = 100
@@ -715,13 +780,32 @@ class FireWeightOption(Range):
     default = 65
 
 
-class DeathLinkOption(Toggle):
+class HealWeightOption(Range):
+    """
+    Weight of healing items in the junk pool.
+    """
+
+    display_name = "Healing Junk Weight"
+    range_start = 0
+    range_end = 100
+    default = 65
+
+
+class DeathLinkOption(Choice):
     """
     Enable to turn on the "DeathLink" mechanic in Archipelago.
+    "full": You die when someone else dies, simple.
+    "drain": Laff drains over time from your current amount to 0, potentially recoverable.
+    "one": Laff is set to 1 when someone else dies, potentially recoverable.
+    "off": (default) Deathlink is disabled.
     """
 
     display_name = "Death Link"
-    default = False
+    option_full = 0
+    option_drain = 1
+    option_one = 2
+    option_off = 3
+    default = 3
 
 
 class RingLinkOption(Toggle):
@@ -768,6 +852,8 @@ class ToontownOptions(PerGameCommonOptions):
     hint_bounties: BountiesHinted
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
+    jokes_per_street: JokesPerStreet
+    joke_books: JokeBookToggle
     checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
     gag_frame_item_behavior: GagTrainingFrameBehavior
@@ -789,20 +875,24 @@ class ToontownOptions(PerGameCommonOptions):
     drip_trap_weight: DripWeightOption
     bean_tax_weight: TaxWeightOption
     gag_shuffle_weight: ShuffleWeightOption
+    damage_trap_weight: DamageWeightOption
     bean_weight: BeanWeightOption
     exp_weight: GagExpWeightOption
     sos_weight: SOSWeightOption
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
+    heal_weight: HealWeightOption
     death_link: DeathLinkOption
     ring_link: RingLinkOption
     pet_shop_display: PetShopRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
+    random_prices: RandomShopCostToggle
 
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
         ProgressionBalancing, Accessibility, SyncJellybeans, 
-        SyncGagExp, PetShopRewardDisplayOption, TaskRewardDisplayOption
+        SyncGagExp, PetShopRewardDisplayOption, TaskRewardDisplayOption,
+        TrapPercentOption
     ]),
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
@@ -810,7 +900,7 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
         DamageMultiplierRange, OverflowModRange, StartMoneyOption, 
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption
+        RingLinkOption, RandomShopCostToggle
     ]),
     OptionGroup("Win Condition", [
         WinConditions, WinConditionRandomizedWeb,
@@ -820,16 +910,19 @@ toontown_option_groups: list[OptionGroup] = [
         WinConditionTotalGagTracksWeb, GagTracksRequired,
         WinConditionFishSpeciesWeb, FishSpeciesRequired,
         WinConditionLaffOLympicsWeb, LaffPointsRequired,
-        WinConditionBountyWeb, BountiesRequired,
+        WinConditionBountyWeb, BountiesRequired, TotalBounties, BountiesHinted
         ], False),
     OptionGroup("Check/Item Behavior", [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, FishChecks, FishLocations,
-        FishProgression, RacingOption, GolfingOption, SeedGenerationTypeOption
+        FishProgression, RacingOption, GolfingOption, SeedGenerationTypeOption,
+        JokesPerStreet, JokeBookToggle
     ], False),
-    OptionGroup("Weights", [
-        TrapPercentOption, UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption,
-        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption
+    OptionGroup("Junk Weights", [
+        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption, HealWeightOption
+    ], True),
+    OptionGroup("Trap Weights", [
+        UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption, DamageWeightOption
     ], True)
 ]

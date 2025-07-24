@@ -125,7 +125,7 @@
       "sellbot-f-factory-interior": ["phase_9/audio/bgm/CHQ_FACT_bg.ogg"],
       "sellbot-f-factory-interior-battle": ["phase_9/audio/bgm/encntr_suit_winning.ogg"],
       "sellbot-s-factory-interior": ["phase_9/audio/bgm/CHQ_FACT_bg.ogg"],
-      "sellbot-s-factory-interior-battle": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
+      "sellbot-s-factory-interior-battle": ["phase_9/audio/bgm/encntr_suit_winning.ogg"],
       "sellbot-lobby": ["phase_9/audio/bgm/encntr_suit_HQ_nbrhood.ogg"],
       
       "sellbot-boss-elevator": ["phase_7/audio/bgm/tt_elevator.ogg"],
@@ -169,7 +169,7 @@
       "bossbot-boss-battle-one": ["phase_3.5/audio/bgm/encntr_general_bg.ogg"],
       "bossbot-boss-battle-roll-two": ["phase_9/audio/bgm/encntr_toon_winning.ogg"],
       "bossbot-boss-battle-pre-two": ["phase_9/audio/bgm/encntr_toon_winning.ogg"],
-      "bossbot-boss-battle-two": ["phase_12/audio/bgm/BossBot_CEO_v2.ogg"],
+      "bossbot-boss-battle-two": ["phase_12/audio/bgm/BossBot_CEO_v1.ogg"],
       "bossbot-boss-battle-pre-three": ["phase_9/audio/bgm/encntr_toon_winning.ogg"],
       "bossbot-boss-battle-three": ["phase_7/audio/bgm/encntr_suit_winning_indoor.ogg"],
       "bossbot-boss-battle-pre-four": ["phase_12/audio/bgm/BossBot_CEO_v2.ogg"],
@@ -189,7 +189,7 @@
       "cashbot-lobby": ["phase_9/audio/bgm/encntr_suit_HQ_nbrhood.ogg"],
 
       "lawbot-courtyard": ["phase_11/audio/bgm/LB_courtyard.ogg"],
-      "lawbot-courtyard-battle": ["phase_9/audio/bgm/encntr_head_suit_theme.ogg"],
+      "lawbot-courtyard-battle": ["phase_9/audio/bgm/encntr_suit_winning.ogg"],
       "lawbot-lobby": ["phase_11/audio/bgm/LB_courtyard.ogg"],
       "lawbot-district-attorney-lobby": ["phase_11/audio/bgm/LB_courtyard.ogg"],
       "lawbot-district-attorney-lobby-battle": ["phase_9/audio/bgm/encntr_suit_winning.ogg"],

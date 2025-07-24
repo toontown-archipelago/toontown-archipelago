@@ -43,7 +43,9 @@ class PrintJSONPacket(ClientBoundPacketBase):
         """
         location_name = client.get_location_name(self.item.location, self.item.player)
         player_name = client.get_player_name(self.item.player)
-        return HintedItem(self.receiving, self.item, player_name, location_name, self.found)
+        item_name = client.get_item_name_for_hint(self.item.item)
+        asking_name = client.get_player_name(self.receiving)
+        return HintedItem(self.receiving, self.item, player_name, location_name, self.found, item_name, asking_name)
 
     def handle(self, client):
 

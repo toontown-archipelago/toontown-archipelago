@@ -20,8 +20,6 @@ class ToontownItemName(enum.Enum):
     ### Task Carry Capacity ###
     TASK_CAPACITY = "Progressive Task Capacity"
 
-
-
     ### Fishing ###
     FISHING_ROD_UPGRADE = "Progressive Fishing Rod"
     TTC_FISHING = "TTC Fishing License"
@@ -70,9 +68,16 @@ class ToontownItemName(enum.Enum):
     CBHQ_ACCESS = "CBHQ Access Key"
     LBHQ_ACCESS = "LBHQ Access Key"
     BBHQ_ACCESS = "BBHQ Access Key"
-
     AA_ACCESS = "AA Access Key"
     GS_ACCESS = 'GS Access Key'
+
+    ### Joke Books ###
+    TTC_JOKE_BOOK = "TTC Joke Book"
+    DD_JOKE_BOOK = "DD Joke Book"
+    DG_JOKE_BOOK = "DG Joke Book"
+    MML_JOKE_BOOK = "MML Joke Book"
+    TB_JOKE_BOOK = "TB Joke Book"
+    DDL_JOKE_BOOK = "DDL Joke Book"
 
     ### Facility Keys ###
     FRONT_FACTORY_ACCESS = "Front Factory Key"
@@ -116,9 +121,16 @@ class ToontownItemName(enum.Enum):
     BOUNTY = "Bounty"
 
     ### Reward Bundles ###
-    SOS_REWARD       = "Random SOS Card"
-    UNITE_REWARD     = "Random Unite"
-    PINK_SLIP_REWARD = "Pink Slip Bundle"
+    SOS_REWARD_3       = "Random 3-Star SOS Card"
+    SOS_REWARD_4       = "Random 4-Star SOS Card"
+    SOS_REWARD_5       = "Random 5-Star SOS Card"
+    UNITE_REWARD_GAG   = "Random Gag Unite"
+    UNITE_REWARD_TOONUP = "Random Toon-Up Unite"
+    PINK_SLIP_REWARD = "Pink Slip"
+
+    ### Healing Items ###
+    HEAL_10 = "10% Toon-Up"
+    HEAL_20 = "20% Toon-Up"
 
     ### Traps ###
     UBER_TRAP = "Uber Trap"
@@ -127,6 +139,8 @@ class ToontownItemName(enum.Enum):
     BEAN_TAX_TRAP_1250 = "1250 Bean Tax"
     DRIP_TRAP = "Drip Trap"
     GAG_SHUFFLE_TRAP = "Gag Shuffle Trap"
+    DAMAGE_15 = "15% Damage Trap"
+    DAMAGE_25 = "25% Damage Trap"
 
     ### META ###
     VP = "Defeated Sellbot VP"
@@ -209,6 +223,14 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.AA_ACCESS,   ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.GS_ACCESS,   ItemClassification.progression),
     # endregion
+    # region Joke Books
+    ToontownItemDefinition(ToontownItemName.TTC_JOKE_BOOK,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DD_JOKE_BOOK,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DG_JOKE_BOOK,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.MML_JOKE_BOOK,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.TB_JOKE_BOOK,   ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.DDL_JOKE_BOOK,  ItemClassification.progression),
+    # endregion
     # region Facility Access
     ToontownItemDefinition(ToontownItemName.FRONT_FACTORY_ACCESS, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.SIDE_FACTORY_ACCESS,  ItemClassification.progression),
@@ -238,16 +260,21 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # endregion
     # region Filler Items
     # TODO - remember to account for the Fish filler when implementing weights here
-    ToontownItemDefinition(ToontownItemName.MONEY_150,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_400,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_700,        ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.MONEY_1000,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_10,            ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_15,            ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.XP_20,            ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.SOS_REWARD,       ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.UNITE_REWARD,     ItemClassification.filler),
-    ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD, ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_150,            ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_400,            ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_700,            ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.MONEY_1000,           ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_10,                ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_15,                ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.XP_20,                ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.SOS_REWARD_3,         ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.SOS_REWARD_4,         ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.SOS_REWARD_5,         ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.UNITE_REWARD_GAG,     ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.UNITE_REWARD_TOONUP,  ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD,     ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.HEAL_10,              ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.HEAL_20,              ItemClassification.filler),
     # endregion
     # region Traps
     ToontownItemDefinition(ToontownItemName.UBER_TRAP,             ItemClassification.trap),
@@ -256,12 +283,14 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.BEAN_TAX_TRAP_1250,    ItemClassification.trap),
     ToontownItemDefinition(ToontownItemName.DRIP_TRAP,             ItemClassification.trap),
     ToontownItemDefinition(ToontownItemName.GAG_SHUFFLE_TRAP,      ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.DAMAGE_15,             ItemClassification.trap),
+    ToontownItemDefinition(ToontownItemName.DAMAGE_25,             ItemClassification.trap),
     # endregion
     # region BossDefeatItems
     ToontownItemDefinition(ToontownItemName.VP,                   ItemClassification.progression_skip_balancing),
-    ToontownItemDefinition(ToontownItemName.CFO,                   ItemClassification.progression_skip_balancing),
+    ToontownItemDefinition(ToontownItemName.CFO,                  ItemClassification.progression_skip_balancing),
     ToontownItemDefinition(ToontownItemName.CJ,                   ItemClassification.progression_skip_balancing),
-    ToontownItemDefinition(ToontownItemName.CEO,                   ItemClassification.progression_skip_balancing),
+    ToontownItemDefinition(ToontownItemName.CEO,                  ItemClassification.progression_skip_balancing),
     # endregion
 ]
 
@@ -363,11 +392,9 @@ GAG_UPGRADES = (
     ToontownItemName.SQUIRT_UPGRADE,
     ToontownItemName.DROP_UPGRADE
 )
+
+
 def get_item_groups():
-
-
-    
-
     GAG_CAPACITY = (
         ToontownItemName.GAG_CAPACITY_5,
         ToontownItemName.GAG_CAPACITY_10,
@@ -393,9 +420,17 @@ def get_item_groups():
     )
 
     REWARD_BUNDLES = (
-        ToontownItemName.SOS_REWARD,
-        ToontownItemName.UNITE_REWARD,
+        ToontownItemName.SOS_REWARD_3,
+        ToontownItemName.SOS_REWARD_4,
+        ToontownItemName.SOS_REWARD_5,
+        ToontownItemName.UNITE_REWARD_TOONUP,
+        ToontownItemName.UNITE_REWARD_GAG,
         ToontownItemName.PINK_SLIP_REWARD
+    )
+
+    HEALS = (
+        ToontownItemName.HEAL_10,
+        ToontownItemName.HEAL_20
     )
 
     TRAPS = (
@@ -404,7 +439,9 @@ def get_item_groups():
         ToontownItemName.BEAN_TAX_TRAP_1000,
         ToontownItemName.BEAN_TAX_TRAP_1250,
         ToontownItemName.BEAN_TAX_TRAP_750,
-        ToontownItemName.GAG_SHUFFLE_TRAP
+        ToontownItemName.GAG_SHUFFLE_TRAP,
+        ToontownItemName.DAMAGE_15,
+        ToontownItemName.DAMAGE_25,
     )
 
     COG_DISGUISES = (
@@ -435,6 +472,15 @@ def get_item_groups():
         ToontownItemName.TASK_CAPACITY,
     )
 
+    JOKE_BOOKS = (
+        ToontownItemName.TTC_JOKE_BOOK,
+        ToontownItemName.DD_JOKE_BOOK,
+        ToontownItemName.DG_JOKE_BOOK,
+        ToontownItemName.MML_JOKE_BOOK,
+        ToontownItemName.TB_JOKE_BOOK,
+        ToontownItemName.DDL_JOKE_BOOK,
+    )
+
     ITEM_NAME_GROUPS_OBJECT = {
         "Cog Disguises": COG_DISGUISES,
         "Facility Keys": FACILITY_KEY_ITEMS,
@@ -449,9 +495,11 @@ def get_item_groups():
         "Task Capacity": TASK_CAPACITY,
         "Laff Boosts": LAFF_BOOSTS,
         "Reward Bundles": REWARD_BUNDLES,
+        "Heals": HEALS,
         "Jellybeans": JELLYBEANS,
         "Gag Exp Reward": GAG_EXP,
         "Traps": TRAPS,
+        "Joke Books": JOKE_BOOKS
     }
 
     return {k:[i.value for i in v] for k,v in ITEM_NAME_GROUPS_OBJECT.items()}
