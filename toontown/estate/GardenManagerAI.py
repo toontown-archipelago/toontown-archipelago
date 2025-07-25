@@ -128,13 +128,7 @@ class GardenAI:
                                            growthLevel=growthLevel, generate=False)
                     zOffset = 1.5
                 else:
-                    av = self.air.doId2do.get(self.avId)
-                    shovel, shovelSkill = av.getShovel(), av.getShovelSkill()
-                    availableRecipes = GardenGlobals.getAvailableRecipes(shovel, shovelSkill)
-                    recipeKey = random.choice(list(availableRecipes.keys()))
-                    species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
-                    obj = self.plantFlower(flowerIndex, species, variety, waterLevel=0, lastCheck=0,
-                                          generate=False)
+                    obj = self.plantRandomFlower(flowerIndex)
                     zOffset = 1.5
 
                 obj.setPlot(estatePlot)
@@ -171,7 +165,39 @@ class GardenAI:
 
         self.reconsiderAvatarOrganicBonus()
         return True
+    
+    def plantRandomFlower(self, flowerIndex, plot=None, ownerIndex=-1):
+        """Plants a random flower (prioritizing undiscovered) at the given index.
+        """
+        av = self.air.doId2do.get(self.avId)
+        if not av:
+            print('GardenAI.plantRandomFlower: No avatar with avId %d, cannot plant flower.' % self.avId)
+            return None
 
+        # Get the list of all possible flowers at the player's current shovel level.
+        shovel, shovelSkill = av.getShovel(), av.getShovelSkill()
+        available_recipes = GardenGlobals.getAvailableRecipes(shovel, shovelSkill)
+
+        # Get the list of flowers the player has already discovered.
+        discovered_flowers = av.flowerCollection
+
+        # Determine the set of undiscovered flowers.
+        undiscovered_recipes = {}
+        for recipe_key, recipe in available_recipes.items():
+            species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipe_key)
+            if not discovered_flowers.hasFlower(species, variety):
+                undiscovered_recipes[recipe_key] = recipe
+
+        # If there are undiscovered flowers, pick a random flower from that set.
+        if undiscovered_recipes:
+            recipeKey = random.choice(list(undiscovered_recipes.keys()))
+        # If all flowers have been discovered, pick a random flower from the full list of possible flowers.
+        else:
+            recipeKey = random.choice(list(available_recipes.keys()))
+
+        species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
+        return self.plantFlower(flowerIndex, species, variety, waterLevel=0, lastCheck=0, plot=plot, generate=False, ownerIndex=ownerIndex)
+    
     def placePlot(self, treeIndex):
         obj = DistributedGardenPlotAI(self)
         obj.setTreeIndex(treeIndex)
