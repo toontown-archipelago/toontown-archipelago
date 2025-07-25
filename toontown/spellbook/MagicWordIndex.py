@@ -1635,12 +1635,16 @@ class GrowFlowers(MagicWord):
     accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1663,12 +1667,16 @@ class PickAllFlowers(MagicWord):
     accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1693,12 +1701,16 @@ class GrowTrees(MagicWord):
         index = args[1]
         grown = args[2]
 
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1733,12 +1745,16 @@ class PickTrees(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         track = args[0]
         index = args[1]
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1775,11 +1791,15 @@ class FlowerAll(MagicWord):
         species = args[0]
         variety = args[1]
 
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"

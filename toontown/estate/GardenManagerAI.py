@@ -166,7 +166,7 @@ class GardenAI:
         self.reconsiderAvatarOrganicBonus()
         return True
     
-    def plantRandomFlower(self, flowerIndex, plot=None, ownerIndex=-1):
+    def plantRandomFlower(self, flowerIndex, plot=None, ownerIndex=-1, plotId=-1):
         """Plants a random flower (prioritizing undiscovered) at the given index.
         """
         av = self.air.doId2do.get(self.avId)
@@ -196,7 +196,7 @@ class GardenAI:
             recipeKey = random.choice(list(available_recipes.keys()))
 
         species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
-        return self.plantFlower(flowerIndex, species, variety, waterLevel=0, lastCheck=0, plot=plot, generate=False, ownerIndex=ownerIndex)
+        return self.plantFlower(flowerIndex, species, variety, waterLevel=0, lastCheck=0, plot=plot, generate=False, ownerIndex=ownerIndex, plotId=plotId)
     
     def placePlot(self, treeIndex):
         obj = DistributedGardenPlotAI(self)
