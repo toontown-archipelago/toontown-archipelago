@@ -395,7 +395,7 @@ class AccessoryPlacer(ShowBase):
             self.autosaveButton['text'] = 'Autosave:\n\x01red\x01off\x02'
         else:
             self.save()
-            taskMgr.doMethodLater(10, self.__autosaveTask, 'autosave-task')
+            taskMgr.doMethodLater(120, self.__autosaveTask, 'autosave-task')
             self.autosaveButton['text'] = 'Autosave:\n\x01green\x01on\x02'
 
 
