@@ -1,4 +1,4 @@
-from . import AccessoryGlobals
+from toontown.toon import AccessoryGlobals
 import json
 
 # This is the animal that will be added to the accessory globals
@@ -11,15 +11,20 @@ hats = AccessoryGlobals.ExtendedHatTransTable
 glasses = AccessoryGlobals.ExtendedGlassesTransTable
 backpacks = AccessoryGlobals.ExtendedBackpackTransTable
 
+exists_json = True
+
 try:
     with open('accessoryplacer/accessories.json', 'r') as f:
         extra = json.load(f)
 except:
+    # template
+    exists_json = False
     extra = {
     'hats': {'defaults': {}, 'specific': {}},
     'glasses': {'defaults': {}, 'specific': {}},
     'backpacks': {'defaults': {}, 'specific': {}}
     }
+    
 
 
 def get_key(key):
@@ -83,9 +88,17 @@ if 'backpacks' not in extra:
 #merge_in(default_glasses, glasses, extra['glasses'], 'glasses')
 
 
-merge(default_backpacks, backpacks, extra['backpacks'], 'backpacks')
-merge(default_hats, hats, extra['hats'], 'hats')
-merge(default_glasses, glasses, extra['glasses'], 'glasses')
+if exists_json:
+    merge(default_backpacks, backpacks, extra['backpacks'], 'backpacks')
+    merge(default_hats, hats, extra['hats'], 'hats')
+    merge(default_glasses, glasses, extra['glasses'], 'glasses')
+    print('Extra exists, writing to JSON')
+else:
+    # If we don't have a *.JSON file, add new entries
+    merge_in_torso(default_backpacks, backpacks, extra['backpacks'], 'backpacks')
+    merge_in_head(default_hats, hats, extra['hats'], 'hats')
+    merge_in_head(default_glasses, glasses, extra['glasses'], 'glasses')
+    print('Extra does NOT exist, creating new entries')
 
 remove_dups(backpacks)
 
@@ -138,7 +151,7 @@ GlassesString = exportSpecificHead(glasses)
 
 result = "BackpackTransTable  = {\n" + DefaultBackpackString + "\n}\nHatTransTable = {\n" + DefaultHatString + "\n}\nGlassesTransTable = {\n" + DefaultGlassesString + "\n}\nExtendedBackpackTransTable = {\n" + BackpackString + "\n}\nExtendedHatTransTable = {\n" + HatString + "\n}\nExtendedGlassesTransTable = {\n" + GlassesString + "\n}"
 
-with open('toontown/toon/AccessoryGlobals_new.py', 'w') as f:
+with open('toontown/toon/AccessoryGlobals.py', 'w') as f:
     f.write(result)
 
 # Re-dump the .json to make sure everything from .py is present.
