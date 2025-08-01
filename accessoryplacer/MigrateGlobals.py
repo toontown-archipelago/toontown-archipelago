@@ -17,8 +17,8 @@ try:
     with open('accessoryplacer/accessories.json', 'r') as f:
         extra = json.load(f)
 except:
-    # template
     exists_json = False
+    # template
     extra = {
     'hats': {'defaults': {}, 'specific': {}},
     'glasses': {'defaults': {}, 'specific': {}},
