@@ -160,9 +160,9 @@ class ToontownItemDefinition:
 
 ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # region Laff Boosts
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_1, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_2, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_3, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_1, ItemClassification.progression_deprioritized),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_2, ItemClassification.progression_deprioritized),
+    ToontownItemDefinition(ToontownItemName.LAFF_BOOST_3, ItemClassification.progression_deprioritized),
     ToontownItemDefinition(ToontownItemName.LAFF_BOOST_4, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.progression),
     # endregion
@@ -175,7 +175,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.MONEY_CAP_1000, ItemClassification.progression, quantity=9),
     # region Task Capacity
     # range depends on the starting capacity
-    ToontownItemDefinition(ToontownItemName.TASK_CAPACITY, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.TASK_CAPACITY, ItemClassification.progression_deprioritized_skip_balancing),
     # endregion
     # region Gag Training Frames
     ToontownItemDefinition(ToontownItemName.TOONUP_FRAME, ItemClassification.progression),
@@ -246,10 +246,10 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.BACK_THREE_ACCESS,    ItemClassification.progression),
     # endregion
     # region Boss Disguises
-    ToontownItemDefinition(ToontownItemName.SELLBOT_DISGUISE, ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.CASHBOT_DISGUISE, ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.LAWBOT_DISGUISE,  ItemClassification.progression, quantity=1),
-    ToontownItemDefinition(ToontownItemName.BOSSBOT_DISGUISE, ItemClassification.progression, quantity=1),
+    ToontownItemDefinition(ToontownItemName.SELLBOT_DISGUISE, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.CASHBOT_DISGUISE, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAWBOT_DISGUISE,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.BOSSBOT_DISGUISE, ItemClassification.progression),
     # endregion
     # region activities
     ToontownItemDefinition(ToontownItemName.GOLF_PUTTER, ItemClassification.progression),
@@ -357,6 +357,13 @@ TELEPORT_ACCESS_ITEMS = (
     ToontownItemName.BBHQ_ACCESS,
     ToontownItemName.AA_ACCESS,
     ToontownItemName.GS_ACCESS,
+)
+
+DISGUISE_ITEMS = (
+    ToontownItemName.SELLBOT_DISGUISE,
+    ToontownItemName.CASHBOT_DISGUISE,
+    ToontownItemName.LAWBOT_DISGUISE,
+    ToontownItemName.BOSSBOT_DISGUISE
 )
 
 FACILITY_KEY_ITEMS = (

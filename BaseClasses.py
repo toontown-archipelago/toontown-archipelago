@@ -14,14 +14,17 @@ class LocationProgressType(IntEnum):
 
 
 class ItemClassification(IntFlag):
-    filler = 0b0000  # aka trash, as in filler items like ammo, currency etc,
-    progression = 0b0001  # Item that is logically relevant
-    useful = 0b0010  # Item that is generally quite useful, but not required for anything logical
-    trap = 0b0100  # detrimental or entirely useless (nothing) item
-    skip_balancing = 0b1000  # should technically never occur on its own
+    filler = 0b00000  # aka trash, as in filler items like ammo, currency etc,
+    progression = 0b00001  # Item that is logically relevant
+    useful = 0b00010  # Item that is generally quite useful, but not required for anything logical
+    trap = 0b00100  # detrimental or entirely useless (nothing) item
+    skip_balancing = 0b01000  # should technically never occur on its own
+    deprioritized = 0b10000  # Should technically never occur on its own, not be considered for priority locations.
     # Item that is logically relevant, but progression balancing should not touch.
     # Typically currency or other counted items.
-    progression_skip_balancing = 0b1001  # only progression gets balanced
+    progression_deprioritized_skip_balancing = 0b11001  # combination of the three
+    progression_skip_balancing = 0b01001  # only progression gets balanced
+    progression_deprioritized = 0b10001  # only progression can be placed during priority fill
 
     def as_flag(self) -> int:
         """As Network API flag int."""
