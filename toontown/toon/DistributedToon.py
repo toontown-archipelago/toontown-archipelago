@@ -188,6 +188,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.shovelModel = None
         self.wateringCan = 0
         self.wateringCanSkill = 0
+        self.gardenKit = 0
         self.wateringCanModel = None
         self.gardenSpecials = []
         self.unlimitedSwing = 0
@@ -2039,6 +2040,12 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setWateringCan(self, wateringCanId):
         self.wateringCan = wateringCanId
 
+    def setGardenKit(self, gardenKit):
+        self.gardenKit = gardenKit
+
+    def getGardenKit(self):
+        return self.gardenKit
+    
     def attachWateringCan(self):
         self.wateringCanModel = self.getWateringCanModel()
         self.wateringCanModel.reparentTo(self.rightHand)
