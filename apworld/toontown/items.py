@@ -167,7 +167,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.progression),
     # endregion
     # region Gag Capacity
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.progression, quantity=12),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.progression_deprioritized, quantity=12),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.progression, quantity=2),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.progression, quantity=0),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
     # endregion
@@ -196,8 +196,8 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.DROP_UPGRADE,   ItemClassification.useful),
     # endregion
     # region Gag Training Multipliers
-    ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_1, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_2, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_1, ItemClassification.progression_deprioritized),
+    ToontownItemDefinition(ToontownItemName.GAG_MULTIPLIER_2, ItemClassification.progression_deprioritized),
     # endregion
     # region Fishing Items
     ToontownItemDefinition(ToontownItemName.FISHING_ROD_UPGRADE, ItemClassification.progression),
