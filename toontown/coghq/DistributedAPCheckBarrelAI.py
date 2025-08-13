@@ -21,20 +21,25 @@ class DistributedAPCheckBarrelAI(DistributedBarrelBaseAI.DistributedBarrelBaseAI
         (ToontownGlobals.SellbotFactoryInt, 0, 0): locations.ToontownLocationName.FRONT_FACTORY_BARREL_1.value,
         (ToontownGlobals.SellbotFactoryInt, 1, 0): locations.ToontownLocationName.FRONT_FACTORY_BARREL_2.value,
         (ToontownGlobals.SellbotFactoryInt, 2, 0): locations.ToontownLocationName.FRONT_FACTORY_BARREL_3.value,
+        (ToontownGlobals.SellbotFactoryInt, 3, 0): locations.ToontownLocationName.FRONT_FACTORY_BARREL_4.value,
         (ToontownGlobals.SellbotFactoryIntS, 0, 0): locations.ToontownLocationName.SIDE_FACTORY_BARREL_1.value,
         (ToontownGlobals.SellbotFactoryIntS, 1, 0): locations.ToontownLocationName.SIDE_FACTORY_BARREL_2.value,
         (ToontownGlobals.SellbotFactoryIntS, 2, 0): locations.ToontownLocationName.SIDE_FACTORY_BARREL_3.value,
+        (ToontownGlobals.SellbotFactoryIntS, 3, 0): locations.ToontownLocationName.SIDE_FACTORY_BARREL_4.value,
 
         # Mint barrels (2nd number in tuple is the ApBarrelIndex, 3rd is floor (0) bc we don't have floors)
         (ToontownGlobals.CashbotMintIntA, 0, 0): locations.ToontownLocationName.COIN_MINT_BARREL_1.value,
         (ToontownGlobals.CashbotMintIntA, 1, 0): locations.ToontownLocationName.COIN_MINT_BARREL_2.value,
         (ToontownGlobals.CashbotMintIntA, 2, 0): locations.ToontownLocationName.COIN_MINT_BARREL_3.value,
+        (ToontownGlobals.CashbotMintIntA, 3, 0): locations.ToontownLocationName.COIN_MINT_BARREL_4.value,
         (ToontownGlobals.CashbotMintIntB, 0, 0): locations.ToontownLocationName.DOLLAR_MINT_BARREL_1.value,
         (ToontownGlobals.CashbotMintIntB, 1, 0): locations.ToontownLocationName.DOLLAR_MINT_BARREL_2.value,
         (ToontownGlobals.CashbotMintIntB, 2, 0): locations.ToontownLocationName.DOLLAR_MINT_BARREL_3.value,
+        (ToontownGlobals.CashbotMintIntB, 3, 0): locations.ToontownLocationName.DOLLAR_MINT_BARREL_4.value,
         (ToontownGlobals.CashbotMintIntC, 0, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_1.value,
         (ToontownGlobals.CashbotMintIntC, 1, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_2.value,
         (ToontownGlobals.CashbotMintIntC, 2, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_3.value,
+        (ToontownGlobals.CashbotMintIntC, 3, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_3.value,
 
         # Office barrels (2nd is apBarrelIndex like before, 3rd number in tuple is the floorNum)
         (ToontownGlobals.LawbotStageIntA, 0, 0): locations.ToontownLocationName.A_OFFICE_BARREL_1.value,

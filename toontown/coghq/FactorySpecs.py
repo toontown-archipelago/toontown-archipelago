@@ -1,5 +1,6 @@
 from toontown.toonbase import ToontownGlobals
 from . import SellbotLegFactorySpec
+from . import SellbotSideFactorySpec
 from . import SellbotLegFactoryCogs
 from . import LawbotLegFactorySpec
 from . import LawbotLegFactoryCogs
@@ -15,7 +16,7 @@ def getCogSpecModule(factoryId):
 
 FactorySpecModules = {
     ToontownGlobals.SellbotFactoryInt: SellbotLegFactorySpec,
-    ToontownGlobals.SellbotFactoryIntS: SellbotLegFactorySpec,
+    ToontownGlobals.SellbotFactoryIntS: SellbotSideFactorySpec,
     ToontownGlobals.LawbotOfficeInt: LawbotLegFactorySpec
 }
 
