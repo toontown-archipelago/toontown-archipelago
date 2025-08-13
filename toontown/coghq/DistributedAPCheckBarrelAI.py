@@ -39,7 +39,7 @@ class DistributedAPCheckBarrelAI(DistributedBarrelBaseAI.DistributedBarrelBaseAI
         (ToontownGlobals.CashbotMintIntC, 0, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_1.value,
         (ToontownGlobals.CashbotMintIntC, 1, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_2.value,
         (ToontownGlobals.CashbotMintIntC, 2, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_3.value,
-        (ToontownGlobals.CashbotMintIntC, 3, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_3.value,
+        (ToontownGlobals.CashbotMintIntC, 3, 0): locations.ToontownLocationName.BULLION_MINT_BARREL_4.value,
 
         # Office barrels (2nd is apBarrelIndex like before, 3rd number in tuple is the floorNum)
         (ToontownGlobals.LawbotStageIntA, 0, 0): locations.ToontownLocationName.A_OFFICE_BARREL_1.value,
