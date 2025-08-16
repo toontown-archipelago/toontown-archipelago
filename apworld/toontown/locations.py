@@ -1062,13 +1062,13 @@ KNOCK_KNOCK_LOCATION_TYPES: list[ToontownLocationType] = [
     ToontownLocationType.JOKE_10,
 ]
 
-REGION_TO_KNOCK_KNOCK_RULES: dict[ToontownRegionName, list[list]] = {
-    ToontownRegionName.TTC:  [Rule.HasTTCBook],
-    ToontownRegionName.DD:   [Rule.HasDDBook],
-    ToontownRegionName.DG:   [Rule.HasDGBook],
-    ToontownRegionName.MML:  [Rule.HasMMLBook],
-    ToontownRegionName.TB:   [Rule.HasTBBook],
-    ToontownRegionName.DDL:  [Rule.HasDDLBook]
+REGION_TO_KNOCK_KNOCK_RULES: dict[ToontownRegionName, list] = {
+    ToontownRegionName.TTC:  [Rule.CanReachTTC, Rule.HasTTCBook],
+    ToontownRegionName.DD:   [Rule.CanReachDD, Rule.HasDDBook],
+    ToontownRegionName.DG:   [Rule.CanReachDG, Rule.HasDGBook],
+    ToontownRegionName.MML:  [Rule.CanReachMML, Rule.HasMMLBook],
+    ToontownRegionName.TB:   [Rule.CanReachTB, Rule.HasTBBook],
+    ToontownRegionName.DDL:  [Rule.CanReachDDL, Rule.HasDDLBook]
 }
 
 KNOCK_KNOCK_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = []
