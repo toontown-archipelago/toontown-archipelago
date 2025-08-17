@@ -22,6 +22,11 @@ class ArchipelagoConnectGUI(DirectFrame):
         self.loadPassItems()
         self.loadButtons()
 
+    def updateFields(self):
+        if hasattr(base, 'localAvatar'):
+            self.ipBarEntry.set(str(base.localAvatar.getArchipelagoIP()))
+            self.slotBarEntry.set(str(base.localAvatar.getSlotName()))
+
     def loadSlotItems(self):
         self.slotBarFrame = DirectFrame(parent=self, relief=None, image=self.cdrGui.find('**/tt_t_gui_sbk_cdrCodeBox'),
                                         pos=(-0.01, 0.0, YOFFSET), scale=(1.3, 1, 0.7))
@@ -53,7 +58,7 @@ class ArchipelagoConnectGUI(DirectFrame):
         self.passBarEntry = DirectEntry(parent=self.passBarFrame, relief=None, text_scale=(0.05, 0.07, 0.07), width=13.25,
                                         textMayChange=1,
                                         pos=(-0.33, 0, 0), text_align=TextNode.ALeft, backgroundFocus=0,
-                                        focusInCommand=self.toggleEntryFocus)
+                                        focusInCommand=self.toggleEntryFocus, obscured=1)
 
     def loadButtons(self):
         self.connectButton = DirectButton(parent=self, relief=None, image=(self.guiButton.find('**/QuitBtn_UP'),

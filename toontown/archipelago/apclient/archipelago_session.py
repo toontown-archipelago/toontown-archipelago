@@ -39,6 +39,7 @@ class ArchipelagoSession:
 
         if server_url or not self.connect_tried:
             server_url = server_url or self.default_ip
+            self.avatar.b_setArchipelagoIP(server_url)
             self.avatar.d_setSystemMessage(0, f"DEBUG: set AP server URL to {server_url}")
             self.client.set_connect_url(server_url)
             self.connect_tried = True
@@ -54,6 +55,7 @@ class ArchipelagoSession:
 
     def handle_slot(self, new_slot):
         self.client.update_identification(new_slot)
+        self.avatar.b_setSlotName(new_slot)
         self.avatar.d_setSystemMessage(0, f"Updated slot name to {new_slot}")
 
     def handle_password(self, new_password):
