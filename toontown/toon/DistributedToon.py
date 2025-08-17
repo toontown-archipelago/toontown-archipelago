@@ -222,6 +222,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
         self.slotData = {}
         self.winCondition = win_condition.NoWinCondition(self)
+        self.slotName = ""
+        self.archipelagoIP = "archipelago.gg:"
         self.ConfirmedWinConditionError = False
         self.rewardHistory = []
         self.rewardTier = 0
@@ -1337,6 +1339,18 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def d_playSplashEffect(self, x, y, z):
         self.sendUpdate('playSplashEffect', [x, y, z])
+
+    def setSlotName(self, slotName):
+        self.slotName = slotName
+
+    def getSlotName(self):
+        return self.slotName
+
+    def setArchipelagoIP(self, archipelagoIP):
+        self.archipelagoIP = archipelagoIP
+
+    def getArchipelagoIP(self):
+        return self.archipelagoIP
 
     def setTrackAccess(self, trackArray):
         self.trackArray = trackArray

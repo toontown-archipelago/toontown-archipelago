@@ -1066,6 +1066,8 @@ dclass DistributedToon : DistributedPlayer {
   setQuestHistory(uint16[] = []) required ownrecv db;
   setRewardHistory(uint8 = 0, uint16[] = []) required ownrecv db;
   setQuestCarryLimit(uint8 = 1) required ownrecv db;
+  setSlotName(string = "") required ownrecv db;
+  setArchipelagoIP(string = "archipelago.gg:") required ownrecv db;
   requestDeleteQuest(uint32[]) ownsend airecv;
   setCheesyEffect(int16 = 0, uint32 = 0, uint32 = 0) required broadcast ownrecv db;
   setGhostMode(uint8) broadcast ownrecv ram;

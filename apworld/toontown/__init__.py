@@ -168,6 +168,20 @@ class ToontownWorld(World):
             for bounty in locations.GAG_BOUNTIES:
                 self.valid_bounties.remove(bounty)
 
+        # We omitted a gag track, remove its respective bounty from the pool
+        OMITTABLE_BOUNTIES = [
+            "NONE",
+            ToontownLocationName.TRAP_TRAIN_UNLOCKED,
+            ToontownLocationName.SOUND_OPERA_UNLOCKED,
+            ToontownLocationName.THROW_WEDDING_UNLOCKED,
+            ToontownLocationName.SQUIRT_GEYSER_UNLOCKED,
+            ToontownLocationName.DROP_BOAT_UNLOCKED
+        ]
+        if self.options.omit_gag.value != 0:
+            # Have to check just in the edge case it was removed above
+            if OMITTABLE_BOUNTIES[self.options.omit_gag.value] in self.valid_bounties:
+                self.valid_bounties.remove(OMITTABLE_BOUNTIES[self.options.omit_gag.value])
+
         # Remove bounties that are excluded
         valid_copy = self.valid_bounties.copy()
         for bounty in valid_copy:
@@ -252,6 +266,10 @@ class ToontownWorld(World):
         if len(self.startingTracks) == 2:
             self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.startingTracks[0])
             self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.startingTracks[1])
+
+        if self.options.omit_gag.value != 0 and self.options.gag_tracks_required.value >= 7:
+                self.options.gag_tracks_required.value = 6
+                logging.warning("Required Gag Tracks for goal is 7, but we omitted a Gag. Setting to 6.")
 
         # Force bounty placements
         if "bounties" in self.options.win_condition.value:
@@ -456,7 +474,19 @@ class ToontownWorld(World):
                 pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
 
         # Dynamically generate training frames.
+        OMITTABLE_ITEMS = [
+            "NONE",
+            ToontownItemName.TRAP_FRAME,
+            ToontownItemName.SOUND_FRAME,
+            ToontownItemName.THROW_FRAME,
+            ToontownItemName.SQUIRT_FRAME,
+            ToontownItemName.DROP_FRAME
+        ]
         for frame in items.GAG_TRAINING_FRAMES:
+            # Skip the frame generation for our omitted track
+            if self.options.omit_gag.value != 0:
+                if frame == OMITTABLE_ITEMS[self.options.omit_gag.value]:
+                    continue
             quantity = 8 if frame not in self.startingTracks else 7
             for _ in range(quantity):
                 pool.append(self.create_item(frame.value))
@@ -607,10 +637,11 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "team": self.options.team.value,
-            "game_version": "v0.17.2",
+            "game_version": "v0.17.3",
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "max_laff": self.options.max_laff.value,
+            "omit_gag": self.options.omit_gag.value,
             "starting_money": self.options.starting_money.value,
             "starting_task_capacity": self.options.starting_task_capacity.value,
             "max_task_capacity": self.options.max_task_capacity.value,
@@ -676,6 +707,13 @@ class ToontownWorld(World):
             "squirt": ToontownItemName.SQUIRT_FRAME,
             "drop": ToontownItemName.DROP_FRAME
         }
+        option_to_track = {
+            1: "trap",
+            2: "sound",
+            3: "throw",
+            4: "squirt",
+            5: "drop"
+        }
         # Define lists to pull gags from so we don't give two support tracks
         OFFENSIVE: List[ToontownItemName] = [
             ToontownItemName.TRAP_FRAME,
@@ -692,39 +730,59 @@ class ToontownWorld(World):
         rng = self.multiworld.random
         choices = ALL.copy()
 
+        # Checking if the track we're wanting is in the starting list
+        # Then also removing it from our options
+        omitted_gag = self.options.omit_gag.value != 0
+        omitted_track = self.options.omit_gag.value
+        # If our omitted track is in our starting, randomize it
+        if omitted_gag:
+            if option_to_track[omitted_track] in set(starting_gags):
+                starting_gags.remove(option_to_track[omitted_track])
+                starting_gags.append("randomized")
+            choices.remove(gag_to_item[option_to_track[omitted_track]])
+
         starting_random_gags = starting_gags.count("randomized")
         starting_gag_items = [gag_to_item[item] for item in set(starting_gags) if item in gag_to_item]
+        wild_random = "wild" in set(starting_gags)
+
 
         for i in starting_gag_items:
             choices.remove(i)
-
         for i in range(starting_random_gags):
             if len(choices) == 0:
                 break
-            if len(starting_gag_items) == 0: #first gag always should be offensive.
-                chosen = rng.choice(OFFENSIVE)
+
+            if wild_random:  # We don't consider any logic for our starting tracks
+                chosen = rng.choice(choices)
                 starting_gag_items.append(chosen)
                 choices.remove(chosen)
-
-            elif len(starting_gag_items) == 1:
-                first_track = starting_gag_items[0]
-                if first_track == ToontownItemName.TRAP_FRAME:
-                    chosen = ToontownItemName.LURE_FRAME
+            else:
+                offensive_choices = OFFENSIVE.copy()
+                if omitted_gag:
+                    # Remove our omitted gag from our possible choices
+                    if gag_to_item[option_to_track[omitted_track]] in offensive_choices:
+                        offensive_choices.remove(gag_to_item[option_to_track[omitted_track]])
+                if len(starting_gag_items) == 0:  # first gag always should be offensive.
+                    chosen = rng.choice(offensive_choices)
                     starting_gag_items.append(chosen)
                     choices.remove(chosen)
-                elif first_track in SUPPORT: #ensure an offensive gag if the first track was support
-                    chosen = rng.choice(OFFENSIVE)
+                elif len(starting_gag_items) == 1:
+                    first_track = starting_gag_items[0]
+                    if first_track == ToontownItemName.TRAP_FRAME:
+                        chosen = ToontownItemName.LURE_FRAME
+                    elif first_track in SUPPORT:  # ensure an offensive gag if the first track was support
+                        if first_track == ToontownItemName.TOONUP_FRAME:
+                            if ToontownItemName.TRAP_FRAME in offensive_choices:
+                                offensive_choices.remove(ToontownItemName.TRAP_FRAME)
+                        chosen = rng.choice(offensive_choices)
+                    else:
+                        chosen = rng.choice(choices)
                     starting_gag_items.append(chosen)
                     choices.remove(chosen)
                 else:
                     chosen = rng.choice(choices)
                     starting_gag_items.append(chosen)
                     choices.remove(chosen)
-
-            else:
-                chosen = rng.choice(choices)
-                starting_gag_items.append(chosen)
-                choices.remove(chosen)
 
 
         ## Check to ensure sphere 1 isn't very likely to be empty.
@@ -735,16 +793,21 @@ class ToontownWorld(World):
                     self.options.fish_progression.option_licenses,
                     self.options.fish_progression.option_licenses_and_rods
                 ])
-        ):
+            ):
             logging.warning("[{self.multiworld.player_name[self.player]}] Sphere 1 likely contains very few checks, adding an offensive gag to starting gags to avoid this.")
             if ToontownItemName.LURE_FRAME in starting_gags:
                 starting_gag_items.append(rng.choice(OFFENSIVE))
             else:
                 choices = OFFENSIVE.copy()
-                choices.remove(ToontownItemName.TRAP_FRAME)
+                if omitted_gag:
+                    # Remove our omitted gag from our possible choices
+                    if gag_to_item[option_to_track[omitted_track]] in choices:
+                        choices.remove(gag_to_item[option_to_track[omitted_track]])
+                if ToontownItemName.TRAP_FRAME in choices:
+                    choices.remove(ToontownItemName.TRAP_FRAME)
                 starting_gag_items.append(rng.choice(choices))
 
-        #Update the option to use the randomized values so that it outputs to spoiler log.
+        # Update the option to use the randomized values so that it outputs to spoiler log.
         item_to_gag = {v:k for k,v in gag_to_item.items()}
         self.options.starting_gags.value = [item_to_gag[i] for i in starting_gag_items]
 
@@ -832,9 +895,23 @@ class ToontownWorld(World):
         if not golf:
             forbidden_location_types.add(ToontownLocationType.GOLF)
 
+        GAG_LOCATION_TYPES = [
+            ToontownLocationType.SUPPORT_GAG_TRAINING,
+            ToontownLocationType.TRAP_GAG_TRAINING,
+            ToontownLocationType.SOUND_GAG_TRAINING,
+            ToontownLocationType.THROW_GAG_TRAINING,
+            ToontownLocationType.SQUIRT_GAG_TRAINING,
+            ToontownLocationType.DROP_GAG_TRAINING,
+        ]
+
         gags = self.options.gag_training_check_behavior.value
         if gags == GagTrainingCheckBehavior.option_disabled:
-            forbidden_location_types.add(ToontownLocationType.GAG_TRAINING)
+            for type in GAG_LOCATION_TYPES:
+                forbidden_location_types.add(type)
+
+        omitted_track = self.options.omit_gag.value
+        if omitted_track != 0:
+            forbidden_location_types.add(GAG_LOCATION_TYPES[omitted_track])
 
         return forbidden_location_types
 

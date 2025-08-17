@@ -38,10 +38,22 @@ Toontown:
   # you cannot start with gags above level 1, duplicate values other than "randomized" will be ignored.
   # 
   # valid keys: ["randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"]
-  # ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks
+  # ex. ["toonup", "sound"] will start you with toonup and sound as starting tracks
   # ex. ["sound"] will start you with only sound as a starting track
+  # Note: You can add "wild" to this list in order to remove any sanity/logic behind randomized gag choices (being able to do damage)
+  # (cont.) This will allow for gag combinations such as ["trap", "toonup"] to be possible with randomization
+  # ex. ['wild', 'randomized', 'randomized'] will roll two random tracks with no consideration
   # An empty list will start you with no gag tracks
   starting_gags: ['randomized', 'randomized']
+
+  # Choose an offensive gag track to not receive during the seed.
+  # none (default): Receive all Gag tracks
+  # trap: Never receive Trap Gags
+  # sound: Never receive Sound Gags
+  # throw: Never receive Throw Gags
+  # squirt: Never receive Squirt Gags
+  # drop: Never receive Drop Gags
+  omit_gag: 'none'
 
   # The percentage of damage that will be done when battling Cogs.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.

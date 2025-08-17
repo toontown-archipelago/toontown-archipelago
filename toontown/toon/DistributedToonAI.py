@@ -244,6 +244,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.deathReason: DeathReason = DeathReason.UNKNOWN
         self.slotData = {}  # set in connected_packet.py
         self.winCondition = win_condition.NoWinCondition(self)
+        self.slotName = ""
+        self.archipelagoIP = "archipelago.gg:"
 
     def generate(self):
         DistributedPlayerAI.DistributedPlayerAI.generate(self)
@@ -1850,6 +1852,32 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def playSound(self, sound):
         self.sendUpdate('playSound', [sound])
+
+    def b_setSlotName(self, slotName):
+        self.setSlotName(slotName)
+        self.d_setSlotName(slotName)
+
+    def d_setSlotName(self, slotName):
+        self.sendUpdate('setSlotName', [slotName])
+
+    def setSlotName(self, slotName):
+        self.slotName = slotName
+
+    def getSlotName(self):
+        return self.slotName
+
+    def b_setArchipelagoIP(self, archipelagoIP):
+        self.setArchipelagoIP(archipelagoIP)
+        self.d_setArchipelagoIP(archipelagoIP)
+
+    def d_setArchipelagoIP(self, archipelagoIP):
+        self.sendUpdate('setArchipelagoIP', [archipelagoIP])
+
+    def setArchipelagoIP(self, archipelagoIP):
+        self.archipelagoIP = archipelagoIP
+
+    def getArchipelagoIP(self):
+        return self.archipelagoIP
 
     def b_setTrackAccess(self, trackArray):
         self.setTrackAccess(trackArray)
