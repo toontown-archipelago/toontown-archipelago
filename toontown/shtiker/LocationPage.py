@@ -245,9 +245,23 @@ class LocationPage(ShtikerPage.ShtikerPage):
         if not golf:
             forbidden_location_types.add(locations.ToontownLocationType.GOLF)
 
+        GAG_LOCATION_TYPES = [
+            locations.ToontownLocationType.SUPPORT_GAG_TRAINING,
+            locations.ToontownLocationType.TRAP_GAG_TRAINING,
+            locations.ToontownLocationType.SOUND_GAG_TRAINING,
+            locations.ToontownLocationType.THROW_GAG_TRAINING,
+            locations.ToontownLocationType.SQUIRT_GAG_TRAINING,
+            locations.ToontownLocationType.DROP_GAG_TRAINING,
+        ]
+
         gags = base.localAvatar.slotData.get('gag_training_check_behavior', 1)
         if gags == options.GagTrainingCheckBehavior.option_disabled:
-            forbidden_location_types.add(locations.ToontownLocationType.GAG_TRAINING)
+            for type in GAG_LOCATION_TYPES:
+                forbidden_location_types.add(type)
+
+        omitted_track = base.localAvatar.slotData.get('omit_gag', 0)
+        if omitted_track != 0:
+            forbidden_location_types.add(GAG_LOCATION_TYPES[omitted_track])
 
         return forbidden_location_types
 
