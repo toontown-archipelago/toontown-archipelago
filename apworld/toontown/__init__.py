@@ -694,37 +694,43 @@ class ToontownWorld(World):
 
         starting_random_gags = starting_gags.count("randomized")
         starting_gag_items = [gag_to_item[item] for item in set(starting_gags) if item in gag_to_item]
+        wild_random = "wild" in set(starting_gags)
+
 
         for i in starting_gag_items:
             choices.remove(i)
-
         for i in range(starting_random_gags):
             if len(choices) == 0:
                 break
-            if len(starting_gag_items) == 0: #first gag always should be offensive.
-                chosen = rng.choice(OFFENSIVE)
+
+            if wild_random:  # We don't consider any logic for our starting tracks
+                chosen = rng.choice(choices)
                 starting_gag_items.append(chosen)
                 choices.remove(chosen)
-
-            elif len(starting_gag_items) == 1:
-                first_track = starting_gag_items[0]
-                if first_track == ToontownItemName.TRAP_FRAME:
-                    chosen = ToontownItemName.LURE_FRAME
+            else:
+                if len(starting_gag_items) == 0:  # first gag always should be offensive.
+                    chosen = rng.choice(OFFENSIVE)
                     starting_gag_items.append(chosen)
                     choices.remove(chosen)
-                elif first_track in SUPPORT: #ensure an offensive gag if the first track was support
-                    chosen = rng.choice(OFFENSIVE)
+                elif len(starting_gag_items) == 1:
+                    first_track = starting_gag_items[0]
+                    if first_track == ToontownItemName.TRAP_FRAME:
+                        chosen = ToontownItemName.LURE_FRAME
+                    elif first_track in SUPPORT:  # ensure an offensive gag if the first track was support
+                        if first_track == ToontownItemName.TOONUP_FRAME:
+                            choices = OFFENSIVE.copy()
+                            choices.remove(ToontownItemName.TRAP_FRAME)
+                            chosen = rng.choice(choices)
+                        else:
+                            chosen = rng.choice(OFFENSIVE)
+                    else:
+                        chosen = rng.choice(choices)
                     starting_gag_items.append(chosen)
                     choices.remove(chosen)
                 else:
                     chosen = rng.choice(choices)
                     starting_gag_items.append(chosen)
                     choices.remove(chosen)
-
-            else:
-                chosen = rng.choice(choices)
-                starting_gag_items.append(chosen)
-                choices.remove(chosen)
 
 
         ## Check to ensure sphere 1 isn't very likely to be empty.
@@ -735,7 +741,7 @@ class ToontownWorld(World):
                     self.options.fish_progression.option_licenses,
                     self.options.fish_progression.option_licenses_and_rods
                 ])
-        ):
+            ):
             logging.warning("[{self.multiworld.player_name[self.player]}] Sphere 1 likely contains very few checks, adding an offensive gag to starting gags to avoid this.")
             if ToontownItemName.LURE_FRAME in starting_gags:
                 starting_gag_items.append(rng.choice(OFFENSIVE))
@@ -744,7 +750,7 @@ class ToontownWorld(World):
                 choices.remove(ToontownItemName.TRAP_FRAME)
                 starting_gag_items.append(rng.choice(choices))
 
-        #Update the option to use the randomized values so that it outputs to spoiler log.
+        # Update the option to use the randomized values so that it outputs to spoiler log.
         item_to_gag = {v:k for k,v in gag_to_item.items()}
         self.options.starting_gags.value = [item_to_gag[i] for i in starting_gag_items]
 

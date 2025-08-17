@@ -30,6 +30,9 @@ class StartGagOption(OptionList):
     valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
     ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks.
     ex. ["sound"] will start you with only sound as a starting track.
+    Note: You can add "wild" to this list in order to remove any sanity/logic behind randomized gag choices
+    (cont.) This will allow for gag combinations such as ["trap", "toonup"] to be possible with randomization
+    ex. ['wild', 'randomized', 'randomized'] will roll two random tracks with no consideration
     An empty list will start you with no gag tracks.
     """
     display_name = "Starting Gags"
@@ -41,7 +44,8 @@ class StartGagOption(OptionList):
         "sound",
         "throw",
         "squirt",
-        "drop"
+        "drop",
+        "wild"
     }
     default = ["randomized", "randomized"]
     visibility = ~(Visibility.simple_ui|Visibility.complex_ui)
