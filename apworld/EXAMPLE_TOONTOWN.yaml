@@ -46,7 +46,7 @@ Toontown:
   # An empty list will start you with no gag tracks
   starting_gags: ['randomized', 'randomized']
 
-  # Which offensive Gag track do you not want to receive?
+  # Choose an offensive gag track to not receive during the seed.
   # none (default): Receive all Gag tracks
   # trap: Never receive Trap Gags
   # sound: Never receive Sound Gags
