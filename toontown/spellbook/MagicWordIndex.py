@@ -1090,21 +1090,35 @@ class SpawnBuilding(MagicWord):
     aliases = ["building", "spawnbldg", "bldg"]
     desc = "Spawns a Cog Building with the given suit index."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("suitName", str, True)]
+    arguments = [("department", str, True), ("floorCount", int, True)]
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
-        suitName = args[0]
+        suitDeptToCode = {
+            'boss': 'c',
+            'bossbot': 'c',
+            'law': 'l',
+            'lawbot': 'l',
+            'cash': 'm',
+            'cashbot': 'm',
+            'sell': 's',
+            'sellbot': 's',
+        }
+        department = args[0]
+        floors = args[1]
 
-        try:
-            suitIndex = SuitDNA.suitHeadTypes.index(suitName)
-        except:
-            return "Invalid Cog specified.".format(suitName)
+        if department in suitDeptToCode:
+            departmentCode = suitDeptToCode[department]
+        else:
+            return "Couldn't spawn a building with department {0}.".format(department)
 
-        returnCode = invoker.doBuildingTakeover(suitIndex)
+        if floors not in range(1, 6):
+            return "Building floor count must be a number from 1 to 5."
+
+        returnCode = invoker.doBuildingTakeover(None, departmentCode, floors)
         if returnCode[0] == 'success':
-            return "Successfully spawned building with Cog '{0}'!".format(suitName)
-        return "Couldn't spawn building with Cog '{0}'.".format(suitName)
+            return "Successfully spawned a {0} building with '{1}' floor(s)!".format(department, floors)
+        return "Couldn't spawn a {0} building with '{1}' floor(s)!".format(department, floors)
 
 
 class SpawnFO(MagicWord):
