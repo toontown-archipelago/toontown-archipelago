@@ -112,6 +112,7 @@ class JellybeanJarUpgradeReward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxMoney(av.maxMoney + self.amount)
+        av.addMoney(self.amount)
 
 class TaskCapacityReward(APReward):
     
