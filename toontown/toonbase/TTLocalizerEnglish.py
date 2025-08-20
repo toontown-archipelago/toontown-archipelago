@@ -9981,6 +9981,7 @@ OptionNames = {
     "INVENTORY_HOTKEY": "Gag Menu Hotkey",
     "QUEST_HOTKEY": "ToonTask Hotkey",
     "GALLERY_HOTKEY": "Cog Gallery Hotkey",
+    "LOCATIONS_HOTKEY": "Locations Tracker Hotkey",
     "CRANE_GRAB_KEY": "Crane Grab Key",
     "ACTION_BUTTON": "Action Button",
     "SECONDARY_ACTION": "Secondary Action Button",

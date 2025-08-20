@@ -226,6 +226,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.invPage.acceptOnscreenHooks()
         base.localAvatar.questMap.acceptOnscreenHooks()
         base.localAvatar.suitPage.acceptOnscreenHooks()
+        base.localAvatar.locationPage.acceptOnscreenHooks()
         self.walkStateData.fsm.request('walking')
         self.enablePeriodTimer()
         base.localAvatar.enterPlaceWalk()
@@ -250,6 +251,8 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.suitPage.ignoreOnscreenHooks()
         base.localAvatar.questMap.hide()
         base.localAvatar.questMap.ignoreOnscreenHooks()
+        base.localAvatar.locationPage.ignoreOnscreenHooks()
+        base.localAvatar.locationPage.hideLocationsOnscreen()
         return
 
     def handleWalkDone(self, doneStatus):

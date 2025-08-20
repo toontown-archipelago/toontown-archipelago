@@ -3,6 +3,7 @@ from . import ShtikerPage
 from apworld.toontown import locations, options, fish, test_location, ToontownWinCondition
 from BaseClasses import MultiWorld
 from toontown.toonbase import TTLocalizer
+from toontown.toonbase import ToontownGlobals
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.archipelago.definitions import util
@@ -323,7 +324,6 @@ class LocationPage(ShtikerPage.ShtikerPage):
             button = self.makeLocationButton(index, location)
             self.locationButtons.append(button)
 
-
     def makeLocationButton(self, index: int, location: LocationCategory):
         locationName = location.get_display_name()
         command = lambda: self.setLocations(index, location)
@@ -336,3 +336,46 @@ class LocationPage(ShtikerPage.ShtikerPage):
         if not self.selectedLocation is None:
             self.locationButtons[self.selectedLocation]['state'] = DGG.NORMAL
         self.selectedLocation = index
+
+    def showLocationsOnscreen(self):
+
+        # Check if there is currently something already displaying in the hotkey interface slot
+        if not base.localAvatar.allowOnscreenInterface():
+            return
+
+        # We can now own the slot
+        base.localAvatar.setCurrentOnscreenInterface(self)
+        messenger.send('wakeup')
+
+        self.enter()
+        self.reparentTo(aspect2d)
+        self.book.show()
+        self.book.setZ(self.book.getZ() - 0.11)
+        self.book.hidePageArrows()
+        self.book.ignore(ToontownGlobals.StickerBookPageLeft)
+        self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.show()
+
+    def hideLocationsOnscreen(self):
+
+        # If the current onscreen interface is not us, don't do anything
+        if base.localAvatar.getCurrentOnscreenInterface() is not self:
+            return
+
+        base.localAvatar.setCurrentOnscreenInterface(None)  # Free up the on screen interface slot
+
+        self.reparentTo(self.book)
+        self.book.hide()
+        self.book.setZ(self.book.getZ() + 0.11)
+        self.book.showPageArrows()
+        self.book.ignore(ToontownGlobals.StickerBookPageLeft)
+        self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.hide()
+
+    def acceptOnscreenHooks(self):
+        self.accept(ToontownGlobals.LocationsHotkeyOn, self.showLocationsOnscreen)
+        self.accept(ToontownGlobals.LocationsHotkeyOff, self.hideLocationsOnscreen)
+
+    def ignoreOnscreenHooks(self):
+        self.ignore(ToontownGlobals.LocationsHotkeyOn)
+        self.ignore(ToontownGlobals.LocationsHotkeyOff)
