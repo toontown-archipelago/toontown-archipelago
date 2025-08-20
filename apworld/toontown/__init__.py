@@ -105,6 +105,13 @@ class ToontownWorld(World):
             self.options.starting_gags.value = list(self.options.web_starting_gags.value) + ["randomized"] * self.options.web_random_gags.value
         if self.options.win_condition.value == self.options.win_condition.default:
             self.options.win_condition.value = self.convert_web_win_conditions()
+            
+        # We picked a randomized omitted gag, set to something new
+        if self.options.omit_gag.value == 6:
+            self.options.omit_gag.value = random.randint(1, 5)
+        # We picked a random single target gag to omit, set to something new
+        elif self.options.omit_gag.value == 7:
+            self.options.omit_gag.value = random.choice([1, 3, 4, 5])
 
         # Calculate what our starting gag tracks should be
         startingTracks = self.calculate_starting_tracks(self.options.starting_gags.value)
@@ -268,8 +275,8 @@ class ToontownWorld(World):
             self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.startingTracks[1])
 
         if self.options.omit_gag.value != 0 and self.options.gag_tracks_required.value >= 7:
-                self.options.gag_tracks_required.value = 6
-                logging.warning("Required Gag Tracks for goal is 7, but we omitted a Gag. Setting to 6.")
+            self.options.gag_tracks_required.value = 6
+            logging.warning("Required Gag Tracks for goal is 7, but we omitted a Gag. Setting to 6.")
 
         # Force bounty placements
         if "bounties" in self.options.win_condition.value:
