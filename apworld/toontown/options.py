@@ -89,6 +89,8 @@ class OmitGagOption(Choice):
     throw: Never receive Throw Gags
     squirt: Never receive Squirt Gags
     drop: Never receive Drop Gags
+    randomized: Pick a random Gag track to not receive during the seed
+    randomsingle: Pick a random single target Gag track to not receive during the seed
     """
     display_name = "Omit Offensive Gag Track"
     option_none = 0
@@ -97,6 +99,8 @@ class OmitGagOption(Choice):
     option_throw = 3
     option_squirt = 4
     option_drop = 5
+    option_randomized = 6
+    option_randomsingle = 7
     default = 0
 
 
@@ -753,7 +757,7 @@ class DamageWeightOption(Range):
     display_name = "Damage Trap Weight"
     range_start = 0
     range_end = 100
-    default = 100
+    default = 80
 
 
 class BeanWeightOption(Range):

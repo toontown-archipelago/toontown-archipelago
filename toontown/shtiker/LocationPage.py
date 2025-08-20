@@ -3,6 +3,7 @@ from . import ShtikerPage
 from apworld.toontown import locations, options, fish, test_location, ToontownWinCondition
 from BaseClasses import MultiWorld
 from toontown.toonbase import TTLocalizer
+from toontown.toonbase import ToontownGlobals
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.archipelago.definitions import util
@@ -127,6 +128,15 @@ class LocationPage(ShtikerPage.ShtikerPage):
         # Determine forbidden location types.
         forbidden_location_types: set[locations.ToontownLocationType] = self.get_disabled_location_types()
 
+        training_types = [
+            locations.ToontownLocationType.SUPPORT_GAG_TRAINING,
+            locations.ToontownLocationType.TRAP_GAG_TRAINING,
+            locations.ToontownLocationType.SOUND_GAG_TRAINING,
+            locations.ToontownLocationType.THROW_GAG_TRAINING,
+            locations.ToontownLocationType.SQUIRT_GAG_TRAINING,
+            locations.ToontownLocationType.DROP_GAG_TRAINING,
+        ]
+
         for location_data in locations.LOCATION_DEFINITIONS:
             # Do we need to track this location based on settings?
             if location_data.type in forbidden_location_types:
@@ -170,7 +180,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
-            elif location_data.type == locations.ToontownLocationType.GAG_TRAINING:
+            elif location_data.type in training_types:
                 name = location_data.rules[0].name
                 name = re.sub(r'(?<=\B)([A-Z])', r' \1', name).rsplit(" ", 1)[0] + " Training"
                 obj = missingLocations.get(name, LocationCategory(name))
@@ -314,7 +324,6 @@ class LocationPage(ShtikerPage.ShtikerPage):
             button = self.makeLocationButton(index, location)
             self.locationButtons.append(button)
 
-
     def makeLocationButton(self, index: int, location: LocationCategory):
         locationName = location.get_display_name()
         command = lambda: self.setLocations(index, location)
@@ -327,3 +336,46 @@ class LocationPage(ShtikerPage.ShtikerPage):
         if not self.selectedLocation is None:
             self.locationButtons[self.selectedLocation]['state'] = DGG.NORMAL
         self.selectedLocation = index
+
+    def showLocationsOnscreen(self):
+
+        # Check if there is currently something already displaying in the hotkey interface slot
+        if not base.localAvatar.allowOnscreenInterface():
+            return
+
+        # We can now own the slot
+        base.localAvatar.setCurrentOnscreenInterface(self)
+        messenger.send('wakeup')
+
+        self.enter()
+        self.reparentTo(aspect2d)
+        self.book.show()
+        self.book.setZ(self.book.getZ() - 0.11)
+        self.book.hidePageArrows()
+        self.book.ignore(ToontownGlobals.StickerBookPageLeft)
+        self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.show()
+
+    def hideLocationsOnscreen(self):
+
+        # If the current onscreen interface is not us, don't do anything
+        if base.localAvatar.getCurrentOnscreenInterface() is not self:
+            return
+
+        base.localAvatar.setCurrentOnscreenInterface(None)  # Free up the on screen interface slot
+
+        self.reparentTo(self.book)
+        self.book.hide()
+        self.book.setZ(self.book.getZ() + 0.11)
+        self.book.showPageArrows()
+        self.book.ignore(ToontownGlobals.StickerBookPageLeft)
+        self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.hide()
+
+    def acceptOnscreenHooks(self):
+        self.accept(ToontownGlobals.LocationsHotkeyOn, self.showLocationsOnscreen)
+        self.accept(ToontownGlobals.LocationsHotkeyOff, self.hideLocationsOnscreen)
+
+    def ignoreOnscreenHooks(self):
+        self.ignore(ToontownGlobals.LocationsHotkeyOn)
+        self.ignore(ToontownGlobals.LocationsHotkeyOff)

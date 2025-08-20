@@ -219,7 +219,7 @@ class PetshopGUI(DirectObject):
                 rng = random.Random()
                 rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting
-                cost = rng.randint((baseCost-500), (baseCost+1000))
+                cost = rng.randint((baseCost + ToontownGlobals.PRICE_RANDO_MIN), (baseCost + ToontownGlobals.PRICE_RANDO_MAX))
             else:
                 cost = baseCost
             model = loader.loadModel('phase_4/models/gui/AdoptPet')
@@ -353,7 +353,7 @@ class PetshopGUI(DirectObject):
                 rng = random.Random()
                 rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting
-                cost = rng.randint((baseCost - 500), (baseCost + 1250))
+                cost = rng.randint((baseCost + ToontownGlobals.PRICE_RANDO_MIN), (baseCost + ToontownGlobals.PRICE_RANDO_MAX))
             else:
                 cost = baseCost
             self.petName.append(self.getItemName())

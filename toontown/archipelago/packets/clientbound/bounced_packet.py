@@ -1,3 +1,4 @@
+import math
 from typing import List, Dict, Any
 
 from toontown.archipelago.packets.serverbound.bounce_packet import BouncePacket
@@ -81,9 +82,12 @@ class BouncedPacket(ClientBoundPacketBase):
                 MinimalJsonMessagePart("You feel your happiness draining because "),
                 MinimalJsonMessagePart(f"{death_component}", color='salmon')
             ])
-            self.hpDrained = 0
-            self.startHp = toon.getHp()
-            taskMgr.doMethodLater(0.33, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
+            self.hpToDrain = toon.getHp()
+            self.drainRate = 0.33
+            # We'll take 0.01 seconds off each tick for each 10 laff we are going to drain
+            rateToRemove = 0.015 * (self.hpToDrain/10)
+            self.drainRate = max(0.01, (0.33 - rateToRemove))
+            taskMgr.doMethodLater(self.drainRate, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
         else:
             # This should not happen! But just in case.
             msg = global_text_properties.get_raw_formatted_string([
@@ -97,9 +101,9 @@ class BouncedPacket(ClientBoundPacketBase):
         if toon.getHp() == 1:
             toon.setDeathReason(DeathReason.DEATHLINK)
         toon.takeDamage(1)
-        self.hpDrained += 1
-        if toon.getHp() > 0 and self.hpDrained != self.startHp:
-            taskMgr.doMethodLater(0.33, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
+        self.hpToDrain -= 1
+        if toon.getHp() > 0 and self.hpToDrain > 0:
+            taskMgr.doMethodLater(self.drainRate, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
 
     def handle_ringlink(self, client):
         self.debug("Received ringlink packet")
