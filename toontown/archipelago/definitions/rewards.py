@@ -615,12 +615,17 @@ class DamageTrapAward(APReward):
         amountPercent = self.amount/100
         # Deal at least 1 damage
         damage = max(1, math.floor(amountPercent * av.getMaxHp()))
+        kill_threshold = math.floor(av.getMaxHp() * 0.1)
         if damage >= av.getHp():
-            # Means we won't kill the player unless we're already at 1 HP
-            damage = max(1, (av.getHp()-1))
+            # Means we won't kill the player unless we're under 10% hp
+            if av.getHp() <= kill_threshold:
+                damage = av.getHp()
+            # Leave the player at 1 since we were at over 10%
+            else:
+                damage = max(1, (av.getHp() - 1))
         if av.getHp() > 0:
-            # If we're at 1, we die
-            if av.getHp() == 1:
+            # If we're under threshold, we die
+            if av.getHp() <= kill_threshold:
                 av.setDeathReason(DeathReason.DAMAGE_TRAP)
             av.takeDamage(damage)
         av.playSound('phase_4/audio/sfx/oof.ogg')

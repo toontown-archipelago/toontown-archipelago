@@ -757,7 +757,7 @@ class DamageWeightOption(Range):
     display_name = "Damage Trap Weight"
     range_start = 0
     range_end = 100
-    default = 100
+    default = 80
 
 
 class BeanWeightOption(Range):

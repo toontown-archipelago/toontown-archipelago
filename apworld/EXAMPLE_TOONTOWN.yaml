@@ -319,7 +319,7 @@ Toontown:
   drip_trap_weight: 50
   bean_tax_weight: 42
   gag_shuffle_weight: 80
-  damage_trap_weight: 100
+  damage_trap_weight: 80
 
   ### General Gameplay Settings ###
 
