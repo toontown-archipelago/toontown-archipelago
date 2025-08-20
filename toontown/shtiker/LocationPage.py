@@ -127,6 +127,15 @@ class LocationPage(ShtikerPage.ShtikerPage):
         # Determine forbidden location types.
         forbidden_location_types: set[locations.ToontownLocationType] = self.get_disabled_location_types()
 
+        training_types = [
+            locations.ToontownLocationType.SUPPORT_GAG_TRAINING,
+            locations.ToontownLocationType.TRAP_GAG_TRAINING,
+            locations.ToontownLocationType.SOUND_GAG_TRAINING,
+            locations.ToontownLocationType.THROW_GAG_TRAINING,
+            locations.ToontownLocationType.SQUIRT_GAG_TRAINING,
+            locations.ToontownLocationType.DROP_GAG_TRAINING,
+        ]
+
         for location_data in locations.LOCATION_DEFINITIONS:
             # Do we need to track this location based on settings?
             if location_data.type in forbidden_location_types:
@@ -170,7 +179,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
-            elif location_data.type == locations.ToontownLocationType.GAG_TRAINING:
+            elif location_data.type in training_types:
                 name = location_data.rules[0].name
                 name = re.sub(r'(?<=\B)([A-Z])', r' \1', name).rsplit(" ", 1)[0] + " Training"
                 obj = missingLocations.get(name, LocationCategory(name))
