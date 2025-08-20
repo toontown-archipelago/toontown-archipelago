@@ -357,7 +357,9 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
     if not npc:
         multiplier = experience.getUberDamageBonus(attackTrack, overflowMod=overflowMod)
         damage *= multiplier
-        damage *= toonDamageMultiplier / 100
+        # Lure does not get affected by damage modifier settings
+        if attackTrack != 2:
+            damage *= toonDamageMultiplier / 100
 
     if propAndOrganicBonusStack:
         originalDamage = damage
