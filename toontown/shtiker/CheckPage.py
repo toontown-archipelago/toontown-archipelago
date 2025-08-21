@@ -405,16 +405,18 @@ class CheckPage(ShtikerPage.ShtikerPage):
             if itemName == "Bounty":
                 bounties.append(button[1])
                 continue
+            # List of the different progression types so we can display properly
+            progressionItemTypes = [0b00001, 0b11001, 0b01001, 0b10001]
             if "Key" in itemName or "Disguise" in itemName:
                 if "Access" in itemName:
                     progressionItems.append(button[1])
                     continue
                 keyItems.append(button[1])
                 continue
-            if itemDef.classification == 0b0001:  # Progression Items
+            if itemDef.classification in progressionItemTypes:  # Progression Items
                 if button[1] not in (progressionItems + keyItems):  # Make sure item isn't already in one of these
                     progressionItems.append(button[1])
-            elif itemDef.classification == 0b0010:  # Useful Items
+            elif itemDef.classification == 0b00010:  # Useful Items
                 usefulItems.append(button[1])
             else:
                 junkItems.append(button[1])
