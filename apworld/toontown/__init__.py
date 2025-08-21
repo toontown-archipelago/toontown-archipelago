@@ -619,6 +619,11 @@ class ToontownWorld(World):
             for location in self.multiworld.get_locations()
             if location.address and location.item and location.item.code and location.item.player == self.player
         ]
+        # Check for our item links as well
+        if self.options.item_links.value:
+            for link in self.options.item_links.value:
+                for item in link["item_pool"]:
+                    local_itempool.append(self.item_name_to_id[item])
 
         local_locations = [
             [location.unique_id, location.name.value]
@@ -701,7 +706,8 @@ class ToontownWorld(World):
             "max_gag_xp": self.options.max_global_gag_xp.value,
             "damage_trap_weight": self.options.damage_trap_weight.value,
             "heal_weight": self.options.heal_weight.value,
-            "random_prices": self.options.random_prices.value
+            "random_prices": self.options.random_prices.value,
+            "item_links": self.options.item_links.value,
         }
 
     def calculate_starting_tracks(self, starting_gags: list):

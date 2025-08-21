@@ -89,6 +89,16 @@ class HintNode(DirectFrame):
             self.externalHint = False
             hints: List[HintedItem] = hintContainer.getHintsForItemAndSlot(checkDef.unique_id, localToonInformation.slotId)
 
+            # A bit hacky, but we should get the mark the icon for our linked items as well
+            if base.localAvatar.slotData.get("item_links", None):
+                allLinkNames = []
+                for link in base.localAvatar.slotData.get("item_links", None):
+                    allLinkNames.append(link["name"])
+                allHints = hintContainer.getHintsForItem(checkDef.unique_id)
+                for hint in allHints:
+                    if hint.asking_name in allLinkNames:
+                        hints.append(hint)
+
         # Using our hints we have so far, start constructing text to show that
         foundHints = []
         lostHints = []
@@ -396,11 +406,10 @@ class CheckPage(ShtikerPage.ShtikerPage):
                               ToontownItemName.TB_ACCESS.value,  ToontownItemName.DDL_ACCESS.value]
             cogKeys = [ToontownItemName.SBHQ_ACCESS.value, ToontownItemName.CBHQ_ACCESS.value,
                        ToontownItemName.LBHQ_ACCESS.value, ToontownItemName.BBHQ_ACCESS.value]
-            if base.localAvatar.slotData.get("tpsanity", 0) == TPSanity.option_none:
-                if itemName in playgroundKeys:
-                    quantity = 2
-                if itemName in cogKeys and base.localAvatar.slotData.get("facility_locking", 0) == FacilityLocking.option_access:
-                    quantity = 2
+            if itemName in playgroundKeys:
+                quantity = 2
+            if itemName in cogKeys and base.localAvatar.slotData.get("facility_locking", 0) == FacilityLocking.option_access:
+                quantity = 2
             button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
             if itemName == "Bounty":
                 bounties.append(button[1])
@@ -448,6 +457,16 @@ class CheckPage(ShtikerPage.ShtikerPage):
         if base.cr.archipelagoManager is not None and (localToonInformation := base.cr.archipelagoManager.getLocalInformation()) is not None:
             if len(base.localAvatar.getHintContainer().getHintsForItemAndSlot(itemDef.unique_id, localToonInformation.slotId)) >= 1:
                 isHinted = True
+            # A bit hacky, but we should get the hints for our linked items as well
+            if base.localAvatar.slotData.get("item_links", None):
+                allLinkNames = []
+                for link in base.localAvatar.slotData.get("item_links", None):
+                    allLinkNames.append(link["name"])
+                allHints = base.localAvatar.hintContainer.getHintsForItem(itemDef.unique_id)
+                for hint in allHints:
+                    if hint.asking_name in allLinkNames:
+                        isHinted = True
+
         if isHinted:
             geomToUse = hinted
         else:
