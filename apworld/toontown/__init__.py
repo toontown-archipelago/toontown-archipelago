@@ -502,7 +502,17 @@ class ToontownWorld(World):
                 self.multiworld.push_precollected(self.create_item(frame.value))
 
         # Dynamically generate gag upgrades.
+        OMIT_VALUE_TO_GAG_UPGRADES = {
+            1: ToontownItemName.TRAP_UPGRADE,
+            2: ToontownItemName.SOUND_UPGRADE,
+            3: ToontownItemName.THROW_UPGRADE,
+            4: ToontownItemName.SQUIRT_UPGRADE,
+            5: ToontownItemName.DROP_UPGRADE
+        }
         for upgrade in items.GAG_UPGRADES:
+            if self.options.omit_gag.value != 0:
+                if upgrade == OMIT_VALUE_TO_GAG_UPGRADES[self.options.omit_gag.value]:
+                    continue
             pool.append(self.create_item(upgrade.value))
 
         # Dynamically generate training multipliers.
