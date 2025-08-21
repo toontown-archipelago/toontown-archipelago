@@ -436,6 +436,7 @@ class ToontownChatManager(ChatManager.ChatManager):
 
     def __apButtonPressed(self):
         if not self.apGuiToggled:
+            self.apGui.updateFields()
             self.apGui.show()
             self.apGuiToggled = True
             self.apButton['text'] = "Hide Panel"

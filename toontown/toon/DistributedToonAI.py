@@ -244,6 +244,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.deathReason: DeathReason = DeathReason.UNKNOWN
         self.slotData = {}  # set in connected_packet.py
         self.winCondition = win_condition.NoWinCondition(self)
+        self.slotName = ""
+        self.archipelagoIP = "archipelago.gg:"
 
     def generate(self):
         DistributedPlayerAI.DistributedPlayerAI.generate(self)
@@ -1851,6 +1853,32 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def playSound(self, sound):
         self.sendUpdate('playSound', [sound])
 
+    def b_setSlotName(self, slotName):
+        self.setSlotName(slotName)
+        self.d_setSlotName(slotName)
+
+    def d_setSlotName(self, slotName):
+        self.sendUpdate('setSlotName', [slotName])
+
+    def setSlotName(self, slotName):
+        self.slotName = slotName
+
+    def getSlotName(self):
+        return self.slotName
+
+    def b_setArchipelagoIP(self, archipelagoIP):
+        self.setArchipelagoIP(archipelagoIP)
+        self.d_setArchipelagoIP(archipelagoIP)
+
+    def d_setArchipelagoIP(self, archipelagoIP):
+        self.sendUpdate('setArchipelagoIP', [archipelagoIP])
+
+    def setArchipelagoIP(self, archipelagoIP):
+        self.archipelagoIP = archipelagoIP
+
+    def getArchipelagoIP(self):
+        return self.archipelagoIP
+
     def b_setTrackAccess(self, trackArray):
         self.setTrackAccess(trackArray)
         self.d_setTrackAccess(trackArray)
@@ -3275,30 +3303,58 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         return ['badlocation', suitIndex, 0]
 
-    def doBuildingTakeover(self, suitIndex):
+    def doBuildingTakeover(self, suitIndex, chosenType=None, floors=None):
         streetId = ZoneUtil.getBranchZone(self.zoneId)
         if streetId not in self.air.suitPlanners:
             self.notify.warning('Street %d is not known.' % streetId)
-            return ['badlocation', suitIndex, 0]
+            if suitIndex:
+                return ['badlocation', suitIndex, 0]
+            else:
+                return ['badlocation', 0]
         sp = self.air.suitPlanners[streetId]
         bm = sp.buildingMgr
         building = self.findClosestDoor()
         if building == None:
-            return ['badlocation', suitIndex, 0]
+            if suitIndex:
+                return ['badlocation', suitIndex, 0]
+            else:
+                return ['badlocation', 0]
         level = None
-        if suitIndex >= len(SuitDNA.suitHeadTypes):
-            self.notify.warning('Bad suit index: %s' % suitIndex)
-            return ['badIndex', suitIndex, 0]
-        suitName = SuitDNA.suitHeadTypes[suitIndex]
-        track = SuitDNA.getSuitDept(suitName)
-        type = SuitDNA.getSuitType(suitName)
-        level, type, track = sp.pickLevelTypeAndTrack(None, type, track)
-        building.suitTakeOver(track, level, None)
+        if suitIndex:
+            if suitIndex >= len(SuitDNA.suitHeadTypes):
+                self.notify.warning('Bad suit index: %s' % suitIndex)
+                return ['badIndex', suitIndex, 0]
+            suitName = SuitDNA.suitHeadTypes[suitIndex]
+            track = SuitDNA.getSuitDept(suitName)
+            type = SuitDNA.getSuitType(suitName)
+            level, type, track = sp.pickLevelTypeAndTrack(None, type, track)
+            building.suitTakeOver(track, level, None)
+        else:
+            track = chosenType
+            # Since this is being summoned with a specified floor count and we don't have a cog for reference,
+            # We have to figure out the difficulty with the logical difficulty range for the count.
+            if floors == 1:
+                level = random.randint(0, 2)
+            elif floors == 2:
+                level = random.randint(1, 4)
+            elif floors == 3:
+                level = random.randint(2, 6)
+            elif floors == 4:
+                level = random.randint(4, 7)
+            elif floors == 5:
+                level = random.randint(6, 8)
+            else:
+                level = random.randint(0, 8)
+            floorCount = floors
+            building.suitTakeOver(track, level, floorCount, True)
         self.notify.warning('cogTakeOver %s %s %d %d' % (track,
                                                          level,
                                                          building.block,
                                                          self.zoneId))
-        return ['success', suitIndex, building.doId]
+        if suitIndex:
+            return ['success', suitIndex, building.doId]
+        else:
+            return ['success', building.doId]
 
     def doCogInvasion(self, suitIndex):
         invMgr = self.air.suitInvasionManager
