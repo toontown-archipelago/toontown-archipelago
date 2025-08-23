@@ -1649,12 +1649,16 @@ class GrowFlowers(MagicWord):
     accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1677,12 +1681,16 @@ class PickAllFlowers(MagicWord):
     accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1707,12 +1715,16 @@ class GrowTrees(MagicWord):
         index = args[1]
         grown = args[2]
 
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1747,12 +1759,16 @@ class PickTrees(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         track = args[0]
         index = args[1]
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1789,11 +1805,15 @@ class FlowerAll(MagicWord):
         species = args[0]
         variety = args[1]
 
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1837,6 +1857,17 @@ class MaxDoodle(MagicWord):
 
         pet.b_setTrickAptitudes([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         return "Maxed your doodle!"
+
+class AwardGardenKit(MagicWord):
+    desc = "Awards the target a new garden kit if they meet the requirements."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.estate.GardenKitManagerAI import GardenKitManagerAI
+        gardenKitManager = GardenKitManagerAI(self.air)
+        gardenKitManager.awardGardenKit(avId)
+        return "Awarded garden kit to %s." % toon.getName()
 
 
 class LeaveRace(MagicWord):
@@ -3014,6 +3045,17 @@ class FreeBldg(MagicWord):
             return "Toons are currently taking back the building!"
         return "Couldn't free building."
 
+class StartGarden(MagicWord):
+    aliases = ["garden"]
+    desc = "Starts a garden on the target."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        if toon.getGardenStarted():
+            return "You already have a garden!"
+        toon.b_setGardenStarted(True)
+        return "Started a garden for %s!" % toon.getName()
 
 class MaxGarden(MagicWord):
     desc = "Maxes your garden."
