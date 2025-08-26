@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 import json
 from typing import Union, Any
 from pathlib import Path
@@ -24,6 +24,7 @@ class ControlSettings:
     INVENTORY_HOTKEY: str = "home"
     QUEST_HOTKEY: str = "end"
     GALLERY_HOTKEY: str = "g"
+    LOCATIONS_HOTKEY: str = "v"
     CRANE_GRAB_KEY: str = "control"
     ACTION_BUTTON: str = "delete"
     SECONDARY_ACTION: str = "insert"
@@ -111,7 +112,9 @@ class Settings:
         return asdict(self.controls)
 
     def updateControls(self, controls: dict[str, str]) -> None:
-        self.controls = ControlSettings(**controls)
+        # Ensure that extra controls in our list dont crash (typically for going back to a previous version)
+        valid_args = {f.name: controls[f.name] for f in fields(ControlSettings) if f.name in controls}
+        self.controls = ControlSettings(**valid_args)
         self.set("controls", asdict(self.controls))
 
     def write(self) -> None:

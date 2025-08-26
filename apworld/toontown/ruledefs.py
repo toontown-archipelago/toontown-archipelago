@@ -560,34 +560,35 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
     return any(state.can_reach(pg.value, None, player) for pg in pgs) \
            and passes_rule(gag_rule, state, locentr, world, player, options)
 
-@rule(Rule.CanMaxTierOneSellbot, 1, ToontownRegionName.SBHQ, Rule.TierOneCogs)
-@rule(Rule.CanMaxTierOneCashbot, 1, ToontownRegionName.CBHQ, Rule.TierOneCogs)
-@rule(Rule.CanMaxTierOneLawbot,  1, ToontownRegionName.LBHQ, Rule.TierOneCogs)
-@rule(Rule.CanMaxTierOneBossbot, 1, ToontownRegionName.BBHQ, Rule.TierOneCogs)
-@rule(Rule.CanMaxTierTwoSellbot, 2, ToontownRegionName.SBHQ, Rule.TierTwoCogs)
-@rule(Rule.CanMaxTierTwoCashbot, 2, ToontownRegionName.CBHQ, Rule.TierTwoCogs)
-@rule(Rule.CanMaxTierTwoLawbot,  2, ToontownRegionName.LBHQ, Rule.TierTwoCogs)
-@rule(Rule.CanMaxTierTwoBossbot, 2, ToontownRegionName.BBHQ, Rule.TierTwoCogs)
-@rule(Rule.CanMaxTierThreeSellbot, 3, ToontownRegionName.SBHQ, Rule.TierThreeCogs)
-@rule(Rule.CanMaxTierThreeCashbot, 3, ToontownRegionName.CBHQ, Rule.TierThreeCogs)
-@rule(Rule.CanMaxTierThreeLawbot,  3, ToontownRegionName.LBHQ, Rule.TierThreeCogs)
-@rule(Rule.CanMaxTierThreeBossbot, 3, ToontownRegionName.BBHQ, Rule.TierThreeCogs)
-@rule(Rule.CanMaxTierFourSellbot, 4, ToontownRegionName.SBHQ, Rule.TierFourSellbot)
-@rule(Rule.CanMaxTierFourCashbot, 4, ToontownRegionName.CBHQ, Rule.TierFourCashbot)
-@rule(Rule.CanMaxTierFourLawbot,  4, ToontownRegionName.LBHQ, Rule.TierFourLawbot)
-@rule(Rule.CanMaxTierFourBossbot, 4, ToontownRegionName.BBHQ, Rule.TierFourBossbot)
-@rule(Rule.CanMaxTierFiveSellbot, 5, ToontownRegionName.SBHQ, Rule.TierFiveSellbot)
-@rule(Rule.CanMaxTierFiveCashbot, 5, ToontownRegionName.CBHQ, Rule.TierFiveCashbot)
-@rule(Rule.CanMaxTierFiveLawbot,  5, ToontownRegionName.LBHQ, Rule.TierFiveLawbot)
-@rule(Rule.CanMaxTierFiveBossbot, 5, ToontownRegionName.BBHQ, Rule.TierFiveBossbot)
-@rule(Rule.CanMaxTierSixSellbot, 6, ToontownRegionName.SBHQ, Rule.TierSixSellbot)
-@rule(Rule.CanMaxTierSixCashbot, 6, ToontownRegionName.CBHQ, Rule.TierSixCashbot)
-@rule(Rule.CanMaxTierSixLawbot,  6, ToontownRegionName.LBHQ, Rule.TierSixLawbot)
-@rule(Rule.CanMaxTierSixBossbot, 6, ToontownRegionName.BBHQ, Rule.TierSixBossbot)
-@rule(Rule.CanMaxTierEightSellbot, 8, ToontownRegionName.SBHQ, Rule.TierEightSellbot)
-@rule(Rule.CanMaxTierEightCashbot, 8, ToontownRegionName.CBHQ, Rule.TierEightCashbot)
-@rule(Rule.CanMaxTierEightLawbot,  8, ToontownRegionName.LBHQ, Rule.TierEightLawbot)
-@rule(Rule.CanMaxTierEightBossbot, 8, ToontownRegionName.BBHQ, Rule.TierEightBossbot)
+
+@rule(Rule.CanMaxTierOneSellbot, 1, ToontownRegionName.SBHQ)
+@rule(Rule.CanMaxTierOneCashbot, 1, ToontownRegionName.CBHQ)
+@rule(Rule.CanMaxTierOneLawbot,  1, ToontownRegionName.LBHQ)
+@rule(Rule.CanMaxTierOneBossbot, 1, ToontownRegionName.BBHQ)
+@rule(Rule.CanMaxTierTwoSellbot, 2, ToontownRegionName.SBHQ)
+@rule(Rule.CanMaxTierTwoCashbot, 2, ToontownRegionName.CBHQ)
+@rule(Rule.CanMaxTierTwoLawbot,  2, ToontownRegionName.LBHQ)
+@rule(Rule.CanMaxTierTwoBossbot, 2, ToontownRegionName.BBHQ)
+@rule(Rule.CanMaxTierThreeSellbot, 3, ToontownRegionName.SBHQ)
+@rule(Rule.CanMaxTierThreeCashbot, 3, ToontownRegionName.CBHQ)
+@rule(Rule.CanMaxTierThreeLawbot,  3, ToontownRegionName.LBHQ)
+@rule(Rule.CanMaxTierThreeBossbot, 3, ToontownRegionName.BBHQ)
+@rule(Rule.CanMaxTierFourSellbot, 4, ToontownRegionName.SBHQ)
+@rule(Rule.CanMaxTierFourCashbot, 4, ToontownRegionName.CBHQ)
+@rule(Rule.CanMaxTierFourLawbot,  4, ToontownRegionName.LBHQ)
+@rule(Rule.CanMaxTierFourBossbot, 4, ToontownRegionName.BBHQ)
+@rule(Rule.CanMaxTierFiveSellbot, 5, ToontownRegionName.SBHQ)
+@rule(Rule.CanMaxTierFiveCashbot, 5, ToontownRegionName.CBHQ)
+@rule(Rule.CanMaxTierFiveLawbot,  5, ToontownRegionName.LBHQ)
+@rule(Rule.CanMaxTierFiveBossbot, 5, ToontownRegionName.BBHQ)
+@rule(Rule.CanMaxTierSixSellbot, 6, ToontownRegionName.SBHQ)
+@rule(Rule.CanMaxTierSixCashbot, 6, ToontownRegionName.CBHQ)
+@rule(Rule.CanMaxTierSixLawbot,  6, ToontownRegionName.LBHQ)
+@rule(Rule.CanMaxTierSixBossbot, 6, ToontownRegionName.BBHQ)
+@rule(Rule.CanMaxTierEightSellbot, 8, ToontownRegionName.SBHQ)
+@rule(Rule.CanMaxTierEightCashbot, 8, ToontownRegionName.CBHQ)
+@rule(Rule.CanMaxTierEightLawbot,  8, ToontownRegionName.LBHQ)
+@rule(Rule.CanMaxTierEightBossbot, 8, ToontownRegionName.BBHQ)
 def CanMaxCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
         max_gallery = options.maxed_cog_gallery_quota.value
@@ -596,7 +597,7 @@ def CanMaxCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
 
     # Our gallery is only one, we don't need special max gallery logic
     if max_gallery == 1:
-        return passes_rule(argument[2], state, locentr, world, player, options)
+        return True
 
     CanFrontFactory = passes_rule(Rule.FrontFactoryKey, state, locentr, world, player, options) \
                       and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
@@ -818,7 +819,8 @@ def CanMaxCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
     # Add area/dept specific rules
     if argument[1]:
         rules.extend(tier_info[argument[1]])
-    return passes_rule(argument[2], state, locentr, world, player, options) and any(rules)
+    return any(rules)
+
 
 @rule(Rule.OneStory, 1)
 @rule(Rule.TwoStory, 2)

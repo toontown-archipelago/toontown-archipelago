@@ -1,4 +1,5 @@
 # Contains data that maps IDs to item names and location names
+from sys import platform
 from typing import Dict, Union
 
 import json
@@ -13,11 +14,20 @@ class DataPackage:
         self.id_to_item_name: Dict[int, str] = {}
         self.id_to_location_name: Dict[int, str] = {}
 
-    def get_item_from_id(self, item_id: Union[int, str]) -> str:
-        return self.id_to_item_name.get(int(item_id), f'Unknown Item[{item_id}]')
+    #encode names to ascii on platforms other than windows, due to astron causing crashes.
+    if platform == 'win32':
+        def get_item_from_id(self, item_id: Union[int, str]) -> str:
+            return self.id_to_item_name.get(int(item_id), f'Unknown Item[{item_id}]')
 
-    def get_location_from_id(self, location_id: Union[int, str]) -> str:
-        return self.id_to_location_name.get(int(location_id), f'Unknown Location[{location_id}]')
+        def get_location_from_id(self, location_id: Union[int, str]) -> str:
+            return self.id_to_location_name.get(int(location_id), f'Unknown Location[{location_id}]')
+
+    else:
+        def get_item_from_id(self, item_id: Union[int, str]) -> str:
+            return self.id_to_item_name.get(int(item_id), f'Unknown Item[{item_id}]').encode('ascii', 'replace').decode()
+
+        def get_location_from_id(self, location_id: Union[int, str]) -> str:
+            return self.id_to_location_name.get(int(location_id), f'Unknown Location[{location_id}]').encode('ascii', 'replace').decode()
 
     @classmethod
     def load(cls, name: str, data: Dict[str, any]):

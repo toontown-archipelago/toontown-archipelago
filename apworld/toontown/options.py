@@ -30,6 +30,9 @@ class StartGagOption(OptionList):
     valid keys: {"randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"}
     ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks.
     ex. ["sound"] will start you with only sound as a starting track.
+    Note: You can add "wild" to this list in order to remove any sanity/logic behind randomized gag choices (being able to do damage)
+    (cont.) This will allow for gag combinations such as ["trap", "toonup"] to be possible with randomization
+    ex. ['wild', 'randomized', 'randomized'] will roll two random tracks with no consideration
     An empty list will start you with no gag tracks.
     """
     display_name = "Starting Gags"
@@ -41,7 +44,8 @@ class StartGagOption(OptionList):
         "sound",
         "throw",
         "squirt",
-        "drop"
+        "drop",
+        "wild"
     }
     default = ["randomized", "randomized"]
     visibility = ~(Visibility.simple_ui|Visibility.complex_ui)
@@ -74,6 +78,30 @@ class StartGagRandomWeb(Range):
     range_end = 7
     default = 2
     visibility = Visibility.simple_ui|Visibility.complex_ui
+
+
+class OmitGagOption(Choice):
+    """
+    Choose an offensive gag track to not receive during the seed.
+    none (default): Receive all Gag tracks
+    trap: Never receive Trap Gags
+    sound: Never receive Sound Gags
+    throw: Never receive Throw Gags
+    squirt: Never receive Squirt Gags
+    drop: Never receive Drop Gags
+    randomized: Pick a random Gag track to not receive during the seed
+    randomsingle: Pick a random single target Gag track to not receive during the seed
+    """
+    display_name = "Omit Offensive Gag Track"
+    option_none = 0
+    option_trap = 1
+    option_sound = 2
+    option_throw = 3
+    option_squirt = 4
+    option_drop = 5
+    option_randomized = 6
+    option_randomsingle = 7
+    default = 0
 
 
 class MaxLaffOption(Range):
@@ -460,7 +488,14 @@ class LogicalTasksPerPlayground(Range):
 
 class StartingTaskOption(Choice):
     """
-    Determines the starting tasking PG of a player
+    Determines what the starting playground is for quests (includes TP access)
+    ttc: start with TTC access
+    dd: start with DD access
+    dg: start with DG access
+    mml: start with MML access
+    tb: start with TB access
+    ddl: start with DDL access
+    randomized: start with a randomized task access
     """
     display_name = "Starting Task Playground"
     option_ttc = 0
@@ -722,7 +757,7 @@ class DamageWeightOption(Range):
     display_name = "Damage Trap Weight"
     range_start = 0
     range_end = 100
-    default = 100
+    default = 80
 
 
 class BeanWeightOption(Range):
@@ -823,6 +858,7 @@ class ToontownOptions(PerGameCommonOptions):
     max_laff: MaxLaffOption
     starting_laff: StartLaffOption
     starting_gags: StartGagOption
+    omit_gag: OmitGagOption
     web_starting_gags: StartGagOptionWeb
     web_random_gags: StartGagRandomWeb
     base_global_gag_xp: BaseGlobalGagXPRange
@@ -896,7 +932,7 @@ toontown_option_groups: list[OptionGroup] = [
     ]),
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
-        StartGagOption, StartGagOptionWeb, StartGagRandomWeb,
+        StartGagOption, StartGagOptionWeb, StartGagRandomWeb, OmitGagOption,
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
         DamageMultiplierRange, OverflowModRange, StartMoneyOption, 
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,

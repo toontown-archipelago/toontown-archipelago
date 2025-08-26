@@ -430,6 +430,10 @@ class ShtikerBook(DirectFrame, StateData.StateData):
             self.prevArrow.hide()
             self.nextArrow.show()
 
+    def hidePageArrows(self):
+        self.prevArrow.hide()
+        self.nextArrow.hide()
+
     def __checkForNewsPage(self):
         from toontown.shtiker import NewsPage
         self.ignore(ToontownGlobals.StickerBookPageLeft)

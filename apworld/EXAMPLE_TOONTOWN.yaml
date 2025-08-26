@@ -38,10 +38,24 @@ Toontown:
   # you cannot start with gags above level 1, duplicate values other than "randomized" will be ignored.
   # 
   # valid keys: ["randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"]
-  # ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks
+  # ex. ["toonup", "sound"] will start you with toonup and sound as starting tracks
   # ex. ["sound"] will start you with only sound as a starting track
+  # Note: You can add "wild" to this list in order to remove any sanity/logic behind randomized gag choices (being able to do damage)
+  # (cont.) This will allow for gag combinations such as ["trap", "toonup"] to be possible with randomization
+  # ex. ['wild', 'randomized', 'randomized'] will roll two random tracks with no consideration
   # An empty list will start you with no gag tracks
   starting_gags: ['randomized', 'randomized']
+
+  # Choose an offensive gag track to not receive during the seed.
+  # none (default): Receive all Gag tracks
+  # trap: Never receive Trap Gags
+  # sound: Never receive Sound Gags
+  # throw: Never receive Throw Gags
+  # squirt: Never receive Squirt Gags
+  # drop: Never receive Drop Gags
+  # randomized: Pick a random Gag track to not receive during the seed
+  # randomsingle: Pick a random single target Gag track to not receive during the seed
+  omit_gag: 'none'
 
   # The percentage of damage that will be done when battling Cogs.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
@@ -305,7 +319,7 @@ Toontown:
   drip_trap_weight: 50
   bean_tax_weight: 42
   gag_shuffle_weight: 80
-  damage_trap_weight: 100
+  damage_trap_weight: 80
 
   ### General Gameplay Settings ###
 
@@ -323,11 +337,108 @@ Toontown:
   # If another player gains or loses money, you will also gain or lose that money.
   ring_link: 'false'
 
-  # Starting hints for Cog Disguises
+  ### Archipelago Extra Settings ###
+
+  ## ITEM GROUPS ##
+  # You can use these rather than the individual items for the following cases: #
+  # Cog Disguises - All Cog Boss disguises
+  # Facility Keys - All facility keys
+  # Access Keys - All Playground/Cog HQ access keys
+  # Gag Training Frame - All gag frames
+  # Gag Capacity Increase - All gag pouch increases
+  # Gag Training Boost - All gag experience multipliers
+  # Gag Upgrades - All organic gag boosts
+  # Fishing Licenses - All fishing access items
+  # Jellybean Capacity - All Jellybean jar upgrades
+  # Side Activity Keys - Golf and Racing access items
+  # Task Capacity - Task capacity upgrades
+  # Laff Boosts - All Laff Boosts
+  # Joke Books - All joke books
+  # Reward Bundles - All Boss Reward items
+  # Heals - All healing junk
+  # Jellybeans - All Jellybean junk
+  # Gag Exp Reward - All EXP Bundle junk
+  # Traps - All traps
+
+  # Starting hints for items in your world
+  # Includes Cog Disguises by default
   start_hints:
-    - Cog Disguises
+    [Cog Disguises]
+
+  local_items:
+    # Forces these items to be in your own game.
+    [ ]
+
+  non_local_items:
+    # Forces these items to be outside your game.
+    [ ]
+
+  start_inventory_from_pool:
+    # Start with these items and don't place them in the world.
+    # EXAMPLE
+    # {ItemName: quantity, ItemName2: quantity, ...}
+    { }
+
+  start_inventory:
+    # Start with these items, but they will still be in the pool.
+    # EXAMPLE
+    # {ItemName: quantity, ItemName2: quantity, ...}
+    { }
+
+  item_links:
+    # Share part of your item pool with other players.
+    # Every player that wants to link must have a copy of the same link in their own yaml
+    # EXAMPLE
+    # item_links:
+    #   - name: LinkName
+    #     item_pool:
+    #       - List Of
+    #       - Items Shared
+    #     replacement_item: ItemToReplaceLinkedItems
+    [ ]
+
+  ## LOCATION GROUPS ##
+  # You can use these rather than the individual locations for the following cases: #
+  # All Tasks - All ToonTask locations
+  # Fishing - All fishing locations
+  # Pet Shops - All doodle/pet shop locations
+  # Gag Training - All gag training locations
+  # Cog Gallery - All cog gallery locations
+  # Treasures - All AP treasure locations
+  # Boss Clears - All Cog Boss locations
+  # Toontown Central - All locations in TTC
+  # Donald's Dock - All locations in DD
+  # Daisy Gardens - All locations in DG
+  # Minnie's Melodyland - All locations in MML
+  # The Brrrgh - All locations in TB
+  # Donald's Dreamland - All locations in DDL
+  # Goofy Speedway - All locations in GS
+  # Acorn Acres - All locations in AA
+  # Sellbot HQ - All locations in SBHQ
+  # SBHQ Facilities - All locations in Factories
+  # Cashbot HQ - All locations in CBHQ
+  # CBHQ Facilities - All locations in Mints
+  # Lawbot HQ - All locations in LBHQ
+  # LBHQ Facilities - All locations in DA Offices
+  # Bossbot HQ - All locations in BBHQ
+  # BBHQ Facilities - All locations in Cog Golf Courses
+  # Buildings - All Cog Building completion locations
+  # Golfing - All minigolf locations
+  # Racing - All racing locations
+
+  start_location_hints:
+    # Start with these locations hinted in your world.
+    [ ]
+
+  priority_locations:
+    # These locations WILL have a progression item on them.
+    [ ]
+
+  exclude_locations:
+    # These locations CANNOT have a progression item.
+    [ ]
 
 game: Toontown
 requires:
-  version: 0.6.1
+  version: 0.6.3
 description: 'Default Toontown Template'

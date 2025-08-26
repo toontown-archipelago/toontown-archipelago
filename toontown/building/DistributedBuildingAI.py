@@ -108,7 +108,7 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
     def _getMinMaxFloors(self, difficulty):
         return SuitBuildingGlobals.SuitBuildingInfo[difficulty][0]
 
-    def suitTakeOver(self, suitTrack, difficulty, buildingHeight):
+    def suitTakeOver(self, suitTrack, difficulty, buildingHeight, forceHeight=False):
         if not self.isToonBlock():
             return
         self.updateSavedBy(None)
@@ -117,9 +117,13 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
         if buildingHeight == None:
             numFloors = random.randint(minFloors, maxFloors)
         else:
-            numFloors = buildingHeight + 1
-            if numFloors < minFloors or numFloors > maxFloors:
-                numFloors = random.randint(minFloors, maxFloors)
+            # We're summoning with a command, force the floor count
+            if forceHeight:
+                numFloors = buildingHeight
+            else:
+                numFloors = buildingHeight + 1
+                if numFloors < minFloors or numFloors > maxFloors:
+                    numFloors = random.randint(minFloors, maxFloors)
         self.track = suitTrack
         self.difficulty = difficulty
         self.numFloors = numFloors
