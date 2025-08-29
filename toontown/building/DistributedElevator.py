@@ -402,6 +402,7 @@ class DistributedElevator(DistributedObject.DistributedObject):
         return taskMgr.add(countdownTask, self.uniqueName('elevatorTimerTask'))
 
     def handleExitButton(self):
+        self.ignoreElevatorHotkey()
         localAvatar.lastElevatorLeft = self.elevatorTripId
         self.sendUpdate('requestExit')
 
@@ -491,6 +492,10 @@ class DistributedElevator(DistributedObject.DistributedObject):
         self.hint = self.clock.attachNewNode(self.hintNode)
         self.clock.setPosHprScale(0, 2.0, 7.5, 0, 0, 0, 2.0, 2.0, 2.0)
         self.hint.setPosHprScale(0, 0, -0.4, 0, 0, 0, 0.35, 0.35, 0.35)
+        if self.localToonOnBoard:
+            self.hint.show()
+        else:
+            self.hint.hide()
         if ts < countdownTime:
             self.countdown(countdownTime - ts)
 
@@ -596,7 +601,13 @@ class DistributedElevator(DistributedObject.DistributedObject):
         self.sendUpdate('countdown', [0])
 
     def acceptElevatorHotkey(self):
+        # If we're accepting the hotkey we know it's okay to show the tooltip
+        if hasattr(self, 'hint'):
+            self.hint.show()
         self.accept(ToontownGlobals.ElevatorHotkeyOn, self.startElevator)
 
     def ignoreElevatorHotkey(self):
+        # If we're ignoring the hotkey we know it's okay to hide the tooltip
+        if hasattr(self, 'hint'):
+            self.hint.hide()
         self.ignore(ToontownGlobals.ElevatorHotkeyOn)

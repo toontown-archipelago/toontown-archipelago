@@ -328,6 +328,10 @@ class DistributedTrolley(DistributedObject.DistributedObject):
         self.clock.setBillboardAxis()
         self.clock.setPosHprScale(15.86, 13.82, 11.75, 0.0, 0.0, 0.0, 3.02, 3.02, 3.02)
         self.hint.setPosHprScale(0, -0.5, -0.34, 0, 0, 0, 0.3, 0.3, 0.3)
+        if self.localToonOnBoard:
+            self.hint.show()
+        else:
+            self.hint.hide()
         if ts < self.trolleyCountdownTime:
             self.countdown(self.trolleyCountdownTime - ts)
 
@@ -348,6 +352,7 @@ class DistributedTrolley(DistributedObject.DistributedObject):
         return taskMgr.add(countdownTask, 'trolleyTimerTask')
 
     def handleExitButton(self):
+        self.ignoreElevatorHotkey()
         self.sendUpdate('requestExit')
 
     def exitWaitCountdown(self):
@@ -425,7 +430,11 @@ class DistributedTrolley(DistributedObject.DistributedObject):
         self.sendUpdate('countdown', [0])
 
     def acceptElevatorHotkey(self):
+        if hasattr(self, 'hint'):
+            self.hint.show()
         self.accept(ToontownGlobals.ElevatorHotkeyOn, self.startTrolley)
 
     def ignoreElevatorHotkey(self):
+        if hasattr(self, 'hint'):
+            self.hint.hide()
         self.ignore(ToontownGlobals.ElevatorHotkeyOn)

@@ -335,6 +335,10 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
         self.clock.setBillboardAxis()
         self.clock.setPosHprScale(0, -1, 7.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0)
         self.hint.setPosHprScale(0, 0, -0.4, 0, 0, 0, 0.35, 0.35, 0.35)
+        if self.localToonOnBoard:
+            self.hint.show()
+        else:
+            self.hint.hide()
         if ts < self.trolleyCountdownTime:
             self.countdown(self.trolleyCountdownTime - ts)
 
@@ -355,6 +359,7 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
         return taskMgr.add(countdownTask, self.uniqueName('golfKartTimerTask'))
 
     def handleExitButton(self):
+        self.ignoreElevatorHotkey()
         self.sendUpdate('requestExit')
 
     def exitWaitCountdown(self):
@@ -562,7 +567,11 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
         self.sendUpdate('countdown', [0])
 
     def acceptElevatorHotkey(self):
+        if hasattr(self, 'hint'):
+            self.hint.show()
         self.accept(ToontownGlobals.ElevatorHotkeyOn, self.startKart)
 
     def ignoreElevatorHotkey(self):
+        if hasattr(self, 'hint'):
+            self.hint.hide()
         self.ignore(ToontownGlobals.ElevatorHotkeyOn)
