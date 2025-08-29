@@ -26,10 +26,14 @@ LullabyLane = 9100
 PajamaPlace = 9200
 
 For adding battle music, you can do it like this:
-'zone-battle': ['path/to/battle_music_file.ogg']
+'zone-battle': ['phase_x/path_to/battle_music_file.ogg']
 
 For example, if you want to add custom boss music, you can do it like this:
-'dept-boss-bosskey': ['path/to/music_file.ogg']
+'dept-boss-bosskey': ['phase_x/path_to/music_file.ogg']
 
 You can input multiple music filepaths into a list for the game to pick a random song each time one plays; like this:
-'example-key': ['path/to/music_file1.ogg', 'path/to/music_file2.ogg'] # You can add as many songs to the list as you'd like
+'example-key': ['phase_x/path_to/music_file1.ogg', 'phase_x/path_to/music_file2.ogg'] # You can add as many songs to the list as you'd like
+
+If you want to add NEW music to your music.json, just add new folders and .ogg files (depending on how you'd like to organize) to the extracted content_pack multifile
+A key referencing these files in a new folder called new_music would be as follows:
+'example-musickey': ['content_pack/new_music/new_music_file.ogg']
