@@ -437,7 +437,7 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             else:
                 suitLevel = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL][-1] + 1
         suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack)
-        newSuit.setupSuitDNA(suitLevel, suitType, suitTrack)
+        newSuit.setupSuitDNA(suitLevel, suitType, suitTrack, suitName)
         newSuit.buildingHeight = buildingHeight
         gotDestination = self.chooseDestination(newSuit, startTime, toonBlockTakeover=toonBlockTakeover, cogdoTakeover=cogdoTakeover, minPathLen=minPathLen, maxPathLen=maxPathLen)
         if not gotDestination:
@@ -1056,6 +1056,13 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             if suit.pathState == 1:
                 suit.flyAwayNow()
 
+    def commandCheckFlyRandomSuit(self):
+        if len(self.suitList) > self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_MAX]:
+            print("Area is full, flying random suit")
+            suit = random.choice(self.suitList)
+            if suit.pathState == 1:
+                suit.flyAwayNow()
+
     def requestBattle(self, zoneId, suit, toonId):
         self.notify.debug('requestBattle() - zone: %d suit: %d toon: %d' % (zoneId, suit.doId, toonId))
         canonicalZoneId = ZoneUtil.getCanonicalZoneId(zoneId)
@@ -1211,8 +1218,7 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         if track == None:
             track = SuitDNA.suitDepts[SuitBattleGlobals.pickFromFreqList(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])]
         self.notify.debug('pickLevelTypeAndTrack: %d %d %s' % (level, type, track))
-        return (
-         level, type, track)
+        return (level, type, track)
 
     @classmethod
     def dump(cls):

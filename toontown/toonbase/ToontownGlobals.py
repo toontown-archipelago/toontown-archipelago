@@ -1585,7 +1585,7 @@ NonSafePassiveHealingZones = (
 )
 
 SuitLevels = []
-for level in range(1,51):
+for level in range(1, 101):
     SuitLevels.append(level)
 
 GravityValue = 32.174
