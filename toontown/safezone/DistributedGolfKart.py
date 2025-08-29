@@ -175,6 +175,7 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
             if avId == base.localAvatar.getDoId():
                 self.loader.place.trolley.fsm.request('boarding', [self.golfKart])
                 self.localToonOnBoard = 1
+                self.acceptElevatorHotkey()
             if avId == base.localAvatar.getDoId():
                 self.loader.place.trolley.fsm.request('boarded')
             if avId in self.cr.doId2do:
@@ -207,6 +208,7 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
         if toon == base.localAvatar:
             self.loader.place.trolley.handleOffTrolley()
             self.localToonOnBoard = 0
+            self.ignoreElevatorHotkey()
         else:
             toon.startSmooth()
 
@@ -274,10 +276,12 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
 
     def setMinigameZone(self, zoneId, minigameId):
         self.localToonOnBoard = 0
+        self.ignoreElevatorHotkey()
         messenger.send('playMinigame', [zoneId, minigameId])
 
     def setGolfZone(self, zoneId, courseId):
         self.localToonOnBoard = 0
+        self.ignoreElevatorHotkey()
         messenger.send('playGolf', [zoneId, courseId])
 
     def __enableCollisions(self):
@@ -321,9 +325,16 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
         self.clockNode.setAlign(TextNode.ACenter)
         self.clockNode.setTextColor(0.9, 0.1, 0.1, 1)
         self.clockNode.setText('10')
+        self.hintNode = TextNode('clockHint')
+        self.hintNode.setFont(ToontownGlobals.getSignFont())
+        self.hintNode.setAlign(TextNode.ACenter)
+        self.hintNode.setTextColor(0.9, 0.1, 0.1, 1)
+        self.hintNode.setText(f"Press '{base.controls.ELEVATOR_HOTKEY}' to Skip")
         self.clock = self.golfKart.attachNewNode(self.clockNode)
+        self.hint = self.clock.attachNewNode(self.hintNode)
         self.clock.setBillboardAxis()
-        self.clock.setPosHprScale(0, -1, 7.0, -0.0, 0.0, 0.0, 2.0, 2.0, 2.0)
+        self.clock.setPosHprScale(0, -1, 7.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0)
+        self.hint.setPosHprScale(0, 0, -0.4, 0, 0, 0, 0.35, 0.35, 0.35)
         if ts < self.trolleyCountdownTime:
             self.countdown(self.trolleyCountdownTime - ts)
 
@@ -351,12 +362,16 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
         self.ignore('trolleyExitButton')
         taskMgr.remove(self.uniqueName('golfKartTimerTask'))
         self.clock.removeNode()
+        self.hint.removeNode()
+        del self.hint
+        del self.hintNode
         del self.clock
         del self.clockNode
 
     def enterLeaving(self, ts):
         self.trolleyExitTrack.start(ts)
         if self.localToonOnBoard:
+            self.ignoreElevatorHotkey()
             if hasattr(self.loader.place, 'trolley') and self.loader.place.trolley:
                 self.loader.place.trolley.fsm.request('trolleyLeaving')
 
@@ -541,3 +556,13 @@ class DistributedGolfKart(DistributedObject.DistributedObject, DelayDeletable):
                 av = base.cr.doId2do.get(avId)
                 if av:
                     av.hide()
+
+    def startKart(self):
+        self.countdown(0)
+        self.sendUpdate('countdown', [0])
+
+    def acceptElevatorHotkey(self):
+        self.accept(ToontownGlobals.ElevatorHotkeyOn, self.startKart)
+
+    def ignoreElevatorHotkey(self):
+        self.ignore(ToontownGlobals.ElevatorHotkeyOn)

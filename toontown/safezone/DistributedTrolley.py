@@ -214,6 +214,7 @@ class DistributedTrolley(DistributedObject.DistributedObject):
                 if hasattr(self.loader.place, 'trolley') and self.loader.place.trolley:
                     self.loader.place.trolley.fsm.request('boarding', [self.trolleyCar])
                     self.localToonOnBoard = 1
+                    self.acceptElevatorHotkey()
                     self.loader.place.trolley.fsm.request('boarded')
                 else:
                     self.notify.warning("Can't board the trolley because it doesn't exist")
@@ -251,6 +252,7 @@ class DistributedTrolley(DistributedObject.DistributedObject):
             if hasattr(self.loader.place, 'trolley') and self.loader.place.trolley:
                 self.loader.place.trolley.handleOffTrolley()
             self.localToonOnBoard = 0
+            self.ignoreElevatorHotkey()
         else:
             toon.startSmooth()
 
@@ -277,6 +279,7 @@ class DistributedTrolley(DistributedObject.DistributedObject):
 
     def setMinigameZone(self, zoneId, minigameId):
         self.localToonOnBoard = 0
+        self.ignoreElevatorHotkey()
         messenger.send('playMinigame', [zoneId, minigameId])
 
     def __enableCollisions(self):
@@ -315,9 +318,16 @@ class DistributedTrolley(DistributedObject.DistributedObject):
         self.clockNode.setAlign(TextNode.ACenter)
         self.clockNode.setTextColor(0.9, 0.1, 0.1, 1)
         self.clockNode.setText('5')
+        self.hintNode = TextNode('clockHint')
+        self.hintNode.setFont(ToontownGlobals.getSignFont())
+        self.hintNode.setAlign(TextNode.ACenter)
+        self.hintNode.setTextColor(0.9, 0.1, 0.1, 1)
+        self.hintNode.setText(f"Press '{base.controls.ELEVATOR_HOTKEY}' to Skip")
         self.clock = self.trolleyStation.attachNewNode(self.clockNode)
+        self.hint = self.clock.attachNewNode(self.hintNode)
         self.clock.setBillboardAxis()
-        self.clock.setPosHprScale(15.86, 13.82, 11.68, -0.0, 0.0, 0.0, 3.02, 3.02, 3.02)
+        self.clock.setPosHprScale(15.86, 13.82, 11.75, 0.0, 0.0, 0.0, 3.02, 3.02, 3.02)
+        self.hint.setPosHprScale(0, -0.5, -0.34, 0, 0, 0, 0.3, 0.3, 0.3)
         if ts < self.trolleyCountdownTime:
             self.countdown(self.trolleyCountdownTime - ts)
 
@@ -345,12 +355,16 @@ class DistributedTrolley(DistributedObject.DistributedObject):
         self.ignore('trolleyExitButton')
         taskMgr.remove('trolleyTimerTask')
         self.clock.removeNode()
+        self.hint.removeNode()
+        del self.hint
+        del self.hintNode
         del self.clock
         del self.clockNode
 
     def enterLeaving(self, ts):
         self.trolleyExitTrack.start(ts)
         if self.localToonOnBoard:
+            self.ignoreElevatorHotkey()
             if hasattr(self.loader.place, 'trolley') and self.loader.place.trolley:
                 self.loader.place.trolley.fsm.request('trolleyLeaving')
 
@@ -405,3 +419,13 @@ class DistributedTrolley(DistributedObject.DistributedObject):
         for key in keyList:
             if key in self.__toonTracks:
                 self.clearToonTrack(key)
+
+    def startTrolley(self):
+        self.countdown(0)
+        self.sendUpdate('countdown', [0])
+
+    def acceptElevatorHotkey(self):
+        self.accept(ToontownGlobals.ElevatorHotkeyOn, self.startTrolley)
+
+    def ignoreElevatorHotkey(self):
+        self.ignore(ToontownGlobals.ElevatorHotkeyOn)

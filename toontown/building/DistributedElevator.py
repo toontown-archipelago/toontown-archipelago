@@ -209,6 +209,7 @@ class DistributedElevator(DistributedObject.DistributedObject):
                     elevator = self.getPlaceElevator()
                 if not elevator:
                     return
+                self.acceptElevatorHotkey()
                 self.localToonOnBoard = 1
                 if hasattr(localAvatar, 'boardingParty') and localAvatar.boardingParty:
                     localAvatar.boardingParty.forceCleanupInviteePanel()
@@ -284,6 +285,7 @@ class DistributedElevator(DistributedObject.DistributedObject):
             elevator = self.getPlaceElevator()
             if elevator:
                 elevator.signalDone(doneStatus)
+            self.ignoreElevatorHotkey()
             self.localToonOnBoard = 0
         else:
             toon.startSmooth()
@@ -415,12 +417,16 @@ class DistributedElevator(DistributedObject.DistributedObject):
         self.ignore('localToonLeft')
         taskMgr.remove(self.uniqueName('elevatorTimerTask'))
         self.clock.removeNode()
+        self.hint.removeNode()
+        del self.hint
+        del self.hintNode
         del self.clock
         del self.clockNode
 
     def enterClosing(self, ts):
         if self.localToonOnBoard:
             elevator = self.getPlaceElevator()
+            self.ignoreElevatorHotkey()
             if elevator:
                 elevator.fsm.request('elevatorClosing')
         self.closeDoors.start(ts)
@@ -476,8 +482,15 @@ class DistributedElevator(DistributedObject.DistributedObject):
         self.clockNode.setAlign(TextNode.ACenter)
         self.clockNode.setTextColor(0.5, 0.5, 0.5, 1)
         self.clockNode.setText(str(int(countdownTime)))
+        self.hintNode = TextNode('clockHint')
+        self.hintNode.setFont(ToontownGlobals.getSignFont())
+        self.hintNode.setAlign(TextNode.ACenter)
+        self.hintNode.setTextColor(0.5, 0.5, 0.5, 1)
+        self.hintNode.setText(f"Press '{base.controls.ELEVATOR_HOTKEY}' to Skip")
         self.clock = self.getElevatorModel().attachNewNode(self.clockNode)
+        self.hint = self.clock.attachNewNode(self.hintNode)
         self.clock.setPosHprScale(0, 2.0, 7.5, 0, 0, 0, 2.0, 2.0, 2.0)
+        self.hint.setPosHprScale(0, 0, -0.4, 0, 0, 0, 0.35, 0.35, 0.35)
         if ts < countdownTime:
             self.countdown(countdownTime - ts)
 
@@ -486,6 +499,7 @@ class DistributedElevator(DistributedObject.DistributedObject):
 
     def __doorsClosed(self, zoneId):
         if self.localToonOnBoard:
+            self.ignoreElevatorHotkey()
             hoodId = ZoneUtil.getHoodId(zoneId)
             loader, where = self._getDoorsClosedInfo()
             doneStatus = {'loader': loader,
@@ -576,3 +590,13 @@ class DistributedElevator(DistributedObject.DistributedObject):
         self.boardingGroupShow = BoardingGroupShow.BoardingGroupShow(toon)
         track, trackType = self.boardingGroupShow.getBoardingTrack(self.getElevatorModel(), self.getOffsetPosWrtToonParent(toon, seatIndex), self.getOffsetPosWrtRender(seatIndex), wantToonRotation)
         return (track, trackType)
+
+    def startElevator(self):
+        self.countdown(0)
+        self.sendUpdate('countdown', [0])
+
+    def acceptElevatorHotkey(self):
+        self.accept(ToontownGlobals.ElevatorHotkeyOn, self.startElevator)
+
+    def ignoreElevatorHotkey(self):
+        self.ignore(ToontownGlobals.ElevatorHotkeyOn)

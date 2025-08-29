@@ -362,3 +362,7 @@ class DistributedElevatorAI(DistributedObjectAI.DistributedObjectAI):
 
     def getMinLaff(self):
         return self.minLaff
+
+    def countdown(self, duration):
+        if hasattr(self, 'setCountdown'):
+            self.setCountdown(duration)
