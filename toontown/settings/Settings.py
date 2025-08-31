@@ -25,6 +25,7 @@ class ControlSettings:
     QUEST_HOTKEY: str = "end"
     GALLERY_HOTKEY: str = "g"
     LOCATIONS_HOTKEY: str = "v"
+    ELEVATOR_HOTKEY: str = "f"
     CRANE_GRAB_KEY: str = "control"
     ACTION_BUTTON: str = "delete"
     SECONDARY_ACTION: str = "insert"

@@ -29,6 +29,7 @@ from toontown.toon import ToonDNA
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
+from toontown.hood import ZoneUtil
 
 from . import MagicWordConfig
 import time
@@ -2505,25 +2506,36 @@ class SpawnCog(MagicWord):
     aliases = ["cog"]
     desc = "Spawns a cog with the defined level"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("suit", str, True), ("level", int, False, 1), ("specialSuit", int, False, 0)]
+    arguments = [("suit", str, True), ("level", int, False, 1), ("specialSuit", int, False, 0), ("revives", int, False, 0)]
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         name = args[0]
         level = args[1]
         specialSuit = args[2]
-        zoneId = invoker.getLocation()[1]
+        revives = args[3]
         if name not in SuitDNA.suitHeadTypes:
             return "Suit %s is not a valid suit!" % name
         if level not in ToontownGlobals.SuitLevels:
             return "Invalid Cog Level."
 
-        sp = simbase.air.suitPlanners.get(zoneId - (zoneId % 100))
+        streetId = ZoneUtil.getBranchZone(invoker.zoneId)
+        if streetId not in invoker.air.suitPlanners:
+            return "Unable to spawn a level %d %s in current zone." % (level, name)
+        sp = invoker.air.suitPlanners[streetId]
+        map = sp.getZoneIdToPointMap()
+        zones = [invoker.zoneId, invoker.zoneId - 1, invoker.zoneId + 1]
+
         if not sp:
             return "Unable to spawn a level %d %s in current zone." % (level, name)
-        pointmap = sp.streetPointList
         try:
-            sp.createNewSuit([], pointmap, suitName=name, suitLevel=level, skelecog=specialSuit)
+            # This probably wont be needed, but in the rare case that we somehow try spawning a cog while the area is capped
+            # We will remove one
+            sp.commandCheckFlyRandomSuit()
+            for zoneId in zones:
+                if zoneId in map:
+                    points = map[zoneId][:]
+                    sp.createNewSuit([], points, suitName=name, suitLevel=level, skelecog=specialSuit, revives=revives)
             return "Spawned a level %d %s in current zone." % (level, name)
         except IndexError:
             return "Level %d is out of range for %s." % (level, name)

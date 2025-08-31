@@ -29,7 +29,7 @@ if __dev__:
     if elevatorCountdown != -1:
         bboard.post('elevatorCountdown', elevatorCountdown)
 
-DEFAULT_ELEVATOR_COUNTDOWN = 5.0  # How much time to wait for boss elevators, building elevators, facility entrances
+DEFAULT_ELEVATOR_COUNTDOWN = 15.0  # How much time to wait for boss elevators, building elevators, facility entrances
 DEFAULT_ELEVATOR_COUNTDOWN_WAIT_FOR_PLAYERS = 45.0  # How much time to wait in between floors for facilities/bldgs
 
 ElevatorData = {ELEVATOR_NORMAL: {'openTime': 2.0,

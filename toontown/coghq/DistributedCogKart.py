@@ -113,6 +113,7 @@ class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
 
     def enterClosing(self, ts):
         if self.localToonOnBoard:
+            self.ignoreElevatorHotkey()
             elevator = self.getPlaceElevator()
             if elevator:
                 elevator.fsm.request('elevatorClosing')
@@ -124,6 +125,7 @@ class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
 
     def kartDoorsClosed(self, zoneId):
         if self.localToonOnBoard:
+            self.ignoreElevatorHotkey()
             hoodId = ZoneUtil.getHoodId(zoneId)
             doneStatus = {'loader': 'suitInterior',
              'where': 'suitInterior',
@@ -137,6 +139,7 @@ class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
 
     def setCountryClubInteriorZone(self, zoneId):
         if self.localToonOnBoard:
+            self.ignoreElevatorHotkey()
             hoodId = self.cr.playGame.hood.hoodId
             countryClubId = self.countryClubId
             if bboard.has('countryClubIdOverride'):
@@ -204,6 +207,7 @@ class DistributedCogKart(DistributedElevatorExt.DistributedElevatorExt):
                 if not elevator:
                     return
                 self.localToonOnBoard = 1
+                self.acceptElevatorHotkey()
                 if hasattr(localAvatar, 'boardingParty') and localAvatar.boardingParty:
                     localAvatar.boardingParty.forceCleanupInviteePanel()
                     localAvatar.boardingParty.forceCleanupInviterPanels()
