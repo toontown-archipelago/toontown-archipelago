@@ -4,9 +4,6 @@ from panda3d.core import *
 from direct.showbase import DirectObject
 from toontown.suit import SuitDNA
 from toontown.toonbase.ToontownGlobals import SellbotFactoryInt, CashbotMintIntA, LawbotStageIntA
-from .DistributedFactoryAI import DistributedFactoryAI
-from .DistributedMintRoomAI import DistributedMintRoomAI
-from .DistributedStageRoomAI import DistributedStageRoomAI
 from direct.directnotify import DirectNotifyGlobal
 from . import LevelBattleManagerAI
 import types
@@ -86,19 +83,19 @@ class LevelSuitPlannerAI(DirectObject.DirectObject):
         level = suitDict['level']
         demotionChance = 0.55
         # If level is a factory
-        if isinstance(self.level, DistributedFactoryAI):
+        if hasattr(self.level, 'getFactoryId'):
             if self.level.getFactoryId() == SellbotFactoryInt:
                 if random.random() <= demotionChance and not suitDict['boss']:
                     level -= 1
 
         # If level is a mint
-        if isinstance(self.level, DistributedMintRoomAI):
+        if hasattr(self.level, 'getMintId'):
             if self.level.getMintId() == CashbotMintIntA:
                 if random.random() <= demotionChance and not suitDict['boss']:
                     level -= 1
 
         # If level is an office
-        if isinstance(self.level, DistributedStageRoomAI):
+        if hasattr(self.level, 'getStageId'):
             if self.level.getStageId() == LawbotStageIntA:
                 if random.random() <= demotionChance and not suitDict['boss']:
                     level -= 1
