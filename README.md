@@ -19,6 +19,8 @@ that however you want to set up your slots for gameplay, it should work as you w
 The possibilities really are endless, and you can play the game however you want. 
 Just make sure you set up your Archipelago rooms to accommodate that!
 
+You can also join the [Toontown: Archipelago Discord](https://discord.gg/GRjQZBsrJK) for information regarding updates!
+
 
 # Source Code
 This source code is based on a March 2019 fork of Toontown Offline v1.0.0.0 used for Toontown School House. 
@@ -174,7 +176,7 @@ Archipelago uses .YAML files to define player settings and slot names for the ga
 page, the yaml is available from download there. If you are running from source, you should look in the `apworld/` directory,
 you will see an `EXAMPLE_TOONTOWN.yaml` file. Go ahead and make a copy of this, and edit its name to whatever you want.
 (It is typical AP etiquette to name the file after your online alias and the game you are playing. e.g. `devvydont-tt.yaml`).
-Now, edit the file and change the `name` field at the top. Replace `PUTTOONNAMEHERE` with what you would like your slot
+Now, edit the file and change the `name` field at the top. Replace `Colorful Toon` with what you would like your slot
 name (and toon name!) to be. You can also change any other settings present here as well to affect how your run will play out.
 
 
