@@ -15,6 +15,8 @@ class BattleCalculatorAI:
      0, 20, 20, 20]
     AttackExpPerTrack = [
      0, 10, 20, 30, 40, 50, 60]
+    SoundDamageCounts = [
+        100, 80, 70, 60]
     NumRoundsLured = AvLureRounds
     TRAP_CONFLICT = -2
     APPLY_HEALTH_ADJUSTMENTS = 1
@@ -568,6 +570,8 @@ class BattleCalculatorAI:
                         result = result * 0.2
                     if self.notify.getDebug():
                         self.notify.debug('toon does ' + str(result) + ' healing to toon(s)')
+                elif atkTrack == SOUND:
+                        result = result * (self.SoundDamageCounts[self.soundCount-1] / 100)
                 else:
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         result = 0
@@ -1089,6 +1093,12 @@ class BattleCalculatorAI:
             maxSuitLevel = max(maxSuitLevel, cog.getActualLevel())
 
         self.creditLevel = maxSuitLevel
+        self.soundCount = 0
+        for toonId in self.toonAtkOrder:
+            attack = self.battle.toonAttacks[toonId]
+            atkTrack = self.__getActualTrack(attack)
+            if atkTrack == SOUND:
+                self.soundCount += 1
         for toonId in self.toonAtkOrder:
             if self.__combatantDead(toonId, toon=1):
                 if self.notify.getDebug():
