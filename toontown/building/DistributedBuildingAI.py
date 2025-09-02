@@ -6,7 +6,7 @@ from direct.directnotify import DirectNotifyGlobal
 from direct.distributed import DistributedObjectAI
 from direct.fsm import State
 from direct.fsm import ClassicFSM, State
-from toontown.toonbase.ToontownGlobals import ToonHall
+from toontown.toonbase.ToontownGlobals import DaisyGardens, DonaldsDock, DonaldsDreamland, MinniesMelodyland, TheBrrrgh, ToonHall, ToontownCentral
 from . import DistributedToonInteriorAI, DistributedToonHallInteriorAI, DistributedSuitInteriorAI, DistributedDoorAI, DoorTypes, DistributedElevatorExtAI, DistributedKnockKnockDoorAI, SuitPlannerInteriorAI, SuitBuildingGlobals, FADoorCodes
 from toontown.hood import ZoneUtil
 import random, time
@@ -338,14 +338,8 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
                 self.air.writeServerEvent('buildingDefeated', t, '%s|%s|%s|%s' % (self.track, self.numFloors, self.zoneId, victorList))
             if toon != None:
                 self.air.questManager.toonKilledBuilding(toon, self.track, self.difficulty, self.numFloors, self.zoneId, activeToons)
-                floorToCheck = [
-                    util.ap_location_name_to_id(locations.ToontownLocationName.ONE_STORY.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY.value)
-                    ]
-                toon.addCheckedLocation(floorToCheck[self.numFloors-1])
+                checks = [self.getBuildingFloorsCheck(), self.getBuildingHoodCheck()]
+                toon.addCheckedLocations([check for check in checks if check is not None])
 
         for i in range(0, 4):
             victor = victorList[i]
@@ -624,3 +618,28 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
 
     def deleteCogdoInterior(self):
         self.deleteSuitInterior()
+
+    def getBuildingFloorsCheck(self):
+        floorToCheck = [
+            util.ap_location_name_to_id(locations.ToontownLocationName.ONE_STORY.value),
+            util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY.value),
+            util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY.value),
+            util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY.value),
+            util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY.value)
+        ]
+        return floorToCheck[self.numFloors-1]
+
+    def getBuildingHoodCheck(self):
+        hoodToCheck = {
+            ToontownCentral:   util.ap_location_name_to_id(locations.ToontownLocationName.TOONTOWN_CENTRAL_BUILDING.value),
+            DonaldsDock:       util.ap_location_name_to_id(locations.ToontownLocationName.DONALDS_DOCK_BUILDING.value),
+            DaisyGardens:      util.ap_location_name_to_id(locations.ToontownLocationName.DAISYS_GARDENS_BUILDING.value),
+            MinniesMelodyland: util.ap_location_name_to_id(locations.ToontownLocationName.MINNIES_MELODYLAND_BUILDING.value),
+            TheBrrrgh:         util.ap_location_name_to_id(locations.ToontownLocationName.THE_BRRRGH_BUILDING.value),
+            DonaldsDreamland:  util.ap_location_name_to_id(locations.ToontownLocationName.DONALDS_DREAMLAND_BUILDING.value),
+        }
+        hoodId = ZoneUtil.getHoodId(self.zoneId)
+        if hoodId in hoodToCheck:
+            return hoodToCheck[hoodId]
+        else:
+            return None

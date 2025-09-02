@@ -1,0 +1,39 @@
+DonaldsDock = 1000
+ToontownCentral = 2000
+TheBrrrgh = 3000
+MinniesMelodyland = 4000
+DaisyGardens = 5000
+OutdoorZone = 6000
+FunnyFarm = 7000
+GoofySpeedway = 8000
+DonaldsDreamland = 9000
+BarnacleBoulevard = 1100
+SeaweedStreet = 1200
+LighthouseLane = 1300
+SillyStreet = 2100
+LoopyLane = 2200
+PunchlinePlace = 2300
+WalrusWay = 3100
+SleetStreet = 3200
+PolarPlace = 3300
+AltoAvenue = 4100
+BaritoneBoulevard = 4200
+TenorTerrace = 4300
+ElmStreet = 5100
+MapleStreet = 5200
+OakStreet = 5300
+LullabyLane = 9100
+PajamaPlace = 9200
+
+For adding battle music, you can do it like this:
+'zone-battle': ['phase_x/path_to/battle_music_file.ogg']
+
+For example, if you want to add custom boss music, you can do it like this:
+'dept-boss-bosskey': ['phase_x/path_to/music_file.ogg']
+
+You can input multiple music filepaths into a list for the game to pick a random song each time one plays; like this:
+'example-key': ['phase_x/path_to/music_file1.ogg', 'phase_x/path_to/music_file2.ogg'] # You can add as many songs to the list as you'd like
+
+If you want to add NEW music to your music.json, just add new folders and .ogg files (depending on how you'd like to organize) to the extracted content_pack multifile
+A key referencing these files in a new folder called new_music would be as follows:
+'example-musickey': ['content_pack/new_music/new_music_file.ogg']

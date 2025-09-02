@@ -235,6 +235,13 @@ class DistributedGolfKartAI(DistributedObjectAI.DistributedObjectAI):
         self.accepting = 1
         taskMgr.doMethodLater(self.trolleyCountdownTime, self.timeToGoTask, self.uniqueName('countdown-timer'))
 
+    def countdown(self, duration):
+        self.setCountdown(duration)
+
+    def setCountdown(self, timeToSet):
+        taskMgr.remove(self.uniqueName('countdown-timer'))
+        taskMgr.doMethodLater(timeToSet, self.timeToGoTask, self.uniqueName('countdown-timer'))
+
     def timeToGoTask(self, task):
         if self.countFullSeats() > 0:
             self.allAboard()
