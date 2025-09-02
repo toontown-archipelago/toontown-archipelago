@@ -65,7 +65,7 @@ def __healToon(toon, hp, ineffective = 0):
     if ineffective == 1:
         laughter = random.choice(TTLocalizer.MovieHealLaughterMisses)
     else:
-        maxDam = ToontownBattleGlobals.AvPropDamage[0][1][0][1]
+        maxDam = ToontownBattleGlobals.AvPropDamage[0][1][0]
         if hp >= maxDam - 1:
             laughter = random.choice(TTLocalizer.MovieHealLaughterHits2)
         else:
