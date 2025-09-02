@@ -43,7 +43,7 @@ def __healToon(toon, hp, gender, callerToonId, ineffective = 0):
         else:
             nolaughter = 1
     else:
-        maxDam = ToontownBattleGlobals.AvPropDamage[0][1][0]
+        maxDam = ToontownBattleGlobals.AvPropDamage[0][1][0][1]
         if callerToonId == toon.doId:
             if gender == 1:
                 laughter = TTLocalizer.MoviePetSOSTrickSucceedBoy

@@ -241,67 +241,67 @@ def getAccuracyPercentString(track, level):
 
 AvPropDamage = (
     (   # Toonup
-        (10, (Levels[0][0], Levels[0][1])),
-        (16, (Levels[0][1], Levels[0][2])),
-        (24, (Levels[0][2], Levels[0][3])),
-        (40, (Levels[0][3], Levels[0][4])),
-        (50, (Levels[0][4], Levels[0][5])),
-        (96, (Levels[0][5], Levels[0][6])),
-        (160, (Levels[0][6], regMaxSkill))
+        ((8, 10), (Levels[0][0], Levels[0][1])),
+        ((12, 16), (Levels[0][1], Levels[0][2])),
+        ((18, 24), (Levels[0][2], Levels[0][3])),
+        ((32, 40), (Levels[0][3], Levels[0][4])),
+        ((45, 50), (Levels[0][4], Levels[0][5])),
+        ((72, 96), (Levels[0][5], Levels[0][6])),
+        ((100, 160), (Levels[0][6], regMaxSkill))
     ),
     (   # Trap
-        (18, (Levels[1][0], Levels[1][1])),
-        (30, (Levels[1][1], Levels[1][2])),
-        (45, (Levels[1][2], Levels[1][3])),
-        (75, (Levels[1][3], Levels[1][4])),
-        (100, (Levels[1][4], Levels[1][5])),
-        (195, (Levels[1][5], Levels[1][6])),
-        (240, (Levels[1][6], regMaxSkill))
+        ((12, 18), (Levels[1][0], Levels[1][1])),
+        ((24, 30), (Levels[1][1], Levels[1][2])),
+        ((35, 45), (Levels[1][2], Levels[1][3])),
+        ((50, 75), (Levels[1][3], Levels[1][4])),
+        ((85, 100), (Levels[1][4], Levels[1][5])),
+        ((110, 195), (Levels[1][5], Levels[1][6])),
+        ((200, 240), (Levels[1][6], regMaxSkill))
     ),
     (   # Lure
-        (40, (Levels[2][0], Levels[2][1])),
-        (40, (Levels[2][1], Levels[2][2])),
-        (50, (Levels[2][2], Levels[2][3])),
-        (50, (Levels[2][3], Levels[2][4])),
-        (60, (Levels[2][4], Levels[2][5])),
-        (60, (Levels[2][5], Levels[2][6])),
-        (100, (Levels[2][6], regMaxSkill))
+        ((30, 40), (Levels[2][0], Levels[2][1])),
+        ((30, 40), (Levels[2][1], Levels[2][2])),
+        ((40, 50), (Levels[2][2], Levels[2][3])),
+        ((40, 50), (Levels[2][3], Levels[2][4])),
+        ((50, 60), (Levels[2][4], Levels[2][5])),
+        ((50, 60), (Levels[2][5], Levels[2][6])),
+        ((65, 100), (Levels[2][6], regMaxSkill))
     ),
     (   # Sound
-        (4, (Levels[3][0], Levels[3][1])),
-        (8, (Levels[3][1], Levels[3][2])),
-        (12, (Levels[3][2], Levels[3][3])),
-        (20, (Levels[3][3], Levels[3][4])),
-        (30, (Levels[3][4], Levels[3][5])),
-        (75, (Levels[3][5], Levels[3][6])),
-        (110, (Levels[3][6], regMaxSkill))
+        ((2, 4), (Levels[3][0], Levels[3][1])),
+        ((5, 8), (Levels[3][1], Levels[3][2])),
+        ((9, 12), (Levels[3][2], Levels[3][3])),
+        ((16, 20), (Levels[3][3], Levels[3][4])),
+        ((25, 30), (Levels[3][4], Levels[3][5])),
+        ((45, 75), (Levels[3][5], Levels[3][6])),
+        ((90, 110), (Levels[3][6], regMaxSkill))
     ),
     (   # Throw
-        (6, (Levels[4][0], Levels[4][1])),
-        (10, (Levels[4][1], Levels[4][2])),
-        (17, (Levels[4][2], Levels[4][3])),
-        (27, (Levels[4][3], Levels[4][4])),
-        (40, (Levels[4][4], Levels[4][5])),
-        (100, (Levels[4][5], Levels[4][6])),
-        (140, (Levels[4][6], regMaxSkill))
+        ((4, 6), (Levels[4][0], Levels[4][1])),
+        ((8, 10), (Levels[4][1], Levels[4][2])),
+        ((14, 17), (Levels[4][2], Levels[4][3])),
+        ((24, 27), (Levels[4][3], Levels[4][4])),
+        ((36, 40), (Levels[4][4], Levels[4][5])),
+        ((48, 100), (Levels[4][5], Levels[4][6])),
+        ((110, 140), (Levels[4][6], regMaxSkill))
     ),
     (   # Squirt
-        (4, (Levels[5][0], Levels[5][1])),
-        (8, (Levels[5][1], Levels[5][2])),
-        (12, (Levels[5][2], Levels[5][3])),
-        (21, (Levels[5][3], Levels[5][4])),
-        (30, (Levels[5][4], Levels[5][5])),
-        (80, (Levels[5][5], Levels[5][6])),
-        (110, (Levels[5][6], regMaxSkill))
+        ((3, 4), (Levels[5][0], Levels[5][1])),
+        ((6, 8), (Levels[5][1], Levels[5][2])),
+        ((10, 12), (Levels[5][2], Levels[5][3])),
+        ((18, 21), (Levels[5][3], Levels[5][4])),
+        ((27, 30), (Levels[5][4], Levels[5][5])),
+        ((36, 80), (Levels[5][5], Levels[5][6])),
+        ((85, 110), (Levels[5][6], regMaxSkill))
     ),
     (   # Drop
-        (10, (Levels[6][0], Levels[6][1])),
-        (18, (Levels[6][1], Levels[6][2])),
-        (30, (Levels[6][2], Levels[6][3])),
-        (50, (Levels[6][3], Levels[6][4])),
-        (75, (Levels[6][4], Levels[6][5])),
-        (170, (Levels[6][5], Levels[6][6])),
-        (210, (Levels[6][6], regMaxSkill))
+        ((8, 10), (Levels[6][0], Levels[6][1])),
+        ((15, 18), (Levels[6][1], Levels[6][2])),
+        ((25, 30), (Levels[6][2], Levels[6][3])),
+        ((42, 50), (Levels[6][3], Levels[6][4])),
+        ((60, 75), (Levels[6][4], Levels[6][5])),
+        ((90, 170), (Levels[6][5], Levels[6][6])),
+        ((175, 210), (Levels[6][6], regMaxSkill))
     )
 )
 ATK_SINGLE_TARGET = 0
@@ -339,7 +339,17 @@ AvPropTarget = (0, 3, 0, 2, 3, 3, 3)
 
 def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
                     organicBonus=False, propBonus=False, propAndOrganicBonusStack=False, npc=False, toonDamageMultiplier=100, overflowMod=100):
-    damage = AvPropDamage[attackTrack][attackLevel][0]
+
+    exp = experience.getExp(attackTrack)
+
+    minD = AvPropDamage[attackTrack][attackLevel][0][0]
+    maxD = AvPropDamage[attackTrack][attackLevel][0][1]
+    minE = AvPropDamage[attackTrack][attackLevel][1][0]
+    maxE = AvPropDamage[attackTrack][attackLevel][1][1]
+
+    expVal = min(exp, maxE)
+    expPerHp = float(maxE - minE + 1) / float(maxD - minD + 1)
+    damage = math.floor((expVal - minE) / expPerHp) + minD
 
     if damage <= 0:
         damage = minD
@@ -364,7 +374,16 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
 
 
 def getAvOriginalDamage(attackTrack, attackLevel, experience: Experience, toonDamageMultiplier=100):
-    damage = AvPropDamage[attackTrack][attackLevel][0]
+    exp = experience.getExp(attackTrack)
+
+    minD = AvPropDamage[attackTrack][attackLevel][0][0]
+    maxD = AvPropDamage[attackTrack][attackLevel][0][1]
+    minE = AvPropDamage[attackTrack][attackLevel][1][0]
+    maxE = AvPropDamage[attackTrack][attackLevel][1][1]
+
+    expVal = min(exp, maxE)
+    expPerHp = float(maxE - minE + 1) / float(maxD - minD + 1)
+    damage = math.floor((expVal - minE) / expPerHp) + minD
     damage *= toonDamageMultiplier / 100
     return math.ceil(damage)
 
