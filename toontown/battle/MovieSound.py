@@ -76,7 +76,10 @@ def __getSuitTrack(sound, lastSoundThatHit, delay, hitCount, targets, totalDamag
             battle = sound['battle']
             kbbonus = target['kbbonus']
             suitTrack = Sequence()
-            showDamage = Func(suit.showHpText, -totalDamage, openEnded=0)
+            if not died:
+                showDamage = Func(suit.showMultiLineHpString, str(-totalDamage), color=(0.75, 0.15, 0.15, 1), text2="WEAKENED!", color2=(.3, .5, .8, 1))
+            else:
+                showDamage = Func(suit.showHpText, -totalDamage, openEnded=0)
             updateHealthBar = Func(suit.updateHealthBar, totalDamage)
             if isUber:
                 breakEffect = BattleParticles.createParticleEffect(file='soundBreak')
