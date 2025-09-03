@@ -64,16 +64,41 @@ regMaxSkill = 20000
 MaxSkill = 999999  # How high should we allow xp to go
 
 # Exp needed per % increase
+# [toonup, trap, lure, sound, throw, squirt, drop]
 overflowRates = [600, 300, 600, 700, 300, 300, 300]
+overflowDiminishThreshold = 35000
+overflowDiminshRate = 0.9  # 90%
+OverflowDiminishRateSound = 0.8  # 80%
 
 def getUberDamageBonus(experience, track, overflowMod=None) -> float:
+    sound = 3
     overflow = experience - regMaxSkill
     if overflow < 0:
         overflow = 0
     if not overflowMod:
         overflowMod = base.localAvatar.getOverflowMod()
+    multToAdd = 0
     adjustedOverflow = overflowRates[track] / (overflowMod / 100)
-    multiplier = 1 + (overflow / adjustedOverflow / 100)
+    overflowCutOffs = []
+    overflowRemainder = overflow % overflowDiminishThreshold
+    overflowTimesToReduce = math.floor(overflow / overflowDiminishThreshold)
+    for cutOff in range(overflowTimesToReduce):
+        overflowCutOffs.append(overflowDiminishThreshold)
+    if overflowRemainder > 0:
+        overflowCutOffs.append(overflowRemainder)
+    for cutOffCount in range(len(overflowCutOffs)):
+        # The first iteration
+        if cutOffCount == 0:
+            diminishMod = 1
+        else:
+            if track == sound:
+                diminishMod = OverflowDiminishRateSound / cutOffCount
+            else:
+                diminishMod = overflowDiminshRate / cutOffCount
+        reAdjustOverflow = (adjustedOverflow / diminishMod)
+        multToAdd += (overflowCutOffs[cutOffCount] / reAdjustOverflow / 100)
+
+    multiplier = (1 + multToAdd)
     multiplier = round(multiplier, 2)
     return multiplier
 
