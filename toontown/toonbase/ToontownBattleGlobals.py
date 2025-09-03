@@ -68,7 +68,7 @@ MaxSkill = 999999  # How high should we allow xp to go
 overflowRates = [600, 300, 600, 700, 300, 300, 300]
 overflowDiminishThreshold = 35000
 overflowDiminshRate = 0.9  # 90%
-OverflowDiminishRateSound = 0.8  # 80%
+OverflowDiminishRateSound = 0.75  # 75%
 
 def getUberDamageBonus(experience, track, overflowMod=None) -> float:
     sound = 3

@@ -49,6 +49,7 @@ class BattleCalculatorAI:
         self.npcTraps = {}
         self.suitAtkStats = {}
         self.suitsTrappedThisTurn = set()
+        self.suitsHitBySoundThisTurn = set()
         self.__clearBonuses(hp=1)
         self.__clearBonuses(hp=0)
         self.delayedUnlures = []
@@ -1264,13 +1265,17 @@ class BattleCalculatorAI:
                 atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getActualLevel(), atkType)
                 result = atkInfo['hp']
 
+                # Deal 20% less damage if suit was hit by sound
+                if attack[SUIT_ID_COL] in self.suitsHitBySoundThisTurn:
+                    result *= 0.8
                 # Divide attack damage by 2 if they were trapped this turn
                 if attack[SUIT_ID_COL] in self.suitsTrappedThisTurn:
                     result *= 0.5
                     result = int(math.ceil(result))
                 elif attack[SUIT_ID_COL] in self.traps:
                     result *= 0.75
-                    result = int(math.ceil(result))
+                # Move rounding to here since we can have multiple mults and we round at the end
+                result = int(math.ceil(result))
             targetIndex = self.battle.activeToons.index(toonId)
             attack[SUIT_HP_COL][targetIndex] = result
 
@@ -1396,15 +1401,25 @@ class BattleCalculatorAI:
         if self.notify.getDebug():
             self.notify.debug('Lured suits: ' + str(self.currentlyLuredSuits))
 
-    def __weakenSuitForTurn(self, suitId):
-        self.suitsTrappedThisTurn.add(suitId)
+    def __weakenSuitForTurn(self, suitId, trap=True):
+        if trap:
+            self.suitsTrappedThisTurn.add(suitId)
+        else:
+            if suitId not in self.suitsHitBySoundThisTurn:
+                self.suitsHitBySoundThisTurn.add(suitId)
 
-    def __weakenAllSuitsForTurn(self):
+    def __weakenAllSuitsForTurn(self, trap=True):
         for suit in self.battle.activeSuits:
-            self.suitsTrappedThisTurn.add(suit.doId)
+            if trap:
+                self.suitsTrappedThisTurn.add(suit.doId)
+            else:
+                if suit.doId not in self.suitsHitBySoundThisTurn:
+                    self.suitsHitBySoundThisTurn.add(suit.doId)
+
 
     def __initRound(self):
         self.suitsTrappedThisTurn.clear()
+        self.suitsHitBySoundThisTurn.clear()
         if self.CLEAR_SUIT_ATTACKERS:
             self.SuitAttackers = {}
         self.toonAtkOrder = []
@@ -1434,6 +1449,10 @@ class BattleCalculatorAI:
                         sortedTraps.append(atk)
 
                 attacks = sortedTraps
+            if track == SOUND:
+                for atk in attacks:
+                    if atk[TOON_TRACK_COL] == SOUND:
+                        self.__weakenAllSuitsForTurn(trap=False)
             for atk in attacks:
                 self.toonAtkOrder.append(atk[TOON_ID_COL])
 
