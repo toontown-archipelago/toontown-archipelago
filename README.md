@@ -39,6 +39,7 @@ Credits:
 * [Panda3D](https://github.com/panda3d/panda3d)  (More specifically, [Open Toontown's fork of Panda3D](https://github.com/open-toontown/panda3d))
 * [libotp-nametags](https://github.com/loblao/libotp-nametags)
 * [Ben Briggs](https://www.youtube.com/@benbriggsmusic) for the dripstinct music.
+* [Project Bikehorn](https://github.com/toonjoey/toontown-project-bikehorn) created by toonjoey, for the textures made game ready from the Pandora leak.
 * Reverse-engineered Toontown Online client/server source code is property of The Walt Disney Company.
 
 # Getting Started
