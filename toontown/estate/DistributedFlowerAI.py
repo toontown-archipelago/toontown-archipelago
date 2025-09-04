@@ -113,11 +113,12 @@ class DistributedFlowerAI(DistributedPlantBaseAI, FlowerBase):
             if action == 'pick':
                 av.b_setShovelSkill(av.getShovelSkill() + self.getValue())
                 av.addFlowerToBasket(self.getSpecies(), self.getVariety())
-
+                
             if task:
                 return task.done
 
         if usingPickAll:
             handleRemoveItem(None)
         else:
-            taskMgr.doMethodLater(7, handleRemoveItem, self.uniqueName('handle-remove-item'))
+            taskMgr.doMethodLater(3.5, handleRemoveItem, self.uniqueName('handle-remove-item'))
+    
