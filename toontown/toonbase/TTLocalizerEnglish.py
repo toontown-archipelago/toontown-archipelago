@@ -9977,6 +9977,7 @@ OptionNames = {
     "SCREENSHOT": "Screenshot",
     "MAP_PAGE_HOTKEY": "Map Page Hotkey",
     "FRIENDS_LIST_HOTKEY": "Friends List Hotkey",
+    "TOGGLE_RUN_HOTKEY": "Toggle Debug Run Speed",
     "STREET_MAP_HOTKEY": "Street Map Hotkey",
     "INVENTORY_HOTKEY": "Gag Menu Hotkey",
     "QUEST_HOTKEY": "ToonTask Hotkey",
