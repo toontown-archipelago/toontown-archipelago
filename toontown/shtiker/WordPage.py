@@ -309,7 +309,7 @@ class WordsTabPage(DirectFrame):
 
         for wordName in magicWordIndex:
             word = magicWordIndex[wordName]
-            if word['classname'] not in words:# or word['classname'] not in priorityWords:
+            if word['classname'] not in words:
                 if not word['hidden']:
                     if word['priority']:
                         priorityWords.append(word['classname'])
