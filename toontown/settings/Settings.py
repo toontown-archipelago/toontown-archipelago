@@ -18,6 +18,7 @@ class ControlSettings:
     JUMP: str = "control"
     SPRINT: str = "shift"
     SCREENSHOT: str = "f9"
+    TOGGLE_RUN_HOTKEY: str = "f8"
     MAP_PAGE_HOTKEY: str = "escape"
     FRIENDS_LIST_HOTKEY: str = "f7"
     STREET_MAP_HOTKEY: str = "alt"
