@@ -541,6 +541,10 @@ class ToonBase(OTPBase.OTPBase):
     def playMusic(self, music, looping = 0, interrupt = 1, volume = None, time = 0.0):
         OTPBase.OTPBase.playMusic(self, music, looping, interrupt, volume, time)
 
+    def setRun(self):
+        if hasattr(base, 'localAvatar'):
+            base.localAvatar.setRunFromHotkey()
+
     @property
     def controls(self) -> ControlSettings:
         return self.settings.controls
@@ -548,6 +552,7 @@ class ToonBase(OTPBase.OTPBase):
     def acceptHotkeys(self) -> None:
         # Accept the screenshot key
         self.accept(self.controls.SCREENSHOT, self.takeScreenShot)
+        self.accept(self.controls.TOGGLE_RUN_HOTKEY, self.setRun)
         self.accept(
             self.controls.MAP_PAGE_HOTKEY,
             messenger.send,
@@ -632,6 +637,7 @@ class ToonBase(OTPBase.OTPBase):
     def ignoreHotkeys(self) -> None:
         # Ignore the screenshot key
         self.ignore(self.controls.SCREENSHOT)
+        self.ignore(self.controls.TOGGLE_RUN_HOTKEY)
         self.ignore(self.controls.MAP_PAGE_HOTKEY)
         self.ignore(self.controls.FRIENDS_LIST_HOTKEY)
         self.ignore(self.controls.STREET_MAP_HOTKEY)

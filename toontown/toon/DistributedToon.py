@@ -2749,10 +2749,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 self.notify.warning('hiding av %s because they are not on the district!' % self.doId)
                 self.setParent(OTPGlobals.SPHidden)
 
-    def setRun(self):
-        if self.isLocal():
-            inputState.set('debugRunning', inputState.isSet('debugRunning') is not True)
-
     def setFriendsList(self, friendsList):
         DistributedPlayer.DistributedPlayer.setFriendsList(self, friendsList)
         for friendId, trueFriend in self.friendsList:
@@ -2828,6 +2824,13 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setRun(self):
         if self.isLocal():
             inputState.set('debugRunning', inputState.isSet('debugRunning') is not True)
+
+    def setRunFromHotkey(self):
+        self.setRun()
+        if inputState.isSet('debugRunning'):
+            self.setSystemMessage(0, "Toggled Fast Run On", whisperType=WhisperType.WTMagicWord)
+        else:
+            self.setSystemMessage(0, "Toggled Fast Run Off", whisperType=WhisperType.WTMagicWord)
 
     def getTransitioning(self):
         return self.transitioning

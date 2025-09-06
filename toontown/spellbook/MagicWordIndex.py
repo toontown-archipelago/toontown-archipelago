@@ -77,6 +77,9 @@ class MagicWord:
     # The minimum access level required to use this Magic Word. By default, USER.
     accessLevel = 'USER'
 
+    # This word has priority to be shown at the top of the spellbook page
+    priority = False
+
     # A restriction on the Magic Word which sets what kind or set of Distributed Objects it can be used on. By default, AFFECT_EVERYONE.
     affectRange = [MagicWordConfig.AFFECT_SINGLE, MagicWordConfig.AFFECT_OTHER, MagicWordConfig.AFFECT_BOTH]
 
@@ -110,7 +113,6 @@ class MagicWord:
             self.__register()  # and register the magic word.
 
     def __register(self):
-
         for wordName in self.aliases:
             magicWordIndex[wordName] = {
                 'classname': self.__class__.__name__,  # This class
@@ -121,6 +123,7 @@ class MagicWord:
                 'example': self.example,
                 'execLocation': self.execLocation,
                 'access': self.accessLevel,
+                'priority': self.priority,
                 'affectRange': self.affectRange,
                 'args': self.arguments
             }
@@ -241,6 +244,7 @@ class Shout(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("shout", str, True)]
     accessLevel = 'NO_ACCESS'
+    priority = True
 
     def handleWord(self, invoker, avId, toon, *args):
         shout = args[0]
@@ -284,6 +288,7 @@ class ToggleRun(MagicWord):
     desc = "Toggles run mode, which gives you a faster running speed."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     accessLevel = 'NO_ACCESS'
+    priority = True
 
     def handleWord(self, invoker, avId, toon, *args):
         toon.d_setRun()
@@ -946,7 +951,7 @@ class TrueFriend(MagicWord):
     desc = "Automatically add a Toon as a true friend."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("avIdShort", int, True)]
-    accessLevel = 'NO_ACCESS'
+    accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
         avIdShort = args[0]
@@ -970,7 +975,7 @@ class ToggleOobeCull(MagicWord):
     aliases = ["oobecull"]
     desc = "Toggle 'out of body experience' view, with culling debugging."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-    accessLevel = 'NO_ACCESS'
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         base.oobeCull()
@@ -980,7 +985,7 @@ class ToggleWire(MagicWord):
     aliases = ["wire", "wireframe"]
     desc = "Toggle wireframe view."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-    accessLevel = 'NO_ACCESS'
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         base.toggleWireframe()
@@ -990,7 +995,7 @@ class ToggleTextures(MagicWord):
     aliases = ["textures"]
     desc = "Toggle textures."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-    accessLevel = 'NO_ACCESS'
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         base.toggleTexture()
@@ -1093,6 +1098,7 @@ class SpawnBuilding(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("department", str, True), ("floorCount", int, True)]
     accessLevel = 'NO_ACCESS'
+    priority = True
 
     def handleWord(self, invoker, avId, toon, *args):
         suitDeptToCode = {
@@ -1581,7 +1587,7 @@ class ToggleGhost(MagicWord):
     aliases = ["ghost"]
     desc = "Set toon to invisible."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = 'NO_ACCESS'
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
         if invoker.ghostMode == 0:
@@ -2282,6 +2288,76 @@ class RestartSeltzerRound(MagicWord):
         return "Restarting Seltzer Round"
 
 
+class KillBoss(MagicWord):
+    aliases = ['skipaction', 'killboss', 'skipfinal']
+    desc = "Skips the final round of a Cog Boss."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'NO_ACCESS'
+    priority = True
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedSellbotBossAI import DistributedSellbotBossAI
+        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
+        from toontown.suit.DistributedLawbotBossAI import DistributedLawbotBossAI
+        from toontown.suit.DistributedBossbotBossAI import DistributedBossbotBossAI
+        boss = None
+        bossType = None
+        for do in list(simbase.air.doId2do.values()):
+            if isinstance(do, DistributedSellbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    bossType = 'sell'
+                    break
+            elif isinstance(do, DistributedCashbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    bossType = 'cash'
+                    break
+            elif isinstance(do, DistributedLawbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    bossType = 'law'
+                    break
+            elif isinstance(do, DistributedBossbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    bossType = 'boss'
+                    break
+        if not boss:
+            return "You aren't in a Cog Boss!"
+
+        if bossType == 'sell':
+            if boss.state in ('PrepareBattleThree', 'BattleThree'):
+                boss.exitIntroduction()
+                boss.b_setState('Victory')
+                return "Skipping VP Final..."
+            else:
+                return "You aren't in the final round!"
+        elif bossType == 'cash':
+            if boss.state in ('PrepareBattleThree', 'BattleThree'):
+                boss.exitIntroduction()
+                boss.b_setState('Victory')
+                return "Skipping CFO Final..."
+            else:
+                return "You aren't in the final round!"
+        elif bossType == 'law':
+            if boss.state in ('PrepareBattleThree', 'BattleThree'):
+                boss.exitIntroduction()
+                boss.b_setState('Victory')
+                return "Skipping CJ Final..."
+            else:
+                return "You aren't in the final round!"
+        elif bossType == 'boss':
+            if boss.state in ('PrepareBattleFour', 'BattleFour'):
+                boss.exitIntroduction()
+                boss.b_setState('Victory')
+                return "Skipping CEO Final..."
+            else:
+                return "You aren't in the final round!"
+        else:
+            return "Got an invalid/no boss!"
+
+
 class SkipVP(MagicWord):
     desc = "Skips to the indicated round of the VP."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
@@ -2329,6 +2405,7 @@ class SkipVP(MagicWord):
                     boss.b_setState("Introduction")
                 boss.b_setState('BattleOne')
                 return "Skipping introduction!"
+
 
 class StunVP(MagicWord):
     desc = "Stuns the VP in the final round of his battle."
@@ -2508,6 +2585,7 @@ class SpawnCog(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("suit", str, True), ("level", int, False, 1), ("specialSuit", int, False, 0), ("revives", int, False, 0)]
     accessLevel = 'NO_ACCESS'
+    priority = True
 
     def handleWord(self, invoker, avId, toon, *args):
         name = args[0]
@@ -3657,6 +3735,18 @@ class SetAccessKeys(MagicWord):
         return f"{toon.getName()}'s keys: {toon.getAccessKeys()}"
 
 
+class APClear(MagicWord):
+    aliases = ['cleartoon', 'clearap', 'wipetoon']
+    desc = "Clears the Toon's progress for another AP seed."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'NO_ACCESS'
+    priority = True
+
+    def handleWord(self, invoker, avId, toon, *args):
+        toon.newToon()
+        return f"Wiped {toon.getName()}'s progress!"
+
+
 class Archipelago(MagicWord):
     aliases = ['ap', 'archi']
     desc = "Commands to force certain behavior with an AP session, does not work unless an active AP session is active"
@@ -3718,7 +3808,7 @@ class FreeLocalToon(MagicWord):
     aliases = ['free', 'unstuck', 'freeme', 'unstick', 'imstuck', 'stuck']
     desc = "Forces your toon to be set in the 'walk' state where you can regain control of your toon and walk around freely. Use at your own risk."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
-    accessLevel = 'NO_ACCESS'
+    accessLevel = 'USER'
 
     def handleWord(self, invoker, avId, toon, *args):
 
