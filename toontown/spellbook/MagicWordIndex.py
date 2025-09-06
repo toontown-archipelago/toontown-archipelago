@@ -2282,6 +2282,75 @@ class RestartSeltzerRound(MagicWord):
         return "Restarting Seltzer Round"
 
 
+class KillBoss(MagicWord):
+    aliases = ['skipaction', 'killboss', 'skipfinal']
+    desc = "Skips the final round of a Cog Boss."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'NO_ACCESS'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedSellbotBossAI import DistributedSellbotBossAI
+        from toontown.suit.DistributedCashbotBossAI import DistributedCashbotBossAI
+        from toontown.suit.DistributedLawbotBossAI import DistributedLawbotBossAI
+        from toontown.suit.DistributedBossbotBossAI import DistributedBossbotBossAI
+        boss = None
+        bossType = None
+        for do in list(simbase.air.doId2do.values()):
+            if isinstance(do, DistributedSellbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    bossType = 'sell'
+                    break
+            elif isinstance(do, DistributedCashbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    bossType = 'cash'
+                    break
+            elif isinstance(do, DistributedLawbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    bossType = 'law'
+                    break
+            elif isinstance(do, DistributedBossbotBossAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    bossType = 'boss'
+                    break
+        if not boss:
+            return "You aren't in a Cog Boss!"
+
+        if bossType == 'sell':
+            if boss.state in ('PrepareBattleThree', 'BattleThree'):
+                boss.exitIntroduction()
+                boss.b_setState('Victory')
+                return "Skipping VP Final..."
+            else:
+                return "You aren't in the final round!"
+        elif bossType == 'cash':
+            if boss.state in ('PrepareBattleThree', 'BattleThree'):
+                boss.exitIntroduction()
+                boss.b_setState('Victory')
+                return "Skipping CFO Final..."
+            else:
+                return "You aren't in the final round!"
+        elif bossType == 'law':
+            if boss.state in ('PrepareBattleThree', 'BattleThree'):
+                boss.exitIntroduction()
+                boss.b_setState('Victory')
+                return "Skipping CJ Final..."
+            else:
+                return "You aren't in the final round!"
+        elif bossType == 'boss':
+            if boss.state in ('PrepareBattleFour', 'BattleFour'):
+                boss.exitIntroduction()
+                boss.b_setState('Victory')
+                return "Skipping CEO Final..."
+            else:
+                return "You aren't in the final round!"
+        else:
+            return "Got an invalid/no boss!"
+
+
 class SkipVP(MagicWord):
     desc = "Skips to the indicated round of the VP."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
@@ -2329,6 +2398,7 @@ class SkipVP(MagicWord):
                     boss.b_setState("Introduction")
                 boss.b_setState('BattleOne')
                 return "Skipping introduction!"
+
 
 class StunVP(MagicWord):
     desc = "Stuns the VP in the final round of his battle."
