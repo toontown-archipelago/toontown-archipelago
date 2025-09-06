@@ -152,6 +152,7 @@ class WordsTabPage(DirectFrame):
         self.load()
 
     def load(self):
+        self.priorityMagicWords = []
         self.magicWords = []
         self.hiddenMagicWords = []
         self.shownMagicWords = []
@@ -250,7 +251,7 @@ class WordsTabPage(DirectFrame):
         guiClose.removeNode()
 
     def unload(self):
-        for word in self.magicWords + self.hiddenMagicWords + self.shownMagicWords:
+        for word in self.magicWords + self.hiddenMagicWords + self.shownMagicWords + self.priorityMagicWords:
             word.destroy()
             del word
 
@@ -303,14 +304,30 @@ class WordsTabPage(DirectFrame):
 
     def setupWords(self, returnWords=False):
         words = []
+        priorityWords = []
+        nonCheatWords = []
 
         for wordName in magicWordIndex:
             word = magicWordIndex[wordName]
-            if word['classname'] not in words:
+            if word['classname'] not in words:# or word['classname'] not in priorityWords:
                 if not word['hidden']:
+                    if word['priority']:
+                        priorityWords.append(word['classname'])
+                    if word['access'] == "NO_ACCESS":
+                        nonCheatWords.append(word['classname'])
                     words.append(word['classname'])
 
-        sortedWords = sorted(words)
+        for word in priorityWords:
+            if word in words:
+                words.remove(word)
+            if word in nonCheatWords:
+                nonCheatWords.remove(word)
+
+        for word in nonCheatWords:
+            if word in words:
+                words.remove(word)
+
+        sortedWords = sorted(priorityWords) + sorted(nonCheatWords) + sorted(words)
 
         numWords = len(sortedWords)
         if returnWords:
