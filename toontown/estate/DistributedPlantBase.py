@@ -192,6 +192,7 @@ class DistributedPlantBase(DistributedLawnDecor.DistributedLawnDecor):
             track.append(Func(self.sendUpdate, 'waterPlantDone'))
             track.append(Func(self.finishInteraction))
         track.start()
+        track.setPlayRate(2.0)
         self.waterTrackDict[avId] = track
 
     def generateWaterTrack(self, toon):
