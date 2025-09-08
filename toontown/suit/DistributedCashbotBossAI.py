@@ -603,7 +603,11 @@ class DistributedCashbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
         self.recycledTreasures = []
 
     def getMaxGoons(self):
-        return self.progressValue(self.ruleset.MAX_GOON_AMOUNT_START, self.ruleset.MAX_GOON_AMOUNT_END)
+        goonsToAdd = 0
+        goonsToAdd += min(4, (len(self.involvedToons)-1))
+        goonsStart = self.ruleset.MAX_GOON_AMOUNT_START + goonsToAdd
+        goonsEnd = self.ruleset.MAX_GOON_AMOUNT_END + goonsToAdd
+        return self.progressValue(goonsStart, goonsEnd)
 
     def makeGoon(self, side = None):
         self.goonMovementTime = globalClock.getFrameTime()
