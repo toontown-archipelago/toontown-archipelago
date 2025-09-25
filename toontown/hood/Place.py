@@ -507,8 +507,12 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
             return rejectEntry(TTLocalizer.BoardingCannotLeaveZone)
 
         tpsanity = localAvatar.slotData.get('tpsanity')
+        targetHood = requestStatus.get('hoodId')
+        print(requestStatus)
+        print(str(requestStatus.get('hoodId')) + " " + str(requestStatus.get('zoneId')))
         if tpsanity == TPSanity.option_keys:
             targetHood = requestStatus.get('hoodId')
+            print(targetHood)
             if targetHood is not None:
                 if not localAvatar.hasTeleportAccess(targetHood):
                     return rejectEntry("You'll need Teleport Access to go through there!")

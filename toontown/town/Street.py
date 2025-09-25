@@ -233,6 +233,7 @@ class Street(BattlePlace.BattlePlace):
         zoneId = requestStatus['zoneId']
         self._ttfToken = self.addSetZoneCompleteCallback(Functor(self._teleportToFriend, requestStatus))
         self.enterZone(zoneId)
+        base.localAvatar.setPosHpr(render, 25, 33, 0, -170, 0, 0)
         BattlePlace.BattlePlace.enterTeleportIn(self, requestStatus)
 
     def _teleportToFriend(self, requestStatus):

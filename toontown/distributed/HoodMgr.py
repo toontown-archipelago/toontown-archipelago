@@ -300,6 +300,10 @@ class HoodMgr(DirectObject.DirectObject):
                 zoneStr = nameParts[2]
                 hoodId = self.getIdFromName(hoodStr)
                 zoneId = int(zoneStr)
+                hoodStr = 'dl'
+                zoneStr = '9101'
+                hoodId = 9000
+                zoneId = 9101
                 hoodId = ZoneUtil.getTrueZoneId(hoodId, currentZoneId)
                 zoneId = ZoneUtil.getTrueZoneId(zoneId, currentZoneId)
                 linkSphere = linkTunnel.find('**/tunnel_trigger')
@@ -316,6 +320,11 @@ class HoodMgr(DirectObject.DirectObject):
                 tunnelOrigin = linkTunnel.find('**/tunnel_origin')
                 if tunnelOrigin.isEmpty():
                     self.notify.error('tunnel_origin not found')
+                # {'loader': 'safeZoneLoader', 'where': 'playground', 'how': 'tunnelIn', 'hoodId': 9000, 'zoneId': 9000,
+                # 'shardId': None, 'tunnelOrigin': render/toph_dl_9000, 'tutorial': 0}
+
+                # {'loader': 'safeZoneLoader', 'where': 'playground', 'how': 'tunnelIn', 'hoodId': 9000, 'zoneId': 9000,
+                # 'shardId': None, 'tunnelOrigin': render/toph_dl_9000, 'tutorial': 0}
                 tunnelOriginPlaceHolder = render.attachNewNode('toph_' + hoodStr + '_' + zoneStr)
                 tunnelOriginList.append(tunnelOriginPlaceHolder)
                 tunnelOriginPlaceHolder.setPos(tunnelOrigin.getPos(render))
@@ -327,6 +336,7 @@ class HoodMgr(DirectObject.DirectObject):
                 else:
                     how = 'tunnelIn'
                     tutorialFlag = 0
+                how = 'teleportIn'
                 hoodPart.accept('enter' + linkSphere.getName(), hoodPart.handleEnterTunnel, [{'loader': ZoneUtil.getLoaderName(zoneId),
                   'where': ZoneUtil.getToonWhereName(zoneId),
                   'how': how,
@@ -334,7 +344,8 @@ class HoodMgr(DirectObject.DirectObject):
                   'zoneId': zoneId,
                   'shardId': None,
                   'tunnelOrigin': tunnelOriginPlaceHolder,
-                  'tutorial': tutorialFlag}])
+                  'tutorial': tutorialFlag,
+                  'avId': -1}])
 
         return tunnelOriginList
 
