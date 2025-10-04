@@ -1214,6 +1214,7 @@ dclass DistributedTrolley : DistributedObject {
   emptySlot1(uint32, int16) broadcast ram;
   emptySlot2(uint32, int16) broadcast ram;
   emptySlot3(uint32, int16) broadcast ram;
+  countdown(uint8) airecv clsend;
   requestBoard() airecv clsend;
   rejectBoard(uint32);
   requestExit() airecv clsend;
@@ -2586,6 +2587,7 @@ dclass DistributedElevator : DistributedObject {
   requestBoard() airecv clsend;
   rejectBoard(uint32, uint8);
   requestExit() airecv clsend;
+  countdown(uint8) airecv clsend;
   setElevatorTripId(uint32) required broadcast ram;
   setAntiShuffle(uint8) required broadcast ram;
   setMinLaff(uint8) required broadcast ram;
@@ -3577,6 +3579,7 @@ dclass DistributedGolfKart : DistributedObject {
   setGolfZone(uint32, uint16);
   setGolfCourse(int8) required broadcast ram;
   setPosHpr(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10) required broadcast ram;
+  countdown(uint8) airecv clsend;
   setColor(int16, int16, int16) required broadcast ram;
 };
 

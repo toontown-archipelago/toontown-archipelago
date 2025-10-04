@@ -280,6 +280,13 @@ class TownBattle(StateData.StateData):
          tracks,
          levels,
          targets))
+        numSounds = 0
+        for i in range(4):
+            if battleIndices[i] == -1:
+                pass
+            else:
+                if tracks[i] == BattleBase.SOUND:
+                    numSounds += 1
         for i in range(4):
             if battleIndices[i] == -1:
                 pass
@@ -307,7 +314,7 @@ class TownBattle(StateData.StateData):
                         target = targets[i]
                         if target == -1:
                             numTargets = None
-                self.toonPanels[battleIndices[i]].setValues(battleIndices[i], tracks[i], levels[i], numTargets, target, self.localNum)
+                self.toonPanels[battleIndices[i]].setValues(battleIndices[i], tracks[i], levels[i], numTargets, target, self.localNum, numSounds)
 
         return
 

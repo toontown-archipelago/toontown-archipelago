@@ -68,9 +68,12 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
     def d_setLevelDist(self, level):
         self.sendUpdate('setLevelDist', [level])
 
-    def setupSuitDNA(self, level, type, track):
+    def setupSuitDNA(self, level, type, track, name=None):
         dna = SuitDNA.SuitDNA()
-        dna.newSuitRandom(type, track)
+        if name and name in SuitDNA.notMainTypes:
+            dna.newSuitName(track, name)
+        else:
+            dna.newSuitRandom(type, track)
         self.dna = dna
         self.track = track
         self.setLevel(level)

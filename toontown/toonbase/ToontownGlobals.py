@@ -6,7 +6,7 @@ from direct.showbase.PythonUtil import invertDict
 from panda3d.core import BitMask32, Vec4, Filename
 import collections
 
-GameVersion = "v0.17.3"
+GameVersion = "v0.17.4"
 MapHotkey = 'MapHotkey'
 AccountDatabaseChannelId = 4008
 ToonDatabaseChannelId = 4021
@@ -1585,7 +1585,7 @@ NonSafePassiveHealingZones = (
 )
 
 SuitLevels = []
-for level in range(1,51):
+for level in range(1, 101):
     SuitLevels.append(level)
 
 GravityValue = 32.174

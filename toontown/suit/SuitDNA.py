@@ -714,6 +714,12 @@ class SuitDNA(AvatarDNA.AvatarDNA):
         self.type = 'b'
         self.dept = dept
 
+    def newSuitName(self, dept, name):
+        self.type = 's'
+        self.dept = dept
+        self.name = name
+        self.body = getSuitBodyType(self.name)
+
     def newSuitRandom(self, level = None, dept = None):
         self.type = 's'
         if level is None:

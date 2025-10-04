@@ -844,7 +844,6 @@ def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
         laff_rule = Rule.Has20PercentMax
     elif argument[0] == 3:
         pgs = [
-            ToontownRegionName.TTC,
             ToontownRegionName.DD,
             ToontownRegionName.DG,
             ToontownRegionName.MML,

@@ -16,7 +16,7 @@ class DistributedBarrelBase(BasicEntities.DistributedNodePathEntity, BarrelBase.
         self.animTrack = None
         self.shadow = 0
         self.barrelScale = 0.5
-        self.sphereRadius = 3.2
+        self.sphereRadius = 4.5
         self.playSoundForRemoteToons = 1
         self.gagNode = None
         self.gagModel = None
@@ -54,6 +54,7 @@ class DistributedBarrelBase(BasicEntities.DistributedNodePathEntity, BarrelBase.
         self.collNode.setIntoCollideMask(WallBitmask)
         self.collNode.addSolid(self.collSphere)
         self.collNodePath = self.barrel.attachNewNode(self.collNode)
+        self.collNodePath.setPos(0, 0, 2)
         self.collNodePath.hide()
         self.applyLabel()
         self.accept(self.uniqueName('enterbarrelSphere'), self.handleEnterSphere)
