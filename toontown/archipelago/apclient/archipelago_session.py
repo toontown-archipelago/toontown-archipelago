@@ -12,6 +12,8 @@ from toontown.archipelago.packets.serverbound.location_checks_packet import Loca
 from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.archipelago.packets.serverbound.say_packet import SayPacket
 from toontown.archipelago.packets.serverbound.status_update_packet import StatusUpdatePacket
+from toontown.archipelago.packets.serverbound.connect_update_packet import ConnectUpdatePacket
+from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacket
 from toontown.archipelago.packets.serverbound.set_packet import SetPacket, DataStorageOperation
 from toontown.archipelago.packets.serverbound.get_packet import GetPacket
 from toontown.archipelago.packets.serverbound.set_notify_packet import SetNotifyPacket
@@ -36,14 +38,12 @@ class ArchipelagoSession:
         self.connect_tried = False
 
     def handle_connect(self, server_url: str = None):
-
         if server_url or not self.connect_tried:
             server_url = server_url or self.default_ip
             self.avatar.b_setArchipelagoIP(server_url)
             self.avatar.d_setSystemMessage(0, f"DEBUG: set AP server URL to {server_url}")
             self.client.set_connect_url(server_url)
             self.connect_tried = True
-
         try:
             self.client.connect()
         except Exception as e:
@@ -61,6 +61,51 @@ class ArchipelagoSession:
     def handle_password(self, new_password):
         self.client.update_identification(self.client.slot_name, new_password)
         self.avatar.d_setSystemMessage(0, f"Updated password")
+
+    def handle_deathlink(self, linktype):
+        validTypes = {"off": DeathLinkOption.option_off,
+                      "drain": DeathLinkOption.option_drain,
+                      "one": DeathLinkOption.option_one,
+                      "full": DeathLinkOption.option_full}
+        if linktype not in validTypes.keys():
+            self.avatar.d_setSystemMessage(0, f"Not a valid deathlink type, valid options are: off, drain, one, full")
+        else:
+            if hasattr(self.avatar, 'slotData'):
+                ring_link = self.avatar.slotData.get('ring_link', False)
+                update_packet = ConnectUpdatePacket()
+                tags = []
+                if linktype != "off":
+                    tags.append(ConnectPacket.TAG_DEATHLINK)
+                if ring_link:
+                    tags.append(ConnectPacket.TAG_RINGLINK)
+                update_packet.tags = tags
+                self.client.send_packet(update_packet)
+                newSlotData = self.avatar.slotData
+                newSlotData['death_link'] = validTypes[linktype]
+                self.avatar.b_setSlotData(newSlotData)
+                self.avatar.d_setSystemMessage(0, f"Set deathlink to {linktype}.")
+            else:
+                self.avatar.d_setSystemMessage(0, f"Slot data not available, try again later.")
+
+    def handle_ringlink(self):
+        if hasattr(self.avatar, 'slotData'):
+            death_link = self.avatar.slotData.get('death_link', DeathLinkOption.option_off)
+            ring_link = self.avatar.slotData.get('ring_link', False)
+            update_packet = ConnectUpdatePacket()
+            tags = []
+            if death_link != DeathLinkOption.option_off:
+                tags.append(ConnectPacket.TAG_DEATHLINK)
+            if not ring_link:
+                tags.append(ConnectPacket.TAG_RINGLINK)
+            update_packet.tags = tags
+            self.client.send_packet(update_packet)
+            newSlotData = self.avatar.slotData
+            # Swap ringlink value
+            newSlotData['ring_link'] = not ring_link
+            self.avatar.b_setSlotData(newSlotData)
+            self.avatar.d_setSystemMessage(0, f"Toggled ringlink.")
+        else:
+            self.avatar.d_setSystemMessage(0, f"Slot data not available, try again later.")
 
     # Called from DisToonAI when this toon sends a chat message
     def handle_chat(self, message: str):
@@ -81,6 +126,15 @@ class ArchipelagoSession:
                 ip = None
 
             return self.handle_connect(server_url=ip)
+
+        if message.startswith('!deathlink'):
+            dlType = message.removeprefix('!deathlink').lstrip()
+            if not type:
+                dlType = None
+            return self.handle_deathlink(linktype=dlType)
+
+        if message.startswith('!ringlink'):
+            return self.handle_ringlink()
 
         # Handle the case where they are trying to disconnect
         if message.startswith('!disconnect'):
