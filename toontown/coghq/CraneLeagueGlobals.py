@@ -158,12 +158,12 @@ class CFORuleset:
 
         # GOON/TREASURE SETTINGS
         self.MIN_GOON_DAMAGE = 3  # What is the lowest amount of damage a goon should do? (beginning of CFO)
-        self.MAX_GOON_DAMAGE = 20  # What is the highest amount of damage a goon should do? (end of CFO)
-        self.GOON_SPEED_MULTIPLIER = 1.0  # How fast should goons move?
+        self.MAX_GOON_DAMAGE = 15  # What is the highest amount of damage a goon should do? (end of CFO)
+        self.GOON_SPEED_MULTIPLIER = 0.9  # How fast should goons move?
 
         # How many goons should we allow to spawn? This will scale up towards the end of the fight to the 2nd var
-        self.MAX_GOON_AMOUNT_START = 4
-        self.MAX_GOON_AMOUNT_END = 6
+        self.MAX_GOON_AMOUNT_START = 2
+        self.MAX_GOON_AMOUNT_END = 4
 
         # Should goons get stunned instead of die on hit?
         self.SAFES_STUN_GOONS = False
