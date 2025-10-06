@@ -81,39 +81,103 @@ class DistributedFlowerAI(DistributedPlantBaseAI, FlowerBase):
             if not av:
                 return
 
-            plot = self.mgr.placePlot(self.getFlowerIndex())
-            plot.setFlowerIndex(self.getFlowerIndex())
-            plot.setPlot(self.plot)
-            plot.setOwnerIndex(self.ownerIndex)
-
-            # <hack>
-            index = (0, 1, 2, 2, 2, 3, 3, 3, 4, 4)[self.getFlowerIndex()]
-            idx = (0, 0, 0, 1, 2, 0, 1, 2, 0, 1)[self.getFlowerIndex()]
-            zOffset = 1.2
-            gardenBox = self.mgr._estateBoxes[index]
-            xOffset = FLOWER_X_OFFSETS[gardenBox.getTypeIndex()][idx]
-            plot.setPos(gardenBox, 0, 0, 0)
-            plot.setZ(gardenBox, zOffset)
-            plot.setX(gardenBox, xOffset)
-            plot.setH(gardenBox, 0)
-            # </hack>
-
-            plot.generateWithRequired(self.zoneId)
-            if not usingPickAll:
-                plot.d_setMovie(GardenGlobals.MOVIE_FINISHREMOVING, avId)
-                plot.d_setMovie(GardenGlobals.MOVIE_CLEAR, avId)
-
-            self.air.writeServerEvent('%s-flower' % action, avId, plot=self.plot)
-            self.requestDelete()
-            self.mgr.flowers.remove(self)
-            mapData = list(map(list, self.mgr.data['flowers']))
-            mapData[self.getFlowerIndex()] = self.mgr.getNullPlant()
-            self.mgr.data['flowers'] = mapData
-            self.mgr.update()
             if action == 'pick':
+                # Give rewards
                 av.b_setShovelSkill(av.getShovelSkill() + self.getValue())
                 av.addFlowerToBasket(self.getSpecies(), self.getVariety())
+
+                # Delete the old flower
+                self.air.writeServerEvent('%s-flower' % action, avId, plot=self.plot)
+                self.requestDelete()
+                self.mgr.flowers.remove(self)
+                mapData = list(map(list, self.mgr.data['flowers']))
+                mapData[self.getFlowerIndex()] = self.mgr.getNullPlant()
+                self.mgr.data['flowers'] = mapData
+                self.mgr.update()
+
+                # Create a new flower
+                newFlower = self.mgr.plantRandomFlower(self.getFlowerIndex(), ownerIndex=self.ownerIndex, plotId=self.plot)
+                if newFlower:
+                    # Position and generate the new flower.
+                    index = (0, 1, 2, 2, 2, 3, 3, 3, 4, 4)[newFlower.getFlowerIndex()]
+                    idx = (0, 0, 0, 1, 2, 0, 1, 2, 0, 1)[newFlower.getFlowerIndex()]
+                    zOffset = 1.5
+                    gardenBox = self.mgr._estateBoxes[index]
+                    xOffset = FLOWER_X_OFFSETS[gardenBox.getTypeIndex()][idx]
+                    newFlower.setPos(gardenBox, 0, 0, 0)
+                    newFlower.setZ(gardenBox, zOffset)
+                    newFlower.setX(gardenBox, xOffset)
+                    newFlower.setH(gardenBox, 0)
+                    
+                    newFlower.generateWithRequired(self.zoneId)
+                    
+                    # Make it fully grown
+                    plantAttribs = GardenGlobals.PlantAttributes.get(newFlower.getSpecies())
+                    if plantAttribs:
+                        growthThresholds = plantAttribs.get('growthThresholds')
+                        if growthThresholds:
+                            growthLevel = growthThresholds[2]
+                            newFlower.b_setGrowthLevel(growthLevel)
+                            newFlower.update()
+
+                    # clear the movie state
+                    newFlower.d_setMovie(GardenGlobals.MOVIE_FINISHREMOVING, avId)
+                    newFlower.d_setMovie(GardenGlobals.MOVIE_CLEAR, avId)
+                else:
+                    plot = self.mgr.placePlot(self.getFlowerIndex())
+                    plot.setFlowerIndex(self.getFlowerIndex())
+                    plot.setPlot(self.plot)
+                    plot.setOwnerIndex(self.ownerIndex)
+
+                    # <hack>
+                    index = (0, 1, 2, 2, 2, 3, 3, 3, 4, 4)[self.getFlowerIndex()]
+                    idx = (0, 0, 0, 1, 2, 0, 1, 2, 0, 1)[self.getFlowerIndex()]
+                    zOffset = 1.2
+                    gardenBox = self.mgr._estateBoxes[index]
+                    xOffset = FLOWER_X_OFFSETS[gardenBox.getTypeIndex()][idx]
+                    plot.setPos(gardenBox, 0, 0, 0)
+                    plot.setZ(gardenBox, zOffset)
+                    plot.setX(gardenBox, xOffset)
+                    plot.setH(gardenBox, 0)
+                    # </hack>
+
+                    plot.generateWithRequired(self.zoneId)
+                    if not usingPickAll:
+                        plot.d_setMovie(GardenGlobals.MOVIE_FINISHREMOVING, avId)
+                        plot.d_setMovie(GardenGlobals.MOVIE_CLEAR, avId)
                 
+
+            else: # Not picking, just removing
+                plot = self.mgr.placePlot(self.getFlowerIndex())
+                plot.setFlowerIndex(self.getFlowerIndex())
+                plot.setPlot(self.plot)
+                plot.setOwnerIndex(self.ownerIndex)
+
+                # <hack>
+                index = (0, 1, 2, 2, 2, 3, 3, 3, 4, 4)[self.getFlowerIndex()]
+                idx = (0, 0, 0, 1, 2, 0, 1, 2, 0, 1)[self.getFlowerIndex()]
+                zOffset = 1.2
+                gardenBox = self.mgr._estateBoxes[index]
+                xOffset = FLOWER_X_OFFSETS[gardenBox.getTypeIndex()][idx]
+                plot.setPos(gardenBox, 0, 0, 0)
+                plot.setZ(gardenBox, zOffset)
+                plot.setX(gardenBox, xOffset)
+                plot.setH(gardenBox, 0)
+                # </hack>
+
+                plot.generateWithRequired(self.zoneId)
+                if not usingPickAll:
+                    plot.d_setMovie(GardenGlobals.MOVIE_FINISHREMOVING, avId)
+                    plot.d_setMovie(GardenGlobals.MOVIE_CLEAR, avId)
+
+                self.air.writeServerEvent('%s-flower' % action, avId, plot=self.plot)
+                self.requestDelete()
+                self.mgr.flowers.remove(self)
+                mapData = list(map(list, self.mgr.data['flowers']))
+                mapData[self.getFlowerIndex()] = self.mgr.getNullPlant()
+                self.mgr.data['flowers'] = mapData
+                self.mgr.update()
+
             if task:
                 return task.done
 
@@ -121,4 +185,3 @@ class DistributedFlowerAI(DistributedPlantBaseAI, FlowerBase):
             handleRemoveItem(None)
         else:
             taskMgr.doMethodLater(3.5, handleRemoveItem, self.uniqueName('handle-remove-item'))
-    

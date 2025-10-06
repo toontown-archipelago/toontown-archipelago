@@ -173,6 +173,8 @@ class DistributedPlantBase(DistributedLawnDecor.DistributedLawnDecor):
             self.doFinishPlantingTrack(avId)
         elif mode == GardenGlobals.MOVIE_REMOVE:
             self.doDigupTrack(avId)
+        elif mode == GardenGlobals.MOVIE_FINISHREMOVING:
+            self.doFinishPlantingTrack(avId)
 
     def doWaterTrack(self, avId):
         toon = base.cr.doId2do.get(avId)
