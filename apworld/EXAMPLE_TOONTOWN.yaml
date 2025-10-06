@@ -425,6 +425,7 @@ Toontown:
   # Buildings - All Cog Building completion locations
   # Golfing - All minigolf locations
   # Racing - All racing locations
+  # Bounty - All bounty locations
 
   start_location_hints:
     # Start with these locations hinted in your world.

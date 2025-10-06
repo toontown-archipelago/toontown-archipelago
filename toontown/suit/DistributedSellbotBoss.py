@@ -86,14 +86,14 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             self.strafeSfx.append(loader.loadSfx('phase_3.5/audio/sfx/SA_shred.ogg'))
 
         render.setTag('pieCode', str(ToontownGlobals.PieCodeNotBossCog))
-        insidesA = CollisionPolygon(Point3(4.0, -2.0, 5.0), Point3(-4.0, -2.0, 5.0), Point3(-4.0, -2.0, 0.5), Point3(4.0, -2.0, 0.5))
+        insidesA = CollisionPolygon(Point3(4.2, -3, 5.0), Point3(-4.2, -3, 5.0), Point3(-4.2, -3, 0.5), Point3(4.2, -3, 0.5))
         insidesANode = CollisionNode('BossZap')
         insidesANode.addSolid(insidesA)
         insidesANode.setCollideMask(ToontownGlobals.PieBitmask | ToontownGlobals.WallBitmask)
         self.insidesANodePath = self.axle.attachNewNode(insidesANode)
         self.insidesANodePath.setTag('pieCode', str(ToontownGlobals.PieCodeBossInsides))
         self.insidesANodePath.stash()
-        insidesB = CollisionPolygon(Point3(-4.0, 2.0, 5.0), Point3(4.0, 2.0, 5.0), Point3(4.0, 2.0, 0.5), Point3(-4.0, 2.0, 0.5))
+        insidesB = CollisionPolygon(Point3(-4.2, 2.95, 5.0), Point3(4.2, 2.95, 5.0), Point3(4.2, 2.95, 0.5), Point3(-4.2, 2.95, 0.5))
         insidesBNode = CollisionNode('BossZap')
         insidesBNode.addSolid(insidesB)
         insidesBNode.setCollideMask(ToontownGlobals.PieBitmask | ToontownGlobals.WallBitmask)
@@ -1230,7 +1230,7 @@ class DistributedSellbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
             h = random.uniform(-720, 720)
             gearTrack.append(Sequence(Wait(i * rate), Func(node.show), Parallel(node.posInterval(1, Point3(x, y, 0), fluid=1), node.hprInterval(1, VBase3(h, 0, 0), fluid=1), Sequence(SoundInterval(self.strafeSfx[i], volume=0.2, node=self), duration=0)), Func(node.detachNode)))
 
-        seq = Sequence(Func(door.request, 'open'), Wait(0.7), gearTrack, Wait(1.4), Func(door.request, 'close'))
+        seq = Sequence(Func(door.request, 'open'), Wait(0.7), gearTrack, Wait(2), Func(door.request, 'close'))
         self.__cleanupStrafe()
         self.strafeInterval = seq
         seq.start()

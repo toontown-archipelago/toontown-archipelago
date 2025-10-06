@@ -572,7 +572,7 @@ class BattleCalculatorAI:
                     if self.notify.getDebug():
                         self.notify.debug('toon does ' + str(result) + ' healing to toon(s)')
                 elif atkTrack == SOUND:
-                        result = result * (self.SoundDamageCounts[self.soundCount-1] / 100)
+                        result = math.ceil(result * (self.SoundDamageCounts[self.soundCount-1] / 100))
                 else:
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         result = 0

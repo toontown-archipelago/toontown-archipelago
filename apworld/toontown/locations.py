@@ -1679,4 +1679,5 @@ def get_location_groups():
     "Buildings": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.BUILDINGS],
     "Golfing": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GOLF],
     "Racing": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.RACING],
+    "Bounty": [location.value for location in BOUNTY_LOCATIONS]
     }
