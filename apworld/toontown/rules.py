@@ -155,6 +155,8 @@ class Rule(Enum):
     MiddleTwoKey = auto()
     BackThreeKey = auto()
 
+    CanAnyFacility = auto()
+
     ### Laff Logic ###
 
     Has20PercentMax = auto()

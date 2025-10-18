@@ -81,6 +81,8 @@ class QuestManagerAI:
         for index, quest in enumerate(self.__toonQuestsList2Quests(toon.quests)):
             if isinstance(quest, Quests.FactoryQuest):
                 self.__incrementQuestProgress(toon.quests[index])
+            if isinstance(quest, Quests.FacilityQuest):
+                self.__incrementQuestProgress(toon.quests[index])
 
         if toon.quests:
             toon.d_setQuests(toon.getQuests())
@@ -93,6 +95,8 @@ class QuestManagerAI:
             if isinstance(quest, Quests.MintQuest):
                 for _ in range(quest.doesMintCount(toon.getDoId(), mintId, activeToonVictors)):
                     self.__incrementQuestProgress(toon.quests[index])
+            if isinstance(quest, Quests.FacilityQuest):
+                self.__incrementQuestProgress(toon.quests[index])
 
         if toon.quests:
             toon.d_setQuests(toon.getQuests())
@@ -102,6 +106,8 @@ class QuestManagerAI:
             if isinstance(quest, Quests.StageQuest):
                 for _ in range(quest.doesMintCount(toon.getDoId(), stageId, activeToonVictors)):
                     self.__incrementQuestProgress(toon.quests[index])
+            if isinstance(quest, Quests.FacilityQuest):
+                self.__incrementQuestProgress(toon.quests[index])
 
         if toon.quests:
             toon.d_setQuests(toon.getQuests())
@@ -111,6 +117,8 @@ class QuestManagerAI:
             if isinstance(quest, Quests.CountryClubQuest):
                 for _ in range(quest.doesMintCount(toon.getDoId(), countryClubId, activeToonVictors)):
                     self.__incrementQuestProgress(toon.quests[index])
+            if isinstance(quest, Quests.FacilityQuest):
+                self.__incrementQuestProgress(toon.quests[index])
 
         if toon.quests:
             toon.d_setQuests(toon.getQuests())
