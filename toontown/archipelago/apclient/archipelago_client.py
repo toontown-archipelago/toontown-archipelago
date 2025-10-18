@@ -125,9 +125,9 @@ class ArchipelagoClient(DirectObject):
             warn("Invalid slot for fetching item name.", UserWarning, 2)  # print to log with where we were called.
             return f'Unknown Item[{item_id}]'
 
-    def get_item_name_for_hint(self, item_id: Union[str, int]) -> str:
+    def get_item_name_by_id(self, item_id: Union[str, int]) -> str:
         """
-        Given the ID of an item and a slot number, return a display name for an item.
+        Given the ID of an item, return a display name for an item.
         """
         try:
             return self.global_data_package.get_item_from_id(item_id)
@@ -409,7 +409,7 @@ class ArchipelagoClient(DirectObject):
         someone_elses = owning_player_id != self.slot
 
         owner_name = self.get_slot_info(owning_player_id).name + "'s " if someone_elses else "Your "
-        item_name = self.get_item_name(item_id, owning_player_id)
+        item_name = self.get_item_name_by_id(item_id)
 
         # Handle settings for displaying location rewards.
         # Task Reward Locations.

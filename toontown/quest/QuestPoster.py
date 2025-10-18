@@ -457,8 +457,15 @@ class QuestPoster(DirectFrame):
                 lIconGeom = cogIcons.find('**/skelecog5')
                 lIconGeomScale = IMAGE_SCALE_SMALL
                 cogIcons.removeNode()
+            elif quest.getType() == Quests.FacilityQuest:
+                bookModel = loader.loadModel('phase_3.5/models/gui/stickerbook_gui')
+                lIconGeom = bookModel.find('**/factoryIcon2')
+                bookModel.removeNode()
+                lIconGeomScale = 0.13
             if not fComplete:
                 infoText = string.capwords(quest.getLocationName())
+                if quest.getType() == Quests.FacilityQuest:
+                    infoText = TTLocalizer.QuestPosterCogHQs
                 if infoText == '':
                     infoText = TTLocalizer.QuestPosterAnywhere
         if fComplete:

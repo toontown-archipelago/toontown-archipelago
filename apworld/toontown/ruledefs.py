@@ -819,6 +819,50 @@ def CanMaxCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
     return any(rules)
 
 
+@rule(Rule.CanAnyFacility)
+def CanDoAnyFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    CanFrontFactory = passes_rule(Rule.FrontFactoryKey, state, locentr, world, player, options) \
+                      and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
+                      and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanSideFactory = passes_rule(Rule.SideFactoryKey, state, locentr, world, player, options) \
+                     and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                     and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanCoin = passes_rule(Rule.CoinMintKey, state, locentr, world, player, options) \
+              and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
+              and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanDollar = passes_rule(Rule.DollarMintKey, state, locentr, world, player, options) \
+                and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanBullion = passes_rule(Rule.BullionMintKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanAOffice = passes_rule(Rule.OfficeAKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanBOffice = passes_rule(Rule.OfficeBKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanCOffice = passes_rule(Rule.OfficeCKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanDOffice = passes_rule(Rule.OfficeDKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelSevenOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanFrontOne = passes_rule(Rule.FrontOneKey, state, locentr, world, player, options) \
+                  and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                  and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanMiddleTwo = passes_rule(Rule.MiddleTwoKey, state, locentr, world, player, options) \
+                   and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
+                   and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanBackThree = passes_rule(Rule.BackThreeKey, state, locentr, world, player, options) \
+                   and passes_rule(Rule.HasLevelSevenOffenseGag, state, locentr, world, player, options) \
+                   and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    facilities = [CanFrontFactory, CanSideFactory,
+                  CanCoin, CanDollar, CanBullion,
+                  CanAOffice, CanBOffice, CanCOffice, CanDOffice,
+                  CanFrontOne, CanMiddleTwo, CanBackThree]
+    return any(facilities)
+
 @rule(Rule.OneStory, 1)
 @rule(Rule.TwoStory, 2)
 @rule(Rule.ThreeStory, 3)

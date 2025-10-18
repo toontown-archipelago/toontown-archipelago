@@ -253,6 +253,9 @@ class Quest:
     def checkBuildingFloors(self, floors):
         self.check(floors >= 1 and floors <= 5, 'invalid num floors: %s' % floors)
 
+    def checkNumFacilities(self, num):
+        self.check(1, 'invalid num facilities: %s' % num)
+
     def checkNumFactories(self, num):
         self.check(1, 'invalid num factories: %s' % num)
 
@@ -1134,6 +1137,59 @@ class BuildingNewbieQuest(BuildingQuest, NewbieQuest):
 
     def doesBuildingCount(self, avId, avList):
         return self.getNumNewbies(avId, avList)
+
+
+class FacilityQuest(LocationBasedQuest):
+    def __init__(self, id, quest):
+        LocationBasedQuest.__init__(self, id, quest)
+        self.checkNumFacilities(self.quest[1])
+
+    def getNumQuestItems(self):
+        return self.getNumFacilities()
+
+    def getNumFacilities(self):
+        return self.quest[1]
+
+    def getCompletionStatus(self, av, questDesc, npc = None):
+        questId, fromNpcId, toNpcId, rewardId, toonProgress = questDesc
+        questComplete = toonProgress >= self.getNumFacilities()
+        return getCompleteStatusWithNpc(questComplete, toNpcId, npc)
+
+    def getProgressString(self, avatar, questDesc):
+        if self.getCompletionStatus(avatar, questDesc) == COMPLETE:
+            return CompleteString
+        elif self.getNumFacilities() == 1:
+            return ''
+        else:
+            return TTLocalizer.QuestsFacilityQuestProgressString % {'progress': questDesc[4],
+             'num': self.getNumFacilities()}
+
+    def getObjectiveStrings(self):
+        count = self.getNumFacilities()
+        if count == 1:
+            text = TTLocalizer.QuestsFacilityQuestDesc
+        else:
+            text = TTLocalizer.QuestsFacilityQuestDescC % {'count': count}
+        return (text,)
+
+    def getString(self):
+        return TTLocalizer.QuestsFacilityQuestString % self.getObjectiveStrings()[0]
+
+    def getSCStrings(self, toNpcId, progress):
+        if progress >= self.getNumFacilities():
+            return getFinishToonTaskSCStrings(toNpcId)
+        count = self.getNumFacilities()
+        if count == 1:
+            objective = TTLocalizer.QuestsFacilityQuestDesc
+        else:
+            objective = TTLocalizer.QuestsFacilityQuestDescI
+        return TTLocalizer.QuestsFacilityQuestSCString % {'objective': objective}
+
+    def getHeadlineString(self):
+        return TTLocalizer.QuestsFacilityQuestHeadline
+
+    def doesFacilityCount(self, avId, location, avList):
+        return self.isLocationMatch(location)
 
 
 class FactoryQuest(LocationBasedQuest):
@@ -2116,19 +2172,28 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     15012: APQuestDefinition((CogTrackQuest, Anywhere, 2, 'm'), 5001),
     15013: APQuestDefinition((CogTrackQuest, Anywhere, 2, 's'), 5001),
 
-    # Location Check #3 (TTC) Recover 2 Cog Gears from lvl 3 cogs in TTC
+    # Location Check #3 (TTC) Recover Cog Gears from lvl 2/3 cogs in TTC
     15020: APQuestDefinition((RecoverItemQuest, ToontownGlobals.ToontownCentral, 2, 2007, Easy, 3, "level"), 5002),
+    15021: APQuestDefinition((RecoverItemQuest, ToontownGlobals.ToontownCentral, 3, 2007, Easy, 2, "level"), 5002),
 
-    # Location Check #4 (TTC) Defeat 5 cogs on a random TTC street
+    # Location Check #4 (TTC) Defeat 4-6 cogs on a random TTC street
     15030: APQuestDefinition((CogQuest, ToontownGlobals.PunchlinePlace, 4, Any), 5003),
-    15031: APQuestDefinition((CogQuest, ToontownGlobals.LoopyLane, 5, Any), 5003),
-    15032: APQuestDefinition((CogQuest, ToontownGlobals.SillyStreet, 6, Any), 5003),
+    15031: APQuestDefinition((CogQuest, ToontownGlobals.PunchlinePlace, 5, Any), 5003),
+    15032: APQuestDefinition((CogQuest, ToontownGlobals.PunchlinePlace, 6, Any), 5003),
+    15033: APQuestDefinition((CogQuest, ToontownGlobals.LoopyLane, 4, Any), 5003),
+    15034: APQuestDefinition((CogQuest, ToontownGlobals.LoopyLane, 5, Any), 5003),
+    15035: APQuestDefinition((CogQuest, ToontownGlobals.LoopyLane, 6, Any), 5003),
+    15036: APQuestDefinition((CogQuest, ToontownGlobals.SillyStreet, 4, Any), 5003),
+    15037: APQuestDefinition((CogQuest, ToontownGlobals.SillyStreet, 5, Any), 5003),
+    15038: APQuestDefinition((CogQuest, ToontownGlobals.SillyStreet, 6, Any), 5003),
 
-    # Location Check #5 (TTC) Defeat either 3-5 level 2s or 5 cogs in TTC
+    # Location Check #5 (TTC) Defeat either 3-5 level 2s or 4-6 cogs in TTC
     15040: APQuestDefinition((CogLevelQuest, ToontownGlobals.ToontownCentral, 3, 2), 5004),
     15041: APQuestDefinition((CogLevelQuest, ToontownGlobals.ToontownCentral, 4, 2), 5004),
     15042: APQuestDefinition((CogLevelQuest, ToontownGlobals.ToontownCentral, 5, 2), 5004),
-    15043: APQuestDefinition((CogQuest, ToontownGlobals.ToontownCentral, 5, Any), 5004),
+    15043: APQuestDefinition((CogQuest, ToontownGlobals.ToontownCentral, 4, Any), 5004),
+    15044: APQuestDefinition((CogQuest, ToontownGlobals.ToontownCentral, 5, Any), 5004),
+    15045: APQuestDefinition((CogQuest, ToontownGlobals.ToontownCentral, 6, Any), 5004),
 
     # Location Check #6 (TTC) Some random tasks
     15050: APQuestDefinition((CogTrackQuest, Anywhere, 3, 'c'), 5005),
@@ -2140,11 +2205,12 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     15056: APQuestDefinition((RecoverItemQuest, ToontownGlobals.ToontownCentral, 2, 20, Easy, Any, "type",), 5005),
     15057: APQuestDefinition((RecoverItemQuest, ToontownGlobals.ToontownCentral, 3, 20, Easy, Any, "type",), 5005),
 
-    # Location Check #7 (TTC) Defeat 2 tier 2 cogs
+    # Location Check #7 (TTC) Defeat 2 tier 2 cogs or some level 2s
     15060: APQuestDefinition((CogQuest, Anywhere, 2, 'p'), 5006),
     15061: APQuestDefinition((CogQuest, Anywhere, 2, 'b'), 5006),
     15062: APQuestDefinition((CogQuest, Anywhere, 2, 'pp'), 5006),
     15063: APQuestDefinition((CogQuest, Anywhere, 2, 'tm'), 5006),
+    15064: APQuestDefinition((CogLevelQuest, Anywhere, 3, 2), 5006),
 
     # Location Check #8 (TTC) Some amount of level 2 cogs or recover 3-5 clown car tires from cogs
     15070: APQuestDefinition((CogLevelQuest, Anywhere, 5, 2), 5007),
@@ -2165,22 +2231,32 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     15087: APQuestDefinition((RecoverItemQuest, ToontownGlobals.ToontownCentral, 2, 17, Easy, Any, "type",), 5008),
     15088: APQuestDefinition((RecoverItemQuest, ToontownGlobals.ToontownCentral, 3, 17, Easy, Any, "type",), 5008),
 
-    # Location Check #10 (TTC) defeat 3 of some dept
+    # Location Check #10 (TTC) defeat 3-4 of some dept
     15090: APQuestDefinition((CogTrackQuest, Anywhere, 3, 'c'), 5009),
     15091: APQuestDefinition((CogTrackQuest, Anywhere, 3, 'l'), 5009),
     15092: APQuestDefinition((CogTrackQuest, Anywhere, 3, 'm'), 5009),
     15093: APQuestDefinition((CogTrackQuest, Anywhere, 3, 's'), 5009),
+    15094: APQuestDefinition((CogTrackQuest, Anywhere, 4, 'c'), 5009),
+    15095: APQuestDefinition((CogTrackQuest, Anywhere, 4, 'l'), 5009),
+    15096: APQuestDefinition((CogTrackQuest, Anywhere, 4, 'm'), 5009),
+    15097: APQuestDefinition((CogTrackQuest, Anywhere, 4, 's'), 5009),
 
-    # Location Check #11 (TTC) defeat some amount of level 3 cogs
-    15100: APQuestDefinition((CogLevelQuest, Anywhere, 2, 3), 5010),
-    15101: APQuestDefinition((CogLevelQuest, Anywhere, 3, 3), 5010),
-    15102: APQuestDefinition((CogLevelQuest, Anywhere, 4, 3), 5010),
+    # Location Check #11 (TTC) defeat some amount of level 2 or 3 cogs
+    15100: APQuestDefinition((CogLevelQuest, Anywhere, 4, 2), 5010),
+    15101: APQuestDefinition((CogLevelQuest, Anywhere, 5, 2), 5010),
+    15102: APQuestDefinition((CogLevelQuest, Anywhere, 6, 2), 5010),
+    15103: APQuestDefinition((CogLevelQuest, Anywhere, 2, 3), 5010),
+    15104: APQuestDefinition((CogLevelQuest, Anywhere, 3, 3), 5010),
+    15105: APQuestDefinition((CogLevelQuest, Anywhere, 4, 3), 5010),
 
-    # Location Check #12 (TTC) Defeat some tier 3 cog
+    # Location Check #12 (TTC) Defeat some tier 3 cog, or some level 3s
     15110: APQuestDefinition((CogQuest, Anywhere, 1, 'ym'), 5011),
     15111: APQuestDefinition((CogQuest, Anywhere, 1, 'dt'), 5011),
     15112: APQuestDefinition((CogQuest, Anywhere, 1, 'tw'), 5011),
     15113: APQuestDefinition((CogQuest, Anywhere, 1, 'nd'), 5011),
+    15114: APQuestDefinition((CogLevelQuest, Anywhere, 3, 3), 5011),
+    15115: APQuestDefinition((CogLevelQuest, Anywhere, 4, 3), 5011),
+    15116: APQuestDefinition((CogLevelQuest, Anywhere, 5, 3), 5011),
 
     # DONALDS DOCK AP QUESTS
 
@@ -2196,27 +2272,40 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     16012: APQuestDefinition((CogLevelQuest, ToontownGlobals.DonaldsDock, 5, 3), 5013),
     16013: APQuestDefinition((CogLevelQuest, ToontownGlobals.DonaldsDock, 4, 3), 5013),
     16014: APQuestDefinition((CogLevelQuest, ToontownGlobals.DonaldsDock, 3, 4), 5013),
+    16015: APQuestDefinition((CogLevelQuest, ToontownGlobals.DonaldsDock, 2, 4), 5013),
 
-    # Location Check #3 (DD) Defeat a cog building (num, dept, floors) or big white wig from back stabbers
+    # Location Check #3 (DD) Defeat a cog building (num, dept, floors) or an item from a tier 5
     16020: APQuestDefinition((BuildingQuest, Anywhere, 1, Any, 1), 5014),
     16021: APQuestDefinition((RecoverItemQuest, Anywhere, 1, 2005, Easy, "bs"), 5014),
+    16022: APQuestDefinition((RecoverItemQuest, Anywhere, 1, 5001, Easy, "ds"), 5014),
+    16023: APQuestDefinition((RecoverItemQuest, Anywhere, 1, 9, Easy, "nc"), 5014),
+    16024: APQuestDefinition((RecoverItemQuest, Anywhere, 1, 2007, Easy, "ms"), 5014),
 
-    # Location Check #4 (DD) Defeat some tier 4 cog
+    # Location Check #4 (DD) Defeat some tier 4 cog or some level 4s
     16030: APQuestDefinition((CogQuest, Anywhere, 1, 'mm'), 5015),
     16031: APQuestDefinition((CogQuest, Anywhere, 1, 'ac'), 5015),
     16032: APQuestDefinition((CogQuest, Anywhere, 1, 'bc'), 5015),
     16033: APQuestDefinition((CogQuest, Anywhere, 1, 'gh'), 5015),
+    16034: APQuestDefinition((CogLevelQuest, Anywhere, 2, 4), 5015),
+    16035: APQuestDefinition((CogLevelQuest, Anywhere, 3, 4), 5015),
 
     # Location Check #5 (DD) Defeat x cogs in dept y
     16040: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'c'), 5016),
     16041: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'l'), 5016),
     16042: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'm'), 5016),
     16043: APQuestDefinition((CogTrackQuest, Anywhere, 6, 's'), 5016),
+    16044: APQuestDefinition((CogTrackQuest, Anywhere, 7, 'c'), 5016),
+    16045: APQuestDefinition((CogTrackQuest, Anywhere, 7, 'l'), 5016),
+    16046: APQuestDefinition((CogTrackQuest, Anywhere, 7, 'm'), 5016),
+    16047: APQuestDefinition((CogTrackQuest, Anywhere, 7, 's'), 5016),
 
-    # Location Check #6 (DD) Defeat x level 6 cogs
+    # Location Check #6 (DD) Defeat x level 5/6 cogs
     16050: APQuestDefinition((CogLevelQuest, Anywhere, 4, 6), 5017),
     16051: APQuestDefinition((CogLevelQuest, Anywhere, 5, 6), 5017),
     16052: APQuestDefinition((CogLevelQuest, Anywhere, 6, 6), 5017),
+    16053: APQuestDefinition((CogLevelQuest, Anywhere, 5, 5), 5017),
+    16054: APQuestDefinition((CogLevelQuest, Anywhere, 6, 5), 5017),
+    16055: APQuestDefinition((CogLevelQuest, Anywhere, 7, 5), 5017),
 
     # Location Check #7 (DD) Defeat 7-10 cogs or recover 2-4 sea charts
     16060: APQuestDefinition((CogQuest, Anywhere, 7, Any), 5018),
@@ -2227,14 +2316,18 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     16065: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 3, 2008, Medium, Any), 5018),
     16066: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 4, 2008, Medium, Any), 5018),
 
-    # Location Check #8 (DD) Defeat 10 level 3/4 cogs
+    # Location Check #8 (DD) Defeat 8-10 level 3/4 cogs
     16070: APQuestDefinition((CogLevelQuest, Anywhere, 10, 3), 5019),
     16071: APQuestDefinition((CogLevelQuest, Anywhere, 10, 4), 5019),
+    16072: APQuestDefinition((CogLevelQuest, Anywhere, 9, 3), 5019),
+    16073: APQuestDefinition((CogLevelQuest, Anywhere, 9, 4), 5019),
+    16074: APQuestDefinition((CogLevelQuest, Anywhere, 8, 3), 5019),
+    16075: APQuestDefinition((CogLevelQuest, Anywhere, 8, 4), 5019),
 
     # Location Check #9 (DD) Defeat a two story building
     16080: APQuestDefinition((BuildingQuest, Anywhere, 1, Any, 2), 5020),
 
-    # Location Check #10 (DD) Defeat 2 type 3 cogs
+    # Location Check #10 (DD) Defeat 2 tier 3 cogs
     16090: APQuestDefinition((CogQuest, Anywhere, 2, 'ym'), 5021),
     16091: APQuestDefinition((CogQuest, Anywhere, 2, 'dt'), 5021),
     16092: APQuestDefinition((CogQuest, Anywhere, 2, 'tw'), 5021),
@@ -2248,10 +2341,12 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     16104: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'm'), 5022),
     16105: APQuestDefinition((CogTrackQuest, Anywhere, 6, 's'), 5022),
 
-    # Location Check #12 (DD) Defeat x level 5s
+    # Location Check #12 (DD) Defeat x level 4/5s
     16110: APQuestDefinition((CogLevelQuest, Anywhere, 6, 5), 5023),
     16111: APQuestDefinition((CogLevelQuest, Anywhere, 7, 5), 5023),
     16112: APQuestDefinition((CogLevelQuest, Anywhere, 8, 5), 5023),
+    16113: APQuestDefinition((CogLevelQuest, Anywhere, 7, 4), 5023),
+    16114: APQuestDefinition((CogLevelQuest, Anywhere, 8, 4), 5023),
 
     # DAISYS GARDENS TASKS
 
@@ -2266,29 +2361,41 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     17012: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'm'), 5025),
     17013: APQuestDefinition((CogTrackQuest, Anywhere, 5, 's'), 5025),
 
-    # Location Check #3 (DG) Defeat 20 sellbots
-    17020: APQuestDefinition((CogTrackQuest, Anywhere, 20, 's'), 5026),
+    # Location Check #3 (DG) Defeat 10-15 sellbots
+    17020: APQuestDefinition((CogTrackQuest, Anywhere, 10, 's'), 5026),
+    17021: APQuestDefinition((CogTrackQuest, Anywhere, 11, 's'), 5026),
+    17022: APQuestDefinition((CogTrackQuest, Anywhere, 12, 's'), 5026),
+    17023: APQuestDefinition((CogTrackQuest, Anywhere, 13, 's'), 5026),
+    17024: APQuestDefinition((CogTrackQuest, Anywhere, 14, 's'), 5026),
+    17025: APQuestDefinition((CogTrackQuest, Anywhere, 15, 's'), 5026),
 
-    # Location Check #4 (DG) Defeat x level 6 cogs
+    # Location Check #4 (DG) Defeat x level 5/6 cogs
     17030: APQuestDefinition((CogLevelQuest, Anywhere, 4, 5), 5027),
     17031: APQuestDefinition((CogLevelQuest, Anywhere, 5, 5), 5027),
     17032: APQuestDefinition((CogLevelQuest, Anywhere, 6, 5), 5027),
+    17033: APQuestDefinition((CogLevelQuest, Anywhere, 3, 6), 5027),
+    17034: APQuestDefinition((CogLevelQuest, Anywhere, 4, 6), 5027),
+    17035: APQuestDefinition((CogLevelQuest, Anywhere, 5, 6), 5027),
 
-    # Location Check #5 (DG) Defeat sellbots cogs on oak street
+    # Location Check #5 (DG) Defeat sellbot cogs on oak street
     17040: APQuestDefinition((CogTrackQuest, ToontownGlobals.OakStreet, 5, 's'), 5028),
     17041: APQuestDefinition((CogTrackQuest, ToontownGlobals.OakStreet, 6, 's'), 5028),
     17042: APQuestDefinition((CogTrackQuest, ToontownGlobals.OakStreet, 7, 's'), 5028),
 
-    # Location Check #6 (DG) Defeat a tier 5 cog
+    # Location Check #6 (DG) Defeat a tier 5 cog or 5 level 5s
     17050: APQuestDefinition((CogQuest, Anywhere, 1, 'ds'), 5029),
     17051: APQuestDefinition((CogQuest, Anywhere, 1, 'bs'), 5029),
     17052: APQuestDefinition((CogQuest, Anywhere, 1, 'nc'), 5029),
     17053: APQuestDefinition((CogQuest, Anywhere, 1, 'ms'), 5029),
+    17054: APQuestDefinition((CogLevelQuest, Anywhere, 5, 5), 5029),
 
     # Location Check #7 (DD) Defeat x amount of cogs
     17060: APQuestDefinition((CogQuest, Anywhere, 10, Any), 5030),
     17061: APQuestDefinition((CogQuest, Anywhere, 11, Any), 5030),
     17062: APQuestDefinition((CogQuest, Anywhere, 12, Any), 5030),
+    17063: APQuestDefinition((CogQuest, Anywhere, 13, Any), 5030),
+    17064: APQuestDefinition((CogQuest, Anywhere, 14, Any), 5030),
+    17065: APQuestDefinition((CogQuest, Anywhere, 15, Any), 5030),
 
     # Location Check #8 (DD) Defeat some specific types of cogs or low drop chance memos on oak street
     17070: APQuestDefinition((CogQuest, Anywhere, 1, 'tf'), 5031),
@@ -2312,15 +2419,18 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     17101: APQuestDefinition((CogTrackQuest, Anywhere, 4, 'l'), 5034),
     17102: APQuestDefinition((CogTrackQuest, Anywhere, 4, 'm'), 5034),
 
-    # Location Check #12 (DG) Defeat 10 level 6s
+    # Location Check #12 (DG) Defeat 10 level 6s or do a 3 story
     17110: APQuestDefinition((CogLevelQuest, Anywhere, 10, 6), 5035),
+    17111: APQuestDefinition((BuildingQuest, Anywhere, 1, Any, 3), 5035),
 
     # MINNIE"S MELODYLAND TASKS
 
     # Location Check #1 (MML) Defeat x amount of cogs
     18000: APQuestDefinition((CogQuest, Anywhere, 8, Any), 5036),
-    18001: APQuestDefinition((CogQuest, Anywhere, 10, Any), 5036),
-    18002: APQuestDefinition((CogQuest, Anywhere, 12, Any), 5036),
+    18001: APQuestDefinition((CogQuest, Anywhere, 9, Any), 5036),
+    18002: APQuestDefinition((CogQuest, Anywhere, 10, Any), 5036),
+    18003: APQuestDefinition((CogQuest, Anywhere, 11, Any), 5036),
+    18004: APQuestDefinition((CogQuest, Anywhere, 12, Any), 5036),
 
     # Location Check #2 (MML) Random Quests
     18010: APQuestDefinition((CogLevelQuest, Anywhere, 10, 6), 5037),
@@ -2338,11 +2448,11 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
 
     # Location Check #4 (MML) Random quests
     18030: APQuestDefinition((CogLevelQuest, Anywhere, 8, 7), 5039),
-    18031: APQuestDefinition((CogQuest, Anywhere, 12, Any), 5039),
-    18032: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'c'), 5039),
-    18033: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'l'), 5039),
-    18034: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'm'), 5039),
-    18035: APQuestDefinition((CogTrackQuest, Anywhere, 5, 's'), 5039),
+    18031: APQuestDefinition((CogQuest, Anywhere, 10, Any), 5039),
+    18032: APQuestDefinition((CogTrackQuest, Anywhere, 4, 'c'), 5039),
+    18033: APQuestDefinition((CogTrackQuest, Anywhere, 4, 'l'), 5039),
+    18034: APQuestDefinition((CogTrackQuest, Anywhere, 4, 'm'), 5039),
+    18035: APQuestDefinition((CogTrackQuest, Anywhere, 4, 's'), 5039),
 
     # Location Check #5 (MML) Defeat x amount of cogs in MML
     18040: APQuestDefinition((CogQuest, ToontownGlobals.MinniesMelodyland, 7, Any), 5040),
@@ -2356,25 +2466,36 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     18052: APQuestDefinition((CogQuest, Anywhere, 2, 'mb'), 5041),
     18053: APQuestDefinition((CogQuest, Anywhere, 2, 'tf'), 5041),
 
-    # Location Check #7 (MML) Defeat x amount of lvl 6s
+    # Location Check #7 (MML) Defeat x amount of lvl 6/7
     18060: APQuestDefinition((CogLevelQuest, Anywhere, 4, 6), 5042),
     18061: APQuestDefinition((CogLevelQuest, Anywhere, 5, 6), 5042),
     18062: APQuestDefinition((CogLevelQuest, Anywhere, 6, 6), 5042),
+    18063: APQuestDefinition((CogLevelQuest, Anywhere, 3, 7), 5042),
+    18064: APQuestDefinition((CogLevelQuest, Anywhere, 4, 7), 5042),
+    18065: APQuestDefinition((CogLevelQuest, Anywhere, 5, 7), 5042),
 
-    # Location Check #8 (MML) Defeat 5 cogs of dept x
+    # Location Check #8 (MML) Defeat 5-6 cogs of dept x
     18070: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'c'), 5043),
     18071: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'l'), 5043),
     18072: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'm'), 5043),
     18073: APQuestDefinition((CogTrackQuest, Anywhere, 5, 's'), 5043),
+    18074: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'c'), 5043),
+    18075: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'l'), 5043),
+    18076: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'm'), 5043),
+    18077: APQuestDefinition((CogTrackQuest, Anywhere, 6, 's'), 5043),
 
-    # Location Check #9 (MML) Defeat a level 9 cog
+    # Location Check #9 (MML) Defeat a level 9 cog, 2 8s, or 3 7s
     18080: APQuestDefinition((CogLevelQuest, Anywhere, 1, 9), 5044),
+    18081: APQuestDefinition((CogLevelQuest, Anywhere, 2, 8), 5044),
+    18082: APQuestDefinition((CogLevelQuest, Anywhere, 3, 7), 5044),
 
     # Location Check #10 (MML) Defeat x amount of level y cogs anywhere
     18090: APQuestDefinition((CogLevelQuest, Anywhere, 5, 6), 5045),
     18091: APQuestDefinition((CogLevelQuest, Anywhere, 5, 5), 5045),
     18092: APQuestDefinition((CogLevelQuest, Anywhere, 6, 6), 5045),
     18093: APQuestDefinition((CogLevelQuest, Anywhere, 6, 5), 5045),
+    18094: APQuestDefinition((CogLevelQuest, Anywhere, 7, 6), 5045),
+    18095: APQuestDefinition((CogLevelQuest, Anywhere, 7, 5), 5045),
 
     # Location Check #11 (MML) Random Quests
     18100: APQuestDefinition((CogLevelQuest, Anywhere, 10, 3), 5046),
@@ -2383,9 +2504,12 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     18103: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'l'), 5046),
     18104: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'm'), 5046),
     18105: APQuestDefinition((CogTrackQuest, Anywhere, 6, 's'), 5046),
+    18106: APQuestDefinition((CogLevelQuest, Anywhere, 10, 4), 5046),
 
-    # Location Check #12 (MML) Defeat 25 cogs
-    18110: APQuestDefinition((CogQuest, Anywhere, 25, Any), 5047),
+    # Location Check #12 (MML) Defeat 20/25 cogs or a cog facility
+    18110: APQuestDefinition((CogQuest, Anywhere, 20, Any), 5047),
+    18111: APQuestDefinition((CogQuest, Anywhere, 25, Any), 5047),
+    18112: APQuestDefinition((FacilityQuest, Anywhere, 1), 5047),
 
     ### THE BRRRGH AP TASKS
 
@@ -2393,23 +2517,37 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     19000: APQuestDefinition((CogQuest, Anywhere, 8, Any), 5048),
     19001: APQuestDefinition((CogQuest, Anywhere, 10, Any), 5048),
     19002: APQuestDefinition((CogQuest, Anywhere, 12, Any), 5048),
+    19003: APQuestDefinition((CogQuest, Anywhere, 14, Any), 5048),
 
     # Location Check #2 (TB) Random Quests
     19010: APQuestDefinition((CogLevelQuest, Anywhere, 7, 7), 5049),
     19011: APQuestDefinition((CogQuest, Anywhere, 12, Any), 5049),
     19012: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'c'), 5049),
-    19013: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'l'), 5049),
-    19014: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'm'), 5049),
-    19015: APQuestDefinition((CogTrackQuest, Anywhere, 5, 's'), 5049),
+    19013: APQuestDefinition((CogTrackQuest, Anywhere, 6, 'l'), 5049),
+    19014: APQuestDefinition((CogTrackQuest, Anywhere, 4, 'm'), 5049),
+    19015: APQuestDefinition((CogTrackQuest, Anywhere, 4, 's'), 5049),
+    19016: APQuestDefinition((CogLevelQuest, Anywhere, 6, 8), 5049),
+    19017: APQuestDefinition((CogQuest, Anywhere, 10, Any), 5049),
 
-    # Location Check #3 (TB) Defeat 20 lawbots anywhere
-    19020: APQuestDefinition((CogTrackQuest, Anywhere, 20, 'l'), 5050),
+    # Location Check #3 (TB) Defeat 10-15 lawbots
+    19020: APQuestDefinition((CogTrackQuest, Anywhere, 10, 'l'), 5050),
+    19021: APQuestDefinition((CogTrackQuest, Anywhere, 11, 'l'), 5050),
+    19022: APQuestDefinition((CogTrackQuest, Anywhere, 12, 'l'), 5050),
+    19023: APQuestDefinition((CogTrackQuest, Anywhere, 13, 'l'), 5050),
+    19024: APQuestDefinition((CogTrackQuest, Anywhere, 14, 'l'), 5050),
+    19025: APQuestDefinition((CogTrackQuest, Anywhere, 15, 'l'), 5050),
 
-    # Location Check #4 (TB) Recover 2 fuzzy dice from lvl 8 cogs
+    # Location Check #4 (TB) Recover 2-5 fuzzy dice from lvl 7/8 cogs
     19030: APQuestDefinition((RecoverItemQuest, Anywhere, 2, 3018, Medium, 8, "level"), 5051),
+    19031: APQuestDefinition((RecoverItemQuest, Anywhere, 3, 3018, Medium, 8, "level"), 5051),
+    19032: APQuestDefinition((RecoverItemQuest, Anywhere, 4, 3018, Easy, 8, "level"), 5051),
+    19033: APQuestDefinition((RecoverItemQuest, Anywhere, 5, 3018, Easy, 7, "level"), 5051),
 
-    # Location Check #5 (TB) Defeat 7 Lawbots in the brrrgh
-    19040: APQuestDefinition((CogTrackQuest, ToontownGlobals.TheBrrrgh, 7, 'l'), 5052),
+    # Location Check #5 (TB) Defeat 7 of any dept in the brrrgh
+    19040: APQuestDefinition((CogTrackQuest, ToontownGlobals.TheBrrrgh, 7, 'c'), 5052),
+    19041: APQuestDefinition((CogTrackQuest, ToontownGlobals.TheBrrrgh, 7, 'l'), 5052),
+    19042: APQuestDefinition((CogTrackQuest, ToontownGlobals.TheBrrrgh, 7, 'm'), 5052),
+    19043: APQuestDefinition((CogTrackQuest, ToontownGlobals.TheBrrrgh, 7, 's'), 5052),
 
     # Location Check #6 (TB) Recover Platform shoes from random tier 8 cog
     19050: APQuestDefinition((RecoverItemQuest, Anywhere, 1, 3021, VeryEasy, "tbc"), 5053),
@@ -2425,19 +2563,29 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     19064: APQuestDefinition((CogTrackQuest, Anywhere, 5, 'm'), 5054),
     19065: APQuestDefinition((CogTrackQuest, Anywhere, 5, 's'), 5054),
 
-    # Location Check #8 (TB) Defeat x cogs of type y on polar place
+    # Location Check #8 (TB) Defeat x cogs of type y on each street
     19070: APQuestDefinition((CogQuest, ToontownGlobals.PolarPlace, 1, 'sd'), 5055),
     19071: APQuestDefinition((CogQuest, ToontownGlobals.PolarPlace, 2, 'bs'), 5055),
+    19072: APQuestDefinition((CogQuest, ToontownGlobals.WalrusWay, 1, 'hh'), 5055),
+    19073: APQuestDefinition((CogQuest, ToontownGlobals.WalrusWay, 2, 'ds'), 5055),
+    19074: APQuestDefinition((CogQuest, ToontownGlobals.SleetStreet, 1, 'nc'), 5055),
+    19075: APQuestDefinition((CogQuest, ToontownGlobals.SleetStreet, 1, 'ms'), 5055),
 
     # Location Check #9 (TB) Recover external temp sensors
-    19080: APQuestDefinition((RecoverItemQuest, Anywhere, 7, 3027, Medium, Any), 5056),
-    19081: APQuestDefinition((RecoverItemQuest, Anywhere, 12, 3027, Easy, Any), 5056),
-    19082: APQuestDefinition((RecoverItemQuest, Anywhere, 20, 3027, VeryEasy, Any), 5056),
+    19080: APQuestDefinition((RecoverItemQuest, Anywhere, 6, 3027, Medium, Any), 5056),
+    19081: APQuestDefinition((RecoverItemQuest, Anywhere, 8, 3027, Medium, Any), 5056),
+    19082: APQuestDefinition((RecoverItemQuest, Anywhere, 10, 3027, Easy, Any), 5056),
+    19083: APQuestDefinition((RecoverItemQuest, Anywhere, 12, 3027, Easy, Any), 5056),
+    19084: APQuestDefinition((RecoverItemQuest, Anywhere, 14, 3027, VeryEasy, Any), 5056),
+    19085: APQuestDefinition((RecoverItemQuest, Anywhere, 16, 3027, VeryEasy, Any), 5056),
 
-    # Location Check #10 (TB) Defeat x amount of level 7 cogs
+    # Location Check #10 (TB) Defeat x amount of level 7/8 cogs
     19090: APQuestDefinition((CogLevelQuest, Anywhere, 6, 7), 5057),
     19091: APQuestDefinition((CogLevelQuest, Anywhere, 7, 7), 5057),
     19092: APQuestDefinition((CogLevelQuest, Anywhere, 8, 7), 5057),
+    19093: APQuestDefinition((CogLevelQuest, Anywhere, 5, 8), 5057),
+    19094: APQuestDefinition((CogLevelQuest, Anywhere, 4, 8), 5057),
+    19095: APQuestDefinition((CogLevelQuest, Anywhere, 3, 8), 5057),
 
     # Location Check #11 (TB) Random Quests
     19100: APQuestDefinition((CogLevelQuest, Anywhere, 5, 8), 5058),
@@ -2452,11 +2600,12 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
 
     ### DDL AP TASKS
 
-    # Location Check #1 (DDL) Defeat x amount of cogs
+    # Location Check #1 (DDL) Defeat x amount of cogs or a 4 story
     20000: APQuestDefinition((CogQuest, Anywhere, 15, Any), 5060),
     20001: APQuestDefinition((CogQuest, Anywhere, 16, Any), 5060),
     20002: APQuestDefinition((CogQuest, Anywhere, 17, Any), 5060),
     20003: APQuestDefinition((CogQuest, Anywhere, 18, Any), 5060),
+    20004: APQuestDefinition((BuildingQuest, Anywhere, 1, Any, 4), 5060),
 
     # Location Check #2 (DDL) Defeat x amount of cogs at level y
     20010: APQuestDefinition((CogLevelQuest, Anywhere, 8, 7), 5061),
@@ -2464,8 +2613,13 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     20012: APQuestDefinition((CogLevelQuest, Anywhere, 6, 9), 5061),
     20013: APQuestDefinition((CogLevelQuest, Anywhere, 5, 10), 5061),
 
-    # Location Check #3 (DDL) Defeat 20 cashbots
-    20020: APQuestDefinition((CogTrackQuest, Anywhere, 20, 'm'), 5062),
+    # Location Check #3 (DDL) Defeat 10-15 cashbots
+    20020: APQuestDefinition((CogTrackQuest, Anywhere, 10, 'm'), 5062),
+    20021: APQuestDefinition((CogTrackQuest, Anywhere, 11, 'm'), 5062),
+    20022: APQuestDefinition((CogTrackQuest, Anywhere, 12, 'm'), 5062),
+    20023: APQuestDefinition((CogTrackQuest, Anywhere, 13, 'm'), 5062),
+    20024: APQuestDefinition((CogTrackQuest, Anywhere, 14, 'm'), 5062),
+    20025: APQuestDefinition((CogTrackQuest, Anywhere, 15, 'm'), 5062),
 
     # Location Check #4 (DDL) Defeat x amount of cogs at level y
     20030: APQuestDefinition((CogLevelQuest, Anywhere, 7, 6), 5063),
@@ -2485,37 +2639,45 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     20052: APQuestDefinition((CogQuest, Anywhere, 1, 'rb'), 5065),
     20053: APQuestDefinition((CogQuest, Anywhere, 1, 'mh'), 5065),
 
-    # Location Check #7 (DDL) Defeat 10 cashbots on pajama place or cashbot plans
+    # Location Check #7 (DDL) Defeat 8/10 cashbots on pajama place or cashbot plans
     20060: APQuestDefinition((CogTrackQuest, ToontownGlobals.PajamaPlace, 10, 'm'), 5066),
-    20061: APQuestDefinition((RecoverItemQuest, ToontownGlobals.PajamaPlace, 5, 6001, Medium, "m", "track"), 5066),
+    20061: APQuestDefinition((CogTrackQuest, ToontownGlobals.PajamaPlace, 8, 'm'), 5066),
+    20062: APQuestDefinition((RecoverItemQuest, ToontownGlobals.PajamaPlace, 4, 6001, Medium, "m", "track"), 5066),
+    20063: APQuestDefinition((RecoverItemQuest, ToontownGlobals.PajamaPlace, 6, 6001, Easy, "m", "track"), 5066),
 
-    # Location Check #8 (DDL) Defeat x amount of cogs
+    # Location Check #8 (DDL) Defeat x amount of cogs or a facility
     20070: APQuestDefinition((CogQuest, Anywhere, 13, Any), 5067),
     20071: APQuestDefinition((CogQuest, Anywhere, 15, Any), 5067),
     20072: APQuestDefinition((CogQuest, Anywhere, 17, Any), 5067),
     20073: APQuestDefinition((CogQuest, Anywhere, 19, Any), 5067),
+    20074: APQuestDefinition((FacilityQuest, Anywhere, 1), 5067),
 
-    # Location Check #9 (DDL) Defeat 4 level 11+ cogs or 7 level 10+
+    # Location Check #9 (DDL) Defeat some 10s or 11s
     20080: APQuestDefinition((CogLevelQuest, Anywhere, 4, 11), 5068),
     20081: APQuestDefinition((CogLevelQuest, Anywhere, 7, 10), 5068),
+    20082: APQuestDefinition((CogLevelQuest, Anywhere, 3, 11), 5068),
+    20083: APQuestDefinition((CogLevelQuest, Anywhere, 6, 10), 5068),
 
     # Location Check #10 (DDL) Defeat x amount of cogs or recover pajamas
     20090: APQuestDefinition((CogQuest, Anywhere, 10, Any), 5069),
-    20091: APQuestDefinition((CogQuest, Anywhere, 14, Any), 5069),
-    20092: APQuestDefinition((CogQuest, Anywhere, 18, Any), 5069),
+    20091: APQuestDefinition((CogQuest, Anywhere, 12, Any), 5069),
+    20092: APQuestDefinition((CogQuest, Anywhere, 14, Any), 5069),
     20093: APQuestDefinition((RecoverItemQuest, Anywhere, 5, 7007, Medium, Any), 5069),
     20094: APQuestDefinition((RecoverItemQuest, Anywhere, 7, 7007, Medium, Any), 5069),
-    20095: APQuestDefinition((RecoverItemQuest, Anywhere, 9, 7007, Medium, Any), 5069),
+    20095: APQuestDefinition((RecoverItemQuest, Anywhere, 9, 7007, Easy, Any), 5069),
 
     # Location Check #11 (DDL) Defeat x cogs of type y in DDL
     20100: APQuestDefinition((CogQuest, ToontownGlobals.DonaldsDreamland, 1, 'mb'), 5070),
     20101: APQuestDefinition((CogQuest, ToontownGlobals.DonaldsDreamland, 2, 'nc'), 5070),
     20102: APQuestDefinition((CogQuest, ToontownGlobals.DonaldsDreamland, 3, 'bc'), 5070),
+    20100: APQuestDefinition((CogQuest, ToontownGlobals.DonaldsDreamland, 1, 'sd'), 5070),
+    20101: APQuestDefinition((CogQuest, ToontownGlobals.DonaldsDreamland, 1, 'tf'), 5070),
+    20102: APQuestDefinition((CogQuest, ToontownGlobals.DonaldsDreamland, 1, 'hh'), 5070),
 
-    # Location Check #12 (DDL) Recover Hard Pillows from level 9s in DDL (very low drop chance)
+    # Location Check #12 (DDL) Recover Hard Pillows from level 9s in DDL (very low drop chance), or some anywhere
     20110: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 2, 7006, Hard, 9, "level"), 5071),
     20111: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 4, 7006, Medium, 9, "level"), 5071),
-
+    20112: APQuestDefinition((RecoverItemQuest, Anywhere, 4, 7006, Hard, 9, "level"), 5071),
 }
 
 
