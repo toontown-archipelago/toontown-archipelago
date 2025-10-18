@@ -324,7 +324,7 @@ class JSONPartFormatter:
 
         # If we were given the ID, override the text
         if part['type'] == 'item_id':
-            part['text'] = self.client.get_item_name_by_id(item, part['player'])
+            part['text'] = self.client.get_item_name_by_id(item)
 
         # If we were given name, instead of ID, do same thing basically
         elif part['type'] == 'item_name':
