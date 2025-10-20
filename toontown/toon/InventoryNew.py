@@ -291,7 +291,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             damage = numRoundsLured
             damageBonusStr = ''
             self.detailCreditLabel.setPos(-0.22, 0, -0.395)
-        elif track == THROW_TRACK and organicBonus:
+        elif (track == THROW_TRACK or track == SQUIRT_TRACK) and organicBonus:
             self.detailCreditLabel.setPos(-0.22, 0, -0.395)
         else:
             self.detailCreditLabel.setPos(-0.22, 0, -0.365)
@@ -324,6 +324,14 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                                                               'damage': damage,
                                                               'bonus': damageBonusStr,
                                                               'heal': healStr,
+                                                              'singleOrGroup': self.getSingleGroupStr(track, level)}
+            elif track == SQUIRT_TRACK and organicBonus:
+                knockStr = "Bonus Knockback: 30%"
+                labelStr = TTLocalizer.InventoryDetailDataOrgSquirt % {'accuracy': accString,
+                                                              'damageString': self.getToonupDmgStr(track, level),
+                                                              'damage': damage,
+                                                              'bonus': damageBonusStr,
+                                                              'knockback': knockStr,
                                                               'singleOrGroup': self.getSingleGroupStr(track, level)}
             else:
                 labelStr = TTLocalizer.InventoryDetailData % {'accuracy': accString,

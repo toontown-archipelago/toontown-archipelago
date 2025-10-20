@@ -398,7 +398,7 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
     return math.ceil(damage)
 
 
-def getAvOriginalDamage(attackTrack, attackLevel, experience: Experience, toonDamageMultiplier=100):
+def getAvOriginalDamage(attackTrack, attackLevel, experience: Experience, toonDamageMultiplier=100, organicBonus=False):
     exp = experience.getExp(attackTrack)
 
     minD = AvPropDamage[attackTrack][attackLevel][0][0]
@@ -410,6 +410,10 @@ def getAvOriginalDamage(attackTrack, attackLevel, experience: Experience, toonDa
     expPerHp = float(maxE - minE + 1) / float(maxD - minD + 1)
     damage = math.floor((expVal - minE) / expPerHp) + minD
     damage *= toonDamageMultiplier / 100
+
+    if organicBonus:
+        damage += getDamageBonus(damage)
+
     return math.ceil(damage)
 
 

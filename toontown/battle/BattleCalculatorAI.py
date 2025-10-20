@@ -832,21 +832,20 @@ class BattleCalculatorAI:
                 if track in self.hpBonuses[tgtPos]:
                     self.hpBonuses[tgtPos][track].append([attackIndex, dmg, 0])
                 else:
-                    self.hpBonuses[tgtPos][track] = [
-                     [
-                      attackIndex, dmg, 0]]
+                    self.hpBonuses[tgtPos][track] = [[attackIndex, dmg, 0]]
             elif self.__suitIsLured(currTgt.getDoId()):
                 kbEff = currTgt.effectHandler.children.get('knockbackBonus', None)
                 if kbEff is not None:
                     kbBonus = kbEff.children['value']
                 else:
-                    kbBonus = 40 # Failsafe
+                    kbBonus = 40  # Failsafe
+                toon = self.battle.getToon(toonId)
+                if track == SQUIRT and toon.checkGagBonus(track, attack[TOON_LVL_COL]):
+                    kbBonus += 30
                 if track in self.kbBonuses[tgtPos]:
                     self.kbBonuses[tgtPos][track].append([attackIndex, dmg, kbBonus])
                 else:
-                    self.kbBonuses[tgtPos][track] = [
-                     [
-                      attackIndex, dmg, kbBonus]]
+                    self.kbBonuses[tgtPos][track] = [[attackIndex, dmg, kbBonus]]
 
     def __clearBonuses(self, hp=1):
         if hp:
@@ -886,7 +885,8 @@ class BattleCalculatorAI:
                     toon = self.battle.getToon(attackerId)
                     baseDmgs = 0
                     for baseDmg in currTgt[currAtkType]:
-                        baseDmgs += getAvOriginalDamage(currAtkType, attack[TOON_LVL_COL], toon.experience, toon.getDamageMultiplier())
+                        organicBonus = toon.checkGagBonus(currAtkType, attack[TOON_LVL_COL])
+                        baseDmgs += getAvOriginalDamage(currAtkType, attack[TOON_LVL_COL], toon.experience, toon.getDamageMultiplier(), organicBonus)
                     if hp:
                         attack[TOON_HPBONUS_COL] = math.ceil(totalDmgs * (self.DamageBonuses[numDmgs - 1] * 0.01))
                         if self.notify.getDebug():
