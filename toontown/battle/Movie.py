@@ -547,8 +547,11 @@ class Movie(DirectObject.DirectObject):
                 adict['toon'] = toon
                 adict['track'] = track
                 adict['level'] = level
-                if toon.checkGagBonus(track, level):
-                    adict['organic'] = True
+                if track not in (SOS, NPCSOS, PETSOS):
+                    if toon.checkGagBonus(track, level):
+                        adict['organic'] = True
+                    else:
+                        adict['organic'] = False
                 else:
                     adict['organic'] = False
                 hps = ta[TOON_HP_COL]
