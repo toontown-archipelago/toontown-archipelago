@@ -165,8 +165,10 @@ jobs:
 
       - name: Copy Scripts
         run: |
-          # copy the .sh files
-          cp build/scripts/*.sh release/
+          # copy the .command files
+          cp build/scripts/*.command release/
+          # make them executable
+          chmod +x release/*.command
 
       - name: Copy Astron
         run: |
