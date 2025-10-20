@@ -291,6 +291,8 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             damage = numRoundsLured
             damageBonusStr = ''
             self.detailCreditLabel.setPos(-0.22, 0, -0.395)
+        elif track == THROW_TRACK and organicBonus:
+            self.detailCreditLabel.setPos(-0.22, 0, -0.395)
         else:
             self.detailCreditLabel.setPos(-0.22, 0, -0.365)
         accString = getAccuracyPercentString(track, level)
@@ -314,11 +316,21 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
              'knockback': knockback,
              'singleOrGroup': self.getSingleGroupStr(track, level)}
         else:
-            labelStr = TTLocalizer.InventoryDetailData % {'accuracy': accString,
-             'damageString': self.getToonupDmgStr(track, level),
-             'damage': damage,
-             'bonus': damageBonusStr,
-             'singleOrGroup': self.getSingleGroupStr(track, level)}
+            if track == THROW_TRACK and organicBonus:
+                heal = int(math.ceil((damage + damageBonus) / 10))
+                healStr = "Self-Heal: " + str(heal)
+                labelStr = TTLocalizer.InventoryDetailDataOrgThrow % {'accuracy': accString,
+                                                              'damageString': self.getToonupDmgStr(track, level),
+                                                              'damage': damage,
+                                                              'bonus': damageBonusStr,
+                                                              'heal': healStr,
+                                                              'singleOrGroup': self.getSingleGroupStr(track, level)}
+            else:
+                labelStr = TTLocalizer.InventoryDetailData % {'accuracy': accString,
+                 'damageString': self.getToonupDmgStr(track, level),
+                 'damage': damage,
+                 'bonus': damageBonusStr,
+                 'singleOrGroup': self.getSingleGroupStr(track, level)}
         self.detailDataLabel.configure(text=labelStr)
         if self.itemIsCredit(track, level):
             mult = self.getBattleCreditMultiplier()
