@@ -415,7 +415,7 @@ def getAvOriginalDamage(attackTrack, attackLevel, experience: Experience, toonDa
 
 
 def getDamageBonus(normal):
-    bonus = math.ceil(normal * 0.1)
+    bonus = math.ceil(normal * 0.05)
     if bonus < 1 and normal > 0:
         bonus = 1
     return bonus
