@@ -572,7 +572,7 @@ class BattleCalculatorAI:
                     if self.notify.getDebug():
                         self.notify.debug('toon does ' + str(result) + ' healing to toon(s)')
                 elif atkTrack == SOUND:
-                        result = math.ceil(result * (self.SoundDamageCounts[self.soundCount-1] / 100))
+                    result = math.ceil(result * (self.SoundDamageCounts[self.soundCount-1] / 100))
                 else:
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         result = 0
@@ -703,6 +703,19 @@ class BattleCalculatorAI:
                     self.toonHPAdjusts[currTarget] += damageDone
                     totalDamages = totalDamages + damageDone
                     continue
+                toon = self.battle.getToon(toonId)
+                if track == THROW:
+                    if toon.checkGagBonus(track, attack[TOON_LVL_COL]):
+                        healDone = math.ceil(attack[TOON_HP_COL][position] * 0.1)
+                        if self.CAP_HEALS:
+                            toonHp = self.__getToonHp(toonId)
+                            toonMaxHp = self.__getToonMaxHp(toonId)
+                            maxHealAllowed = math.ceil(toonMaxHp * 0.2)
+                            if healDone > maxHealAllowed:
+                                healDone = maxHealAllowed
+                            if toonHp + healDone > toonMaxHp:
+                                healDone = toonMaxHp - toonHp
+                        self.toonHPAdjusts[toonId] += healDone
                 currTarget = targets[position]
                 currentlyImmuneSuits = self.getImmuneSuits()
                 if currTarget.getImmuneStatus() == 1:
@@ -1271,7 +1284,6 @@ class BattleCalculatorAI:
                 # Divide attack damage by 2 if they were trapped this turn
                 if attack[SUIT_ID_COL] in self.suitsTrappedThisTurn:
                     result *= 0.5
-                    result = int(math.ceil(result))
                 elif attack[SUIT_ID_COL] in self.traps:
                     result *= 0.75
                 # Move rounding to here since we can have multiple mults and we round at the end
