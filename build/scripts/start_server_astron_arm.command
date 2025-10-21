@@ -1,3 +1,4 @@
+cd $(dirname $0 )
 cd game/astron
 
 while true 
