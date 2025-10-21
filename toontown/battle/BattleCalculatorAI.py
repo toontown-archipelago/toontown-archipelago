@@ -46,6 +46,7 @@ class BattleCalculatorAI:
         self.toonHPAdjusts = {}
         self.toonSkillPtsGained = {}
         self.traps = {}
+        self.orgTraps = []
         self.npcTraps = {}
         self.suitAtkStats = {}
         self.suitsTrappedThisTurn = set()
@@ -353,16 +354,19 @@ class BattleCalculatorAI:
                     else:
                         self.traps[id] = [
                          self.TRAP_CONFLICT, 0, 0]
-
             else:
                 toon = self.battle.getToon(attackerId)
                 organicBonus = toon.checkGagBonus(TRAP, trapLvl)
                 propBonus = self.__checkPropBonus(TRAP)
                 damage = getAvPropDamage(TRAP, trapLvl, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
                 if self.itemIsCredit(TRAP, trapLvl):
+                    if organicBonus and suitId not in self.orgTraps:
+                        self.orgTraps.append(suitId)
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
                 else:
+                    if organicBonus and suitId not in self.orgTraps:
+                        self.orgTraps.append(suitId)
                     self.traps[suitId] = [trapLvl, 0, damage]
                 self.notify.debug('calling __addLuredSuitsDelayed')
                 self.__addLuredSuitsDelayed(attackerId, targetId=-1, ignoreDamageCheck=True)
@@ -389,9 +393,13 @@ class BattleCalculatorAI:
                 propBonus = self.__checkPropBonus(TRAP)
                 damage = getAvPropDamage(TRAP, trapLvl, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
                 if self.itemIsCredit(TRAP, trapLvl):
+                    if organicBonus and suitId not in self.orgTraps:
+                        self.orgTraps.append(suitId)
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
                 else:
+                    if organicBonus and suitId not in self.orgTraps:
+                        self.orgTraps.append(suitId)
                     self.traps[suitId] = [trapLvl, 0, damage]
         else:
             if suitId in self.traps:
@@ -406,6 +414,8 @@ class BattleCalculatorAI:
     def __removeSuitTrap(self, suitId):
         if suitId in self.traps:
             del self.traps[suitId]
+        if suitId in self.orgTraps:
+            self.orgTraps.remove(suitId)
 
     def __clearTrapCreator(self, creatorId, suitId=None):
         if suitId == None:
@@ -1304,11 +1314,13 @@ class BattleCalculatorAI:
                     result *= 0.8
                 # Divide attack damage by 2 if they were trapped this turn
                 if attack[SUIT_ID_COL] in self.suitsTrappedThisTurn:
-                    result *= 0.5
+                    mult = 0.25 if attack[SUIT_ID_COL] in self.orgTraps else 0.5
+                    result *= mult
                 elif attack[SUIT_ID_COL] in self.traps:
-                    result *= 0.75
+                    mult = 0.5 if attack[SUIT_ID_COL] in self.orgTraps else 0.75
+                    result *= mult
                 # Move rounding to here since we can have multiple mults and we round at the end
-                result = int(math.ceil(result))
+                result = max(1, int(math.ceil(result)))
             targetIndex = self.battle.activeToons.index(toonId)
             attack[SUIT_HP_COL][targetIndex] = result
 
