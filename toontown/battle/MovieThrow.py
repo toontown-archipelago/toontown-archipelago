@@ -276,6 +276,7 @@ def __throwPie(throw, delay, hitCount):
     rightSuits = target['rightSuits']
     level = throw['level']
     battle = throw['battle']
+    organic = throw['organic']
     suitPos = suit.getPos(battle)
     origHpr = toon.getHpr(battle)
     notify.debug('toon: %s throws tart at suit: %d for hp: %d died: %d' % (toon.getName(),
@@ -338,7 +339,18 @@ def __throwPie(throw, delay, hitCount):
         pieTrack.append(Func(battle.movie.clearRenderProp, pies[0]))
     if hitSuit:
         suitResponseTrack = Sequence()
-        showDamage = Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK)
+        if organic:
+            baseHeal = math.ceil(hp * 0.1)
+            toonHp = toon.getHp()
+            toonMaxHp = toon.getMaxHp()
+            maxHealAllowed = math.ceil(toonMaxHp * 0.2)
+            if baseHeal > maxHealAllowed:
+                baseHeal = maxHealAllowed
+            if toonHp + baseHeal > toonMaxHp:
+                baseHeal = toonMaxHp - toonHp
+            showDamage = Parallel(Func(toon.toonUp, baseHeal), Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK))
+        else:
+            showDamage = Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK)
         updateHealthBar = Func(suit.updateHealthBar, hp)
         sival = []
         if kbbonus > 0:
@@ -529,6 +541,7 @@ def __throwGroupPie(throw, delay, groupHitDict):
     groupSuitResponseTrack = Parallel()
     for i in range(numTargets):
         target = throw['target'][i]
+        organic = throw['organic']
         suit = target['suit']
         hitSuit = target['hp'] > 0
         leftSuits = target['leftSuits']
@@ -539,7 +552,18 @@ def __throwGroupPie(throw, delay, groupHitDict):
         revived = target['revived']
         if hitSuit:
             singleSuitResponseTrack = Sequence()
-            showDamage = Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK)
+            if organic:
+                baseHeal = math.ceil(hp * 0.1)
+                toonHp = toon.getHp()
+                toonMaxHp = toon.getMaxHp()
+                maxHealAllowed = math.ceil(toonMaxHp * 0.2)
+                if baseHeal > maxHealAllowed:
+                    baseHeal = maxHealAllowed
+                if toonHp + baseHeal > toonMaxHp:
+                    baseHeal = toonMaxHp - toonHp
+                showDamage = Parallel(Func(toon.toonUp, baseHeal), Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK))
+            else:
+                showDamage = Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK)
             updateHealthBar = Func(suit.updateHealthBar, hp)
             sival = []
             if kbbonus > 0:

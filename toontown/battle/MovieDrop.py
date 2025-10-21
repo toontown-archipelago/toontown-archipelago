@@ -227,6 +227,7 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
     else:
         origHpr = toon.getHpr(battle)
     hpbonus = drop['hpbonus']
+    organic = drop['organic']
     suit = target['suit']
     hp = target['hp']
     hitSuit = hp > 0
@@ -276,7 +277,7 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
 
     def posObject(object, suit, level, majorObject, miss, battle = battle):
         object.reparentTo(battle)
-        if battle.isSuitLured(suit):
+        if battle.isSuitLured(suit) and not organic:
             suitPos, suitHpr = battle.getActorPosHpr(suit)
             object.setPos(suitPos)
             object.setHpr(suitHpr)
@@ -285,7 +286,7 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
         else:
             object.setPos(suit.getPos(battle))
             object.setHpr(suit.getHpr(battle))
-            if miss and level >= 3:
+            if miss:# and level >= 3:
                 object.setY(object.getY(battle) + 5)
         if not majorObject:
             if not miss:
@@ -360,7 +361,7 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
 
     def posShadow(dropShadow = dropShadow, suit = suit, battle = battle, hp = hp, level = level):
         dropShadow.reparentTo(battle)
-        if battle.isSuitLured(suit):
+        if battle.isSuitLured(suit) and not organic:
             suitPos, suitHpr = battle.getActorPosHpr(suit)
             dropShadow.setPos(suitPos)
             dropShadow.setHpr(suitHpr)
@@ -376,12 +377,20 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
     shadowTrack = Sequence(Wait(delay + tButtonPressed), Func(battle.movie.needRestoreRenderProp, dropShadow), Func(posShadow), LerpScaleInterval(dropShadow, tObjectAppears - tButtonPressed, dropShadow.getScale(), startScale=Point3(0.01, 0.01, 0.01)), Wait(0.3), Func(MovieUtil.removeProp, dropShadow), Func(battle.movie.clearRenderProp, dropShadow))
     return Parallel(toonTrack, soundTrack, buttonTrack, objectTrack, shadowTrack)
 
+def __createSuitResetPosTrack(suit, battle):
+    resetPos, resetHpr = battle.getActorPosHpr(suit)
+    moveDist = Vec3(suit.getPos(battle) - resetPos).length()
+    moveDuration = 0.5
+    walkTrack = Sequence(Func(suit.setHpr, battle, resetHpr), ActorInterval(suit, 'walk', startTime=1, duration=moveDuration, endTime=0.0001), Func(suit.loop, 'neutral'))
+    moveTrack = LerpPosInterval(suit, moveDuration, resetPos, other=battle)
+    return Parallel(walkTrack, moveTrack)
 
 def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, npcs):
     toon = drop['toon']
     if 'npc' in drop:
         toon = drop['npc']
     battle = drop['battle']
+    organic = drop['organic']
     majorObject = level >= 3
     suit = target['suit']
     hp = target['hp']
@@ -410,6 +419,9 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
             suitGettingHit.append(SoundInterval(gotHitSound, node=toon))
         suitTrack.append(suitGettingHit)
         bonusTrack = None
+        if kbbonus == 0 and organic:
+            suitTrack.append(__createSuitResetPosTrack(suit, battle))
+            suitTrack.append(Func(battle.unlureSuit, suit))
         if hpbonus > 0:
             bonusTrack = Sequence(Wait(delay + tObjectAppears + 0.75), Func(suit.showHpText, -hpbonus, 1, openEnded=0))
             bonusTrack.append(Func(suit.updateHealthBar, hpbonus))
@@ -424,8 +436,6 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
             suitTrack.append(Func(suit.loop, 'neutral'))
         if bonusTrack != None:
             suitTrack = Parallel(suitTrack, bonusTrack)
-    elif kbbonus == 0:
-        suitTrack = Sequence(Wait(delay + tObjectAppears), Func(MovieUtil.indicateMissed, suit, 0.6), Func(suit.loop, 'neutral'))
     else:
         if alreadyDodged > 0:
             return
@@ -433,7 +443,7 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
             if alreadyTeased > 0:
                 return
             else:
-                suitTrack = MovieUtil.createSuitTeaseMultiTrack(suit, delay=delay + tObjectAppears)
+                suitTrack = Sequence(Wait(delay + tObjectAppears), Func(MovieUtil.indicateMissed, suit, 0.6), Func(suit.loop, 'neutral'))
         else:
-            suitTrack = MovieUtil.createSuitDodgeMultitrack(delay + tSuitDodges, suit, leftSuits, rightSuits)
+            suitTrack = Sequence(Wait(delay + tObjectAppears), Func(MovieUtil.indicateMissed, suit, 0.6), Func(suit.loop, 'neutral'))
     return suitTrack
