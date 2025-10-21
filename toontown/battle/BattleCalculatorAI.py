@@ -51,6 +51,7 @@ class BattleCalculatorAI:
         self.suitAtkStats = {}
         self.suitsTrappedThisTurn = set()
         self.suitsHitBySoundThisTurn = set()
+        self.toonsHealedByOrgToonupThisTurn = set()
         self.__clearBonuses(hp=1)
         self.__clearBonuses(hp=0)
         self.delayedUnlures = []
@@ -598,7 +599,6 @@ class BattleCalculatorAI:
                     if self.notify.getDebug():
                         self.notify.debug('toon does ' + str(result) + ' healing to toon(s)')
                 elif atkTrack == SOUND:
-                    # working here
                     toon = self.battle.getToon(toonId)
                     if attackTrack not in (SOS, NPCSOS, PETSOS):
                         organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
@@ -738,6 +738,9 @@ class BattleCalculatorAI:
                     continue
                 if track == HEAL or track == PETSOS:
                     currTarget = targets[position]
+                    toon = self.battle.getToon(toonId)
+                    if toon.checkGagBonus(track, attack[TOON_LVL_COL]) and currTarget not in self.toonsHealedByOrgToonupThisTurn:
+                        self.toonsHealedByOrgToonupThisTurn.add(currTarget)
                     if self.CAP_HEALS:
                         toonHp = self.__getToonHp(currTarget)
                         toonMaxHp = self.__getToonMaxHp(currTarget)
@@ -747,8 +750,8 @@ class BattleCalculatorAI:
                     self.toonHPAdjusts[currTarget] += damageDone
                     totalDamages = totalDamages + damageDone
                     continue
-                toon = self.battle.getToon(toonId)
                 if track == THROW:
+                    toon = self.battle.getToon(toonId)
                     if toon.checkGagBonus(track, attack[TOON_LVL_COL]):
                         healDone = math.ceil(attack[TOON_HP_COL][position] * 0.1)
                         if self.CAP_HEALS:
@@ -1333,6 +1336,8 @@ class BattleCalculatorAI:
                 elif attack[SUIT_ID_COL] in self.traps:
                     mult = 0.5 if attack[SUIT_ID_COL] in self.orgTraps else 0.75
                     result *= mult
+                if toonId in self.toonsHealedByOrgToonupThisTurn:
+                    result *= 0.75
                 # Move rounding to here since we can have multiple mults and we round at the end
                 result = max(1, int(math.ceil(result)))
             targetIndex = self.battle.activeToons.index(toonId)
@@ -1479,6 +1484,7 @@ class BattleCalculatorAI:
     def __initRound(self):
         self.suitsTrappedThisTurn.clear()
         self.suitsHitBySoundThisTurn.clear()
+        self.toonsHealedByOrgToonupThisTurn.clear()
         if self.CLEAR_SUIT_ATTACKERS:
             self.SuitAttackers = {}
         self.toonAtkOrder = []

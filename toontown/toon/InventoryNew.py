@@ -359,6 +359,14 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                                                               'bonus': damageBonusStr,
                                                               'ability': bonusStr,
                                                               'singleOrGroup': self.getSingleGroupStr(track, level)}
+            elif track == HEAL_TRACK and organicBonus:
+                bonusStr = "Bonus: +25% Defence"
+                labelStr = TTLocalizer.InventoryDetailDataOrgDrop % {'accuracy': accString,
+                                                              'damageString': self.getToonupDmgStr(track, level),
+                                                              'damage': damage,
+                                                              'bonus': damageBonusStr,
+                                                              'ability': bonusStr,
+                                                              'singleOrGroup': self.getSingleGroupStr(track, level)}
             else:
                 labelStr = TTLocalizer.InventoryDetailData % {'accuracy': accString,
                  'damageString': self.getToonupDmgStr(track, level),
