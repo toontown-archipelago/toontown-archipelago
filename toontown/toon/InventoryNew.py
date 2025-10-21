@@ -293,7 +293,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                 knockback += ' (+5%)'
             damageBonusStr = ''
             self.detailCreditLabel.setPos(-0.22, 0, -0.395)
-        elif (track == THROW_TRACK or track == SQUIRT_TRACK or track == DROP_TRACK or track == TRAP_TRACK) and organicBonus:
+        elif track != LURE_TRACK and organicBonus:
             self.detailCreditLabel.setPos(-0.22, 0, -0.395)
         else:
             self.detailCreditLabel.setPos(-0.22, 0, -0.365)
@@ -345,6 +345,14 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                                                               'singleOrGroup': self.getSingleGroupStr(track, level)}
             elif track == TRAP_TRACK and organicBonus:
                 bonusStr = "Bonus: +Dmg Reduction"
+                labelStr = TTLocalizer.InventoryDetailDataOrgDrop % {'accuracy': accString,
+                                                              'damageString': self.getToonupDmgStr(track, level),
+                                                              'damage': damage,
+                                                              'bonus': damageBonusStr,
+                                                              'ability': bonusStr,
+                                                              'singleOrGroup': self.getSingleGroupStr(track, level)}
+            elif track == SOUND_TRACK and organicBonus:
+                bonusStr = "Bonus: +Lvl Based Dmg"
                 labelStr = TTLocalizer.InventoryDetailDataOrgDrop % {'accuracy': accString,
                                                               'damageString': self.getToonupDmgStr(track, level),
                                                               'damage': damage,

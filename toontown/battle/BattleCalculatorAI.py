@@ -598,6 +598,20 @@ class BattleCalculatorAI:
                     if self.notify.getDebug():
                         self.notify.debug('toon does ' + str(result) + ' healing to toon(s)')
                 elif atkTrack == SOUND:
+                    # working here
+                    toon = self.battle.getToon(toonId)
+                    if attackTrack not in (SOS, NPCSOS, PETSOS):
+                        organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
+                    else:
+                        organicBonus = False
+                    if organicBonus:
+                        lvls = []
+                        for suit in self.battle.activeSuits:
+                            lvls.append(suit.getActualLevel())
+                        print(lvls)
+                        highestLevel = max(lvls)
+                        mult = 1 + ((highestLevel * 2) / 100)
+                        result = result * mult
                     result = math.ceil(result * (self.SoundDamageCounts[self.soundCount-1] / 100))
                 else:
                     if attackTrack not in (SOS, NPCSOS, PETSOS):

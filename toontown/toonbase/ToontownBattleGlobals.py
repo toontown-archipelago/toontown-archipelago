@@ -298,8 +298,8 @@ AvPropDamage = (
         ((11, 12), (Levels[3][2], Levels[3][3])),
         ((18, 20), (Levels[3][3], Levels[3][4])),
         ((27, 30), (Levels[3][4], Levels[3][5])),
-        ((68, 75), (Levels[3][5], Levels[3][6])),
-        ((99, 110), (Levels[3][6], regMaxSkill))
+        ((59, 65), (Levels[3][5], Levels[3][6])),
+        ((90, 100), (Levels[3][6], regMaxSkill))
     ),
     (   # Throw
         ((6, 6), (Levels[4][0], Levels[4][1])),
@@ -321,11 +321,11 @@ AvPropDamage = (
     ),
     (   # Drop
         ((9, 10), (Levels[6][0], Levels[6][1])),
-        ((17, 18), (Levels[6][1], Levels[6][2])),
+        ((18, 20), (Levels[6][1], Levels[6][2])),
         ((27, 30), (Levels[6][2], Levels[6][3])),
-        ((45, 50), (Levels[6][3], Levels[6][4])),
+        ((50, 55), (Levels[6][3], Levels[6][4])),
         ((68, 75), (Levels[6][4], Levels[6][5])),
-        ((153, 170), (Levels[6][5], Levels[6][6])),
+        ((158, 175), (Levels[6][5], Levels[6][6])),
         ((189, 210), (Levels[6][6], regMaxSkill))
     )
 )
