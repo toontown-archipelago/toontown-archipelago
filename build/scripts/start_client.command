@@ -1,3 +1,4 @@
+cd $(dirname $0 )
 export SERVICE_TO_RUN=CLIENT
 cd game
 echo "Enter your name (default: player): "

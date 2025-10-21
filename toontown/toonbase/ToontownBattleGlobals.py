@@ -298,8 +298,8 @@ AvPropDamage = (
         ((11, 12), (Levels[3][2], Levels[3][3])),
         ((18, 20), (Levels[3][3], Levels[3][4])),
         ((27, 30), (Levels[3][4], Levels[3][5])),
-        ((68, 75), (Levels[3][5], Levels[3][6])),
-        ((99, 110), (Levels[3][6], regMaxSkill))
+        ((59, 65), (Levels[3][5], Levels[3][6])),
+        ((90, 100), (Levels[3][6], regMaxSkill))
     ),
     (   # Throw
         ((6, 6), (Levels[4][0], Levels[4][1])),
@@ -321,11 +321,11 @@ AvPropDamage = (
     ),
     (   # Drop
         ((9, 10), (Levels[6][0], Levels[6][1])),
-        ((17, 18), (Levels[6][1], Levels[6][2])),
+        ((18, 20), (Levels[6][1], Levels[6][2])),
         ((27, 30), (Levels[6][2], Levels[6][3])),
-        ((45, 50), (Levels[6][3], Levels[6][4])),
+        ((50, 55), (Levels[6][3], Levels[6][4])),
         ((68, 75), (Levels[6][4], Levels[6][5])),
-        ((153, 170), (Levels[6][5], Levels[6][6])),
+        ((158, 175), (Levels[6][5], Levels[6][6])),
         ((189, 210), (Levels[6][6], regMaxSkill))
     )
 )
@@ -392,13 +392,15 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
             damage += getDamageBonus(originalDamage)
         if propBonus:
             damage += getDamageBonus(originalDamage)
+    elif organicBonus and attackTrack == 2:
+        damage += 5
     elif organicBonus or propBonus:
         damage += getDamageBonus(damage)
 
     return math.ceil(damage)
 
 
-def getAvOriginalDamage(attackTrack, attackLevel, experience: Experience, toonDamageMultiplier=100):
+def getAvOriginalDamage(attackTrack, attackLevel, experience: Experience, toonDamageMultiplier=100, organicBonus=False):
     exp = experience.getExp(attackTrack)
 
     minD = AvPropDamage[attackTrack][attackLevel][0][0]
@@ -410,12 +412,16 @@ def getAvOriginalDamage(attackTrack, attackLevel, experience: Experience, toonDa
     expPerHp = float(maxE - minE + 1) / float(maxD - minD + 1)
     damage = math.floor((expVal - minE) / expPerHp) + minD
     damage *= toonDamageMultiplier / 100
+
+    if organicBonus:
+        damage += getDamageBonus(damage)
+
     return math.ceil(damage)
 
 
 
 def getDamageBonus(normal):
-    bonus = math.ceil(normal * 0.1)
+    bonus = math.ceil(normal * 0.05)
     if bonus < 1 and normal > 0:
         bonus = 1
     return bonus

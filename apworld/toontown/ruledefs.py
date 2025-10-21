@@ -94,18 +94,18 @@ def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
     return state.has(argument[0].value, player)
 
 
-@rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
-@rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS)
-@rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS)
-@rule(Rule.DollarMintKey,   ToontownItemName.DOLLAR_MINT_ACCESS)
-@rule(Rule.BullionMintKey,  ToontownItemName.BULLION_MINT_ACCESS)
-@rule(Rule.OfficeAKey,      ToontownItemName.A_OFFICE_ACCESS)
-@rule(Rule.OfficeBKey,      ToontownItemName.B_OFFICE_ACCESS)
-@rule(Rule.OfficeCKey,      ToontownItemName.C_OFFICE_ACCESS)
-@rule(Rule.OfficeDKey,      ToontownItemName.D_OFFICE_ACCESS)
-@rule(Rule.FrontOneKey,     ToontownItemName.FRONT_ONE_ACCESS)
-@rule(Rule.MiddleTwoKey,    ToontownItemName.MIDDLE_TWO_ACCESS)
-@rule(Rule.BackThreeKey,    ToontownItemName.BACK_THREE_ACCESS)
+@rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS, Rule.Has40PercentMax)
+@rule(Rule.SideFactoryKey,  ToontownItemName.SIDE_FACTORY_ACCESS, Rule.Has40PercentMax)
+@rule(Rule.CoinMintKey,     ToontownItemName.COIN_MINT_ACCESS, Rule.Has40PercentMax)
+@rule(Rule.DollarMintKey,   ToontownItemName.DOLLAR_MINT_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.BullionMintKey,  ToontownItemName.BULLION_MINT_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeAKey,      ToontownItemName.A_OFFICE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeBKey,      ToontownItemName.B_OFFICE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeCKey,      ToontownItemName.C_OFFICE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.OfficeDKey,      ToontownItemName.D_OFFICE_ACCESS, Rule.Has80PercentMax)
+@rule(Rule.FrontOneKey,     ToontownItemName.FRONT_ONE_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.MiddleTwoKey,    ToontownItemName.MIDDLE_TWO_ACCESS, Rule.Has60PercentMax)
+@rule(Rule.BackThreeKey,    ToontownItemName.BACK_THREE_ACCESS, Rule.Has80PercentMax)
 def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     args = (state, locentr, world, player, options)
     itemToHQAccessRule = {
@@ -129,7 +129,8 @@ def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWo
     # Facilities have their own keys
     if locking_method == FacilityLocking.option_keys:
         return state.has(argument[0].value, player) \
-               and passes_rule(itemToHQAccessRule[argument[0]], *args)
+               and passes_rule(itemToHQAccessRule[argument[0]], *args) \
+               and passes_rule(argument[1], *args)
     # Facilities are locked by a second access key
     elif locking_method == FacilityLocking.option_access:
         key_to_access = {
@@ -147,11 +148,13 @@ def CanEnterFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWo
             ToontownItemName.BACK_THREE_ACCESS: ToontownItemName.BBHQ_ACCESS,
         }
         return state.count(key_to_access[argument[0]].value, player) >= 2 \
-               and passes_rule(itemToHQAccessRule[argument[0]], *args)
+               and passes_rule(itemToHQAccessRule[argument[0]], *args) \
+               and passes_rule(argument[1], *args)
     # Facilities must be set to unlocked, access is true as long as we can reach the HQ
     else:
         return passes_rule(itemToHQAccessRule[argument[0]], *args) \
-               and passes_rule(itemToHQAccessRule[argument[0]], *args)
+               and passes_rule(itemToHQAccessRule[argument[0]], *args) \
+               and passes_rule(argument[1], *args)
 
 
 @rule(Rule.Has20PercentMax, 0.2)
@@ -818,6 +821,50 @@ def CanMaxCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
         rules.extend(tier_info[argument[1]])
     return any(rules)
 
+
+@rule(Rule.CanAnyFacility)
+def CanDoAnyFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    CanFrontFactory = passes_rule(Rule.FrontFactoryKey, state, locentr, world, player, options) \
+                      and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
+                      and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanSideFactory = passes_rule(Rule.SideFactoryKey, state, locentr, world, player, options) \
+                     and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                     and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanCoin = passes_rule(Rule.CoinMintKey, state, locentr, world, player, options) \
+              and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
+              and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanDollar = passes_rule(Rule.DollarMintKey, state, locentr, world, player, options) \
+                and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanBullion = passes_rule(Rule.BullionMintKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanAOffice = passes_rule(Rule.OfficeAKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanBOffice = passes_rule(Rule.OfficeBKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanCOffice = passes_rule(Rule.OfficeCKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanDOffice = passes_rule(Rule.OfficeDKey, state, locentr, world, player, options) \
+                 and passes_rule(Rule.HasLevelSevenOffenseGag, state, locentr, world, player, options) \
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanFrontOne = passes_rule(Rule.FrontOneKey, state, locentr, world, player, options) \
+                  and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
+                  and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+    CanMiddleTwo = passes_rule(Rule.MiddleTwoKey, state, locentr, world, player, options) \
+                   and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
+                   and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    CanBackThree = passes_rule(Rule.BackThreeKey, state, locentr, world, player, options) \
+                   and passes_rule(Rule.HasLevelSevenOffenseGag, state, locentr, world, player, options) \
+                   and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+    facilities = [CanFrontFactory, CanSideFactory,
+                  CanCoin, CanDollar, CanBullion,
+                  CanAOffice, CanBOffice, CanCOffice, CanDOffice,
+                  CanFrontOne, CanMiddleTwo, CanBackThree]
+    return any(facilities)
 
 @rule(Rule.OneStory, 1)
 @rule(Rule.TwoStory, 2)

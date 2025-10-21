@@ -84,7 +84,7 @@ class TownBattleToonPanel(DirectFrame):
             self.laffMeter.adjustFace(hp, self.avatar.maxHp)
         self.setHealthText(hp, maxHp)
 
-    def setValues(self, index, track, level = None, numTargets = None, targetIndex = None, localNum = None, numSounds=0):
+    def setValues(self, index, track, level = None, numTargets = None, targetIndex = None, localNum = None, numSounds=0, highestLevel=0):
         self.notify.debug('Toon Panel setValues: index=%s track=%s level=%s numTargets=%s targetIndex=%s localNum=%s' % (index,
          track,
          level,
@@ -127,6 +127,9 @@ class TownBattleToonPanel(DirectFrame):
             self.hasGag = 1
             dmg = getAvPropDamage(track, level, self.avatar.experience, self.avatar.trackBonusLevel[track] >= level, toonDamageMultiplier=self.avatar.getDamageMultiplier(), overflowMod=self.avatar.getOverflowMod())
             if track == BattleBase.SOUND:
+                if self.avatar.trackBonusLevel[track] >= level:
+                    mult = 1 + ((highestLevel * 2) / 100)
+                    dmg = dmg * mult
                 soundMults = [100, 80, 70, 60]
                 dmg = math.ceil(dmg * soundMults[numSounds-1]/100)
             operator = '+' if track == HEAL_TRACK else '-'

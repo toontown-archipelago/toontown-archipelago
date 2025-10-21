@@ -1516,6 +1516,23 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.timer.stop()
         return None
 
+    def handleThrowHeal(self, toon, attack):
+        if toon.checkGagBonus(THROW, attack[TOON_LVL_COL]):
+            for dmg in attack[TOON_HP_COL]:
+                if dmg != -1:
+                    actDmg = dmg
+                    break
+            healDone = math.ceil(actDmg * 0.1)
+            toonHp = toon.getHp()
+            toonMaxHp = toon.getMaxHp()
+            maxHealAllowed = math.ceil(toonMaxHp * 0.2)
+            if healDone > maxHealAllowed:
+                healDone = maxHealAllowed
+            if toonHp + healDone > toonMaxHp:
+                healDone = toonMaxHp - toonHp
+            return healDone
+        return
+
     def __movieDone(self):
         self.notify.debug('__movieDone() - movie is finished')
         if self.movieHasPlayed == 1:
@@ -1629,6 +1646,12 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                                     hp = 0
                                 toonHpDict[toon.doId][0] += hp
                     elif attackAffectsGroup(track, level, attack[TOON_TRACK_COL]):
+                        if track == THROW:
+                            toonId = attack[TOON_ID_COL]
+                            toon = self.getToon(toonId)
+                            heal = self.handleThrowHeal(toon, attack)
+                            if heal:
+                                toonHpDict[toon.doId][0] += heal
                         for suit in self.activeSuits:
                             targetIndex = self.activeSuits.index(suit)
                             if targetIndex < 0 or targetIndex >= len(hps):
@@ -1659,10 +1682,15 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                                 if died != 0:
                                     if deadSuits.count(suit) == 0:
                                         deadSuits.append(suit)
-
                     else:
                         targetId = attack[TOON_TGT_COL]
                         target = self.findSuit(targetId)
+                        if track == THROW:
+                            toonId = attack[TOON_ID_COL]
+                            toon = self.getToon(toonId)
+                            heal = self.handleThrowHeal(toon, attack)
+                            if heal:
+                                toonHpDict[toon.doId][0] += heal
                         if target != None:
                             targetIndex = self.activeSuits.index(target)
                             if targetIndex < 0 or targetIndex >= len(hps):

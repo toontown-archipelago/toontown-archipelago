@@ -46,10 +46,12 @@ class BattleCalculatorAI:
         self.toonHPAdjusts = {}
         self.toonSkillPtsGained = {}
         self.traps = {}
+        self.orgTraps = []
         self.npcTraps = {}
         self.suitAtkStats = {}
         self.suitsTrappedThisTurn = set()
         self.suitsHitBySoundThisTurn = set()
+        self.toonsHealedByOrgToonupThisTurn = set()
         self.__clearBonuses(hp=1)
         self.__clearBonuses(hp=0)
         self.delayedUnlures = []
@@ -116,7 +118,7 @@ class BattleCalculatorAI:
                 else:
                     allLured = False
 
-            if allLured:
+            if allLured and not toon.checkGagBonus(atkTrack, atkLevel):
                 attack[TOON_ACCBONUS_COL] = 1
                 return (0, 0)
         elif atkTrack == PETSOS:
@@ -207,8 +209,12 @@ class BattleCalculatorAI:
             elif numLured == len(atkTargets):
                 if debug:
                     self.notify.debug('all targets are lured, attack misses')
-                attack[TOON_ACCBONUS_COL] = 0
-                return (0, 0)
+                if toon.checkGagBonus(atkTrack, atkLevel):
+                    attack[TOON_ACCBONUS_COL] = 0
+                    return (1, 100)
+                else:
+                    attack[TOON_ACCBONUS_COL] = 0
+                    return (0, 0)
         if acc > MaxToonAcc:
             acc = MaxToonAcc
         if randChoice < acc:
@@ -349,16 +355,19 @@ class BattleCalculatorAI:
                     else:
                         self.traps[id] = [
                          self.TRAP_CONFLICT, 0, 0]
-
             else:
                 toon = self.battle.getToon(attackerId)
                 organicBonus = toon.checkGagBonus(TRAP, trapLvl)
                 propBonus = self.__checkPropBonus(TRAP)
                 damage = getAvPropDamage(TRAP, trapLvl, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
                 if self.itemIsCredit(TRAP, trapLvl):
+                    if organicBonus and suitId not in self.orgTraps:
+                        self.orgTraps.append(suitId)
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
                 else:
+                    if organicBonus and suitId not in self.orgTraps:
+                        self.orgTraps.append(suitId)
                     self.traps[suitId] = [trapLvl, 0, damage]
                 self.notify.debug('calling __addLuredSuitsDelayed')
                 self.__addLuredSuitsDelayed(attackerId, targetId=-1, ignoreDamageCheck=True)
@@ -385,9 +394,13 @@ class BattleCalculatorAI:
                 propBonus = self.__checkPropBonus(TRAP)
                 damage = getAvPropDamage(TRAP, trapLvl, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
                 if self.itemIsCredit(TRAP, trapLvl):
+                    if organicBonus and suitId not in self.orgTraps:
+                        self.orgTraps.append(suitId)
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
                 else:
+                    if organicBonus and suitId not in self.orgTraps:
+                        self.orgTraps.append(suitId)
                     self.traps[suitId] = [trapLvl, 0, damage]
         else:
             if suitId in self.traps:
@@ -402,6 +415,8 @@ class BattleCalculatorAI:
     def __removeSuitTrap(self, suitId):
         if suitId in self.traps:
             del self.traps[suitId]
+        if suitId in self.orgTraps:
+            self.orgTraps.remove(suitId)
 
     def __clearTrapCreator(self, creatorId, suitId=None):
         if suitId == None:
@@ -503,6 +518,11 @@ class BattleCalculatorAI:
                 else:
                     pass
             else:
+                toon = self.battle.getToon(toonId)
+                if atkTrack not in (SOS, NPCSOS, PETSOS):
+                    organicBonus = toon.checkGagBonus(atkTrack, attack[TOON_LVL_COL])
+                else:
+                    organicBonus = False
                 if atkTrack == TRAP:
                     npcDamage = 0
                     if attack[TOON_TRACK_COL] == NPCSOS:
@@ -521,6 +541,9 @@ class BattleCalculatorAI:
                         self.__addSuitTrap(targetId, atkLevel, toonId, npcDamage)
                 elif self.__suitIsLured(targetId) and atkTrack == SOUND:
                     self.notify.debug('Sound on lured suit, ' + 'indicating with KBBONUS_COL flag')
+                    tgtPos = self.battle.activeSuits.index(targetList[currTarget])
+                    attack[TOON_KBBONUS_COL][tgtPos] = self.KBBONUS_LURED_FLAG
+                elif self.__suitIsLured(targetId) and atkTrack == DROP and organicBonus:
                     tgtPos = self.battle.activeSuits.index(targetList[currTarget])
                     attack[TOON_KBBONUS_COL][tgtPos] = self.KBBONUS_LURED_FLAG
                 attackLevel = atkLevel
@@ -551,7 +574,11 @@ class BattleCalculatorAI:
                     propBonus = self.__checkPropBonus(attackTrack)
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
                 if not self.__combatantDead(targetId, toon=toonTarget):
-                    if self.__suitIsLured(targetId) and atkTrack == DROP:
+                    if attack[TOON_TRACK_COL] not in (SOS, NPCSOS, PETSOS):
+                        organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
+                    else:
+                        organicBonus = False
+                    if self.__suitIsLured(targetId) and atkTrack == DROP and not organicBonus:
                         self.notify.debug('not setting validTargetAvail, since drop on a lured suit')
                     else:
                         validTargetAvail = 1
@@ -572,9 +599,25 @@ class BattleCalculatorAI:
                     if self.notify.getDebug():
                         self.notify.debug('toon does ' + str(result) + ' healing to toon(s)')
                 elif atkTrack == SOUND:
-                        result = math.ceil(result * (self.SoundDamageCounts[self.soundCount-1] / 100))
+                    toon = self.battle.getToon(toonId)
+                    if attack[TOON_TRACK_COL] not in (SOS, NPCSOS, PETSOS):
+                        organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
+                    else:
+                        organicBonus = False
+                    if organicBonus:
+                        lvls = []
+                        for suit in self.battle.activeSuits:
+                            lvls.append(suit.getActualLevel())
+                        highestLevel = max(lvls)
+                        mult = 1 + ((highestLevel * 2) / 100)
+                        result = result * mult
+                    result = math.ceil(result * (self.SoundDamageCounts[self.soundCount-1] / 100))
                 else:
-                    if self.__suitIsLured(targetId) and atkTrack == DROP:
+                    if attack[TOON_TRACK_COL] not in (SOS, NPCSOS, PETSOS):
+                        organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
+                    else:
+                        organicBonus = False
+                    if self.__suitIsLured(targetId) and atkTrack == DROP and not organicBonus:
                         result = 0
                         self.notify.debug('setting damage to 0, since drop on a lured suit')
                     if self.notify.getDebug():
@@ -694,6 +737,9 @@ class BattleCalculatorAI:
                     continue
                 if track == HEAL or track == PETSOS:
                     currTarget = targets[position]
+                    toon = self.battle.getToon(toonId)
+                    if toon.checkGagBonus(track, attack[TOON_LVL_COL]) and currTarget not in self.toonsHealedByOrgToonupThisTurn:
+                        self.toonsHealedByOrgToonupThisTurn.add(currTarget)
                     if self.CAP_HEALS:
                         toonHp = self.__getToonHp(currTarget)
                         toonMaxHp = self.__getToonMaxHp(currTarget)
@@ -703,6 +749,19 @@ class BattleCalculatorAI:
                     self.toonHPAdjusts[currTarget] += damageDone
                     totalDamages = totalDamages + damageDone
                     continue
+                if track == THROW:
+                    toon = self.battle.getToon(toonId)
+                    if toon.checkGagBonus(track, attack[TOON_LVL_COL]):
+                        healDone = math.ceil(attack[TOON_HP_COL][position] * 0.1)
+                        if self.CAP_HEALS:
+                            toonHp = self.__getToonHp(toonId)
+                            toonMaxHp = self.__getToonMaxHp(toonId)
+                            maxHealAllowed = math.ceil(toonMaxHp * 0.2)
+                            if healDone > maxHealAllowed:
+                                healDone = maxHealAllowed
+                            if toonHp + healDone > toonMaxHp:
+                                healDone = toonMaxHp - toonHp
+                        self.toonHPAdjusts[toonId] += healDone
                 currTarget = targets[position]
                 currentlyImmuneSuits = self.getImmuneSuits()
                 if currTarget.getImmuneStatus() == 1:
@@ -819,21 +878,20 @@ class BattleCalculatorAI:
                 if track in self.hpBonuses[tgtPos]:
                     self.hpBonuses[tgtPos][track].append([attackIndex, dmg, 0])
                 else:
-                    self.hpBonuses[tgtPos][track] = [
-                     [
-                      attackIndex, dmg, 0]]
+                    self.hpBonuses[tgtPos][track] = [[attackIndex, dmg, 0]]
             elif self.__suitIsLured(currTgt.getDoId()):
                 kbEff = currTgt.effectHandler.children.get('knockbackBonus', None)
                 if kbEff is not None:
                     kbBonus = kbEff.children['value']
                 else:
-                    kbBonus = 40 # Failsafe
+                    kbBonus = 40  # Failsafe
+                toon = self.battle.getToon(toonId)
+                if track == SQUIRT and toon.checkGagBonus(track, attack[TOON_LVL_COL]):
+                    kbBonus += 30
                 if track in self.kbBonuses[tgtPos]:
                     self.kbBonuses[tgtPos][track].append([attackIndex, dmg, kbBonus])
                 else:
-                    self.kbBonuses[tgtPos][track] = [
-                     [
-                      attackIndex, dmg, kbBonus]]
+                    self.kbBonuses[tgtPos][track] = [[attackIndex, dmg, kbBonus]]
 
     def __clearBonuses(self, hp=1):
         if hp:
@@ -873,7 +931,8 @@ class BattleCalculatorAI:
                     toon = self.battle.getToon(attackerId)
                     baseDmgs = 0
                     for baseDmg in currTgt[currAtkType]:
-                        baseDmgs += getAvOriginalDamage(currAtkType, attack[TOON_LVL_COL], toon.experience, toon.getDamageMultiplier())
+                        organicBonus = toon.checkGagBonus(currAtkType, attack[TOON_LVL_COL])
+                        baseDmgs += getAvOriginalDamage(currAtkType, attack[TOON_LVL_COL], toon.experience, toon.getDamageMultiplier(), organicBonus)
                     if hp:
                         attack[TOON_HPBONUS_COL] = math.ceil(totalDmgs * (self.DamageBonuses[numDmgs - 1] * 0.01))
                         if self.notify.getDebug():
@@ -1143,7 +1202,8 @@ class BattleCalculatorAI:
     def __unlureAtk(self, attackIndex, toon=1):
         attack = self.battle.toonAttacks[attackIndex]
         track = self.__getActualTrack(attack)
-        if toon and (track == THROW or track == SQUIRT or track == SOUND):
+        toon = self.battle.getToon(attackIndex)
+        if toon and (track == THROW or track == SQUIRT or track == SOUND or (track == DROP and toon.checkGagBonus(track, attack[TOON_LVL_COL]))):
             if self.notify.getDebug():
                 self.notify.debug('attack is an unlure')
             return 1
@@ -1270,12 +1330,15 @@ class BattleCalculatorAI:
                     result *= 0.8
                 # Divide attack damage by 2 if they were trapped this turn
                 if attack[SUIT_ID_COL] in self.suitsTrappedThisTurn:
-                    result *= 0.5
-                    result = int(math.ceil(result))
+                    mult = 0.25 if attack[SUIT_ID_COL] in self.orgTraps else 0.5
+                    result *= mult
                 elif attack[SUIT_ID_COL] in self.traps:
+                    mult = 0.5 if attack[SUIT_ID_COL] in self.orgTraps else 0.75
+                    result *= mult
+                if toonId in self.toonsHealedByOrgToonupThisTurn:
                     result *= 0.75
                 # Move rounding to here since we can have multiple mults and we round at the end
-                result = int(math.ceil(result))
+                result = max(1, int(math.ceil(result)))
             targetIndex = self.battle.activeToons.index(toonId)
             attack[SUIT_HP_COL][targetIndex] = result
 
@@ -1420,6 +1483,7 @@ class BattleCalculatorAI:
     def __initRound(self):
         self.suitsTrappedThisTurn.clear()
         self.suitsHitBySoundThisTurn.clear()
+        self.toonsHealedByOrgToonupThisTurn.clear()
         if self.CLEAR_SUIT_ATTACKERS:
             self.SuitAttackers = {}
         self.toonAtkOrder = []
@@ -1453,8 +1517,23 @@ class BattleCalculatorAI:
                 for atk in attacks:
                     if atk[TOON_TRACK_COL] == SOUND:
                         self.__weakenAllSuitsForTurn(trap=False)
-            for atk in attacks:
-                self.toonAtkOrder.append(atk[TOON_ID_COL])
+            if track != DROP:
+                for atk in attacks:
+                    self.toonAtkOrder.append(atk[TOON_ID_COL])
+            else:
+                # We gotta do some hacky stuff here so that organic drops are considered first to avoid issues
+                organizedDrops = []
+                for atk in attacks:
+                    toonId = atk[TOON_ID_COL]
+                    toon = self.battle.getToon(toonId)
+                    if toon.checkGagBonus(track, atk[TOON_LVL_COL]):
+                        organizedDrops.append(atk)
+                for atk in attacks:
+                    if atk not in organizedDrops:
+                        organizedDrops.append(atk)
+                for atk in organizedDrops:
+                    self.toonAtkOrder.append(atk[TOON_ID_COL])
+
 
         specials = findToonAttack(self.battle.activeToons, self.battle.toonAttacks, NPCSOS)
         toonsHit = 0
@@ -1677,7 +1756,8 @@ class BattleCalculatorAI:
             if npc:
                 lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, npc=True, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
             else:
-                lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
+                organicBonus = toon.checkGagBonus(LURE, lureLvl)
+                lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod(), organicBonus=organicBonus)
         self.notify.debug('__addLuredSuitInfo: currLuredSuits -> %s' % repr(self.currentlyLuredSuits))
         return availLureId
 
