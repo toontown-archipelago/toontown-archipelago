@@ -274,6 +274,16 @@ class GagUpgradeReward(APReward):
         DROP: "drop_%s",
     }
 
+    TRACK_TO_UPGRADE_DESC = {
+        TOONUP: "now increase defense on use!",
+        TRAP: "now further reduce Cog damage!",
+        LURE: "have increased accuracy and knockback!",
+        SOUND: "deal more damage the higher the Cogs!",
+        THROW: "provide self-heal!",
+        SQUIRT: "deal increased knockback damage!",
+        DROP: "can now hit lured Cogs!",
+    }
+
     def __init__(self, track):
         self.track = track
 
@@ -282,9 +292,9 @@ class GagUpgradeReward(APReward):
     def formatted_header(self) -> str:
         track_name_color = self.TRACK_TO_COLOR.get(self.track)
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Trees have been planted!\nYour "),
-            MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
-            MinimalJsonMessagePart(" Gags are now organic!"),
+            MinimalJsonMessagePart("Trees planted! Your "),
+            MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}\n".upper(), color=track_name_color),
+            MinimalJsonMessagePart(f" Gags {self.TRACK_TO_UPGRADE_DESC[self.track]}"),
         ])
 
     def get_image_path(self) -> str:
