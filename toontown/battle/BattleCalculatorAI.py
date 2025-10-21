@@ -1737,7 +1737,8 @@ class BattleCalculatorAI:
             if npc:
                 lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, npc=True, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
             else:
-                lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
+                organicBonus = toon.checkGagBonus(LURE, lureLvl)
+                lureEff.children['value'] = getAvPropDamage(LURE, lureLvl, toon.experience, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod(), organicBonus=organicBonus)
         self.notify.debug('__addLuredSuitInfo: currLuredSuits -> %s' % repr(self.currentlyLuredSuits))
         return availLureId
 

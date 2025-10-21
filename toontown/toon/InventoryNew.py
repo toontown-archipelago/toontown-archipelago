@@ -289,6 +289,8 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             numRoundsLured = AvLureRounds[level]
             knockback = str(damage) + '%'
             damage = numRoundsLured
+            if organicBonus:
+                knockback += ' (+5%)'
             damageBonusStr = ''
             self.detailCreditLabel.setPos(-0.22, 0, -0.395)
         elif (track == THROW_TRACK or track == SQUIRT_TRACK or track == DROP_TRACK or track == TRAP_TRACK) and organicBonus:
