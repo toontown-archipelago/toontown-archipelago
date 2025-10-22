@@ -519,7 +519,7 @@ class BattleCalculatorAI:
                     pass
             else:
                 toon = self.battle.getToon(toonId)
-                if atkTrack not in (SOS, NPCSOS, PETSOS):
+                if atkTrack not in (SOS, NPCSOS, PETSOS, FIRE):
                     organicBonus = toon.checkGagBonus(atkTrack, attack[TOON_LVL_COL])
                 else:
                     organicBonus = False
@@ -574,7 +574,7 @@ class BattleCalculatorAI:
                     propBonus = self.__checkPropBonus(attackTrack)
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience, organicBonus, propBonus, self.propAndOrganicBonusStack, toonDamageMultiplier=toon.getDamageMultiplier(), overflowMod=toon.getOverflowMod())
                 if not self.__combatantDead(targetId, toon=toonTarget):
-                    if attack[TOON_TRACK_COL] not in (SOS, NPCSOS, PETSOS):
+                    if attack[TOON_TRACK_COL] not in (SOS, NPCSOS, PETSOS, FIRE):
                         organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
                     else:
                         organicBonus = False
@@ -600,7 +600,7 @@ class BattleCalculatorAI:
                         self.notify.debug('toon does ' + str(result) + ' healing to toon(s)')
                 elif atkTrack == SOUND:
                     toon = self.battle.getToon(toonId)
-                    if attack[TOON_TRACK_COL] not in (SOS, NPCSOS, PETSOS):
+                    if attack[TOON_TRACK_COL] not in (SOS, NPCSOS, PETSOS, FIRE):
                         organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
                     else:
                         organicBonus = False
@@ -613,7 +613,7 @@ class BattleCalculatorAI:
                         result = result * mult
                     result = math.ceil(result * (self.SoundDamageCounts[self.soundCount-1] / 100))
                 else:
-                    if attack[TOON_TRACK_COL] not in (SOS, NPCSOS, PETSOS):
+                    if attack[TOON_TRACK_COL] not in (SOS, NPCSOS, PETSOS, FIRE):
                         organicBonus = toon.checkGagBonus(attackTrack, attackLevel)
                     else:
                         organicBonus = False

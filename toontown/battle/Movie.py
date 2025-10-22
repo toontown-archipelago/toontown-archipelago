@@ -547,7 +547,7 @@ class Movie(DirectObject.DirectObject):
                 adict['toon'] = toon
                 adict['track'] = track
                 adict['level'] = level
-                if track not in (SOS, NPCSOS, PETSOS):
+                if track not in (SOS, NPCSOS, PETSOS, FIRE):
                     if toon.checkGagBonus(track, level):
                         adict['organic'] = True
                     else:
