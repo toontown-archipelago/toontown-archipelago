@@ -608,9 +608,13 @@ class BattleCalculatorAI:
                         lvls = []
                         for suit in self.battle.activeSuits:
                             lvls.append(suit.getActualLevel())
+                        ogDamage = getAvOriginalDamage(attackTrack, attackLevel, toon.experience,
+                                                       toonDamageMultiplier=toon.getDamageMultiplier(),
+                                                       organicBonus=organicBonus)
                         highestLevel = max(lvls)
-                        mult = 1 + ((highestLevel * 2) / 100)
-                        result = result * mult
+                        mult = ((highestLevel * 4) / 100)
+                        addedDmg = ogDamage * mult
+                        result += addedDmg
                     result = math.ceil(result * (self.SoundDamageCounts[self.soundCount-1] / 100))
                 else:
                     if attack[TOON_TRACK_COL] not in (SOS, NPCSOS, PETSOS, FIRE):
