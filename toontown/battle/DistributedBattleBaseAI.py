@@ -1522,7 +1522,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                 if dmg != -1:
                     actDmg = dmg
                     break
-            healDone = math.ceil(actDmg * 0.1)
+            healDone = math.ceil(actDmg * 0.15)
             toonHp = toon.getHp()
             toonMaxHp = toon.getMaxHp()
             maxHealAllowed = math.ceil(toonMaxHp * 0.2)
