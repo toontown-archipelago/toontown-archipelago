@@ -340,7 +340,7 @@ def __throwPie(throw, delay, hitCount):
     if hitSuit:
         suitResponseTrack = Sequence()
         if organic:
-            baseHeal = math.ceil(hp * 0.1)
+            baseHeal = math.ceil(hp * 0.15)
             toonHp = toon.getHp()
             toonMaxHp = toon.getMaxHp()
             maxHealAllowed = math.ceil(toonMaxHp * 0.2)
@@ -553,7 +553,7 @@ def __throwGroupPie(throw, delay, groupHitDict):
         if hitSuit:
             singleSuitResponseTrack = Sequence()
             if organic:
-                baseHeal = math.ceil(hp * 0.1)
+                baseHeal = math.ceil(hp * 0.15)
                 toonHp = toon.getHp()
                 toonMaxHp = toon.getMaxHp()
                 maxHealAllowed = math.ceil(toonMaxHp * 0.2)
