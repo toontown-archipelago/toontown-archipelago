@@ -279,7 +279,7 @@ AvPropDamage = (
         ((27, 30), (Levels[1][1], Levels[1][2])),
         ((41, 45), (Levels[1][2], Levels[1][3])),
         ((68, 75), (Levels[1][3], Levels[1][4])),
-        ((90, 100), (Levels[1][4], Levels[1][5])),
+        ((95, 105), (Levels[1][4], Levels[1][5])),
         ((176, 195), (Levels[1][5], Levels[1][6])),
         ((216, 240), (Levels[1][6], regMaxSkill))
     ),
@@ -298,16 +298,16 @@ AvPropDamage = (
         ((11, 12), (Levels[3][2], Levels[3][3])),
         ((18, 20), (Levels[3][3], Levels[3][4])),
         ((27, 30), (Levels[3][4], Levels[3][5])),
-        ((59, 65), (Levels[3][5], Levels[3][6])),
-        ((90, 100), (Levels[3][6], regMaxSkill))
+        ((56, 62), (Levels[3][5], Levels[3][6])),
+        ((86, 95), (Levels[3][6], regMaxSkill))
     ),
     (   # Throw
         ((6, 6), (Levels[4][0], Levels[4][1])),
         ((9, 10), (Levels[4][1], Levels[4][2])),
         ((16, 17), (Levels[4][2], Levels[4][3])),
-        ((25, 27), (Levels[4][3], Levels[4][4])),
+        ((26, 28), (Levels[4][3], Levels[4][4])),
         ((36, 40), (Levels[4][4], Levels[4][5])),
-        ((90, 100), (Levels[4][5], Levels[4][6])),
+        ((95, 105), (Levels[4][5], Levels[4][6])),
         ((126, 140), (Levels[4][6], regMaxSkill))
     ),
     (   # Squirt

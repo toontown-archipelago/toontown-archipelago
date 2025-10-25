@@ -319,7 +319,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
              'singleOrGroup': self.getSingleGroupStr(track, level)}
         else:
             if track == THROW_TRACK and organicBonus:
-                heal = int(math.ceil((damage + damageBonus) / 10))
+                heal = int(math.ceil((damage + damageBonus) * 0.15))
                 healStr = "Self-Heal: " + str(heal)
                 labelStr = TTLocalizer.InventoryDetailDataOrgThrow % {'accuracy': accString,
                                                               'damageString': self.getToonupDmgStr(track, level),
