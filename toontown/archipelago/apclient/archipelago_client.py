@@ -162,6 +162,9 @@ class ArchipelagoClient(DirectObject):
         thread = threading.Thread(target=self.__socket_thread, daemon=True)
         thread.start()
 
+    def is_connected(self):
+        return self.state == APClientEnums.CONNECTED
+
     def connect(self):
         """
         Attempt to use the socket to send a ConnectPacket

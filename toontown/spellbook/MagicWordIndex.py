@@ -3767,8 +3767,11 @@ class Archipelago(MagicWord):
             return f"Gave {toon.getName()} the {check.name} check!"
 
         if operation in ('wipe', 'reset', 'clear'):
-            toon.newToon()
-            return f"Wiped {toon.getName()}'s progress!"
+            if toon.archipelago_session.client.is_connected():
+                return f"Cannot wipe {toon.getName()}'s progress while connected to AP!"
+            else:
+                toon.newToon()
+                return f"Wiped {toon.getName()}'s progress!"
 
         if operation in ('reward', 'gift'):
             # Get a random reward, apply it and show it just like the packet does
