@@ -66,11 +66,10 @@ MaxSkill = 999999  # How high should we allow xp to go
 # Exp needed per % increase
 # [toonup, trap, lure, sound, throw, squirt, drop]
 overflowRates = [600, 400, 400, 600, 400, 400, 400]
-overflowDiminishThreshold = 15000
-overflowIncreaseRate = 1.5  # 50% more exp per % dmg
+overflowDiminishThreshold = 30000
+overflowIncreaseRate = 1.5  # 40% more exp per % dmg
 
 def getUberDamageBonus(experience, track, overflowMod=None) -> float:
-    sound = 3
     overflow = experience - regMaxSkill
     if overflow < 0:
         overflow = 0
