@@ -123,7 +123,8 @@ class ArchipelagoClient(DirectObject):
             return self.global_data_package.get_item(self.get_slot_info(slot).game, item_id)
         except (KeyError, TypeError):  # no slot info for the given slot, or slot was None
             warn("Invalid slot for fetching item name.", UserWarning, 2)  # print to log with where we were called.
-            return f'Unknown Item[{item_id}]'
+            # Attempt to find the item purely by ID
+            return self.get_item_name_by_id(item_id)
 
     def get_item_name_by_id(self, item_id: Union[str, int]) -> str:
         """
@@ -132,7 +133,7 @@ class ArchipelagoClient(DirectObject):
         try:
             return self.global_data_package.get_item_from_id(item_id)
         except (KeyError, TypeError):  # no slot info for the given slot, or slot was None
-            warn("Invalid slot for fetching item name.", UserWarning, 2)  # print to log with where we were called.
+            warn("Invalid item ID for fetching item name.", UserWarning, 2)  # print to log with where we were called.
             return f'Unknown Item[{item_id}]'
 
     def get_location_name(self, location_id: Union[str, int], slot: str | int) -> str:
@@ -160,6 +161,9 @@ class ArchipelagoClient(DirectObject):
         self.accept(self.__get_packet_handle_event_name(), self.handle_message_from_server)
         thread = threading.Thread(target=self.__socket_thread, daemon=True)
         thread.start()
+
+    def is_connected(self):
+        return self.state == APClientEnums.CONNECTED
 
     def connect(self):
         """
@@ -393,6 +397,9 @@ class ArchipelagoClient(DirectObject):
     def set_connect_url(self, server_url: str):
         self.address = server_url
 
+    def clear_cache(self):
+        self.location_scouts_cache.clear_cache()
+
     def cache_location_and_item(self, our_location_id: int, owning_player_id: int, item_id: int, item_flag: int = 0):
         """
         # Caches an item ID at some location. We do all the conversion in this method necessary to store it how we please
@@ -409,7 +416,7 @@ class ArchipelagoClient(DirectObject):
         someone_elses = owning_player_id != self.slot
 
         owner_name = self.get_slot_info(owning_player_id).name + "'s " if someone_elses else "Your "
-        item_name = self.get_item_name_by_id(item_id)
+        item_name = self.get_item_name(item_id, owning_player_id)
 
         # Handle settings for displaying location rewards.
         # Task Reward Locations.

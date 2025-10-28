@@ -324,7 +324,7 @@ class JSONPartFormatter:
 
         # If we were given the ID, override the text
         if part['type'] == 'item_id':
-            part['text'] = self.client.get_item_name_by_id(item)
+            part['text'] = self.client.get_item_name(item, part['player'])
 
         # If we were given name, instead of ID, do same thing basically
         elif part['type'] == 'item_name':
@@ -422,7 +422,7 @@ class JSONtoTextParser(metaclass=HandlerMeta):
 
     def _handle_item_id(self, node: JSONMessagePart):
         item_id = int(node["text"])
-        node["text"] = self.client.get_item_name_by_id(item_id)
+        node["text"] = self.client.get_item_name(item_id, node['player'])
         return self._handle_item_name(node)
 
     def _handle_location_name(self, node: JSONMessagePart):
