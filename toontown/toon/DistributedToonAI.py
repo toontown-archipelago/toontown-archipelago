@@ -4567,6 +4567,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         self.sendUpdate('updateLocationScoutsCache', [cache.struct()])
 
+    def resetLocationScoutsCache(self):
+        if self.archipelago_session:
+            self.archipelago_session.client.clear_cache()
+        self.sendUpdate('resetLocationScoutsCache', [])
+
     def sendHint(self, hint: HintedItem):
         self.air.archipelagoManager.d_sendHint(self.getDoId(), hint)
 
@@ -4642,6 +4647,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setMaxHp(15)
         self.b_setHp(15)
         self.b_setMaxCarry(20)
+
+        # Reset location Cache
+        self.resetLocationScoutsCache()
 
         # Now quests
         for id in self.getQuests():

@@ -397,6 +397,9 @@ class ArchipelagoClient(DirectObject):
     def set_connect_url(self, server_url: str):
         self.address = server_url
 
+    def clear_cache(self):
+        self.location_scouts_cache.clear_cache()
+
     def cache_location_and_item(self, our_location_id: int, owning_player_id: int, item_id: int, item_flag: int = 0):
         """
         # Caches an item ID at some location. We do all the conversion in this method necessary to store it how we please

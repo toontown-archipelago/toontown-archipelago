@@ -2116,6 +2116,10 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         new_cache = LocationScoutsCache.from_struct(cacheTuples)
         self.locationScoutsCache.merge(new_cache, update=True)
 
+    # Called from the ai, reset our scout cache when we start a new toon
+    def resetLocationScoutsCache(self) -> None:
+        self.locationScoutsCache.clear_cache()
+
     # Call this method to get the cached location that we have stored
     def getCachedLocationReward(self, locationId: int) -> str:
         return self.locationScoutsCache.get(locationId, default=f"Undefined <location={locationId}>")
