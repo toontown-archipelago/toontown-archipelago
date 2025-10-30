@@ -2908,6 +2908,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
         pass
 
+    # To be overridden in LocalToon, just here for safety
+    def resetLocationScoutsCache(self) -> None:
+        pass
+
     # To be overriden in LocalToon, just here for safety
     def d_setDeathReason(self, reason: DeathReason):
         pass
