@@ -148,7 +148,6 @@ class DiscordRPC(object):
         # timer is done
         self.discordTask = None
 
-
     def setLaff(self, hp, maxHp):
         if not base.wantRichPresence:
             return
@@ -190,6 +189,14 @@ class DiscordRPC(object):
         self.details = 'Making a Toon.'
         self.setData()
 
+    def sleeping(self):
+        if not base.wantRichPresence:
+            return
+        self.image = LOGO
+        self.details = 'Sleeping...'
+        self.imageTxt='AFK'
+        self.setData()
+
     def startTasks(self):
         if not base.wantRichPresence:
             return
@@ -204,16 +211,22 @@ class DiscordRPC(object):
         self.setData()
 
     def cfo(self):
+        if not base.wantRichPresence:
+            return
         self.image = 'cfo'
         self.details = 'Fighting the CFO.'
         self.setData()
 
     def cj(self):
+        if not base.wantRichPresence:
+            return
         self.image = 'cj'
         self.details = 'Fighting the CJ.'
         self.setData()
 
     def ceo(self):
+        if not base.wantRichPresence:
+            return
         self.image = 'ceo'
         self.details = 'Fighting the CEO.'
         self.setData()
