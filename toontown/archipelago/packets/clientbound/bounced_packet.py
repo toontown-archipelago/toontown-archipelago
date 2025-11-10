@@ -110,7 +110,7 @@ class BouncedPacket(ClientBoundPacketBase):
 
         # At this point we are assuming that this packet IS a ringlink packet and that our client has it enabled.
         timestamp = self.data['time']
-        amount: int = self.data.get("amount", 0)
+        amount: int = self.data.get("amount", 0) * 10
         source: str = self.data["source"]
         toon = client.av
         toonId = abs(int(hash(toon.getUUID()) / 10000000000))
