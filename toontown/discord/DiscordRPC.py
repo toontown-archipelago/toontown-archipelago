@@ -7,76 +7,73 @@ from pypresence.exceptions import PyPresenceException
 from direct.directnotify import DirectNotifyGlobal
 from direct.task import Task
 import threading
+from toontown.toonbase import ToontownGlobals
 clientId  = "1255381622128377998"
-LOGO = "https://avatars.githubusercontent.com/u/164748629"
+LOGO = "toontown-logo"
 
 class DiscordRPC(object):
     notify = DirectNotifyGlobal.directNotify.newCategory('DiscordRPC')
     zone2imgdesc = {  # A dict of ZoneID -> An image and a description
-        1000: ["https://static.wikia.nocookie.net/toontown/images/6/65/Donalds_Dock.png", "In Donald's Dock"],
-        1100: ["https://static.wikia.nocookie.net/toontown/images/e/e7/Barnacle_Boulevard_Tunnel.jpg", "On Barnacle Boulevard"],
-        1200: ["https://static.wikia.nocookie.net/toontown/images/9/91/Seaweed_Street_Tunnel.jpg", "On Seaweed Street"],
-        1300: ["https://static.wikia.nocookie.net/toontown/images/0/06/Lighthouse_Lane_Tunnel.jpg", "On Lighthouse Lane"],
+        ToontownGlobals.DonaldsDock: ["donalds_dock", "In Donald's Dock"],
+        ToontownGlobals.BarnacleBoulevard: ["barnacle_boulevard_tunnel", "On Barnacle Boulevard"],
+        ToontownGlobals.SeaweedStreet: ["seaweed_street_tunnel", "On Seaweed Street"],
+        ToontownGlobals.LighthouseLane: ["lighthouse_lane_tunnel", "On Lighthouse Lane"],
 
-        2000: ["https://static.wikia.nocookie.net/toontown/images/9/93/Toontown_Central.png", "In Toontown Central"],
-        2100: ["https://static.wikia.nocookie.net/toontown/images/4/40/Silly_Street_Tunnel.jpg", "On Silly Street"],
-        2200: ["https://static.wikia.nocookie.net/toontown/images/9/98/Loopy_Lane_Tunnel.jpg", "On Loopy Lane"],
-        2300: ["https://static.wikia.nocookie.net/toontown/images/c/cc/Punchline_Place_Tunnel.jpg", "On Punchline Place"],
+        ToontownGlobals.ToontownCentral: ["toontown_central", "In Toontown Central"],
+        ToontownGlobals.SillyStreet: ["silly_street_tunnel", "On Silly Street"],
+        ToontownGlobals.LoopyLane: ["loopy_lane_tunnel", "On Loopy Lane"],
+        ToontownGlobals.PunchlinePlace: ["punchline_place_tunnel", "On Punchline Place"],
 
-        3000: ["https://static.wikia.nocookie.net/toontown/images/5/57/The_Brrrgh.png", "In The Brrrgh"],
-        3100: ["https://static.wikia.nocookie.net/toontown/images/f/fd/Walrus_Way_Tunnel.jpg", "On Walrus Way"],
-        3200: ["https://static.wikia.nocookie.net/toontown/images/3/35/Sleet_Street_Tunnel.jpg", "On Sleet Street"],
-        3300: ["https://static.wikia.nocookie.net/toontown/images/e/e9/Polar_Place_Tunnel.jpg", "On Polar Place"],
+        ToontownGlobals.TheBrrrgh: ["the_brrrgh", "In The Brrrgh"],
+        ToontownGlobals.WalrusWay: ["walrus_way_tunnel", "On Walrus Way"],
+        ToontownGlobals.SleetStreet: ["sleet_street_tunnel", "On Sleet Street"],
+        ToontownGlobals.PolarPlace: ["polar_place_tunnel", "On Polar Place"],
 
-        4000: ["https://static.wikia.nocookie.net/toontown/images/6/61/Minnies_Melodyland.png", "In Minnie's Melodyland"],
-        4100: ["https://static.wikia.nocookie.net/toontown/images/d/d0/Alto_Avenue_Tunnel.jpg", "On Alto Avenue"],
-        4200: ["https://static.wikia.nocookie.net/toontown/images/4/4c/Baritone_Boulevard_Tunnel.jpg/", "On Baritone Boulevard"],
-        4300: ["https://static.wikia.nocookie.net/toontown/images/5/5e/Tenor_Terrace_Tunnel.jpg", "On Tenor Terrace"],
+        ToontownGlobals.MinniesMelodyland: ["minnies_melodyland", "In Minnie's Melodyland"],
+        ToontownGlobals.AltoAvenue: ["alto_avenue_tunnel", "On Alto Avenue"],
+        ToontownGlobals.BaritoneBoulevard: ["baritone_boulevard_tunnel", "On Baritone Boulevard"],
+        ToontownGlobals.TenorTerrace: ["tenor_terrace_tunnel", "On Tenor Terrace"],
 
-        5000: ["https://static.wikia.nocookie.net/toontownrewritten/images/8/81/Daisy_Gardens.jpg", "In Daisy Gardens"],
-        5100: ["https://static.wikia.nocookie.net/toontown/images/d/dc/Elm_Street_Tunnel.jpg", "On Elm Street"],
-        5200: ["https://static.wikia.nocookie.net/toontown/images/4/41/Maple_Street_Tunnel.jpg", "On Maple Street"],
-        5300: ["https://static.wikia.nocookie.net/toontown/images/d/d3/Oak_Street_Tunnel.jpg", "On Oak Street"],
+        ToontownGlobals.DaisyGardens: ["daisy_gardens", "In Daisy Gardens"],
+        ToontownGlobals.ElmStreet: ["elm_street_tunnel", "On Elm Street"],
+        ToontownGlobals.MapleStreet: ["maple_street_tunnel", "On Maple Street"],
+        ToontownGlobals.OakStreet: ["oak_street_tunnel", "On Oak Street"],
 
-        6000: ["https://static.wikia.nocookie.net/toontown/images/8/88/Chip_n_Dales_Acorn_Acres.png", "At Chip 'n Dale's Acorn Acres"],
+        ToontownGlobals.OutdoorZone: ["chip_n_dales_acorn_acres", "At Chip 'n Dale's Acorn Acres"],
 
+        ToontownGlobals.GoofySpeedway: ["goofy_speedway", "In Goofy Speedway"],
 
-        8000: ["https://static.wikia.nocookie.net/toontownrewritten/images/1/10/Goofy_Speedway.png", "In Goofy Speedway"],
+        ToontownGlobals.DonaldsDreamland: ["donalds_dreamland", "In Donald's Dreamland"],
+        ToontownGlobals.LullabyLane: ["lullaby_lane_tunnel", "On Lullaby Lane"],
+        ToontownGlobals.PajamaPlace: ["pajama_place_tunnel", "On Pajama Place"],
 
-        9000: ["https://static.wikia.nocookie.net/toontown/images/9/9c/Donalds_Dreamland.png", "In Donald's Dreamland"],
-        9100: ["https://static.wikia.nocookie.net/toontown/images/c/c7/Lullaby_Lane_Tunnel.jpg", "On Lullaby Lane"],
-        9200: ["https://static.wikia.nocookie.net/toontown/images/e/ec/Pajama_Place_Tunnel.jpg", "On Pajama Place"],
-        10000: ["https://static.wikia.nocookie.net/toontown/images/6/61/Bossbot_Headquarters.png", "At Bossbot HQ"],
-        10100: ["https://static.wikia.nocookie.net/toontown/images/2/2b/Bossbot_Clubhouse.png", "In The CEO Clubhouse"],
-        10200: ["https://static.wikia.nocookie.net/toontown/images/2/2b/Bossbot_Clubhouse.png", "In The CEO Clubhouse"],
-        10500: ["https://static.wikia.nocookie.net/toontown/images/f/f6/Bbhqfrontthree.png", "In The Front One"],
-        10600: ["https://www.toontowncentral.com/gallery/data/986/Middle_6.jpg", "In The Middle Two"],
-        10700: ["https://i.ytimg.com/vi/DaMcp3S74lI/maxresdefault.jpg", "In The Back Three"],
+        ToontownGlobals.BossbotHQ: ["bossbot_hq", "At Bossbot HQ"],
+        ToontownGlobals.BossbotLobby: ["bossbot_clubhouse", "In The CEO Clubhouse"],
+        ToontownGlobals.BossbotCountryClubIntA: ["bossbot_hq_the_front_one", "In The Front One"],
+        ToontownGlobals.BossbotCountryClubIntB: ["bossbot_hq_the_middle_two", "In The Middle Two"],
+        ToontownGlobals.BossbotCountryClubIntC: ["bossbot_hq_the_back_three", "In The Back Three"],
 
-        11000: ["https://static.wikia.nocookie.net/toontownrewritten/images/8/8a/Sellbot_Headquarters.jpg/", "At Sellbot HQ"],
-        11100: ["https://static.wikia.nocookie.net/toontown/images/c/c0/SBHQ_lobby_1.jpg", "In The Sellbot HQ Lobby"],
-        11200: ["https://static.wikia.nocookie.net/toontown/images/a/aa/Sellbot_Factory.png", "In The Sellbot HQ Factory Exterior"],
-        11500: ["https://static.wikia.nocookie.net/toontown/images/a/aa/Sellbot_Factory.png", "In The Sellbot Front Factory"],
-        11600: ["https://static.wikia.nocookie.net/toontown/images/a/aa/Sellbot_Factory.png", "In The Sellbot Side Factory"],
+        ToontownGlobals.SellbotHQ: ["sellbot_hq", "At Sellbot HQ"],
+        ToontownGlobals.SellbotLobby: ["sellbot_hq_lobby", "In The Sellbot HQ Lobby"],
+        ToontownGlobals.SellbotFactoryExt: ["sellbot_factory", "In The Sellbot HQ Factory Exterior"],
+        ToontownGlobals.SellbotFactoryInt: ["sellbot_factory_front", "In The Sellbot Front Factory"],
+        ToontownGlobals.SellbotFactoryIntS: ["sellbot_factory_side", "In The Sellbot Side Factory"],
 
-        12000: ["https://static.wikia.nocookie.net/toontown/images/f/fe/Cashbot_Headquarters.png", "At Cashbot HQ"],
-        12100: ["https://spikesrewrittenguide.com/images/cogs/cashbots/cbhq_vault.PNG", "In The Cashbot HQ Lobby"],
-        12500: ["https://static.wikia.nocookie.net/toontown/images/b/b7/Coin_Mint.png", "In The Cashbot Coin Mint"],
-        12600: ["https://static.wikia.nocookie.net/toontown/images/b/b7/Coin_Mint.png", "In The Cashbot Dollar Mint"],
-        12700: ["https://static.wikia.nocookie.net/toontown/images/4/48/Bullions.jpg", "In The Cashbot Bullion Mint"],
+        ToontownGlobals.CashbotHQ: ["cashbot_hq", "At Cashbot HQ"],
+        ToontownGlobals.CashbotLobby: ["cashbot_hq_vault", "In The Cashbot HQ Lobby"],
+        ToontownGlobals.CashbotMintIntA: ["cashbot_hq_coin_mint", "In The Cashbot Coin Mint"],
+        ToontownGlobals.CashbotMintIntB: ["cashbot_hq_dollar_mint", "In The Cashbot Dollar Mint"],
+        ToontownGlobals.CashbotMintIntC: ["cashbot_hq_bullion_mint", "In The Cashbot Bullion Mint"],
 
-        13000: ["https://static.wikia.nocookie.net/toontown/images/5/5f/Lawbot_Headquarters.png", "At Lawbot HQ"],
-        13100: ["https://static.wikia.nocookie.net/toontown/images/c/c8/Screenshot-Wed-Jul-31-13-17-19-2013-5711.jpg", "In The Courthouse Lobby"],
-        13200: ["https://static.wikia.nocookie.net/toontown/images/d/d1/District_Attorneys_Office.png", "In The DA's Office Lobby"],
-        13300: ["https://static.wikia.nocookie.net/toontown/images/d/d1/District_Attorneys_Office.png", "In The Lawbot Office A"],
-        13400: ["https://static.wikia.nocookie.net/toontown/images/d/d1/District_Attorneys_Office.png", "In The Lawbot Office B"],
-        13500: ["https://static.wikia.nocookie.net/toontown/images/d/d1/District_Attorneys_Office.png", "In The Lawbot Office C"],
-        13600: ["https://static.wikia.nocookie.net/toontown/images/d/d1/District_Attorneys_Office.png", "In The Lawbot Office D"],
+        ToontownGlobals.LawbotHQ: ["lawbot_hq", "At Lawbot HQ"],
+        ToontownGlobals.LawbotLobby: ["lawbot_hq_courthouse_lobby", "In The Courthouse Lobby"],
+        ToontownGlobals.LawbotOfficeExt: ["district_attorneys_office", "In The DA's Office Lobby"],
+        ToontownGlobals.LawbotOfficeInt: ["da_office_a", "In The Lawbot Office A"],
+        ToontownGlobals.LawbotStageIntB: ["da_office_b", "In The Lawbot Office B"],
+        ToontownGlobals.LawbotStageIntC: ["da_office_c", "In The Lawbot Office C"],
+        ToontownGlobals.LawbotStageIntD: ["da_office_d", "In The Lawbot Office D"],
 
-
-
-        17000: ['https://static.wikia.nocookie.net/toontown/images/f/f7/Chip_n_Dales_MiniGolf.png', "In Chip 'n Dale's MiniGolf"]
-
+        ToontownGlobals.GolfZone: ["chip_n_dales_minigolf", "In Chip 'n Dale's MiniGolf"]
     }
 
     def __init__(self):
@@ -151,7 +148,6 @@ class DiscordRPC(object):
         # timer is done
         self.discordTask = None
 
-
     def setLaff(self, hp, maxHp):
         if not base.wantRichPresence:
             return
@@ -193,6 +189,14 @@ class DiscordRPC(object):
         self.details = 'Making a Toon.'
         self.setData()
 
+    def sleeping(self):
+        if not base.wantRichPresence:
+            return
+        self.image = LOGO
+        self.details = 'Sleeping...'
+        self.imageTxt='AFK'
+        self.setData()
+
     def startTasks(self):
         if not base.wantRichPresence:
             return
@@ -202,23 +206,30 @@ class DiscordRPC(object):
     def vp(self):
         if not base.wantRichPresence:
             return
-        self.image = 'https://static.wikia.nocookie.net/toontown-corporate-clash/images/9/92/VP.png/'
+        self.image = 'vp'
         self.details = 'Fighting the VP.'
         self.setData()
 
     def cfo(self):
-        self.image = 'https://static.wikia.nocookie.net/toontown-corporate-clash/images/3/37/CFO.png'
+        if not base.wantRichPresence:
+            return
+        self.image = 'cfo'
         self.details = 'Fighting the CFO.'
         self.setData()
 
     def cj(self):
-        self.image = 'https://static.wikia.nocookie.net/toontown-corporate-clash/images/3/31/Cj1.png'
+        if not base.wantRichPresence:
+            return
+        self.image = 'cj'
         self.details = 'Fighting the CJ.'
         self.setData()
 
     def ceo(self):
-        self.image = 'https://static.wikia.nocookie.net/toontown/images/e/e4/CeoPic.png'
+        if not base.wantRichPresence:
+            return
+        self.image = 'ceo'
         self.details = 'Fighting the CEO.'
+        self.setData()
 
     def setZone(self, zone):  # Set image and text based on the zone
         if not isinstance(zone, int):
@@ -233,7 +244,6 @@ class DiscordRPC(object):
             self.notify.warning(f'Could not find image and description for zone {zone % 100}.')
 
     def enable(self):
-        clientId = "1255381622128377998"
         try:
             if self.discordRPC is None:
                 self.discordRPC = Presence(clientId)
