@@ -758,6 +758,8 @@ class BattleCalculatorAI:
                     if toon.checkGagBonus(track, attack[TOON_LVL_COL]):
                         healDone = math.ceil(attack[TOON_HP_COL][position] * 0.15)
                         if self.CAP_HEALS:
+                            if healDone < 0:
+                                healDone = 0
                             toonHp = self.__getToonHp(toonId)
                             toonMaxHp = self.__getToonMaxHp(toonId)
                             maxHealAllowed = math.ceil(toonMaxHp * 0.2)
