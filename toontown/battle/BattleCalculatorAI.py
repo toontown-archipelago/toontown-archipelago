@@ -645,7 +645,7 @@ class BattleCalculatorAI:
                     self.successfulLures[targetId][3] = result
                 else:
                     attack[TOON_HP_COL][targetIndex] = result
-                if result > 0 and atkTrack != HEAL and atkTrack != DROP and atkTrack != PETSOS:
+                if result > 0 and atkTrack != HEAL and atkTrack != PETSOS:
                     attackTrack = LURE
                     lureInfos = self.__getLuredExpInfo(targetId)
                     for currInfo in lureInfos:
@@ -758,6 +758,8 @@ class BattleCalculatorAI:
                     if toon.checkGagBonus(track, attack[TOON_LVL_COL]):
                         healDone = math.ceil(attack[TOON_HP_COL][position] * 0.15)
                         if self.CAP_HEALS:
+                            if healDone < 0:
+                                healDone = 0
                             toonHp = self.__getToonHp(toonId)
                             toonMaxHp = self.__getToonMaxHp(toonId)
                             maxHealAllowed = math.ceil(toonMaxHp * 0.2)
