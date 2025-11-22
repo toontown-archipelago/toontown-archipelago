@@ -645,7 +645,7 @@ class BattleCalculatorAI:
                     self.successfulLures[targetId][3] = result
                 else:
                     attack[TOON_HP_COL][targetIndex] = result
-                if result > 0 and atkTrack != HEAL and atkTrack != DROP and atkTrack != PETSOS:
+                if result > 0 and atkTrack != HEAL and atkTrack != PETSOS:
                     attackTrack = LURE
                     lureInfos = self.__getLuredExpInfo(targetId)
                     for currInfo in lureInfos:
