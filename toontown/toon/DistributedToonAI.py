@@ -4821,6 +4821,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.set_ap_data("fish-collection", [genusList, speciesList, weightList], True)
 
     def ap_setCogCount(self, cogCountList: List[int]):
+        #only send the main cog types, anything in notMainTypes shouldn't be in the gallery anyways.
+        cogCountList = cogCountList[:len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes)]
         self.b_setCogCount(cogCountList)
         self.notify.debug(f"setting AP cog-gallery for {self.getDoId()} to: {cogCountList}" )
         self.set_ap_data("cog-gallery", cogCountList, True)
@@ -4903,6 +4905,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                     cogCount = self.getCogCount()
                     cogStatus = self.getCogStatus()
                     for suitIndex, count in enumerate(v):
+                        if suitIndex >= len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes):
+                            self.notify.debug(f"Suit {SuitDNA.suitHeadTypes[suitIndex]} found in AP message, this should not happen, ignoring.")
+                            continue
                         # Ensure we don't overwrite if any are already higher than what was sent to us.
                         cogCount[suitIndex] = max(cogCount[suitIndex], count)
                         if cogCount[suitIndex] >= 1: # Don't mark cogs with a count of 0 as defeated.
