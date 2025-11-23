@@ -67,6 +67,10 @@ class BouncedPacket(ClientBoundPacketBase):
                     MinimalJsonMessagePart(f"{death_component}", color='salmon')
                 ])
             elif deathLinkOption == DeathLinkOption.option_one:
+                # We set the death reason to deathlink to prevent some cases where a second link could be sent shortly after
+                # This isn't a "double deathlink" but can be mistaken as one
+                # Hashtag #ConfirmationBias
+                toon.setDeathReason(DeathReason.DEATHLINK)
                 toon.takeDamage((toon.getHp() - 1))
                 death_component = cause if cause is not None else f"{source} died!"
                 msg = global_text_properties.get_raw_formatted_string([
@@ -97,9 +101,9 @@ class BouncedPacket(ClientBoundPacketBase):
         toon.d_sendArchipelagoMessage(msg)
 
     def handle_link_drain(self, toon, toonId):
-        # This tick is killing the toon, set the death reason to not kill others and break the loop
-        if toon.getHp() == 1:
-            toon.setDeathReason(DeathReason.DEATHLINK)
+        # We set the death reason to deathlink on every tick just to avoid any really stupid edge cases that probably dont exist
+        # Hashtag #ConfirmationBias
+        toon.setDeathReason(DeathReason.DEATHLINK)
         toon.takeDamage(1)
         self.hpToDrain -= 1
         if toon.getHp() > 0 and self.hpToDrain > 0:
