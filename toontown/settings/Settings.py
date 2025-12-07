@@ -43,6 +43,7 @@ class Settings:
         "music": True,
         "sfx": True,
         "toon-chat-sounds": True,
+        'ap-sounds': True,
         "resolution": [1280, 720],
         "music-volume": 0.4,
         "sfx-volume": 0.4,

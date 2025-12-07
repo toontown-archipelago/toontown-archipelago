@@ -65,6 +65,7 @@ OptionToType = {
     "music-volume": OptionTypes.SLIDER,
     "sfx-volume": OptionTypes.SLIDER,
     "toon-chat-sounds": OptionTypes.BUTTON,
+    'ap-sounds': OptionTypes.BUTTON,
     "random-music": OptionTypes.BUTTON,
     "refresh-audio": OptionTypes.BUTTON
 }
@@ -167,7 +168,7 @@ class OptionsTabPage(DirectFrame, FSM):
         ],
         "Audio": [
             "music", "sfx", "music-volume", "sfx-volume", "toon-chat-sounds",
-            "random-music", "refresh-audio"
+            'ap-sounds', "random-music", "refresh-audio"
         ],
     }
 
@@ -798,7 +799,8 @@ class OptionElement(DirectFrame):
             base.laffMeterDisplay = newSetting
         elif self.optionName == "battle-speed":
             base.battleSpeed = newSetting
-            self.battlespeed
+        elif self.optionName == "ap-sounds":
+            base.apSounds = newSetting
         elif self.optionName == "random-music":
             base.randomMusic = newSetting
             base.refreshRandomMusic()

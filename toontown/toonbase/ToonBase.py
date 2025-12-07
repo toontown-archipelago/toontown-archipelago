@@ -205,6 +205,7 @@ class ToonBase(OTPBase.OTPBase):
         self.wantRichPresence = self.settings.get('discord-rich-presence')
         self.colorBlindMode = self.settings.get('color-blind-mode')
         self.battleSpeed = self.settings.get('battle-speed')
+        self.apSounds = self.settings.get('ap-sounds')
         # do they want laff meter on or off?
         self.laffMeterDisplay = self.settings.get('laff-display')
         self.randomMusic = self.settings.get("random-music")

@@ -1221,8 +1221,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 messenger.send('petTrickPhrasesChanged')
 
     def playSound(self, sound):
-        soundEffect = base.loader.loadSfx(sound)
-        base.playSfx(soundEffect)
+        if base.apSounds:
+            soundEffect = base.loader.loadSfx(sound)
+            base.playSfx(soundEffect)
 
     def setCustomMessages(self, customMessages):
         self.customMessages = customMessages
