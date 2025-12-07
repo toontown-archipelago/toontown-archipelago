@@ -74,8 +74,6 @@ class FishManagerAI:
         return rng < threshold
 
     def addNewSpeciesPity(self, av):
-        print(av.slotData)
-        print(av.slotData.get('fish_pity'))
         pity = (av.slotData.get('fish_pity', 25) / 100)
 
         # Add the pity

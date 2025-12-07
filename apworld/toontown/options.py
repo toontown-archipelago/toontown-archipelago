@@ -833,7 +833,18 @@ class HealWeightOption(Range):
     display_name = "Healing Junk Weight"
     range_start = 0
     range_end = 100
-    default = 65
+    default = 75
+
+
+class FishWeightOption(Range):
+    """
+    Weight of Fish items in the junk pool.
+    """
+
+    display_name = "Fish Junk Weight"
+    range_start = 0
+    range_end = 100
+    default = 75
 
 
 class DeathLinkOption(Choice):
@@ -929,6 +940,7 @@ class ToontownOptions(PerGameCommonOptions):
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
     heal_weight: HealWeightOption
+    fish_weight: FishWeightOption
     death_link: DeathLinkOption
     ring_link: RingLinkOption
     pet_shop_display: PetShopRewardDisplayOption
@@ -967,7 +979,7 @@ toontown_option_groups: list[OptionGroup] = [
         JokesPerStreet, JokeBookToggle
     ], False),
     OptionGroup("Junk Weights", [
-        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption, HealWeightOption
+        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption, HealWeightOption, FishWeightOption
     ], True),
     OptionGroup("Trap Weights", [
         UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption, DamageWeightOption

@@ -310,7 +310,8 @@ Toontown:
   sos_weight: 65
   unite_weight: 65
   fire_weight: 65
-  heal_weight: 65
+  heal_weight: 75
+  fish_weight: 75
 
   ### Trap Settings ###
 
