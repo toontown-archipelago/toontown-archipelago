@@ -3143,10 +3143,10 @@ FADoorCodes_DEFEAT_FLUNKY_TOM = 'Walk up to that Flunky to battle him!'
 FADoorCodes_TALK_TO_HQ_TOM = 'Go get your reward from Toon Headquarters!'
 FADoorCodes_SUIT_APPROACHING = None
 FADoorCodes_BUILDING_TAKEOVER = "Watch out! There's a Cog in there!"
-FADoorCodes_SB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Sellbot Disguise first!\n\nBuild your Sellbot Disguise out of parts from the Factory."
-FADoorCodes_CB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Cashbot Disguise first!\n\nBuild your Cashbot Disguise by doing ToonTasks in Donald's Dreamland."
-FADoorCodes_LB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Lawbot Disguise first!\n\nBuild your Lawbot Disguise by doing the ToonTasks after Donald's Dreamland."
-FADoorCodes_BB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Bossbot Disguise first!\n\nBuild your Bossbot Disguise by doing the ToonTasks after Donald's Dreamland."
+FADoorCodes_SB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to receive your Sellbot Disguise first!\n\nHint for your Sellbot Disguise if you can't find it."
+FADoorCodes_CB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to receive your Cashbot Disguise first!\n\nHint for your Cashbot Disguise if you can't find it."
+FADoorCodes_LB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to receive your Lawbot Disguise first!\n\nHint for your Lawbot Disguise if you can't find it."
+FADoorCodes_BB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to receive your Bossbot Disguise first!\n\nHint for your Bossbot Disguise if you can't find it."
 
 FADoorCodes_TTC_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need enough Toontown Central Access Keys before you can enter and complete toontasks here."
 FADoorCodes_DD_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need enough Donald's Dock Access Keys before you can enter and complete toontasks here."
