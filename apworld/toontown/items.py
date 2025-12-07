@@ -207,7 +207,6 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.MML_FISHING, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.TB_FISHING,  ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.DDL_FISHING, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.FISH,        ItemClassification.filler),
     # endregion
     # region Teleport Access
     ToontownItemDefinition(ToontownItemName.TTC_ACCESS,  ItemClassification.progression),
@@ -275,6 +274,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD,     ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.HEAL_10,              ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.HEAL_20,              ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.FISH,                 ItemClassification.filler),
     # endregion
     # region Traps
     ToontownItemDefinition(ToontownItemName.UBER_TRAP,             ItemClassification.trap),

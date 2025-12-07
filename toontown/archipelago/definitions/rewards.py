@@ -610,6 +610,24 @@ class JellybeanReward(APReward):
         av.addMoney(self.amount)
 
 
+class FishReward(APReward):
+    def __init__(self, amount: int):
+        self.amount: int = amount
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You know what that means...\n"),
+            MinimalJsonMessagePart("Fish", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.addMoney(self.amount)
+        sounds = ["phase_4/audio/sfx/fish.ogg", "phase_4/audio/sfx/ykwtm.ogg"]
+        sound = random.choice(sounds)
+        av.playSound(sound)
+
+
 class DamageTrapAward(APReward):
 
     def __init__(self, amount: int):
@@ -999,7 +1017,6 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MML_FISHING.value: FishingLicenseReward(FishingLicenseReward.MINNIES_MELODYLAND),
     ToontownItemName.TB_FISHING.value: FishingLicenseReward(FishingLicenseReward.THE_BRRRGH),
     ToontownItemName.DDL_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DREAMLAND),
-    ToontownItemName.FISH.value: IgnoreReward(),
     ToontownItemName.GOLF_PUTTER.value: GolfPutterReward(),
     ToontownItemName.GO_KART.value: GoKartReward(),
     ToontownItemName.FRONT_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
@@ -1022,6 +1039,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MONEY_400.value: JellybeanReward(400),
     ToontownItemName.MONEY_700.value: JellybeanReward(700),
     ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
+    ToontownItemName.FISH.value: FishReward(1),
     ToontownItemName.XP_10.value: GagExpBundleAward(10),
     ToontownItemName.XP_15.value: GagExpBundleAward(15),
     ToontownItemName.XP_20.value: GagExpBundleAward(20),

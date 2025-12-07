@@ -77,7 +77,7 @@ Toontown:
 
   # The max amount of tasks you can carry in a run.
   # Range: 1 to 6
-  max_task_capacity: 4
+  max_task_capacity: 6
   
   ### Boss Settings ###
 
@@ -109,7 +109,7 @@ Toontown:
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game
   # Unused if win_condition is not cog-bosses
   # Range: 0 to 4
-  cog_bosses_required: 4
+  cog_bosses_required: 3
   
   # How many total tasks must be finished before being able to talk to Flippy to complete the game.
   # Unused if win_condition is not total-tasks.
@@ -129,7 +129,7 @@ Toontown:
   # How many fish species must be caught before being able to talk to Flippy to complete the game
   # Unused if win_condition is not fish-species
   # Range 0 to 70
-  fish_species_required: 70
+  fish_species_required: 60
 
   # How many laff points we must have before being able to talk to Flippy to complete the game
   # Unused if win_condition is not laff-o-lympics
@@ -138,17 +138,20 @@ Toontown:
   laff_points_required: 120
 
   # BOUNTY SETTINGS #
+  # HINT: Put "Bounty" in priority_locations if you want all possible bounty locations to have something important, regardless
+  #       of having bounty or not.
+  # NOTE: Putting individual bounty locations in priority_locations will put bounties on those locations before any else
 
   # How many bounties we must have before being able to talk to Flippy to complete the game
   # Unused if win_condition is not bounties
   # Range 0 to 33
-  bounties_required: 10
+  bounties_required: 7
 
   # How many bounties are in the pool.
   # Unused if win_condition is not bounties
   # Must be equal to or above bounties_required
   # Range 1 to 33
-  total_bounties: 20
+  total_bounties: 15
 
   # Should bounties be hinted from the beginning of the run?
   hint_bounties: "false"
@@ -219,7 +222,7 @@ Toontown:
 
   # The amount of Cogs required to reach its maxed Cog Gallery.
   # Range: 1 to 10
-  maxed_cog_gallery_quota: 3
+  maxed_cog_gallery_quota: 2
 
   ### Facility Settings ###
 
@@ -250,6 +253,10 @@ Toontown:
   # - rods: Progressive fishing rod items are added to the pool.
   # - none: All fishing areas are available. The player starts with a Gold Rod.
   fish_progression: 'rods'
+
+  # The amount of pity (% chance of a guarantee) gained towards a new species per catch.
+  # Range: 0 to 100
+  fish_pity: 25
 
   ### Data Sync Settings ###
 
@@ -306,7 +313,8 @@ Toontown:
   sos_weight: 65
   unite_weight: 65
   fire_weight: 65
-  heal_weight: 65
+  heal_weight: 75
+  fish_weight: 65
 
   ### Trap Settings ###
 

@@ -262,7 +262,11 @@ class Movie(DirectObject.DirectObject):
         for toon in self.battle.toons:
             self.track.delayDeletes.append(DelayDelete.DelayDelete(toon, 'Movie.play'))
 
-        playRate = 2
+        playRates = []
+        if len(self.battle.toons) == 1 and self.battle.localToonPendingOrActive():
+            playRate = base.localAvatar.getBattleSpeed()
+        else:
+            playRate = 2
         self.setTrackPlayRate(self.track, playRate)
         self.track.start(ts, playRate=playRate)
         return None

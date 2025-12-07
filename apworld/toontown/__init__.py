@@ -615,6 +615,7 @@ class ToontownWorld(World):
             ToontownItemName.PINK_SLIP_REWARD.value: self.options.fire_weight,
             ToontownItemName.HEAL_10.value: (self.options.heal_weight/2),
             ToontownItemName.HEAL_20.value: (self.options.heal_weight/2),
+            ToontownItemName.FISH.value: self.options.fish_weight,
         }
         junk_items = list(junk_weights.keys())
         return random.choices(junk_items, weights=[junk_weights[i] for i in junk_items])[0]
@@ -659,7 +660,7 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "team": self.options.team.value,
-            "game_version": "v0.18.2",
+            "game_version": "v0.18.4",
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "max_laff": self.options.max_laff.value,
@@ -716,8 +717,10 @@ class ToontownWorld(World):
             "max_gag_xp": self.options.max_global_gag_xp.value,
             "damage_trap_weight": self.options.damage_trap_weight.value,
             "heal_weight": self.options.heal_weight.value,
+            "fish_weight": self.options.fish_weight.value,
             "random_prices": self.options.random_prices.value,
             "item_links": self.options.item_links.value,
+            "fish_pity": self.options.fish_pity.value,
         }
 
     def calculate_starting_tracks(self, starting_gags: list):

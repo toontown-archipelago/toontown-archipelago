@@ -231,6 +231,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
         self.receivedItems: List[Tuple[int, int]] = []  # List of AP items received so far, [(index, itemid), (index, itemid)]
         self.checkedLocations: List[int] = []  # List of AP checks we have completed
+        self.battleSpeed = 2
         self.hintPoints = 0  # How many hint points the player has
         self.hintCostPercentage = 0 # How many points to hint an item, in % of checks.
         self.totalChecks = 0 # How many checks are there in total, calculates exact cost for display for client.
@@ -4597,6 +4598,22 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Sent by client to request hint points from the arch session
     def requestHintPoints(self):
         self.sendUpdate('hintPointResp', [self.hintPoints, self.hintCostPercentage * self.totalChecks // 100])
+
+    def requestSetBattleSpeed(self, speed):
+        self.b_setBattleSpeed(speed)
+
+    def setBattleSpeed(self, speed):
+        self.battleSpeed = speed
+
+    def getBattleSpeed(self):
+        return self.battleSpeed
+
+    def d_setBattleSpeed(self, speed):
+        self.sendUpdate('setBattleSpeed', [speed])
+
+    def b_setBattleSpeed(self, speed):
+        self.setBattleSpeed(speed)
+        self.d_setBattleSpeed(speed)
 
     def setLastSeed(self, seedName: str):
         self._lastSeedName = seedName
