@@ -44,6 +44,7 @@ OptionToType = {
     'color-blind-mode': OptionTypes.BUTTON,
     'want-legacy-models': OptionTypes.BUTTON,
     'laff-display': OptionTypes.BUTTON,
+    'battle-speed': OptionTypes.DROPDOWN,
 
     # Privacy
     "competitive-boss-scoring": OptionTypes.BUTTON,
@@ -64,6 +65,7 @@ OptionToType = {
     "music-volume": OptionTypes.SLIDER,
     "sfx-volume": OptionTypes.SLIDER,
     "toon-chat-sounds": OptionTypes.BUTTON,
+    'ap-sounds': OptionTypes.BUTTON,
     "random-music": OptionTypes.BUTTON,
     "refresh-audio": OptionTypes.BUTTON
 }
@@ -118,6 +120,7 @@ class OptionsPage(ShtikerPage):
 
     def exit(self):
         assert self.notify.debugStateCall(self)
+        base.localAvatar.sendUpdate("requestSetBattleSpeed", [base.settings.get('battle-speed')])
         self.optionsTabPage.exit()
 
         # Make the call to the superclass exit method.
@@ -142,6 +145,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'camSensitivityY',
             'movement_mode',
             'sprint_mode',
+            'battle-speed',
             'fovEffects',
             'cam-toggle-lock',
             'boss-alerts',
@@ -151,8 +155,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'archipelago-log-bg',
             'color-blind-mode',
             'want-legacy-models',
-            'laff-display'
-
+            'laff-display',
         ],
         "Privacy": [
             "competitive-boss-scoring",
@@ -165,7 +168,7 @@ class OptionsTabPage(DirectFrame, FSM):
         ],
         "Audio": [
             "music", "sfx", "music-volume", "sfx-volume", "toon-chat-sounds",
-            "random-music", "refresh-audio"
+            'ap-sounds', "random-music", "refresh-audio"
         ],
     }
 
@@ -465,6 +468,8 @@ class DropdownScrolledFrame(ToontownScrolledFrame):
                 return TTLocalizer.OptionAnisotropic[setting]
             if self.optionName == "fps-limit":
                 return TTLocalizer.OptionFPSLimit[setting]
+            if self.optionName == "battle-speed":
+                return TTLocalizer.OptionBattleSpeed[setting]
 
         return str(setting)
 
@@ -503,7 +508,8 @@ class OptionElement(DirectFrame):
         "resolution": base.possibleScreenSizes,
         "anisotropic-filter": list(TTLocalizer.OptionAnisotropic),
         "anti-aliasing": list(TTLocalizer.OptionAntiAlias),
-        "fps-limit": list(TTLocalizer.OptionFPSLimit)
+        "fps-limit": list(TTLocalizer.OptionFPSLimit),
+        "battle-speed": list(TTLocalizer.OptionBattleSpeed)
     })
 
     def __init__(self, page, parent, name: str, index: int, gui, **kw):
@@ -637,6 +643,8 @@ class OptionElement(DirectFrame):
                 return TTLocalizer.OptionAnisotropic[setting]
             if self.optionName == "fps-limit":
                 return TTLocalizer.OptionFPSLimit[setting]
+            if self.optionName == "battle-speed":
+                return TTLocalizer.OptionBattleSpeed[setting]
 
         return str(setting)
 
@@ -789,6 +797,10 @@ class OptionElement(DirectFrame):
             base.WANT_LEGACY_MODELS = newSetting
         elif self.optionName == "laff-display":
             base.laffMeterDisplay = newSetting
+        elif self.optionName == "battle-speed":
+            base.battleSpeed = newSetting
+        elif self.optionName == "ap-sounds":
+            base.apSounds = newSetting
         elif self.optionName == "random-music":
             base.randomMusic = newSetting
             base.refreshRandomMusic()

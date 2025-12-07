@@ -162,7 +162,7 @@ class SuitAttackAttribute:
 
     # Given an amount of levels we are overflowed by, return how much extra damage an attack should do.
     def __getOverflowDamage(self, overflow):
-        return overflow * 3  # Simply just 3 damage per level of overflow this suit is for a given attack definition.
+        return overflow * 2  # Simply just 2 damage per level of overflow this suit is for a given attack definition.
 
     # Given an amount of levels we are underflowed by, return how less damage an attack should do.
     def __getUnderflowDamage(self, underflow):

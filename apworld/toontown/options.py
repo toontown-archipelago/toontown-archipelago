@@ -187,7 +187,7 @@ class MaxTaskCapacityOption(Range):
     display_name = "Max Task Capacity"
     range_start = 1
     range_end = 6
-    default = 4
+    default = 6
 
 
 class WinConditions(OptionList):
@@ -240,7 +240,7 @@ class CogBossesRequired(Range):
     display_name = "Bosses Required"
     range_start = 0
     range_end = 4
-    default = 4
+    default = 3
 
 
 class WinConditionTotalTasksWeb(Toggle):
@@ -316,7 +316,7 @@ class FishSpeciesRequired(Range):
     display_name = "Fish Required"
     range_start = 0
     range_end = 70
-    default = 70
+    default = 60
 
 
 class WinConditionLaffOLympicsWeb(Toggle):
@@ -354,7 +354,7 @@ class BountiesRequired(Range):
     display_name = "Bounties Required"
     range_start = 0
     range_end = 33
-    default = 10
+    default = 7
 
 
 class TotalBounties(Range):
@@ -367,7 +367,7 @@ class TotalBounties(Range):
     display_name = "Total Bounties"
     range_start = 1
     range_end = 33
-    default = 20
+    default = 15
 
 
 class BountiesHinted(Toggle):
@@ -523,7 +523,7 @@ class MaxedCogGalleryQuota(Range):
     display_name = "Maxed Cog Gallery Quota"
     range_start = 1
     range_end = 10
-    default = 3
+    default = 2
 
 
 class FacilityLocking(Choice):
@@ -584,6 +584,16 @@ class FishProgression(Choice):
     option_rods = 2
     option_none = 3
     default = 2
+
+
+class FishPity(Range):
+    """
+    The amount of pity (% chance of a guarantee) gained towards a new species per catch.
+    """
+    display_name = "Fishing Pity Per Catch"
+    range_start = 0
+    range_end = 100
+    default = 25
 
 
 class RacingOption(Toggle):
@@ -823,6 +833,17 @@ class HealWeightOption(Range):
     display_name = "Healing Junk Weight"
     range_start = 0
     range_end = 100
+    default = 75
+
+
+class FishWeightOption(Range):
+    """
+    Weight of Fish items in the junk pool.
+    """
+
+    display_name = "Fish Junk Weight"
+    range_start = 0
+    range_end = 100
     default = 65
 
 
@@ -901,6 +922,7 @@ class ToontownOptions(PerGameCommonOptions):
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression
+    fish_pity: FishPity
     slot_sync_jellybeans: SyncJellybeans
     slot_sync_gag_experience: SyncGagExp
     racing_logic: RacingOption
@@ -918,6 +940,7 @@ class ToontownOptions(PerGameCommonOptions):
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
     heal_weight: HealWeightOption
+    fish_weight: FishWeightOption
     death_link: DeathLinkOption
     ring_link: RingLinkOption
     pet_shop_display: PetShopRewardDisplayOption
@@ -952,11 +975,11 @@ toontown_option_groups: list[OptionGroup] = [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, FishChecks, FishLocations,
-        FishProgression, RacingOption, GolfingOption, SeedGenerationTypeOption,
+        FishProgression, FishPity, RacingOption, GolfingOption, SeedGenerationTypeOption,
         JokesPerStreet, JokeBookToggle
     ], False),
     OptionGroup("Junk Weights", [
-        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption, HealWeightOption
+        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption, HealWeightOption, FishWeightOption
     ], True),
     OptionGroup("Trap Weights", [
         UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption, DamageWeightOption

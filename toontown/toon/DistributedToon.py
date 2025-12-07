@@ -219,7 +219,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.checkedLocations: List[int] = []
         self.hintPoints = 0
         self.hintCost = 0
-
+        self.battleSpeed = 2
         self.slotData = {}
         self.winCondition = win_condition.NoWinCondition(self)
         self.slotName = ""
@@ -1221,8 +1221,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 messenger.send('petTrickPhrasesChanged')
 
     def playSound(self, sound):
-        soundEffect = base.loader.loadSfx(sound)
-        base.playSfx(soundEffect)
+        if base.apSounds:
+            soundEffect = base.loader.loadSfx(sound)
+            base.playSfx(soundEffect)
 
     def setCustomMessages(self, customMessages):
         self.customMessages = customMessages
@@ -1351,6 +1352,12 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def getArchipelagoIP(self):
         return self.archipelagoIP
+
+    def setBattleSpeed(self, speed):
+        self.battleSpeed = speed
+
+    def getBattleSpeed(self):
+        return self.battleSpeed
 
     def setTrackAccess(self, trackArray):
         self.trackArray = trackArray
