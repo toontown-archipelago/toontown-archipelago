@@ -9974,6 +9974,7 @@ OptionNames = {
     "color-blind-mode": "Colorblind Mode",
     "want-legacy-models": "Toggle TTO Species Models*",
     'laff-display': "Toggle Overhead Laff Meter",
+    'battle-speed': "Battle Speed Multiplier",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",
@@ -10024,6 +10025,14 @@ OptionAntiAlias = {
     0: "Off",
     4: "4x MSAA",
     8: "8x MSAA",
+}
+
+OptionBattleSpeed = {
+    1: "1x Speed",
+    2: "2x Speed",
+    3: "3x Speed",
+    4: "4x Speed",
+    5: "5x Speed"
 }
 
 OptionAnisotropic = {

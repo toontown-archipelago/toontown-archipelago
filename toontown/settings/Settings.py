@@ -63,6 +63,7 @@ class Settings:
         "camSensitivityY": 0.1,
         "fps-limit": 0,
         'laff-display': True,
+        'battle-speed': 2,
         'random-music': False,
         "archipelago-textsize": 0.5,
         "archipelago-log-bg": False,
