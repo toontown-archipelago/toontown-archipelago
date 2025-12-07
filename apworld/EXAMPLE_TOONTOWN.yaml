@@ -251,6 +251,10 @@ Toontown:
   # - none: All fishing areas are available. The player starts with a Gold Rod.
   fish_progression: 'rods'
 
+  # The amount of pity (% chance of a guarantee) gained towards a new species per catch.
+  # Range: 0 to 100
+  fish_pity: 25
+
   ### Data Sync Settings ###
 
   # Enable to sync Jellybeans between toons on the same slot.

@@ -13,10 +13,6 @@ from toontown.fishing.FishBase import FishBase
 from toontown.safezone.DistributedFishingSpotAI import DistributedFishingSpotAI
 
 
-# How much pity to add per rod (.01) = 1%
-FISHING_ROD_PITY = 0.25
-
-
 class FishManagerAI:
     notify = DirectNotifyGlobal.directNotify.newCategory('FishManagerAI')
 
@@ -78,7 +74,9 @@ class FishManagerAI:
         return rng < threshold
 
     def addNewSpeciesPity(self, av):
-        pity = FISHING_ROD_PITY
+        print(av.slotData)
+        print(av.slotData.get('fish_pity'))
+        pity = (av.slotData.get('fish_pity', 25) / 100)
 
         # Add the pity
         oldPity = self.newSpeciesPity.get(av.doId, 0)

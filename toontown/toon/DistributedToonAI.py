@@ -4600,7 +4600,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.sendUpdate('hintPointResp', [self.hintPoints, self.hintCostPercentage * self.totalChecks // 100])
 
     def requestSetBattleSpeed(self, speed):
-        print("Setting Battle Speed to: " + str(speed))
         self.b_setBattleSpeed(speed)
 
     def setBattleSpeed(self, speed):

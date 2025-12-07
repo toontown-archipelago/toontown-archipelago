@@ -718,6 +718,7 @@ class ToontownWorld(World):
             "heal_weight": self.options.heal_weight.value,
             "random_prices": self.options.random_prices.value,
             "item_links": self.options.item_links.value,
+            "fish_pity": self.options.fish_pity.value,
         }
 
     def calculate_starting_tracks(self, starting_gags: list):

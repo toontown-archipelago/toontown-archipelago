@@ -586,6 +586,16 @@ class FishProgression(Choice):
     default = 2
 
 
+class FishPity(Range):
+    """
+    The amount of pity (% chance of a guarantee) gained towards a new species per catch.
+    """
+    display_name = "Fishing Pity Per Catch"
+    range_start = 0
+    range_end = 100
+    default = 25
+
+
 class RacingOption(Toggle):
     """
     Enable to turn on racing checks.
@@ -901,6 +911,7 @@ class ToontownOptions(PerGameCommonOptions):
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression
+    fish_pity: FishPity
     slot_sync_jellybeans: SyncJellybeans
     slot_sync_gag_experience: SyncGagExp
     racing_logic: RacingOption
@@ -952,7 +963,7 @@ toontown_option_groups: list[OptionGroup] = [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, FishChecks, FishLocations,
-        FishProgression, RacingOption, GolfingOption, SeedGenerationTypeOption,
+        FishProgression, FishPity, RacingOption, GolfingOption, SeedGenerationTypeOption,
         JokesPerStreet, JokeBookToggle
     ], False),
     OptionGroup("Junk Weights", [
