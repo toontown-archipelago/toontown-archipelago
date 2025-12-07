@@ -101,13 +101,14 @@ class BouncedPacket(ClientBoundPacketBase):
         toon.d_sendArchipelagoMessage(msg)
 
     def handle_link_drain(self, toon, toonId):
+        if toon.getHp() <= 0 or self.hpToDrain <= 0:
+            return
         # We set the death reason to deathlink on every tick just to avoid any really stupid edge cases that probably dont exist
         # Hashtag #ConfirmationBias
         toon.setDeathReason(DeathReason.DEATHLINK)
         toon.takeDamage(1)
         self.hpToDrain -= 1
-        if toon.getHp() > 0 and self.hpToDrain > 0:
-            taskMgr.doMethodLater(self.drainRate, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
+        taskMgr.doMethodLater(self.drainRate, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
 
     def handle_ringlink(self, client):
         self.debug("Received ringlink packet")
