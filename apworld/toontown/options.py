@@ -187,7 +187,7 @@ class MaxTaskCapacityOption(Range):
     display_name = "Max Task Capacity"
     range_start = 1
     range_end = 6
-    default = 4
+    default = 6
 
 
 class WinConditions(OptionList):
@@ -240,7 +240,7 @@ class CogBossesRequired(Range):
     display_name = "Bosses Required"
     range_start = 0
     range_end = 4
-    default = 4
+    default = 3
 
 
 class WinConditionTotalTasksWeb(Toggle):
@@ -316,7 +316,7 @@ class FishSpeciesRequired(Range):
     display_name = "Fish Required"
     range_start = 0
     range_end = 70
-    default = 70
+    default = 60
 
 
 class WinConditionLaffOLympicsWeb(Toggle):
@@ -354,7 +354,7 @@ class BountiesRequired(Range):
     display_name = "Bounties Required"
     range_start = 0
     range_end = 33
-    default = 10
+    default = 7
 
 
 class TotalBounties(Range):
@@ -367,7 +367,7 @@ class TotalBounties(Range):
     display_name = "Total Bounties"
     range_start = 1
     range_end = 33
-    default = 20
+    default = 15
 
 
 class BountiesHinted(Toggle):
@@ -523,7 +523,7 @@ class MaxedCogGalleryQuota(Range):
     display_name = "Maxed Cog Gallery Quota"
     range_start = 1
     range_end = 10
-    default = 3
+    default = 2
 
 
 class FacilityLocking(Choice):
@@ -844,7 +844,7 @@ class FishWeightOption(Range):
     display_name = "Fish Junk Weight"
     range_start = 0
     range_end = 100
-    default = 75
+    default = 65
 
 
 class DeathLinkOption(Choice):
