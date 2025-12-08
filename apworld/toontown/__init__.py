@@ -660,7 +660,7 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "team": self.options.team.value,
-            "game_version": "v0.18.4",
+            "game_version": "v0.18.5",
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "max_laff": self.options.max_laff.value,
@@ -861,15 +861,14 @@ class ToontownWorld(World):
         randomized = win_conditions.count("randomized")
         choices = list(self.options.win_condition.valid_keys)
         choices.remove("randomized")  # not a valid random choice
+        for omitted_choice in self.options.conditions_omitted_when_randomized.value:
+            choices.remove(omitted_choice)
         result = [i for i in set(win_conditions) if i != "randomized"]
         rng = self.multiworld.random
         for i in result:
             choices.remove(i)
         result += rng.sample(choices, k=min(randomized, len(choices)))
         return result
-        
-
-
 
     def get_disabled_location_types(self) -> set[ToontownLocationType]:
         """

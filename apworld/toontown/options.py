@@ -225,6 +225,30 @@ class WinConditions(OptionList):
     visibility = ~(Visibility.simple_ui|Visibility.complex_ui)
 
 
+class OmitRandomWinConditions(OptionList):
+    """
+    Allows for the selected win conditions to be omitted when randomizing a win condition.
+    Example: Adding "bounties" to this option will ensure bounties can't be rolled when you roll for a randomized win condition
+
+    valid keys: ["cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
+                 "fish-species", "laff-o-lympics"]
+
+    Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
+    """
+    display_name = "Win Conditions Omitted when Randomized"
+    valid_keys = {
+        "cog-bosses",
+        "total-tasks",
+        "hood-tasks",
+        "gag-tracks",
+        "fish-species",
+        "laff-o-lympics",
+        "bounties"
+    }
+    default = []
+    visibility = ~(Visibility.simple_ui|Visibility.complex_ui)
+
+
 class WinConditionCogBossesWeb(Toggle):
     """Defeat a number of cog bosses to complete the game (determined by cog_bosses_required)."""
     display_name = "Cog Bosses"
@@ -890,6 +914,7 @@ class ToontownOptions(PerGameCommonOptions):
     starting_task_capacity: StartingTaskCapacityOption
     max_task_capacity: MaxTaskCapacityOption
     win_condition: WinConditions
+    conditions_omitted_when_randomized: OmitRandomWinConditions
     web_win_condition_cog_bosses: WinConditionCogBossesWeb
     web_win_condition_total_tasks: WinConditionTotalTasksWeb
     web_win_condition_hood_tasks: WinConditionHoodTasksWeb
@@ -962,7 +987,7 @@ toontown_option_groups: list[OptionGroup] = [
         RingLinkOption, RandomShopCostToggle
     ]),
     OptionGroup("Win Condition", [
-        WinConditions, WinConditionRandomizedWeb,
+        WinConditions, WinConditionRandomizedWeb, OmitRandomWinConditions,
         WinConditionCogBossesWeb, CogBossesRequired,
         WinConditionTotalTasksWeb, TotalTasksRequired,
         WinConditionHoodTasksWeb, HoodTasksRequired,
