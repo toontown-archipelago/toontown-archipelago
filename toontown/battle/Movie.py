@@ -227,7 +227,7 @@ class Movie(DirectObject.DirectObject):
         self.rewardPanel = None
         return
 
-    def play(self, ts, callback):
+    def play(self, ts, callback, battleSpeeds):
         self.hasBeenReset = 0
         ptrack = Sequence()
         camtrack = Sequence()
@@ -262,10 +262,14 @@ class Movie(DirectObject.DirectObject):
         for toon in self.battle.toons:
             self.track.delayDeletes.append(DelayDelete.DelayDelete(toon, 'Movie.play'))
 
-        playRates = []
-        if len(self.battle.toons) == 1 and self.battle.localToonPendingOrActive():
-            playRate = base.localAvatar.getBattleSpeed()
-        else:
+        try:
+            # Pick the lowest value in our list of speeds
+            playRate = min(battleSpeeds)
+            if len(self.battle.toons) > 1:
+                # Make sure we're at slowest 2x speed in co-op battles
+                playRate = max(2, playRate)
+        except:
+            # We're gonna default to 2x speed in any case where battlespeeds are wrong for some reason
             playRate = 2
         self.setTrackPlayRate(self.track, playRate)
         self.track.start(ts, playRate=playRate)

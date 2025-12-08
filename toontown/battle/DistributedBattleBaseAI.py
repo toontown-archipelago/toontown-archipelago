@@ -73,6 +73,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.movieRequested = 0
         self.ignoreResponses = 0
         self.ignoreAdjustingResponses = 0
+        self.battleSpeeds = [2]
         self.taskNames = []
         self.exitedToons = []
         self.suitsKilled = []
@@ -245,6 +246,15 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
 
     def getState(self):
         return [self.fsm.getCurrentState().getName(), globalClockDelta.getRealNetworkTime()]
+
+    def b_setBattleSpeeds(self, speeds):
+        self.sendUpdate('setBattleSpeeds', [speeds])
+
+    def setBattleSpeeds(self, speeds):
+        self.battleSpeeds = speeds
+
+    def getBattleSpeeds(self):
+        return self.battleSpeeds
 
     def d_setMembers(self):
         self.notify.debug('network:setMembers()')
@@ -1476,6 +1486,15 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.__requestMovie(timeout=1)
 
     def enterMakeMovie(self):
+        self.battleSpeeds = []
+        for avId in self.toons:
+            toon = simbase.air.doId2do.get(avId)
+            if toon:
+                self.battleSpeeds.append(toon.getBattleSpeed())
+        # Catch possible edge case where list of speeds could potentially be empty
+        if len(self.battleSpeeds) == 0:
+            self.battleSpeeds.append(2)
+        self.b_setBattleSpeeds(self.battleSpeeds)
         self.notify.debug('enterMakeMovie()')
         self.runableFsm.request('Unrunable')
         self.resetResponses()

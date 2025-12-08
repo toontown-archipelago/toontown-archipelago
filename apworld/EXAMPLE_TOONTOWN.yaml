@@ -106,6 +106,16 @@ Toontown:
   # Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
   win_condition: ["cog-bosses"]
 
+
+  # Allows for the selected win conditions to be omitted when randomizing a win condition.
+  # Example: Adding "bounties" to this option will ensure bounties can't be rolled when you roll for a randomized win condition
+
+  # valid keys: [ "cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
+  #               "fish-species", "laff-o-lympics" ]
+
+  # Examples: [ "cog-bosses", "hood-tasks" ] | ["randomized", "randomized", "gag-tracks"]
+  conditions_omitted_when_randomized: []
+
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game
   # Unused if win_condition is not cog-bosses
   # Range: 0 to 4
