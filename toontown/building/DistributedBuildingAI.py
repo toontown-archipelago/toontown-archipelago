@@ -339,7 +339,7 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
                 self.air.writeServerEvent('buildingDefeated', t, '%s|%s|%s|%s' % (self.track, self.numFloors, self.zoneId, victorList))
             if toon != None:
                 self.air.questManager.toonKilledBuilding(toon, self.track, self.difficulty, self.numFloors, self.zoneId, activeToons)
-                checks = [self.getBuildingFloorsCheck(), self.getBuildingSuitCheck(), self.getBuildingHoodCheck()]
+                checks = [*self.getBuildingFloorsCheck(), self.getBuildingSuitCheck(), self.getBuildingHoodCheck()]
                 toon.addCheckedLocations([check for check in checks if check is not None])
 
         for i in range(0, 4):
@@ -622,11 +622,27 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
 
     def getBuildingFloorsCheck(self):
         floorToCheck = [
-            util.ap_location_name_to_id(locations.ToontownLocationName.ONE_STORY.value),
-            util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY.value),
-            util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY.value),
-            util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY.value),
-            util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY.value)
+            [
+                util.ap_location_name_to_id(locations.ToontownLocationName.ONE_STORY_FIRST_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY_SECOND_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY_SECOND_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY_THIRD_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_SECOND_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_THIRD_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_FOURTH_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_SECOND_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_THIRD_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_FOURTH_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_FIFTH_FLOOR.value)
+            ]
         ]
         return floorToCheck[self.numFloors-1]
 
