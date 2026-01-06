@@ -14,6 +14,12 @@ class ToontownItemName(enum.Enum):
     LAFF_BOOST_4 = "+4 Laff Boost"
     LAFF_BOOST_5 = "+5 Laff Boost"
 
+    ### Damage Increase ###
+    DMG_BOOST_1 = "+1% Damage Boost"
+    DMG_BOOST_2 = "+2% Damage Boost"
+    DMG_BOOST_3 = "+3% Damage Boost"
+    DMG_BOOST_4 = "+4% Damage Boost"
+
     ### Jellybean Jar Capacity ###
     MONEY_CAP_1000 = "Progressive Jellybean Jar"
     
@@ -166,6 +172,12 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.LAFF_BOOST_4, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.LAFF_BOOST_5, ItemClassification.progression),
     # endregion
+    # region Laff Boosts
+    ToontownItemDefinition(ToontownItemName.DMG_BOOST_1, ItemClassification.progression_deprioritized),
+    ToontownItemDefinition(ToontownItemName.DMG_BOOST_2, ItemClassification.progression_deprioritized),
+    ToontownItemDefinition(ToontownItemName.DMG_BOOST_3, ItemClassification.progression_deprioritized),
+    ToontownItemDefinition(ToontownItemName.DMG_BOOST_4, ItemClassification.progression),
+    # endregion
     # region Gag Capacity
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.progression_deprioritized, quantity=12),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
     ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.progression, quantity=2),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
@@ -258,7 +270,6 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.BOUNTY, ItemClassification.progression_skip_balancing),
     # endregion
     # region Filler Items
-    # TODO - remember to account for the Fish filler when implementing weights here
     ToontownItemDefinition(ToontownItemName.MONEY_150,            ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_400,            ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.MONEY_700,            ItemClassification.filler),
@@ -416,6 +427,13 @@ def get_item_groups():
         ToontownItemName.LAFF_BOOST_5
     )
 
+    DMG_BOOSTS = (
+        ToontownItemName.DMG_BOOST_1,
+        ToontownItemName.DMG_BOOST_2,
+        ToontownItemName.DMG_BOOST_3,
+        ToontownItemName.DMG_BOOST_4
+    )
+
     TRAINING_BOOSTS = (
         ToontownItemName.GAG_MULTIPLIER_1,
         ToontownItemName.GAG_MULTIPLIER_2
@@ -496,6 +514,7 @@ def get_item_groups():
         "Gag Capacity Increase": GAG_CAPACITY,
         "Gag Training Boosts": TRAINING_BOOSTS,
         "Gag Upgrades": GAG_UPGRADES,
+        "Damage Boosts": DMG_BOOSTS,
         "Fishing Licenses": FISHING_LICENSES,
         "Jellybean Capacity": JELLYBEAN_CAPACITY,
         "Side Activity Keys": ACTIVITY_KEYS,

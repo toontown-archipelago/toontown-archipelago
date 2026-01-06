@@ -119,7 +119,7 @@ class ToontownWorld(World):
         # Save as attributes so we can reference this later in fill_slot_data()
         self.startingTracks = startingTracks
 
-        #Randomize win conditions
+        # Randomize win conditions
         if "randomized" in self.options.win_condition.value:
             self.options.win_condition.value = self.randomize_win_condition(self.options.win_condition.value)
 
@@ -433,6 +433,31 @@ class ToontownWorld(World):
                     if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS):
                         pool.append(self.create_item(itemName.value))
 
+        # Dynamically generate damage increase items.
+        start_dmg = self.options.start_damage_multiplier.value
+        max_dmg = self.options.max_damage_multiplier.value
+        if start_dmg > max_dmg:
+            self.options.max_damage_multiplier.value = start_dmg
+            max_dmg = start_dmg
+        DMG_TO_GIVE = max_dmg - start_dmg
+        FOUR_BOOSTS = round(consts.FOUR_DMG_RATIO * DMG_TO_GIVE)
+        while FOUR_BOOSTS > 0 and DMG_TO_GIVE > 4:
+            FOUR_BOOSTS -= 1
+            DMG_TO_GIVE -= 4
+            pool.append(self.create_item(ToontownItemName.DMG_BOOST_4.value))
+        THREE_BOOSTS = round(consts.THREE_DMG_RATIO * DMG_TO_GIVE)
+        while THREE_BOOSTS > 0 and DMG_TO_GIVE > 3:
+            THREE_BOOSTS -= 1
+            DMG_TO_GIVE -= 3
+            pool.append(self.create_item(ToontownItemName.DMG_BOOST_3.value))
+        TWO_BOOSTS = round(consts.TWO_DMG_RATIO * DMG_TO_GIVE)
+        while TWO_BOOSTS > 0 and DMG_TO_GIVE > 2:
+            TWO_BOOSTS -= 1
+            DMG_TO_GIVE -= 2
+            pool.append(self.create_item(ToontownItemName.DMG_BOOST_2.value))
+        for _ in range(DMG_TO_GIVE):
+            pool.append(self.create_item(ToontownItemName.DMG_BOOST_1.value))
+
         # Dynamically generate laff boosts.
         max_laff = self.options.max_laff.value
         start_laff = self.options.starting_laff.value
@@ -669,7 +694,8 @@ class ToontownWorld(World):
             "starting_task_capacity": self.options.starting_task_capacity.value,
             "max_task_capacity": self.options.max_task_capacity.value,
             "base_global_gag_xp": self.options.base_global_gag_xp.value,
-            "damage_multiplier": self.options.damage_multiplier.value,
+            "start_damage_multiplier": self.options.start_damage_multiplier.value,
+            "max_damage_multiplier": self.options.max_damage_multiplier.value,
             "overflow_mod": self.options.overflow_mod.value,
             "win_condition": int(win_condition),
             "cog_bosses_required": self.options.cog_bosses_required.value,

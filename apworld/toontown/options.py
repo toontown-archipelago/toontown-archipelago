@@ -138,9 +138,20 @@ class MaxGlobalGagXPRange(Range):
     default = 30
 
 
-class DamageMultiplierRange(Range):
+class StartDamageMultiplierRange(Range):
     """
-    The percentage of damage that will be done when battling Cogs.
+    The percentage of damage that will be done when battling Cogs at the start of the run.
+    75 -> 75%/0.75x damage, 200 -> 200%/2x damage, etc.
+    """
+    display_name = "Damage Multiplier"
+    range_start = 50
+    range_end = 200
+    default = 100
+
+
+class MaxDamageMultiplierRange(Range):
+    """
+    The percentage of damage that can be reached at max.
     75 -> 75%/0.75x damage, 200 -> 200%/2x damage, etc.
     """
     display_name = "Damage Multiplier"
@@ -908,7 +919,8 @@ class ToontownOptions(PerGameCommonOptions):
     web_random_gags: StartGagRandomWeb
     base_global_gag_xp: BaseGlobalGagXPRange
     max_global_gag_xp: MaxGlobalGagXPRange
-    damage_multiplier: DamageMultiplierRange
+    start_damage_multiplier: StartDamageMultiplierRange
+    max_damage_multiplier: MaxDamageMultiplierRange
     overflow_mod: OverflowModRange
     starting_money: StartMoneyOption
     starting_task_capacity: StartingTaskCapacityOption
@@ -982,7 +994,7 @@ toontown_option_groups: list[OptionGroup] = [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
         StartGagOption, StartGagOptionWeb, StartGagRandomWeb, OmitGagOption,
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
-        DamageMultiplierRange, OverflowModRange, StartMoneyOption, 
+        StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, StartMoneyOption,
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
         RingLinkOption, RandomShopCostToggle
     ]),
