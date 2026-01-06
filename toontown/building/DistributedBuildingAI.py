@@ -6,6 +6,7 @@ from direct.directnotify import DirectNotifyGlobal
 from direct.distributed import DistributedObjectAI
 from direct.fsm import State
 from direct.fsm import ClassicFSM, State
+from toontown.suit import SuitDNA
 from toontown.toonbase.ToontownGlobals import DaisyGardens, DonaldsDock, DonaldsDreamland, MinniesMelodyland, TheBrrrgh, ToonHall, ToontownCentral
 from . import DistributedToonInteriorAI, DistributedToonHallInteriorAI, DistributedSuitInteriorAI, DistributedDoorAI, DoorTypes, DistributedElevatorExtAI, DistributedKnockKnockDoorAI, SuitPlannerInteriorAI, SuitBuildingGlobals, FADoorCodes
 from toontown.hood import ZoneUtil
@@ -338,7 +339,7 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
                 self.air.writeServerEvent('buildingDefeated', t, '%s|%s|%s|%s' % (self.track, self.numFloors, self.zoneId, victorList))
             if toon != None:
                 self.air.questManager.toonKilledBuilding(toon, self.track, self.difficulty, self.numFloors, self.zoneId, activeToons)
-                checks = [self.getBuildingFloorsCheck(), self.getBuildingHoodCheck()]
+                checks = [*self.getBuildingFloorsCheck(), self.getBuildingSuitCheck(), self.getBuildingHoodCheck()]
                 toon.addCheckedLocations([check for check in checks if check is not None])
 
         for i in range(0, 4):
@@ -621,13 +622,41 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
 
     def getBuildingFloorsCheck(self):
         floorToCheck = [
-            util.ap_location_name_to_id(locations.ToontownLocationName.ONE_STORY.value),
-            util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY.value),
-            util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY.value),
-            util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY.value),
-            util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY.value)
+            [
+                util.ap_location_name_to_id(locations.ToontownLocationName.ONE_STORY_FIRST_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY_SECOND_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY_SECOND_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY_THIRD_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_SECOND_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_THIRD_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_FOURTH_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_SECOND_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_THIRD_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_FOURTH_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_FIFTH_FLOOR.value)
+            ]
         ]
         return floorToCheck[self.numFloors-1]
+
+    def getBuildingSuitCheck(self):
+        suitToCheck = {
+            SuitDNA.suitDepts[0]: util.ap_location_name_to_id(locations.ToontownLocationName.BOSSBOT_BUILDING.value),
+            SuitDNA.suitDepts[1]: util.ap_location_name_to_id(locations.ToontownLocationName.LAWBOT_BUILDING.value),
+            SuitDNA.suitDepts[2]: util.ap_location_name_to_id(locations.ToontownLocationName.CASHBOT_BUILDING.value),
+            SuitDNA.suitDepts[3]: util.ap_location_name_to_id(locations.ToontownLocationName.SELLBOT_BUILDING.value),
+        }
+        if self.track in suitToCheck:
+            return suitToCheck[self.track]
+        else:
+            return None
 
     def getBuildingHoodCheck(self):
         hoodToCheck = {
