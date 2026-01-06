@@ -2,7 +2,8 @@ import math
 from typing import Dict, Callable, Any, Tuple, Union
 
 from BaseClasses import CollectionState, MultiWorld
-from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVEL, ToontownWinCondition
+from .consts import XP_RATIO_FOR_GAG_LEVEL, ToontownItem, CAP_RATIO_FOR_GAG_LEVEL, ToontownWinCondition, \
+    DMG_RATIO_FOR_GAG_LEVEL
 from .fish import LOCATION_TO_GENUS_SPECIES, FISH_DICT, FishProgression, FishLocation, get_catchable_fish, \
     LOCATION_TO_GENUS, FISH_ZONE_TO_LICENSE, FishZone, FISH_ZONE_TO_REGION, PlaygroundFishZoneGroups
 from .items import ToontownItemName
@@ -33,11 +34,15 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
         start_xp = options.base_global_gag_xp.value
         gag_training_item = options.gag_frame_item_behavior.value
         gag_training_check = options.gag_training_check_behavior.value
+        start_dmg = options.start_damage_multiplier.value
+        max_dmg = options.max_damage_multiplier.value
     else:
         max_xp = options.get("max_gag_xp", 30)
         start_xp = options.get("start_gag_xp", 5)
         gag_training_item = options.get("gag_frame_item_behavior", 0)
         gag_training_check = options.get("gag_training_check_behavior", 0)
+        start_dmg = options.get("start_damage_multiplier", 100)
+        max_dmg = options.get("max_damage_multiplier", 100)
     # Determines if a given player has collected a sufficient amount of the XP items in the run.
     # Always returns True if the player has a difference of less than 10 mult between start and max (aka, assumes they don't care)
     xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
@@ -49,6 +54,24 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
     if gags_pretrained or (gags_unlocked and checks_not_normal):
         sufficient_xp = True
 
+    sufficient_dmg = False
+    dmg_diff = max_dmg - start_dmg
+    # Our difference in base and max dmg mult is too low, always true
+    if dmg_diff < 10:
+        sufficient_dmg = True
+    else:
+        # We need this so archipelago itself can calculate our current dmg
+        def calcDmg():
+            dmg = start_dmg
+            dmg += state.count(ToontownItemName.DMG_BOOST_1.value, player)
+            dmg += (2 * state.count(ToontownItemName.DMG_BOOST_2.value, player))
+            dmg += (3 * state.count(ToontownItemName.DMG_BOOST_3.value, player))
+            dmg += (4 * state.count(ToontownItemName.DMG_BOOST_4.value, player))
+            return dmg
+        dmg_ratio = calcDmg() / max_dmg
+        if dmg_ratio >= DMG_RATIO_FOR_GAG_LEVEL.get(level):
+            sufficient_dmg = True
+
     # Check collected gag capacity items too.
     cap = state.count(ToontownItemName.GAG_CAPACITY_5.value, player) + (
                 2 * state.count(ToontownItemName.GAG_CAPACITY_10.value, player)) + (
@@ -57,7 +80,7 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
     sufficient_cap = CAP_RATIO_FOR_GAG_LEVEL.get(level) <= (cap / max_cap)
 
     # Return TRUE if we have enough xp and cap.
-    return sufficient_xp and sufficient_cap
+    return sufficient_xp and sufficient_cap and sufficient_dmg
 
 
 @rule(Rule.LoopyLane)          # NOTE - Streets are always enabled for now.

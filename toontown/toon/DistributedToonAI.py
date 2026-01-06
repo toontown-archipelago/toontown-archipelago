@@ -4664,6 +4664,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setMaxHp(15)
         self.b_setHp(15)
         self.b_setMaxCarry(20)
+        self.b_setDamageMultiplier(100)
 
         # Reset location Cache
         self.resetLocationScoutsCache()

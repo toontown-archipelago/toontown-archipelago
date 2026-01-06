@@ -82,6 +82,22 @@ class LaffBoostReward(APReward):
         av.checkWinCondition()
 
 
+class DmgBoostReward(APReward):
+    def __init__(self, amount: int):
+        self.amount = amount
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Increased your\nGag damage by "),
+            MinimalJsonMessagePart(f"+{self.amount}", color='green'),
+            MinimalJsonMessagePart("%!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        old_dmg = av.getDamageMultiplier()
+        av.b_setDamageMultiplier(old_dmg + self.amount)
+
+
 class GagCapacityReward(APReward):
 
     def __init__(self, amount: int):
@@ -971,6 +987,10 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.LAFF_BOOST_3.value: LaffBoostReward(3),
     ToontownItemName.LAFF_BOOST_4.value: LaffBoostReward(4),
     ToontownItemName.LAFF_BOOST_5.value: LaffBoostReward(5),
+    ToontownItemName.DMG_BOOST_1.value: DmgBoostReward(1),
+    ToontownItemName.DMG_BOOST_2.value: DmgBoostReward(2),
+    ToontownItemName.DMG_BOOST_3.value: DmgBoostReward(3),
+    ToontownItemName.DMG_BOOST_4.value: DmgBoostReward(4),
     ToontownItemName.GAG_CAPACITY_5.value: GagCapacityReward(5),
     ToontownItemName.GAG_CAPACITY_10.value: GagCapacityReward(10),
     ToontownItemName.GAG_CAPACITY_15.value: GagCapacityReward(15),
