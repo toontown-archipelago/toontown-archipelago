@@ -583,6 +583,123 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
     return any(state.can_reach(pg.value, None, player) for pg in pgs) \
            and passes_rule(gag_rule, state, locentr, world, player, options)
 
+@rule(Rule.TierSevenCogs, 7)
+@rule(Rule.TierEightCogs, 8)
+@rule(Rule.TierNineCogs, 9)
+@rule(Rule.TierTenCogs, 10)
+@rule(Rule.TierElevenCogs, 11)
+@rule(Rule.TierTwelveCogs, 12)
+@rule(Rule.TierThirteenCogs, 13)
+@rule(Rule.TierFourteenCogs, 14)
+def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    args = (state, locentr, world, player, options)
+
+    CanTier8Boss = passes_rule(Rule.TierEightBossbot, *args)
+    CanTier8Law =  passes_rule(Rule.TierEightLawbot,  *args)
+    CanTier8Cash = passes_rule(Rule.TierEightCashbot, *args)
+    CanTier8Sell = passes_rule(Rule.TierEightSellbot, *args)
+    CanDDL = state.can_reach(ToontownRegionName.DDL.value, None, player)
+    CanCBHQ = state.can_reach(ToontownRegionName.CBHQ.value, None, player)
+    CanLBHQ = state.can_reach(ToontownRegionName.LBHQ.value, None, player)
+    CanBBHQ = state.can_reach(ToontownRegionName.BBHQ.value, None, player)
+    CanBullion = passes_rule(Rule.BullionMintKey, *args) \
+                 and passes_rule(Rule.HasLevelSixOffenseGag, *args) \
+                 and passes_rule(Rule.Has60PercentMax, *args)
+    CanDOffice = passes_rule(Rule.OfficeDKey, *args) \
+                 and passes_rule(Rule.HasLevelSevenOffenseGag, *args) \
+                 and passes_rule(Rule.Has60PercentMax, *args)
+    CanBackThree = passes_rule(Rule.BackThreeKey, *args) \
+                   and passes_rule(Rule.HasLevelSevenOffenseGag, *args) \
+                   and passes_rule(Rule.Has60PercentMax, *args)
+    CanFiveStory = passes_rule(Rule.FiveStory, *args)
+    CanCFO = passes_rule(Rule.CanFightCFO, *args)
+    CanCJ = passes_rule(Rule.CanFightCJ, *args)
+    CanCEO = passes_rule(Rule.CanFightCEO, *args)
+
+    tier_to_info = {
+        7: {
+            "gags": Rule.HasLevelFourOffenseGag,
+            "laff": Rule.Has20PercentMax,
+            "rules": [
+                CanTier8Boss,
+                CanTier8Law,
+                CanTier8Cash,
+                CanTier8Sell,
+            ]
+        },
+        8: {
+            "gags": Rule.HasLevelFourOffenseGag,
+            "laff": Rule.Has20PercentMax,
+            "rules": [
+                CanTier8Boss,
+                CanTier8Law,
+                CanTier8Cash,
+                CanTier8Sell,
+            ]
+        },
+        9: {
+            "gags": Rule.HasLevelFiveOffenseGag,
+            "laff": Rule.Has20PercentMax,
+            "rules": [
+                CanDDL,
+                CanFiveStory,
+                CanCBHQ,
+                CanLBHQ,
+                CanBBHQ,
+            ]
+        },
+        10: {
+            "gags": Rule.HasLevelFiveOffenseGag,
+            "laff": Rule.Has40PercentMax,
+            "rules": [
+                CanFiveStory,
+                CanBullion,
+                CanCFO,
+                CanLBHQ,
+                CanBBHQ,
+            ]
+        },
+        11: {
+            "gags": Rule.HasLevelFiveOffenseGag,
+            "laff": Rule.Has60PercentMax,
+            "rules": [
+                CanCJ,
+                CanBBHQ,
+            ]
+        },
+        12: {
+            "gags": Rule.HasLevelSixOffenseGag,
+            "laff": Rule.Has60PercentMax,
+            "rules": [
+                CanDOffice,
+                CanCJ,
+                CanBackThree,
+                CanCEO,
+            ]
+        },
+        13: {
+            "gags": Rule.HasLevelSevenOffenseGag,
+            "laff": Rule.Has80PercentMax,
+            "rules": [
+                CanCEO,
+            ]
+        },
+        14: {
+            "gags": Rule.HasLevelSevenOffenseGag,
+            "laff": Rule.Has80PercentMax,
+            "rules": [
+                CanCEO,
+            ]
+        },
+    }
+
+    tier = argument[0]
+    tier_info = tier_to_info[tier]
+
+    return passes_rule(tier_info["gags"], *args) \
+            and passes_rule(tier_info["laff"], *args) \
+            and any(rule for rule in tier_info["rules"])
+
 
 @rule(Rule.CanMaxTierOneSellbot, 1, ToontownRegionName.SBHQ)
 @rule(Rule.CanMaxTierOneCashbot, 1, ToontownRegionName.CBHQ)

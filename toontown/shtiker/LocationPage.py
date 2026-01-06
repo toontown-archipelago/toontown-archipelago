@@ -165,6 +165,10 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
+            elif location_data.type == locations.ToontownLocationType.COG_LEVELS:
+                obj = missingLocations.get("Cog Levels", LocationCategory("Cog Levels"))
+                obj.add_location(location_data.name.value)
+
             elif location_data.region == locations.ToontownRegionName.GALLERY:
                 name = location_data.name.value.split('(')[0].rstrip()
                 obj = missingLocations.get(name, LocationCategory(name))

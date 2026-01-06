@@ -76,6 +76,20 @@ class ToontownLocationName(Enum):
     ROBBER_BARRON_MAXED =                       "Cog Gallery Maxed (Robber Baron)"
     BIG_WIG_MAXED =                             "Cog Gallery Maxed (Big Wig)"
     BIG_CHEESE_MAXED =                          "Cog Gallery Maxed (Big Cheese)"
+    LEVEL_ONE_COG_DEFEATED =                    "Level 1 Cog Defeated"
+    LEVEL_TWO_COG_DEFEATED =                    "Level 2 Cog Defeated"
+    LEVEL_THREE_COG_DEFEATED =                  "Level 3 Cog Defeated"
+    LEVEL_FOUR_COG_DEFEATED =                   "Level 4 Cog Defeated"
+    LEVEL_FIVE_COG_DEFEATED =                   "Level 5 Cog Defeated"
+    LEVEL_SIX_COG_DEFEATED =                    "Level 6 Cog Defeated"
+    LEVEL_SEVEN_COG_DEFEATED =                  "Level 7 Cog Defeated"
+    LEVEL_EIGHT_COG_DEFEATED =                  "Level 8 Cog Defeated"
+    LEVEL_NINE_COG_DEFEATED =                   "Level 9 Cog Defeated"
+    LEVEL_TEN_COG_DEFEATED =                    "Level 10 Cog Defeated"
+    LEVEL_ELEVEN_COG_DEFEATED =                 "Level 11 Cog Defeated"
+    LEVEL_TWELVE_COG_DEFEATED =                 "Level 12 Cog Defeated"
+    LEVEL_THIRTEEN_COG_DEFEATED =               "Level 13 Cog Defeated"
+    LEVEL_FOURTEEN_COG_DEFEATED =               "Level 14 Cog Defeated"
     TOONUP_FEATHER_UNLOCKED =                   "Feather Trained (Toon-up Training)"
     TOONUP_MEGAPHONE_UNLOCKED =                 "Megaphone Trained (Toon-up Training)"
     TOONUP_LIPSTICK_UNLOCKED =                  "Lipstick Trained (Toon-up Training)"
@@ -322,17 +336,31 @@ class ToontownLocationName(Enum):
     DONALDS_DREAMLAND_TASK_10 =                 "Donald's Dreamland Task #10"
     DONALDS_DREAMLAND_TASK_11 =                 "Donald's Dreamland Task #11"
     DONALDS_DREAMLAND_TASK_12 =                 "Donald's Dreamland Task #12"
-    ONE_STORY =                                 "One Story Building Clear"
-    TWO_STORY =                                 "Two Story Building Clear"
-    THREE_STORY =                               "Three Story Building Clear"
-    FOUR_STORY =                                "Four Story Building Clear"
-    FIVE_STORY =                                "Five Story Building Clear"
+    ONE_STORY_FIRST_FLOOR =                     "One Story Building Clear"
+    TWO_STORY_FIRST_FLOOR =                     "Two Story Building First Floor Clear"
+    TWO_STORY_SECOND_FLOOR =                    "Two Story Building Clear"
+    THREE_STORY_FIRST_FLOOR =                   "Three Story Building First Floor Clear"
+    THREE_STORY_SECOND_FLOOR =                  "Three Story Building Second Floor Clear"
+    THREE_STORY_THIRD_FLOOR =                   "Three Story Building Clear"
+    FOUR_STORY_FIRST_FLOOR =                    "Four Story Building First Floor Clear"
+    FOUR_STORY_SECOND_FLOOR =                   "Four Story Building Second Floor Clear"
+    FOUR_STORY_THIRD_FLOOR =                    "Four Story Building Third Floor Clear"
+    FOUR_STORY_FOURTH_FLOOR =                   "Four Story Building Clear"
+    FIVE_STORY_FIRST_FLOOR =                    "Five Story Building First Floor Clear"
+    FIVE_STORY_SECOND_FLOOR =                   "Five Story Building Second Floor Clear"
+    FIVE_STORY_THIRD_FLOOR =                    "Five Story Building Third Floor Clear"
+    FIVE_STORY_FOURTH_FLOOR =                   "Five Story Building Fourth Floor Clear"
+    FIVE_STORY_FIFTH_FLOOR =                    "Five Story Building Clear"
     TOONTOWN_CENTRAL_BUILDING =                 "Toontown Central Building Clear"
     DONALDS_DOCK_BUILDING =                     "Donald's Dock Building Clear"
     DAISYS_GARDENS_BUILDING =                   "Daisy Gardens Building Clear"
     MINNIES_MELODYLAND_BUILDING =               "Minnie's Melodyland Building Clear"
     THE_BRRRGH_BUILDING =                       "The Brrrgh Building Clear"
     DONALDS_DREAMLAND_BUILDING =                "Donald's Dreamland Building Clear"
+    BOSSBOT_BUILDING =                          "Bossbot Building Clear"
+    LAWBOT_BUILDING =                           "Lawbot Building Clear"
+    CASHBOT_BUILDING =                          "Cashbot Building Clear"
+    SELLBOT_BUILDING =                          "Sellbot Building Clear"
     TTC_SHOP_1 =                                "Thickie (TTC Pet Shop)"
     TTC_SHOP_2 =                                "Bowser (TTC Pet Shop)"
     TTC_SHOP_3 =                                "Snowman (TTC Pet Shop)"
@@ -684,6 +712,7 @@ class ToontownLocationType(IntEnum):
     STARTER         = auto()  # Location that is considered a "starting" check on login, typically we force checks here
     GALLERY         = auto()  # Locations for discovering cogs in the gallery
     GALLERY_MAX     = auto()  # Locations for maxing cogs in the gallery
+    COG_LEVELS      = auto()  # Locations related to cogs generally
     FACILITIES      = auto()  # Locations for clearing facilities
     BUILDINGS       = auto()  # Locations for clearing cog buildings
     BOSS_META       = auto()  # Locations for clearing bosses
@@ -1230,6 +1259,22 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.BIG_WIG_MAXED,              ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierEightLawbot,  Rule.TierEightLawbot]),
     ToontownLocationDefinition(ToontownLocationName.BIG_CHEESE_MAXED,           ToontownLocationType.GALLERY_MAX, ToontownRegionName.GALLERY, [Rule.CanMaxTierEightBossbot, Rule.TierEightBossbot]),
     # endregion
+    # region Cog Levels
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_ONE_COG_DEFEATED,      ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierOneCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_TWO_COG_DEFEATED,      ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierTwoCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_THREE_COG_DEFEATED,    ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierThreeCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_FOUR_COG_DEFEATED,     ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierFourCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_FIVE_COG_DEFEATED,     ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierFiveCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_SIX_COG_DEFEATED,      ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierSixCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_SEVEN_COG_DEFEATED,    ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierSevenCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_EIGHT_COG_DEFEATED,    ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierEightCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_NINE_COG_DEFEATED,     ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierNineCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_TEN_COG_DEFEATED,      ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierTenCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_ELEVEN_COG_DEFEATED,   ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierElevenCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_TWELVE_COG_DEFEATED,   ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierTwelveCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_THIRTEEN_COG_DEFEATED, ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierThirteenCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_FOURTEEN_COG_DEFEATED, ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.TierFourteenCogs]),
+    # endregion
     # region racing
     ToontownLocationDefinition(ToontownLocationName.SPEEDWAY_1_CLEAR,           ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
     ToontownLocationDefinition(ToontownLocationName.SPEEDWAY_1_QUALIFY,         ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
@@ -1456,17 +1501,31 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_12,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag, Rule.Has40PercentMax]),
     # endregion
     # region Buildings
-    ToontownLocationDefinition(ToontownLocationName.ONE_STORY,                  ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelThreeOffenseGag, Rule.OneStory]),
-    ToontownLocationDefinition(ToontownLocationName.TWO_STORY,                  ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFourOffenseGag,  Rule.TwoStory]),
-    ToontownLocationDefinition(ToontownLocationName.THREE_STORY,                ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory]),
-    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY,                 ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag,   Rule.FourStory]),
-    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY,                 ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
+    ToontownLocationDefinition(ToontownLocationName.ONE_STORY_FIRST_FLOOR,      ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelThreeOffenseGag, Rule.OneStory]),
+    ToontownLocationDefinition(ToontownLocationName.TWO_STORY_FIRST_FLOOR,      ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFourOffenseGag,  Rule.TwoStory]),
+    ToontownLocationDefinition(ToontownLocationName.TWO_STORY_SECOND_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFourOffenseGag,  Rule.TwoStory]),
+    ToontownLocationDefinition(ToontownLocationName.THREE_STORY_FIRST_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory]),
+    ToontownLocationDefinition(ToontownLocationName.THREE_STORY_SECOND_FLOOR,   ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory]),
+    ToontownLocationDefinition(ToontownLocationName.THREE_STORY_THIRD_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory]),
+    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_FIRST_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag,   Rule.FourStory]),
+    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_SECOND_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag,   Rule.FourStory]),
+    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_THIRD_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag,   Rule.FourStory]),
+    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_FOURTH_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag,   Rule.FourStory]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_FIRST_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_SECOND_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_THIRD_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_FOURTH_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_FIFTH_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
     ToontownLocationDefinition(ToontownLocationName.TOONTOWN_CENTRAL_BUILDING,  ToontownLocationType.BUILDINGS, ToontownRegionName.TTC,       [Rule.HasLevelThreeOffenseGag, Rule.OneStory,   Rule.CanReachTTC]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_BUILDING,      ToontownLocationType.BUILDINGS, ToontownRegionName.DD,        [Rule.HasLevelFourOffenseGag,  Rule.TwoStory,   Rule.CanReachDD]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_BUILDING,    ToontownLocationType.BUILDINGS, ToontownRegionName.DG,        [Rule.HasLevelFourOffenseGag,  Rule.TwoStory,   Rule.CanReachDG]),
     ToontownLocationDefinition(ToontownLocationName.MINNIES_MELODYLAND_BUILDING,ToontownLocationType.BUILDINGS, ToontownRegionName.MML,       [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory, Rule.CanReachMML]),
     ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_BUILDING,        ToontownLocationType.BUILDINGS, ToontownRegionName.TB,        [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory, Rule.CanReachTB]),
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_BUILDING, ToontownLocationType.BUILDINGS, ToontownRegionName.DDL,       [Rule.HasLevelSixOffenseGag,   Rule.FourStory,  Rule.CanReachDDL]),
+    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_BUILDING,           ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelThreeOffenseGag, Rule.OneStory]),
+    ToontownLocationDefinition(ToontownLocationName.LAWBOT_BUILDING,            ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelThreeOffenseGag, Rule.OneStory]),
+    ToontownLocationDefinition(ToontownLocationName.CASHBOT_BUILDING,           ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelThreeOffenseGag, Rule.OneStory]),
+    ToontownLocationDefinition(ToontownLocationName.SELLBOT_BUILDING,           ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelThreeOffenseGag, Rule.OneStory]),
     # endregion
 ] + TREASURE_LOCATION_DEFINITIONS + KNOCK_KNOCK_LOCATION_DEFINITIONS + [
     # region Facilities
@@ -1626,6 +1685,7 @@ SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy() + SHOP_LOCATIONS.copy()
 LOCATION_NAME_TO_ID = {location.name.value: i + consts.BASE_ID for i, location in enumerate(LOCATION_DEFINITIONS)}
 LOCATION_ID_TO_NAME = {i + consts.BASE_ID: location.name.value for i, location in enumerate(LOCATION_DEFINITIONS)}
 
+# Remember to update BountiesRequired and TotalBounties options when more bounties get added
 BOUNTY_LOCATIONS = [
     ToontownLocationName.SELLBOT_PROOF_1, ToontownLocationName.CASHBOT_PROOF_1, ToontownLocationName.LAWBOT_PROOF_1, ToontownLocationName.BOSSBOT_PROOF_1,  # Boss bounty locations
     ToontownLocationName.URBAN_2_QUALIFY, ToontownLocationName.HARD_GOLF_9, ToontownLocationName.FISHING_COMPLETE_ALBUM, ToontownLocationName.DOG_FISH_1,  # Activity bounty locations
@@ -1636,7 +1696,8 @@ BOUNTY_LOCATIONS = [
     ToontownLocationName.CLEAR_D_OFFICE, ToontownLocationName.CLEAR_FRONT_ONE, ToontownLocationName.CLEAR_MIDDLE_TWO, ToontownLocationName.CLEAR_BACK_THREE,  # Facility bounty locations (3)
     ToontownLocationName.TOONUP_HIGHDIVE_UNLOCKED, ToontownLocationName.TRAP_TRAIN_UNLOCKED, ToontownLocationName.LURE_PRESENTATION_UNLOCKED, ToontownLocationName.SOUND_OPERA_UNLOCKED,  # Gag bounty locations (1)
     ToontownLocationName.THROW_WEDDING_UNLOCKED, ToontownLocationName.SQUIRT_GEYSER_UNLOCKED, ToontownLocationName.DROP_BOAT_UNLOCKED,  # Gag bounty locations (2)
-    ToontownLocationName.FIVE_STORY,  # Building bounty locations
+    ToontownLocationName.LEVEL_TWELVE_COG_DEFEATED,  # Cog tier bounty locations
+    ToontownLocationName.FIVE_STORY_FIFTH_FLOOR,  # Building bounty locations
 ]
 
 BOSS_BOUNTIES = [ToontownLocationName.SELLBOT_PROOF_1, ToontownLocationName.CASHBOT_PROOF_1, ToontownLocationName.LAWBOT_PROOF_1, ToontownLocationName.BOSSBOT_PROOF_1]
@@ -1657,7 +1718,10 @@ def get_location_groups():
     "Fishing": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.region == ToontownRegionName.FISHING],
     "Pet Shops": [name.value for name in SHOP_LOCATIONS],
     "Gag Training": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.region == ToontownRegionName.TRAINING],
-    "Cog Gallery": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.region == ToontownRegionName.GALLERY],
+    "Cog Discovery": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GALLERY],
+    "Cog Gallery": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.region == ToontownRegionName.GALLERY and loc_def.type != ToontownLocationType.COG_LEVELS],
+    "Max Gallery": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GALLERY_MAX],
+    "Cog Levels": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.COG_LEVELS],
     "Treasures": [loc_def.name.value for loc_def in TREASURE_LOCATION_DEFINITIONS],
     "Boss Clears": [loc_def.name.value for loc_def in BOSS_LOCATION_DEFINITIONS],
     "Toontown Central": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.region == ToontownRegionName.TTC],
