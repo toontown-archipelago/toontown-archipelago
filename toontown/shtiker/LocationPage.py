@@ -166,11 +166,12 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 obj.add_location(location_data.name.value)
 
             elif location_data.type == locations.ToontownLocationType.COG_LEVELS:
-                obj = missingLocations.get("Cog Levels", LocationCategory("Cog Levels"))
+                name = "Cog Levels"
+                obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
-            elif location_data.region == locations.ToontownRegionName.GALLERY:
-                name = location_data.name.value.split('(')[0].rstrip()
+            elif location_data.type in (locations.ToontownLocationType.GALLERY, locations.ToontownLocationType.GALLERY_MAX):
+                name = "Cog Gallery"
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
@@ -180,7 +181,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 obj.add_location(location_data.name.value)
 
             elif location_data.type == locations.ToontownLocationType.PET_SHOP:
-                name=location_data.region.name + " Pet Shop"
+                name = location_data.region.name + " Pet Shop"
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 

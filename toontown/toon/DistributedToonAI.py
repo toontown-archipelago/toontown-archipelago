@@ -3456,13 +3456,28 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             randomLevel = random.randrange(0, SuitDNA.suitsPerDept)
             suitIndex = deptIndex * SuitDNA.suitsPerLevel + randomLevel
         else:
-            numSuits = len(SuitDNA.suitHeadTypes)
+            numSuits = len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes)
             suitIndex = random.randrange(0, numSuits)
-        if summonType in ['single', 'building', 'invasion']:
+        if summonType in ['single', 'building']:
             type = summonType
         else:
-            typeWeights = ['single'] * 70 + ['building'] * 25 + ['invasion'] * 5
+            typeWeights = ['single'] * 90 + ['building'] * 10
             type = random.choice(typeWeights)
+        numCogs = len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes) - 1
+        foundOpen = False
+        while not foundOpen:
+            hasSummon = self.hasCogSummons(suitIndex, type)
+            if hasSummon:
+                if type == 'single':
+                    type = 'building'
+                    continue
+                elif type == 'building':
+                    type = 'single'
+                    suitIndex += 1
+                if suitIndex >= numCogs:
+                    return (suitIndex, type)
+            else:
+                foundOpen = True
         if suitIndex >= len(SuitDNA.suitHeadTypes):
             self.notify.warning('Bad suit index: %s' % suitIndex)
         self.addCogSummonsEarned(suitIndex, type)
