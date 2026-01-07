@@ -860,6 +860,7 @@ class BossRewardAward(APReward):
     SOS = 0
     UNITE = 1
     PINK_SLIP = 2
+    SUMMON = 3
 
     REWARD_TO_DISPLAY_STR = {
         SOS: {3: "3-Star SOS Card",
@@ -868,6 +869,7 @@ class BossRewardAward(APReward):
         UNITE: {1: "Toon-Up Unite",
                 2: "Gag-Up Unite"},
         PINK_SLIP: "Pink Slip",
+        SUMMON: "Cog Summon"
     }
 
     def __init__(self, reward: int, type: int):
@@ -915,6 +917,8 @@ class BossRewardAward(APReward):
             av.addResistanceMessage(ResistanceChat.encodeId(uniteType, uniteChoice))
         elif self.reward == BossRewardAward.PINK_SLIP:
             av.addPinkSlips(1)
+        elif self.reward == BossRewardAward.SUMMON:
+            av.assignNewCogSummons()
 
 
 class ProofReward(APReward):
@@ -1069,6 +1073,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.UNITE_REWARD_TOONUP.value: BossRewardAward(BossRewardAward.UNITE, 1),
     ToontownItemName.UNITE_REWARD_GAG.value: BossRewardAward(BossRewardAward.UNITE, 2),
     ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP, 0),
+    ToontownItemName.SUMMON_REWARD.value: BossRewardAward(BossRewardAward.SUMMON, 0),
     ToontownItemName.HEAL_10.value: HealAward(10),
     ToontownItemName.HEAL_20.value: HealAward(20),
     ToontownItemName.UBER_TRAP.value: UberTrapAward(),

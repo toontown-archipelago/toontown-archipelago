@@ -127,12 +127,13 @@ class ToontownItemName(enum.Enum):
     BOUNTY = "Bounty"
 
     ### Reward Bundles ###
-    SOS_REWARD_3       = "Random 3-Star SOS Card"
-    SOS_REWARD_4       = "Random 4-Star SOS Card"
-    SOS_REWARD_5       = "Random 5-Star SOS Card"
-    UNITE_REWARD_GAG   = "Random Gag Unite"
+    SOS_REWARD_3        = "Random 3-Star SOS Card"
+    SOS_REWARD_4        = "Random 4-Star SOS Card"
+    SOS_REWARD_5        = "Random 5-Star SOS Card"
+    UNITE_REWARD_GAG    = "Random Gag Unite"
     UNITE_REWARD_TOONUP = "Random Toon-Up Unite"
-    PINK_SLIP_REWARD = "Pink Slip"
+    PINK_SLIP_REWARD    = "Pink Slip"
+    SUMMON_REWARD       = "Cog Summon"
 
     ### Healing Items ###
     HEAL_10 = "10% Toon-Up"
@@ -283,6 +284,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.UNITE_REWARD_GAG,     ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.UNITE_REWARD_TOONUP,  ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.PINK_SLIP_REWARD,     ItemClassification.filler),
+    ToontownItemDefinition(ToontownItemName.SUMMON_REWARD,        ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.HEAL_10,              ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.HEAL_20,              ItemClassification.filler),
     ToontownItemDefinition(ToontownItemName.FISH,                 ItemClassification.filler),
@@ -450,7 +452,8 @@ def get_item_groups():
         ToontownItemName.SOS_REWARD_5,
         ToontownItemName.UNITE_REWARD_TOONUP,
         ToontownItemName.UNITE_REWARD_GAG,
-        ToontownItemName.PINK_SLIP_REWARD
+        ToontownItemName.PINK_SLIP_REWARD,
+        ToontownItemName.SUMMON_REWARD
     )
 
     HEALS = (

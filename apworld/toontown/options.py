@@ -835,7 +835,7 @@ class SOSWeightOption(Range):
     display_name = "SOS Card Weight"
     range_start = 0
     range_end = 100
-    default = 65
+    default = 60
 
 
 class UniteWeightOption(Range):
@@ -846,7 +846,7 @@ class UniteWeightOption(Range):
     display_name = "Unite Weight"
     range_start = 0
     range_end = 100
-    default = 65
+    default = 60
 
 
 class FireWeightOption(Range):
@@ -857,7 +857,18 @@ class FireWeightOption(Range):
     display_name = "Pink Slip Weight"
     range_start = 0
     range_end = 100
-    default = 65
+    default = 60
+
+
+class SummonWeightOption(Range):
+    """
+    Weight of Cog Summon items in the junk pool.
+    """
+
+    display_name = "Cog Summon Weight"
+    range_start = 0
+    range_end = 100
+    default = 50
 
 
 class HealWeightOption(Range):
@@ -976,6 +987,7 @@ class ToontownOptions(PerGameCommonOptions):
     sos_weight: SOSWeightOption
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
+    summon_weight: SummonWeightOption
     heal_weight: HealWeightOption
     fish_weight: FishWeightOption
     death_link: DeathLinkOption
