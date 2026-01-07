@@ -583,17 +583,29 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
     return any(state.can_reach(pg.value, None, player) for pg in pgs) \
            and passes_rule(gag_rule, state, locentr, world, player, options)
 
-@rule(Rule.TierSevenCogs, 7)
-@rule(Rule.TierEightCogs, 8)
-@rule(Rule.TierNineCogs, 9)
-@rule(Rule.TierTenCogs, 10)
-@rule(Rule.TierElevenCogs, 11)
-@rule(Rule.TierTwelveCogs, 12)
-@rule(Rule.TierThirteenCogs, 13)
-@rule(Rule.TierFourteenCogs, 14)
+@rule(Rule.LevelOneCogs, 1)
+@rule(Rule.LevelTwoCogs, 2)
+@rule(Rule.LevelThreeCogs, 3)
+@rule(Rule.LevelFourCogs, 4)
+@rule(Rule.LevelFiveCogs, 5)
+@rule(Rule.LevelSixCogs, 6)
+@rule(Rule.LevelSevenCogs, 7)
+@rule(Rule.LevelEightCogs, 8)
+@rule(Rule.LevelNineCogs, 9)
+@rule(Rule.LevelTenCogs, 10)
+@rule(Rule.LevelElevenCogs, 11)
+@rule(Rule.LevelTwelveCogs, 12)
+@rule(Rule.LevelThirteenCogs, 13)
+@rule(Rule.LevelFourteenCogs, 14)
 def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     args = (state, locentr, world, player, options)
 
+    CanTier1 = passes_rule(Rule.TierOneCogs, *args)
+    CanTier2 = passes_rule(Rule.TierTwoCogs, *args)
+    CanTier3 = passes_rule(Rule.TierThreeCogs, *args)
+    CanTier4 = passes_rule(Rule.TierFourCogs, *args)
+    CanTier5 = passes_rule(Rule.TierFiveCogs, *args)
+    CanTier6 = passes_rule(Rule.TierSixCogs, *args)
     CanTier8Boss = passes_rule(Rule.TierEightBossbot, *args)
     CanTier8Law =  passes_rule(Rule.TierEightLawbot,  *args)
     CanTier8Cash = passes_rule(Rule.TierEightCashbot, *args)
@@ -617,6 +629,48 @@ def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: Mult
     CanCEO = passes_rule(Rule.CanFightCEO, *args)
 
     tier_to_info = {
+        1: {
+            "gags": None,
+            "laff": None,
+            "rules": [
+                CanTier1,
+            ]
+        },
+        2: {
+            "gags": None,
+            "laff": None,
+            "rules": [
+                CanTier2,
+            ]
+        },
+        3: {
+            "gags": None,
+            "laff": None,
+            "rules": [
+                CanTier3,
+            ]
+        },
+        4: {
+            "gags": None,
+            "laff": None,
+            "rules": [
+                CanTier4,
+            ]
+        },
+        5: {
+            "gags": None,
+            "laff": None,
+            "rules": [
+                CanTier5,
+            ]
+        },
+        6: {
+            "gags": None,
+            "laff": None,
+            "rules": [
+                CanTier6,
+            ]
+        },
         7: {
             "gags": Rule.HasLevelFourOffenseGag,
             "laff": Rule.Has20PercentMax,
@@ -695,10 +749,20 @@ def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: Mult
 
     tier = argument[0]
     tier_info = tier_to_info[tier]
+    if tier_info["gags"] is not None:
+        gag_rule = passes_rule(tier_info["gags"], *args)
+    else:
+        gag_rule = True
+    if tier_info["laff"] is not None:
+        laff_rule = passes_rule(tier_info["laff"], *args)
+    else:
+        laff_rule = True
+    if len(tier_info["rules"]) >= 1:
+        gen_rule = any(rule for rule in tier_info["rules"])
+    else:
+        gen_rule = True
 
-    return passes_rule(tier_info["gags"], *args) \
-            and passes_rule(tier_info["laff"], *args) \
-            and any(rule for rule in tier_info["rules"])
+    return gag_rule and laff_rule and gen_rule
 
 
 @rule(Rule.CanMaxTierOneSellbot, 1, ToontownRegionName.SBHQ)
