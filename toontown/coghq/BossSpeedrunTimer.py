@@ -17,6 +17,7 @@ class BossSpeedrunTimer:
         self.time_text = OnscreenText(parent=self.frame, text='00:00.00', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft, scale=0.1, font=ToontownGlobals.getCompetitionFont())
         self.reset()
         self.overridden_time = None
+        self.gave_popup = False
         self.start_updating()
 
     def reset(self):
@@ -45,10 +46,16 @@ class BossSpeedrunTimer:
         sec = total_secs % 60
         frac = int((total_secs - int(total_secs)) * 100)
         new_time = '{:02}:{:02}.{:02}'.format(int(min), int(sec), frac)
+        if min == 4 and not self.gave_popup:
+            self.advice_popup()
+            self.gave_popup = True
         self.time_text.setText(new_time)
 
     def override_time(self, secs):
         self.overridden_time = secs
+
+    def advice_popup(self):
+        base.localAvatar.setSystemMessage(0, "Having a rough time? You can skip the final round with the following chat command:\n~skipfinal")
 
     def cleanup(self):
         self.stop_updating()
