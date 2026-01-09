@@ -68,6 +68,7 @@ class SummonCogDialog(DirectFrame, StateData.StateData):
         self.enableButtons()
         self.popup = None
         base.transitions.fadeScreen(0.5)
+        self.summonInvasionButton.hide()
         self.show()
         return
 

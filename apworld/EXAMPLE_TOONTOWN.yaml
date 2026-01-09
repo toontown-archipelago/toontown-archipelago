@@ -57,10 +57,15 @@ Toontown:
   # randomsingle: Pick a random single target Gag track to not receive during the seed
   omit_gag: 'none'
 
-  # The percentage of damage that will be done when battling Cogs.
+  # The percentage of damage the Toon has at the start of a run.
+  # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
+  # Range: 50 to 200
+  start_damage_multiplier: 100
+
+  # The percentage of damage the Toon can have at max.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
   # Range: 70 to 200
-  damage_multiplier: 100
+  max_damage_multiplier: 100
 
   # The percentage multiplier that will be applied to the exp overflow rate.
   # 50 -> 50%/Half overflow rate, 200 -> 200%/2x overflow rate, etc.
@@ -105,7 +110,6 @@ Toontown:
   #                NOTE: Can be input into the below list multiple times for multiple random goals
   # Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
   win_condition: ["cog-bosses"]
-
 
   # Allows for the selected win conditions to be omitted when randomizing a win condition.
   # Example: Adding "bounties" to this option will ensure bounties can't be rolled when you roll for a randomized win condition
@@ -154,13 +158,13 @@ Toontown:
 
   # How many bounties we must have before being able to talk to Flippy to complete the game
   # Unused if win_condition is not bounties
-  # Range 0 to 33
+  # Range 0 to 34
   bounties_required: 7
 
   # How many bounties are in the pool.
   # Unused if win_condition is not bounties
   # Must be equal to or above bounties_required
-  # Range 1 to 33
+  # Range 1 to 34
   total_bounties: 15
 
   # Should bounties be hinted from the beginning of the run?
@@ -320,9 +324,10 @@ Toontown:
   # At least 1 junk must have a value greater than 0.
   bean_weight: 100
   exp_weight: 100
-  sos_weight: 65
-  unite_weight: 65
-  fire_weight: 65
+  sos_weight: 60
+  unite_weight: 60
+  fire_weight: 60
+  summon_weight: 50
   heal_weight: 75
   fish_weight: 65
 
@@ -366,6 +371,7 @@ Toontown:
   # Gag Capacity Increase - All gag pouch increases
   # Gag Training Boosts - All gag experience multipliers
   # Gag Upgrades - All organic gag boosts
+  # Damage Boosts - All damage increase items
   # Fishing Licenses - All fishing access items
   # Jellybean Capacity - All Jellybean jar upgrades
   # Side Activity Keys - Golf and Racing access items
@@ -421,7 +427,10 @@ Toontown:
   # Fishing - All fishing locations
   # Pet Shops - All doodle/pet shop locations
   # Gag Training - All gag training locations
+  # Cog Discovery - All locations for first discovering a new cog for the cog gallery
+  # Max Gallery - All locations for maxing the cog entries in the cog gallery
   # Cog Gallery - All cog gallery locations
+  # Cog Levels - All locations for unique levels of cogs
   # Treasures - All AP treasure locations
   # Boss Clears - All Cog Boss locations
   # Toontown Central - All locations in TTC

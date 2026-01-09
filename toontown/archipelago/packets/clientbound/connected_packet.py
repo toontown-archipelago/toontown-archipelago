@@ -90,11 +90,14 @@ class ConnectedPacket(ClientBoundPacketBase):
         av.b_setMoney(self.slot_data.get('starting_money', 50))
 
         # Set their starting task capacity
-
         av.b_setQuestCarryLimit(self.slot_data.get('starting_task_capacity', 4))
 
         # Set their starting gag xp multiplier
         av.b_setBaseGagSkillMultiplier(self.slot_data.get('base_global_gag_xp', 2))
+
+        # Set starting damage multiplier
+        damageMultiplier = self.slot_data.get('start_damage_multiplier', 100)
+        av.b_setDamageMultiplier(damageMultiplier)
 
         # Give them gold rod if set in yaml
         fish_progression = FishProgression(self.slot_data.get('fish_progression', 3))
@@ -141,10 +144,6 @@ class ConnectedPacket(ClientBoundPacketBase):
         rng_option = self.slot_data.get('seed_generation_type', 'global')
         new_seed = self.handle_seed_generation_type(av, new_seed, rng_option)
         av.b_setSeed(new_seed)
-        
-        # Get damage multiplier
-        damageMultiplier = self.slot_data.get('damage_multiplier', 100)
-        av.b_setDamageMultiplier(damageMultiplier)
 
         # Get overflow modifier
         overflowMod = self.slot_data.get('overflow_mod', 100)

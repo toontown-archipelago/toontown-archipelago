@@ -539,6 +539,7 @@ def __throwGroupPie(throw, delay, groupHitDict):
 
     soundTrack = __getSoundTrack(level, didThrowHitAnyone, toon)
     groupSuitResponseTrack = Parallel()
+    healTriggered = False
     for i in range(numTargets):
         target = throw['target'][i]
         organic = throw['organic']
@@ -561,7 +562,11 @@ def __throwGroupPie(throw, delay, groupHitDict):
                     baseHeal = maxHealAllowed
                 if toonHp + baseHeal > toonMaxHp:
                     baseHeal = toonMaxHp - toonHp
-                showDamage = Parallel(Func(toon.toonUp, baseHeal), Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK))
+                if not healTriggered:
+                    healTriggered = True
+                    showDamage = Parallel(Func(toon.toonUp, baseHeal), Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK))
+                else:
+                    showDamage = Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK)
             else:
                 showDamage = Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK)
             updateHealthBar = Func(suit.updateHealthBar, hp)

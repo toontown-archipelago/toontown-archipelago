@@ -772,8 +772,8 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
 
                 possibleCogLevel = range(SuitDNA.suitsPerDept)
                 possibleDeptIndex = range(len(SuitDNA.suitDepts))
-                possibleSummonType = ['single', 'building', 'invasion']
-                typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3
+                possibleSummonType = ['single', 'building']
+                typeWeights = ['single'] * 70 + ['building'] * 30
                 if not foundOne:
                     for i in range(5):
                         randomCogLevel = random.choice(possibleCogLevel)

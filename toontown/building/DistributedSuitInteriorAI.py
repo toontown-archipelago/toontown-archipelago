@@ -287,6 +287,8 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
         self.battle.setInitialMembers(self.toons, self.suits)
         self.battle.generateWithRequired(self.zoneId)
 
+        self.battle.floorCheckLocation = self.getFloorCheck()
+
         mult = getInteriorCreditMultiplier(self.numFloors)
 
         battleHoodId = ZoneUtil.getHoodId(self.zoneId)
@@ -469,3 +471,30 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
 
     def exitReward(self):
         return None
+
+    def getFloorCheck(self):
+        floorToCheck = [
+            [
+                util.ap_location_name_to_id(locations.ToontownLocationName.ONE_STORY_FIRST_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY_SECOND_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY_SECOND_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY_THIRD_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_SECOND_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_THIRD_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY_FOURTH_FLOOR.value)
+            ], [
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_FIRST_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_SECOND_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_THIRD_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_FOURTH_FLOOR.value),
+                util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY_FIFTH_FLOOR.value)
+            ]
+        ]
+
+        return floorToCheck[self.topFloor][self.currentFloor]

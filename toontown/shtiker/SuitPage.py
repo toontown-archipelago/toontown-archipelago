@@ -453,9 +453,18 @@ class SuitPage(ShtikerPage.ShtikerPage):
 
     def setPanelStatus(self, panel, status):
         index = self.panels.index(panel)
-        if status == COG_UNSEEN:
+        panelStatus = status
+        if base.localAvatar.hasCogSummons(index):
+            # A little silly but I want the cog to display if we have the summon for clarity's sake
+            if panelStatus == COG_UNSEEN:
+                panelStatus = COG_BATTLED
+            #if panel.summonButton:
+            #    panel.summonButton.show()
+            #else:
+            #    self.addSummonButton(panel)
+        if panelStatus == COG_UNSEEN:
             panel['text'] = TTLocalizer.SuitPageMystery
-        elif status == COG_BATTLED:
+        elif panelStatus == COG_BATTLED:
             suitName = SuitDNA.suitHeadTypes[index]
             suitFullName = SuitBattleGlobals.getSuitAttributes(suitName).name
             panel['text'] = suitFullName
@@ -463,6 +472,7 @@ class SuitPage(ShtikerPage.ShtikerPage):
                 panel.quotaLabel.show()
             else:
                 self.addQuotaLabel(panel)
+            panel.quotaLabel.hide()
             if panel.head and panel.shadow:
                 panel.head.show()
                 panel.shadow.show()
@@ -473,16 +483,16 @@ class SuitPage(ShtikerPage.ShtikerPage):
                     panel.summonButton.show()
                 else:
                     self.addSummonButton(panel)
-        elif status == COG_DEFEATED:
+        elif panelStatus == COG_DEFEATED:
             count = str(base.localAvatar.cogCounts[index])
             if base.localAvatar.cogs[index] < COG_COMPLETE1:
                 quota = str(get_min_cog_quota(base.localAvatar))
             else:
                 quota = str(get_max_cog_quota(base.localAvatar))
             panel.quotaLabel['text'] = TTLocalizer.SuitPageQuota % (count, quota)
-        elif status == COG_COMPLETE1:
+        elif panelStatus == COG_COMPLETE1:
             panel['image_color'] = PANEL_COLORS_COMPLETE1[index // SuitDNA.suitsPerDept]
-        elif status == COG_COMPLETE2:
+        elif panelStatus == COG_COMPLETE2:
             panel['image_color'] = PANEL_COLORS_COMPLETE2[index // SuitDNA.suitsPerDept]
 
     def updateAllCogs(self, status):

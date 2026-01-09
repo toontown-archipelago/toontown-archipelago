@@ -36,7 +36,7 @@ class ArchipelagoConnectGUI(DirectFrame):
         self.slotBarEntry = DirectEntry(parent=self.slotBarFrame, relief=None, text_scale=(0.05, 0.07, 0.07), width=13.25,
                                         textMayChange=1,
                                         pos=(-0.33, 0, 0), text_align=TextNode.ALeft, backgroundFocus=0,
-                                        focusInCommand=self.toggleEntryFocus)
+                                        focusInCommand=self.entrySlot)
 
     def loadIpItems(self):
         self.ipBarFrame = DirectFrame(parent=self, relief=None, image=self.cdrGui.find('**/tt_t_gui_sbk_cdrCodeBox'),
@@ -47,7 +47,7 @@ class ArchipelagoConnectGUI(DirectFrame):
         self.ipBarEntry = DirectEntry(parent=self.ipBarFrame, relief=None, text_scale=(0.05, 0.07, 0.07), width=13.25,
                                         textMayChange=1,
                                         pos=(-0.33, 0, 0), text_align=TextNode.ALeft, backgroundFocus=0,
-                                        focusInCommand=self.toggleEntryFocus)
+                                        focusInCommand=self.entryIp)
 
     def loadPassItems(self):
         self.passBarFrame = DirectFrame(parent=self, relief=None, image=self.cdrGui.find('**/tt_t_gui_sbk_cdrCodeBox'),
@@ -58,7 +58,7 @@ class ArchipelagoConnectGUI(DirectFrame):
         self.passBarEntry = DirectEntry(parent=self.passBarFrame, relief=None, text_scale=(0.05, 0.07, 0.07), width=13.25,
                                         textMayChange=1,
                                         pos=(-0.33, 0, 0), text_align=TextNode.ALeft, backgroundFocus=0,
-                                        focusInCommand=self.toggleEntryFocus, obscured=1)
+                                        focusInCommand=self.entryPass, obscured=1)
 
     def loadButtons(self):
         self.connectButton = DirectButton(parent=self, relief=None, image=(self.guiButton.find('**/QuitBtn_UP'),
@@ -93,6 +93,18 @@ class ArchipelagoConnectGUI(DirectFrame):
     def handleReset(self):
         base.talkAssistant.sendOpenTalk("~ap clear")
         self.toggleEntryFocus(True)
+
+    def entrySlot(self):
+        self.toggleEntryFocus()
+        self.slotBarEntry.setCursorPosition(len(self.slotBarEntry.get()))
+
+    def entryIp(self):
+        self.toggleEntryFocus()
+        self.ipBarEntry.setCursorPosition(len(self.ipBarEntry.get()))
+
+    def entryPass(self):
+        self.toggleEntryFocus()
+        self.passBarEntry.setCursorPosition(len(self.passBarEntry.get()))
 
     def toggleEntryFocus(self, lose=False):
         if not hasattr(base, "localAvatar"):

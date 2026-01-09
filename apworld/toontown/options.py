@@ -138,9 +138,20 @@ class MaxGlobalGagXPRange(Range):
     default = 30
 
 
-class DamageMultiplierRange(Range):
+class StartDamageMultiplierRange(Range):
     """
-    The percentage of damage that will be done when battling Cogs.
+    The percentage of damage that will be done when battling Cogs at the start of the run.
+    75 -> 75%/0.75x damage, 200 -> 200%/2x damage, etc.
+    """
+    display_name = "Damage Multiplier"
+    range_start = 50
+    range_end = 200
+    default = 100
+
+
+class MaxDamageMultiplierRange(Range):
+    """
+    The percentage of damage that can be reached at max.
     75 -> 75%/0.75x damage, 200 -> 200%/2x damage, etc.
     """
     display_name = "Damage Multiplier"
@@ -373,11 +384,11 @@ class BountiesRequired(Range):
     """
     How many bounties we must have before being able to talk to Flippy to complete the game
     Unused if win_condition is not bounty
-    Range 0 to 33
+    Range 0 to 34
     """
     display_name = "Bounties Required"
     range_start = 0
-    range_end = 33
+    range_end = 34
     default = 7
 
 
@@ -386,11 +397,11 @@ class TotalBounties(Range):
     How many bounties are in the pool.
     Unused if win_condition is not bounty
     Must be equal to or above bounties_required
-    Range 1 to 33
+    Range 1 to 34
     """
     display_name = "Total Bounties"
     range_start = 1
-    range_end = 33
+    range_end = 34
     default = 15
 
 
@@ -824,7 +835,7 @@ class SOSWeightOption(Range):
     display_name = "SOS Card Weight"
     range_start = 0
     range_end = 100
-    default = 65
+    default = 60
 
 
 class UniteWeightOption(Range):
@@ -835,7 +846,7 @@ class UniteWeightOption(Range):
     display_name = "Unite Weight"
     range_start = 0
     range_end = 100
-    default = 65
+    default = 60
 
 
 class FireWeightOption(Range):
@@ -846,7 +857,18 @@ class FireWeightOption(Range):
     display_name = "Pink Slip Weight"
     range_start = 0
     range_end = 100
-    default = 65
+    default = 60
+
+
+class SummonWeightOption(Range):
+    """
+    Weight of Cog Summon items in the junk pool.
+    """
+
+    display_name = "Cog Summon Weight"
+    range_start = 0
+    range_end = 100
+    default = 50
 
 
 class HealWeightOption(Range):
@@ -908,7 +930,8 @@ class ToontownOptions(PerGameCommonOptions):
     web_random_gags: StartGagRandomWeb
     base_global_gag_xp: BaseGlobalGagXPRange
     max_global_gag_xp: MaxGlobalGagXPRange
-    damage_multiplier: DamageMultiplierRange
+    start_damage_multiplier: StartDamageMultiplierRange
+    max_damage_multiplier: MaxDamageMultiplierRange
     overflow_mod: OverflowModRange
     starting_money: StartMoneyOption
     starting_task_capacity: StartingTaskCapacityOption
@@ -964,6 +987,7 @@ class ToontownOptions(PerGameCommonOptions):
     sos_weight: SOSWeightOption
     unite_weight: UniteWeightOption
     fire_weight: FireWeightOption
+    summon_weight: SummonWeightOption
     heal_weight: HealWeightOption
     fish_weight: FishWeightOption
     death_link: DeathLinkOption
@@ -982,7 +1006,7 @@ toontown_option_groups: list[OptionGroup] = [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
         StartGagOption, StartGagOptionWeb, StartGagRandomWeb, OmitGagOption,
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
-        DamageMultiplierRange, OverflowModRange, StartMoneyOption, 
+        StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, StartMoneyOption,
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
         RingLinkOption, RandomShopCostToggle
     ]),

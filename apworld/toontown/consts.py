@@ -11,6 +11,10 @@ THREE_LAFF_BOOST_RATIO = 5 / 100
 FOUR_LAFF_BOOST_RATIO = 3 / 100
 FIVE_LAFF_BOOST_RATIO = 2 / 100
 
+TWO_DMG_RATIO = 25 / 100
+THREE_DMG_RATIO = 15 / 100
+FOUR_DMG_RATIO = 7 / 100
+
 TWO_XP_BOOST_RATIO = 2 / 13
 
 
@@ -36,6 +40,18 @@ CAP_RATIO_FOR_GAG_LEVEL = {
     6: 0.25,
     7: 0.35,
     8: 0.40
+}
+
+# The ratio of Gag Capacity items required to reach a given gag level.
+DMG_RATIO_FOR_GAG_LEVEL = {
+    1: 0.50,
+    2: 0.50,
+    3: 0.50,
+    4: 0.60,
+    5: 0.70,
+    6: 0.80,
+    7: 0.90,
+    8: 0.90
 }
 
 

@@ -82,6 +82,22 @@ class LaffBoostReward(APReward):
         av.checkWinCondition()
 
 
+class DmgBoostReward(APReward):
+    def __init__(self, amount: int):
+        self.amount = amount
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Increased your\nGag damage by "),
+            MinimalJsonMessagePart(f"+{self.amount}", color='green'),
+            MinimalJsonMessagePart("%!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        old_dmg = av.getDamageMultiplier()
+        av.b_setDamageMultiplier(old_dmg + self.amount)
+
+
 class GagCapacityReward(APReward):
 
     def __init__(self, amount: int):
@@ -844,6 +860,7 @@ class BossRewardAward(APReward):
     SOS = 0
     UNITE = 1
     PINK_SLIP = 2
+    SUMMON = 3
 
     REWARD_TO_DISPLAY_STR = {
         SOS: {3: "3-Star SOS Card",
@@ -852,6 +869,7 @@ class BossRewardAward(APReward):
         UNITE: {1: "Toon-Up Unite",
                 2: "Gag-Up Unite"},
         PINK_SLIP: "Pink Slip",
+        SUMMON: "Cog Summon"
     }
 
     def __init__(self, reward: int, type: int):
@@ -899,6 +917,8 @@ class BossRewardAward(APReward):
             av.addResistanceMessage(ResistanceChat.encodeId(uniteType, uniteChoice))
         elif self.reward == BossRewardAward.PINK_SLIP:
             av.addPinkSlips(1)
+        elif self.reward == BossRewardAward.SUMMON:
+            av.assignNewCogSummons()
 
 
 class ProofReward(APReward):
@@ -971,6 +991,10 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.LAFF_BOOST_3.value: LaffBoostReward(3),
     ToontownItemName.LAFF_BOOST_4.value: LaffBoostReward(4),
     ToontownItemName.LAFF_BOOST_5.value: LaffBoostReward(5),
+    ToontownItemName.DMG_BOOST_1.value: DmgBoostReward(1),
+    ToontownItemName.DMG_BOOST_2.value: DmgBoostReward(2),
+    ToontownItemName.DMG_BOOST_3.value: DmgBoostReward(3),
+    ToontownItemName.DMG_BOOST_4.value: DmgBoostReward(4),
     ToontownItemName.GAG_CAPACITY_5.value: GagCapacityReward(5),
     ToontownItemName.GAG_CAPACITY_10.value: GagCapacityReward(10),
     ToontownItemName.GAG_CAPACITY_15.value: GagCapacityReward(15),
@@ -1049,6 +1073,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.UNITE_REWARD_TOONUP.value: BossRewardAward(BossRewardAward.UNITE, 1),
     ToontownItemName.UNITE_REWARD_GAG.value: BossRewardAward(BossRewardAward.UNITE, 2),
     ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP, 0),
+    ToontownItemName.SUMMON_REWARD.value: BossRewardAward(BossRewardAward.SUMMON, 0),
     ToontownItemName.HEAL_10.value: HealAward(10),
     ToontownItemName.HEAL_20.value: HealAward(20),
     ToontownItemName.UBER_TRAP.value: UberTrapAward(),
