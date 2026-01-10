@@ -168,7 +168,7 @@ class ToontownLocationName(Enum):
     DOG_FISH_0 =                                "Dog Fish"
     DOG_FISH_1 =                                "Bull Dog Fish"
     DOG_FISH_2 =                                "Hot Dog Fish"
-    DOG_FISH_3 =                                "Dalmation Dog Fish"
+    DOG_FISH_3 =                                "Dalmatian Dog Fish"
     DOG_FISH_4 =                                "Puppy Dog Fish"
     DEVIL_RAY_0 =                               "Devil Ray"
     AMORE_EEL_0 =                               "Amore Eel"
