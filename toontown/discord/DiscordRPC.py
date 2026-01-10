@@ -131,7 +131,7 @@ class DiscordRPC(object):
             try:
                 self.discordRPC.update(state=state, details=details, large_image=image, large_text=imageTxt,
                                        small_text=smallTxt, party_size=[party, maxSize])
-            except (PipeClosed, BrokenPipeError, ServerError):
+            except (PipeClosed, BrokenPipeError, ServerError, OSError):
                 # schedule a task to try to reconnect to the discord
                 self.discordRPC = None
                 self.notify.warning('Discord RPC connection lost, trying to reconnect in 30 seconds.')
