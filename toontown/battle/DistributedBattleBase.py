@@ -1100,6 +1100,9 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
             self.interactiveProp.gotoBattleCheer()
         self.choseAttackAlready = 0
         if self.localToonActive():
+            # When going into gag select, update our battle speed if it isn't correct (new toon that hasn't entered the settings page yet)
+            if base.localAvatar.getBattleSpeed() != base.settings.get('battle-speed'):
+                base.localAvatar.sendUpdate("requestSetBattleSpeed", [base.settings.get('battle-speed')])
             self.__enterLocalToonWaitForInput()
             self.startTimer(ts)
         if self.needAdjustTownBattle == 1:

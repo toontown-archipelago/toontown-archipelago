@@ -12,13 +12,14 @@ from direct.interval.IntervalGlobal import *
 class BossSpeedrunTimer:
 
     def __init__(self):
-
         self.frame = DirectFrame(pos=(-0.22, 0, .9))
         self.time_text = OnscreenText(parent=self.frame, text='00:00.00', style=3, fg=(.9, .9, .9, .85), align=TextNode.ALeft, scale=0.1, font=ToontownGlobals.getCompetitionFont())
         self.reset()
         self.overridden_time = None
         self.gave_popup = False
+        self.timer_paused = False
         self.start_updating()
+        self.pause_timer()
 
     def reset(self):
         self.started = datetime.now()
@@ -31,6 +32,7 @@ class BossSpeedrunTimer:
         taskMgr.remove('boss-timer-update-time')
 
     def start_updating(self):
+        self.timer_paused = False
         self.stop_updating()
         taskMgr.add(self._update_time_task, "boss-timer-update-time")
 
@@ -38,18 +40,22 @@ class BossSpeedrunTimer:
         self.update_time()
         return Task.cont
 
+    def pause_timer(self):
+        self.timer_paused = True
+
     def update_time(self):
-        now = datetime.now()
-        difference = now - self.started
-        total_secs = difference.total_seconds() if not self.overridden_time else self.overridden_time
-        min = total_secs // 60
-        sec = total_secs % 60
-        frac = int((total_secs - int(total_secs)) * 100)
-        new_time = '{:02}:{:02}.{:02}'.format(int(min), int(sec), frac)
-        if min == 4 and not self.gave_popup:
-            self.advice_popup()
-            self.gave_popup = True
-        self.time_text.setText(new_time)
+        if not self.timer_paused:
+            now = datetime.now()
+            difference = now - self.started
+            total_secs = difference.total_seconds() if not self.overridden_time else self.overridden_time
+            min = total_secs // 60
+            sec = total_secs % 60
+            frac = int((total_secs - int(total_secs)) * 100)
+            new_time = '{:02}:{:02}.{:02}'.format(int(min), int(sec), frac)
+            if min == 4 and not self.gave_popup:
+                self.advice_popup()
+                self.gave_popup = True
+            self.time_text.setText(new_time)
 
     def override_time(self, secs):
         self.overridden_time = secs

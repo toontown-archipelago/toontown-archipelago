@@ -458,10 +458,6 @@ class SuitPage(ShtikerPage.ShtikerPage):
             # A little silly but I want the cog to display if we have the summon for clarity's sake
             if panelStatus == COG_UNSEEN:
                 panelStatus = COG_BATTLED
-            #if panel.summonButton:
-            #    panel.summonButton.show()
-            #else:
-            #    self.addSummonButton(panel)
         if panelStatus == COG_UNSEEN:
             panel['text'] = TTLocalizer.SuitPageMystery
         elif panelStatus == COG_BATTLED:
@@ -472,7 +468,9 @@ class SuitPage(ShtikerPage.ShtikerPage):
                 panel.quotaLabel.show()
             else:
                 self.addQuotaLabel(panel)
-            panel.quotaLabel.hide()
+            # Only hide the label if our defeats are 0, hacky fix to hide the label in the instance we have summon but no cog
+            if base.localAvatar.cogCounts[index] == 0:
+                panel.quotaLabel.hide()
             if panel.head and panel.shadow:
                 panel.head.show()
                 panel.shadow.show()

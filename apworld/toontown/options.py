@@ -143,7 +143,7 @@ class StartDamageMultiplierRange(Range):
     The percentage of damage that will be done when battling Cogs at the start of the run.
     75 -> 75%/0.75x damage, 200 -> 200%/2x damage, etc.
     """
-    display_name = "Damage Multiplier"
+    display_name = "Starting Damage Percentage"
     range_start = 50
     range_end = 200
     default = 100
@@ -154,7 +154,7 @@ class MaxDamageMultiplierRange(Range):
     The percentage of damage that can be reached at max.
     75 -> 75%/0.75x damage, 200 -> 200%/2x damage, etc.
     """
-    display_name = "Damage Multiplier"
+    display_name = "Maximum Damage Percentage"
     range_start = 70
     range_end = 200
     default = 100
@@ -165,7 +165,7 @@ class OverflowModRange(Range):
     The percentage multiplier that will given with exp overflow.
     50 -> 50%/Half overflow rate, 200 -> 200%/2x overflow rate, etc.
     """
-    display_name = "Overflow Modifier"
+    display_name = "Overflow Rate Modifier"
     range_start = 25
     range_end = 300
     default = 100
@@ -1028,7 +1028,7 @@ toontown_option_groups: list[OptionGroup] = [
         JokesPerStreet, JokeBookToggle
     ], False),
     OptionGroup("Junk Weights", [
-        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption, HealWeightOption, FishWeightOption
+        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, SummonWeightOption, FireWeightOption, HealWeightOption, FishWeightOption
     ], True),
     OptionGroup("Trap Weights", [
         UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption, DamageWeightOption

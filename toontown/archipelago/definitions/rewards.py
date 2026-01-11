@@ -89,8 +89,8 @@ class DmgBoostReward(APReward):
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("Increased your\nGag damage by "),
-            MinimalJsonMessagePart(f"+{self.amount}", color='green'),
-            MinimalJsonMessagePart("%!"),
+            MinimalJsonMessagePart(f"+{self.amount}%", color='green'),
+            MinimalJsonMessagePart("!"),
         ])
 
     def apply(self, av: "DistributedToonAI"):

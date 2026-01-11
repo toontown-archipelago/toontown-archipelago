@@ -361,7 +361,7 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
 
     def posShadow(dropShadow = dropShadow, suit = suit, battle = battle, hp = hp, level = level):
         dropShadow.reparentTo(battle)
-        if battle.isSuitLured(suit) and not organic:
+        if (battle.isSuitLured(suit) and not organic):
             suitPos, suitHpr = battle.getActorPosHpr(suit)
             dropShadow.setPos(suitPos)
             dropShadow.setHpr(suitHpr)
@@ -370,7 +370,7 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
         else:
             dropShadow.setPos(suit.getPos(battle))
             dropShadow.setHpr(suit.getHpr(battle))
-            if hp <= 0 and level >= 3:
+            if hp <= 0:
                 dropShadow.setY(dropShadow.getY(battle) + 5)
         dropShadow.setZ(dropShadow.getZ() + 0.5)
 

@@ -42,18 +42,6 @@ CAP_RATIO_FOR_GAG_LEVEL = {
     8: 0.40
 }
 
-# The ratio of Gag Capacity items required to reach a given gag level.
-DMG_RATIO_FOR_GAG_LEVEL = {
-    1: 0.50,
-    2: 0.50,
-    3: 0.50,
-    4: 0.60,
-    5: 0.70,
-    6: 0.80,
-    7: 0.90,
-    8: 0.90
-}
-
 
 class ToontownItem(Item):
     game: str = "Toontown"
