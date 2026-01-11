@@ -699,8 +699,8 @@ def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: Mult
             ]
         },
         12: {
-            "gags": Rule.HasLevelSixOffenseGag,
-            "laff": Rule.Has60PercentMax,
+            "gags": None,
+            "laff": None,
             "rules": [
                 CanDOffice,
                 CanCJ,
@@ -709,15 +709,15 @@ def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: Mult
             ]
         },
         13: {
-            "gags": Rule.HasLevelSevenOffenseGag,
-            "laff": Rule.Has80PercentMax,
+            "gags": None,
+            "laff": None,
             "rules": [
                 CanCEO,
             ]
         },
         14: {
-            "gags": Rule.HasLevelSevenOffenseGag,
-            "laff": Rule.Has80PercentMax,
+            "gags": None,
+            "laff": None,
             "rules": [
                 CanCEO,
             ]
@@ -1001,7 +1001,6 @@ def CanMaxCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld
     if argument[1]:
         rules.extend(tier_info[argument[1]])
     return any(rules)
-
 
 @rule(Rule.CanAnyFacility)
 def CanDoAnyFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
