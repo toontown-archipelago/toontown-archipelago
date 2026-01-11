@@ -1028,7 +1028,7 @@ toontown_option_groups: list[OptionGroup] = [
         JokesPerStreet, JokeBookToggle
     ], False),
     OptionGroup("Junk Weights", [
-        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, FireWeightOption, HealWeightOption, FishWeightOption, SummonWeightOption
+        BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, SummonWeightOption, FireWeightOption, HealWeightOption, FishWeightOption
     ], True),
     OptionGroup("Trap Weights", [
         UberWeightOption, DripWeightOption, TaxWeightOption, ShuffleWeightOption, DamageWeightOption

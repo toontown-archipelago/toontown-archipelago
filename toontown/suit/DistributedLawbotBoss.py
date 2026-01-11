@@ -105,7 +105,6 @@ class DistributedLawbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
         self.bossSpeedrunTimer.hide()
         # self.heatDisplay.update(self.calculateHeat(), self.modifiers)
 
-
     def setRawRuleset(self, attrs):
         self.ruleset = ScaleLeagueGlobals.CJRuleset.fromStruct(attrs)
         self.updateRequiredElements()
