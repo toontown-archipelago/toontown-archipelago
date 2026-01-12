@@ -595,13 +595,15 @@ class FishChecks(Choice):
     - all_species: All 70 species will have an item.
     - all_gallery_and_genus: Every 10 species and unique genus will have an item.
     - all_gallery: Every 10 species will have an item.
+    - everything: Every 10 species, every species, and every genus will have an item.
     - none: There are no items in fishing.
     """
     display_name = "Fish Checks"
     option_all_species = 0
     option_all_gallery_and_genus = 1
     option_all_gallery = 2
-    option_none = 3
+    option_everything = 3
+    option_none = 4
     default = 0
 
 
