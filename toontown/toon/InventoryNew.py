@@ -106,9 +106,11 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
     def updateTotalPropsText(self):
         textTotal = TTLocalizer.InventoryTotalGags % (self.totalProps, self.toon.getMaxCarry())
         if localAvatar.getPinkSlips() > 1:
-            textTotal = textTotal + '\n\n' + TTLocalizer.InventroyPinkSlips % localAvatar.getPinkSlips()
+            textTotal = textTotal + '\n\n' + TTLocalizer.InventroyPinkSlips % localAvatar.getPinkSlips() + '\n\n' + TTLocalizer.InventoryDamageRate % (str(base.localAvatar.getDamageMultiplier()) + "%")
         elif localAvatar.getPinkSlips() == 1:
-            textTotal = textTotal + '\n\n' + TTLocalizer.InventroyPinkSlip
+            textTotal = textTotal + '\n\n' + TTLocalizer.InventroyPinkSlip + '\n\n' + TTLocalizer.InventoryDamageRate % (str(base.localAvatar.getDamageMultiplier()) + "%")
+        else:
+            textTotal = textTotal + '\n\n' + TTLocalizer.InventoryDamageRate % (str(base.localAvatar.getDamageMultiplier()) + "%")
         self.totalLabel['text'] = textTotal
 
     def unload(self):

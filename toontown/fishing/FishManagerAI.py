@@ -153,6 +153,7 @@ class FishManagerAI:
 
             av.addCheckedLocation(ap_location_name_to_id(fishLocationName.value))
             av.addCheckedLocation(ap_location_name_to_id(genusLocationName.value))
+            self.checkForFishingLocationCompletions(av)
 
             collectionNetList = av.fishCollection.getNetLists()
             av.ap_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
@@ -173,11 +174,8 @@ class FishManagerAI:
         curTrophies = len(av.fishingTrophies)
         av.addMoney(av.fishTank.getTotalValue())
         av.b_setFishTank([], [], [])
-        self.checkForFishingLocationCompletions(av)
 
         if trophies > curTrophies:
-            # av.b_setMaxHp(av.getMaxHp() + trophies - curTrophies)
-            # av.toonUp(av.getMaxHp())
             av.b_setFishingTrophies(list(range(trophies)))
             return True
 

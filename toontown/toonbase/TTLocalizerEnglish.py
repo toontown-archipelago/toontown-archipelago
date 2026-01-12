@@ -4972,6 +4972,7 @@ HealthForceAcknowledgeMessage = 'You cannot leave the playground until your Laff
 InventoryTotalGags = 'Total gags\n%d / %d'
 InventroyPinkSlips = '%s Pink Slips'
 InventroyPinkSlip = '1 Pink Slip'
+InventoryDamageRate = "Damage Rate: %s"
 InventoryDelete = 'DELETE'
 InventoryDone = 'DONE'
 InventoryDeleteHelp = 'Click on a gag to DELETE it.'

@@ -258,6 +258,7 @@ Toontown:
   # - all_species: All 70 species will have an item.
   # - all_gallery_and_genus: Every 10 species and unique genus will have an item.
   # - all_gallery: Every 10 species will have an item.
+  # - everything: Every 10 species, every species, and every genus will have an item.
   # - none: There are no items in fishing.
   fish_checks: 'all_species'
 
