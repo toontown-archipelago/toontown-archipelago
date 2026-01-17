@@ -2613,7 +2613,7 @@ class SpawnCog(MagicWord):
             for zoneId in zones:
                 if zoneId in map:
                     points = map[zoneId][:]
-                    sp.createNewSuit([], points, suitName=name, suitLevel=level, skelecog=specialSuit, revives=revives)
+                    sp.createNewSuit([], points, suitName=name, suitLevel=level, skelecog=specialSuit, revives=revives, command=True)
             return "Spawned a level %d %s in current zone." % (level, name)
         except IndexError:
             return "Level %d is out of range for %s." % (level, name)

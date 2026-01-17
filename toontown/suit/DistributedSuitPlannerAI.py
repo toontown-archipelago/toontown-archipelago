@@ -261,6 +261,15 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             else:
                 count[suit.track] = 1
 
+    def checkForSuitInTrack(self, track, suitType):
+        for suit in self.suitList:
+            if suit.track == track:
+                suitName = SuitDNA.suitDeptToTrackList[track][suitType-1]
+                if suitName == suit.dna.name:
+                    print("Found this cog")
+                    return True
+        return False
+
     def countNumBuildingsPerTrack(self, count):
         if self.buildingMgr:
             for building in self.buildingMgr.getBuildings():
@@ -345,7 +354,7 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
 
         return pointList
 
-    def createNewSuit(self, blockNumbers, streetPoints, toonBlockTakeover=None, cogdoTakeover=None, minPathLen=None, maxPathLen=None, buildingHeight=None, suitLevel=None, suitType=None, suitTrack=None, suitName=None, skelecog=None, revives=None):
+    def createNewSuit(self, blockNumbers, streetPoints, toonBlockTakeover=None, cogdoTakeover=None, minPathLen=None, maxPathLen=None, buildingHeight=None, suitLevel=None, suitType=None, suitTrack=None, suitName=None, skelecog=None, revives=None, command=False):
         startPoint = None
         blockNumber = None
         if self.notify.getDebug():
@@ -437,6 +446,31 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             else:
                 suitLevel = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL][-1] + 1
         suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack)
+
+        # This cog exists, check if we have open suits in the other spots
+        if self.checkForSuitInTrack(suitTrack, suitType) and not command:
+            levelRange = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LEVEL_RANGE]
+            levelSpread = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL]
+            allowedTiers = []
+            if ZoneUtil.isCogHQZone(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_ZONE]):
+                for level in levelSpread:
+                    for tier in list(range(max(level - levelRange, 1), min(level, self.MAX_SUIT_TYPES_HQ) + 1)):
+                        if tier not in allowedTiers:
+                            allowedTiers.append(tier)
+            else:
+                for level in levelSpread:
+                    for tier in list(range(max(level - levelRange, 1), min(level, self.MAX_SUIT_TYPES) + 1)):
+                        if tier not in allowedTiers:
+                            allowedTiers.append(tier)
+
+            for tier in allowedTiers:
+                # Found a cog in the department that doesn't exist
+                if not self.checkForSuitInTrack(suitTrack, tier):
+                    suitType = tier
+                    suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(None, suitType, suitTrack)
+                    break
+            # At this point we know we have everything spawned possible so just continue and go random
+
         newSuit.setupSuitDNA(suitLevel, suitType, suitTrack, suitName)
         newSuit.buildingHeight = buildingHeight
         gotDestination = self.chooseDestination(newSuit, startTime, toonBlockTakeover=toonBlockTakeover, cogdoTakeover=cogdoTakeover, minPathLen=minPathLen, maxPathLen=maxPathLen)
