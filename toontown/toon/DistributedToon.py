@@ -2871,7 +2871,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # Set this toon's damage multiplier
     def setDamageMultiplier(self, newDamageMultiplier) -> None:
         self.damageMultiplier = newDamageMultiplier
-        self.inventory.updateTotalPropsText()
+        if base.localAvatar == self:
+            self.inventory.updateTotalPropsText()
 
     # What is this toon's overflow modifier
     def getOverflowMod(self) -> int:
