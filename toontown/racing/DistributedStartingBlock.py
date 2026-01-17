@@ -335,12 +335,14 @@ class DistributedStartingBlock(DistributedObject.DistributedObject, FSM):
         if hasattr(self.kartPad, 'state'):
             if not self.kartPad.state == 'WaitCountdown':
                 return
+        self.acceptElevatorHotkey()
         self.cancelButton.show()
 
     def hideGui(self):
         self.notify.debugStateCall(self)
         if not hasattr(self, 'cancelButton'):
             return
+        self.ignoreElevatorHotkey()
         self.cancelButton.hide()
 
     def generateToonMoveTrack(self):
@@ -506,7 +508,7 @@ class DistributedStartingBlock(DistributedObject.DistributedObject, FSM):
         else:
             self.finishMovie()
             self.movieTrack = Sequence(toonTrack, kartTrack, jumpTrack, name=name, autoFinish=1)
-        self.movieTrack.start()
+        self.movieTrack.start(playRate=5)
         return
 
     def exitEnterMovie(self):
@@ -529,7 +531,7 @@ class DistributedStartingBlock(DistributedObject.DistributedObject, FSM):
             cameraTrack = self.generateCameraReturnMoveTrack()
             self.movieTrack.append(cameraTrack)
             self.movieTrack.append(Func(self.d_movieFinished))
-        self.movieTrack.start()
+        self.movieTrack.start(playRate=5)
         return
 
     def exitExitMovie(self):
@@ -559,6 +561,13 @@ class DistributedStartingBlock(DistributedObject.DistributedObject, FSM):
     def bulkLoad(self):
         base.loader.beginBulkLoad('atRace', TTLocalizer.StartingBlock_Loading, 60, 1, TTLocalizer.TIP_KARTING)
 
+    def acceptElevatorHotkey(self):
+        self.kartPad.addHotkeyHint()
+        self.accept(ToontownGlobals.ElevatorHotkeyOn, self.kartPad.startRace)
+
+    def ignoreElevatorHotkey(self):
+        self.kartPad.removeHotkeyHint()
+        self.ignore(ToontownGlobals.ElevatorHotkeyOn)
 
 class DistributedViewingBlock(DistributedStartingBlock):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedViewingBlock')
@@ -687,6 +696,6 @@ class DistributedViewingBlock(DistributedStartingBlock):
         else:
             self.finishMovie()
             self.movieTrack = Sequence(toonTrack, kartTrack, jumpTrack, name=name, autoFinish=1)
-        self.movieTrack.start()
         self.exitRequested = True
+        self.movieTrack.start(playRate=5)
         return

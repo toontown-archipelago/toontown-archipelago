@@ -266,7 +266,6 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             if suit.track == track:
                 suitName = SuitDNA.suitDeptToTrackList[track][suitType-1]
                 if suitName == suit.dna.name:
-                    print("Found this cog")
                     return True
         return False
 
