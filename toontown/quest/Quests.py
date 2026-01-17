@@ -2109,6 +2109,14 @@ DefaultDialog = {GREETING: DefaultGreeting,
  COMPLETE: DefaultComplete,
  LEAVING: DefaultLeaving}
 
+DefaultDialogBlanks = {GREETING: (),
+ QUEST: DefaultQuest,
+ INCOMPLETE: DefaultIncomplete,
+ INCOMPLETE_PROGRESS: DefaultIncompleteProgress,
+ INCOMPLETE_WRONG_NPC: DefaultIncompleteWrongNPC,
+ COMPLETE: (),
+ LEAVING: ()}
+
 def getQuestFromNpcId(id):
     return QuestDict.get(id)[QuestDictFromNpcIndex]
 
@@ -2691,7 +2699,7 @@ def getAPQuest(questId: int):
     # Now format it as if it was a normal quest
     # AP tier, start of a quest, from and to NPC is HQ officer, No next quest, and default dialog
 
-    quest = (AP_TIER, Start, apQuest.questDescription, ToonHQ, ToonHQ, apQuest.rewardID, NA, DefaultDialog)
+    quest = (AP_TIER, Start, apQuest.questDescription, ToonHQ, ToonHQ, apQuest.rewardID, NA, DefaultDialogBlanks)
     return quest
 
 # All the registered quests in the game. If you want the legacy TTO quests, see LegacyQuestDict
@@ -2947,7 +2955,10 @@ def chooseQuestDialog(id, status):
         else:
             questDialog = DefaultDialog[status]
     if type(questDialog) == type(()):
-        return random.choice(questDialog)
+        try:
+            return random.choice(questDialog)
+        except IndexError:
+            return None
     else:
         return questDialog
     return
@@ -3468,7 +3479,7 @@ class APLocationReward(Reward):
         return av.getCachedLocationReward(self.getCheckId())
 
     def getString(self):
-        return f"You have completed {self.getCheckName()}"
+        return f"You have completed {self.getCheckName()}."
 
     def getPosterString(self):
         return self.getRewardName()

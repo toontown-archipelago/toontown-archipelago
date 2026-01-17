@@ -55,6 +55,50 @@ suitHeadTypes = [
     'bgh'
 ]
 
+suitBossbots = [
+    'f',
+    'p',
+    'ym',
+    'mm',
+    'ds',
+    'hh',
+    'cr',
+    'tbc'
+    ]
+
+suitLawbots = [
+    'bf',
+    'b',
+    'dt',
+    'ac',
+    'bs',
+    'sd',
+    'le',
+    'bw'
+    ]
+
+suitCashbots = [
+    'sc',
+    'pp',
+    'tw',
+    'bc',
+    'nc',
+    'mb',
+    'ls',
+    'rb'
+]
+
+suitSellbots = [
+    'cc',
+    'tm',
+    'nd',
+    'gh',
+    'ms',
+    'tf',
+    'm',
+    'mh'
+]
+
 notMainTypes = [
     'trf',
     'ski',
@@ -113,6 +157,13 @@ suitDepts = [
     'm',
     's'
 ]
+
+suitDeptToTrackList = {
+    'c': suitBossbots,
+    'l': suitLawbots,
+    'm': suitCashbots,
+    's': suitSellbots
+}
 
 suitDeptToPhase = {'s': 9,
                    'm': 10,

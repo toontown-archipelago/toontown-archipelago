@@ -154,7 +154,9 @@ class DistributedNPCToon(DistributedNPCToonBase):
             greetingString = Quests.chooseQuestDialog(questId, Quests.GREETING)
             if greetingString:
                 fullString += greetingString + '\x07'
-            fullString += Quests.chooseQuestDialog(questId, Quests.COMPLETE) + '\x07'
+            completeString = Quests.chooseQuestDialog(questId, Quests.COMPLETE)
+            if completeString:
+                fullString += completeString + '\x07'
             if rewardId:
                 fullString += Quests.getReward(rewardId).getString()
             leavingString = Quests.chooseQuestDialog(questId, Quests.LEAVING)
