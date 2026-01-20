@@ -506,6 +506,7 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
     tier_to_info = {
         3: {
             "pgs": [
+                ToontownRegionName.TTC,
                 ToontownRegionName.DD,
                 ToontownRegionName.DG,
                 ToontownRegionName.MML,
@@ -525,6 +526,7 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
         },
         5: {
             "pgs": [
+                ToontownRegionName.DD,
                 ToontownRegionName.DG,
                 ToontownRegionName.MML,
                 ToontownRegionName.TB,
