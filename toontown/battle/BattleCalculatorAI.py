@@ -1343,6 +1343,8 @@ class BattleCalculatorAI:
                     result *= mult
                 if toonId in self.toonsHealedByOrgToonupThisTurn:
                     result *= 0.75
+                if toon.slotData.get('cog_dmg_rando', False):
+                    result *= random.uniform(0.9, 1.3)
                 # Move rounding to here since we can have multiple mults and we round at the end
                 result = max(1, int(math.ceil(result)))
             targetIndex = self.battle.activeToons.index(toonId)

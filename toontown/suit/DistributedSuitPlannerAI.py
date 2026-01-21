@@ -269,6 +269,13 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
                     return True
         return False
 
+    def checkForRatioOfTrack(self, track, ratio):
+        currentSuitsInTrack = 0
+        for suit in self.suitList:
+            if suit.track == track:
+                currentSuitsInTrack += 1
+        return (currentSuitsInTrack / max(len(self.suitList), 1)) >= (ratio / 100)
+
     def countNumBuildingsPerTrack(self, count):
         if self.buildingMgr:
             for building in self.buildingMgr.getBuildings():
@@ -446,6 +453,25 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
                 suitLevel = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL][-1] + 1
         suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack)
 
+        trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(suitTrack)]
+        # The dept we're spawning is at or above the wanted ratio based on set %s
+        if self.checkForRatioOfTrack(suitTrack, trackRatio):
+            tracksCanSpawn = []
+            for rate in range(len(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])):
+                if self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][rate] > 0:
+                    tracksCanSpawn.append(SuitDNA.suitDepts[rate])
+            # Remove the track we've already tried spawning
+            if suitTrack in tracksCanSpawn:
+                tracksCanSpawn.remove(suitTrack)
+            # Randomize the order each time so it doesn't fill from the bottom up and has more "random" behavior
+            random.shuffle(tracksCanSpawn)
+            for track in tracksCanSpawn:
+                trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(track)]
+                # We've hit a department without a met ratio yet, break and move on
+                if not self.checkForRatioOfTrack(track, trackRatio):
+                    suitTrack = track
+                    break
+
         # This cog exists, check if we have open suits in the other spots
         if self.checkForSuitInTrack(suitTrack, suitType) and not command:
             levelRange = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LEVEL_RANGE]
@@ -462,11 +488,13 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
                         if tier not in allowedTiers:
                             allowedTiers.append(tier)
 
+            # Randomize the order each time so it doesn't fill from the bottom up and has more "random" behavior
+            random.shuffle(allowedTiers)
             for tier in allowedTiers:
                 # Found a cog in the department that doesn't exist
                 if not self.checkForSuitInTrack(suitTrack, tier):
                     suitType = tier
-                    suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(None, suitType, suitTrack)
+                    suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack)
                     break
             # At this point we know we have everything spawned possible so just continue and go random
 
@@ -1091,7 +1119,6 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
 
     def commandCheckFlyRandomSuit(self):
         if len(self.suitList) > self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_MAX]:
-            print("Area is full, flying random suit")
             suit = random.choice(self.suitList)
             if suit.pathState == 1:
                 suit.flyAwayNow()
@@ -1247,6 +1274,10 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         # A catch if for whatever reason (most likely an invasion), a cog is a lower level than its tier
         if level < type:
             level = type
+
+        # Catch for when the level is higher than what it should be for the tier
+        if level > (type + 4):
+            level = (type + 4)
 
         if track == None:
             track = SuitDNA.suitDepts[SuitBattleGlobals.pickFromFreqList(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])]

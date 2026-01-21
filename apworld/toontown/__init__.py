@@ -730,6 +730,7 @@ class ToontownWorld(World):
             "facility_locking": self.options.facility_locking.value,
             "death_link": self.options.death_link.value,
             "ring_link": self.options.ring_link.value,
+            "cog_dmg_rando": self.options.cog_dmg_rando.value,
             "slot_sync_jellybeans": self.options.slot_sync_jellybeans.value,
             "slot_sync_gag_experience": self.options.slot_sync_gag_experience.value,
             "pet_shop_display": self.options.pet_shop_display.value,
