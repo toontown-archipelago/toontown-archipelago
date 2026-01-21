@@ -120,7 +120,7 @@ Toontown:
   # valid keys: [ "cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
   #               "fish-species", "laff-o-lympics" ]
 
-  # Examples: [ "cog-bosses", "hood-tasks" ] | ["randomized", "randomized", "gag-tracks"]
+  # Examples: [ "cog-bosses", "hood-tasks" ] | ["gag-tracks"]
   conditions_omitted_when_randomized: []
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game

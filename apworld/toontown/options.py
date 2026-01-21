@@ -244,7 +244,7 @@ class OmitRandomWinConditions(OptionList):
     valid keys: ["cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
                  "fish-species", "laff-o-lympics"]
 
-    Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
+    Examples: ["cog-bosses", "hood-tasks"] | ["gag-tracks"]
     """
     display_name = "Win Conditions Omitted when Randomized"
     valid_keys = {
