@@ -72,6 +72,9 @@ Toontown:
   # Range: 25 to 300
   overflow_mod: 100
 
+  # Toggle the ability for Cogs to deal slightly randomized damage (0.9x-1.3x).
+  cog_dmg_rando: 'false'
+
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 1000
   starting_money: 1000
