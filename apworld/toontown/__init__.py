@@ -143,7 +143,7 @@ class ToontownWorld(World):
 
         # Fishing settings to remove specific bounties
         # Non-species logic
-        if self.options.fish_checks.value in [1, 2]:
+        if self.options.fish_checks.value in [1, 2, 3]:
             for bounty in locations.FISH_SPECIES_BOUNTIES:
                 self.valid_bounties.remove(bounty)
         # Species logic
@@ -151,7 +151,7 @@ class ToontownWorld(World):
             for bounty in locations.FISH_ALBUM_BOUNTIES:
                 self.valid_bounties.remove(bounty)
         # No fishing
-        if self.options.fish_checks.value == 3:
+        if self.options.fish_checks.value == 4:
             for bounty in locations.ALL_FISH_BOUNTIES:
                 self.valid_bounties.remove(bounty)
 
@@ -686,7 +686,7 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "team": self.options.team.value,
-            "game_version": "v0.19.0",
+            "game_version": "v0.19.1",
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "max_laff": self.options.max_laff.value,
@@ -730,6 +730,7 @@ class ToontownWorld(World):
             "facility_locking": self.options.facility_locking.value,
             "death_link": self.options.death_link.value,
             "ring_link": self.options.ring_link.value,
+            "cog_dmg_rando": self.options.cog_dmg_rando.value,
             "slot_sync_jellybeans": self.options.slot_sync_jellybeans.value,
             "slot_sync_gag_experience": self.options.slot_sync_gag_experience.value,
             "pet_shop_display": self.options.pet_shop_display.value,

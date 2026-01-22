@@ -72,6 +72,9 @@ Toontown:
   # Range: 25 to 300
   overflow_mod: 100
 
+  # Toggle the ability for Cogs to deal slightly randomized damage (0.9x-1.3x).
+  cog_dmg_rando: 'false'
+
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 1000
   starting_money: 1000
@@ -117,7 +120,7 @@ Toontown:
   # valid keys: [ "cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
   #               "fish-species", "laff-o-lympics" ]
 
-  # Examples: [ "cog-bosses", "hood-tasks" ] | ["randomized", "randomized", "gag-tracks"]
+  # Examples: [ "cog-bosses", "hood-tasks" ] | ["gag-tracks"]
   conditions_omitted_when_randomized: []
 
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game
@@ -258,6 +261,7 @@ Toontown:
   # - all_species: All 70 species will have an item.
   # - all_gallery_and_genus: Every 10 species and unique genus will have an item.
   # - all_gallery: Every 10 species will have an item.
+  # - everything: Every 10 species, every species, and every genus will have an item.
   # - none: There are no items in fishing.
   fish_checks: 'all_species'
 

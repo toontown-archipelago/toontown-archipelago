@@ -506,6 +506,7 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
     tier_to_info = {
         3: {
             "pgs": [
+                ToontownRegionName.TTC,
                 ToontownRegionName.DD,
                 ToontownRegionName.DG,
                 ToontownRegionName.MML,
@@ -525,6 +526,7 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
         },
         5: {
             "pgs": [
+                ToontownRegionName.DD,
                 ToontownRegionName.DG,
                 ToontownRegionName.MML,
                 ToontownRegionName.TB,
@@ -1226,7 +1228,10 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
 
     def two_powerful_tracks():
         powerful_tracks = 0
-        for track in (powerful_drop, powerful_trap, powerful_sound, powerful_throw_knockback, powerful_squirt_knockback):
+        # only trap or drop count for one powerful track
+        if (powerful_trap or powerful_drop):
+            powerful_tracks += 1
+        for track in (powerful_sound, powerful_throw_knockback, powerful_squirt_knockback):
             if track:
                 powerful_tracks += 1
         return powerful_tracks >= 2

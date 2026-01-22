@@ -3238,6 +3238,7 @@ dclass DistributedRacePad : DistributedKartPad {
   setState(string, int16) required broadcast ram;
   setRaceZone(uint32);
   setTrackInfo(uint16[]) required broadcast ram;
+  countdown(uint8) airecv clsend;
 };
 
 dclass DistributedViewPad : DistributedKartPad {

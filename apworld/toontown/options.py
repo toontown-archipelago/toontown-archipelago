@@ -244,7 +244,7 @@ class OmitRandomWinConditions(OptionList):
     valid keys: ["cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
                  "fish-species", "laff-o-lympics"]
 
-    Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
+    Examples: ["cog-bosses", "hood-tasks"] | ["gag-tracks"]
     """
     display_name = "Win Conditions Omitted when Randomized"
     valid_keys = {
@@ -595,13 +595,15 @@ class FishChecks(Choice):
     - all_species: All 70 species will have an item.
     - all_gallery_and_genus: Every 10 species and unique genus will have an item.
     - all_gallery: Every 10 species will have an item.
+    - everything: Every 10 species, every species, and every genus will have an item.
     - none: There are no items in fishing.
     """
     display_name = "Fish Checks"
     option_all_species = 0
     option_all_gallery_and_genus = 1
     option_all_gallery = 2
-    option_none = 3
+    option_everything = 3
+    option_none = 4
     default = 0
 
 
@@ -918,6 +920,16 @@ class RingLinkOption(Toggle):
     display_name = "Ring Link"
     default = False
 
+
+class DamageRandoOption(Toggle):
+    """
+    Toggle this option to give cogs a random damage range throughout a run (0.9x-1.3x)
+    """
+
+    display_name = "Cog Damage Randomization"
+    default = False
+
+
 @dataclass
 class ToontownOptions(PerGameCommonOptions):
     start_inventory_from_pool: StartInventoryPool
@@ -992,6 +1004,7 @@ class ToontownOptions(PerGameCommonOptions):
     fish_weight: FishWeightOption
     death_link: DeathLinkOption
     ring_link: RingLinkOption
+    cog_dmg_rando: DamageRandoOption
     pet_shop_display: PetShopRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
     random_prices: RandomShopCostToggle
@@ -1005,7 +1018,7 @@ toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
         StartGagOption, StartGagOptionWeb, StartGagRandomWeb, OmitGagOption,
-        BaseGlobalGagXPRange, MaxGlobalGagXPRange, 
+        BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
         StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, StartMoneyOption,
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
         RingLinkOption, RandomShopCostToggle

@@ -6,7 +6,7 @@ from direct.showbase.PythonUtil import invertDict
 from panda3d.core import BitMask32, Vec4, Filename
 import collections
 
-GameVersion = "v0.19.0"
+GameVersion = "v0.19.1"
 MapHotkey = 'MapHotkey'
 AccountDatabaseChannelId = 4008
 ToonDatabaseChannelId = 4021
@@ -1299,7 +1299,7 @@ LawbotBossBonusWaitTime = 15
 LawbotBossBonusDuration = 20
 LawbotBossBonusToonup = 10
 LawbotBossBonusWeightMultiplier = 2
-LawbotBossChanceToDoAreaAttack = 0
+LawbotBossChanceToDoAreaAttack = 11
 LOW_POP_JP = 0
 MID_POP_JP = 100
 HIGH_POP_JP = 200

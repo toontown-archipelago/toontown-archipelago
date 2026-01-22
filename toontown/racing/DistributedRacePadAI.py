@@ -99,6 +99,13 @@ class DistributedRacePadAI(DistributedKartPadAI, FSM):
 
         return task.done
 
+    def countdown(self, duration):
+        self.setCountdown(duration)
+
+    def setCountdown(self, timeToSet):
+        taskMgr.remove(self.uniqueName('countdownTask'))
+        taskMgr.doMethodLater(timeToSet, self.considerAllAboard, self.uniqueName('countdownTask'))
+
     def addAvBlock(self, avId, startingBlock, paid):
         av = self.air.doId2do.get(avId)
         if not av:
