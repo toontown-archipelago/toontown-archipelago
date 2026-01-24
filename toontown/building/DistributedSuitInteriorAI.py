@@ -288,6 +288,8 @@ class DistributedSuitInteriorAI(DistributedObjectAI.DistributedObjectAI):
         self.battle.generateWithRequired(self.zoneId)
 
         self.battle.floorCheckLocation = self.getFloorCheck()
+        self.battle.currentFloor = self.currentFloor
+        self.battle.topFloor = self.topFloor
 
         mult = getInteriorCreditMultiplier(self.numFloors)
 

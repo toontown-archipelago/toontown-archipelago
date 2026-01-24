@@ -453,24 +453,25 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
                 suitLevel = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL][-1] + 1
         suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack)
 
-        trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(suitTrack)]
-        # The dept we're spawning is at or above the wanted ratio based on set %s
-        if self.checkForRatioOfTrack(suitTrack, trackRatio):
-            tracksCanSpawn = []
-            for rate in range(len(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])):
-                if self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][rate] > 0:
-                    tracksCanSpawn.append(SuitDNA.suitDepts[rate])
-            # Remove the track we've already tried spawning
-            if suitTrack in tracksCanSpawn:
-                tracksCanSpawn.remove(suitTrack)
-            # Randomize the order each time so it doesn't fill from the bottom up and has more "random" behavior
-            random.shuffle(tracksCanSpawn)
-            for track in tracksCanSpawn:
-                trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(track)]
-                # We've hit a department without a met ratio yet, break and move on
-                if not self.checkForRatioOfTrack(track, trackRatio):
-                    suitTrack = track
-                    break
+        if not command:
+            trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(suitTrack)]
+            # The dept we're spawning is at or above the wanted ratio based on set %s
+            if self.checkForRatioOfTrack(suitTrack, trackRatio):
+                tracksCanSpawn = []
+                for rate in range(len(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])):
+                    if self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][rate] > 0:
+                        tracksCanSpawn.append(SuitDNA.suitDepts[rate])
+                # Remove the track we've already tried spawning
+                if suitTrack in tracksCanSpawn:
+                    tracksCanSpawn.remove(suitTrack)
+                # Randomize the order each time so it doesn't fill from the bottom up and has more "random" behavior
+                random.shuffle(tracksCanSpawn)
+                for track in tracksCanSpawn:
+                    trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(track)]
+                    # We've hit a department without a met ratio yet, break and move on
+                    if not self.checkForRatioOfTrack(track, trackRatio):
+                        suitTrack = track
+                        break
 
         # This cog exists, check if we have open suits in the other spots
         if self.checkForSuitInTrack(suitTrack, suitType) and not command:

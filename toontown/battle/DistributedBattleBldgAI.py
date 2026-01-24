@@ -3,12 +3,15 @@ from direct.distributed.ClockDelta import *
 from .BattleBase import *
 from .BattleCalculatorAI import *
 from toontown.toonbase.ToontownBattleGlobals import *
+from toontown.toonbase.ToontownGlobals import DaisyGardens, DonaldsDock, DonaldsDreamland, MinniesMelodyland, TheBrrrgh, ToonHall, ToontownCentral
 from .SuitBattleGlobals import *
 from direct.showbase.PythonUtil import addListsByValue
 from . import DistributedBattleBaseAI
 from direct.task import Task
 from direct.directnotify import DirectNotifyGlobal
 import random
+from toontown.hood import ZoneUtil
+from toontown.suit import SuitDNA
 from direct.fsm import State
 from direct.fsm import ClassicFSM, State
 from otp.otpbase import PythonUtil
@@ -161,6 +164,7 @@ class DistributedBattleBldgAI(DistributedBattleBaseAI.DistributedBattleBaseAI):
     def enterBuildingReward(self):
         self.resetResponses()
         self.assignRewards()
+        self.handleBuildingQuests()
         self.rewardFloorCleared()
         self.timer.startCallback(BUILDING_REWARD_TIMEOUT, self.serverRewardDone)
         return None
@@ -183,3 +187,50 @@ class DistributedBattleBldgAI(DistributedBattleBaseAI.DistributedBattleBaseAI):
                 toon = self.getToon(t)
                 if toon:
                     toon.addCheckedLocations([self.floorCheckLocation])
+        checks = [self.getBuildingSuitCheck(), self.getBuildingHoodCheck()]
+        for t in self.activeToons:
+            toon = self.getToon(t)
+            if toon:
+                toon.addCheckedLocations([check for check in checks if check is not None])
+
+    def getBuildingHoodCheck(self):
+        hoodToCheck = {
+            ToontownCentral:   util.ap_location_name_to_id(locations.ToontownLocationName.TOONTOWN_CENTRAL_BUILDING.value),
+            DonaldsDock:       util.ap_location_name_to_id(locations.ToontownLocationName.DONALDS_DOCK_BUILDING.value),
+            DaisyGardens:      util.ap_location_name_to_id(locations.ToontownLocationName.DAISYS_GARDENS_BUILDING.value),
+            MinniesMelodyland: util.ap_location_name_to_id(locations.ToontownLocationName.MINNIES_MELODYLAND_BUILDING.value),
+            TheBrrrgh:         util.ap_location_name_to_id(locations.ToontownLocationName.THE_BRRRGH_BUILDING.value),
+            DonaldsDreamland:  util.ap_location_name_to_id(locations.ToontownLocationName.DONALDS_DREAMLAND_BUILDING.value),
+        }
+        hoodId = ZoneUtil.getHoodId(self.zoneId)
+        if hoodId in hoodToCheck and self.isTopFloor():
+            return hoodToCheck[hoodId]
+        else:
+            return None
+
+    def getBuildingSuitCheck(self):
+        # We're in a building, cog should always be same dept as building
+        # Kinda silly way to do this but will work
+        suitToCheck = {
+            SuitDNA.suitDepts[0]: util.ap_location_name_to_id(locations.ToontownLocationName.BOSSBOT_BUILDING.value),
+            SuitDNA.suitDepts[1]: util.ap_location_name_to_id(locations.ToontownLocationName.LAWBOT_BUILDING.value),
+            SuitDNA.suitDepts[2]: util.ap_location_name_to_id(locations.ToontownLocationName.CASHBOT_BUILDING.value),
+            SuitDNA.suitDepts[3]: util.ap_location_name_to_id(locations.ToontownLocationName.SELLBOT_BUILDING.value),
+        }
+        if suitToCheck and self.isTopFloor():
+            return suitToCheck[self.getBuildingTrack()]
+        else:
+            return None
+
+    def handleBuildingQuests(self):
+        for t in self.activeToons:
+            toon = self.getToon(t)
+            if toon:
+                self.air.questManager.toonKilledBuilding(toon, self.getBuildingTrack(), 0, self.topFloor + 1, self.zoneId, self.activeToons)
+
+    def getBuildingTrack(self):
+        suitForTrack = self.suitsKilled[0]
+        return suitForTrack['track']
+
+    def isTopFloor(self):
+        return self.currentFloor == self.topFloor

@@ -3298,7 +3298,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         for zoneId in zones:
             if zoneId in map:
                 points = map[zoneId][:]
-                suit = sp.createNewSuit([], points, suitName=suitName)
+                suit = sp.createNewSuit([], points, suitName=suitName, command=True)
                 if suit:
                     return ['success', suitIndex, 0]
 
