@@ -6,7 +6,7 @@ from direct.showbase.PythonUtil import invertDict
 from panda3d.core import BitMask32, Vec4, Filename
 import collections
 
-GameVersion = "v0.19.1"
+GameVersion = "v0.19.2"
 MapHotkey = 'MapHotkey'
 AccountDatabaseChannelId = 4008
 ToonDatabaseChannelId = 4021
