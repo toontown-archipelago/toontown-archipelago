@@ -338,9 +338,7 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
                 toon = self.getToon(t)
                 self.air.writeServerEvent('buildingDefeated', t, '%s|%s|%s|%s' % (self.track, self.numFloors, self.zoneId, victorList))
             if toon != None:
-                self.air.questManager.toonKilledBuilding(toon, self.track, self.difficulty, self.numFloors, self.zoneId, activeToons)
-                checks = [self.getBuildingSuitCheck(), self.getBuildingHoodCheck()]
-                toon.addCheckedLocations([check for check in checks if check is not None])
+                pass
 
         for i in range(0, 4):
             victor = victorList[i]
@@ -619,30 +617,3 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
 
     def deleteCogdoInterior(self):
         self.deleteSuitInterior()
-
-    def getBuildingSuitCheck(self):
-        suitToCheck = {
-            SuitDNA.suitDepts[0]: util.ap_location_name_to_id(locations.ToontownLocationName.BOSSBOT_BUILDING.value),
-            SuitDNA.suitDepts[1]: util.ap_location_name_to_id(locations.ToontownLocationName.LAWBOT_BUILDING.value),
-            SuitDNA.suitDepts[2]: util.ap_location_name_to_id(locations.ToontownLocationName.CASHBOT_BUILDING.value),
-            SuitDNA.suitDepts[3]: util.ap_location_name_to_id(locations.ToontownLocationName.SELLBOT_BUILDING.value),
-        }
-        if self.track in suitToCheck:
-            return suitToCheck[self.track]
-        else:
-            return None
-
-    def getBuildingHoodCheck(self):
-        hoodToCheck = {
-            ToontownCentral:   util.ap_location_name_to_id(locations.ToontownLocationName.TOONTOWN_CENTRAL_BUILDING.value),
-            DonaldsDock:       util.ap_location_name_to_id(locations.ToontownLocationName.DONALDS_DOCK_BUILDING.value),
-            DaisyGardens:      util.ap_location_name_to_id(locations.ToontownLocationName.DAISYS_GARDENS_BUILDING.value),
-            MinniesMelodyland: util.ap_location_name_to_id(locations.ToontownLocationName.MINNIES_MELODYLAND_BUILDING.value),
-            TheBrrrgh:         util.ap_location_name_to_id(locations.ToontownLocationName.THE_BRRRGH_BUILDING.value),
-            DonaldsDreamland:  util.ap_location_name_to_id(locations.ToontownLocationName.DONALDS_DREAMLAND_BUILDING.value),
-        }
-        hoodId = ZoneUtil.getHoodId(self.zoneId)
-        if hoodId in hoodToCheck:
-            return hoodToCheck[hoodId]
-        else:
-            return None
