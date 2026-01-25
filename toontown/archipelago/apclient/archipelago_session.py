@@ -41,7 +41,7 @@ class ArchipelagoSession:
         if server_url or not self.connect_tried:
             server_url = server_url or self.default_ip
             self.avatar.b_setArchipelagoIP(server_url)
-            self.avatar.d_setSystemMessage(0, f"DEBUG: set AP server URL to {server_url}")
+            self.avatar.d_setSystemMessage(0, f"Connected to the AP session: {server_url}")
             self.client.set_connect_url(server_url)
             self.connect_tried = True
         try:
@@ -50,6 +50,8 @@ class ArchipelagoSession:
             self.avatar.d_setSystemMessage(0, f"{e}")
 
     def handle_disconnect(self):
+        if self.client.is_connected():
+            self.avatar.d_setSystemMessage(0, "Disconnected from the Archipelago session.")
         self.client.team = 999
         self.client.stop()
 

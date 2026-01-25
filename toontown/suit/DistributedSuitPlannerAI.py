@@ -24,43 +24,43 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
     # boss, law, cash, sell
     SuitHoodInfo = [
                     #Toontown Central
-                    [2100, 5, 15, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (0, 0, 25, 75), (1, 2, 3), [], 4],
-                    [2200, 3, 10, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (0, 50, 50, 0), (1, 2, 3), [], 4],
-                    [2300, 3, 10, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (75, 25, 0, 0), (1, 2, 3), [], 4],
+                    [2100, 4, 15, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (0, 0, 25, 75), (1, 2, 3), [], 4],
+                    [2200, 4, 15, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (0, 50, 50, 0), (1, 2, 3), [], 4],
+                    [2300, 4, 15, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (75, 25, 0, 0), (1, 2, 3), [], 4],
 
                     #Donalds Dock
-                    [1100, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (50, 0, 50, 0), (3, 4, 5), [], 4],
-                    [1200, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 25, 75), (3, 4, 5), [], 4],
-                    [1300, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (25, 75, 0, 0), (3, 4, 5), [], 4],
+                    [1100, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (50, 0, 50, 0), (3, 4, 5), [], 4],
+                    [1200, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 25, 75), (3, 4, 5), [], 4],
+                    [1300, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (25, 75, 0, 0), (3, 4, 5), [], 4],
 
                     # Daisy Gardens
-                    [5100, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 50, 50, 0),  (4, 5, 6), [], 4],
-                    [5200, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (50, 25, 25, 0), (4, 5, 6), [], 4],
-                    [5300, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 0, 100),  (4, 5, 6), [], 4],
+                    [5100, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 50, 50, 0),  (4, 5, 6), [], 4],
+                    [5200, 4, 18, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (60, 20, 20, 0), (4, 5, 6), [], 4],
+                    [5300, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 0, 100),  (4, 5, 6), [], 4],
 
                     # Minnies Melodyland
-                    [4100, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (50, 0, 0, 50),  (4, 5, 6, 7), [], 4],
-                    [4200, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0),  (4, 5, 6, 7), [], 4],
-                    [4300, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (25, 0, 50, 25), (4, 5, 6, 7), [], 4],
+                    [4100, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (50, 0, 0, 50),  (4, 5, 6, 7), [], 4],
+                    [4200, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0),  (4, 5, 6, 7), [], 4],
+                    [4300, 4, 18, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (20, 0, 60, 20), (4, 5, 6, 7), [], 4],
 
                     # The Brrrgh
-                    [3100, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (100, 0, 0, 0), (5, 6, 7, 8), [], 4],
-                    [3200, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 50, 50), (5, 6, 7, 8), [], 4],
-                    [3300, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0), (5, 6, 7, 8), [], 4],
+                    [3100, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (100, 0, 0, 0), (5, 6, 7, 8), [], 4],
+                    [3200, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 50, 50), (5, 6, 7, 8), [], 4],
+                    [3300, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0), (5, 6, 7, 8), [], 4],
 
                     #Donalds Dreamland
-                    [9100, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (33, 34, 0, 33), (6, 7, 8, 9), [], 4],
-                    [9200, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 100, 0),  (6, 7, 8, 9), [], 4],
+                    [9100, 4, 18, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (33, 34, 0, 33), (6, 7, 8, 9), [], 4],
+                    [9200, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 100, 0),  (6, 7, 8, 9), [], 4],
                     
                     # Sellbot Courtyard, Factory Exterior
                     [11000, 3, 15, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 0, 0, 100),  (5, 6, 7), [], 4],
-                    [11200, 10, 20, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 0, 0, 100), (6, 7, 8, 9), [], 4],
+                    [11200, 10, 25, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 0, 0, 100), (6, 7, 8, 9), [], 4],
                     
                     # Cashbot Courtyard
-                    [12000, 10, 20, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 0, 100, 0), (6, 7, 8, 9), [], 4],
+                    [12000, 10, 25, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 0, 100, 0), (6, 7, 8, 9), [], 4],
                     
                     # Lawbot Courtyard, Office Lobby
-                    [13000, 10, 20, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0), (7, 8, 9, 10), [], 4],
+                    [13000, 10, 25, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0), (7, 8, 9, 10), [], 4],
                     [13200, 10, 20, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0), (7, 8, 9, 10), [], 4],
                     
                     # Bossbot Courtyard
@@ -453,24 +453,25 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
                 suitLevel = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL][-1] + 1
         suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack)
 
-        trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(suitTrack)]
-        # The dept we're spawning is at or above the wanted ratio based on set %s
-        if self.checkForRatioOfTrack(suitTrack, trackRatio):
-            tracksCanSpawn = []
-            for rate in range(len(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])):
-                if self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][rate] > 0:
-                    tracksCanSpawn.append(SuitDNA.suitDepts[rate])
-            # Remove the track we've already tried spawning
-            if suitTrack in tracksCanSpawn:
-                tracksCanSpawn.remove(suitTrack)
-            # Randomize the order each time so it doesn't fill from the bottom up and has more "random" behavior
-            random.shuffle(tracksCanSpawn)
-            for track in tracksCanSpawn:
-                trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(track)]
-                # We've hit a department without a met ratio yet, break and move on
-                if not self.checkForRatioOfTrack(track, trackRatio):
-                    suitTrack = track
-                    break
+        if not command:
+            trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(suitTrack)]
+            # The dept we're spawning is at or above the wanted ratio based on set %s
+            if self.checkForRatioOfTrack(suitTrack, trackRatio):
+                tracksCanSpawn = []
+                for rate in range(len(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])):
+                    if self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][rate] > 0:
+                        tracksCanSpawn.append(SuitDNA.suitDepts[rate])
+                # Remove the track we've already tried spawning
+                if suitTrack in tracksCanSpawn:
+                    tracksCanSpawn.remove(suitTrack)
+                # Randomize the order each time so it doesn't fill from the bottom up and has more "random" behavior
+                random.shuffle(tracksCanSpawn)
+                for track in tracksCanSpawn:
+                    trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(track)]
+                    # We've hit a department without a met ratio yet, break and move on
+                    if not self.checkForRatioOfTrack(track, trackRatio):
+                        suitTrack = track
+                        break
 
         # This cog exists, check if we have open suits in the other spots
         if self.checkForSuitInTrack(suitTrack, suitType) and not command:

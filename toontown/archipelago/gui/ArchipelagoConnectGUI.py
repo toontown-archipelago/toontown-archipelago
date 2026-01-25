@@ -6,6 +6,7 @@ from direct.gui.DirectFrame import DirectFrame
 from direct.gui.DirectLabel import DirectLabel
 from panda3d.core import TextNode, TransparencyAttrib
 YOFFSET = 0.265
+BOTTOM_X = -0.185
 class ArchipelagoConnectGUI(DirectFrame):
 
     def __init__(self):
@@ -16,7 +17,7 @@ class ArchipelagoConnectGUI(DirectFrame):
 
     def load(self):
         self.container_frame = DirectFrame(parent=self, relief=None, image=DGG.getDefaultDialogGeom(),
-                                           pos=(0, 0.0, 0), scale=(1.1, 1, 0.85))
+                                           pos=(0, 0.0, -0.066), scale=(1.1, 1, 0.95))
         self.loadSlotItems()
         self.loadIpItems()
         self.loadPassItems()
@@ -79,19 +80,39 @@ class ArchipelagoConnectGUI(DirectFrame):
                                           image_scale=(0.7, 1, 1), text="Reset Toon",
                                           text_scale=0.045, text_pos=(0, -0.01), pos=(-0.35, 0.0, (YOFFSET-0.605)),
                                           command=self.handleReset)
+        self.deathlinkButton = DirectButton(parent=self, relief=None, image=(self.guiButton.find('**/QuitBtn_UP'),
+                                                                         self.guiButton.find('**/QuitBtn_DN'),
+                                                                         self.guiButton.find('**/QuitBtn_RLVR')),
+                                        image_scale=(1.2, 1, 1), text="Change Deathlink Mode",
+                                        text_scale=0.045, text_pos=(0, -0.01), pos=(BOTTOM_X, 0.0, (YOFFSET - 0.73)),
+                                        command=self.handleDeathlink)
+        self.ringlinkButton = DirectButton(parent=self, relief=None, image=(self.guiButton.find('**/QuitBtn_UP'),
+                                                                             self.guiButton.find('**/QuitBtn_DN'),
+                                                                             self.guiButton.find('**/QuitBtn_RLVR')),
+                                            image_scale=(0.73, 1, 1), text="Toggle Ringlink",
+                                            text_scale=0.045, text_pos=(0, -0.01), pos=((BOTTOM_X + 0.46), 0.0, (YOFFSET - 0.73)),
+                                            command=self.handleRinglink)
 
     def handleConnect(self):
-        base.talkAssistant.sendOpenTalk(f"!slot {self.slotBarEntry.get()}")
-        base.talkAssistant.sendOpenTalk(f"!password {self.passBarEntry.get()}")
-        base.talkAssistant.sendOpenTalk(f"!connect {self.ipBarEntry.get()}")
+        base.talkAssistant.sendOpenTalk(f"~ap slot {self.slotBarEntry.get()}")
+        base.talkAssistant.sendOpenTalk(f"~ap password {self.passBarEntry.get()}")
+        base.talkAssistant.sendOpenTalk(f"~ap connect {self.ipBarEntry.get()}")
         self.toggleEntryFocus(True)
 
     def handleDisconnect(self):
-        base.talkAssistant.sendOpenTalk("!disconnect")
+        base.talkAssistant.sendOpenTalk("~ap disconnect")
         self.toggleEntryFocus(True)
 
     def handleReset(self):
         base.talkAssistant.sendOpenTalk("~ap clear")
+        self.toggleEntryFocus(True)
+
+    def handleDeathlink(self):
+        base.talkAssistant.sendOpenTalk("~ap deathlink")
+        self.toggleEntryFocus(True)
+
+    def handleRinglink(self):
+        base.talkAssistant.sendOpenTalk("~ap ringlink")
         self.toggleEntryFocus(True)
 
     def entrySlot(self):
