@@ -62,6 +62,7 @@ QuestDictDialogIndex = 7
 VeryEasy = 100
 Easy = 75
 Medium = 50
+SlightlyHard = 35
 Hard = 25
 VeryHard = 20
 TT_TIER = 0
@@ -2320,7 +2321,7 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     16061: APQuestDefinition((CogQuest, Anywhere, 8, Any), 5018),
     16062: APQuestDefinition((CogQuest, Anywhere, 9, Any), 5018),
     16063: APQuestDefinition((CogQuest, Anywhere, 10, Any), 5018),
-    16064: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 2, 2008, Hard, Any), 5018),
+    16064: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 2, 2008, SlightlyHard, Any), 5018),
     16065: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 3, 2008, Medium, Any), 5018),
     16066: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDock, 4, 2008, Medium, Any), 5018),
 
@@ -2683,9 +2684,9 @@ __AP_QUEST_DICT: Dict[int, APQuestDefinition] = {
     20102: APQuestDefinition((CogQuest, ToontownGlobals.DonaldsDreamland, 1, 'hh'), 5070),
 
     # Location Check #12 (DDL) Recover Hard Pillows from level 9s in DDL (very low drop chance), or some anywhere
-    20110: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 2, 7006, Hard, 9, "level"), 5071),
+    20110: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 3, 7006, Medium, 9, "level"), 5071),
     20111: APQuestDefinition((RecoverItemQuest, ToontownGlobals.DonaldsDreamland, 4, 7006, Medium, 9, "level"), 5071),
-    20112: APQuestDefinition((RecoverItemQuest, Anywhere, 4, 7006, Hard, 9, "level"), 5071),
+    20112: APQuestDefinition((RecoverItemQuest, Anywhere, 4, 7006, SlightlyHard, 9, "level"), 5071),
 }
 
 
