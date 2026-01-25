@@ -230,6 +230,7 @@ class ToontownWorld(World):
         forbidden_location_types: set[ToontownLocationType] = self.get_disabled_location_types()
 
         # Now create locations.
+        warning_sent = False
         for i, location_data in enumerate(LOCATION_DEFINITIONS):
             # Do we skip this location generation?
             if location_data.type in forbidden_location_types:
@@ -254,6 +255,15 @@ class ToontownWorld(World):
 
             if not self.options.logical_maxed_cog_gallery.value:
                 if location_data.type == ToontownLocationType.GALLERY_MAX:
+                    location.progress_type = LocationProgressType.EXCLUDED
+
+            bosses_condition = "cog-bosses" in self.options.win_condition.value
+            if not bosses_condition and self.options.checks_per_boss.value == 0:
+                # Bosses aren't relevant to the seed, make the level 13 and 14 checks excluded
+                if not warning_sent:
+                    logging.warning(f"WARNING: [{self.multiworld.player_name[self.player]}] has nothing on bosses. Excluding Level 13 and Level 14 Cog checks.")
+                    warning_sent = True
+                if location_data.name in (ToontownLocationName.LEVEL_THIRTEEN_COG_DEFEATED, ToontownLocationName.LEVEL_FOURTEEN_COG_DEFEATED):
                     location.progress_type = LocationProgressType.EXCLUDED
 
         for location_data in EVENT_DEFINITIONS:

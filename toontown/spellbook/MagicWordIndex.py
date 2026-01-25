@@ -3749,13 +3749,17 @@ class APClear(MagicWord):
 
 class Archipelago(MagicWord):
     aliases = ['ap', 'archi']
-    desc = "Commands to force certain behavior with an AP session, does not work unless an active AP session is active"
+    desc = "Commands to force certain behavior with an AP session, does not work unless an active AP session is connected"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [('operation', str, True)]
+    arguments = [('operation', str, True), ('argument', str, False, "")]
     accessLevel = 'NO_ACCESS'
 
     def handleWord(self, invoker, avId, toon, *args):
         operation = args[0].lower()
+        argument = args[1]
+
+        if invoker != toon:
+            return f"You can only use this command on yourself!"
 
         if not toon.archipelago_session:
             return f"Toon {toon.getName()} does not have an active AP session!"
@@ -3782,7 +3786,7 @@ class Archipelago(MagicWord):
                 toon.d_showReward(item_def.unique_id, "The Spellbook", False)
             return f"Gave {toon.getName()} a few random AP rewards"
 
-        if operation in ('deathlink'):
+        if operation in ('fakedl'):
             # Simulate a deathlink packet.
 
             # Hack in a fake "AP client"
@@ -3800,7 +3804,41 @@ class Archipelago(MagicWord):
             deathlink_packet.handle_deathlink(client)
             return f"Simulating deathlink packet for {toon.getName()}"
 
-        return f"Invalid argument, valid arguments are: check"
+        if operation in ('deathlink'):
+            if argument == "":
+                death_link = toon.slotData.get('death_link', 3)
+                if death_link == 3:
+                    argument = 'drain'
+                if death_link == 1:
+                    argument = 'one'
+                if death_link == 2:
+                    argument = 'full'
+                if death_link == 0:
+                    argument = 'off'
+            toon.archipelago_session.handle_deathlink(linktype=argument)
+            return "nan"
+
+        if operation in ('ringlink'):
+            toon.archipelago_session.handle_ringlink()
+            return "nan"
+
+        if operation in ('connect'):
+            toon.archipelago_session.handle_connect(server_url=argument)
+            return "nan"
+
+        if operation in ('disconnect'):
+            toon.archipelago_session.handle_disconnect()
+            return "nan"
+
+        if operation in ('slot'):
+            toon.archipelago_session.handle_slot(argument)
+            return "nan"
+
+        if operation in ('password'):
+            toon.archipelago_session.handle_password(argument)
+            return "nan"
+
+        return f"Invalid argument"
 
 
 # Command that forces your state to the 'Walk' state.
