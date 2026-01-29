@@ -518,8 +518,10 @@ class CheckPage(ShtikerPage.ShtikerPage):
                     return False
         if isHinted:
             geomToUse = hinted
+        # We've found this item, no need to keep it in our external hints
         elif isHinted and locationId in base.localAvatar.getCheckedLocations():
-            geomToUse = check
+            return False
+        # Item not hinted for an external location on this location
         else:
             return False
         command = lambda: self.setHint(locationName, locationId, 1)
