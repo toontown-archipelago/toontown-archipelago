@@ -712,7 +712,8 @@ class ToontownLocationType(IntEnum):
     STARTER         = auto()  # Location that is considered a "starting" check on login, typically we force checks here
     GALLERY         = auto()  # Locations for discovering cogs in the gallery
     GALLERY_MAX     = auto()  # Locations for maxing cogs in the gallery
-    COG_LEVELS      = auto()  # Locations related to cogs generally
+    COG_LEVELS      = auto()  # Locations related to cog levels
+    HIGH_COG_LEVELS = auto()  # Locations related to high leveled cogs
     FACILITIES      = auto()  # Locations for clearing facilities
     BUILDINGS       = auto()  # Locations for clearing cog buildings
     BOSS_META       = auto()  # Locations for clearing bosses
@@ -1272,8 +1273,8 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.LEVEL_TEN_COG_DEFEATED,      ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.LevelTenCogs]),
     ToontownLocationDefinition(ToontownLocationName.LEVEL_ELEVEN_COG_DEFEATED,   ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.LevelElevenCogs]),
     ToontownLocationDefinition(ToontownLocationName.LEVEL_TWELVE_COG_DEFEATED,   ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.LevelTwelveCogs]),
-    ToontownLocationDefinition(ToontownLocationName.LEVEL_THIRTEEN_COG_DEFEATED, ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.LevelThirteenCogs]),
-    ToontownLocationDefinition(ToontownLocationName.LEVEL_FOURTEEN_COG_DEFEATED, ToontownLocationType.COG_LEVELS, ToontownRegionName.GALLERY, [Rule.LevelFourteenCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_THIRTEEN_COG_DEFEATED, ToontownLocationType.HIGH_COG_LEVELS, ToontownRegionName.GALLERY, [Rule.LevelThirteenCogs]),
+    ToontownLocationDefinition(ToontownLocationName.LEVEL_FOURTEEN_COG_DEFEATED, ToontownLocationType.HIGH_COG_LEVELS, ToontownRegionName.GALLERY, [Rule.LevelFourteenCogs]),
     # endregion
     # region racing
     ToontownLocationDefinition(ToontownLocationName.SPEEDWAY_1_CLEAR,           ToontownLocationType.RACING, ToontownRegionName.GS, [Rule.CanReachGS, Rule.Racing]),
