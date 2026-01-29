@@ -9966,6 +9966,7 @@ OptionNames = {
     "movement_mode": "Movement Mode",
     "sprint_mode": "Sprint Mode",
     "fovEffects": "Sprinting FOV Effects",
+    'new-popup': "AP Connect Intro Message",
     "cam-toggle-lock": "Camera Toggle Lock",
     "speedchat-style": "Speedchat Color",
     'discord-rich-presence': 'Discord Rich Presence',

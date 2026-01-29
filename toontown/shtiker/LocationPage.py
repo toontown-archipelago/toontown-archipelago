@@ -251,6 +251,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
 
         if not ToontownWinCondition.cog_bosses in ToontownWinCondition(wc) and cpb <= 0:
             forbidden_location_types.add(locations.ToontownLocationType.BOSS_META)
+            forbidden_location_types.add(locations.ToontownLocationType.HIGH_COG_LEVELS)
 
         racing = base.localAvatar.slotData.get('racing_logic', False)
         if not racing:
