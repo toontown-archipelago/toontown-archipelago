@@ -1345,15 +1345,17 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.alertText.setAlphaScale(0)
         # fade in, pulse, fade out after
         fadeIn = LerpFunctionInterval(self.fadeFunc, duration=0.3, fromData=0, toData=1)
-        pulse = Sequence(LerpColorScaleInterval(self.alertText, duration=0.25, colorScale=lerpColor, startColorScale=color),
-                         LerpColorScaleInterval(self.alertText, duration=0.25, colorScale=color, startColorScale=lerpColor))
+        pulse = Sequence(LerpFunctionInterval(self.lerpColorFunc, duration=0.25, fromData=color, toData=lerpColor),
+                         LerpFunctionInterval(self.lerpColorFunc, duration=0.25, fromData=lerpColor, toData=color))
         fadeOut = LerpFunctionInterval(self.fadeFunc, duration=0.3, fromData=1, toData=0)
         alert = Sequence(Parallel(fadeIn, Sequence(Wait(0.3), pulse, pulse), Sequence(Wait(1.5), fadeOut)))
         alert.start()
 
     def fadeFunc(self, alpha):
-        """
-        This function will be used to fade the alert text in and out
-        """
-        self.alertText.setAlphaScale(alpha)
+        if hasattr(self, 'alertText'):
+            self.alertText.setAlphaScale(alpha)
+
+    def lerpColorFunc(self, colorscale):
+        if hasattr(self, 'alertText'):
+            self.alertText.setColorScale(colorscale)
         
