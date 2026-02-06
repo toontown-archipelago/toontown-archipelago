@@ -80,11 +80,7 @@ class DistributedPlantBaseAI(DistributedLawnDecorAI):
         if not av:
             return
 
-        if self.waterLevel < 6:
-            av.b_setWateringCanSkill(av.getWateringCanSkill() + 1)
-        else:
-            av.b_setWateringCanSkill(av.getWateringCanSkill())
-
+        av.b_setWateringCanSkill(av.getWateringCanSkill() + 1)
         self.d_setMovie(GardenGlobals.MOVIE_CLEAR)
 
     def update(self):

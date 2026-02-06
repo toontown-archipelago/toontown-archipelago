@@ -16,6 +16,7 @@ from toontown.quest import Quests
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.battle import SuitBattleGlobals
 from direct.task import Task
+from direct.showbase.PythonUtil import union
 from toontown.catalog import CatalogItemList
 from toontown.catalog import CatalogItem
 from direct.distributed.ClockDelta import *
@@ -203,6 +204,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.shovelSkill = 0
         self.wateringCan = 0
         self.wateringCanSkill = 0
+        self.gardenKit = 0
+
         self.hatePets = 1
         self.golfHistory = None
         self.golfHoleBest = None
@@ -3795,6 +3798,19 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def getGardenStarted(self):
         return self.gardenStarted
+
+    def b_setGardenKit(self, gardenKit):
+        self.setGardenKit(gardenKit)
+        self.d_setGardenKit(gardenKit)
+
+    def d_setGardenKit(self, gardenKit):
+        self.sendUpdate('setGardenKit', [gardenKit])
+
+    def setGardenKit(self, gardenKit):
+        self.gardenKit = gardenKit
+
+    def getGardenKit(self):
+        return self.gardenKit
 
     def logSuspiciousEvent(self, eventName):
         senderId = self.air.getAvatarIdFromSender()

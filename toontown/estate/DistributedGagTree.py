@@ -264,6 +264,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
             self.movie.append(Func(self.movieDone))
             self.movie.append(Func(self.doResultDialog))
         self.movie.start()
+        self.movie.setPlayRate(5.0)
 
     def doHarvestTrack(self, avId):
         toon = base.cr.doId2do.get(avId)
@@ -277,6 +278,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
             self.movie.append(Func(self.finishInteraction))
             self.movie.append(Func(self.movieDone))
         self.movie.start()
+        self.movie.setPlayRate(5.0)
 
     def setupShadow(self):
         if DIRT_AS_WATER_INDICATOR:

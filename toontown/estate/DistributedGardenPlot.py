@@ -290,6 +290,7 @@ class DistributedGardenPlot(DistributedLawnDecor.DistributedLawnDecor):
             self.movie.append(Func(self.finishInteraction))
             self.movie.append(Func(self.movieDone))
         self.movie.start()
+        self.movie.setPlayRate(2.0)
 
     def doFinishRemovingTrack(self, avId):
         toon = base.cr.doId2do.get(avId)
@@ -311,6 +312,7 @@ class DistributedGardenPlot(DistributedLawnDecor.DistributedLawnDecor):
             self.movie.append(Func(self.finishInteraction))
             self.movie.append(Func(self.movieDone))
         self.movie.start()
+        self.movie.setPlayRate(5.0)
 
     def doPlaceItemTrack(self, avId, item = None):
         toon = base.cr.doId2do.get(avId)
@@ -328,6 +330,7 @@ class DistributedGardenPlot(DistributedLawnDecor.DistributedLawnDecor):
             self.expectingReplacement = 1
             self.movie.append(Func(self.movieDone))
         self.movie.start()
+        self.movie.setPlayRate(5.0)
 
     def generatePlaceItemTrack(self, toon, item):
         sound = loader.loadSfx('phase_5.5/audio/sfx/burrow.ogg')
