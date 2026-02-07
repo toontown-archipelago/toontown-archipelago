@@ -7,6 +7,7 @@ from apworld.toontown import ToontownItemName, ToontownItemDefinition, get_item_
 from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
 from panda3d.core import *
+from direct.task import Task
 
 from ..archipelago.util.HintContainer import HintContainer, HintedItem
 from ..archipelago.util.archipelago_information import ArchipelagoInformation
@@ -17,8 +18,12 @@ from ..util.ui import make_dsl_scrollable
 class HintNode(DirectFrame):
     def __init__(self, parent):
         super().__init__(parent)
+        main_text_scale = 0.055
 
         self.title = DirectLabel(parent=self, scale=0.07, pos=(0.02, 0, -0.08), text="Select an Item", textMayChange=True, relief=None)
+        self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % (0, 0),
+                                           text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None,
+                                           pos=(0.02, 0, 0.02))
         self.scrollList = None
         self.externalHint = False
 
@@ -46,8 +51,16 @@ class HintNode(DirectFrame):
     def askForHint(self):
         if self.hintName is None or self.externalHint:
             base.talkAssistant.sendOpenTalk("!hint")
-            return
-        base.talkAssistant.sendOpenTalk("!hint " + self.hintName.value)
+        else:
+            base.talkAssistant.sendOpenTalk("!hint " + self.hintName.value)
+        taskMgr.doMethodLater(1, self.updateHintTextTask, 'updateHintTextTask')
+
+
+    def updateHintTextTask(self, task):
+        base.localAvatar.sendUpdate('requestHintPoints')
+
+    def updateHintPointText(self, points, cost):
+        self.hintPointsTitle['text'] = TTLocalizer.HintPointsTitle % (points, cost)
 
     def getHintContainer(self) -> HintContainer:
         return base.localAvatar.getHintContainer()
@@ -234,7 +247,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
     def __init__(self):
         ShtikerPage.ShtikerPage.__init__(self)
         self.scrollList = None
-        self.hintPointsTitle = None
         self.textRolloverColor = Vec4(1, 1, 0, 1)
         self.textDownColor = Vec4(0.5, 0.9, 1, 1)
         self.textDisabledColor = Vec4(0.4, 0.8, 0.4, 1)
@@ -259,9 +271,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.itemFrameXorigin = -0.237
         self.itemFrameZorigin = 0.365
         self.buttonXstart = self.itemFrameXorigin + 0.425
-        self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % (0, 0),
-                                            text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None,
-                                            pos=(0, 0, 0.525))
         gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
         quitHover = gui.find('**/QuitBtn_UP')
         self.hintTypeButton = DirectButton(
@@ -290,6 +299,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
 
         self.hintNode.show()
         self.hintNode.showDefaultDisplay()
+        self.hintNode.updateHintPointText(base.localAvatar.hintPoints, base.localAvatar.hintCost)
 
         self.accept('archipelago-hints-updated', self.__handleHintsUpdated)
         self.viewingHint = False
@@ -352,9 +362,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         if self.viewingHint and isinstance(self.viewingHint, tuple) and not onToggle:
             self.setHint(*self.viewingHint)
         return
-
-    def updateHintPointText(self):
-        self.hintPointsTitle['text'] = TTLocalizer.HintPointsTitle % (base.localAvatar.hintPoints, base.localAvatar.hintCost)
 
     def cleanupButtons(self):
         for button in self.checkButtons:
