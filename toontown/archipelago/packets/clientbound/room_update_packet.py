@@ -28,13 +28,23 @@ class RoomUpdatePacket(RoomInfoPacket, ConnectedPacket):
         self.checked_locations: List[int] = self.read_raw_field('checked_locations', ignore_missing=True)
 
     def handle_hint_points_update(self, av):
-
         # This packet did not contain the hint_points field, nothing to update
         if self.hint_points is None:
             return
 
         new_hint_points = self.hint_points
         av.hintPoints = new_hint_points
+        av.requestHintPoints()
+
+    def handle_hint_cost_update(self, av):
+        # This packet did not contain the hint_cost field, nothing to update
+        if self.hint_cost is None:
+            return
+
+        new_hint_cost = self.hint_cost
+        av.hintCostPercentage = new_hint_cost
+        av.requestHintPoints()
+        self.handle_hint_points_update(av)
 
     def handle_checked_locations_update(self, av):
         # Packet did not contain checked locations, nothing to update.
@@ -48,11 +58,11 @@ class RoomUpdatePacket(RoomInfoPacket, ConnectedPacket):
             client.set_slot_aliases(self.players)
 
     def handle(self, client):
-
         self.debug("Handling packet")
 
         # Attempt to handle a hint point update if this packet contains one
         self.update_aliases(client)
         self.handle_hint_points_update(client.av)
+        self.handle_hint_cost_update(client.av)
         self.handle_checked_locations_update(client.av)
 
