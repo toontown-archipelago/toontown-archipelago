@@ -2967,7 +2967,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintPoints = pts
         self.hintCost = cost
         if self.isLocal:
-            base.localAvatar.checkPage.updateHintPointText()
+            base.localAvatar.checkPage.hintNode.updateHintPointText(self.hintPoints, self.hintCost)
 
     def getSlotData(self) -> dict[str, int]:
         return self.slotData

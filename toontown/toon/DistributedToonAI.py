@@ -4612,7 +4612,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Sent by client to request hint points from the arch session
     def requestHintPoints(self):
-        self.sendUpdate('hintPointResp', [self.hintPoints, self.hintCostPercentage * self.totalChecks // 100])
+        hintPoints = self.hintPoints
+        # This avoids a server crash if for whatever reason points become negative (usually when settings are changed)
+        if hintPoints < 0:
+            hintPoints = 0
+        self.sendUpdate('hintPointResp', [hintPoints, self.hintCostPercentage * self.totalChecks // 100])
 
     def requestSetBattleSpeed(self, speed):
         self.b_setBattleSpeed(speed)
