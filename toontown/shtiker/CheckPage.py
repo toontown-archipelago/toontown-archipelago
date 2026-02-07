@@ -55,7 +55,6 @@ class HintNode(DirectFrame):
             base.talkAssistant.sendOpenTalk("!hint " + self.hintName.value)
         taskMgr.doMethodLater(1, self.updateHintTextTask, 'updateHintTextTask')
 
-
     def updateHintTextTask(self, task):
         base.localAvatar.sendUpdate('requestHintPoints')
 
