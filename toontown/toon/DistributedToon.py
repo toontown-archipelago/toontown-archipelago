@@ -111,6 +111,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.disguisePage = None
         self.sosPage = None
         self.gardenPage = None
+        self.has75 = 0
+        self.has90 = 0
         self.cogTypes = [0,
          0,
          0,
@@ -416,6 +418,16 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if self._isGM != wasGM:
             self._handleGMName()
         return
+
+    def setHas75Capacity(self, value):
+        if not self.has75 and value == 1:
+            self.displayWhisper(0, "You've reached 75 Gag capacity, individual capacities increased!", WhisperType.WTSystem)
+        self.has75 = value
+
+    def setHas90Capacity(self, value):
+        if not self.has90 and value == 1:
+            self.displayWhisper(0, "You've reached 90 Gag capacity, individual capacities further increased!", WhisperType.WTSystem)
+        self.has90 = value
 
     def setExperience(self, experience):
         self.experience = Experience.Experience(experience, self)
