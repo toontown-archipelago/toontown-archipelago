@@ -3274,7 +3274,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if type == 'single':
             returnCode = self.doSummonSingleCog(suitIndex)
         elif type == 'building':
-            returnCode = self.doBuildingTakeover(suitIndex)
+            returnCode = self.doBuildingTakeover(suitIndex, isSummon=True)
         elif type == 'invasion':
             returnCode = self.doCogInvasion(suitIndex)
         if returnCode:
@@ -3304,11 +3304,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         return ['badlocation', suitIndex, 0]
 
-    def doBuildingTakeover(self, suitIndex, chosenType=None, floors=None):
+    def doBuildingTakeover(self, suitIndex, chosenType=None, floors=None, isSummon=False):
         streetId = ZoneUtil.getBranchZone(self.zoneId)
         if streetId not in self.air.suitPlanners:
             self.notify.warning('Street %d is not known.' % streetId)
-            if suitIndex:
+            if isSummon:
                 return ['badlocation', suitIndex, 0]
             else:
                 return ['badlocation', 0]
@@ -3316,12 +3316,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         bm = sp.buildingMgr
         building = self.findClosestDoor()
         if building == None:
-            if suitIndex:
+            if isSummon:
                 return ['badlocation', suitIndex, 0]
             else:
                 return ['badlocation', 0]
         level = None
-        if suitIndex:
+        if isSummon:
             if suitIndex >= len(SuitDNA.suitHeadTypes):
                 self.notify.warning('Bad suit index: %s' % suitIndex)
                 return ['badIndex', suitIndex, 0]
@@ -3352,7 +3352,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                                                          level,
                                                          building.block,
                                                          self.zoneId))
-        if suitIndex:
+        if isSummon:
             return ['success', suitIndex, building.doId]
         else:
             return ['success', building.doId]
