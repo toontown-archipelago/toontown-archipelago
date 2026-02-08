@@ -1167,13 +1167,14 @@ dclass DistributedToon : DistributedPlayer {
   setImmortalMode(uint8) broadcast ownrecv ram;
   setUnlimitedGags(uint8) broadcast ownrecv ram;
   setInstaKill(uint8) broadcast ownrecv ram;
+  considerCapacityRewardMessage75() ownrecv;
+  considerCapacityRewardMessage90() ownrecv;
   setRun() broadcast ownrecv ram;
   doTeleport(string hood);
   forceEnterBoss(uint16 zone, uint32 doId) ownrecv;
   setMagicDNA(blob) airecv clsend;
   setMagicBodyAccessories(uint16, uint16, uint16, uint16) airecv clsend;
   setMagicHeadAccessories(uint16, uint16, uint16, uint16) airecv clsend;
-
   setBaseGagSkillMultiplier(uint16=1) required ownrecv broadcast db;
   setDamageMultiplier(uint16=100) required ownrecv broadcast db;
   setOverflowMod(uint16=100) required ownrecv broadcast db;

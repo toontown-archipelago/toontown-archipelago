@@ -1809,10 +1809,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         return self.questCarryLimit
 
     def b_setMaxCarry(self, maxCarry):
-        if maxCarry >= 75:
-            self.b_setHas75Capacity(1)
-        if maxCarry >= 90:
-            self.b_setHas90Capacity(1)
         self.setMaxCarry(maxCarry)
         self.d_setMaxCarry(maxCarry)
 
@@ -4274,8 +4270,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         return self._isGM
 
     def b_setHas75Capacity(self, value):
-        if self.has75:
-            return
         self.d_setHas75Capacity(value)
         self.setHas75Capacity(value)
 
@@ -4286,8 +4280,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.has75 = value
 
     def b_setHas90Capacity(self, value):
-        if self.has90:
-            return
         self.d_setHas90Capacity(value)
         self.setHas90Capacity(value)
 
@@ -4296,6 +4288,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def setHas90Capacity(self, value):
         self.has90 = value
+
+    def d_considerCapacityRewardMessage75(self):
+        self.sendUpdate('considerCapacityRewardMessage75', [])
+
+    def d_considerCapacityRewardMessage90(self):
+        self.sendUpdate('considerCapacityRewardMessage90', [])
 
     def d_setRun(self):
         self.sendUpdate('setRun', [])
