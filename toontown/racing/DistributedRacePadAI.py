@@ -51,7 +51,8 @@ class DistributedRacePadAI(DistributedKartPadAI, FSM):
                 self.request('WaitEmpty')
                 return
 
-        self.request('AllAboard')
+        if not self.state == 'AllAboard':
+            self.request('AllAboard')
 
         if task:
             return task.done

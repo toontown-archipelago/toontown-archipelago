@@ -106,6 +106,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.glasses = (0, 0, 0)
         self.backpack = (0, 0, 0)
         self.shoes = (0, 0, 0)
+        self.has75 = 0
+        self.has90 = 0
         self.cogTypes = [0,
                          0,
                          0,
@@ -1807,6 +1809,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         return self.questCarryLimit
 
     def b_setMaxCarry(self, maxCarry):
+        if maxCarry >= 75:
+            self.b_setHas75Capacity(1)
+        if maxCarry >= 90:
+            self.b_setHas90Capacity(1)
         self.setMaxCarry(maxCarry)
         self.d_setMaxCarry(maxCarry)
 
@@ -4267,6 +4273,30 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def isGM(self):
         return self._isGM
 
+    def b_setHas75Capacity(self, value):
+        if self.has75:
+            return
+        self.d_setHas75Capacity(value)
+        self.setHas75Capacity(value)
+
+    def d_setHas75Capacity(self, value):
+        self.sendUpdate('setHas75Capacity', [value])
+
+    def setHas75Capacity(self, value):
+        self.has75 = value
+
+    def b_setHas90Capacity(self, value):
+        if self.has90:
+            return
+        self.d_setHas90Capacity(value)
+        self.setHas90Capacity(value)
+
+    def d_setHas90Capacity(self, value):
+        self.sendUpdate('setHas90Capacity', [value])
+
+    def setHas90Capacity(self, value):
+        self.has90 = value
+
     def d_setRun(self):
         self.sendUpdate('setRun', [])
 
@@ -4684,6 +4714,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setHp(15)
         self.b_setMaxCarry(20)
         self.b_setDamageMultiplier(100)
+        self.b_setHas75Capacity(0)
+        self.b_setHas90Capacity(0)
 
         # Reset location Cache
         self.resetLocationScoutsCache()
