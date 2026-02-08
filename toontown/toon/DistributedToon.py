@@ -420,14 +420,16 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         return
 
     def setHas75Capacity(self, value):
-        if not self.has75 and value == 1:
-            self.displayWhisper(0, "You've reached 75 Gag capacity, individual capacities increased!", WhisperType.WTSystem)
         self.has75 = value
 
     def setHas90Capacity(self, value):
-        if not self.has90 and value == 1:
-            self.displayWhisper(0, "You've reached 90 Gag capacity, individual capacities further increased!", WhisperType.WTSystem)
         self.has90 = value
+
+    def considerCapacityRewardMessage75(self):
+        self.displayWhisper(0, "You've reached 75 Gag capacity, individual Gag capacities increased!", WhisperType.WTSystem)
+
+    def considerCapacityRewardMessage90(self):
+        self.displayWhisper(0, "You've reached 90 Gag capacity, individual Gag capacities further increased!", WhisperType.WTSystem)
 
     def setExperience(self, experience):
         self.experience = Experience.Experience(experience, self)
