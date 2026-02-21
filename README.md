@@ -21,6 +21,11 @@ Just make sure you set up your Archipelago rooms to accommodate that!
 
 You can also join the [Toontown: Archipelago Discord](https://discord.gg/GRjQZBsrJK) for information regarding updates!
 
+NOTE: If you are looking for help with specifically Toontown: Archipelago or are wanting to play in the official Archipelago Discord,
+it's absolutely important to note that Toontown `AS A WHOLE` is a banned topic with official Archipelago spaces. You can however,
+join the [unofficial Archipelago Discord](https://discord.gg/SmfbEG3HeP) if you'd like a more public place to discuss and play Toontown
+with other games!
+
 
 # Source Code
 This source code is based on a March 2019 fork of Toontown Offline v1.0.0.0 used for Toontown School House. 
@@ -159,9 +164,10 @@ Similarly to a game crash, sometimes the district can crash. Follow the same ste
 
 ### I was given an Archipelago room link and my game works fine, how do I connect to the multiworld and play?
 
-When in game, you first need to type (in Toontown's chat) `!slot <SLOT NAME>` where you replace `<SLOT NAME>` with 
-whatever your slot is in the Multiworld room. Once you have done this, you can then type `!connect <AP SERVER IP>`
-to play! The AP Server IP is usually listed at the top where it says "You can type /connect (AP SERVER IP) in your client...".
+When in game, you can click the red chat button at the top-left of the screen to open the game's Archipelago UI.
+From there, you input your slot name (from your .yaml/in the Multiworld room) and Archipelago Server IP in the respective boxes
+and click the "Connect" button.
+Note: The AP Server IP is usually listed at the top where it says "You can type /connect (AP SERVER IP) in your client...".
 
 
 ### I want to Play Toontown: Archipelago in my friend's multiworld, and they are asking for my .apworld file. What the heck is that??
@@ -169,6 +175,8 @@ to play! The AP Server IP is usually listed at the top where it says "You can ty
 .apworld files are what tell Archipelago what items a game has and what locations it can check. They are essentially just zip files
 of the source code for seed generation. The .apworld file is available on the releases page. If you are running from source,
 go to the `apworld/` folder, and run `make_apworld.bat`. This will generate the .apworld file you need to give to your friend who is generating an AP seed.
+NOTE: It is absolutely important that you use the .apworld file that matches the game version you would like to play, and vice versa. You will get
+a warning pop-up in-game if you are playing with mismatched versions compared to the game and .apworld.
 
 
 ### Okay now they are asking for my YAML??? HELP!!!!
@@ -201,3 +209,7 @@ on the Archipelago launcher.
 If you have any difficulties with this step, you can ask for help in the [Toontown: Archipelago Discord](https://discord.gg/GRjQZBsrJK).
 You can also refer to the [official Archipelago Discord](https://discord.gg/8Z65BR2), where you can find a guide to installing/generating seeds that include
 unsupported/unofficial games.
+NOTE: If you are looking for help with specifically Toontown: Archipelago or are wanting to play in the official Archipelago Discord,
+it's absolutely important to note that Toontown `AS A WHOLE` is a banned topic with official Archipelago spaces. You can however,
+join the [unofficial Archipelago Discord](https://discord.gg/SmfbEG3HeP) if you'd like a more public place to discuss and play Toontown
+with other games!
