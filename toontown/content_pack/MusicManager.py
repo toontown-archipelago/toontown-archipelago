@@ -29,6 +29,13 @@ class MusicManager:
         # this mainly only matters for cog building battles, but a good catch all
         if self.previousMusic == json_code and not randomToggle:
             return
+        # We're getting the possible paths for the music now so that we can check paths before they are cleared by the following stopMusic call
+        if json_code in self.musicJson['global_music']:
+            possible_paths = self.musicJson['global_music'][json_code]
+            # If the paths match exactly with the previous file, just let the music keep playing
+            if self.currentMusicInfo:
+                if possible_paths == self.currentMusicInfo[self.previousMusic]["path"]:
+                    return
         # we've got music and we're interrupting, kill
         if self.currentMusic and interrupt:
             self.stopMusic()
@@ -38,17 +45,17 @@ class MusicManager:
             # Storing the info for normal music for an area, so we have reference when disabling music rando
             self.storedMusicInfo = {}
             self.storedMusicInfo[self.previousMusic] = {"looping": looping, "volume": volume, "interrupt": interrupt,
-                                                "time": time}
+                                                        "time": time, "path": possible_paths}
         if json_code in self.musicJson['global_music']:
-            json_code_path = random.choice(self.musicJson['global_music'][json_code])
+            possible_paths = self.musicJson['global_music'][json_code]
+            json_code_path = random.choice(possible_paths)
             self.currentMusic[json_code] = base.loader.loadMusic(json_code_path)
             self.currentMusic[json_code].setLoop(looping)
             self.currentMusic[json_code].setVolume(volume)
             self.currentMusic[json_code].setTime(time)
             self.currentMusicInfo[json_code] = {"looping": looping, "volume": volume, "interrupt": interrupt, 
-                                                 "time": time}
-            base.playMusic(self.currentMusic[json_code], looping=looping, interrupt=interrupt, volume=volume, time=time
-                            )
+                                                "time": time, "path": possible_paths}
+            base.playMusic(self.currentMusic[json_code], looping=looping, interrupt=interrupt, volume=volume, time=time)
 
     # Used when we are disabling music randomizer
     def getNormalMusicInfo(self):
