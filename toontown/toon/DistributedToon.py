@@ -111,6 +111,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.disguisePage = None
         self.sosPage = None
         self.gardenPage = None
+        self.has75 = 0
+        self.has90 = 0
         self.cogTypes = [0,
          0,
          0,
@@ -416,6 +418,18 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if self._isGM != wasGM:
             self._handleGMName()
         return
+
+    def setHas75Capacity(self, value):
+        self.has75 = value
+
+    def setHas90Capacity(self, value):
+        self.has90 = value
+
+    def considerCapacityRewardMessage75(self):
+        self.displayWhisper(0, "You've reached 75 Gag capacity, individual Gag capacities increased!", WhisperType.WTSystem)
+
+    def considerCapacityRewardMessage90(self):
+        self.displayWhisper(0, "You've reached 90 Gag capacity, individual Gag capacities further increased!", WhisperType.WTSystem)
 
     def setExperience(self, experience):
         self.experience = Experience.Experience(experience, self)
@@ -2967,7 +2981,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintPoints = pts
         self.hintCost = cost
         if self.isLocal:
-            base.localAvatar.checkPage.updateHintPointText()
+            base.localAvatar.checkPage.hintNode.updateHintPointText(self.hintPoints, self.hintCost)
 
     def getSlotData(self) -> dict[str, int]:
         return self.slotData

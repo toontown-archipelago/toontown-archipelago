@@ -17,6 +17,7 @@ class DistributedBanquetTableAI(DistributedObjectAI.DistributedObjectAI, FSM.FSM
         self.numChairs = 8
         self.dinerStatus = {}
         self.dinerInfo = {}
+        self.roundSkipped = False
         for i in range(self.numDiners):
             self.dinerStatus[i] = self.INACTIVE
             diffSettings = ToontownGlobals.BossbotBossDifficultySettings[self.boss.battleDifficulty]
@@ -128,6 +129,28 @@ class DistributedBanquetTableAI(DistributedObjectAI.DistributedObjectAI, FSM.FSM
             hungryDur = self.dinerInfo[chairIndex][0]
             newTask = self.doMethodLater(hungryDur, self.finishedHungry, taskName, extraArgs=[chairIndex])
             self.transitionTasks[chairIndex] = newTask
+        dinersAlive = False
+        for table in self.boss.tables:
+            if dinersAlive:
+                break
+            for chair in list(table.dinerInfo.keys()):
+                dinerStatus = table.getDinerStatus(chair)
+                if dinerStatus != table.DEAD:
+                    dinersAlive = True
+                    break
+        # This was the last cog eating, skip the remainder of the feeding round
+        if not dinersAlive:
+            if not self.roundSkipped:
+                # Make sure all remaining diners finish eating and DIE
+                for table in self.boss.tables:
+                    for chair in list(table.dinerInfo.keys()):
+                        dinerStatus = table.getDinerStatus(chair)
+                        if dinerStatus != table.DEAD:
+                            chair.finishedEating()
+                self.roundSkipped = True
+                self.boss.exitIntroduction()
+                self.boss.b_setState('PrepareBattleThree')
+
 
     def incrementFoodEaten(self, chairIndex):
         numFood = 0

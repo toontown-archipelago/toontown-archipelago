@@ -65,6 +65,7 @@ class Settings:
         "fps-limit": 0,
         'laff-display': True,
         'battle-speed': 2,
+        'new-popup': True,
         'random-music': False,
         "archipelago-textsize": 0.5,
         "archipelago-log-bg": False,

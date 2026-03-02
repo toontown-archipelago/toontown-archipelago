@@ -59,7 +59,6 @@ class BouncedPacket(ClientBoundPacketBase):
             toon.d_broadcastHpString("DEATHLINKED!", (.8, .35, .35))
             if deathLinkOption == DeathLinkOption.option_full:
                 toon.takeDamage(toon.getMaxHp())
-                toon.d_setAnimState("Died", 1)
                 death_component = cause if cause is not None else f"{source} died!"
                 msg = global_text_properties.get_raw_formatted_string([
                     MinimalJsonMessagePart("[DeathLink] ", color='red'),

@@ -4949,7 +4949,7 @@ KartShtikerNo = 'No %s Accessory'
 CheckPageTitle = 'Items'
 LocationPageTitle = 'Tracker'
 CheckPageScrollTitle = 'Item            Status'
-HintPointsTitle = 'Hint Points: %s                    Cost: %s'
+HintPointsTitle = 'Hint Points: %s            Cost: %s'
 QuestChoiceGuiCancel = lCancel
 TrackChoiceGuiChoose = 'Choose'
 TrackChoiceGuiCancel = lCancel
@@ -9966,6 +9966,7 @@ OptionNames = {
     "movement_mode": "Movement Mode",
     "sprint_mode": "Sprint Mode",
     "fovEffects": "Sprinting FOV Effects",
+    'new-popup': "AP Connect Intro Message",
     "cam-toggle-lock": "Camera Toggle Lock",
     "speedchat-style": "Speedchat Color",
     'discord-rich-presence': 'Discord Rich Presence',

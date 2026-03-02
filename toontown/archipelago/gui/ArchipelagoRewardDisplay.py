@@ -10,6 +10,7 @@ from direct.interval.FunctionInterval import Wait, Func
 from direct.interval.LerpInterval import LerpPosInterval, LerpFunctionInterval
 from direct.interval.MetaInterval import Sequence
 from panda3d.core import TextNode, TransparencyAttrib
+from direct.gui.DirectGui import DGG
 
 from toontown.archipelago.definitions.rewards import APReward, IgnoreReward
 
@@ -66,9 +67,12 @@ class ArchipelagoRewardDisplay(DirectLabel):
         self.initialiseoptions(ArchipelagoRewardDisplay)
 
         self.close_button = DirectButton(parent=self, frameColor=(.9, 0.1, 0.1, 1), scale=.25, pos=(0.875, 0, 0.175), command=self._do_hide_sequence)
-        self.additional_items_label = OnscreenText(parent=self.close_button, align=TextNode.ACenter, text='x', fg=(1, 1, 1, 1), scale=.2, pos=(-0.01, -.042), mayChange=True)
+        self.additional_items_label = OnscreenText(parent=self.close_button, align=TextNode.ACenter, text='x', fg=(1, 1, 1, 1), scale=.2, pos=(-0.01, -.055), mayChange=True)
+        self.close_all_tip = OnscreenText(parent=self.close_button, align=TextNode.ACenter, text='Shift+Click to Clear', fg=(1, 1, 1, 1), bg=(0, 0, 0, 0.5), scale=.17, pos=(-0.01, 0.18), mayChange=True)
         self.showtime_bar = DirectWaitBar(parent=self, range=100, value=100, frameColor=(0, 0, 0, 0), barColor=(1, 1, 1, 1), frameSize=(0, self.FRAME_WIDTH, 0, self.FRAME_HEIGHT * .02))
-
+        self.close_button.bind(DGG.WITHIN, self.showCloseTip)
+        self.close_button.bind(DGG.WITHOUT, self.hideCloseTip)
+        self.close_all_tip.hide()
         self._reward_queue: List[APRewardGift] = []
         self._slide_sequence = None
         self.__holding_shift = False
@@ -80,6 +84,12 @@ class ArchipelagoRewardDisplay(DirectLabel):
 
     def __shift_up(self):
         self.__holding_shift = False
+
+    def showCloseTip(self, event):
+        self.close_all_tip.show()
+
+    def hideCloseTip(self, event):
+        self.close_all_tip.hide()
 
     # Call to reset all options to default, ideally only need to do this once
     def set_default_options(self):

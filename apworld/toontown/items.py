@@ -133,7 +133,7 @@ class ToontownItemName(enum.Enum):
     UNITE_REWARD_GAG    = "Random Gag Unite"
     UNITE_REWARD_TOONUP = "Random Toon-Up Unite"
     PINK_SLIP_REWARD    = "Pink Slip"
-    SUMMON_REWARD       = "Cog Summon"
+    SUMMON_REWARD       = "Random Cog Summon"
 
     ### Healing Items ###
     HEAL_10 = "10% Toon-Up"

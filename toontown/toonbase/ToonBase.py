@@ -209,6 +209,7 @@ class ToonBase(OTPBase.OTPBase):
         # do they want laff meter on or off?
         self.laffMeterDisplay = self.settings.get('laff-display')
         self.randomMusic = self.settings.get("random-music")
+        self.newPopup = self.settings.get("new-popup")
         self.discord = DiscordRPC()
         self.discord.launching()
         self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {version}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)

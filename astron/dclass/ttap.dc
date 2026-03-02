@@ -532,6 +532,7 @@ dclass DistributedPlayer : DistributedAvatar {
   setWhisperSCCustomFrom(uint32, uint16) ownrecv clsend;
   setWhisperSCEmoteFrom(uint32, uint16) ownrecv clsend;
   setSystemMessage(uint32, string(0-256)) ownrecv;
+  setArchipelagoHintMessage(uint32, string(0-256)) ownrecv;
   setCommonChatFlags(uint8) broadcast ownrecv ram airecv;
   setWhitelistChatFlags(uint8) broadcast ownrecv ram airecv;
   setSC(uint16) broadcast ownsend airecv;
@@ -976,6 +977,8 @@ struct APItem {
 dclass DistributedToon : DistributedPlayer {
   setDNAString(blob) required broadcast ownrecv db;
   setGM(uint8 = 0) required broadcast ownrecv db;
+  setHas75Capacity(uint8 = 0) required broadcast ownrecv db;
+  setHas90Capacity(uint8 = 0) required broadcast ownrecv db;
   setMaxBankMoney(int16 = 0) required broadcast ownrecv db;
   setBankMoney(int16 = 0) required broadcast ownrecv db;
   setMaxMoney(int16 = 40) required broadcast ownrecv db;
@@ -1164,13 +1167,14 @@ dclass DistributedToon : DistributedPlayer {
   setImmortalMode(uint8) broadcast ownrecv ram;
   setUnlimitedGags(uint8) broadcast ownrecv ram;
   setInstaKill(uint8) broadcast ownrecv ram;
+  considerCapacityRewardMessage75() ownrecv;
+  considerCapacityRewardMessage90() ownrecv;
   setRun() broadcast ownrecv ram;
   doTeleport(string hood);
   forceEnterBoss(uint16 zone, uint32 doId) ownrecv;
   setMagicDNA(blob) airecv clsend;
   setMagicBodyAccessories(uint16, uint16, uint16, uint16) airecv clsend;
   setMagicHeadAccessories(uint16, uint16, uint16, uint16) airecv clsend;
-
   setBaseGagSkillMultiplier(uint16=1) required ownrecv broadcast db;
   setDamageMultiplier(uint16=100) required ownrecv broadcast db;
   setOverflowMod(uint16=100) required ownrecv broadcast db;

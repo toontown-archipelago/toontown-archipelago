@@ -3831,11 +3831,11 @@ class Archipelago(MagicWord):
             return "nan"
 
         if operation in ('slot'):
-            toon.archipelago_session.handle_slot(argument)
+            toon.archipelago_session.handle_slot(argument, from_gui=True)
             return "nan"
 
         if operation in ('password'):
-            toon.archipelago_session.handle_password(argument)
+            toon.archipelago_session.handle_password(argument, from_gui=True)
             return "nan"
 
         return f"Invalid argument"

@@ -139,6 +139,16 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
     def setSystemMessage(self, aboutId: int, chatString: str, whisperType: WhisperType = WhisperType.WTSystem):
         self.displayWhisper(aboutId, chatString, whisperType)
 
+    def setArchipelagoHintMessage(self, aboutId: int, ip:str, whisperType: WhisperType = WhisperType.WTSystem):
+        chatString = f"Welcome to Toontown: Archipelago!\nCurrent session: {ip}"
+        self.displayWhisper(aboutId, chatString, whisperType)
+        taskMgr.doMethodLater(1, self.archipelagoMessageTwo, 'secondMessage')
+
+    def archipelagoMessageTwo(self, task):
+        if base.settings.get('new-popup'):
+            chatString = "Check out the options page for things like setting keybinds and changing battle speed! (Or disabling this popup)"
+            self.displayWhisper(0, chatString, WhisperType.WTSystem)
+
     def displayWhisper(self, fromId, chatString, whisperType, colorProfileOverride: ColorProfile = None):
         print('Whisper type %s from %s: %s' % (whisperType, fromId, chatString))
 

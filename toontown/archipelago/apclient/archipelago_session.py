@@ -41,7 +41,9 @@ class ArchipelagoSession:
         if server_url or not self.connect_tried:
             server_url = server_url or self.default_ip
             self.avatar.b_setArchipelagoIP(server_url)
-            self.avatar.d_setSystemMessage(0, f"Connected to the AP session: {server_url}")
+            # Only display popups if we aren't already connected
+            if not self.client.is_connected():
+                self.avatar.d_setArchipelagoHintMessage(0, server_url)
             self.client.set_connect_url(server_url)
             self.connect_tried = True
         try:
@@ -55,16 +57,21 @@ class ArchipelagoSession:
         self.client.team = 999
         self.client.stop()
 
-    def handle_slot(self, new_slot):
+    def handle_slot(self, new_slot, from_gui=False):
         self.client.update_identification(new_slot)
         self.avatar.b_setSlotName(new_slot)
-        self.avatar.d_setSystemMessage(0, f"Updated slot name to {new_slot}")
+        if not from_gui:
+            self.avatar.d_setSystemMessage(0, f"Updated slot name to {new_slot}")
 
-    def handle_password(self, new_password):
+    def handle_password(self, new_password, from_gui=False):
         self.client.update_identification(self.client.slot_name, new_password)
-        self.avatar.d_setSystemMessage(0, f"Updated password")
+        if not from_gui:
+            self.avatar.d_setSystemMessage(0, f"Updated password")
 
     def handle_deathlink(self, linktype):
+        if not self.client.is_connected():
+            self.avatar.d_setSystemMessage(0, "Not connected to an Archipelago session, try again later.")
+            return
         validTypes = {"off": DeathLinkOption.option_off,
                       "drain": DeathLinkOption.option_drain,
                       "one": DeathLinkOption.option_one,
@@ -90,6 +97,9 @@ class ArchipelagoSession:
                 self.avatar.d_setSystemMessage(0, f"Slot data not available, try again later.")
 
     def handle_ringlink(self):
+        if not self.client.is_connected():
+            self.avatar.d_setSystemMessage(0, "Not connected to an Archipelago session, try again later.")
+            return
         if hasattr(self.avatar, 'slotData'):
             death_link = self.avatar.slotData.get('death_link', DeathLinkOption.option_off)
             ring_link = self.avatar.slotData.get('ring_link', False)

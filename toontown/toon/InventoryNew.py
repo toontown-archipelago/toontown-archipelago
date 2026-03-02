@@ -944,6 +944,13 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             self.runButton.hide()
             self.sosButton.show()
             self.passButton.show()
+            self.fireButton.show()
+            if localAvatar.getPinkSlips() > 0:
+                self.fireButton['state'] = DGG.NORMAL
+                self.fireButton['image_color'] = Vec4(0, 0.6, 1, 1)
+            else:
+                self.fireButton['state'] = DGG.DISABLED
+                self.fireButton['image_color'] = Vec4(0.4, 0.4, 0.4, 1)
         elif self.tutorialFlag == 1:
             self.runButton.hide()
             self.sosButton.hide()

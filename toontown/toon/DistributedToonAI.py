@@ -106,6 +106,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.glasses = (0, 0, 0)
         self.backpack = (0, 0, 0)
         self.shoes = (0, 0, 0)
+        self.has75 = 0
+        self.has90 = 0
         self.cogTypes = [0,
                          0,
                          0,
@@ -3274,7 +3276,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if type == 'single':
             returnCode = self.doSummonSingleCog(suitIndex)
         elif type == 'building':
-            returnCode = self.doBuildingTakeover(suitIndex)
+            returnCode = self.doBuildingTakeover(suitIndex, isSummon=True)
         elif type == 'invasion':
             returnCode = self.doCogInvasion(suitIndex)
         if returnCode:
@@ -3304,11 +3306,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         return ['badlocation', suitIndex, 0]
 
-    def doBuildingTakeover(self, suitIndex, chosenType=None, floors=None):
+    def doBuildingTakeover(self, suitIndex, chosenType=None, floors=None, isSummon=False):
         streetId = ZoneUtil.getBranchZone(self.zoneId)
         if streetId not in self.air.suitPlanners:
             self.notify.warning('Street %d is not known.' % streetId)
-            if suitIndex:
+            if isSummon:
                 return ['badlocation', suitIndex, 0]
             else:
                 return ['badlocation', 0]
@@ -3316,12 +3318,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         bm = sp.buildingMgr
         building = self.findClosestDoor()
         if building == None:
-            if suitIndex:
+            if isSummon:
                 return ['badlocation', suitIndex, 0]
             else:
                 return ['badlocation', 0]
         level = None
-        if suitIndex:
+        if isSummon:
             if suitIndex >= len(SuitDNA.suitHeadTypes):
                 self.notify.warning('Bad suit index: %s' % suitIndex)
                 return ['badIndex', suitIndex, 0]
@@ -3352,7 +3354,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                                                          level,
                                                          building.block,
                                                          self.zoneId))
-        if suitIndex:
+        if isSummon:
             return ['success', suitIndex, building.doId]
         else:
             return ['success', building.doId]
@@ -4267,6 +4269,32 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def isGM(self):
         return self._isGM
 
+    def b_setHas75Capacity(self, value):
+        self.d_setHas75Capacity(value)
+        self.setHas75Capacity(value)
+
+    def d_setHas75Capacity(self, value):
+        self.sendUpdate('setHas75Capacity', [value])
+
+    def setHas75Capacity(self, value):
+        self.has75 = value
+
+    def b_setHas90Capacity(self, value):
+        self.d_setHas90Capacity(value)
+        self.setHas90Capacity(value)
+
+    def d_setHas90Capacity(self, value):
+        self.sendUpdate('setHas90Capacity', [value])
+
+    def setHas90Capacity(self, value):
+        self.has90 = value
+
+    def d_considerCapacityRewardMessage75(self):
+        self.sendUpdate('considerCapacityRewardMessage75', [])
+
+    def d_considerCapacityRewardMessage90(self):
+        self.sendUpdate('considerCapacityRewardMessage90', [])
+
     def d_setRun(self):
         self.sendUpdate('setRun', [])
 
@@ -4612,7 +4640,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Sent by client to request hint points from the arch session
     def requestHintPoints(self):
-        self.sendUpdate('hintPointResp', [self.hintPoints, self.hintCostPercentage * self.totalChecks // 100])
+        hintPoints = self.hintPoints
+        # This avoids a server crash if for whatever reason points become negative (usually when settings are changed)
+        if hintPoints < 0:
+            hintPoints = 0
+        self.sendUpdate('hintPointResp', [hintPoints, self.hintCostPercentage * self.totalChecks // 100])
 
     def requestSetBattleSpeed(self, speed):
         self.b_setBattleSpeed(speed)
@@ -4680,6 +4712,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setHp(15)
         self.b_setMaxCarry(20)
         self.b_setDamageMultiplier(100)
+        self.b_setHas75Capacity(0)
+        self.b_setHas90Capacity(0)
 
         # Reset location Cache
         self.resetLocationScoutsCache()
