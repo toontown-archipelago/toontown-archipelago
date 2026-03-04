@@ -34,8 +34,14 @@ class MusicManager:
             possible_paths = self.musicJson['global_music'][json_code]
             # If the paths match exactly with the previous file, just let the music keep playing
             if self.currentMusicInfo:
-                if possible_paths == self.currentMusicInfo[self.previousMusic]["path"]:
-                    return
+                if base.randomMusic:
+                    random_json_code = self.randomMusicInfo[json_code]
+                    random_possible_paths = self.musicJson['global_music'][random_json_code]
+                    if random_possible_paths == self.currentMusicInfo[self.previousMusic]["path"]:
+                        return
+                else:
+                    if possible_paths == self.currentMusicInfo[self.previousMusic]["path"]:
+                        return
         # we've got music and we're interrupting, kill
         if self.currentMusic and interrupt:
             self.stopMusic()
@@ -46,6 +52,7 @@ class MusicManager:
             self.storedMusicInfo = {}
             self.storedMusicInfo[self.previousMusic] = {"looping": looping, "volume": volume, "interrupt": interrupt,
                                                         "time": time, "path": possible_paths}
+            self.previousMusic = json_code
         if json_code in self.musicJson['global_music']:
             possible_paths = self.musicJson['global_music'][json_code]
             json_code_path = random.choice(possible_paths)
