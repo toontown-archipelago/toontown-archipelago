@@ -98,7 +98,7 @@ To get started, please see the build instructions [here.](https://github.com/too
 ## Starting the game
 
 Once Panda3D is installed, please find your operating systems' launch directory.
-- Windows: `launch/win32`
+- Windows: `launch/windows`
 - Mac: `launch/darwin`
 - Linux: `launch/linux`
 
