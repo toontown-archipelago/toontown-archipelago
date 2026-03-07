@@ -2105,6 +2105,10 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def d_setDeathReason(self, reason: DeathReason):
         self.sendUpdate('setDeathReason', [reason.to_astron()])
 
+    # Tells the server to send out an ap location
+    def d_addCheckedLocation(self, location):
+        self.sendUpdate('addCheckedLocation', [location])
+
     # Shows a reward that we were given, called from the AI
     def showReward(self, rewardId: int, playerName: str, isLocal: bool) -> None:
         apReward = get_ap_reward_from_id(rewardId)

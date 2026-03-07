@@ -97,10 +97,10 @@ To get started, please see the build instructions [here.](https://github.com/too
 
 ## Starting the game
 
-Once Panda3D is installed, please find your systems launch directory.
-- Windows: `win32`
-- Mac: `darwin`
-- Linux: `linux`
+Once Panda3D is installed, please find your operating systems' launch directory.
+- Windows: `launch/windows`
+- Mac: `launch/darwin`
+- Linux: `launch/linux`
 
 Then run the following scripts in order:
 - `start_astron_server`

@@ -705,6 +705,10 @@ class ToontownLocationName(Enum):
     BOSSBOT_PROOF_3 =                           "Bossbot Proof Bundle 3"
     BOSSBOT_PROOF_4 =                           "Bossbot Proof Bundle 4"
     BOSSBOT_PROOF_5 =                           "Bossbot Proof Bundle 5"
+    TRAIN_CRUSHED =                             "(CBHQ) Get Crushed by a Train"
+    GEYSER_RIDE =                               "(AA) Ride the Geyser"
+    FLOWER_RISE =                               "(DG) Raise the Maze Flower"
+    KART_SHOWN =                                "(GS) Show off your Go-Kart by the Shop"
     SAVED_TOONTOWN =                            "Save Toontown"
 
 
@@ -746,6 +750,7 @@ class ToontownLocationType(IntEnum):
     MML_TASKS       = auto()  # Locations for MML tasks
     TB_TASKS        = auto()  # Locations for TB tasks
     DDL_TASKS       = auto()  # Locations for DDL tasks
+    SILLY           = auto()  # Locations that are less sensical (ex. CHBQ Train check)
     JOKE_1          = auto()  # Locations for knock knock jokes
     JOKE_2          = auto()  # Locations for knock knock jokes
     JOKE_3          = auto()  # Locations for knock knock jokes
@@ -1590,6 +1595,12 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.BACK_THREE_BARREL_5,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag, Rule.Has60PercentMax]),
     ToontownLocationDefinition(ToontownLocationName.BACK_THREE_BARREL_6,    ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag, Rule.Has60PercentMax]),
     ToontownLocationDefinition(ToontownLocationName.CLEAR_BACK_THREE,       ToontownLocationType.FACILITIES, ToontownRegionName.BBHQ, [Rule.BackThreeKey,    Rule.HasLevelSevenOffenseGag, Rule.Has60PercentMax]),
+    # endregion
+    # region silly
+    ToontownLocationDefinition(ToontownLocationName.TRAIN_CRUSHED,    ToontownLocationType.SILLY, ToontownRegionName.CBHQ, [Rule.CanReachCBHQ]),
+    ToontownLocationDefinition(ToontownLocationName.GEYSER_RIDE,      ToontownLocationType.SILLY, ToontownRegionName.AA,   [Rule.CanReachAA]),
+    ToontownLocationDefinition(ToontownLocationName.FLOWER_RISE,      ToontownLocationType.SILLY, ToontownRegionName.DG,   [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.KART_SHOWN,       ToontownLocationType.SILLY, ToontownRegionName.GS,   [Rule.CanReachGS, Rule.Racing]),
     # endregion
     # region Gag Unlocks
     ToontownLocationDefinition(ToontownLocationName.TOONUP_FEATHER_UNLOCKED,      ToontownLocationType.SUPPORT_GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.ToonUpOne, Rule.HasLevelOneOffenseGag]),

@@ -70,9 +70,12 @@ class LocationCategory():
         return self.name
     
     def get_display_name(self):
+        name_to_use = self.name
+        if len(name_to_use) > 32:
+            name_to_use = name_to_use[:32] + "..."
         if self.get_count() != 1:
-            return self.name + f' ({self.get_count()}x)'
-        return self.name
+            return name_to_use + f' ({self.get_count()}x)'
+        return name_to_use
 
     def __str__(self):
         return self.get_raw_name()

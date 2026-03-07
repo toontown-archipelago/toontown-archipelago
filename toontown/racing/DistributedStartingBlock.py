@@ -562,12 +562,14 @@ class DistributedStartingBlock(DistributedObject.DistributedObject, FSM):
         base.loader.beginBulkLoad('atRace', TTLocalizer.StartingBlock_Loading, 60, 1, TTLocalizer.TIP_KARTING)
 
     def acceptElevatorHotkey(self):
-        self.kartPad.addHotkeyHint()
-        self.accept(ToontownGlobals.ElevatorHotkeyOn, self.kartPad.startRace)
+        if hasattr(self.kartPad, "addHotkeyHint"):
+            self.kartPad.addHotkeyHint()
+            self.accept(ToontownGlobals.ElevatorHotkeyOn, self.kartPad.startRace)
 
     def ignoreElevatorHotkey(self):
-        self.kartPad.removeHotkeyHint()
-        self.ignore(ToontownGlobals.ElevatorHotkeyOn)
+        if hasattr(self.kartPad, "removeHotkeyHint"):
+            self.kartPad.removeHotkeyHint()
+            self.ignore(ToontownGlobals.ElevatorHotkeyOn)
 
 class DistributedViewingBlock(DistributedStartingBlock):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedViewingBlock')
