@@ -1194,6 +1194,7 @@ dclass DistributedToon : DistributedPlayer {
   setLastSeed(string = "") required airecv db;
   setArchipelagoAuto(string, string) ownsend airecv;
   setDeathReason(string) airecv clsend;
+  addCheckedLocation(int64) airecv clsend;
   clientDied() airecv clsend;
 };
 
