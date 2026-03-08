@@ -43,11 +43,13 @@ class ArchipelagoSession:
             self.avatar.b_setArchipelagoIP(server_url)
             # Only display popups if we aren't already connected
             if not self.client.is_connected():
-                self.avatar.d_setArchipelagoHintMessage(0, server_url)
+                self.avatar.d_setArchipelagoHintMessage(server_url)
             self.client.set_connect_url(server_url)
             self.connect_tried = True
         try:
-            self.client.connect()
+            # Only try to connect if we aren't already connected
+            if not self.client.is_connected():
+                self.client.connect()
         except Exception as e:
             self.avatar.d_setSystemMessage(0, f"{e}")
 
