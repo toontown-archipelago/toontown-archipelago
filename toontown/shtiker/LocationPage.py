@@ -70,9 +70,12 @@ class LocationCategory():
         return self.name
     
     def get_display_name(self):
+        name_to_use = self.name
+        if len(name_to_use) > 32:
+            name_to_use = name_to_use[:32] + "..."
         if self.get_count() != 1:
-            return self.name + f' ({self.get_count()}x)'
-        return self.name
+            return name_to_use + f' ({self.get_count()}x)'
+        return name_to_use
 
     def __str__(self):
         return self.get_raw_name()
@@ -80,7 +83,6 @@ class LocationCategory():
 
 
 class LocationPage(ShtikerPage.ShtikerPage):
-
     def __init__(self):
         ShtikerPage.ShtikerPage.__init__(self)
         self.locationsPossible: dict[str,LocationCategory] = {}
@@ -92,12 +94,13 @@ class LocationPage(ShtikerPage.ShtikerPage):
         self.LocationNode = LocationNode(self)
         self.LocationNode.setPos(0.42, 0, 0.5)
         self.LocationNode.hide()
+        self.logicalLocations = 0
         self.selectedLocation: int | None = None
-
 
     def load(self):
         title_text_scale = 0.12
         self.title = DirectLabel(parent=self, relief=None, text=TTLocalizer.LocationPageTitle, text_scale=title_text_scale, textMayChange=0, pos=(0, 0, 0.6))
+        self.logicalLocationsLabel = DirectLabel(parent=self, relief=None, text="Locations in Logic: 0", text_scale=title_text_scale/2.5, textMayChange=1, pos=(0, 0, 0.53))
         self.gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
         self.listXorigin = 0.02
         self.listFrameSizeX = 0.86
@@ -116,6 +119,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
         self.regenerateScrollList()
         self.LocationNode.show()
         self.LocationNode.showDefaultDisplay()
+        self.logicalLocationsLabel['text'] = f"Locations in Logic: {self.logicalLocations}"
         self.selectedLocation = None
 
     def getLocations(self):
@@ -137,6 +141,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
             locations.ToontownLocationType.DROP_GAG_TRAINING,
         ]
 
+        self.logicalLocations = 0
         for location_data in locations.LOCATION_DEFINITIONS:
             # Do we need to track this location based on settings?
             if location_data.type in forbidden_location_types:
@@ -211,6 +216,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 name = location_data.name.value
                 obj = LocationCategory(name, name)
             missingLocations.update({name:obj})
+            self.logicalLocations += 1
 
         self.locationsPossible = {**priorityMissingLocations, **missingLocations}
 

@@ -15,6 +15,8 @@ from otp.chat import TalkAssistant
 from otp.otpbase import OTPGlobals
 from otp.avatar.Avatar import teleportNotify
 from otp.distributed.TelemetryLimited import TelemetryLimited
+from toontown.distributed import DelayDelete
+from toontown.toontowngui import TTDialog
 from toontown.archipelago.definitions.color_profile import ColorProfile
 
 if base.config.GetBool('want-chatfilter-hacks', 0):
@@ -139,15 +141,24 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
     def setSystemMessage(self, aboutId: int, chatString: str, whisperType: WhisperType = WhisperType.WTSystem):
         self.displayWhisper(aboutId, chatString, whisperType)
 
-    def setArchipelagoHintMessage(self, aboutId: int, ip:str, whisperType: WhisperType = WhisperType.WTSystem):
-        chatString = f"Welcome to Toontown: Archipelago!\nCurrent session: {ip}"
-        self.displayWhisper(aboutId, chatString, whisperType)
-        taskMgr.doMethodLater(1, self.archipelagoMessageTwo, 'secondMessage')
-
-    def archipelagoMessageTwo(self, task):
+    def setArchipelagoHintMessage(self, ip: str):
+        chatString = f"Current session: {ip}"
+        self.displayWhisper(0, chatString, WhisperType.WTSystem)
         if base.settings.get('new-popup'):
-            chatString = "Check out the options page for things like setting keybinds and changing battle speed! (Or disabling this popup)"
-            self.displayWhisper(0, chatString, WhisperType.WTSystem)
+            taskMgr.doMethodLater(0.1, self.displayArchipelagoMessage, 'secondMessage')
+
+    def displayArchipelagoMessage(self, task):
+        self.accept('archipelagoAckDlg', self.__handleArchipelagoAckDlg)
+        boxText = f"Welcome to Toontown: Archipelago!"
+        boxTextCont = "\n\nTo make the experience as smooth as possible, we have implemented several new hotkeys and book pages; check them out!"
+        boxTextCont2 = "\n\nAdditionally, take the time to look at the options page for things like setting keybinds and changing the battle speed! (Or disabling this popup)"
+        self.hintMessage = TTDialog.TTGlobalDialog(message=(boxText + boxTextCont + boxTextCont2), doneEvent='archipelagoAckDlg', style=TTDialog.Acknowledge)
+        self.hintMessage.show()
+
+    def __handleArchipelagoAckDlg(self):
+        if self.hintMessage:
+            self.hintMessage.cleanup()
+            self.hintMessage = None
 
     def displayWhisper(self, fromId, chatString, whisperType, colorProfileOverride: ColorProfile = None):
         print('Whisper type %s from %s: %s' % (whisperType, fromId, chatString))

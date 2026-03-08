@@ -89,8 +89,8 @@ class DistributedPlayerAI(DistributedAvatarAI.DistributedAvatarAI, PlayerBase.Pl
     def d_setSystemMessage(self, aboutId, chatString):
         self.sendUpdate('setSystemMessage', [aboutId, chatString])
 
-    def d_setArchipelagoHintMessage(self, aboutId, ip):
-        self.sendUpdate('setArchipelagoHintMessage', [aboutId, ip])
+    def d_setArchipelagoHintMessage(self, ip):
+        self.sendUpdate('setArchipelagoHintMessage', [ip])
 
     def d_setCommonChatFlags(self, flags):
         self.sendUpdate('setCommonChatFlags', [flags])

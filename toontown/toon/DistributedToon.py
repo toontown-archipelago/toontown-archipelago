@@ -2939,6 +2939,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def d_setDeathReason(self, reason: DeathReason):
         pass
 
+    # To be overriden in LocalToon, just here for safety
+    def d_addCheckedLocation(self, location):
+        pass
+
     def count(self, item, player):
         count = 0
         for receivedItem in self.getReceivedItems():

@@ -46,12 +46,13 @@ from ..archipelago.apclient.distributed_toon_apmessage_queue import DistributedT
 from ..archipelago.apclient.distributed_toon_reward_queue import DistributedToonRewardQueue
 from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.definitions.rewards import EarnedAPReward
-from ..archipelago.definitions.util import get_zone_discovery_id
+from ..archipelago.definitions.util import ap_location_name_to_id
 from ..archipelago.util import win_condition
 from ..archipelago.util.HintContainer import HintedItem
 from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..shtiker import CogPageGlobals
 from ..util.astron.AstronDict import AstronDict
+from apworld.toontown import locations
 
 if simbase.wantPets:
     from toontown.pets import PetLookerAI, PetObserve
@@ -4588,8 +4589,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         self.b_setCheckedLocations(self.checkedLocations)
 
-
-
     # Called to announce to Archipelago that we need to know what this location ID is so we can receive
     # A LocationInfo packet and keep track of it
     def scoutLocation(self, location: int):
@@ -4818,12 +4817,15 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     #
     # When setting death reasons, always make sure to set it BEFORE the damage is taken.
     def setDeathReason(self, reason: Union[DeathReason, str]):
-
         if isinstance(reason, str):
             reasonEnum = DeathReason.from_astron(reason)
             # Was this update garbage?
             if reasonEnum is None:
                 return
+
+            # Good place to handle the check for getting ran over like an idiot
+            if reasonEnum == DeathReason.TRAIN:
+                self.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.TRAIN_CRUSHED.value))
 
             # Valid reason from client
             reason = reasonEnum
