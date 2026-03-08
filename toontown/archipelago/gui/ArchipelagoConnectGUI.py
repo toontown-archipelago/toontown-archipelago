@@ -98,6 +98,8 @@ class ArchipelagoConnectGUI(DirectFrame):
         base.talkAssistant.sendOpenTalk(f"~ap password {self.passBarEntry.get()}")
         base.talkAssistant.sendOpenTalk(f"~ap connect {self.ipBarEntry.get()}")
         self.toggleEntryFocus(True)
+        if base.settings.get('new-popup'):
+            base.localAvatar.chatMgr.mimicApButtonPressed()
 
     def handleDisconnect(self):
         base.talkAssistant.sendOpenTalk("~ap disconnect")

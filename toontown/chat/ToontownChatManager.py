@@ -445,6 +445,17 @@ class ToontownChatManager(ChatManager.ChatManager):
             self.apGuiToggled = False
             self.apButton['text'] = ""
 
+    def mimicApButtonPressed(self):
+        if not self.apGuiToggled:
+            self.apGui.updateFields()
+            self.apGui.show()
+            self.apGuiToggled = True
+            self.apButton['text'] = "Hide Panel"
+        else:
+            self.apGui.hide()
+            self.apGuiToggled = False
+            self.apButton['text'] = ""
+
     def __whisperButtonPressed(self, avatarName, avatarId, playerId):
         messenger.send('wakeup')
         playerInfo = None
