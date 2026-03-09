@@ -170,7 +170,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
-            elif location_data.type == locations.ToontownLocationType.COG_LEVELS:
+            elif location_data.type in (locations.ToontownLocationType.COG_LEVELS, locations.ToontownLocationType.HIGH_COG_LEVELS):
                 name = "Cog Levels"
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
