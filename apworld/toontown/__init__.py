@@ -896,7 +896,7 @@ class ToontownWorld(World):
                     self.options.fish_progression.option_licenses_and_rods
                 ])
             ):
-            logging.warning("[{self.multiworld.player_name[self.player]}] Sphere 1 likely contains very few checks, adding an offensive gag to starting gags to avoid this.")
+            logging.warning(f"[{self.multiworld.player_name[self.player]}] Sphere 1 likely contains very few checks, adding an offensive gag to starting gags to avoid this.")
             if ToontownItemName.LURE_FRAME in starting_gags:
                 starting_gag_items.append(rng.choice(OFFENSIVE))
             else:
