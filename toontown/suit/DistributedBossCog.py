@@ -1353,9 +1353,11 @@ class DistributedBossCog(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
 
     def fadeFunc(self, alpha):
         if hasattr(self, 'alertText'):
-            self.alertText.setAlphaScale(alpha)
+            if self.alertText:
+                self.alertText.setAlphaScale(alpha)
 
     def lerpColorFunc(self, colorscale):
         if hasattr(self, 'alertText'):
-            self.alertText.setColorScale(colorscale)
+            if self.alertText:
+                self.alertText.setColorScale(colorscale)
         
