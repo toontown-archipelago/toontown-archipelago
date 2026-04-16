@@ -129,6 +129,10 @@ class LocationPage(ShtikerPage.ShtikerPage):
         missingLocations: dict[str,LocationCategory] = {}
         # Locations to force to the top of the list.
         priorityMissingLocations: dict[str,LocationCategory] = {}
+        # Tasks, force to the bottom of the list.
+        taskMissingLocations: dict[str,LocationCategory] = {}
+        # Doodles, force to the bottom of the list.
+        doodleMissingLocations: dict[str, LocationCategory] = {}
         # Determine forbidden location types.
         forbidden_location_types: set[locations.ToontownLocationType] = self.get_disabled_location_types()
 
@@ -160,17 +164,19 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 enabled_locations = []
                 for x in range(cpb):
                     enabled_locations.append(boss_locations[x].value)
+                    self.logicalLocations += 1
                 obj = LocationCategory(location_data.name.value, enabled_locations)
                 priorityMissingLocations.update({location_data.name.value:obj})
                 continue
+
             # Locations that are identical with only a number appended.
-            if location_data.type in locations.TREASURE_LOCATION_TYPES + locations.TASK_LOCATION_TYPES + locations.KNOCK_KNOCK_LOCATION_TYPES:
+            if location_data.type in locations.TREASURE_LOCATION_TYPES + locations.KNOCK_KNOCK_LOCATION_TYPES:
                 name = location_data.name.value.rsplit(" ", 1)[0]
                 name = name.replace("Knock Knock", "Street")
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
-            elif location_data.type == locations.ToontownLocationType.COG_LEVELS:
+            elif location_data.type in (locations.ToontownLocationType.COG_LEVELS, locations.ToontownLocationType.HIGH_COG_LEVELS):
                 name = "Cog Levels"
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
@@ -182,11 +188,6 @@ class LocationPage(ShtikerPage.ShtikerPage):
 
             elif location_data.region in [locations.ToontownRegionName.FISHING]:
                 name = location_data.type.name.replace("_", " ").title()
-                obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
-
-            elif location_data.type == locations.ToontownLocationType.PET_SHOP:
-                name = location_data.region.name + " Pet Shop"
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
@@ -211,14 +212,27 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 name = location_data.type.name.title()
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
-
             else:
                 name = location_data.name.value
                 obj = LocationCategory(name, name)
-            missingLocations.update({name:obj})
+
+            # Task checks, we want these on the bottom
+            if location_data.type in locations.TASK_LOCATION_TYPES:
+                name = location_data.name.value.rsplit(" ", 1)[0]
+                obj = taskMissingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+                taskMissingLocations.update({name: obj})
+            # Doodle checks, we want these on the bottom
+            elif location_data.type == locations.ToontownLocationType.PET_SHOP:
+                name = location_data.region.name + " Pet Shop"
+                obj = doodleMissingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+                doodleMissingLocations.update({name: obj})
+            else:
+                missingLocations.update({name:obj})
             self.logicalLocations += 1
 
-        self.locationsPossible = {**priorityMissingLocations, **missingLocations}
+        self.locationsPossible = {**priorityMissingLocations, **missingLocations, **taskMissingLocations, **doodleMissingLocations}
 
     def get_disabled_location_types(self) -> set[locations.ToontownLocationType]:
         """
