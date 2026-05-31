@@ -92,6 +92,9 @@ class DistributedPlayerAI(DistributedAvatarAI.DistributedAvatarAI, PlayerBase.Pl
     def d_setArchipelagoHintMessage(self, ip):
         self.sendUpdate('setArchipelagoHintMessage', [ip])
 
+    def d_setVersionMismatchMessage(self, ap_version):
+        self.sendUpdate('setVersionMismatchMessage', [ap_version])
+
     def d_setCommonChatFlags(self, flags):
         self.sendUpdate('setCommonChatFlags', [flags])
 

@@ -223,9 +223,8 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Check to warn the player that our game version mismatches the apworld's
         if ToontownGlobals.GameVersion != self.slot_data.get('game_version', ToontownGlobals.GameVersion):
-            client.av.d_setSystemMessage(0, f"WARNING: Game version doesn't match the APWORLD's!\n"
-                                            f"GAME: {ToontownGlobals.GameVersion}\n"
-                                            f"APWORLD: {self.slot_data.get('game_version', ToontownGlobals.GameVersion)}")
+            ap_version = self.slot_data.get('game_version', ToontownGlobals.GameVersion)
+            client.av.d_setVersionMismatchMessage(ap_version)
 
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)
