@@ -578,30 +578,13 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
 @rule(Rule.LevelFourteenCogs, 14)
 def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     args = (state, locentr, world, player, options)
-
-    CanTier1 = passes_rule(Rule.TierOneCogs, *args)
-    CanTier2 = passes_rule(Rule.TierTwoCogs, *args)
-    CanTier3 = passes_rule(Rule.TierThreeCogs, *args)
-    CanTier4 = passes_rule(Rule.TierFourCogs, *args)
-    CanTier4Boss = passes_rule(Rule.TierFourBossbot, *args)
-    CanTier4Law = passes_rule(Rule.TierFourLawbot, *args)
-    CanTier4Cash = passes_rule(Rule.TierFourCashbot, *args)
-    CanTier4Sell = passes_rule(Rule.TierFourSellbot, *args)
-    CanTier5 = passes_rule(Rule.TierFiveCogs, *args)
-    CanTier5Boss = passes_rule(Rule.TierFiveBossbot, *args)
-    CanTier5Law = passes_rule(Rule.TierFiveLawbot, *args)
-    CanTier5Cash = passes_rule(Rule.TierFiveCashbot, *args)
-    CanTier5Sell = passes_rule(Rule.TierFiveSellbot, *args)
-    CanTier6 = passes_rule(Rule.TierSixCogs, *args)
-    CanTier6Boss = passes_rule(Rule.TierSixBossbot, *args)
-    CanTier6Law = passes_rule(Rule.TierSixLawbot, *args)
-    CanTier6Cash = passes_rule(Rule.TierSixCashbot, *args)
-    CanTier6Sell = passes_rule(Rule.TierSixSellbot, *args)
-    CanTier8Boss = passes_rule(Rule.TierEightBossbot, *args)
-    CanTier8Law =  passes_rule(Rule.TierEightLawbot,  *args)
-    CanTier8Cash = passes_rule(Rule.TierEightCashbot, *args)
-    CanTier8Sell = passes_rule(Rule.TierEightSellbot, *args)
+    CanTTC = state.can_reach(ToontownRegionName.TTC.value, None, player)
+    CanDD = state.can_reach(ToontownRegionName.DD.value, None, player)
+    CanDG = state.can_reach(ToontownRegionName.DG.value, None, player)
+    CanMML = state.can_reach(ToontownRegionName.MML.value, None, player)
+    CanTB = state.can_reach(ToontownRegionName.TB.value, None, player)
     CanDDL = state.can_reach(ToontownRegionName.DDL.value, None, player)
+    CanSBHQ = state.can_reach(ToontownRegionName.SBHQ.value, None, player)
     CanCBHQ = state.can_reach(ToontownRegionName.CBHQ.value, None, player)
     CanLBHQ = state.can_reach(ToontownRegionName.LBHQ.value, None, player)
     CanBBHQ = state.can_reach(ToontownRegionName.BBHQ.value, None, player)
@@ -621,77 +604,81 @@ def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: Mult
 
     tier_to_info = {
         1: {
-            "gags": None,
+            "gags": Rule.HasLevelOneOffenseGag,
             "laff": None,
             "rules": [
-                CanTier1,
+                CanTTC,
             ]
         },
         2: {
-            "gags": None,
+            "gags": Rule.HasLevelOneOffenseGag,
             "laff": None,
             "rules": [
-                CanTier2,
+                CanTTC,
             ]
         },
         3: {
-            "gags": None,
+            "gags": Rule.HasLevelTwoOffenseGag,
             "laff": None,
             "rules": [
-                CanTier3,
+                CanTTC,
+                CanDD,
             ]
         },
         4: {
-            "gags": None,
+            "gags": Rule.HasLevelThreeOffenseGag,
             "laff": None,
             "rules": [
-                CanTier4,
-                CanTier4Law,
-                CanTier4Cash,
-                CanTier4Sell,
-                CanTier4Boss,
+                CanDD,
+                CanDG,
+                CanMML,
             ]
         },
         5: {
-            "gags": None,
+            "gags": Rule.HasLevelThreeOffenseGag,
             "laff": None,
             "rules": [
-                CanTier5,
-                CanTier5Boss,
-                CanTier5Law,
-                CanTier5Cash,
-                CanTier5Sell,
+                CanDD,
+                CanDG,
+                CanMML,
+                CanTB,
+                CanSBHQ,
             ]
         },
         6: {
-            "gags": None,
+            "gags": Rule.HasLevelFourOffenseGag,
             "laff": None,
             "rules": [
-                CanTier6,
-                CanTier6Boss,
-                CanTier6Law,
-                CanTier6Cash,
-                CanTier6Sell,
+                CanDG,
+                CanMML,
+                CanTB,
+                CanDDL,
+                CanSBHQ,
+                CanCBHQ,
             ]
         },
         7: {
             "gags": Rule.HasLevelFourOffenseGag,
             "laff": Rule.Has20PercentMax,
             "rules": [
-                CanTier8Boss,
-                CanTier8Law,
-                CanTier8Cash,
-                CanTier8Sell,
+                CanMML,
+                CanTB,
+                CanDDL,
+                CanSBHQ,
+                CanCBHQ,
+                CanLBHQ,
             ]
         },
         8: {
             "gags": Rule.HasLevelFourOffenseGag,
             "laff": Rule.Has20PercentMax,
             "rules": [
-                CanTier8Boss,
-                CanTier8Law,
-                CanTier8Cash,
-                CanTier8Sell,
+                CanTB,
+                CanDDL,
+                CanSBHQ,
+                CanCBHQ,
+                CanLBHQ,
+                CanBBHQ,
             ]
         },
         9: {
@@ -700,6 +687,7 @@ def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: Mult
             "rules": [
                 CanDDL,
                 CanFiveStory,
+                CanSBHQ,
                 CanCBHQ,
                 CanLBHQ,
                 CanBBHQ,
