@@ -166,7 +166,7 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
     def displayVersionMessage(self, ap_version: str):
         self.accept('versionAckDlg', self.__handleVersionAckDlg)
         boxText = f"GAME VERSION DOESN'T MATCH APWORLD!"
-        boxTextCont = f"\n\nGame Version: {ToontownGlobals.GameVersion}\nApworld Verion: {ap_version}"
+        boxTextCont = f"\n\nGame Version: {ToontownGlobals.GameVersion}\nApworld Version: {ap_version}"
         boxTextCont2 = "\n\nRegenerate the seed with the correct apworld version or switch to the proper game version!"
         self.versionMessage = TTDialog.TTGlobalDialog(message=(boxText + boxTextCont + boxTextCont2), doneEvent='versionAckDlg', style=TTDialog.Acknowledge)
         self.versionMessage.show()
