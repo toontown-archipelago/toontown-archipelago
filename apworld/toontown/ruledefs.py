@@ -583,8 +583,20 @@ def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: Mult
     CanTier2 = passes_rule(Rule.TierTwoCogs, *args)
     CanTier3 = passes_rule(Rule.TierThreeCogs, *args)
     CanTier4 = passes_rule(Rule.TierFourCogs, *args)
+    CanTier4Boss = passes_rule(Rule.TierFourBossbot, *args)
+    CanTier4Law = passes_rule(Rule.TierFourLawbot, *args)
+    CanTier4Cash = passes_rule(Rule.TierFourCashbot, *args)
+    CanTier4Sell = passes_rule(Rule.TierFourSellbot, *args)
     CanTier5 = passes_rule(Rule.TierFiveCogs, *args)
+    CanTier5Boss = passes_rule(Rule.TierFiveBossbot, *args)
+    CanTier5Law = passes_rule(Rule.TierFiveLawbot, *args)
+    CanTier5Cash = passes_rule(Rule.TierFiveCashbot, *args)
+    CanTier5Sell = passes_rule(Rule.TierFiveSellbot, *args)
     CanTier6 = passes_rule(Rule.TierSixCogs, *args)
+    CanTier6Boss = passes_rule(Rule.TierSixBossbot, *args)
+    CanTier6Law = passes_rule(Rule.TierSixLawbot, *args)
+    CanTier6Cash = passes_rule(Rule.TierSixCashbot, *args)
+    CanTier6Sell = passes_rule(Rule.TierSixSellbot, *args)
     CanTier8Boss = passes_rule(Rule.TierEightBossbot, *args)
     CanTier8Law =  passes_rule(Rule.TierEightLawbot,  *args)
     CanTier8Cash = passes_rule(Rule.TierEightCashbot, *args)
@@ -634,6 +646,10 @@ def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: Mult
             "laff": None,
             "rules": [
                 CanTier4,
+                CanTier4Law,
+                CanTier4Cash,
+                CanTier4Sell,
+                CanTier4Boss,
             ]
         },
         5: {
@@ -641,6 +657,10 @@ def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: Mult
             "laff": None,
             "rules": [
                 CanTier5,
+                CanTier5Boss,
+                CanTier5Law,
+                CanTier5Cash,
+                CanTier5Sell,
             ]
         },
         6: {
@@ -648,6 +668,10 @@ def CanReachHighCogTier(state: CollectionState, locentr: LocEntrDef, world: Mult
             "laff": None,
             "rules": [
                 CanTier6,
+                CanTier6Boss,
+                CanTier6Law,
+                CanTier6Cash,
+                CanTier6Sell,
             ]
         },
         7: {

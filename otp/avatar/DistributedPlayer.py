@@ -18,6 +18,7 @@ from otp.distributed.TelemetryLimited import TelemetryLimited
 from toontown.distributed import DelayDelete
 from toontown.toontowngui import TTDialog
 from toontown.archipelago.definitions.color_profile import ColorProfile
+from toontown.toonbase import ToontownGlobals
 
 if base.config.GetBool('want-chatfilter-hacks', 0):
     from otp.switchboard import badwordpy
@@ -50,7 +51,7 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
             self.accessLevel = 0
             self.autoRun = 0
             self.whiteListEnabled = base.config.GetBool('whitelist-chat-enabled', 1)
-
+            self.apVersion = ""
         return
 
     def isPlayerControlled(self):
@@ -145,7 +146,14 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
         chatString = f"Current session: {ip}"
         self.displayWhisper(0, chatString, WhisperType.WTSystem)
         if base.settings.get('new-popup'):
-            taskMgr.doMethodLater(0.1, self.displayArchipelagoMessage, 'secondMessage')
+            taskMgr.doMethodLater(0.15, self.displayArchipelagoMessage, 'secondMessage')
+
+    def setVersionMismatchMessage(self, ap_version: str):
+        self.apVersion = ap_version
+        # Only immediately display the version mismatch if we don't have a connect popup
+        if not base.settings.get('new-popup'):
+            base.localAvatar.chatMgr.mimicApButtonPressed()
+            taskMgr.doMethodLater(0.15, self.displayVersionMessage, 'versionMessage', extraArgs=[self.apVersion])
 
     def displayArchipelagoMessage(self, task):
         self.accept('archipelagoAckDlg', self.__handleArchipelagoAckDlg)
@@ -155,10 +163,26 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
         self.hintMessage = TTDialog.TTGlobalDialog(message=(boxText + boxTextCont + boxTextCont2), doneEvent='archipelagoAckDlg', style=TTDialog.Acknowledge)
         self.hintMessage.show()
 
+    def displayVersionMessage(self, ap_version: str):
+        self.accept('versionAckDlg', self.__handleVersionAckDlg)
+        boxText = f"GAME VERSION DOESN'T MATCH APWORLD!"
+        boxTextCont = f"\n\nGame Version: {ToontownGlobals.GameVersion}\nApworld Verion: {ap_version}"
+        boxTextCont2 = "\n\nRegenerate the seed with the correct apworld version or switch to the proper game version!"
+        self.versionMessage = TTDialog.TTGlobalDialog(message=(boxText + boxTextCont + boxTextCont2), doneEvent='versionAckDlg', style=TTDialog.Acknowledge)
+        self.versionMessage.show()
+
     def __handleArchipelagoAckDlg(self):
         if self.hintMessage:
             self.hintMessage.cleanup()
             self.hintMessage = None
+            # Only attmept to display the apworld warning if we sent a version over
+            if self.apVersion != "":
+                taskMgr.doMethodLater(0.1, self.displayVersionMessage, 'versionMessage', extraArgs=[self.apVersion])
+
+    def __handleVersionAckDlg(self):
+        if self.versionMessage:
+            self.versionMessage.cleanup()
+            self.versionMessage = None
 
     def displayWhisper(self, fromId, chatString, whisperType, colorProfileOverride: ColorProfile = None):
         print('Whisper type %s from %s: %s' % (whisperType, fromId, chatString))
