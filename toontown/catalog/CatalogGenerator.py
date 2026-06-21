@@ -1709,7 +1709,7 @@ class CatalogGenerator:
     def __determineSeries(self, seriesDict, weeklist):
         for week in weeklist:
             if isinstance(week, int):
-                series = (week - 1) / ToontownGlobals.CatalogNumWeeksPerSeries + 1
+                series = (week - 1) // ToontownGlobals.CatalogNumWeeksPerSeries + 1
                 seriesDict[series] = None
 
         return

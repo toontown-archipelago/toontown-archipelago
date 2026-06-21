@@ -7,7 +7,7 @@ from direct.fsm.FSM import FSM
 from toontown.estate import HouseGlobals
 from toontown.estate.DistributedHouseAI import DistributedHouseAI
 from toontown.toon import ToonDNA
-
+import threading
 
 class LoadHouseOperation(FSM):
     def __init__(self, mgr, estate, index, avatar, callback):
@@ -28,7 +28,8 @@ class LoadHouseOperation(FSM):
             # Case #1: There isn't an avatar in that estate slot. Make a blank house.
             # Because this state completes so fast, we'll use taskMgr to delay
             # it until the next iteration. This solves reentrancy problems.
-            taskMgr.doMethodLater(0.0, self.demand, 'makeBlankHouse-%s' % id(self), extraArgs=['MakeBlankHouse'])
+            # threading.Timer(0.0, self.demand, ['MakeBlankHouse']).start()
+            taskMgr.doMethodLater(0, self.makeBlankHouse, 'makeBlankHouse-%d' % self.index)
             return
 
         style = ToonDNA.ToonDNA()
@@ -41,6 +42,11 @@ class LoadHouseOperation(FSM):
         else:
             # Case #3: Avatar with a setHouseId. Load it:
             self.demand('LoadHouse')
+
+    # function to enter the make blank house state
+    def makeBlankHouse(self, task):
+        self.demand('MakeBlankHouse')
+        return task.done
 
     def enterMakeBlankHouse(self):
         self.house = DistributedHouseAI(self.mgr.air)
@@ -261,7 +267,11 @@ class LoadEstateOperation(FSM):
                 petOperation.start()
 
         if not self.petOperations:
-            taskMgr.doMethodLater(0, lambda: self.demand('Finished'), 'no-pets', extraArgs=[])
+            taskMgr.doMethodLater(0, self.noPets, 'noPets-%d' % self.estateId)
+
+    def noPets(self, task):
+        self.demand('Finished')
+        return task.done
 
     def __handlePetLoaded(self, pet):
         if self.state != 'LoadPets':
@@ -384,7 +394,6 @@ class EstateManagerAI(DistributedObjectAI):
         if estate:
             # The sender already has an estate loaded, so let's send them there.
             self._mapToEstate(senderAv, senderAv.estate)
-
             if senderAv and senderAv.getPetId() != 0:
                 pet = self.air.doId2do.get(senderAv.getPetId())
                 if pet:

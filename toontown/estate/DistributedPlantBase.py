@@ -173,6 +173,8 @@ class DistributedPlantBase(DistributedLawnDecor.DistributedLawnDecor):
             self.doFinishPlantingTrack(avId)
         elif mode == GardenGlobals.MOVIE_REMOVE:
             self.doDigupTrack(avId)
+        elif mode == GardenGlobals.MOVIE_FINISHREMOVING:
+            self.doFinishPlantingTrack(avId)
 
     def doWaterTrack(self, avId):
         toon = base.cr.doId2do.get(avId)
@@ -192,6 +194,7 @@ class DistributedPlantBase(DistributedLawnDecor.DistributedLawnDecor):
             track.append(Func(self.sendUpdate, 'waterPlantDone'))
             track.append(Func(self.finishInteraction))
         track.start()
+        track.setPlayRate(2.0)
         self.waterTrackDict[avId] = track
 
     def generateWaterTrack(self, toon):

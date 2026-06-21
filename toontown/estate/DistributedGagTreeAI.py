@@ -66,7 +66,7 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
 
         # Growth level
         maxGrowth = self.growthThresholds[2]
-        newGrowthLevel = min(self.growthLevel + grown, maxGrowth)
+        newGrowthLevel = maxGrowth
         self.setGrowthLevel(newGrowthLevel)
         self.setWilted(self.waterLevel == -2)
         self.lastCheck = now - elapsed
