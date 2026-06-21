@@ -249,6 +249,11 @@ Toontown:
   # - unlocked: Facilities are unlocked from the start of the run.
   facility_locking: 'keys'
 
+  # Will allow for maze minigames to sometimes replace the mole stomp minigame in Bossbot HQ's facilities.
+  # All toons entering the facility must have this setting enabled for it to take effect.
+  # NOTE: Each floor with a maze adds an additional cog battle to that floor, slightly increasing difficulty.
+  want_cgc_mazes: 'false'
+
   ### Fish Settings ###
 
   # Determines where fish can spawn.
