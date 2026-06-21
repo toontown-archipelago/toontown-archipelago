@@ -575,6 +575,16 @@ class FacilityLocking(Choice):
     default = 0
 
 
+class WantCGCMazes(Toggle):
+    """
+    Will allow for maze minigames to sometimes replace the mole stomp minigame in Bossbot HQ's facilities.
+    All toons entering the facility must have this setting enabled for it to take effect.
+    NOTE: Each floor with a maze adds an additional cog battle to that floor, slightly increasing difficulty.
+    """
+    display_name = "Want CGC Mazes"
+    default = False
+
+
 class FishLocations(Choice):
     """
     Determines where fish can spawn.
@@ -979,6 +989,7 @@ class ToontownOptions(PerGameCommonOptions):
     logical_maxed_cog_gallery: LogicalMaxedCogGallery
     maxed_cog_gallery_quota: MaxedCogGalleryQuota
     facility_locking: FacilityLocking
+    want_cgc_mazes: WantCGCMazes
     fish_locations: FishLocations
     fish_checks: FishChecks
     fish_progression: FishProgression
@@ -1036,7 +1047,7 @@ toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Check/Item Behavior", [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
-        MaxedCogGalleryQuota, FacilityLocking, FishChecks, FishLocations,
+        MaxedCogGalleryQuota, FacilityLocking, WantCGCMazes, FishChecks, FishLocations,
         FishProgression, FishPity, RacingOption, GolfingOption, SeedGenerationTypeOption,
         JokesPerStreet, JokeBookToggle
     ], False),
