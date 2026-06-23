@@ -533,6 +533,7 @@ dclass DistributedPlayer : DistributedAvatar {
   setWhisperSCEmoteFrom(uint32, uint16) ownrecv clsend;
   setSystemMessage(uint32, string(0-256)) ownrecv;
   setArchipelagoHintMessage(string(0-256)) ownrecv;
+  setVersionMismatchMessage(string(0-256)) ownrecv;
   setCommonChatFlags(uint8) broadcast ownrecv ram airecv;
   setWhitelistChatFlags(uint8) broadcast ownrecv ram airecv;
   setSC(uint16) broadcast ownsend airecv;

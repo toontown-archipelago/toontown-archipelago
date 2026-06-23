@@ -2977,7 +2977,12 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if base.localAvatar.slotData.get("tpsanity", 0) != TPSanity.option_keys:
             return True
         for item in self.getReceivedItems():
-            if region_to_tp_item[region] == get_item_def_from_id(item[1]).name:
+            item_def = get_item_def_from_id(item[1])
+            if item_def:
+                item_name = item_def.name
+            else:
+                item_name = ""
+            if region_to_tp_item[region] == item_name:
                 return True
         return False
 

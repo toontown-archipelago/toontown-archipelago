@@ -733,7 +733,7 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "team": self.options.team.value,
-            "game_version": "v0.19.5",
+            "game_version": "v0.19.6",
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "max_laff": self.options.max_laff.value,
@@ -782,6 +782,7 @@ class ToontownWorld(World):
             "slot_sync_gag_experience": self.options.slot_sync_gag_experience.value,
             "pet_shop_display": self.options.pet_shop_display.value,
             "task_reward_display": self.options.task_reward_display.value,
+            "want_cgc_mazes": self.options.want_cgc_mazes.value,
             "local_itempool": local_itempool,
             "local_locations": local_locations,
             "tpsanity": self.options.tpsanity.value,
