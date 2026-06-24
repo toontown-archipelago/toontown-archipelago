@@ -22,11 +22,11 @@ class DistributedCountryClubAI(DistributedObjectAI.DistributedObjectAI):
         self.wantMazes = True
         if self.avIds:
             for avId in self.avIds:
-                if toon:
                     toon = self.air.doId2do.get(avId)
-                    self.wantMazes = toon.slotData.get('want_cgc_mazes', False)
-                    if not self.wantMazes:
-                        break
+                    if toon:
+                        self.wantMazes = toon.slotData.get('want_cgc_mazes', False)
+                        if not self.wantMazes:
+                            break
         self.layout = CountryClubLayout.CountryClubLayout(self.countryClubId, self.floorNum, self.layoutIndex, self.wantMazes)
         for i in range(self.layout.getNumRooms()):
             if i:
