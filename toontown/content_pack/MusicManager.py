@@ -15,8 +15,12 @@ class MusicManager:
         self.randomMusicInfo = {}
         self.storedMusicInfo = {}
         self.lastPlayedTrack = {}
+        self.shuffledMusic = {}
+        self._loadMusicPacks()
     
     def playMusic(self, json_code, looping=True, volume=1.0, interrupt=True, time=0.0, refresh=False, randomToggle=False):
+        import builtins
+        base = getattr(builtins, 'base', None)
         if self.previousMusic == json_code and not randomToggle:
             return
         if self.currentMusic and interrupt:
@@ -27,12 +31,31 @@ class MusicManager:
         }
         self.previousMusic = json_code
         if getattr(base, 'randomMusic', False):
-            pool = self._getTrackPool()
-            allowed_tracks = [t for t in pool if t != self.lastPlayedTrack.get(json_code)]
-            if not allowed_tracks:
-                allowed_tracks = pool
-            json_code_path = random.choice(allowed_tracks)
-            self.lastPlayedTrack[json_code] = json_code_path
+            is_wild = False
+            if getattr(base, 'localAvatar', None) and base.localAvatar.hasConnected():
+                rng_option = base.localAvatar.slotData.get('seed_generation_type', 0)
+                if rng_option in (3, 'wild'):
+                    is_wild = True
+            if is_wild:
+                pool = self._getTrackPool()
+                allowed_tracks = [t for t in pool if t != self.lastPlayedTrack.get(json_code)]
+                if not allowed_tracks:
+                    allowed_tracks = pool
+                json_code_path = random.choice(allowed_tracks)
+                self.lastPlayedTrack[json_code] = json_code_path
+            else:
+                if not getattr(self, 'shuffledMusic', {}):
+                    self.setRandomizedMusic()
+                if json_code in self.shuffledMusic:
+                    json_code_path = self.shuffledMusic[json_code]
+                else:
+                    pool = self._getTrackPool()
+                    if pool:
+                        json_code_path = random.choice(pool)
+                    elif possible_paths:
+                        json_code_path = random.choice(possible_paths)
+                    else:
+                        return
         else:
             if possible_paths:
                 json_code_path = random.choice(possible_paths)
@@ -51,7 +74,44 @@ class MusicManager:
                 from libotp.nametag.WhisperGlobals import WhisperType
                 base.localAvatar.displayWhisper(0, "Now Playing: " + track_name, WhisperType.WTSystem, colorProfileOverride=color_profile.PURPLE)
 
+    def _loadMusicPacks(self):
+        import os
+        packs_dir = "resources/music_packs"
+        if not os.path.exists(packs_dir):
+            try:
+                os.makedirs(packs_dir)
+            except Exception:
+                pass
+            return
+        try:
+            for item in os.listdir(packs_dir):
+                item_path = os.path.join(packs_dir, item)
+                if os.path.isdir(item_path):
+                    for f in os.listdir(item_path):
+                        if f.lower().endswith(".json"):
+                            json_path = os.path.join(item_path, f)
+                            try:
+                                with open(json_path, 'r') as json_file:
+                                    pack_data = json.load(json_file)
+                                global_music = pack_data.get("global_music", {})
+                                for key, paths in global_music.items():
+                                    resolved_paths = []
+                                    for p in paths:
+                                        p_cleaned = p.replace("\\", "/")
+                                        if not os.path.exists(p_cleaned):
+                                            local_p = os.path.join(item_path, p).replace("\\", "/")
+                                            if os.path.exists(local_p):
+                                                p_cleaned = local_p
+                                        resolved_paths.append(p_cleaned)
+                                    self.musicJson.setdefault("global_music", {})[key] = resolved_paths
+                            except Exception:
+                                pass
+        except Exception:
+            pass
+
     def _getTrackPool(self):
+        import builtins
+        base = getattr(builtins, 'base', None)
         in_game_paths = []
         for paths in self.musicJson.get('global_music', {}).values():
             for p in paths:
@@ -163,7 +223,31 @@ class MusicManager:
         return None
 
     def setRandomizedMusic(self):
+        import builtins
+        base = getattr(builtins, 'base', None)
         self.lastPlayedTrack = {}
+        self.shuffledMusic = {}
+        is_wild = False
+        seed = None
+        if getattr(base, 'localAvatar', None) and base.localAvatar.hasConnected():
+            rng_option = base.localAvatar.slotData.get('seed_generation_type', 0)
+            if rng_option in (3, 'wild'):
+                is_wild = True
+            else:
+                seed = base.localAvatar.getSeed()
+        if is_wild:
+            return
+        pool = self._getTrackPool()
+        if not pool:
+            return
+        rng = random.Random()
+        if seed is not None:
+            rng.seed(seed)
+        keys = sorted(list(self.musicJson.get('global_music', {}).keys()))
+        pool_copy = sorted(list(pool))
+        rng.shuffle(pool_copy)
+        for i, key in enumerate(keys):
+            self.shuffledMusic[key] = pool_copy[i % len(pool_copy)]
 
     def stopMusic(self):        
         for music in list(self.currentMusic.keys()):

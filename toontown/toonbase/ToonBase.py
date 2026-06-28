@@ -778,6 +778,8 @@ class ToonBase(OTPBase.OTPBase):
             currentMusicInfo = self.contentPackMusicManager.getCurMusicInfo()  # this will return a dict with the current music, the value of each being data like looping, volume, etc.
             normalMusicInfo = self.contentPackMusicManager.getNormalMusicInfo()
             musicJson = self.contentPackMusicManager.musicJson
+        if getattr(self, "contentPackMusicManager", None):
+            self.contentPackMusicManager.setRandomizedMusic()
         # Play the music again
         if musicJson:
             self.contentPackMusicManager.stopMusic()
