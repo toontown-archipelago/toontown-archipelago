@@ -209,6 +209,7 @@ class ToonBase(OTPBase.OTPBase):
         # do they want laff meter on or off?
         self.laffMeterDisplay = self.settings.get('laff-display')
         self.randomMusic = self.settings.get("random-music")
+        self.randomMusicStyle = self.settings.get("random-music-style")
         self.newPopup = self.settings.get("new-popup")
         self.discord = DiscordRPC()
         self.discord.launching()
