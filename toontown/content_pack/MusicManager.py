@@ -63,7 +63,7 @@ class MusicManager:
         if os.path.exists(custom_dir):
             try:
                 for f in os.listdir(custom_dir):
-                    if f.lower().endswith(".ogg"):
+                    if f.lower().endswith((".ogg", ".mp3", ".wav", ".flac", ".wma", ".aac", ".m4a", ".opus")):
                         custom_paths.append(os.path.join(custom_dir, f).replace("\\", "/"))
             except Exception:
                 pass
@@ -78,13 +78,62 @@ class MusicManager:
             return in_game_paths
 
     def _getTrackName(self, track_path):
-        title = self._getOggTitle(track_path)
+        title = self._getAudioTitle(track_path)
         if title:
             return title
         import os
         filename = os.path.basename(track_path)
         name_without_ext = os.path.splitext(filename)[0]
         return name_without_ext.replace('_', ' ').replace('-', ' ').strip().title()
+
+    def _getAudioTitle(self, file_path):
+        import os
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext in ('.ogg', '.flac'):
+            return self._getOggTitle(file_path)
+        elif ext == '.mp3':
+            return self._getMp3Title(file_path)
+        return None
+
+    def _getMp3Title(self, file_path):
+        try:
+            with open(file_path, 'rb') as f:
+                data = f.read(16384)
+            idx = data.find(b'TIT2')
+            if idx != -1:
+                if len(data) >= idx + 11:
+                    size_bytes = data[idx+4:idx+8]
+                    frame_size = int.from_bytes(size_bytes, byteorder='big')
+                    if 0 < frame_size < 1024:
+                        encoding = data[idx+10]
+                        raw_bytes = data[idx+11 : idx+11+frame_size-1]
+                        if encoding == 0:
+                            title = raw_bytes.decode('iso-8859-1', errors='ignore')
+                        elif encoding == 1:
+                            title = raw_bytes.decode('utf-16', errors='ignore')
+                        elif encoding == 2:
+                            title = raw_bytes.decode('utf-16-be', errors='ignore')
+                        elif encoding == 3:
+                            title = raw_bytes.decode('utf-8', errors='ignore')
+                        else:
+                            title = raw_bytes.decode('utf-8', errors='ignore')
+                        title = title.replace('\x00', '').strip()
+                        if title:
+                            return title
+            with open(file_path, 'rb') as f:
+                f.seek(0, 2)
+                file_size = f.tell()
+                if file_size >= 128:
+                    f.seek(-128, 2)
+                    tag = f.read(3)
+                    if tag == b'TAG':
+                        title_bytes = f.read(30)
+                        title = title_bytes.decode('iso-8859-1', errors='ignore').replace('\x00', '').strip()
+                        if title:
+                            return title
+        except Exception:
+            pass
+        return None
 
     def _getOggTitle(self, file_path):
         try:
