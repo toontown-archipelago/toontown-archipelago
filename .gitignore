@@ -17,6 +17,9 @@ backups/
 settings.json
 errorCode
 PPYTHON_PATH
+Panda3D/
+
+resources/custom_music
 
 toontown/archipelago/output/
 

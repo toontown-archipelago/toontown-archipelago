@@ -14,55 +14,207 @@ class MusicManager:
         self.currentMusicInfo = {}
         self.randomMusicInfo = {}
         self.storedMusicInfo = {}
+        self.lastPlayedTrack = {}
+        self.shuffledMusic = {}
+        self._loadMusicPacks()
     
     def playMusic(self, json_code, looping=True, volume=1.0, interrupt=True, time=0.0, refresh=False, randomToggle=False):
-        """
-        Play a music track from the music json file.
-        :param json_code: The json code for the music track.
-        :param looping: Whether the music should loop.
-        :param volume: The volume of the music.
-        :param interrupt: Whether to interrupt the current music.
-        :param time: The time to start the music at.
-        """
-
-        # we're trying to play the exact same key that was already playing, don't
-        # this mainly only matters for cog building battles, but a good catch all
+        import builtins
+        base = getattr(builtins, 'base', None)
         if self.previousMusic == json_code and not randomToggle:
             return
-        # We're getting the possible paths for the music now so that we can check paths before they are cleared by the following stopMusic call
-        if json_code in self.musicJson['global_music']:
-            possible_paths = self.musicJson['global_music'][json_code]
-            # If the paths match exactly with the previous file, just let the music keep playing
-            if self.currentMusicInfo:
-                if base.randomMusic:
-                    random_json_code = self.randomMusicInfo[json_code]
-                    random_possible_paths = self.musicJson['global_music'][random_json_code]
-                    if random_possible_paths == self.currentMusicInfo[self.previousMusic]["path"]:
-                        return
-                else:
-                    if possible_paths == self.currentMusicInfo[self.previousMusic]["path"]:
-                        return
-        # we've got music and we're interrupting, kill
         if self.currentMusic and interrupt:
             self.stopMusic()
+        possible_paths = self.musicJson.get('global_music', {}).get(json_code, [])
+        self.storedMusicInfo = {
+            json_code: {"looping": looping, "volume": volume, "interrupt": interrupt, "time": time, "path": possible_paths}
+        }
         self.previousMusic = json_code
-        if json_code in list(self.randomMusicInfo.keys()) and base.randomMusic and not refresh:
-            json_code = self.randomMusicInfo[json_code]
-            # Storing the info for normal music for an area, so we have reference when disabling music rando
-            self.storedMusicInfo = {}
-            self.storedMusicInfo[self.previousMusic] = {"looping": looping, "volume": volume, "interrupt": interrupt,
-                                                        "time": time, "path": possible_paths}
-            self.previousMusic = json_code
-        if json_code in self.musicJson['global_music']:
-            possible_paths = self.musicJson['global_music'][json_code]
-            json_code_path = random.choice(possible_paths)
-            self.currentMusic[json_code] = base.loader.loadMusic(json_code_path)
-            self.currentMusic[json_code].setLoop(looping)
-            self.currentMusic[json_code].setVolume(volume)
-            self.currentMusic[json_code].setTime(time)
-            self.currentMusicInfo[json_code] = {"looping": looping, "volume": volume, "interrupt": interrupt, 
-                                                "time": time, "path": possible_paths}
-            base.playMusic(self.currentMusic[json_code], looping=looping, interrupt=interrupt, volume=volume, time=time)
+        if getattr(base, 'randomMusic', False):
+            is_wild = False
+            if getattr(base, 'localAvatar', None) and base.localAvatar.hasConnected():
+                rng_option = base.localAvatar.slotData.get('seed_generation_type', 0)
+                if rng_option in (3, 'wild'):
+                    is_wild = True
+            if is_wild:
+                pool = self._getTrackPool()
+                allowed_tracks = [t for t in pool if t != self.lastPlayedTrack.get(json_code)]
+                if not allowed_tracks:
+                    allowed_tracks = pool
+                json_code_path = random.choice(allowed_tracks)
+                self.lastPlayedTrack[json_code] = json_code_path
+            else:
+                if not getattr(self, 'shuffledMusic', {}):
+                    self.setRandomizedMusic()
+                if json_code in self.shuffledMusic:
+                    json_code_path = self.shuffledMusic[json_code]
+                else:
+                    pool = self._getTrackPool()
+                    if pool:
+                        json_code_path = random.choice(pool)
+                    elif possible_paths:
+                        json_code_path = random.choice(possible_paths)
+                    else:
+                        return
+        else:
+            if possible_paths:
+                json_code_path = random.choice(possible_paths)
+            else:
+                return
+        self.currentMusic[json_code] = base.loader.loadMusic(json_code_path)
+        self.currentMusic[json_code].setLoop(looping)
+        self.currentMusic[json_code].setVolume(volume)
+        self.currentMusic[json_code].setTime(time)
+        self.currentMusicInfo[json_code] = {"looping": looping, "volume": volume, "interrupt": interrupt, "time": time, "path": [json_code_path]}
+        base.playMusic(self.currentMusic[json_code], looping=looping, interrupt=interrupt, volume=volume, time=time)
+        if getattr(base, 'randomMusic', False):
+            track_name = self._getTrackName(json_code_path)
+            if getattr(base, 'localAvatar', None):
+                from toontown.archipelago.definitions import color_profile
+                from libotp.nametag.WhisperGlobals import WhisperType
+                base.localAvatar.displayWhisper(0, "Now Playing: " + track_name, WhisperType.WTSystem, colorProfileOverride=color_profile.PURPLE)
+
+    def _loadMusicPacks(self):
+        import os
+        packs_dir = "resources/music_packs"
+        if not os.path.exists(packs_dir):
+            try:
+                os.makedirs(packs_dir)
+            except Exception:
+                pass
+            return
+        try:
+            for item in os.listdir(packs_dir):
+                item_path = os.path.join(packs_dir, item)
+                if os.path.isdir(item_path):
+                    for f in os.listdir(item_path):
+                        if f.lower().endswith(".json"):
+                            json_path = os.path.join(item_path, f)
+                            try:
+                                with open(json_path, 'r') as json_file:
+                                    pack_data = json.load(json_file)
+                                global_music = pack_data.get("global_music", {})
+                                for key, paths in global_music.items():
+                                    resolved_paths = []
+                                    for p in paths:
+                                        p_cleaned = p.replace("\\", "/")
+                                        if not os.path.exists(p_cleaned):
+                                            local_p = os.path.join(item_path, p).replace("\\", "/")
+                                            if os.path.exists(local_p):
+                                                p_cleaned = local_p
+                                        resolved_paths.append(p_cleaned)
+                                    self.musicJson.setdefault("global_music", {})[key] = resolved_paths
+                            except Exception:
+                                pass
+        except Exception:
+            pass
+
+    def _getTrackPool(self):
+        import builtins
+        base = getattr(builtins, 'base', None)
+        in_game_paths = []
+        for paths in self.musicJson.get('global_music', {}).values():
+            for p in paths:
+                if p not in in_game_paths:
+                    in_game_paths.append(p)
+        import os
+        custom_paths = []
+        custom_dir = "resources/custom_music"
+        if os.path.exists(custom_dir):
+            try:
+                for f in os.listdir(custom_dir):
+                    if f.lower().endswith((".ogg", ".mp3", ".wav", ".flac", ".wma", ".aac", ".m4a", ".opus")):
+                        custom_paths.append(os.path.join(custom_dir, f).replace("\\", "/"))
+            except Exception:
+                pass
+        style = getattr(base, 'randomMusicStyle', 'Mix')
+        if style == 'Custom Only':
+            if custom_paths:
+                return custom_paths
+            return in_game_paths
+        elif style == 'Mix':
+            return custom_paths + in_game_paths
+        else:
+            return in_game_paths
+
+    def _getTrackName(self, track_path):
+        title = self._getAudioTitle(track_path)
+        if title:
+            return title
+        import os
+        filename = os.path.basename(track_path)
+        name_without_ext = os.path.splitext(filename)[0]
+        return name_without_ext.replace('_', ' ').replace('-', ' ').strip().title()
+
+    def _getAudioTitle(self, file_path):
+        import os
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext in ('.ogg', '.flac'):
+            return self._getOggTitle(file_path)
+        elif ext == '.mp3':
+            return self._getMp3Title(file_path)
+        return None
+
+    def _getMp3Title(self, file_path):
+        try:
+            with open(file_path, 'rb') as f:
+                data = f.read(16384)
+            idx = data.find(b'TIT2')
+            if idx != -1:
+                if len(data) >= idx + 11:
+                    size_bytes = data[idx+4:idx+8]
+                    frame_size = int.from_bytes(size_bytes, byteorder='big')
+                    if 0 < frame_size < 1024:
+                        encoding = data[idx+10]
+                        raw_bytes = data[idx+11 : idx+11+frame_size-1]
+                        if encoding == 0:
+                            title = raw_bytes.decode('iso-8859-1', errors='ignore')
+                        elif encoding == 1:
+                            title = raw_bytes.decode('utf-16', errors='ignore')
+                        elif encoding == 2:
+                            title = raw_bytes.decode('utf-16-be', errors='ignore')
+                        elif encoding == 3:
+                            title = raw_bytes.decode('utf-8', errors='ignore')
+                        else:
+                            title = raw_bytes.decode('utf-8', errors='ignore')
+                        title = title.replace('\x00', '').strip()
+                        if title:
+                            return title
+            with open(file_path, 'rb') as f:
+                f.seek(0, 2)
+                file_size = f.tell()
+                if file_size >= 128:
+                    f.seek(-128, 2)
+                    tag = f.read(3)
+                    if tag == b'TAG':
+                        title_bytes = f.read(30)
+                        title = title_bytes.decode('iso-8859-1', errors='ignore').replace('\x00', '').strip()
+                        if title:
+                            return title
+        except Exception:
+            pass
+        return None
+
+    def _getOggTitle(self, file_path):
+        try:
+            with open(file_path, 'rb') as f:
+                data = f.read(16384)
+            idx = data.lower().find(b'title=')
+            if idx != -1:
+                start = idx + 6
+                title_bytes = bytearray()
+                for i in range(start, min(start + 128, len(data))):
+                    b = data[i]
+                    if 32 <= b <= 126 or b >= 128:
+                        title_bytes.append(b)
+                    else:
+                        break
+                title_str = title_bytes.decode('utf-8', errors='ignore').strip()
+                if title_str:
+                    return title_str
+        except Exception:
+            pass
+        return None
 
     # Used when we are disabling music randomizer
     def getNormalMusicInfo(self):
@@ -70,14 +222,32 @@ class MusicManager:
             return self.storedMusicInfo
         return None
 
-    # Used on launch to set random music for the session
     def setRandomizedMusic(self):
-        music_keys = list(self.musicJson['global_music'].keys())
-        music_keys_copy = music_keys.copy()
-        for key in music_keys:
-            new_key = random.choice(music_keys_copy)
-            music_keys_copy.remove(new_key)
-            self.randomMusicInfo[key] = new_key
+        import builtins
+        base = getattr(builtins, 'base', None)
+        self.lastPlayedTrack = {}
+        self.shuffledMusic = {}
+        is_wild = False
+        seed = None
+        if getattr(base, 'localAvatar', None) and base.localAvatar.hasConnected():
+            rng_option = base.localAvatar.slotData.get('seed_generation_type', 0)
+            if rng_option in (3, 'wild'):
+                is_wild = True
+            else:
+                seed = base.localAvatar.getSeed()
+        if is_wild:
+            return
+        pool = self._getTrackPool()
+        if not pool:
+            return
+        rng = random.Random()
+        if seed is not None:
+            rng.seed(seed)
+        keys = sorted(list(self.musicJson.get('global_music', {}).keys()))
+        pool_copy = sorted(list(pool))
+        rng.shuffle(pool_copy)
+        for i, key in enumerate(keys):
+            self.shuffledMusic[key] = pool_copy[i % len(pool_copy)]
 
     def stopMusic(self):        
         for music in list(self.currentMusic.keys()):
@@ -183,13 +353,9 @@ class MusicManager:
             self.currentMusicInfo[music]["rate"] = rate
 
     def lerpPlayRate(self, json_key, to_data, duration):
-        if base.randomMusic:
-            json_key = self.randomMusicInfo[json_key]
         self.currentMusicInfo[json_key]["rate"] = to_data
         return LerpFunctionInterval(self.currentMusic[json_key].setPlayRate, fromData=self.getSpecifcPlayRate(json_key), toData=to_data, duration=duration)
 
     def lerpVolume(self, json_key, to_data, duration):
-        if base.randomMusic:
-            json_key = self.randomMusicInfo[json_key]
         self.currentMusicInfo[json_key]["volume"] = to_data
         return LerpFunctionInterval(self.currentMusic[json_key].setVolume, fromData=self.getVolume(), toData=to_data, duration=duration)

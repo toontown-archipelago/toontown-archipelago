@@ -68,6 +68,7 @@ OptionToType = {
     "toon-chat-sounds": OptionTypes.BUTTON,
     'ap-sounds': OptionTypes.BUTTON,
     "random-music": OptionTypes.BUTTON,
+    "random-music-style": OptionTypes.BUTTON,
     "refresh-audio": OptionTypes.BUTTON
 }
 
@@ -170,7 +171,7 @@ class OptionsTabPage(DirectFrame, FSM):
         ],
         "Audio": [
             "music", "sfx", "music-volume", "sfx-volume", "toon-chat-sounds",
-            'ap-sounds', "random-music", "refresh-audio"
+            'ap-sounds', "random-music", "random-music-style", "refresh-audio"
         ],
     }
 
@@ -505,6 +506,8 @@ class OptionElement(DirectFrame):
             optionOptions[option] = ["TTCC", "TTR"]
         elif option == "sprint_mode":
             optionOptions[option] = ["Hold", "Toggle"]
+        elif option == "random-music-style":
+            optionOptions[option] = ["Custom Only", "Mix", "In-Game Only"]
 
     optionOptions.update({
         "resolution": base.possibleScreenSizes,
@@ -805,6 +808,9 @@ class OptionElement(DirectFrame):
             base.apSounds = newSetting
         elif self.optionName == "random-music":
             base.randomMusic = newSetting
+            base.refreshRandomMusic()
+        elif self.optionName == "random-music-style":
+            base.randomMusicStyle = newSetting
             base.refreshRandomMusic()
         elif self.optionName == "new-popup":
             base.newPopup = newSetting

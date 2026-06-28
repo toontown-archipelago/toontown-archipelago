@@ -328,6 +328,10 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # Sets a seed value to use for any RNG elements that want to be determined by the AP seed
     def setSeed(self, seed):
         self.seed = seed
+        if self.isLocal:
+            if getattr(base, 'contentPackMusicManager', None):
+                base.contentPackMusicManager.setRandomizedMusic()
+                base.refreshRandomMusic()
 
     # Gets this toon's current AP seed, used for task generation mainly
     def getSeed(self):
