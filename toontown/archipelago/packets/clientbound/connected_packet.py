@@ -221,6 +221,8 @@ class ConnectedPacket(ClientBoundPacketBase):
             update_packet.tags = tags
             client.send_packet(update_packet)
 
+        client.av.d_setArchipelagoHintMessage(client.av.getArchipelagoIP())
+
         # Check to warn the player that our game version mismatches the apworld's
         if ToontownGlobals.GameVersion != self.slot_data.get('game_version', ToontownGlobals.GameVersion):
             ap_version = self.slot_data.get('game_version', ToontownGlobals.GameVersion)
