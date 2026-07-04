@@ -74,6 +74,14 @@ lDonaldsDock = "Donald's Dock"
 lDonaldsDreamland = "Donald's Dreamland"
 lMinniesMelodyland = "Minnie's Melodyland"
 lToontownCentral = 'Toontown Central'
+pgNameToAbv = {
+    lToontownCentral : "TTC",
+    lDonaldsDock: "DD",
+    lDaisyGardens: "DG",
+    lMinniesMelodyland: "MML",
+    lTheBrrrgh: "TB",
+    lDonaldsDreamland: "DDL"
+}
 lToonHQ = 'Toon HQ'
 lSellbotHQ = 'Sellbot HQ'
 lGoofySpeedway = 'Goofy Speedway'
