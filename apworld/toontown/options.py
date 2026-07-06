@@ -734,6 +734,25 @@ class RandomShopCostToggle(Toggle):
     default = False
 
 
+class EstateIntegration(Toggle):
+    """
+    Enable estate checks and gardening progression.
+    Adds progressive Garden Kits, Shovels, and Watering Cans, flower checks, gag tree checks, and cattlelog checks.
+    """
+    display_name = "Estate Integration"
+    default = False
+
+
+class CatalogChecks(Range):
+    """
+    How many Archipelago checks Clarabelle's cattlelog offers when estate integration is enabled.
+    """
+    display_name = "Cattlelog Checks"
+    range_start = 0
+    range_end = 7
+    default = 6
+
+
 class SeedGenerationTypeOption(Choice):
     """
     Type of seeding to use when RNG checks happen in game.
@@ -1019,6 +1038,8 @@ class ToontownOptions(PerGameCommonOptions):
     pet_shop_display: PetShopRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
     random_prices: RandomShopCostToggle
+    estate_integration: EstateIntegration
+    catalog_checks: CatalogChecks
 
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
@@ -1032,7 +1053,7 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
         StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, StartMoneyOption,
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption, RandomShopCostToggle
+        RingLinkOption, RandomShopCostToggle, EstateIntegration, CatalogChecks
     ]),
     OptionGroup("Win Condition", [
         WinConditions, WinConditionRandomizedWeb, OmitRandomWinConditions,

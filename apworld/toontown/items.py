@@ -123,6 +123,11 @@ class ToontownItemName(enum.Enum):
     GOLF_PUTTER = "Golf Putter"
     GO_KART = "Go-Kart"
 
+    ### Gardening ###
+    GARDEN_KIT = "Progressive Garden Kit"
+    GARDEN_SHOVEL = "Progressive Shovel"
+    GARDEN_WATERING_CAN = "Progressive Watering Can"
+
     ### Bounty Items ###
     BOUNTY = "Bounty"
 
@@ -266,6 +271,11 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # region activities
     ToontownItemDefinition(ToontownItemName.GOLF_PUTTER, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.GO_KART, ItemClassification.progression),
+    # endregion
+    # region gardening
+    ToontownItemDefinition(ToontownItemName.GARDEN_KIT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GARDEN_SHOVEL, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GARDEN_WATERING_CAN, ItemClassification.progression_deprioritized),
     # endregion
     # region bounties
     ToontownItemDefinition(ToontownItemName.BOUNTY, ItemClassification.progression_skip_balancing),
@@ -446,6 +456,12 @@ def get_item_groups():
         ToontownItemName.GO_KART
     )
 
+    GARDENING = (
+        ToontownItemName.GARDEN_KIT,
+        ToontownItemName.GARDEN_SHOVEL,
+        ToontownItemName.GARDEN_WATERING_CAN
+    )
+
     REWARD_BUNDLES = (
         ToontownItemName.SOS_REWARD_3,
         ToontownItemName.SOS_REWARD_4,
@@ -519,6 +535,7 @@ def get_item_groups():
         "Gag Upgrades": GAG_UPGRADES,
         "Damage Boosts": DMG_BOOSTS,
         "Fishing Licenses": FISHING_LICENSES,
+        "Gardening": GARDENING,
         "Jellybean Capacity": JELLYBEAN_CAPACITY,
         "Side Activity Keys": ACTIVITY_KEYS,
         "Task Capacity": TASK_CAPACITY,

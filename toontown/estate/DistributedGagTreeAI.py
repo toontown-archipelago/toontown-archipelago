@@ -48,28 +48,11 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
 
     def calculate(self, lastHarvested, lastCheck):
         now = int(time.time())
-        if lastCheck == 0:
-            lastCheck = now
-
-        grown = 0
-
-        # Water level
-        elapsed = now - lastCheck
-        while elapsed > ONE_DAY:
-            if self.waterLevel >= 0:
-                grown += self.GrowRate
-
-            elapsed -= ONE_DAY
-            self.waterLevel -= 1
-
-        self.waterLevel = max(self.waterLevel, -2)
-
-        # Growth level
         maxGrowth = self.growthThresholds[2]
-        newGrowthLevel = maxGrowth
-        self.setGrowthLevel(newGrowthLevel)
-        self.setWilted(self.waterLevel == -2)
-        self.lastCheck = now - elapsed
+        self.waterLevel = max(self.waterLevel, 0)
+        self.setGrowthLevel(maxGrowth)
+        self.setWilted(0)
+        self.lastCheck = now
         self.lastHarvested = lastHarvested
         self.update()
 

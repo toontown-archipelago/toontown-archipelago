@@ -12,6 +12,28 @@ INVALID_TYPE = -1
 GAG_TREE_TYPE = 0
 FLOWER_TYPE = 1
 STATUARY_TYPE = 2
+BASIC_GARDEN_KIT = 0
+INTERMEDIATE_GARDEN_KIT = 1
+ADVANCED_GARDEN_KIT = 2
+PRO_GARDEN_KIT = 3
+GardenKitAttributes = {
+    BASIC_GARDEN_KIT: {
+        'name': 'Basic Garden Kit',
+        'max_gag_level': 3,
+    },
+    INTERMEDIATE_GARDEN_KIT: {
+        'name': 'Intermediate Garden Kit',
+        'max_gag_level': 4,
+    },
+    ADVANCED_GARDEN_KIT: {
+        'name': 'Advanced Garden Kit',
+        'max_gag_level': 5,
+    },
+    PRO_GARDEN_KIT: {
+        'name': 'Pro Garden Kit',
+        'max_gag_level': 7,
+    },
+}
 WATERING_CAN_SMALL = 0
 WATERING_CAN_MEDIUM = 1
 WATERING_CAN_LARGE = 2

@@ -2,6 +2,7 @@ import time
 
 from direct.directnotify import DirectNotifyGlobal
 
+from toontown.archipelago.definitions import util
 from toontown.estate import GardenGlobals
 from toontown.estate.DistributedPlantBaseAI import DistributedPlantBaseAI
 from toontown.estate.FlowerBase import FlowerBase
@@ -27,27 +28,10 @@ class DistributedFlowerAI(DistributedPlantBaseAI, FlowerBase):
 
     def calculate(self, lastCheck):
         now = int(time.time())
-        if lastCheck == 0:
-            lastCheck = now
-
-        grown = 0
-
-        # Water level
-        elapsed = now - lastCheck
-        while elapsed > ONE_DAY:
-            if self.waterLevel >= 0:
-                grown += 1
-
-            elapsed -= ONE_DAY
-            self.waterLevel -= 1
-
-        self.waterLevel = max(self.waterLevel, -2)
-
-        # Growth level
         maxGrowth = self.growthThresholds[2]
-        newGrowthLevel = min(self.growthLevel + grown, maxGrowth)
-        self.setGrowthLevel(newGrowthLevel)
-        self.lastCheck = now - elapsed
+        self.waterLevel = max(self.waterLevel, 0)
+        self.setGrowthLevel(max(self.growthLevel, maxGrowth))
+        self.lastCheck = now
         self.update()
 
     def update(self):
@@ -85,6 +69,9 @@ class DistributedFlowerAI(DistributedPlantBaseAI, FlowerBase):
                 # Give rewards
                 av.b_setShovelSkill(av.getShovelSkill() + self.getValue())
                 av.addFlowerToBasket(self.getSpecies(), self.getVariety())
+                if av.slotData.get('estate_integration', False):
+                    location = util.flower_to_location(self.getSpecies(), self.getVariety())
+                    av.addCheckedLocation(util.ap_location_name_to_id(location))
 
                 # Delete the old flower
                 self.air.writeServerEvent('%s-flower' % action, avId, plot=self.plot)

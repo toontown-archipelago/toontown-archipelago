@@ -1865,18 +1865,6 @@ class MaxDoodle(MagicWord):
         pet.b_setTrickAptitudes([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         return "Maxed your doodle!"
 
-class AwardGardenKit(MagicWord):
-    desc = "Awards the target a new garden kit if they meet the requirements."
-    execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    accessLevel = 'USER'
-
-    def handleWord(self, invoker, avId, toon, *args):
-        from toontown.estate.GardenKitManagerAI import GardenKitManagerAI
-        gardenKitManager = GardenKitManagerAI(self.air)
-        gardenKitManager.awardGardenKit(avId)
-        return "Awarded garden kit to %s." % toon.getName()
-
-
 class LeaveRace(MagicWord):
     desc = "Leave the current race you are in."
     execLocation = MagicWordConfig.EXEC_LOC_CLIENT
@@ -3787,6 +3775,111 @@ class APClear(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         toon.newToon()
         return f"Wiped {toon.getName()}'s progress!"
+
+
+class EstateAPTest(MagicWord):
+    aliases = ['estateap', 'apestate']
+    desc = "Developer helper for testing AP estate integration."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [('operation', str, True), ('argument', str, False, "")]
+    accessLevel = 'TTOFF_DEVELOPER'
+
+    def _setEstateSlotData(self, toon, catalogChecks=7):
+        slotData = dict(toon.slotData)
+        slotData['estate_integration'] = True
+        slotData['catalog_checks'] = max(0, min(7, catalogChecks))
+        toon.b_setSlotData(slotData)
+
+    def _deliverCatalog(self, toon):
+        simbase.air.catalogManager.deliverCatalogFor(toon)
+
+    def _applyGardenReward(self, toon, itemName, count):
+        itemId = items.ITEM_NAME_TO_ID[itemName.value]
+        reward = rewards.get_ap_reward_from_id(itemId)
+        for _ in range(count):
+            reward.apply(toon)
+            toon.d_showReward(itemId, "The Spellbook", False)
+
+    def _getInt(self, value, default):
+        if not value:
+            return default
+        try:
+            return int(value)
+        except ValueError:
+            return default
+
+    def handleWord(self, invoker, avId, toon, *args):
+        operation = args[0].lower()
+        argument = args[1]
+
+        if invoker != toon:
+            return f"You can only use this command on yourself!"
+
+        if operation in ('on', 'enable'):
+            catalogChecks = self._getInt(argument, 7)
+            self._setEstateSlotData(toon, catalogChecks)
+            self._deliverCatalog(toon)
+            return f"Enabled AP estate integration and delivered {toon.slotData.get('catalog_checks', 0)} cattlelog checks."
+
+        if operation in ('off', 'disable'):
+            slotData = dict(toon.slotData)
+            slotData['estate_integration'] = False
+            toon.b_setSlotData(slotData)
+            return "Disabled AP estate integration."
+
+        if operation in ('kit', 'gardenkit'):
+            self._setEstateSlotData(toon, toon.slotData.get('catalog_checks', 7))
+            count = max(0, self._getInt(argument, 1))
+            self._applyGardenReward(toon, items.ToontownItemName.GARDEN_KIT, count)
+            return f"Gave {toon.getName()} {count} progressive garden kit reward(s)."
+
+        if operation in ('shovel',):
+            self._setEstateSlotData(toon, toon.slotData.get('catalog_checks', 7))
+            count = max(0, self._getInt(argument, 1))
+            self._applyGardenReward(toon, items.ToontownItemName.GARDEN_SHOVEL, count)
+            return f"Gave {toon.getName()} {count} progressive shovel reward(s)."
+
+        if operation in ('can', 'wateringcan'):
+            self._setEstateSlotData(toon, toon.slotData.get('catalog_checks', 7))
+            count = max(0, self._getInt(argument, 1))
+            self._applyGardenReward(toon, items.ToontownItemName.GARDEN_WATERING_CAN, count)
+            return f"Gave {toon.getName()} {count} progressive watering can reward(s)."
+
+        if operation in ('catalog', 'cattlelog'):
+            catalogChecks = self._getInt(argument, toon.slotData.get('catalog_checks', 7))
+            self._setEstateSlotData(toon, catalogChecks)
+            self._deliverCatalog(toon)
+            return f"Delivered AP cattlelog with {toon.slotData.get('catalog_checks', 0)} check(s)."
+
+        if operation == 'scout':
+            checkCount = toon.slotData.get('catalog_checks', 7)
+            catalogLocationIds = [
+                locations.LOCATION_NAME_TO_ID[location.value]
+                for location in locations.CATALOG_LOCATIONS[:checkCount]
+            ]
+            toon.scoutLocations(catalogLocationIds)
+            return f"Scouted {len(catalogLocationIds)} cattlelog check(s)."
+
+        if operation == 'clear':
+            estateLocationNames = locations.GARDEN_LOCATIONS + locations.CATALOG_LOCATIONS
+            estateLocationIds = {locations.LOCATION_NAME_TO_ID[location.value] for location in estateLocationNames}
+            toon.checkedLocations = [location for location in toon.checkedLocations if location not in estateLocationIds]
+            toon.b_setCheckedLocations(toon.checkedLocations)
+            return f"Cleared local estate AP checks for {toon.getName()}."
+
+        if operation == 'state':
+            return ("estate_integration=%s catalog_checks=%s garden_started=%s garden_kit=%s "
+                    "shovel=%s watering_can=%s checked_locations=%s") % (
+                        toon.slotData.get('estate_integration', False),
+                        toon.slotData.get('catalog_checks', 0),
+                        toon.getGardenStarted(),
+                        toon.getGardenKit(),
+                        toon.getShovel(),
+                        toon.getWateringCan(),
+                        len(toon.checkedLocations),
+                    )
+
+        return "Invalid operation. Use on, off, kit, shovel, can, catalog, scout, clear, or state."
 
 
 class Archipelago(MagicWord):

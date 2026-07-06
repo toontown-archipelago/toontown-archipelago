@@ -219,6 +219,63 @@ def HasEnoughBeanCapacity(state: CollectionState, locentr: LocEntrDef, world: Mu
         return (state.count(ToontownItemName.MONEY_CAP_1000.value, player) >= argument[0])
 
 
+@rule(Rule.GardenKitOne, 1)
+@rule(Rule.GardenKitTwo, 2)
+@rule(Rule.GardenKitThree, 3)
+@rule(Rule.GardenKitFour, 4)
+def HasGardenKitTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    return state.count(ToontownItemName.GARDEN_KIT.value, player) >= argument[0]
+
+
+@rule(Rule.GardenShovelOne, 1)
+@rule(Rule.GardenShovelTwo, 2)
+@rule(Rule.GardenShovelThree, 3)
+def HasGardenShovelTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    return state.count(ToontownItemName.GARDEN_SHOVEL.value, player) >= argument[0]
+
+
+@rule(Rule.GardenCanOne, 1)
+@rule(Rule.GardenCanTwo, 2)
+@rule(Rule.GardenCanThree, 3)
+def HasGardenCanTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    return state.count(ToontownItemName.GARDEN_WATERING_CAN.value, player) >= argument[0]
+
+
+@rule(Rule.CanBuyCatalogCheckOne, 1)
+@rule(Rule.CanBuyCatalogCheckTwo, 2)
+@rule(Rule.CanBuyCatalogCheckThree, 3)
+@rule(Rule.CanBuyCatalogCheckFour, 4)
+@rule(Rule.CanBuyCatalogCheckFive, 5)
+@rule(Rule.CanBuyCatalogCheckSix, 6)
+@rule(Rule.CanBuyCatalogCheckSeven, 7)
+def CanBuyCatalogCheck(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        random_price = options.random_prices.value
+    else:
+        random_price = options.get("random_prices", False)
+    required = argument[0] + (1 if random_price else 0)
+    return state.count(ToontownItemName.MONEY_CAP_1000.value, player) >= required
+
+
+@rule(Rule.GardenGagLevelOne, 1)
+@rule(Rule.GardenGagLevelTwo, 2)
+@rule(Rule.GardenGagLevelThree, 3)
+@rule(Rule.GardenGagLevelFour, 4)
+@rule(Rule.GardenGagLevelFive, 5)
+@rule(Rule.GardenGagLevelSix, 6)
+@rule(Rule.GardenGagLevelSeven, 7)
+def CanPlantGardenGagLevel(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    level = argument[0]
+    kit_count = state.count(ToontownItemName.GARDEN_KIT.value, player)
+    if level <= 4:
+        return kit_count >= 1
+    if level == 5:
+        return kit_count >= 2
+    if level == 6:
+        return kit_count >= 3
+    return kit_count >= 4
+
+
 @rule(Rule.HasTTCBook, ToontownItemName.TTC_JOKE_BOOK)
 @rule(Rule.HasDDBook, ToontownItemName.DD_JOKE_BOOK)
 @rule(Rule.HasDGBook, ToontownItemName.DG_JOKE_BOOK)

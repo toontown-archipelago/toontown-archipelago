@@ -3661,6 +3661,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def b_setShovelSkill(self, skillLevel):
         self.sendGardenEvent()
+        if self.slotData.get('estate_integration', False):
+            skillLevel = min(skillLevel, GardenGlobals.ShovelAttributes[self.shovel]['skillPts'] - 1)
+            self.setShovelSkill(skillLevel)
+            self.d_setShovelSkill(skillLevel)
+            return
+
         if skillLevel >= GardenGlobals.ShovelAttributes[self.shovel]['skillPts']:
             if self.shovel < GardenGlobals.MAX_SHOVELS - 1:
                 self.b_setShovel(self.shovel + 1)
@@ -3696,6 +3702,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def b_setWateringCanSkill(self, skillLevel):
         self.sendGardenEvent()
+        if self.slotData.get('estate_integration', False):
+            skillLevel = min(skillLevel, GardenGlobals.WateringCanAttributes[self.wateringCan]['skillPts'] - 1)
+            self.setWateringCanSkill(skillLevel)
+            self.d_setWateringCanSkill(skillLevel)
+            return
+
         if skillLevel >= GardenGlobals.WateringCanAttributes[self.wateringCan]['skillPts']:
             if self.wateringCan < GardenGlobals.MAX_WATERING_CANS - 1:
                 self.b_setWateringCan(self.wateringCan + 1)

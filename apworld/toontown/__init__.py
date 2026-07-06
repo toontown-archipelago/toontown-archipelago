@@ -10,7 +10,8 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
     ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS, get_item_groups, DISGUISE_ITEMS
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
-    TREASURE_LOCATION_TYPES, KNOCK_KNOCK_LOCATION_TYPES, BOSS_LOCATION_TYPES, BOSS_EVENT_DEFINITIONS, get_location_groups
+    TREASURE_LOCATION_TYPES, KNOCK_KNOCK_LOCATION_TYPES, BOSS_LOCATION_TYPES, BOSS_EVENT_DEFINITIONS, \
+    CATALOG_LOCATIONS, get_location_groups
 from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups, \
     GagTrainingFrameBehavior
 from .regions import REGION_DEFINITIONS, ToontownRegionName
@@ -235,6 +236,9 @@ class ToontownWorld(World):
             # Do we skip this location generation?
             if location_data.type in forbidden_location_types:
                 continue
+            if location_data.name in CATALOG_LOCATIONS:
+                if CATALOG_LOCATIONS.index(location_data.name) >= self.options.catalog_checks.value:
+                    continue
 
             if location_data.region == ToontownRegionName.LOGIN:
                 if location_data.name in [ToontownLocationName.STARTING_TRACK_ONE, ToontownLocationName.STARTING_TRACK_TWO] and not len(self.startingTracks) == 2:
@@ -637,6 +641,12 @@ class ToontownWorld(World):
         else:
             self.multiworld.push_precollected(item)
 
+        if self.options.estate_integration.value:
+            for _ in range(4):
+                pool.append(self.create_item(ToontownItemName.GARDEN_KIT.value))
+            for _ in range(3):
+                pool.append(self.create_item(ToontownItemName.GARDEN_SHOVEL.value))
+                pool.append(self.create_item(ToontownItemName.GARDEN_WATERING_CAN.value))
 
         # Fill the rest of the room with junk.
         junk: int = len(self.multiworld.get_unfilled_locations(self.player)) - len(pool)
@@ -782,6 +792,8 @@ class ToontownWorld(World):
             "slot_sync_gag_experience": self.options.slot_sync_gag_experience.value,
             "pet_shop_display": self.options.pet_shop_display.value,
             "task_reward_display": self.options.task_reward_display.value,
+            "estate_integration": self.options.estate_integration.value,
+            "catalog_checks": self.options.catalog_checks.value if self.options.estate_integration.value else 0,
             "want_cgc_mazes": self.options.want_cgc_mazes.value,
             "local_itempool": local_itempool,
             "local_locations": local_locations,
@@ -1020,6 +1032,11 @@ class ToontownWorld(World):
         omitted_track = self.options.omit_gag.value
         if omitted_track != 0:
             forbidden_location_types.add(GAG_LOCATION_TYPES[omitted_track])
+
+        if not self.options.estate_integration.value:
+            forbidden_location_types.add(ToontownLocationType.CATALOG)
+            forbidden_location_types.add(ToontownLocationType.GARDEN_FLOWER)
+            forbidden_location_types.add(ToontownLocationType.GARDEN_TREE)
 
         return forbidden_location_types
 

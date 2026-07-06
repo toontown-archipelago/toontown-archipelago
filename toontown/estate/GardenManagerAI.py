@@ -5,7 +5,6 @@ import random
 from direct.directnotify import DirectNotifyGlobal
 
 from toontown.estate import GardenGlobals
-from toontown.estate import GardenKitGlobals
 from toontown.estate.DistributedAnimatedStatuaryAI import DistributedAnimatedStatuaryAI
 from toontown.estate.DistributedChangingStatuaryAI import DistributedChangingStatuaryAI
 from toontown.estate.DistributedFlowerAI import DistributedFlowerAI
@@ -130,6 +129,10 @@ class GardenAI:
                 else:
                     obj = self.plantRandomFlower(flowerIndex)
                     zOffset = 1.5
+                    if obj is None:
+                        obj = self.placePlot(flowerIndex)
+                        obj.setFlowerIndex(flowerIndex)
+                        zOffset = 1.2
 
                 obj.setPlot(estatePlot)
                 obj.setOwnerIndex(houseIndex)
@@ -173,10 +176,20 @@ class GardenAI:
         if not av:
             print('GardenAI.plantRandomFlower: No avatar with avId %d, cannot plant flower.' % self.avId)
             return None
+        if av.slotData.get('estate_integration', False) and not av.getGardenStarted():
+            return None
 
         # Get the list of all possible flowers at the player's current shovel level.
         shovel, shovelSkill = av.getShovel(), av.getShovelSkill()
-        available_recipes = GardenGlobals.getAvailableRecipes(shovel, shovelSkill)
+        available_recipes = {}
+        for recipe_key, recipe in GardenGlobals.getAvailableRecipes(shovel, shovelSkill).items():
+            species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipe_key)
+            plant = GardenGlobals.PlantAttributes.get(species, {})
+            if plant.get('plantType') == GardenGlobals.FLOWER_TYPE:
+                available_recipes[recipe_key] = recipe
+
+        if not available_recipes:
+            return None
 
         # Get the list of flowers the player has already discovered.
         discovered_flowers = av.flowerCollection
@@ -196,7 +209,9 @@ class GardenAI:
             recipeKey = random.choice(list(available_recipes.keys()))
 
         species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
-        return self.plantFlower(flowerIndex, species, variety, waterLevel=0, lastCheck=0, plot=plot, generate=False, ownerIndex=ownerIndex, plotId=plotId)
+        growthLevel = GardenGlobals.PlantAttributes[species]['growthThresholds'][2]
+        return self.plantFlower(flowerIndex, species, variety, waterLevel=0, lastCheck=0, growthLevel=growthLevel,
+                                plot=plot, generate=False, ownerIndex=ownerIndex, plotId=plotId)
     
     def placePlot(self, treeIndex):
         obj = DistributedGardenPlotAI(self)
@@ -249,9 +264,12 @@ class GardenAI:
         if not av:
             print('GardenAI.plantTree: No avatar with avId %d, cannot plant tree.' % self.avId)
             return
+        if av.slotData.get('estate_integration', False) and not av.getGardenStarted():
+            print('GardenAI.plantTree: Avatar %d has not unlocked gardening.' % self.avId)
+            return
 
         track, level = GardenGlobals.getTreeTrackAndLevel(value)
-        max_gag_level = GardenKitGlobals.GardenKitAttributes[av.getGardenKit()]['max_gag_level']
+        max_gag_level = GardenGlobals.GardenKitAttributes[av.getGardenKit()]['max_gag_level']
         if level > max_gag_level:
             print('GardenAI.plantTree: Level %d exceeds max gag level %d for avatar with garden kit %d.' %
                   (level, max_gag_level, av.getGardenKit()))

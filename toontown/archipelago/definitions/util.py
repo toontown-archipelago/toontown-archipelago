@@ -1,7 +1,8 @@
 from typing import Union
 from apworld.toontown import consts, ToontownLocationName, LOCATION_DEFINITIONS
 from apworld.toontown.locations import TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS, MML_TASK_LOCATIONS, \
-    TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS, EVENT_DEFINITIONS, ToontownLocationDefinition, get_location_def_from_name
+    TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS, EVENT_DEFINITIONS, ToontownLocationDefinition, get_location_def_from_name, \
+    FLOWER_LOCATION_BY_SPECIES_VARIETY, TREE_LOCATION_BY_TRACK_LEVEL, CATALOG_LOCATIONS
 from toontown.shtiker import CogPageGlobals
 from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
@@ -208,3 +209,15 @@ def track_and_level_to_location(track: int, level: int):
         (ToontownLocationName.DROP_FLOWERPOT_UNLOCKED.value, ToontownLocationName.DROP_SANDBAG_UNLOCKED.value, ToontownLocationName.DROP_ANVIL_UNLOCKED.value, ToontownLocationName.DROP_BIGWEIGHT_UNLOCKED.value, ToontownLocationName.DROP_SAFE_UNLOCKED.value, ToontownLocationName.DROP_PIANO_UNLOCKED.value, ToontownLocationName.DROP_BOAT_UNLOCKED.value),
     )
     return trackAndLevels[track][level]
+
+
+def flower_to_location(species: int, variety: int) -> str:
+    return FLOWER_LOCATION_BY_SPECIES_VARIETY[(species, variety)].value
+
+
+def garden_tree_to_location(track: int, level: int) -> str:
+    return TREE_LOCATION_BY_TRACK_LEVEL[(track, level)].value
+
+
+def catalog_check_to_location(check_index: int) -> str:
+    return CATALOG_LOCATIONS[check_index].value

@@ -203,6 +203,33 @@ class Rule(Enum):
     CanBuyTBDoodle = auto()
     CanBuyDDLDoodle = auto()
 
+    ### Gardening ###
+
+    GardenKitOne = auto()
+    GardenKitTwo = auto()
+    GardenKitThree = auto()
+    GardenKitFour = auto()
+    GardenShovelOne = auto()
+    GardenShovelTwo = auto()
+    GardenShovelThree = auto()
+    GardenCanOne = auto()
+    GardenCanTwo = auto()
+    GardenCanThree = auto()
+    CanBuyCatalogCheckOne = auto()
+    CanBuyCatalogCheckTwo = auto()
+    CanBuyCatalogCheckThree = auto()
+    CanBuyCatalogCheckFour = auto()
+    CanBuyCatalogCheckFive = auto()
+    CanBuyCatalogCheckSix = auto()
+    CanBuyCatalogCheckSeven = auto()
+    GardenGagLevelOne = auto()
+    GardenGagLevelTwo = auto()
+    GardenGagLevelThree = auto()
+    GardenGagLevelFour = auto()
+    GardenGagLevelFive = auto()
+    GardenGagLevelSix = auto()
+    GardenGagLevelSeven = auto()
+
     ### Gag Rules ###
 
     ToonUpOne   = auto()

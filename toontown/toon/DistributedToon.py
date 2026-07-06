@@ -2926,6 +2926,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def getCheckedLocations(self) -> List[int]:
         return self.checkedLocations
 
+    def hasCheckedLocation(self, location: int) -> bool:
+        return location in self.checkedLocations
+
     # To be overridden in LocalToon, just here for safety
     def sendArchipelagoMessages(self, messages: List[str]) -> None:
         pass

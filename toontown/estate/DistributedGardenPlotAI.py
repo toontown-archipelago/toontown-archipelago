@@ -1,5 +1,8 @@
+import random
+
 from direct.directnotify import DirectNotifyGlobal
 
+from toontown.archipelago.definitions import util
 from toontown.estate import GardenGlobals
 from toontown.estate.DistributedLawnDecorAI import DistributedLawnDecorAI
 
@@ -130,6 +133,18 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
         av = self.__initialSanityCheck(GardenGlobals.GAG_TREE_TYPE)
         if not av:
             return
+        if av.slotData.get('estate_integration', False) and not av.getGardenStarted():
+            msg = 'tried to plant tree before unlocking gardening'
+            self.notify.warning('%d %s' % (av.doId, msg))
+            self.air.writeServerEvent('suspicious', av.doId, msg)
+            return self.d_setMovie(GardenGlobals.MOVIE_PLANT_REJECTED)
+
+        max_gag_level = GardenGlobals.GardenKitAttributes[av.getGardenKit()]['max_gag_level']
+        if index > max_gag_level:
+            msg = 'tried to plant tree above garden kit cap'
+            self.notify.warning('%d %s' % (av.doId, msg))
+            self.air.writeServerEvent('suspicious', av.doId, msg)
+            return self.d_setMovie(GardenGlobals.MOVIE_PLANT_REJECTED)
 
         for i in range(index):
             if not self.mgr.hasTree(track, i):
@@ -159,6 +174,13 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
 
             tree = self.mgr.plantTree(self.getTreeIndex(), GardenGlobals.getTreeTypeIndex(track, index), plot=self,
                                       ownerIndex=self.ownerIndex, plotId=self.plot, pos=(self.getPos(), self.getH()))
+            if not tree:
+                return task.done
+
+            if av.slotData.get('estate_integration', False):
+                location = util.garden_tree_to_location(track, index)
+                av.addCheckedLocation(util.ap_location_name_to_id(location))
+
             tree.d_setMovie(GardenGlobals.MOVIE_FINISHPLANTING, self.__plantingAvId)
             tree.d_setMovie(GardenGlobals.MOVIE_CLEAR, self.__plantingAvId)
             self.air.writeServerEvent('plant-tree', self.__plantingAvId, track=track, index=index, plot=self.plot)
@@ -178,7 +200,13 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
             return
 
         shovel, shovelSkill = av.getShovel(), av.getShovelSkill()
-        available_recipes = GardenGlobals.getAvailableRecipes(shovel, shovelSkill)
+        available_recipes = {}
+        for recipe_key, recipe in GardenGlobals.getAvailableRecipes(shovel, shovelSkill).items():
+            species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipe_key)
+            plant = GardenGlobals.PlantAttributes.get(species, {})
+            if plant.get('plantType') == GardenGlobals.FLOWER_TYPE:
+                available_recipes[recipe_key] = recipe
+
         if not available_recipes:
             return
 
