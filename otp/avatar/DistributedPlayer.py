@@ -15,7 +15,10 @@ from otp.chat import TalkAssistant
 from otp.otpbase import OTPGlobals
 from otp.avatar.Avatar import teleportNotify
 from otp.distributed.TelemetryLimited import TelemetryLimited
+from toontown.distributed import DelayDelete
+from toontown.toontowngui import TTDialog
 from toontown.archipelago.definitions.color_profile import ColorProfile
+from toontown.toonbase import ToontownGlobals
 
 if base.config.GetBool('want-chatfilter-hacks', 0):
     from otp.switchboard import badwordpy
@@ -48,7 +51,7 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
             self.accessLevel = 0
             self.autoRun = 0
             self.whiteListEnabled = base.config.GetBool('whitelist-chat-enabled', 1)
-
+            self.apVersion = ""
         return
 
     def isPlayerControlled(self):
@@ -138,6 +141,48 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
 
     def setSystemMessage(self, aboutId: int, chatString: str, whisperType: WhisperType = WhisperType.WTSystem):
         self.displayWhisper(aboutId, chatString, whisperType)
+
+    def setArchipelagoHintMessage(self, ip: str):
+        chatString = f"Current session: {ip}"
+        self.displayWhisper(0, chatString, WhisperType.WTSystem)
+        if base.settings.get('new-popup'):
+            taskMgr.doMethodLater(0.15, self.displayArchipelagoMessage, 'secondMessage')
+
+    def setVersionMismatchMessage(self, ap_version: str):
+        self.apVersion = ap_version
+        # Only immediately display the version mismatch if we don't have a connect popup
+        if not base.settings.get('new-popup'):
+            base.localAvatar.chatMgr.mimicApButtonPressed()
+            taskMgr.doMethodLater(0.15, self.displayVersionMessage, 'versionMessage', extraArgs=[self.apVersion])
+
+    def displayArchipelagoMessage(self, task):
+        self.accept('archipelagoAckDlg', self.__handleArchipelagoAckDlg)
+        boxText = f"Welcome to Toontown: Archipelago!"
+        boxTextCont = "\n\nTo make the experience as smooth as possible, we have implemented several new hotkeys and book pages; check them out!"
+        boxTextCont2 = "\n\nAdditionally, take the time to look at the options page for things like setting keybinds and changing the battle speed! (Or disabling this popup)"
+        self.hintMessage = TTDialog.TTGlobalDialog(message=(boxText + boxTextCont + boxTextCont2), doneEvent='archipelagoAckDlg', style=TTDialog.Acknowledge)
+        self.hintMessage.show()
+
+    def displayVersionMessage(self, ap_version: str):
+        self.accept('versionAckDlg', self.__handleVersionAckDlg)
+        boxText = f"GAME VERSION DOESN'T MATCH APWORLD!"
+        boxTextCont = f"\n\nGame Version: {ToontownGlobals.GameVersion}\nApworld Version: {ap_version}"
+        boxTextCont2 = "\n\nRegenerate the seed with the correct apworld version or switch to the proper game version!"
+        self.versionMessage = TTDialog.TTGlobalDialog(message=(boxText + boxTextCont + boxTextCont2), doneEvent='versionAckDlg', style=TTDialog.Acknowledge)
+        self.versionMessage.show()
+
+    def __handleArchipelagoAckDlg(self):
+        if self.hintMessage:
+            self.hintMessage.cleanup()
+            self.hintMessage = None
+            # Only attmept to display the apworld warning if we sent a version over
+            if self.apVersion != "":
+                taskMgr.doMethodLater(0.1, self.displayVersionMessage, 'versionMessage', extraArgs=[self.apVersion])
+
+    def __handleVersionAckDlg(self):
+        if self.versionMessage:
+            self.versionMessage.cleanup()
+            self.versionMessage = None
 
     def displayWhisper(self, fromId, chatString, whisperType, colorProfileOverride: ColorProfile = None):
         print('Whisper type %s from %s: %s' % (whisperType, fromId, chatString))

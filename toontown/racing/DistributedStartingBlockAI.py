@@ -8,6 +8,8 @@ from direct.fsm import ClassicFSM
 from direct.fsm import State
 from direct.showbase.DirectObject import DirectObject
 from toontown.racing.KartShopGlobals import KartGlobals
+from toontown.archipelago.definitions.util import ap_location_name_to_id
+from apworld.toontown import locations
 if __debug__:
     import pdb
 
@@ -60,6 +62,9 @@ class DistributedStartingBlockAI(DistributedObjectAI.DistributedObjectAI):
                 self.acceptOnce(self.unexpectedEvent, self.unexpectedExit)
                 self.d_setOccupied(self.avId)
                 self.d_setMovie(KartGlobals.ENTER_MOVIE)
+                av = self.air.doId2do.get(avId)
+                if av:
+                    av.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.KART_SHOWN.value))
             else:
                 self.sendUpdateToAvatarId(avId, 'rejectEnter', [success])
         else:

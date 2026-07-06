@@ -302,7 +302,6 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
 
     def formatSuitType(self):
         try:
-
             def hasSuit(id):
                 if not self.isToonWearingRentalSuit(id):
                     return 1
@@ -765,11 +764,13 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
             self.damageToon(toon, damage)
             currState = self.getCurrentOrNextState()
             if attackCode == ToontownGlobals.BossCogElectricFence and (currState == 'RollToBattleTwo' or currState == 'BattleThree'):
-                if bpy < 0 and abs(bpx / bpy) > 0.5:
-                    if bpx < 0:
-                        self.b_setAttackCode(ToontownGlobals.BossCogSwatRight)
-                    else:
-                        self.b_setAttackCode(ToontownGlobals.BossCogSwatLeft)
+                # Only swat if we aren't currently stunned
+                if self.attackCode != ToontownGlobals.BossCogDizzyNow:
+                    if bpy < 0 and abs(bpx / bpy) > 0.5:
+                        if bpx < 0:
+                            self.b_setAttackCode(ToontownGlobals.BossCogSwatRight)
+                        else:
+                            self.b_setAttackCode(ToontownGlobals.BossCogSwatLeft)
         return
 
     def d_showZapToon(self, avId, x, y, z, h, p, r, attackCode, timestamp):
@@ -876,8 +877,6 @@ class DistributedBossCogAI(DistributedAvatarAI.DistributedAvatarAI):
         # tell the client the amount of toons skipped
         self.notify.info('Sending client skip amount')
         self.sendUpdate('setSkipAmount', [len(self.toonsSkipped)])
-
-
 
     def checkSkip(self):
         """

@@ -7,7 +7,7 @@ import logging
 from . import regions, consts
 from .consts import ToontownItem, ToontownLocation, ToontownWinCondition
 from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, \
-    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS, get_item_groups
+    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS, get_item_groups, DISGUISE_ITEMS
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, KNOCK_KNOCK_LOCATION_TYPES, BOSS_LOCATION_TYPES, BOSS_EVENT_DEFINITIONS, get_location_groups
@@ -16,6 +16,7 @@ from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingC
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
 from .fish import FishProgression, FishChecks
+import math
 
 DEBUG_MODE = False
 
@@ -42,7 +43,7 @@ class ToontownWorld(World):
     game = "Toontown"
     web = ToontownWeb()
 
-    required_client_version = (0, 6, 1)
+    required_client_version = (0, 6, 3)
     options_dataclass = ToontownOptions
     options: ToontownOptions
 
@@ -82,6 +83,10 @@ class ToontownWorld(World):
         item_def: ToontownItemDefinition = get_item_def_from_id(item_id)
         return ToontownItem(name, item_def.classification, item_id, self.player)
 
+    def create_progression_deprioritized_skip_balancing(self, name: str) -> ToontownItem:
+        item_id: int = self.item_name_to_id[name]
+        return ToontownItem(name, ItemClassification.progression_deprioritized_skip_balancing, item_id, self.player)
+
     def create_progression_item(self, name: str) -> ToontownItem:
         item_id: int = self.item_name_to_id[name]
         return ToontownItem(name, ItemClassification.progression, item_id, self.player)
@@ -101,6 +106,13 @@ class ToontownWorld(World):
             self.options.starting_gags.value = list(self.options.web_starting_gags.value) + ["randomized"] * self.options.web_random_gags.value
         if self.options.win_condition.value == self.options.win_condition.default:
             self.options.win_condition.value = self.convert_web_win_conditions()
+            
+        # We picked a randomized omitted gag, set to something new
+        if self.options.omit_gag.value == 6:
+            self.options.omit_gag.value = random.randint(1, 5)
+        # We picked a random single target gag to omit, set to something new
+        elif self.options.omit_gag.value == 7:
+            self.options.omit_gag.value = random.choice([1, 3, 4, 5])
 
         # Calculate what our starting gag tracks should be
         startingTracks = self.calculate_starting_tracks(self.options.starting_gags.value)
@@ -108,7 +120,7 @@ class ToontownWorld(World):
         # Save as attributes so we can reference this later in fill_slot_data()
         self.startingTracks = startingTracks
 
-        #Randomize win conditions
+        # Randomize win conditions
         if "randomized" in self.options.win_condition.value:
             self.options.win_condition.value = self.randomize_win_condition(self.options.win_condition.value)
 
@@ -132,7 +144,7 @@ class ToontownWorld(World):
 
         # Fishing settings to remove specific bounties
         # Non-species logic
-        if self.options.fish_checks.value in [1, 2]:
+        if self.options.fish_checks.value in [1, 2, 3]:
             for bounty in locations.FISH_SPECIES_BOUNTIES:
                 self.valid_bounties.remove(bounty)
         # Species logic
@@ -140,7 +152,7 @@ class ToontownWorld(World):
             for bounty in locations.FISH_ALBUM_BOUNTIES:
                 self.valid_bounties.remove(bounty)
         # No fishing
-        if self.options.fish_checks.value == 3:
+        if self.options.fish_checks.value == 4:
             for bounty in locations.ALL_FISH_BOUNTIES:
                 self.valid_bounties.remove(bounty)
 
@@ -163,6 +175,20 @@ class ToontownWorld(World):
         if self.options.gag_training_check_behavior.value == 2:
             for bounty in locations.GAG_BOUNTIES:
                 self.valid_bounties.remove(bounty)
+
+        # We omitted a gag track, remove its respective bounty from the pool
+        OMITTABLE_BOUNTIES = [
+            "NONE",
+            ToontownLocationName.TRAP_TRAIN_UNLOCKED,
+            ToontownLocationName.SOUND_OPERA_UNLOCKED,
+            ToontownLocationName.THROW_WEDDING_UNLOCKED,
+            ToontownLocationName.SQUIRT_GEYSER_UNLOCKED,
+            ToontownLocationName.DROP_BOAT_UNLOCKED
+        ]
+        if self.options.omit_gag.value != 0:
+            # Have to check just in the edge case it was removed above
+            if OMITTABLE_BOUNTIES[self.options.omit_gag.value] in self.valid_bounties:
+                self.valid_bounties.remove(OMITTABLE_BOUNTIES[self.options.omit_gag.value])
 
         # Remove bounties that are excluded
         valid_copy = self.valid_bounties.copy()
@@ -249,6 +275,10 @@ class ToontownWorld(World):
             self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.startingTracks[0])
             self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.startingTracks[1])
 
+        if self.options.omit_gag.value != 0 and self.options.gag_tracks_required.value >= 7:
+            self.options.gag_tracks_required.value = 6
+            logging.warning("Required Gag Tracks for goal is 7, but we omitted a Gag. Setting to 6.")
+
         # Force bounty placements
         if "bounties" in self.options.win_condition.value:
             self.calculate_bounties()
@@ -318,6 +348,18 @@ class ToontownWorld(World):
                 if item.name == self.startingAccess:
                     continue
                 pool.append(self.create_item(item.name.value))
+
+        # Handle Cog Disguise generation
+        bosses_condition = "cog-bosses" in self.options.win_condition.value
+        if not bosses_condition and self.options.checks_per_boss.value == 0:
+            # Bosses aren't relevant to the seed, we don't want disguises to be on priority and
+            # not progression balanced.
+            for itemName in DISGUISE_ITEMS:
+                pool.append(self.create_progression_deprioritized_skip_balancing(itemName.value))
+        else:
+            # Bosses are relevant to the seed, make them progression as normal
+            for itemName in DISGUISE_ITEMS:
+                pool.append(self.create_item(itemName.value))
 
         # Handle facility key generation
         if self.options.facility_locking.value == FacilityLocking.option_keys:
@@ -392,12 +434,58 @@ class ToontownWorld(World):
                     if itemName in (ToontownItemName.SBHQ_ACCESS, ToontownItemName.CBHQ_ACCESS, ToontownItemName.LBHQ_ACCESS, ToontownItemName.BBHQ_ACCESS):
                         pool.append(self.create_item(itemName.value))
 
+        # Dynamically generate damage increase items.
+        start_dmg = self.options.start_damage_multiplier.value
+        max_dmg = self.options.max_damage_multiplier.value
+        if start_dmg > max_dmg:
+            self.options.max_damage_multiplier.value = start_dmg
+            max_dmg = start_dmg
+        DMG_TO_GIVE = max_dmg - start_dmg
+        useful_threshold = 140
+        dmg_given = 0
+        FOUR_BOOSTS = round(consts.FOUR_DMG_RATIO * DMG_TO_GIVE)
+        while FOUR_BOOSTS > 0 and DMG_TO_GIVE > 4:
+            FOUR_BOOSTS -= 1
+            DMG_TO_GIVE -= 4
+            if (start_dmg + dmg_given) >= useful_threshold:
+                pool.append(self.create_useful_item(ToontownItemName.DMG_BOOST_4.value))
+            else:
+                pool.append(self.create_item(ToontownItemName.DMG_BOOST_4.value))
+            dmg_given += 4
+        THREE_BOOSTS = round(consts.THREE_DMG_RATIO * DMG_TO_GIVE)
+        while THREE_BOOSTS > 0 and DMG_TO_GIVE > 3:
+            THREE_BOOSTS -= 1
+            DMG_TO_GIVE -= 3
+            if (start_dmg + dmg_given) >= useful_threshold:
+                pool.append(self.create_useful_item(ToontownItemName.DMG_BOOST_3.value))
+            else:
+                pool.append(self.create_item(ToontownItemName.DMG_BOOST_3.value))
+            dmg_given += 3
+        TWO_BOOSTS = round(consts.TWO_DMG_RATIO * DMG_TO_GIVE)
+        while TWO_BOOSTS > 0 and DMG_TO_GIVE > 2:
+            TWO_BOOSTS -= 1
+            DMG_TO_GIVE -= 2
+            if (start_dmg + dmg_given) >= useful_threshold:
+                pool.append(self.create_useful_item(ToontownItemName.DMG_BOOST_2.value))
+            else:
+                pool.append(self.create_item(ToontownItemName.DMG_BOOST_2.value))
+            dmg_given += 2
+        for _ in range(DMG_TO_GIVE):
+            if (start_dmg + dmg_given) >= useful_threshold:
+                pool.append(self.create_useful_item(ToontownItemName.DMG_BOOST_1.value))
+            else:
+                pool.append(self.create_item(ToontownItemName.DMG_BOOST_1.value))
+            dmg_given += 1
+
         # Dynamically generate laff boosts.
         max_laff = self.options.max_laff.value
         start_laff = self.options.starting_laff.value
         if start_laff > max_laff:
             self.options.max_laff.value = start_laff
             max_laff = self.options.max_laff.value
+        # The threshold (90% of our max laff) where our laff is generated as useful
+        useful_threshold = math.ceil(max_laff * 0.9)
+        laff_given = 0
         if "laff-o-lympics" in self.options.win_condition.value:  # Our goal is laff-o-lympics, only progressive +1 Boost items
             # Lets make sure our goal isn't more than our max_laff
             # If it is, make our max the same as our goal
@@ -409,7 +497,11 @@ class ToontownWorld(World):
             LAFF_TO_GIVE = max_laff - start_laff
 
             for _ in range(LAFF_TO_GIVE):
-                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
+                if (start_laff + laff_given) >= useful_threshold:
+                    pool.append(self.create_progression_deprioritized_skip_balancing(ToontownItemName.LAFF_BOOST_1.value))
+                else:
+                    pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
+                laff_given += 1
         else:  # If our goal isn't laff-o-lypics, generate laff items normally
             LAFF_TO_GIVE = max_laff - start_laff
             if LAFF_TO_GIVE < 0:
@@ -417,30 +509,63 @@ class ToontownWorld(World):
                 LAFF_TO_GIVE = 0
             FIVE_LAFF_BOOSTS = round(consts.FIVE_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
             while FIVE_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 5:
+
                 FIVE_LAFF_BOOSTS -= 1
                 LAFF_TO_GIVE -= 5
-                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_5.value))
+                if (start_laff + laff_given) >= useful_threshold:
+                    pool.append(self.create_useful_item(ToontownItemName.LAFF_BOOST_5.value))
+                else:
+                    pool.append(self.create_item(ToontownItemName.LAFF_BOOST_5.value))
+                laff_given += 5
             FOUR_LAFF_BOOSTS = round(consts.FOUR_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
             while FOUR_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 4:
                 FOUR_LAFF_BOOSTS -= 1
                 LAFF_TO_GIVE -= 4
-                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_4.value))
+                if (start_laff + laff_given) >= useful_threshold:
+                    pool.append(self.create_useful_item(ToontownItemName.LAFF_BOOST_4.value))
+                else:
+                    pool.append(self.create_item(ToontownItemName.LAFF_BOOST_4.value))
+                laff_given += 4
             THREE_LAFF_BOOSTS = round(consts.THREE_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
             while THREE_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 3:
                 THREE_LAFF_BOOSTS -= 1
                 LAFF_TO_GIVE -= 3
-                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_3.value))
+                if (start_laff + laff_given) >= useful_threshold:
+                    pool.append(self.create_useful_item(ToontownItemName.LAFF_BOOST_3.value))
+                else:
+                    pool.append(self.create_item(ToontownItemName.LAFF_BOOST_3.value))
+                laff_given += 3
             TWO_LAFF_BOOSTS = round(consts.TWO_LAFF_BOOST_RATIO * LAFF_TO_GIVE)
             while TWO_LAFF_BOOSTS > 0 and LAFF_TO_GIVE > 2:
                 TWO_LAFF_BOOSTS -= 1
                 LAFF_TO_GIVE -= 2
-                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_2.value))
-
+                if (start_laff + laff_given) >= useful_threshold:
+                    pool.append(self.create_useful_item(ToontownItemName.LAFF_BOOST_2.value))
+                else:
+                    pool.append(self.create_item(ToontownItemName.LAFF_BOOST_2.value))
+                laff_given += 2
+            # All that's left is +1s
             for _ in range(LAFF_TO_GIVE):
-                pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
+                if (start_laff + laff_given) >= useful_threshold:
+                    pool.append(self.create_useful_item(ToontownItemName.LAFF_BOOST_1.value))
+                else:
+                    pool.append(self.create_item(ToontownItemName.LAFF_BOOST_1.value))
+                laff_given += 1
 
         # Dynamically generate training frames.
+        OMITTABLE_ITEMS = [
+            "NONE",
+            ToontownItemName.TRAP_FRAME,
+            ToontownItemName.SOUND_FRAME,
+            ToontownItemName.THROW_FRAME,
+            ToontownItemName.SQUIRT_FRAME,
+            ToontownItemName.DROP_FRAME
+        ]
         for frame in items.GAG_TRAINING_FRAMES:
+            # Skip the frame generation for our omitted track
+            if self.options.omit_gag.value != 0:
+                if frame == OMITTABLE_ITEMS[self.options.omit_gag.value]:
+                    continue
             quantity = 8 if frame not in self.startingTracks else 7
             for _ in range(quantity):
                 pool.append(self.create_item(frame.value))
@@ -449,7 +574,17 @@ class ToontownWorld(World):
                 self.multiworld.push_precollected(self.create_item(frame.value))
 
         # Dynamically generate gag upgrades.
+        OMIT_VALUE_TO_GAG_UPGRADES = {
+            1: ToontownItemName.TRAP_UPGRADE,
+            2: ToontownItemName.SOUND_UPGRADE,
+            3: ToontownItemName.THROW_UPGRADE,
+            4: ToontownItemName.SQUIRT_UPGRADE,
+            5: ToontownItemName.DROP_UPGRADE
+        }
         for upgrade in items.GAG_UPGRADES:
+            if self.options.omit_gag.value != 0:
+                if upgrade == OMIT_VALUE_TO_GAG_UPGRADES[self.options.omit_gag.value]:
+                    continue
             pool.append(self.create_item(upgrade.value))
 
         # Dynamically generate training multipliers.
@@ -550,8 +685,10 @@ class ToontownWorld(World):
             ToontownItemName.UNITE_REWARD_GAG.value: (self.options.unite_weight/2),
             ToontownItemName.UNITE_REWARD_TOONUP.value: (self.options.unite_weight/2),
             ToontownItemName.PINK_SLIP_REWARD.value: self.options.fire_weight,
+            ToontownItemName.SUMMON_REWARD.value: self.options.summon_weight,
             ToontownItemName.HEAL_10.value: (self.options.heal_weight/2),
             ToontownItemName.HEAL_20.value: (self.options.heal_weight/2),
+            ToontownItemName.FISH.value: self.options.fish_weight,
         }
         junk_items = list(junk_weights.keys())
         return random.choices(junk_items, weights=[junk_weights[i] for i in junk_items])[0]
@@ -566,6 +703,11 @@ class ToontownWorld(World):
             for location in self.multiworld.get_locations()
             if location.address and location.item and location.item.code and location.item.player == self.player
         ]
+        # Check for our item links as well
+        if self.options.item_links.value:
+            for link in self.options.item_links.value:
+                for item in link["item_pool"]:
+                    local_itempool.append(self.item_name_to_id[item])
 
         local_locations = [
             [location.unique_id, location.name.value]
@@ -591,15 +733,17 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "team": self.options.team.value,
-            "game_version": "v0.17.0",
+            "game_version": "v0.19.7",
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "max_laff": self.options.max_laff.value,
+            "omit_gag": self.options.omit_gag.value,
             "starting_money": self.options.starting_money.value,
             "starting_task_capacity": self.options.starting_task_capacity.value,
             "max_task_capacity": self.options.max_task_capacity.value,
             "base_global_gag_xp": self.options.base_global_gag_xp.value,
-            "damage_multiplier": self.options.damage_multiplier.value,
+            "start_damage_multiplier": self.options.start_damage_multiplier.value,
+            "max_damage_multiplier": self.options.max_damage_multiplier.value,
             "overflow_mod": self.options.overflow_mod.value,
             "win_condition": int(win_condition),
             "cog_bosses_required": self.options.cog_bosses_required.value,
@@ -621,6 +765,7 @@ class ToontownWorld(World):
             "bean_tax_weight": self.options.bean_tax_weight.value,
             "gag_shuffle_weight": self.options.gag_shuffle_weight.value,
             "bean_weight": self.options.bean_weight.value,
+            "summon_weight": self.options.summon_weight.value,
             "exp_weight": self.options.exp_weight.value,
             "sos_weight": self.options.sos_weight.value,
             "unite_weight": self.options.unite_weight.value,
@@ -632,10 +777,12 @@ class ToontownWorld(World):
             "facility_locking": self.options.facility_locking.value,
             "death_link": self.options.death_link.value,
             "ring_link": self.options.ring_link.value,
+            "cog_dmg_rando": self.options.cog_dmg_rando.value,
             "slot_sync_jellybeans": self.options.slot_sync_jellybeans.value,
             "slot_sync_gag_experience": self.options.slot_sync_gag_experience.value,
             "pet_shop_display": self.options.pet_shop_display.value,
             "task_reward_display": self.options.task_reward_display.value,
+            "want_cgc_mazes": self.options.want_cgc_mazes.value,
             "local_itempool": local_itempool,
             "local_locations": local_locations,
             "tpsanity": self.options.tpsanity.value,
@@ -647,7 +794,10 @@ class ToontownWorld(World):
             "max_gag_xp": self.options.max_global_gag_xp.value,
             "damage_trap_weight": self.options.damage_trap_weight.value,
             "heal_weight": self.options.heal_weight.value,
-            "random_prices": self.options.random_prices.value
+            "fish_weight": self.options.fish_weight.value,
+            "random_prices": self.options.random_prices.value,
+            "item_links": self.options.item_links.value,
+            "fish_pity": self.options.fish_pity.value,
         }
 
     def calculate_starting_tracks(self, starting_gags: list):
@@ -659,6 +809,13 @@ class ToontownWorld(World):
             "throw": ToontownItemName.THROW_FRAME,
             "squirt": ToontownItemName.SQUIRT_FRAME,
             "drop": ToontownItemName.DROP_FRAME
+        }
+        option_to_track = {
+            1: "trap",
+            2: "sound",
+            3: "throw",
+            4: "squirt",
+            5: "drop"
         }
         # Define lists to pull gags from so we don't give two support tracks
         OFFENSIVE: List[ToontownItemName] = [
@@ -676,39 +833,59 @@ class ToontownWorld(World):
         rng = self.multiworld.random
         choices = ALL.copy()
 
+        # Checking if the track we're wanting is in the starting list
+        # Then also removing it from our options
+        omitted_gag = self.options.omit_gag.value != 0
+        omitted_track = self.options.omit_gag.value
+        # If our omitted track is in our starting, randomize it
+        if omitted_gag:
+            if option_to_track[omitted_track] in set(starting_gags):
+                starting_gags.remove(option_to_track[omitted_track])
+                starting_gags.append("randomized")
+            choices.remove(gag_to_item[option_to_track[omitted_track]])
+
         starting_random_gags = starting_gags.count("randomized")
         starting_gag_items = [gag_to_item[item] for item in set(starting_gags) if item in gag_to_item]
+        wild_random = "wild" in set(starting_gags)
+
 
         for i in starting_gag_items:
             choices.remove(i)
-
         for i in range(starting_random_gags):
             if len(choices) == 0:
                 break
-            if len(starting_gag_items) == 0: #first gag always should be offensive.
-                chosen = rng.choice(OFFENSIVE)
+
+            if wild_random:  # We don't consider any logic for our starting tracks
+                chosen = rng.choice(choices)
                 starting_gag_items.append(chosen)
                 choices.remove(chosen)
-
-            elif len(starting_gag_items) == 1:
-                first_track = starting_gag_items[0]
-                if first_track == ToontownItemName.TRAP_FRAME:
-                    chosen = ToontownItemName.LURE_FRAME
+            else:
+                offensive_choices = OFFENSIVE.copy()
+                if omitted_gag:
+                    # Remove our omitted gag from our possible choices
+                    if gag_to_item[option_to_track[omitted_track]] in offensive_choices:
+                        offensive_choices.remove(gag_to_item[option_to_track[omitted_track]])
+                if len(starting_gag_items) == 0:  # first gag always should be offensive.
+                    chosen = rng.choice(offensive_choices)
                     starting_gag_items.append(chosen)
                     choices.remove(chosen)
-                elif first_track in SUPPORT: #ensure an offensive gag if the first track was support
-                    chosen = rng.choice(OFFENSIVE)
+                elif len(starting_gag_items) == 1:
+                    first_track = starting_gag_items[0]
+                    if first_track == ToontownItemName.TRAP_FRAME:
+                        chosen = ToontownItemName.LURE_FRAME
+                    elif first_track in SUPPORT:  # ensure an offensive gag if the first track was support
+                        if first_track == ToontownItemName.TOONUP_FRAME:
+                            if ToontownItemName.TRAP_FRAME in offensive_choices:
+                                offensive_choices.remove(ToontownItemName.TRAP_FRAME)
+                        chosen = rng.choice(offensive_choices)
+                    else:
+                        chosen = rng.choice(choices)
                     starting_gag_items.append(chosen)
                     choices.remove(chosen)
                 else:
                     chosen = rng.choice(choices)
                     starting_gag_items.append(chosen)
                     choices.remove(chosen)
-
-            else:
-                chosen = rng.choice(choices)
-                starting_gag_items.append(chosen)
-                choices.remove(chosen)
 
 
         ## Check to ensure sphere 1 isn't very likely to be empty.
@@ -719,16 +896,21 @@ class ToontownWorld(World):
                     self.options.fish_progression.option_licenses,
                     self.options.fish_progression.option_licenses_and_rods
                 ])
-        ):
-            logging.warning("[{self.multiworld.player_name[self.player]}] Sphere 1 likely contains very few checks, adding an offensive gag to starting gags to avoid this.")
+            ):
+            logging.warning(f"[{self.multiworld.player_name[self.player]}] Sphere 1 likely contains very few checks, adding an offensive gag to starting gags to avoid this.")
             if ToontownItemName.LURE_FRAME in starting_gags:
                 starting_gag_items.append(rng.choice(OFFENSIVE))
             else:
                 choices = OFFENSIVE.copy()
-                choices.remove(ToontownItemName.TRAP_FRAME)
+                if omitted_gag:
+                    # Remove our omitted gag from our possible choices
+                    if gag_to_item[option_to_track[omitted_track]] in choices:
+                        choices.remove(gag_to_item[option_to_track[omitted_track]])
+                if ToontownItemName.TRAP_FRAME in choices:
+                    choices.remove(ToontownItemName.TRAP_FRAME)
                 starting_gag_items.append(rng.choice(choices))
 
-        #Update the option to use the randomized values so that it outputs to spoiler log.
+        # Update the option to use the randomized values so that it outputs to spoiler log.
         item_to_gag = {v:k for k,v in gag_to_item.items()}
         self.options.starting_gags.value = [item_to_gag[i] for i in starting_gag_items]
 
@@ -756,15 +938,14 @@ class ToontownWorld(World):
         randomized = win_conditions.count("randomized")
         choices = list(self.options.win_condition.valid_keys)
         choices.remove("randomized")  # not a valid random choice
+        for omitted_choice in self.options.conditions_omitted_when_randomized.value:
+            choices.remove(omitted_choice)
         result = [i for i in set(win_conditions) if i != "randomized"]
         rng = self.multiworld.random
         for i in result:
             choices.remove(i)
         result += rng.sample(choices, k=min(randomized, len(choices)))
         return result
-        
-
-
 
     def get_disabled_location_types(self) -> set[ToontownLocationType]:
         """
@@ -816,9 +997,29 @@ class ToontownWorld(World):
         if not golf:
             forbidden_location_types.add(ToontownLocationType.GOLF)
 
+        bosses_condition = "cog-bosses" in self.options.win_condition.value
+        if not bosses_condition and self.options.checks_per_boss.value == 0:
+            # Bosses aren't relevant to the seed, remove the level 13 and 14 checks
+            logging.warning(f"WARNING: [{self.multiworld.player_name[self.player]}] has nothing on bosses. Removing the Level 13 and Level 14 Cog checks.")
+            forbidden_location_types.add(ToontownLocationType.HIGH_COG_LEVELS)
+
+        GAG_LOCATION_TYPES = [
+            ToontownLocationType.SUPPORT_GAG_TRAINING,
+            ToontownLocationType.TRAP_GAG_TRAINING,
+            ToontownLocationType.SOUND_GAG_TRAINING,
+            ToontownLocationType.THROW_GAG_TRAINING,
+            ToontownLocationType.SQUIRT_GAG_TRAINING,
+            ToontownLocationType.DROP_GAG_TRAINING,
+        ]
+
         gags = self.options.gag_training_check_behavior.value
         if gags == GagTrainingCheckBehavior.option_disabled:
-            forbidden_location_types.add(ToontownLocationType.GAG_TRAINING)
+            for type in GAG_LOCATION_TYPES:
+                forbidden_location_types.add(type)
+
+        omitted_track = self.options.omit_gag.value
+        if omitted_track != 0:
+            forbidden_location_types.add(GAG_LOCATION_TYPES[omitted_track])
 
         return forbidden_location_types
 

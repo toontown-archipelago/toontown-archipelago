@@ -850,7 +850,7 @@ class DistributedCashbotBoss(DistributedBossCog.DistributedBossCog, FSM.FSM):
                 rollTrack,
                 self.door3.posInterval(2.5, Point3(0, 0, 25), startPos=Point3(0, 0, 18)))),
             (5.5, Func(self.setChatAbsolute, outtaHere, CFSpeech)),
-            (5.5, SoundInterval(trainPassingSfx)),
+            (5.5, SoundInterval(trainPassingSfx, volume=0.1)),
             (8.1, Func(self.clearChat)),
             (9.4, Sequence(
                 Func(loco.reparentTo, render),

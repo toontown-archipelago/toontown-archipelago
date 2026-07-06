@@ -118,7 +118,7 @@ class Train(DirectObject):
             sfxStopTime = 4.3
             halfway = (self.trackStartPos + self.trackEndPos) / 2
             halfway.setX(150)
-            nextRun.append(Parallel(Sequence(Wait(totalTime - sfxStopTime), SoundInterval(self.trainStopStartSfx, volume=0.5)), Sequence(LerpPosInterval(self.locomotive, totalTime, halfway, self.trackStartPos, blendType='easeInOut'), WaitInterval(waitTime), LerpPosInterval(self.locomotive, totalTime, self.trackEndPos, halfway, blendType='easeIn'))))
+            nextRun.append(Parallel(Sequence(Wait(totalTime - sfxStopTime), SoundInterval(self.trainStopStartSfx, volume=0.1)), Sequence(LerpPosInterval(self.locomotive, totalTime, halfway, self.trackStartPos, blendType='easeInOut'), WaitInterval(waitTime), LerpPosInterval(self.locomotive, totalTime, self.trackEndPos, halfway, blendType='easeIn'))))
         else:
             totalTime = random.randrange(6, self.MarkDelta - 1)
             sfxTime = 7
@@ -127,7 +127,7 @@ class Train(DirectObject):
                 sfxStartTime -= 1
             else:
                 sfxStartTime += 1
-            nextRun.append(Parallel(Sequence(Wait(sfxStartTime), SoundInterval(self.trainPassingSfx, volume=0.5)), LerpPosInterval(self.locomotive, totalTime, self.trackEndPos, self.trackStartPos)))
+            nextRun.append(Parallel(Sequence(Wait(sfxStartTime), SoundInterval(self.trainPassingSfx, volume=0.1)), LerpPosInterval(self.locomotive, totalTime, self.trackEndPos, self.trackStartPos)))
         nextRun.append(Func(self.doNextRun))
         return nextRun
 

@@ -106,9 +106,11 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
     def updateTotalPropsText(self):
         textTotal = TTLocalizer.InventoryTotalGags % (self.totalProps, self.toon.getMaxCarry())
         if localAvatar.getPinkSlips() > 1:
-            textTotal = textTotal + '\n\n' + TTLocalizer.InventroyPinkSlips % localAvatar.getPinkSlips()
+            textTotal = textTotal + '\n\n' + TTLocalizer.InventroyPinkSlips % localAvatar.getPinkSlips() + '\n\n' + TTLocalizer.InventoryDamageRate % (str(base.localAvatar.getDamageMultiplier()) + "%")
         elif localAvatar.getPinkSlips() == 1:
-            textTotal = textTotal + '\n\n' + TTLocalizer.InventroyPinkSlip
+            textTotal = textTotal + '\n\n' + TTLocalizer.InventroyPinkSlip + '\n\n' + TTLocalizer.InventoryDamageRate % (str(base.localAvatar.getDamageMultiplier()) + "%")
+        else:
+            textTotal = textTotal + '\n\n' + TTLocalizer.InventoryDamageRate % (str(base.localAvatar.getDamageMultiplier()) + "%")
         self.totalLabel['text'] = textTotal
 
     def unload(self):
@@ -289,7 +291,11 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             numRoundsLured = AvLureRounds[level]
             knockback = str(damage) + '%'
             damage = numRoundsLured
+            if organicBonus:
+                knockback += ' (+5%)'
             damageBonusStr = ''
+            self.detailCreditLabel.setPos(-0.22, 0, -0.395)
+        elif track != LURE_TRACK and organicBonus:
             self.detailCreditLabel.setPos(-0.22, 0, -0.395)
         else:
             self.detailCreditLabel.setPos(-0.22, 0, -0.365)
@@ -314,11 +320,61 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
              'knockback': knockback,
              'singleOrGroup': self.getSingleGroupStr(track, level)}
         else:
-            labelStr = TTLocalizer.InventoryDetailData % {'accuracy': accString,
-             'damageString': self.getToonupDmgStr(track, level),
-             'damage': damage,
-             'bonus': damageBonusStr,
-             'singleOrGroup': self.getSingleGroupStr(track, level)}
+            if track == THROW_TRACK and organicBonus:
+                heal = int(math.ceil((damage + damageBonus) * 0.15))
+                healStr = "Self-Heal: " + str(heal)
+                labelStr = TTLocalizer.InventoryDetailDataOrgThrow % {'accuracy': accString,
+                                                              'damageString': self.getToonupDmgStr(track, level),
+                                                              'damage': damage,
+                                                              'bonus': damageBonusStr,
+                                                              'heal': healStr,
+                                                              'singleOrGroup': self.getSingleGroupStr(track, level)}
+            elif track == SQUIRT_TRACK and organicBonus:
+                knockStr = "Bonus Knockback: 30%"
+                labelStr = TTLocalizer.InventoryDetailDataOrgSquirt % {'accuracy': accString,
+                                                              'damageString': self.getToonupDmgStr(track, level),
+                                                              'damage': damage,
+                                                              'bonus': damageBonusStr,
+                                                              'knockback': knockStr,
+                                                              'singleOrGroup': self.getSingleGroupStr(track, level)}
+            elif track == DROP_TRACK and organicBonus:
+                bonusStr = "Bonus: Lured Targeting"
+                labelStr = TTLocalizer.InventoryDetailDataOrgDrop % {'accuracy': accString,
+                                                              'damageString': self.getToonupDmgStr(track, level),
+                                                              'damage': damage,
+                                                              'bonus': damageBonusStr,
+                                                              'ability': bonusStr,
+                                                              'singleOrGroup': self.getSingleGroupStr(track, level)}
+            elif track == TRAP_TRACK and organicBonus:
+                bonusStr = "Bonus: +Dmg Reduction"
+                labelStr = TTLocalizer.InventoryDetailDataOrgDrop % {'accuracy': accString,
+                                                              'damageString': self.getToonupDmgStr(track, level),
+                                                              'damage': damage,
+                                                              'bonus': damageBonusStr,
+                                                              'ability': bonusStr,
+                                                              'singleOrGroup': self.getSingleGroupStr(track, level)}
+            elif track == SOUND_TRACK and organicBonus:
+                bonusStr = "Bonus: +Lvl Based Dmg"
+                labelStr = TTLocalizer.InventoryDetailDataOrgDrop % {'accuracy': accString,
+                                                              'damageString': self.getToonupDmgStr(track, level),
+                                                              'damage': damage,
+                                                              'bonus': damageBonusStr,
+                                                              'ability': bonusStr,
+                                                              'singleOrGroup': self.getSingleGroupStr(track, level)}
+            elif track == HEAL_TRACK and organicBonus:
+                bonusStr = "Bonus: +25% Defense"
+                labelStr = TTLocalizer.InventoryDetailDataOrgDrop % {'accuracy': accString,
+                                                              'damageString': self.getToonupDmgStr(track, level),
+                                                              'damage': damage,
+                                                              'bonus': damageBonusStr,
+                                                              'ability': bonusStr,
+                                                              'singleOrGroup': self.getSingleGroupStr(track, level)}
+            else:
+                labelStr = TTLocalizer.InventoryDetailData % {'accuracy': accString,
+                 'damageString': self.getToonupDmgStr(track, level),
+                 'damage': damage,
+                 'bonus': damageBonusStr,
+                 'singleOrGroup': self.getSingleGroupStr(track, level)}
         self.detailDataLabel.configure(text=labelStr)
         if self.itemIsCredit(track, level):
             mult = self.getBattleCreditMultiplier()
@@ -888,6 +944,13 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             self.runButton.hide()
             self.sosButton.show()
             self.passButton.show()
+            self.fireButton.show()
+            if localAvatar.getPinkSlips() > 0:
+                self.fireButton['state'] = DGG.NORMAL
+                self.fireButton['image_color'] = Vec4(0, 0.6, 1, 1)
+            else:
+                self.fireButton['state'] = DGG.DISABLED
+                self.fireButton['image_color'] = Vec4(0.4, 0.4, 0.4, 1)
         elif self.tutorialFlag == 1:
             self.runButton.hide()
             self.sosButton.hide()

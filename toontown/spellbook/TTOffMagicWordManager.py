@@ -58,7 +58,9 @@ class TTOffMagicWordManager(DistributedObject.DistributedObject):
                          affectType=None, affectExtra=None, lastClickedAvId=None, extraMessageData = None):
         response = self.generateMagicWordResponse(responseType, magicWord, args, returnValue, affectRange, affectType,
                                                   affectExtra, lastClickedAvId, extraMessageData)
-        base.localAvatar.setSystemMessage(0, response, WhisperType.WTMagicWord)
+        # Only notify the client when we want to
+        if response != "nan":
+            base.localAvatar.setSystemMessage(0, response, WhisperType.WTMagicWord)
         self.notify.info(response)
 
     def generateMagicWordResponse(self, responseType, magicWord, args, returnValue, affectRange, affectType,

@@ -204,9 +204,12 @@ class ToonBase(OTPBase.OTPBase):
         self.WANT_LEGACY_MODELS = self.settings.get('want-legacy-models')
         self.wantRichPresence = self.settings.get('discord-rich-presence')
         self.colorBlindMode = self.settings.get('color-blind-mode')
+        self.battleSpeed = self.settings.get('battle-speed')
+        self.apSounds = self.settings.get('ap-sounds')
         # do they want laff meter on or off?
         self.laffMeterDisplay = self.settings.get('laff-display')
         self.randomMusic = self.settings.get("random-music")
+        self.newPopup = self.settings.get("new-popup")
         self.discord = DiscordRPC()
         self.discord.launching()
         self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {version}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)
@@ -541,6 +544,10 @@ class ToonBase(OTPBase.OTPBase):
     def playMusic(self, music, looping = 0, interrupt = 1, volume = None, time = 0.0):
         OTPBase.OTPBase.playMusic(self, music, looping, interrupt, volume, time)
 
+    def setRun(self):
+        if hasattr(base, 'localAvatar'):
+            base.localAvatar.setRunFromHotkey()
+
     @property
     def controls(self) -> ControlSettings:
         return self.settings.controls
@@ -548,6 +555,7 @@ class ToonBase(OTPBase.OTPBase):
     def acceptHotkeys(self) -> None:
         # Accept the screenshot key
         self.accept(self.controls.SCREENSHOT, self.takeScreenShot)
+        self.accept(self.controls.TOGGLE_RUN_HOTKEY, self.setRun)
         self.accept(
             self.controls.MAP_PAGE_HOTKEY,
             messenger.send,
@@ -594,6 +602,26 @@ class ToonBase(OTPBase.OTPBase):
             extraArgs=[ToontownGlobals.GalleryHotkeyOff]
         )
         self.accept(
+            self.controls.LOCATIONS_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.LocationsHotkeyOn]
+        )
+        self.accept(
+            f"{self.controls.LOCATIONS_HOTKEY}-up",
+            messenger.send,
+            extraArgs=[ToontownGlobals.LocationsHotkeyOff]
+        )
+        self.accept(
+            self.controls.ELEVATOR_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.ElevatorHotkeyOn]
+        )
+        self.accept(
+            f"{self.controls.ELEVATOR_HOTKEY}-up",
+            messenger.send,
+            extraArgs=[ToontownGlobals.ElevatorHotkeyOff]
+        )
+        self.accept(
             self.controls.CHAT_HOTKEY,
             messenger.send,
             extraArgs=["enterNormalChat"]
@@ -612,6 +640,7 @@ class ToonBase(OTPBase.OTPBase):
     def ignoreHotkeys(self) -> None:
         # Ignore the screenshot key
         self.ignore(self.controls.SCREENSHOT)
+        self.ignore(self.controls.TOGGLE_RUN_HOTKEY)
         self.ignore(self.controls.MAP_PAGE_HOTKEY)
         self.ignore(self.controls.FRIENDS_LIST_HOTKEY)
         self.ignore(self.controls.STREET_MAP_HOTKEY)
@@ -621,6 +650,10 @@ class ToonBase(OTPBase.OTPBase):
         self.ignore(f"{self.controls.QUEST_HOTKEY}-up")
         self.ignore(self.controls.GALLERY_HOTKEY)
         self.ignore(f"{self.controls.GALLERY_HOTKEY}-up")
+        self.ignore(self.controls.LOCATIONS_HOTKEY)
+        self.ignore(f"{self.controls.LOCATIONS_HOTKEY}-up")
+        self.ignore(self.controls.ELEVATOR_HOTKEY)
+        self.ignore(f"{self.controls.ELEVATOR_HOTKEY}-up")
         self.ignore(self.controls.CHAT_HOTKEY)
         self.ignore(self.controls.MOVE_LEFT)
         self.ignore(self.controls.MOVE_RIGHT)

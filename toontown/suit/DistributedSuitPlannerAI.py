@@ -24,43 +24,43 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
     # boss, law, cash, sell
     SuitHoodInfo = [
                     #Toontown Central
-                    [2100, 5, 15, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (0, 0, 25, 75), (1, 2, 3), [], 4],
-                    [2200, 3, 10, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (0, 50, 50, 0), (1, 2, 3), [], 4],
-                    [2300, 3, 10, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (75, 25, 0, 0), (1, 2, 3), [], 4],
+                    [2100, 4, 15, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (0, 0, 25, 75), (1, 2, 3), [], 4],
+                    [2200, 4, 15, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (0, 50, 50, 0), (1, 2, 3), [], 4],
+                    [2300, 4, 15, 0, 99, 100, 3, (1, 5, 10, 40, 60, 80), (75, 25, 0, 0), (1, 2, 3), [], 4],
 
                     #Donalds Dock
-                    [1100, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (50, 0, 50, 0), (3, 4, 5), [], 4],
-                    [1200, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 25, 75), (3, 4, 5), [], 4],
-                    [1300, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (25, 75, 0, 0), (3, 4, 5), [], 4],
+                    [1100, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (50, 0, 50, 0), (3, 4, 5), [], 4],
+                    [1200, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 25, 75), (3, 4, 5), [], 4],
+                    [1300, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (25, 75, 0, 0), (3, 4, 5), [], 4],
 
                     # Daisy Gardens
-                    [5100, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 50, 50, 0),  (4, 5, 6), [], 4],
-                    [5200, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (50, 25, 25, 0), (4, 5, 6), [], 4],
-                    [5300, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 0, 100),  (4, 5, 6), [], 4],
+                    [5100, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 50, 50, 0),  (4, 5, 6), [], 4],
+                    [5200, 4, 18, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (60, 20, 20, 0), (4, 5, 6), [], 4],
+                    [5300, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 0, 100),  (4, 5, 6), [], 4],
 
                     # Minnies Melodyland
-                    [4100, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (50, 0, 0, 50),  (4, 5, 6, 7), [], 4],
-                    [4200, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0),  (4, 5, 6, 7), [], 4],
-                    [4300, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (25, 0, 50, 25), (4, 5, 6, 7), [], 4],
+                    [4100, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (50, 0, 0, 50),  (4, 5, 6, 7), [], 4],
+                    [4200, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0),  (4, 5, 6, 7), [], 4],
+                    [4300, 4, 18, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (20, 0, 60, 20), (4, 5, 6, 7), [], 4],
 
                     # The Brrrgh
-                    [3100, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (100, 0, 0, 0), (5, 6, 7, 8), [], 4],
-                    [3200, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 50, 50), (5, 6, 7, 8), [], 4],
-                    [3300, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0), (5, 6, 7, 8), [], 4],
+                    [3100, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (100, 0, 0, 0), (5, 6, 7, 8), [], 4],
+                    [3200, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 50, 50), (5, 6, 7, 8), [], 4],
+                    [3300, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0), (5, 6, 7, 8), [], 4],
 
                     #Donalds Dreamland
-                    [9100, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (33, 34, 0, 33), (6, 7, 8, 9), [], 4],
-                    [9200, 1, 5, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 100, 0),  (6, 7, 8, 9), [], 4],
+                    [9100, 4, 18, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (33, 34, 0, 33), (6, 7, 8, 9), [], 4],
+                    [9200, 4, 15, 0, 99, 100, 4, (1, 5, 10, 40, 60, 80), (0, 0, 100, 0),  (6, 7, 8, 9), [], 4],
                     
                     # Sellbot Courtyard, Factory Exterior
                     [11000, 3, 15, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 0, 0, 100),  (5, 6, 7), [], 4],
-                    [11200, 10, 20, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 0, 0, 100), (6, 7, 8, 9), [], 4],
+                    [11200, 10, 25, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 0, 0, 100), (6, 7, 8, 9), [], 4],
                     
                     # Cashbot Courtyard
-                    [12000, 10, 20, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 0, 100, 0), (6, 7, 8, 9), [], 4],
+                    [12000, 10, 25, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 0, 100, 0), (6, 7, 8, 9), [], 4],
                     
                     # Lawbot Courtyard, Office Lobby
-                    [13000, 10, 20, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0), (7, 8, 9, 10), [], 4],
+                    [13000, 10, 25, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0), (7, 8, 9, 10), [], 4],
                     [13200, 10, 20, 0, 0, 0, 4, (1, 5, 10, 40, 60, 80), (0, 100, 0, 0), (7, 8, 9, 10), [], 4],
                     
                     # Bossbot Courtyard
@@ -261,6 +261,21 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             else:
                 count[suit.track] = 1
 
+    def checkForSuitInTrack(self, track, suitType):
+        for suit in self.suitList:
+            if suit.track == track:
+                suitName = SuitDNA.suitDeptToTrackList[track][suitType-1]
+                if suitName == suit.dna.name:
+                    return True
+        return False
+
+    def checkForRatioOfTrack(self, track, ratio):
+        currentSuitsInTrack = 0
+        for suit in self.suitList:
+            if suit.track == track:
+                currentSuitsInTrack += 1
+        return (currentSuitsInTrack / max(len(self.suitList), 1)) >= (ratio / 100)
+
     def countNumBuildingsPerTrack(self, count):
         if self.buildingMgr:
             for building in self.buildingMgr.getBuildings():
@@ -345,7 +360,7 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
 
         return pointList
 
-    def createNewSuit(self, blockNumbers, streetPoints, toonBlockTakeover=None, cogdoTakeover=None, minPathLen=None, maxPathLen=None, buildingHeight=None, suitLevel=None, suitType=None, suitTrack=None, suitName=None, skelecog=None, revives=None):
+    def createNewSuit(self, blockNumbers, streetPoints, toonBlockTakeover=None, cogdoTakeover=None, minPathLen=None, maxPathLen=None, buildingHeight=None, suitLevel=None, suitType=None, suitTrack=None, suitName=None, skelecog=None, revives=None, command=False):
         startPoint = None
         blockNumber = None
         if self.notify.getDebug():
@@ -437,7 +452,54 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             else:
                 suitLevel = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL][-1] + 1
         suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack)
-        newSuit.setupSuitDNA(suitLevel, suitType, suitTrack)
+
+        if not command:
+            trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(suitTrack)]
+            # The dept we're spawning is at or above the wanted ratio based on set %s
+            if self.checkForRatioOfTrack(suitTrack, trackRatio):
+                tracksCanSpawn = []
+                for rate in range(len(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])):
+                    if self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][rate] > 0:
+                        tracksCanSpawn.append(SuitDNA.suitDepts[rate])
+                # Remove the track we've already tried spawning
+                if suitTrack in tracksCanSpawn:
+                    tracksCanSpawn.remove(suitTrack)
+                # Randomize the order each time so it doesn't fill from the bottom up and has more "random" behavior
+                random.shuffle(tracksCanSpawn)
+                for track in tracksCanSpawn:
+                    trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(track)]
+                    # We've hit a department without a met ratio yet, break and move on
+                    if not self.checkForRatioOfTrack(track, trackRatio):
+                        suitTrack = track
+                        break
+
+        # This cog exists, check if we have open suits in the other spots
+        if self.checkForSuitInTrack(suitTrack, suitType) and not command:
+            levelRange = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LEVEL_RANGE]
+            levelSpread = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL]
+            allowedTiers = []
+            if ZoneUtil.isCogHQZone(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_ZONE]):
+                for level in levelSpread:
+                    for tier in list(range(max(level - levelRange, 1), min(level, self.MAX_SUIT_TYPES_HQ) + 1)):
+                        if tier not in allowedTiers:
+                            allowedTiers.append(tier)
+            else:
+                for level in levelSpread:
+                    for tier in list(range(max(level - levelRange, 1), min(level, self.MAX_SUIT_TYPES) + 1)):
+                        if tier not in allowedTiers:
+                            allowedTiers.append(tier)
+
+            # Randomize the order each time so it doesn't fill from the bottom up and has more "random" behavior
+            random.shuffle(allowedTiers)
+            for tier in allowedTiers:
+                # Found a cog in the department that doesn't exist
+                if not self.checkForSuitInTrack(suitTrack, tier):
+                    suitType = tier
+                    suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack)
+                    break
+            # At this point we know we have everything spawned possible so just continue and go random
+
+        newSuit.setupSuitDNA(suitLevel, suitType, suitTrack, suitName)
         newSuit.buildingHeight = buildingHeight
         gotDestination = self.chooseDestination(newSuit, startTime, toonBlockTakeover=toonBlockTakeover, cogdoTakeover=cogdoTakeover, minPathLen=minPathLen, maxPathLen=maxPathLen)
         if not gotDestination:
@@ -1056,6 +1118,12 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             if suit.pathState == 1:
                 suit.flyAwayNow()
 
+    def commandCheckFlyRandomSuit(self):
+        if len(self.suitList) > self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_MAX]:
+            suit = random.choice(self.suitList)
+            if suit.pathState == 1:
+                suit.flyAwayNow()
+
     def requestBattle(self, zoneId, suit, toonId):
         self.notify.debug('requestBattle() - zone: %d suit: %d toon: %d' % (zoneId, suit.doId, toonId))
         canonicalZoneId = ZoneUtil.getCanonicalZoneId(zoneId)
@@ -1208,11 +1276,14 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         if level < type:
             level = type
 
+        # Catch for when the level is higher than what it should be for the tier
+        if level > (type + 4):
+            level = (type + 4)
+
         if track == None:
             track = SuitDNA.suitDepts[SuitBattleGlobals.pickFromFreqList(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])]
         self.notify.debug('pickLevelTypeAndTrack: %d %d %s' % (level, type, track))
-        return (
-         level, type, track)
+        return (level, type, track)
 
     @classmethod
     def dump(cls):

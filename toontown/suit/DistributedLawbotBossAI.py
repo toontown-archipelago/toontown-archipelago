@@ -479,15 +479,18 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
     def exitBattleTwo(self):
         self.resetBattles()
         self.numToonJurorsSeated = 0
-        for chair in self.chairs:
-            self.notify.debug('chair.state==%s' % chair.state)
-            if chair.state == 'ToonJuror':
-                self.numToonJurorsSeated += 1
-
+        self.countToonJurors()
         self.notify.debug('numToonJurorsSeated=%d' % self.numToonJurorsSeated)
         self.air.writeServerEvent('jurorsSeated', self.doId, '%s|%s|%s' % (self.dept, self.involvedToons, self.numToonJurorsSeated))
         self.__deleteCannons()
         self.__stopChairs()
+
+    def countToonJurors(self):
+        self.numToonJurorsSeated = 0
+        for chair in self.chairs:
+            self.notify.debug('chair.state==%s' % chair.state)
+            if chair.state == 'ToonJuror':
+                self.numToonJurorsSeated += 1
 
     def enterRollToBattleThree(self):
         self.divideToons()
@@ -772,8 +775,8 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
 
                 possibleCogLevel = range(SuitDNA.suitsPerDept)
                 possibleDeptIndex = range(len(SuitDNA.suitDepts))
-                possibleSummonType = ['single', 'building', 'invasion']
-                typeWeights = ['single'] * 70 + ['building'] * 27 + ['invasion'] * 3
+                possibleSummonType = ['single', 'building']
+                typeWeights = ['single'] * 70 + ['building'] * 30
                 if not foundOne:
                     for i in range(5):
                         randomCogLevel = random.choice(possibleCogLevel)
@@ -898,6 +901,12 @@ class DistributedLawbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM
             return
         self.chairs[chairIndex].b_setToonJurorIndex(npcToonIndex)
         self.chairs[chairIndex].requestToonJuror()
+        # Skip the rest of the cannon round if we are solo and filled the jury
+        if len(self.involvedToons) == 1:
+            self.countToonJurors()
+            if self.numToonJurorsSeated == 12:
+                self.exitIntroduction()
+                self.b_setState('PrepareBattleThree')
 
     def clearBonus(self, taskName):
         if self and hasattr(self, 'bonusState'):

@@ -100,7 +100,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 rng = random.Random()
                 rng.seed(f"{av.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting
-                cost = rng.randint((baseCost - 500), (baseCost + 1000))
+                cost = rng.randint((baseCost + ToontownGlobals.PRICE_RANDO_MIN), (baseCost + ToontownGlobals.PRICE_RANDO_MAX))
             else:
                 cost = baseCost
             if cost > av.getMoney():

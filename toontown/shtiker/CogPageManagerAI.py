@@ -1,3 +1,4 @@
+from apworld.toontown import locations
 from direct.directnotify import DirectNotifyGlobal
 
 from toontown.archipelago.definitions.util import cog_code_to_ap_location, ap_location_name_to_id
@@ -34,7 +35,7 @@ class CogPageManagerAI:
                 continue
 
             if toon.getDoId() in suit['activeToons']:
-                
+
                 # ik this is hacky, but it works for now with custom cogs as we dont have extra room for cog gallery besides the OG 32.
                 try:
                     # AP location check
@@ -42,6 +43,9 @@ class CogPageManagerAI:
                     location_id = ap_location_name_to_id(cog_location_unique_name)
                     if location_id > 0:
                         toon.addCheckedLocation(location_id)
+
+                    if suit['level'] > 0:
+                        toon.addCheckedLocation(self.checkKilledCogLevel(suit['level']))
 
                     suitIndex = SuitDNA.suitHeadTypes.index(suit['type'])
                     suitDept = SuitDNA.suitDepts.index(suit['track'])
@@ -66,6 +70,25 @@ class CogPageManagerAI:
         toon.ap_setCogCount(cogCount)
 
         self.updateRadar(toon)
+
+    def checkKilledCogLevel(self, level):
+        levelToLocation = [
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_ONE_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_TWO_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_THREE_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_FOUR_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_FIVE_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_SIX_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_SEVEN_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_EIGHT_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_NINE_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_TEN_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_ELEVEN_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_TWELVE_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_THIRTEEN_COG_DEFEATED.value),
+            ap_location_name_to_id(locations.ToontownLocationName.LEVEL_FOURTEEN_COG_DEFEATED.value),
+        ]
+        return levelToLocation[level - 1]
 
     def updateRadar(self, toon):
         cogRadar = toon.getCogRadar()

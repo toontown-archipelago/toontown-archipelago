@@ -95,19 +95,21 @@ def __resetToBase(heal):
 
 def __healToon(toon, hp, ineffective, hasInteractivePropHealBonus):
     notify.debug('healToon() - toon: %d hp: %d ineffective: %d' % (toon.doId, hp, ineffective))
+    # Make sure the healing is always rounded up in instances where it needs to be
+    trueHp = math.ceil(hp)
     if ineffective == 1:
         laughter = random.choice(TTLocalizer.MovieHealLaughterMisses)
     else:
         maxDam = AvPropDamage[0][1][0][1]
-        if hp >= maxDam - 1:
+        if trueHp >= maxDam - 1:
             laughter = random.choice(TTLocalizer.MovieHealLaughterHits2)
         else:
             laughter = random.choice(TTLocalizer.MovieHealLaughterHits1)
     toon.playDialogueForString(laughter)
-    if hp > 0 and toon.hp != None:
-        toon.toonUp(hp, hasInteractivePropHealBonus)
+    if trueHp > 0 and toon.hp != None:
+        toon.toonUp(trueHp, hasInteractivePropHealBonus)
     else:
-        notify.debug('__healToon() - toon: %d hp: %d' % (toon.doId, hp))
+        notify.debug('__healToon() - toon: %d hp: %d' % (toon.doId, trueHp))
     return
 
 

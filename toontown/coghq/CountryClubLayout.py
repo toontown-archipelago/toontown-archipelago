@@ -70,80 +70,44 @@ def printNumBattles():
 
 
 ClubLayout3_0 = [
-    # (0, 2, 5, 9, 17),
-    # (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 18)
 ]
 ClubLayout3_1 = [
-    # (0, 2, 5, 9, 17),
-    # (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 18)
 ]
 
 ClubLayout3_2 = [
-    # (0, 2, 4, 9, 17),
-    # (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 18)
 ]
 
 ClubLayout6_0 = [
-    # (0, 22, 4, 29, 17),
-    # (0, 22, 5, 29, 17),
-    # (0, 22, 6, 29, 17),
-    # (0, 22, 5, 29, 17),
     (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 18)
                  ]
 
 ClubLayout6_1 = [
-    # (0, 22, 4, 29, 17),
-    # (0, 22, 6, 29, 17),
-    # (0, 22, 4, 29, 17),
-    # (0, 22, 6, 29, 17),
     (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 18)
 ]
 
 ClubLayout6_2 = [
-    # (0, 22, 4, 29, 17),
-    # (0, 22, 6, 29, 17),
-    # (0, 22, 5, 29, 17),
-    # (0, 22, 6, 29, 17),
     (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 18)
 ]
 
 ClubLayout9_0 = [
-    # (0, 32, 4, 39, 17),
-    # (0, 32, 5, 39, 17),
-    # (0, 32, 6, 39, 17),
-    # (0, 32, 7, 39, 17),
-    # (0, 32, 5, 39, 17),
-    # (0, 32, 6, 39, 17),
     (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 18)
 ]
 
 ClubLayout9_1 = [
-    # (0, 32, 4, 39, 17),
-    # (0, 32, 5, 39, 17),
-    # (0, 32, 6, 39, 17),
-    # (0, 32, 7, 39, 17),
-    # (0, 32, 5, 39, 17),
-    # (0, 32, 6, 39, 17),
     (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 18)
 ]
 
 ClubLayout9_2 = [
-    # (0, 32, 5, 39, 17),
-    # (0, 32, 5, 39, 17),
-    # (0, 32, 6, 39, 17),
-    # (0, 32, 6, 39, 17),
-    # (0, 32, 5, 39, 17),
-    # (0, 32, 5, 39, 17),
     (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 17),
     (0, 2, 4, 9, 18)
@@ -159,6 +123,62 @@ countryClubLayouts = [
     ClubLayout9_0,
     ClubLayout9_1,
     ClubLayout9_2
+]
+
+ClubLayout3_0_Maze = [
+    (0, 5, 4, 9, 18)
+]
+ClubLayout3_1_Maze = [
+    (0, 6, 4, 9, 18)
+]
+
+ClubLayout3_2_Maze = [
+    (0, 7, 4, 9, 18)
+]
+
+ClubLayout6_0_Maze = [
+    (0, 5, 4, 9, 17),
+    (0, 2, 4, 9, 18)
+                 ]
+
+ClubLayout6_1_Maze = [
+    (0, 2, 4, 9, 17),
+    (0, 6, 4, 9, 18)
+]
+
+ClubLayout6_2_Maze = [
+    (0, 7, 4, 9, 17),
+    (0, 2, 4, 9, 18)
+]
+
+ClubLayout9_0_Maze = [
+    (0, 5, 4, 9, 17),
+    (0, 2, 4, 9, 17),
+    (0, 6, 4, 9, 18)
+]
+
+ClubLayout9_1_Maze = [
+    (0, 2, 4, 9, 17),
+    (0, 6, 4, 9, 17),
+    (0, 7, 4, 9, 18)
+]
+
+ClubLayout9_2_Maze = [
+    (0, 7, 4, 9, 17),
+    (0, 5, 4, 9, 17),
+    (0, 2, 4, 9, 18)
+]
+
+mazeLayouts = [
+    ClubLayout3_0_Maze,
+    ClubLayout3_1_Maze,
+    ClubLayout3_2_Maze,
+    ClubLayout6_0_Maze,
+    ClubLayout6_1_Maze,
+    ClubLayout6_2_Maze,
+    ClubLayout9_0_Maze,
+    ClubLayout9_1_Maze,
+    ClubLayout9_2_Maze
 ]
 
 testLayout = [
@@ -178,7 +198,7 @@ testLayout = [
 class CountryClubLayout:
     notify = DirectNotifyGlobal.directNotify.newCategory('CountryClubLayout')
 
-    def __init__(self, countryClubId, floorNum, layoutIndex):
+    def __init__(self, countryClubId, floorNum, layoutIndex, wantMazes=False):
         self.countryClubId = countryClubId
         self.floorNum = floorNum
         self.layoutIndex = layoutIndex
@@ -186,7 +206,10 @@ class CountryClubLayout:
         self.hallways = []
         self.numRooms = 1 + ToontownGlobals.CountryClubNumRooms[self.countryClubId][0]
         self.numHallways = self.numRooms - 1 + 1
-        self.roomIds = countryClubLayouts[layoutIndex][floorNum]
+        if wantMazes:
+            self.roomIds = mazeLayouts[layoutIndex][floorNum]
+        else:
+            self.roomIds = countryClubLayouts[layoutIndex][floorNum]
         hallwayRng = self.getRng()
         connectorRoomNames = CountryClubRoomSpecs.BossbotCountryClubConnectorRooms
         for i in range(self.numHallways):

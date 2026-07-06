@@ -1,4 +1,4 @@
-
+cd $(dirname $0 )
 export SERVICE_TO_RUN=AI
 cd game
 export BASE_CHANNEL=401000000

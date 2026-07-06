@@ -7,6 +7,7 @@ from apworld.toontown import ToontownItemName, ToontownItemDefinition, get_item_
 from toontown.toonbase import TTLocalizer
 from direct.gui.DirectGui import *
 from panda3d.core import *
+from direct.task import Task
 
 from ..archipelago.util.HintContainer import HintContainer, HintedItem
 from ..archipelago.util.archipelago_information import ArchipelagoInformation
@@ -17,8 +18,12 @@ from ..util.ui import make_dsl_scrollable
 class HintNode(DirectFrame):
     def __init__(self, parent):
         super().__init__(parent)
+        main_text_scale = 0.055
 
         self.title = DirectLabel(parent=self, scale=0.07, pos=(0.02, 0, -0.08), text="Select an Item", textMayChange=True, relief=None)
+        self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % (0, 0),
+                                           text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None,
+                                           pos=(0.02, 0, 0.02))
         self.scrollList = None
         self.externalHint = False
 
@@ -46,8 +51,15 @@ class HintNode(DirectFrame):
     def askForHint(self):
         if self.hintName is None or self.externalHint:
             base.talkAssistant.sendOpenTalk("!hint")
-            return
-        base.talkAssistant.sendOpenTalk("!hint " + self.hintName.value)
+        else:
+            base.talkAssistant.sendOpenTalk("!hint " + self.hintName.value)
+        taskMgr.doMethodLater(1, self.updateHintTextTask, 'updateHintTextTask')
+
+    def updateHintTextTask(self, task):
+        base.localAvatar.sendUpdate('requestHintPoints')
+
+    def updateHintPointText(self, points, cost):
+        self.hintPointsTitle['text'] = TTLocalizer.HintPointsTitle % (points, cost)
 
     def getHintContainer(self) -> HintContainer:
         return base.localAvatar.getHintContainer()
@@ -88,6 +100,16 @@ class HintNode(DirectFrame):
             self.update_title_text(checkDef.name.value)
             self.externalHint = False
             hints: List[HintedItem] = hintContainer.getHintsForItemAndSlot(checkDef.unique_id, localToonInformation.slotId)
+
+            # A bit hacky, but we should get the mark the icon for our linked items as well
+            if base.localAvatar.slotData.get("item_links", None):
+                allLinkNames = []
+                for link in base.localAvatar.slotData.get("item_links", None):
+                    allLinkNames.append(link["name"])
+                allHints = hintContainer.getHintsForItem(checkDef.unique_id)
+                for hint in allHints:
+                    if hint.asking_name in allLinkNames:
+                        hints.append(hint)
 
         # Using our hints we have so far, start constructing text to show that
         foundHints = []
@@ -224,7 +246,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
     def __init__(self):
         ShtikerPage.ShtikerPage.__init__(self)
         self.scrollList = None
-        self.hintPointsTitle = None
         self.textRolloverColor = Vec4(1, 1, 0, 1)
         self.textDownColor = Vec4(0.5, 0.9, 1, 1)
         self.textDisabledColor = Vec4(0.4, 0.8, 0.4, 1)
@@ -249,9 +270,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.itemFrameXorigin = -0.237
         self.itemFrameZorigin = 0.365
         self.buttonXstart = self.itemFrameXorigin + 0.425
-        self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % (0, 0),
-                                            text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None,
-                                            pos=(0, 0, 0.525))
         gui = loader.loadModel('phase_3/models/gui/pick_a_toon_gui')
         quitHover = gui.find('**/QuitBtn_UP')
         self.hintTypeButton = DirectButton(
@@ -280,6 +298,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
 
         self.hintNode.show()
         self.hintNode.showDefaultDisplay()
+        self.hintNode.updateHintPointText(base.localAvatar.hintPoints, base.localAvatar.hintCost)
 
         self.accept('archipelago-hints-updated', self.__handleHintsUpdated)
         self.viewingHint = False
@@ -343,9 +362,6 @@ class CheckPage(ShtikerPage.ShtikerPage):
             self.setHint(*self.viewingHint)
         return
 
-    def updateHintPointText(self):
-        self.hintPointsTitle['text'] = TTLocalizer.HintPointsTitle % (base.localAvatar.hintPoints, base.localAvatar.hintCost)
-
     def cleanupButtons(self):
         for button in self.checkButtons:
             button.detachNode()
@@ -396,25 +412,26 @@ class CheckPage(ShtikerPage.ShtikerPage):
                               ToontownItemName.TB_ACCESS.value,  ToontownItemName.DDL_ACCESS.value]
             cogKeys = [ToontownItemName.SBHQ_ACCESS.value, ToontownItemName.CBHQ_ACCESS.value,
                        ToontownItemName.LBHQ_ACCESS.value, ToontownItemName.BBHQ_ACCESS.value]
-            if base.localAvatar.slotData.get("tpsanity", 0) == TPSanity.option_none:
-                if itemName in playgroundKeys:
-                    quantity = 2
-                if itemName in cogKeys and base.localAvatar.slotData.get("facility_locking", 0) == FacilityLocking.option_access:
-                    quantity = 2
+            if itemName in playgroundKeys:
+                quantity = 2
+            if itemName in cogKeys and base.localAvatar.slotData.get("facility_locking", 0) == FacilityLocking.option_access:
+                quantity = 2
             button = self._makeCheckButton(model, itemDef, itemsAndCount.get(itemDef.unique_id, 0), quantity)
             if itemName == "Bounty":
                 bounties.append(button[1])
                 continue
+            # List of the different progression types so we can display properly
+            progressionItemTypes = [0b00001, 0b11001, 0b01001, 0b10001]
             if "Key" in itemName or "Disguise" in itemName:
                 if "Access" in itemName:
                     progressionItems.append(button[1])
                     continue
                 keyItems.append(button[1])
                 continue
-            if itemDef.classification == 0b0001:  # Progression Items
+            if itemDef.classification in progressionItemTypes:  # Progression Items
                 if button[1] not in (progressionItems + keyItems):  # Make sure item isn't already in one of these
                     progressionItems.append(button[1])
-            elif itemDef.classification == 0b0010:  # Useful Items
+            elif itemDef.classification == 0b00010:  # Useful Items
                 usefulItems.append(button[1])
             else:
                 junkItems.append(button[1])
@@ -446,6 +463,16 @@ class CheckPage(ShtikerPage.ShtikerPage):
         if base.cr.archipelagoManager is not None and (localToonInformation := base.cr.archipelagoManager.getLocalInformation()) is not None:
             if len(base.localAvatar.getHintContainer().getHintsForItemAndSlot(itemDef.unique_id, localToonInformation.slotId)) >= 1:
                 isHinted = True
+            # A bit hacky, but we should get the hints for our linked items as well
+            if base.localAvatar.slotData.get("item_links", None):
+                allLinkNames = []
+                for link in base.localAvatar.slotData.get("item_links", None):
+                    allLinkNames.append(link["name"])
+                allHints = base.localAvatar.hintContainer.getHintsForItem(itemDef.unique_id)
+                for hint in allHints:
+                    if hint.asking_name in allLinkNames:
+                        isHinted = True
+
         if isHinted:
             geomToUse = hinted
         else:
@@ -497,9 +524,11 @@ class CheckPage(ShtikerPage.ShtikerPage):
                     return False
         if isHinted:
             geomToUse = hinted
-        elif isHinted and locationId in base.localAvatar.getCheckedLocations():
-            geomToUse = check
+        # Item not hinted for an external location on this location
         else:
+            return False
+        # We've found this item, no need to keep it in our external hints
+        if isHinted and locationId in base.localAvatar.getCheckedLocations():
             return False
         command = lambda: self.setHint(locationName, locationId, 1)
         if len(locationName) > 26:

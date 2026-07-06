@@ -203,13 +203,13 @@ class DistributedLevelBattle(DistributedBattle.DistributedBattle):
     def __playReward(self, ts, callback):
         toonTracks = Parallel()
         for toon in self.toons:
-            toonTracks.append(Sequence(Func(toon.loop, 'victory'), Wait(FLOOR_REWARD_TIMEOUT), Func(toon.loop, 'neutral')))
+            toonTracks.append(Sequence(Func(toon.loop, 'victory'), Wait(FLOOR_REWARD_TIMEOUT*2), Func(toon.loop, 'neutral')))
 
         name = self.uniqueName('floorReward')
         track = Sequence(toonTracks, Func(callback), name=name)
         LerpPosHprInterval(camera, .5, (0, 0, 1), (180, 10, 0), blendType='easeInOut').start()
         self.storeInterval(track, name)
-        track.start(ts)
+        track.start(ts, playRate=3)
 
     def enterReward(self, ts):
         self.notify.info('enterReward()')

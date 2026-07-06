@@ -532,6 +532,8 @@ dclass DistributedPlayer : DistributedAvatar {
   setWhisperSCCustomFrom(uint32, uint16) ownrecv clsend;
   setWhisperSCEmoteFrom(uint32, uint16) ownrecv clsend;
   setSystemMessage(uint32, string(0-256)) ownrecv;
+  setArchipelagoHintMessage(string(0-256)) ownrecv;
+  setVersionMismatchMessage(string(0-256)) ownrecv;
   setCommonChatFlags(uint8) broadcast ownrecv ram airecv;
   setWhitelistChatFlags(uint8) broadcast ownrecv ram airecv;
   setSC(uint16) broadcast ownsend airecv;
@@ -976,6 +978,8 @@ struct APItem {
 dclass DistributedToon : DistributedPlayer {
   setDNAString(blob) required broadcast ownrecv db;
   setGM(uint8 = 0) required broadcast ownrecv db;
+  setHas75Capacity(uint8 = 0) required broadcast ownrecv db;
+  setHas90Capacity(uint8 = 0) required broadcast ownrecv db;
   setMaxBankMoney(int16 = 0) required broadcast ownrecv db;
   setBankMoney(int16 = 0) required broadcast ownrecv db;
   setMaxMoney(int16 = 40) required broadcast ownrecv db;
@@ -1000,7 +1004,7 @@ dclass DistributedToon : DistributedPlayer {
   setHoodsVisited(uint32[] = [2000]) required ownrecv db;
   setInterface(blob = []) required ownrecv db;
   setLastHood(uint32 = 0) required ownrecv db;
-  setTutorialAck(uint8 = 0) required ownrecv db;
+  setTutorialAck(uint8 = 1) required ownrecv;
   setMaxClothes(uint32 = 10) required ownrecv db;
   setClothesTopsList(uint8[] = []) required ownrecv db;
   setClothesBottomsList(uint8[] = []) required ownrecv db;
@@ -1066,6 +1070,8 @@ dclass DistributedToon : DistributedPlayer {
   setQuestHistory(uint16[] = []) required ownrecv db;
   setRewardHistory(uint8 = 0, uint16[] = []) required ownrecv db;
   setQuestCarryLimit(uint8 = 1) required ownrecv db;
+  setSlotName(string = "") required ownrecv db;
+  setArchipelagoIP(string = "archipelago.gg:") required ownrecv db;
   requestDeleteQuest(uint32[]) ownsend airecv;
   setCheesyEffect(int16 = 0, uint32 = 0, uint32 = 0) required broadcast ownrecv db;
   setGhostMode(uint8) broadcast ownrecv ram;
@@ -1163,13 +1169,14 @@ dclass DistributedToon : DistributedPlayer {
   setImmortalMode(uint8) broadcast ownrecv ram;
   setUnlimitedGags(uint8) broadcast ownrecv ram;
   setInstaKill(uint8) broadcast ownrecv ram;
+  considerCapacityRewardMessage75() ownrecv;
+  considerCapacityRewardMessage90() ownrecv;
   setRun() broadcast ownrecv ram;
   doTeleport(string hood);
   forceEnterBoss(uint16 zone, uint32 doId) ownrecv;
   setMagicDNA(blob) airecv clsend;
   setMagicBodyAccessories(uint16, uint16, uint16, uint16) airecv clsend;
   setMagicHeadAccessories(uint16, uint16, uint16, uint16) airecv clsend;
-
   setBaseGagSkillMultiplier(uint16=1) required ownrecv broadcast db;
   setDamageMultiplier(uint16=100) required ownrecv broadcast db;
   setOverflowMod(uint16=100) required ownrecv broadcast db;
@@ -1179,14 +1186,17 @@ dclass DistributedToon : DistributedPlayer {
   sendArchipelagoMessages(string[]) ownrecv;
   showReward(int64, string, bool) ownrecv;
   updateLocationScoutsCache(LocationScoutsCache[]) ownrecv;
+  resetLocationScoutsCache() ownrecv;
   requestHintPoints() ownsend airecv;
+  requestSetBattleSpeed(uint8) ownsend airecv;
+  setBattleSpeed(uint8=2) required ownrecv db;
   hintPointResp(uint16, uint16) ownrecv;
   setUUID(string) required airecv db;
-
   setSlotData(AstronDict) required ownrecv broadcast;
   setLastSeed(string = "") required airecv db;
   setArchipelagoAuto(string, string) ownsend airecv;
   setDeathReason(string) airecv clsend;
+  addCheckedLocation(int64) airecv clsend;
   clientDied() airecv clsend;
 };
 
@@ -1213,6 +1223,7 @@ dclass DistributedTrolley : DistributedObject {
   emptySlot1(uint32, int16) broadcast ram;
   emptySlot2(uint32, int16) broadcast ram;
   emptySlot3(uint32, int16) broadcast ram;
+  countdown(uint8) airecv clsend;
   requestBoard() airecv clsend;
   rejectBoard(uint32);
   requestExit() airecv clsend;
@@ -1538,6 +1549,7 @@ dclass DistributedBattleBase : DistributedObject {
   setZoneId(uint32) required broadcast ram;
   setInitialSuitPos(int16/10, int16/10, int16/10) required broadcast ram;
   setMembers(uint32[], string, string, string, string, string, uint32[], string, string, string, string, string, int16) required broadcast ram;
+  setBattleSpeeds(uint8[]) required broadcast ram;
   adjust(int16) broadcast;
   setMovie(BattleMovie movie) required broadcast ram;
   setChosenToonAttacks(uint32[], int16[], int16[], int32[]) broadcast ram;
@@ -2585,6 +2597,7 @@ dclass DistributedElevator : DistributedObject {
   requestBoard() airecv clsend;
   rejectBoard(uint32, uint8);
   requestExit() airecv clsend;
+  countdown(uint8) airecv clsend;
   setElevatorTripId(uint32) required broadcast ram;
   setAntiShuffle(uint8) required broadcast ram;
   setMinLaff(uint8) required broadcast ram;
@@ -3232,6 +3245,7 @@ dclass DistributedRacePad : DistributedKartPad {
   setState(string, int16) required broadcast ram;
   setRaceZone(uint32);
   setTrackInfo(uint16[]) required broadcast ram;
+  countdown(uint8) airecv clsend;
 };
 
 dclass DistributedViewPad : DistributedKartPad {
@@ -3576,6 +3590,7 @@ dclass DistributedGolfKart : DistributedObject {
   setGolfZone(uint32, uint16);
   setGolfCourse(int8) required broadcast ram;
   setPosHpr(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10) required broadcast ram;
+  countdown(uint8) airecv clsend;
   setColor(int16, int16, int16) required broadcast ram;
 };
 

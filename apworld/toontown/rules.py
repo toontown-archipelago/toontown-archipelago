@@ -97,10 +97,28 @@ class Rule(Enum):
     TierSixBossbot = auto()
     TierSixCogs = auto()
 
+    TierSevenCogs = auto()
+
     TierEightSellbot = auto()
     TierEightCashbot = auto()
     TierEightLawbot  = auto()
     TierEightBossbot = auto()
+    TierEightCogs = auto()
+
+    LevelOneCogs = auto()
+    LevelTwoCogs = auto()
+    LevelThreeCogs = auto()
+    LevelFourCogs = auto()
+    LevelFiveCogs = auto()
+    LevelSixCogs = auto()
+    LevelSevenCogs = auto()
+    LevelEightCogs = auto()
+    LevelNineCogs = auto()
+    LevelTenCogs = auto()
+    LevelElevenCogs = auto()
+    LevelTwelveCogs = auto()
+    LevelThirteenCogs = auto()
+    LevelFourteenCogs = auto()
 
     CanMaxTierOneSellbot = auto()
     CanMaxTierOneCashbot = auto()
@@ -154,6 +172,8 @@ class Rule(Enum):
     FrontOneKey  = auto()
     MiddleTwoKey = auto()
     BackThreeKey = auto()
+
+    CanAnyFacility = auto()
 
     ### Laff Logic ###
 

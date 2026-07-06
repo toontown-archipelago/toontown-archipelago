@@ -25,7 +25,8 @@ class FishChecks(IntEnum):
     AllSpecies = 0
     AllGalleryAndGenus = 1
     AllGallery = 2
-    Nonne = 3
+    Everything = 3
+    Nonne = 4
 
 
 class FishProgression(IntEnum):

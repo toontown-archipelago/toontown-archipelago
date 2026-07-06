@@ -55,6 +55,50 @@ suitHeadTypes = [
     'bgh'
 ]
 
+suitBossbots = [
+    'f',
+    'p',
+    'ym',
+    'mm',
+    'ds',
+    'hh',
+    'cr',
+    'tbc'
+    ]
+
+suitLawbots = [
+    'bf',
+    'b',
+    'dt',
+    'ac',
+    'bs',
+    'sd',
+    'le',
+    'bw'
+    ]
+
+suitCashbots = [
+    'sc',
+    'pp',
+    'tw',
+    'bc',
+    'nc',
+    'mb',
+    'ls',
+    'rb'
+]
+
+suitSellbots = [
+    'cc',
+    'tm',
+    'nd',
+    'gh',
+    'ms',
+    'tf',
+    'm',
+    'mh'
+]
+
 notMainTypes = [
     'trf',
     'ski',
@@ -113,6 +157,13 @@ suitDepts = [
     'm',
     's'
 ]
+
+suitDeptToTrackList = {
+    'c': suitBossbots,
+    'l': suitLawbots,
+    'm': suitCashbots,
+    's': suitSellbots
+}
 
 suitDeptToPhase = {'s': 9,
                    'm': 10,
@@ -629,7 +680,7 @@ def getRandomSuitType(level, rng=random):
     if level >= 12:
         return random.choice([6, 7, 8])
     else:
-        return random.randint(max(level - 7, 1), min(level, 8))
+        return random.randint(max(level - 6, 1), min(level, 8))
 
 
 def getRandomSuitByDept(dept):
@@ -713,6 +764,12 @@ class SuitDNA(AvatarDNA.AvatarDNA):
     def newBossCog(self, dept):
         self.type = 'b'
         self.dept = dept
+
+    def newSuitName(self, dept, name):
+        self.type = 's'
+        self.dept = dept
+        self.name = name
+        self.body = getSuitBodyType(self.name)
 
     def newSuitRandom(self, level = None, dept = None):
         self.type = 's'

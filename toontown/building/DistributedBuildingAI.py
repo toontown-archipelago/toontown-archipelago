@@ -6,7 +6,8 @@ from direct.directnotify import DirectNotifyGlobal
 from direct.distributed import DistributedObjectAI
 from direct.fsm import State
 from direct.fsm import ClassicFSM, State
-from toontown.toonbase.ToontownGlobals import ToonHall
+from toontown.suit import SuitDNA
+from toontown.toonbase.ToontownGlobals import DaisyGardens, DonaldsDock, DonaldsDreamland, MinniesMelodyland, TheBrrrgh, ToonHall, ToontownCentral
 from . import DistributedToonInteriorAI, DistributedToonHallInteriorAI, DistributedSuitInteriorAI, DistributedDoorAI, DoorTypes, DistributedElevatorExtAI, DistributedKnockKnockDoorAI, SuitPlannerInteriorAI, SuitBuildingGlobals, FADoorCodes
 from toontown.hood import ZoneUtil
 import random, time
@@ -108,7 +109,7 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
     def _getMinMaxFloors(self, difficulty):
         return SuitBuildingGlobals.SuitBuildingInfo[difficulty][0]
 
-    def suitTakeOver(self, suitTrack, difficulty, buildingHeight):
+    def suitTakeOver(self, suitTrack, difficulty, buildingHeight, forceHeight=False):
         if not self.isToonBlock():
             return
         self.updateSavedBy(None)
@@ -117,9 +118,13 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
         if buildingHeight == None:
             numFloors = random.randint(minFloors, maxFloors)
         else:
-            numFloors = buildingHeight + 1
-            if numFloors < minFloors or numFloors > maxFloors:
-                numFloors = random.randint(minFloors, maxFloors)
+            # We're summoning with a command, force the floor count
+            if forceHeight:
+                numFloors = buildingHeight
+            else:
+                numFloors = buildingHeight + 1
+                if numFloors < minFloors or numFloors > maxFloors:
+                    numFloors = random.randint(minFloors, maxFloors)
         self.track = suitTrack
         self.difficulty = difficulty
         self.numFloors = numFloors
@@ -333,15 +338,7 @@ class DistributedBuildingAI(DistributedObjectAI.DistributedObjectAI):
                 toon = self.getToon(t)
                 self.air.writeServerEvent('buildingDefeated', t, '%s|%s|%s|%s' % (self.track, self.numFloors, self.zoneId, victorList))
             if toon != None:
-                self.air.questManager.toonKilledBuilding(toon, self.track, self.difficulty, self.numFloors, self.zoneId, activeToons)
-                floorToCheck = [
-                    util.ap_location_name_to_id(locations.ToontownLocationName.ONE_STORY.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.TWO_STORY.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.THREE_STORY.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.FOUR_STORY.value),
-                    util.ap_location_name_to_id(locations.ToontownLocationName.FIVE_STORY.value)
-                    ]
-                toon.addCheckedLocation(floorToCheck[self.numFloors-1])
+                pass
 
         for i in range(0, 4):
             victor = victorList[i]

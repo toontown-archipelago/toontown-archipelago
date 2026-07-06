@@ -111,6 +111,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.disguisePage = None
         self.sosPage = None
         self.gardenPage = None
+        self.has75 = 0
+        self.has90 = 0
         self.cogTypes = [0,
          0,
          0,
@@ -220,9 +222,11 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.checkedLocations: List[int] = []
         self.hintPoints = 0
         self.hintCost = 0
-
+        self.battleSpeed = 2
         self.slotData = {}
         self.winCondition = win_condition.NoWinCondition(self)
+        self.slotName = ""
+        self.archipelagoIP = "archipelago.gg:"
         self.ConfirmedWinConditionError = False
         self.rewardHistory = []
         self.rewardTier = 0
@@ -415,6 +419,18 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if self._isGM != wasGM:
             self._handleGMName()
         return
+
+    def setHas75Capacity(self, value):
+        self.has75 = value
+
+    def setHas90Capacity(self, value):
+        self.has90 = value
+
+    def considerCapacityRewardMessage75(self):
+        self.displayWhisper(0, "You've reached 75 Gag capacity, individual Gag capacities increased!", WhisperType.WTSystem)
+
+    def considerCapacityRewardMessage90(self):
+        self.displayWhisper(0, "You've reached 90 Gag capacity, individual Gag capacities further increased!", WhisperType.WTSystem)
 
     def setExperience(self, experience):
         self.experience = Experience.Experience(experience, self)
@@ -1220,8 +1236,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 messenger.send('petTrickPhrasesChanged')
 
     def playSound(self, sound):
-        soundEffect = base.loader.loadSfx(sound)
-        base.playSfx(soundEffect)
+        if base.apSounds:
+            soundEffect = base.loader.loadSfx(sound)
+            base.playSfx(soundEffect)
 
     def setCustomMessages(self, customMessages):
         self.customMessages = customMessages
@@ -1338,6 +1355,24 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def d_playSplashEffect(self, x, y, z):
         self.sendUpdate('playSplashEffect', [x, y, z])
+
+    def setSlotName(self, slotName):
+        self.slotName = slotName
+
+    def getSlotName(self):
+        return self.slotName
+
+    def setArchipelagoIP(self, archipelagoIP):
+        self.archipelagoIP = archipelagoIP
+
+    def getArchipelagoIP(self):
+        return self.archipelagoIP
+
+    def setBattleSpeed(self, speed):
+        self.battleSpeed = speed
+
+    def getBattleSpeed(self):
+        return self.battleSpeed
 
     def setTrackAccess(self, trackArray):
         self.trackArray = trackArray
@@ -2742,10 +2777,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 self.notify.warning('hiding av %s because they are not on the district!' % self.doId)
                 self.setParent(OTPGlobals.SPHidden)
 
-    def setRun(self):
-        if self.isLocal():
-            inputState.set('debugRunning', inputState.isSet('debugRunning') is not True)
-
     def setFriendsList(self, friendsList):
         DistributedPlayer.DistributedPlayer.setFriendsList(self, friendsList)
         for friendId, trueFriend in self.friendsList:
@@ -2822,6 +2853,13 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if self.isLocal():
             inputState.set('debugRunning', inputState.isSet('debugRunning') is not True)
 
+    def setRunFromHotkey(self):
+        self.setRun()
+        if inputState.isSet('debugRunning'):
+            self.setSystemMessage(0, "Toggled Fast Run On", whisperType=WhisperType.WTMagicWord)
+        else:
+            self.setSystemMessage(0, "Toggled Fast Run Off", whisperType=WhisperType.WTMagicWord)
+
     def getTransitioning(self):
         return self.transitioning
 
@@ -2854,6 +2892,8 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     # Set this toon's damage multiplier
     def setDamageMultiplier(self, newDamageMultiplier) -> None:
         self.damageMultiplier = newDamageMultiplier
+        if base.localAvatar == self:
+            self.inventory.updateTotalPropsText()
 
     # What is this toon's overflow modifier
     def getOverflowMod(self) -> int:
@@ -2898,8 +2938,16 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
         pass
 
+    # To be overridden in LocalToon, just here for safety
+    def resetLocationScoutsCache(self) -> None:
+        pass
+
     # To be overriden in LocalToon, just here for safety
     def d_setDeathReason(self, reason: DeathReason):
+        pass
+
+    # To be overriden in LocalToon, just here for safety
+    def d_addCheckedLocation(self, location):
         pass
 
     def count(self, item, player):
@@ -2936,7 +2984,12 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if base.localAvatar.slotData.get("tpsanity", 0) != TPSanity.option_keys:
             return True
         for item in self.getReceivedItems():
-            if region_to_tp_item[region] == get_item_def_from_id(item[1]).name:
+            item_def = get_item_def_from_id(item[1])
+            if item_def:
+                item_name = item_def.name
+            else:
+                item_name = ""
+            if region_to_tp_item[region] == item_name:
                 return True
         return False
 
@@ -2944,7 +2997,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.hintPoints = pts
         self.hintCost = cost
         if self.isLocal:
-            base.localAvatar.checkPage.updateHintPointText()
+            base.localAvatar.checkPage.hintNode.updateHintPointText(self.hintPoints, self.hintCost)
 
     def getSlotData(self) -> dict[str, int]:
         return self.slotData

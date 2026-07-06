@@ -44,6 +44,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         self.choseAttackAlready = 0
         self.toons = []
         self.exitedToons = []
+        self.battleSpeeds = [2]
         self.suitTraps = ''
         self.membersKeep = None
         self.faceOffName = self.uniqueBattleName('faceoff')
@@ -341,6 +342,12 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
             return
         self.notify.debug('setState(%s)' % state)
         self.fsm.request(state, [globalClockDelta.localElapsedTime(timestamp)])
+
+    def setBattleSpeeds(self, speeds):
+        self.battleSpeeds = speeds
+
+    def getBattleSpeeds(self):
+        return self.battleSpeeds
 
     def setMembers(self, suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, suitsImmune, timestamp):
         if self.__battleCleanedUp:
@@ -1093,6 +1100,9 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
             self.interactiveProp.gotoBattleCheer()
         self.choseAttackAlready = 0
         if self.localToonActive():
+            # When going into gag select, update our battle speed if it isn't correct (new toon that hasn't entered the settings page yet)
+            if base.localAvatar.getBattleSpeed() != base.settings.get('battle-speed'):
+                base.localAvatar.sendUpdate("requestSetBattleSpeed", [base.settings.get('battle-speed')])
             self.__enterLocalToonWaitForInput()
             self.startTimer(ts)
         if self.needAdjustTownBattle == 1:
@@ -1231,10 +1241,10 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         if self.hasLocalToon():
             NametagGlobals.setMasterArrowsOn(0)
         if ToontownBattleGlobals.SkipMovie:
-            self.movie.play(ts, self.__handleMovieDone)
+            self.movie.play(ts, self.__handleMovieDone, self.battleSpeeds)
             self.movie.finish()
         else:
-            self.movie.play(ts, self.__handleMovieDone)
+            self.movie.play(ts, self.__handleMovieDone, self.battleSpeeds)
         return None
 
     def __handleMovieDone(self):

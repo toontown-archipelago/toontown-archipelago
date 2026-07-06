@@ -32,6 +32,7 @@ class DistributedAvatar(DistributedActor, Avatar):
         Avatar.__init__(self)
         DistributedActor.__init__(self, cr)
         self.hpText = None
+        self.hpText2 = None
         self.hpTextSeq = None
         self.hp = None
         self.maxHp = None
@@ -255,6 +256,34 @@ class DistributedAvatar(DistributedActor, Avatar):
                 self.hpText.setScale(scale)
                 self.hpText.setBillboardAxis()
                 self.hpText.setPos(0, 0, self.height / 2)
+                self.hpTextSeq = Sequence(self.hpText.posInterval(1.0, Point3(0, 0, self.height + 1.5), blendType='easeOut'), Wait(duration), self.hpText.colorScaleInterval(0.25, Vec4(color[0], color[1], color[2], 0)), Func(self.hideHpText))
+                self.hpTextSeq.start()
+
+    def showMultiLineHpString(self, text, duration=1.1, scale=0.7, color=(1, 0, 0, 1), text2="", color2=(1, 0, 0, 1)):
+        if self.HpTextEnabled and not self.ghostMode:
+            if text != '':
+                if self.hpText:
+                    self.hideHpText()
+                self.HpTextGenerator.setFont(OTPGlobals.getSignFont())
+                self.HpTextGenerator.setText(text)
+                self.HpTextGenerator.clearShadow()
+                self.HpTextGenerator.setAlign(TextNode.ACenter)
+                self.HpTextGenerator.setTextColor(color[0], color[1], color[2], color[3])
+                self.hpTextNode = self.HpTextGenerator.generate()
+                self.HpTextGenerator.setFont(OTPGlobals.getSignFont())
+                self.HpTextGenerator.setText(text2)
+                self.HpTextGenerator.clearShadow()
+                self.HpTextGenerator.setAlign(TextNode.ACenter)
+                self.HpTextGenerator.setTextColor(color2[0], color2[1], color2[2], color2[3])
+                self.hpTextNode2 = self.HpTextGenerator.generate()
+                self.hpText = self.attachNewNode(self.hpTextNode)
+                self.hpText2 = self.hpText.attachNewNode(self.hpTextNode2)
+                self.hpText.setScale(scale*1.5)
+                self.hpText.setBillboardAxis()
+                self.hpText.setPos(0, 0, self.height / 2)
+                self.hpText2.setScale(scale*0.9)
+                self.hpText2.setBillboardAxis()
+                self.hpText2.setPos(0, 0, -0.7)
                 self.hpTextSeq = Sequence(self.hpText.posInterval(1.0, Point3(0, 0, self.height + 2.2), blendType='easeOut'), Wait(duration), self.hpText.colorScaleInterval(0.25, Vec4(color[0], color[1], color[2], 0)), Func(self.hideHpText))
                 self.hpTextSeq.start()
 
@@ -271,6 +300,9 @@ class DistributedAvatar(DistributedActor, Avatar):
             if self.hpTextSeq:
                 self.hpTextSeq.finish()
                 self.hpTextSeq = None
+        if self.hpText2:
+            self.hpText2.removeNode()
+            self.hpText2 = None
         return
 
     def getStareAtNodeAndOffset(self):

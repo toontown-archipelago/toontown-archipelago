@@ -38,20 +38,42 @@ Toontown:
   # you cannot start with gags above level 1, duplicate values other than "randomized" will be ignored.
   # 
   # valid keys: ["randomized", "toonup", "trap", "lure", "sound", "throw", "squirt", "drop"]
-  # ex. ["toonup, "sound"] will start you with toonup and sound as starting tracks
+  # ex. ["toonup", "sound"] will start you with toonup and sound as starting tracks
   # ex. ["sound"] will start you with only sound as a starting track
+  # Note: You can add "wild" to this list in order to remove any sanity/logic behind randomized gag choices (being able to do damage)
+  # (cont.) This will allow for gag combinations such as ["trap", "toonup"] to be possible with randomization
+  # ex. ['wild', 'randomized', 'randomized'] will roll two random tracks with no consideration
   # An empty list will start you with no gag tracks
   starting_gags: ['randomized', 'randomized']
 
-  # The percentage of damage that will be done when battling Cogs.
+  # Choose an offensive gag track to not receive during the seed.
+  # none (default): Receive all Gag tracks
+  # trap: Never receive Trap Gags
+  # sound: Never receive Sound Gags
+  # throw: Never receive Throw Gags
+  # squirt: Never receive Squirt Gags
+  # drop: Never receive Drop Gags
+  # randomized: Pick a random Gag track to not receive during the seed
+  # randomsingle: Pick a random single target Gag track to not receive during the seed
+  omit_gag: 'none'
+
+  # The percentage of damage the Toon has at the start of a run.
+  # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
+  # Range: 50 to 200
+  start_damage_multiplier: 100
+
+  # The percentage of damage the Toon can have at max.
   # 50 -> 50%/Half damage, 200 -> 200%/2x damage, etc.
   # Range: 70 to 200
-  damage_multiplier: 100
+  max_damage_multiplier: 100
 
   # The percentage multiplier that will be applied to the exp overflow rate.
   # 50 -> 50%/Half overflow rate, 200 -> 200%/2x overflow rate, etc.
   # Range: 25 to 300
   overflow_mod: 100
+
+  # Toggle the ability for Cogs to deal slightly randomized damage (0.9x-1.3x).
+  cog_dmg_rando: 'false'
 
   # The starting amount of jellybeans to have when starting a new game.
   # Range: 0 to 1000
@@ -63,7 +85,7 @@ Toontown:
 
   # The max amount of tasks you can carry in a run.
   # Range: 1 to 6
-  max_task_capacity: 4
+  max_task_capacity: 6
   
   ### Boss Settings ###
 
@@ -92,10 +114,19 @@ Toontown:
   # Examples: ["cog-bosses", "hood-tasks"] | ["randomized", "randomized", "gag-tracks"]
   win_condition: ["cog-bosses"]
 
+  # Allows for the selected win conditions to be omitted when randomizing a win condition.
+  # Example: Adding "bounties" to this option will ensure bounties can't be rolled when you roll for a randomized win condition
+
+  # valid keys: [ "cog-bosses", "bounties", "total-tasks", "hood-tasks", "gag-tracks",
+  #               "fish-species", "laff-o-lympics" ]
+
+  # Examples: [ "cog-bosses", "hood-tasks" ] | ["gag-tracks"]
+  conditions_omitted_when_randomized: []
+
   # How many cog bosses must be defeated before being able to talk to Flippy to complete the game
   # Unused if win_condition is not cog-bosses
   # Range: 0 to 4
-  cog_bosses_required: 4
+  cog_bosses_required: 3
   
   # How many total tasks must be finished before being able to talk to Flippy to complete the game.
   # Unused if win_condition is not total-tasks.
@@ -115,7 +146,7 @@ Toontown:
   # How many fish species must be caught before being able to talk to Flippy to complete the game
   # Unused if win_condition is not fish-species
   # Range 0 to 70
-  fish_species_required: 70
+  fish_species_required: 60
 
   # How many laff points we must have before being able to talk to Flippy to complete the game
   # Unused if win_condition is not laff-o-lympics
@@ -124,17 +155,20 @@ Toontown:
   laff_points_required: 120
 
   # BOUNTY SETTINGS #
+  # HINT: Put "Bounty" in priority_locations if you want all possible bounty locations to have something important, regardless
+  #       of having bounty or not.
+  # NOTE: Putting individual bounty locations in priority_locations will put bounties on those locations before any else
 
   # How many bounties we must have before being able to talk to Flippy to complete the game
   # Unused if win_condition is not bounties
-  # Range 0 to 33
-  bounties_required: 10
+  # Range 0 to 34
+  bounties_required: 7
 
   # How many bounties are in the pool.
   # Unused if win_condition is not bounties
   # Must be equal to or above bounties_required
-  # Range 1 to 33
-  total_bounties: 20
+  # Range 1 to 34
+  total_bounties: 15
 
   # Should bounties be hinted from the beginning of the run?
   hint_bounties: "false"
@@ -205,7 +239,7 @@ Toontown:
 
   # The amount of Cogs required to reach its maxed Cog Gallery.
   # Range: 1 to 10
-  maxed_cog_gallery_quota: 3
+  maxed_cog_gallery_quota: 2
 
   ### Facility Settings ###
 
@@ -214,6 +248,11 @@ Toontown:
   # - access: Adds a second area access key for each cog HQ to the pool that unlocks all facilities within.
   # - unlocked: Facilities are unlocked from the start of the run.
   facility_locking: 'keys'
+
+  # Will allow for maze minigames to sometimes replace the mole stomp minigame in Bossbot HQ's facilities.
+  # All toons entering the facility must have this setting enabled for it to take effect.
+  # NOTE: Each floor with a maze adds an additional cog battle to that floor, slightly increasing difficulty.
+  want_cgc_mazes: 'false'
 
   ### Fish Settings ###
 
@@ -227,6 +266,7 @@ Toontown:
   # - all_species: All 70 species will have an item.
   # - all_gallery_and_genus: Every 10 species and unique genus will have an item.
   # - all_gallery: Every 10 species will have an item.
+  # - everything: Every 10 species, every species, and every genus will have an item.
   # - none: There are no items in fishing.
   fish_checks: 'all_species'
 
@@ -236,6 +276,10 @@ Toontown:
   # - rods: Progressive fishing rod items are added to the pool.
   # - none: All fishing areas are available. The player starts with a Gold Rod.
   fish_progression: 'rods'
+
+  # The amount of pity (% chance of a guarantee) gained towards a new species per catch.
+  # Range: 0 to 100
+  fish_pity: 25
 
   ### Data Sync Settings ###
 
@@ -289,10 +333,12 @@ Toontown:
   # At least 1 junk must have a value greater than 0.
   bean_weight: 100
   exp_weight: 100
-  sos_weight: 65
-  unite_weight: 65
-  fire_weight: 65
-  heal_weight: 65
+  sos_weight: 60
+  unite_weight: 60
+  fire_weight: 60
+  summon_weight: 50
+  heal_weight: 75
+  fish_weight: 65
 
   ### Trap Settings ###
 
@@ -305,7 +351,7 @@ Toontown:
   drip_trap_weight: 50
   bean_tax_weight: 42
   gag_shuffle_weight: 80
-  damage_trap_weight: 100
+  damage_trap_weight: 80
 
   ### General Gameplay Settings ###
 
@@ -323,11 +369,113 @@ Toontown:
   # If another player gains or loses money, you will also gain or lose that money.
   ring_link: 'false'
 
-  # Starting hints for Cog Disguises
+  ### Archipelago Extra Settings ###
+
+  ## ITEM GROUPS ##
+  # You can use these rather than the individual items for the following cases: #
+  # Cog Disguises - All Cog Boss disguises
+  # Facility Keys - All facility keys
+  # Access Keys - All Playground/Cog HQ access keys
+  # Gag Training Frames - All gag frames
+  # Gag Capacity Increase - All gag pouch increases
+  # Gag Training Boosts - All gag experience multipliers
+  # Gag Upgrades - All organic gag boosts
+  # Damage Boosts - All damage increase items
+  # Fishing Licenses - All fishing access items
+  # Jellybean Capacity - All Jellybean jar upgrades
+  # Side Activity Keys - Golf and Racing access items
+  # Task Capacity - Task capacity upgrades
+  # Laff Boosts - All Laff Boosts
+  # Joke Books - All Joke Books
+  # Reward Bundles - All Boss Reward items
+  # Heals - All healing junk
+  # Jellybeans - All Jellybean junk
+  # Gag Exp Reward - All EXP Bundle junk
+  # Traps - All traps
+
+  # Starting hints for items in your world
+  # Includes Cog Disguises by default
   start_hints:
-    - Cog Disguises
+    [Cog Disguises]
+
+  local_items:
+    # Forces these items to be in your own game.
+    [ ]
+
+  non_local_items:
+    # Forces these items to be outside your game.
+    [ ]
+
+  start_inventory_from_pool:
+    # Start with these items and don't place them in the world.
+    # EXAMPLE
+    # {ItemName: quantity, ItemName2: quantity, ...}
+    { }
+
+  start_inventory:
+    # Start with these items, but they will still be in the pool.
+    # EXAMPLE
+    # {ItemName: quantity, ItemName2: quantity, ...}
+    { }
+
+  item_links:
+    # Share part of your item pool with other players.
+    # Every player that wants to link must have a copy of the same link in their own yaml
+    # EXAMPLE
+    # item_links:
+    #   - name: LinkName
+    #     item_pool:
+    #       - List Of
+    #       - Items Shared
+    #     replacement_item: ItemToReplaceLinkedItems
+    [ ]
+
+  ## LOCATION GROUPS ##
+  # You can use these rather than the individual locations for the following cases: #
+  # All Tasks - All ToonTask locations
+  # Fishing - All fishing locations
+  # Pet Shops - All doodle/pet shop locations
+  # Gag Training - All gag training locations
+  # Cog Discovery - All locations for first discovering a new cog for the cog gallery
+  # Max Gallery - All locations for maxing the cog entries in the cog gallery
+  # Cog Gallery - All cog gallery locations
+  # Cog Levels - All locations for unique levels of cogs
+  # Treasures - All AP treasure locations
+  # Boss Clears - All Cog Boss locations
+  # Toontown Central - All locations in TTC
+  # Donald's Dock - All locations in DD
+  # Daisy Gardens - All locations in DG
+  # Minnie's Melodyland - All locations in MML
+  # The Brrrgh - All locations in TB
+  # Donald's Dreamland - All locations in DDL
+  # Goofy Speedway - All locations in GS
+  # Acorn Acres - All locations in AA
+  # Sellbot HQ - All locations in SBHQ
+  # SBHQ Facilities - All locations in Factories
+  # Cashbot HQ - All locations in CBHQ
+  # CBHQ Facilities - All locations in Mints
+  # Lawbot HQ - All locations in LBHQ
+  # LBHQ Facilities - All locations in DA Offices
+  # Bossbot HQ - All locations in BBHQ
+  # BBHQ Facilities - All locations in Cog Golf Courses
+  # Buildings - All Cog Building completion locations
+  # Golfing - All minigolf locations
+  # Racing - All racing locations
+  # Bounty - All bounty locations
+
+  start_location_hints:
+    # Start with these locations hinted in your world.
+    [ ]
+
+  priority_locations:
+    # These locations WILL have a progression item on them.
+    [ ]
+
+  exclude_locations:
+    # These locations CANNOT have a progression item.
+    [ ]
 
 game: Toontown
 requires:
-  version: 0.6.1
+  version: 0.6.3
 description: 'Default Toontown Template'

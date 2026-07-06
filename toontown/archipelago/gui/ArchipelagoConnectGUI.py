@@ -6,6 +6,7 @@ from direct.gui.DirectFrame import DirectFrame
 from direct.gui.DirectLabel import DirectLabel
 from panda3d.core import TextNode, TransparencyAttrib
 YOFFSET = 0.265
+BOTTOM_X = -0.185
 class ArchipelagoConnectGUI(DirectFrame):
 
     def __init__(self):
@@ -16,11 +17,16 @@ class ArchipelagoConnectGUI(DirectFrame):
 
     def load(self):
         self.container_frame = DirectFrame(parent=self, relief=None, image=DGG.getDefaultDialogGeom(),
-                                           pos=(0, 0.0, 0), scale=(1.1, 1, 0.85))
+                                           pos=(0, 0.0, -0.066), scale=(1.1, 1, 0.95))
         self.loadSlotItems()
         self.loadIpItems()
         self.loadPassItems()
         self.loadButtons()
+
+    def updateFields(self):
+        if hasattr(base, 'localAvatar'):
+            self.ipBarEntry.set(str(base.localAvatar.getArchipelagoIP()))
+            self.slotBarEntry.set(str(base.localAvatar.getSlotName()))
 
     def loadSlotItems(self):
         self.slotBarFrame = DirectFrame(parent=self, relief=None, image=self.cdrGui.find('**/tt_t_gui_sbk_cdrCodeBox'),
@@ -31,7 +37,7 @@ class ArchipelagoConnectGUI(DirectFrame):
         self.slotBarEntry = DirectEntry(parent=self.slotBarFrame, relief=None, text_scale=(0.05, 0.07, 0.07), width=13.25,
                                         textMayChange=1,
                                         pos=(-0.33, 0, 0), text_align=TextNode.ALeft, backgroundFocus=0,
-                                        focusInCommand=self.toggleEntryFocus)
+                                        focusInCommand=self.entrySlot)
 
     def loadIpItems(self):
         self.ipBarFrame = DirectFrame(parent=self, relief=None, image=self.cdrGui.find('**/tt_t_gui_sbk_cdrCodeBox'),
@@ -42,7 +48,7 @@ class ArchipelagoConnectGUI(DirectFrame):
         self.ipBarEntry = DirectEntry(parent=self.ipBarFrame, relief=None, text_scale=(0.05, 0.07, 0.07), width=13.25,
                                         textMayChange=1,
                                         pos=(-0.33, 0, 0), text_align=TextNode.ALeft, backgroundFocus=0,
-                                        focusInCommand=self.toggleEntryFocus)
+                                        focusInCommand=self.entryIp)
 
     def loadPassItems(self):
         self.passBarFrame = DirectFrame(parent=self, relief=None, image=self.cdrGui.find('**/tt_t_gui_sbk_cdrCodeBox'),
@@ -53,7 +59,7 @@ class ArchipelagoConnectGUI(DirectFrame):
         self.passBarEntry = DirectEntry(parent=self.passBarFrame, relief=None, text_scale=(0.05, 0.07, 0.07), width=13.25,
                                         textMayChange=1,
                                         pos=(-0.33, 0, 0), text_align=TextNode.ALeft, backgroundFocus=0,
-                                        focusInCommand=self.toggleEntryFocus)
+                                        focusInCommand=self.entryPass, obscured=1)
 
     def loadButtons(self):
         self.connectButton = DirectButton(parent=self, relief=None, image=(self.guiButton.find('**/QuitBtn_UP'),
@@ -74,20 +80,54 @@ class ArchipelagoConnectGUI(DirectFrame):
                                           image_scale=(0.7, 1, 1), text="Reset Toon",
                                           text_scale=0.045, text_pos=(0, -0.01), pos=(-0.35, 0.0, (YOFFSET-0.605)),
                                           command=self.handleReset)
+        self.deathlinkButton = DirectButton(parent=self, relief=None, image=(self.guiButton.find('**/QuitBtn_UP'),
+                                                                         self.guiButton.find('**/QuitBtn_DN'),
+                                                                         self.guiButton.find('**/QuitBtn_RLVR')),
+                                        image_scale=(1.2, 1, 1), text="Change Deathlink Mode",
+                                        text_scale=0.045, text_pos=(0, -0.01), pos=(BOTTOM_X, 0.0, (YOFFSET - 0.73)),
+                                        command=self.handleDeathlink)
+        self.ringlinkButton = DirectButton(parent=self, relief=None, image=(self.guiButton.find('**/QuitBtn_UP'),
+                                                                             self.guiButton.find('**/QuitBtn_DN'),
+                                                                             self.guiButton.find('**/QuitBtn_RLVR')),
+                                            image_scale=(0.73, 1, 1), text="Toggle Ringlink",
+                                            text_scale=0.045, text_pos=(0, -0.01), pos=((BOTTOM_X + 0.46), 0.0, (YOFFSET - 0.73)),
+                                            command=self.handleRinglink)
 
     def handleConnect(self):
-        base.talkAssistant.sendOpenTalk(f"!slot {self.slotBarEntry.get()}")
-        base.talkAssistant.sendOpenTalk(f"!password {self.passBarEntry.get()}")
-        base.talkAssistant.sendOpenTalk(f"!connect {self.ipBarEntry.get()}")
+        base.talkAssistant.sendOpenTalk(f"~ap slot {self.slotBarEntry.get()}")
+        base.talkAssistant.sendOpenTalk(f"~ap password {self.passBarEntry.get()}")
+        base.talkAssistant.sendOpenTalk(f"~ap connect {self.ipBarEntry.get()}")
         self.toggleEntryFocus(True)
+        if base.settings.get('new-popup'):
+            base.localAvatar.chatMgr.mimicApButtonPressed()
 
     def handleDisconnect(self):
-        base.talkAssistant.sendOpenTalk("!disconnect")
+        base.talkAssistant.sendOpenTalk("~ap disconnect")
         self.toggleEntryFocus(True)
 
     def handleReset(self):
         base.talkAssistant.sendOpenTalk("~ap clear")
         self.toggleEntryFocus(True)
+
+    def handleDeathlink(self):
+        base.talkAssistant.sendOpenTalk("~ap deathlink")
+        self.toggleEntryFocus(True)
+
+    def handleRinglink(self):
+        base.talkAssistant.sendOpenTalk("~ap ringlink")
+        self.toggleEntryFocus(True)
+
+    def entrySlot(self):
+        self.toggleEntryFocus()
+        self.slotBarEntry.setCursorPosition(len(self.slotBarEntry.get()))
+
+    def entryIp(self):
+        self.toggleEntryFocus()
+        self.ipBarEntry.setCursorPosition(len(self.ipBarEntry.get()))
+
+    def entryPass(self):
+        self.toggleEntryFocus()
+        self.passBarEntry.setCursorPosition(len(self.passBarEntry.get()))
 
     def toggleEntryFocus(self, lose=False):
         if not hasattr(base, "localAvatar"):

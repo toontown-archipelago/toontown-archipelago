@@ -16,6 +16,8 @@ from otp.otpbase import OTPGlobals
 import copy
 from toontown.effects import Bubbles
 import random
+from toontown.archipelago.definitions.util import ap_location_name_to_id
+from apworld.toontown import locations
 if (__debug__):
     import pdb
 
@@ -186,6 +188,8 @@ class OZSafeZoneLoader(SafeZoneLoader):
                     base.localAvatar.setTeleportAvailable(0)
                     base.localAvatar.collisionsOff()
                     local = 1
+                    location = locations.ToontownLocationName.GEYSER_RIDE.value
+                    base.localAvatar.d_addCheckedLocation(ap_location_name_to_id(location))
                 else:
                     topTrack.delayDeletes = [DelayDelete.DelayDelete(av, 'OZSafeZoneLoader.setGeyserAnim')]
                     av.stopSmooth()

@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 import json
 from typing import Union, Any
 from pathlib import Path
@@ -18,12 +18,15 @@ class ControlSettings:
     JUMP: str = "control"
     SPRINT: str = "shift"
     SCREENSHOT: str = "f9"
+    TOGGLE_RUN_HOTKEY: str = "f8"
     MAP_PAGE_HOTKEY: str = "escape"
     FRIENDS_LIST_HOTKEY: str = "f7"
     STREET_MAP_HOTKEY: str = "alt"
     INVENTORY_HOTKEY: str = "home"
     QUEST_HOTKEY: str = "end"
     GALLERY_HOTKEY: str = "g"
+    LOCATIONS_HOTKEY: str = "v"
+    ELEVATOR_HOTKEY: str = "f"
     CRANE_GRAB_KEY: str = "control"
     ACTION_BUTTON: str = "delete"
     SECONDARY_ACTION: str = "insert"
@@ -40,6 +43,7 @@ class Settings:
         "music": True,
         "sfx": True,
         "toon-chat-sounds": True,
+        'ap-sounds': True,
         "resolution": [1280, 720],
         "music-volume": 0.4,
         "sfx-volume": 0.4,
@@ -60,6 +64,8 @@ class Settings:
         "camSensitivityY": 0.1,
         "fps-limit": 0,
         'laff-display': True,
+        'battle-speed': 2,
+        'new-popup': True,
         'random-music': False,
         "archipelago-textsize": 0.5,
         "archipelago-log-bg": False,
@@ -111,7 +117,9 @@ class Settings:
         return asdict(self.controls)
 
     def updateControls(self, controls: dict[str, str]) -> None:
-        self.controls = ControlSettings(**controls)
+        # Ensure that extra controls in our list dont crash (typically for going back to a previous version)
+        valid_args = {f.name: controls[f.name] for f in fields(ControlSettings) if f.name in controls}
+        self.controls = ControlSettings(**valid_args)
         self.set("controls", asdict(self.controls))
 
     def write(self) -> None:

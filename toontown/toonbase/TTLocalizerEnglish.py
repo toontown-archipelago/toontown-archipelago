@@ -332,6 +332,14 @@ QuestsCountryClubQuestDesc = 'a Cog Golf Course'
 QuestsCountryClubQuestDescC = '%(count)s Cog Golf Course'
 QuestsCountryClubQuestDescI = 'some Cog Golf Courses'
 
+QuestsFacilityQuestHeadline = 'DEFEAT'
+QuestsFacilityQuestSCString = 'I need to defeat %(objective)s.'
+QuestsFacilityQuestDesc = 'a Cog Facility'
+QuestsFacilityQuestDescC = '%(count)s Cog Facilities'
+QuestsFacilityQuestDescI = 'some Cog Facilities'
+QuestsFacilityQuestProgressString = '%(progress)s of %(num)s defeated'
+QuestsFacilityQuestString = 'Defeat %s'
+
 QuestsRescueQuestProgress = '%(progress)s of %(numToons)s rescued'
 QuestsRescueQuestHeadline = 'RESCUE'
 QuestsRescueQuestSCStringS = 'I need to rescue a Toon%(toonLoc)s.'
@@ -3135,10 +3143,10 @@ FADoorCodes_DEFEAT_FLUNKY_TOM = 'Walk up to that Flunky to battle him!'
 FADoorCodes_TALK_TO_HQ_TOM = 'Go get your reward from Toon Headquarters!'
 FADoorCodes_SUIT_APPROACHING = None
 FADoorCodes_BUILDING_TAKEOVER = "Watch out! There's a Cog in there!"
-FADoorCodes_SB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Sellbot Disguise first!\n\nBuild your Sellbot Disguise out of parts from the Factory."
-FADoorCodes_CB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Cashbot Disguise first!\n\nBuild your Cashbot Disguise by doing ToonTasks in Donald's Dreamland."
-FADoorCodes_LB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Lawbot Disguise first!\n\nBuild your Lawbot Disguise by doing the ToonTasks after Donald's Dreamland."
-FADoorCodes_BB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to complete your Bossbot Disguise first!\n\nBuild your Bossbot Disguise by doing the ToonTasks after Donald's Dreamland."
+FADoorCodes_SB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to receive your Sellbot Disguise first!\n\nHint for your Sellbot Disguise if you can't find it."
+FADoorCodes_CB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to receive your Cashbot Disguise first!\n\nHint for your Cashbot Disguise if you can't find it."
+FADoorCodes_LB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to receive your Lawbot Disguise first!\n\nHint for your Lawbot Disguise if you can't find it."
+FADoorCodes_BB_DISGUISE_INCOMPLETE = "You'll get caught going in there as a Toon! You need to receive your Bossbot Disguise first!\n\nHint for your Bossbot Disguise if you can't find it."
 
 FADoorCodes_TTC_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need enough Toontown Central Access Keys before you can enter and complete toontasks here."
 FADoorCodes_DD_ACCESS_MISSING = "You don't have clearance for this HQ yet!\n\nYou need enough Donald's Dock Access Keys before you can enter and complete toontasks here."
@@ -4818,6 +4826,7 @@ QuestPosterInHome = 'In your home'
 QuestPosterOnPhone = 'On your phone'
 QuestPosterEstate = 'At your estate'
 QuestPosterAnywhere = 'Anywhere'
+QuestPosterCogHQs = 'Any Cog HQ'
 QuestPosterAuxTo = 'to:'
 QuestPosterAuxFrom = 'from:'
 QuestPosterAuxFor = 'for:'
@@ -4940,7 +4949,7 @@ KartShtikerNo = 'No %s Accessory'
 CheckPageTitle = 'Items'
 LocationPageTitle = 'Tracker'
 CheckPageScrollTitle = 'Item            Status'
-HintPointsTitle = 'Hint Points: %s                    Cost: %s'
+HintPointsTitle = 'Hint Points: %s            Cost: %s'
 QuestChoiceGuiCancel = lCancel
 TrackChoiceGuiChoose = 'Choose'
 TrackChoiceGuiCancel = lCancel
@@ -4963,12 +4972,16 @@ HealthForceAcknowledgeMessage = 'You cannot leave the playground until your Laff
 InventoryTotalGags = 'Total gags\n%d / %d'
 InventroyPinkSlips = '%s Pink Slips'
 InventroyPinkSlip = '1 Pink Slip'
+InventoryDamageRate = "Damage Rate: %s"
 InventoryDelete = 'DELETE'
 InventoryDone = 'DONE'
 InventoryDeleteHelp = 'Click on a gag to DELETE it.'
 InventorySkillCredit = 'Skill credit: %s'
 InventorySkillCreditNone = 'Skill credit: None'
 InventoryDetailAmount = '%(numItems)s / %(maxItems)s'
+InventoryDetailDataOrgThrow = 'Accuracy: %(accuracy)s\n%(damageString)s: %(damage)d%(bonus)s\n%(heal)s\n%(singleOrGroup)s'
+InventoryDetailDataOrgSquirt = 'Accuracy: %(accuracy)s\n%(damageString)s: %(damage)d%(bonus)s\n%(knockback)s\n%(singleOrGroup)s'
+InventoryDetailDataOrgDrop = 'Accuracy: %(accuracy)s\n%(damageString)s: %(damage)d%(bonus)s\n%(ability)s\n%(singleOrGroup)s'
 InventoryDetailData = 'Accuracy: %(accuracy)s\n%(damageString)s: %(damage)d%(bonus)s\n%(singleOrGroup)s'
 InventoryDetailDataLure = 'Accuracy: %(accuracy)s\n%(damageString)s: %(damage)d%(bonus)s\nKnockback: %(knockback)s\n%(singleOrGroup)s'
 InventoryTrackExp = '%(curExp)s / %(nextExp)s'
@@ -9953,6 +9966,7 @@ OptionNames = {
     "movement_mode": "Movement Mode",
     "sprint_mode": "Sprint Mode",
     "fovEffects": "Sprinting FOV Effects",
+    'new-popup': "AP Connect Intro Popup",
     "cam-toggle-lock": "Camera Toggle Lock",
     "speedchat-style": "Speedchat Color",
     'discord-rich-presence': 'Discord Rich Presence',
@@ -9962,6 +9976,7 @@ OptionNames = {
     "color-blind-mode": "Colorblind Mode",
     "want-legacy-models": "Toggle TTO Species Models*",
     'laff-display': "Toggle Overhead Laff Meter",
+    'battle-speed': "Battle Speed Multiplier",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",
@@ -9977,10 +9992,13 @@ OptionNames = {
     "SCREENSHOT": "Screenshot",
     "MAP_PAGE_HOTKEY": "Map Page Hotkey",
     "FRIENDS_LIST_HOTKEY": "Friends List Hotkey",
+    "TOGGLE_RUN_HOTKEY": "Toggle Debug Run Speed",
     "STREET_MAP_HOTKEY": "Street Map Hotkey",
     "INVENTORY_HOTKEY": "Gag Menu Hotkey",
     "QUEST_HOTKEY": "ToonTask Hotkey",
     "GALLERY_HOTKEY": "Cog Gallery Hotkey",
+    "LOCATIONS_HOTKEY": "Location Tracker Hotkey",
+    "ELEVATOR_HOTKEY": "Skip Elevator Timer Hotkey",
     "CRANE_GRAB_KEY": "Crane Grab Key",
     "ACTION_BUTTON": "Action Button",
     "SECONDARY_ACTION": "Secondary Action Button",
@@ -10002,6 +10020,7 @@ OptionNames = {
     "sfx-volume": "Sound Effects Volume",
     "toon-chat-sounds": "Toon Chat Sounds",
     "random-music": "Randomize Music",
+    'ap-sounds': "AP Item Sounds",
     'refresh-audio': "Refresh Audio",
 }
 
@@ -10009,6 +10028,14 @@ OptionAntiAlias = {
     0: "Off",
     4: "4x MSAA",
     8: "8x MSAA",
+}
+
+OptionBattleSpeed = {
+    1: "1x Speed",
+    2: "2x Speed",
+    3: "3x Speed",
+    4: "4x Speed",
+    5: "5x Speed"
 }
 
 OptionAnisotropic = {

@@ -6,7 +6,7 @@ from direct.showbase.PythonUtil import invertDict
 from panda3d.core import BitMask32, Vec4, Filename
 import collections
 
-GameVersion = "v0.17.0"
+GameVersion = "v0.19.7"
 MapHotkey = 'MapHotkey'
 AccountDatabaseChannelId = 4008
 ToonDatabaseChannelId = 4021
@@ -1299,7 +1299,7 @@ LawbotBossBonusWaitTime = 15
 LawbotBossBonusDuration = 20
 LawbotBossBonusToonup = 10
 LawbotBossBonusWeightMultiplier = 2
-LawbotBossChanceToDoAreaAttack = 0
+LawbotBossChanceToDoAreaAttack = 11
 LOW_POP_JP = 0
 MID_POP_JP = 100
 HIGH_POP_JP = 200
@@ -1585,7 +1585,7 @@ NonSafePassiveHealingZones = (
 )
 
 SuitLevels = []
-for level in range(1,51):
+for level in range(1, 101):
     SuitLevels.append(level)
 
 GravityValue = 32.174
@@ -1651,13 +1651,15 @@ PUTTER_KEY = 38
 from ..archipelago.definitions import util
 from apworld.toontown import locations
 ZONE_TO_CHECK_COST = {
-    ToontownCentral: 600,
-    DonaldsDock: 1600,
-    DaisyGardens: 2600,
-    MinniesMelodyland: 3600,
-    TheBrrrgh: 4600,
-    DonaldsDreamland: 5600
+    ToontownCentral: 1600,
+    DonaldsDock: 2600,
+    DaisyGardens: 3600,
+    MinniesMelodyland: 4600,
+    TheBrrrgh: 5600,
+    DonaldsDreamland: 6600
 }
+PRICE_RANDO_MIN = -750
+PRICE_RANDO_MAX = 1300
 ZONE_TO_ID_TO_CHECK = {
         ToontownCentral: {1: locations.ToontownLocationName.TTC_SHOP_1.value,
                           2: locations.ToontownLocationName.TTC_SHOP_2.value,

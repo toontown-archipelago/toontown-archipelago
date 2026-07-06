@@ -47,12 +47,13 @@ from ..archipelago.apclient.distributed_toon_apmessage_queue import DistributedT
 from ..archipelago.apclient.distributed_toon_reward_queue import DistributedToonRewardQueue
 from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.definitions.rewards import EarnedAPReward
-from ..archipelago.definitions.util import get_zone_discovery_id
+from ..archipelago.definitions.util import ap_location_name_to_id
 from ..archipelago.util import win_condition
 from ..archipelago.util.HintContainer import HintedItem
 from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..shtiker import CogPageGlobals
 from ..util.astron.AstronDict import AstronDict
+from apworld.toontown import locations
 
 if simbase.wantPets:
     from toontown.pets import PetLookerAI, PetObserve
@@ -107,6 +108,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.glasses = (0, 0, 0)
         self.backpack = (0, 0, 0)
         self.shoes = (0, 0, 0)
+        self.has75 = 0
+        self.has90 = 0
         self.cogTypes = [0,
                          0,
                          0,
@@ -234,6 +237,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.accessKeys: List[int] = []  # List of keys for accessing doors and elevators
         self.receivedItems: List[Tuple[int, int]] = []  # List of AP items received so far, [(index, itemid), (index, itemid)]
         self.checkedLocations: List[int] = []  # List of AP checks we have completed
+        self.battleSpeed = 2
         self.hintPoints = 0  # How many hint points the player has
         self.hintCostPercentage = 0 # How many points to hint an item, in % of checks.
         self.totalChecks = 0 # How many checks are there in total, calculates exact cost for display for client.
@@ -247,6 +251,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.deathReason: DeathReason = DeathReason.UNKNOWN
         self.slotData = {}  # set in connected_packet.py
         self.winCondition = win_condition.NoWinCondition(self)
+        self.slotName = ""
+        self.archipelagoIP = "archipelago.gg:"
 
     def generate(self):
         DistributedPlayerAI.DistributedPlayerAI.generate(self)
@@ -1854,6 +1860,32 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def playSound(self, sound):
         self.sendUpdate('playSound', [sound])
 
+    def b_setSlotName(self, slotName):
+        self.setSlotName(slotName)
+        self.d_setSlotName(slotName)
+
+    def d_setSlotName(self, slotName):
+        self.sendUpdate('setSlotName', [slotName])
+
+    def setSlotName(self, slotName):
+        self.slotName = slotName
+
+    def getSlotName(self):
+        return self.slotName
+
+    def b_setArchipelagoIP(self, archipelagoIP):
+        self.setArchipelagoIP(archipelagoIP)
+        self.d_setArchipelagoIP(archipelagoIP)
+
+    def d_setArchipelagoIP(self, archipelagoIP):
+        self.sendUpdate('setArchipelagoIP', [archipelagoIP])
+
+    def setArchipelagoIP(self, archipelagoIP):
+        self.archipelagoIP = archipelagoIP
+
+    def getArchipelagoIP(self):
+        return self.archipelagoIP
+
     def b_setTrackAccess(self, trackArray):
         self.setTrackAccess(trackArray)
         self.d_setTrackAccess(trackArray)
@@ -3248,7 +3280,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         if type == 'single':
             returnCode = self.doSummonSingleCog(suitIndex)
         elif type == 'building':
-            returnCode = self.doBuildingTakeover(suitIndex)
+            returnCode = self.doBuildingTakeover(suitIndex, isSummon=True)
         elif type == 'invasion':
             returnCode = self.doCogInvasion(suitIndex)
         if returnCode:
@@ -3272,36 +3304,64 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         for zoneId in zones:
             if zoneId in map:
                 points = map[zoneId][:]
-                suit = sp.createNewSuit([], points, suitName=suitName)
+                suit = sp.createNewSuit([], points, suitName=suitName, command=True)
                 if suit:
                     return ['success', suitIndex, 0]
 
         return ['badlocation', suitIndex, 0]
 
-    def doBuildingTakeover(self, suitIndex):
+    def doBuildingTakeover(self, suitIndex, chosenType=None, floors=None, isSummon=False):
         streetId = ZoneUtil.getBranchZone(self.zoneId)
         if streetId not in self.air.suitPlanners:
             self.notify.warning('Street %d is not known.' % streetId)
-            return ['badlocation', suitIndex, 0]
+            if isSummon:
+                return ['badlocation', suitIndex, 0]
+            else:
+                return ['badlocation', 0]
         sp = self.air.suitPlanners[streetId]
         bm = sp.buildingMgr
         building = self.findClosestDoor()
         if building == None:
-            return ['badlocation', suitIndex, 0]
+            if isSummon:
+                return ['badlocation', suitIndex, 0]
+            else:
+                return ['badlocation', 0]
         level = None
-        if suitIndex >= len(SuitDNA.suitHeadTypes):
-            self.notify.warning('Bad suit index: %s' % suitIndex)
-            return ['badIndex', suitIndex, 0]
-        suitName = SuitDNA.suitHeadTypes[suitIndex]
-        track = SuitDNA.getSuitDept(suitName)
-        type = SuitDNA.getSuitType(suitName)
-        level, type, track = sp.pickLevelTypeAndTrack(None, type, track)
-        building.suitTakeOver(track, level, None)
+        if isSummon:
+            if suitIndex >= len(SuitDNA.suitHeadTypes):
+                self.notify.warning('Bad suit index: %s' % suitIndex)
+                return ['badIndex', suitIndex, 0]
+            suitName = SuitDNA.suitHeadTypes[suitIndex]
+            track = SuitDNA.getSuitDept(suitName)
+            type = SuitDNA.getSuitType(suitName)
+            level, type, track = sp.pickLevelTypeAndTrack(None, type, track)
+            building.suitTakeOver(track, level, None)
+        else:
+            track = chosenType
+            # Since this is being summoned with a specified floor count and we don't have a cog for reference,
+            # We have to figure out the difficulty with the logical difficulty range for the count.
+            if floors == 1:
+                level = random.randint(0, 2)
+            elif floors == 2:
+                level = random.randint(1, 4)
+            elif floors == 3:
+                level = random.randint(2, 6)
+            elif floors == 4:
+                level = random.randint(4, 7)
+            elif floors == 5:
+                level = random.randint(6, 8)
+            else:
+                level = random.randint(0, 8)
+            floorCount = floors
+            building.suitTakeOver(track, level, floorCount, True)
         self.notify.warning('cogTakeOver %s %s %d %d' % (track,
                                                          level,
                                                          building.block,
                                                          self.zoneId))
-        return ['success', suitIndex, building.doId]
+        if isSummon:
+            return ['success', suitIndex, building.doId]
+        else:
+            return ['success', building.doId]
 
     def doCogInvasion(self, suitIndex):
         invMgr = self.air.suitInvasionManager
@@ -3402,13 +3462,28 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             randomLevel = random.randrange(0, SuitDNA.suitsPerDept)
             suitIndex = deptIndex * SuitDNA.suitsPerLevel + randomLevel
         else:
-            numSuits = len(SuitDNA.suitHeadTypes)
+            numSuits = len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes)
             suitIndex = random.randrange(0, numSuits)
-        if summonType in ['single', 'building', 'invasion']:
+        if summonType in ['single', 'building']:
             type = summonType
         else:
-            typeWeights = ['single'] * 70 + ['building'] * 25 + ['invasion'] * 5
+            typeWeights = ['single'] * 90 + ['building'] * 10
             type = random.choice(typeWeights)
+        numCogs = len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes) - 1
+        foundOpen = False
+        while not foundOpen:
+            hasSummon = self.hasCogSummons(suitIndex, type)
+            if hasSummon:
+                if type == 'single':
+                    type = 'building'
+                    continue
+                elif type == 'building':
+                    type = 'single'
+                    suitIndex += 1
+                if suitIndex >= numCogs:
+                    return (suitIndex, type)
+            else:
+                foundOpen = True
         if suitIndex >= len(SuitDNA.suitHeadTypes):
             self.notify.warning('Bad suit index: %s' % suitIndex)
         self.addCogSummonsEarned(suitIndex, type)
@@ -4211,6 +4286,32 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def isGM(self):
         return self._isGM
 
+    def b_setHas75Capacity(self, value):
+        self.d_setHas75Capacity(value)
+        self.setHas75Capacity(value)
+
+    def d_setHas75Capacity(self, value):
+        self.sendUpdate('setHas75Capacity', [value])
+
+    def setHas75Capacity(self, value):
+        self.has75 = value
+
+    def b_setHas90Capacity(self, value):
+        self.d_setHas90Capacity(value)
+        self.setHas90Capacity(value)
+
+    def d_setHas90Capacity(self, value):
+        self.sendUpdate('setHas90Capacity', [value])
+
+    def setHas90Capacity(self, value):
+        self.has90 = value
+
+    def d_considerCapacityRewardMessage75(self):
+        self.sendUpdate('considerCapacityRewardMessage75', [])
+
+    def d_considerCapacityRewardMessage90(self):
+        self.sendUpdate('considerCapacityRewardMessage90', [])
+
     def d_setRun(self):
         self.sendUpdate('setRun', [])
 
@@ -4504,8 +4605,6 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         self.b_setCheckedLocations(self.checkedLocations)
 
-
-
     # Called to announce to Archipelago that we need to know what this location ID is so we can receive
     # A LocationInfo packet and keep track of it
     def scoutLocation(self, location: int):
@@ -4526,6 +4625,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             cache = self.archipelago_session.client.location_scouts_cache
 
         self.sendUpdate('updateLocationScoutsCache', [cache.struct()])
+
+    def resetLocationScoutsCache(self):
+        if self.archipelago_session:
+            self.archipelago_session.client.clear_cache()
+        self.sendUpdate('resetLocationScoutsCache', [])
 
     def sendHint(self, hint: HintedItem):
         self.air.archipelagoManager.d_sendHint(self.getDoId(), hint)
@@ -4551,7 +4655,27 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Sent by client to request hint points from the arch session
     def requestHintPoints(self):
-        self.sendUpdate('hintPointResp', [self.hintPoints, self.hintCostPercentage * self.totalChecks // 100])
+        hintPoints = self.hintPoints
+        # This avoids a server crash if for whatever reason points become negative (usually when settings are changed)
+        if hintPoints < 0:
+            hintPoints = 0
+        self.sendUpdate('hintPointResp', [hintPoints, self.hintCostPercentage * self.totalChecks // 100])
+
+    def requestSetBattleSpeed(self, speed):
+        self.b_setBattleSpeed(speed)
+
+    def setBattleSpeed(self, speed):
+        self.battleSpeed = speed
+
+    def getBattleSpeed(self):
+        return self.battleSpeed
+
+    def d_setBattleSpeed(self, speed):
+        self.sendUpdate('setBattleSpeed', [speed])
+
+    def b_setBattleSpeed(self, speed):
+        self.setBattleSpeed(speed)
+        self.d_setBattleSpeed(speed)
 
     def setLastSeed(self, seedName: str):
         self._lastSeedName = seedName
@@ -4602,6 +4726,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setMaxHp(15)
         self.b_setHp(15)
         self.b_setMaxCarry(20)
+        self.b_setDamageMultiplier(100)
+        self.b_setHas75Capacity(0)
+        self.b_setHas90Capacity(0)
+
+        # Reset location Cache
+        self.resetLocationScoutsCache()
 
         # Now quests
         for id in self.getQuests():
@@ -4703,12 +4833,15 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     #
     # When setting death reasons, always make sure to set it BEFORE the damage is taken.
     def setDeathReason(self, reason: Union[DeathReason, str]):
-
         if isinstance(reason, str):
             reasonEnum = DeathReason.from_astron(reason)
             # Was this update garbage?
             if reasonEnum is None:
                 return
+
+            # Good place to handle the check for getting ran over like an idiot
+            if reasonEnum == DeathReason.TRAIN:
+                self.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.TRAIN_CRUSHED.value))
 
             # Valid reason from client
             reason = reasonEnum
@@ -4773,6 +4906,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.set_ap_data("fish-collection", [genusList, speciesList, weightList], True)
 
     def ap_setCogCount(self, cogCountList: List[int]):
+        #only send the main cog types, anything in notMainTypes shouldn't be in the gallery anyways.
+        cogCountList = cogCountList[:len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes)]
         self.b_setCogCount(cogCountList)
         self.notify.debug(f"setting AP cog-gallery for {self.getDoId()} to: {cogCountList}" )
         self.set_ap_data("cog-gallery", cogCountList, True)
@@ -4855,6 +4990,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                     cogCount = self.getCogCount()
                     cogStatus = self.getCogStatus()
                     for suitIndex, count in enumerate(v):
+                        if suitIndex >= len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes):
+                            self.notify.debug(f"Suit {SuitDNA.suitHeadTypes[suitIndex]} found in AP message, this should not happen, ignoring.")
+                            continue
                         # Ensure we don't overwrite if any are already higher than what was sent to us.
                         cogCount[suitIndex] = max(cogCount[suitIndex], count)
                         if cogCount[suitIndex] >= 1: # Don't mark cogs with a count of 0 as defeated.

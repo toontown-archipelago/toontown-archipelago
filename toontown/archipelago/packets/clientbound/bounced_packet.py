@@ -1,3 +1,4 @@
+import math
 from typing import List, Dict, Any
 
 from toontown.archipelago.packets.serverbound.bounce_packet import BouncePacket
@@ -58,7 +59,6 @@ class BouncedPacket(ClientBoundPacketBase):
             toon.d_broadcastHpString("DEATHLINKED!", (.8, .35, .35))
             if deathLinkOption == DeathLinkOption.option_full:
                 toon.takeDamage(toon.getMaxHp())
-                toon.d_setAnimState("Died", 1)
                 death_component = cause if cause is not None else f"{source} died!"
                 msg = global_text_properties.get_raw_formatted_string([
                     MinimalJsonMessagePart("[DeathLink] ", color='red'),
@@ -66,6 +66,10 @@ class BouncedPacket(ClientBoundPacketBase):
                     MinimalJsonMessagePart(f"{death_component}", color='salmon')
                 ])
             elif deathLinkOption == DeathLinkOption.option_one:
+                # We set the death reason to deathlink to prevent some cases where a second link could be sent shortly after
+                # This isn't a "double deathlink" but can be mistaken as one
+                # Hashtag #ConfirmationBias
+                toon.setDeathReason(DeathReason.DEATHLINK)
                 toon.takeDamage((toon.getHp() - 1))
                 death_component = cause if cause is not None else f"{source} died!"
                 msg = global_text_properties.get_raw_formatted_string([
@@ -81,9 +85,12 @@ class BouncedPacket(ClientBoundPacketBase):
                 MinimalJsonMessagePart("You feel your happiness draining because "),
                 MinimalJsonMessagePart(f"{death_component}", color='salmon')
             ])
-            self.hpDrained = 0
-            self.startHp = toon.getHp()
-            taskMgr.doMethodLater(0.33, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
+            self.hpToDrain = toon.getHp()
+            self.drainRate = 0.33
+            # We'll take 0.01 seconds off each tick for each 10 laff we are going to drain
+            rateToRemove = 0.015 * (self.hpToDrain/10)
+            self.drainRate = max(0.01, (0.33 - rateToRemove))
+            taskMgr.doMethodLater(self.drainRate, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
         else:
             # This should not happen! But just in case.
             msg = global_text_properties.get_raw_formatted_string([
@@ -93,20 +100,21 @@ class BouncedPacket(ClientBoundPacketBase):
         toon.d_sendArchipelagoMessage(msg)
 
     def handle_link_drain(self, toon, toonId):
-        # This tick is killing the toon, set the death reason to not kill others and break the loop
-        if toon.getHp() == 1:
-            toon.setDeathReason(DeathReason.DEATHLINK)
+        if toon.getHp() <= 0 or self.hpToDrain <= 0:
+            return
+        # We set the death reason to deathlink on every tick just to avoid any really stupid edge cases that probably dont exist
+        # Hashtag #ConfirmationBias
+        toon.setDeathReason(DeathReason.DEATHLINK)
         toon.takeDamage(1)
-        self.hpDrained += 1
-        if toon.getHp() > 0 and self.hpDrained != self.startHp:
-            taskMgr.doMethodLater(0.33, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
+        self.hpToDrain -= 1
+        taskMgr.doMethodLater(self.drainRate, self.handle_link_drain, toonId + '-deathlink-drainTick', extraArgs=[toon, toonId])
 
     def handle_ringlink(self, client):
         self.debug("Received ringlink packet")
 
         # At this point we are assuming that this packet IS a ringlink packet and that our client has it enabled.
         timestamp = self.data['time']
-        amount: int = self.data.get("amount", 0)
+        amount: int = self.data.get("amount", 0) * 10
         source: str = self.data["source"]
         toon = client.av
         toonId = abs(int(hash(toon.getUUID()) / 10000000000))

@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # Install Astron Dependencies
 RUN apt-get update && apt-get upgrade -y

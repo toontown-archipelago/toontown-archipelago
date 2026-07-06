@@ -90,11 +90,14 @@ class ConnectedPacket(ClientBoundPacketBase):
         av.b_setMoney(self.slot_data.get('starting_money', 50))
 
         # Set their starting task capacity
-
         av.b_setQuestCarryLimit(self.slot_data.get('starting_task_capacity', 4))
 
         # Set their starting gag xp multiplier
         av.b_setBaseGagSkillMultiplier(self.slot_data.get('base_global_gag_xp', 2))
+
+        # Set starting damage multiplier
+        damageMultiplier = self.slot_data.get('start_damage_multiplier', 100)
+        av.b_setDamageMultiplier(damageMultiplier)
 
         # Give them gold rod if set in yaml
         fish_progression = FishProgression(self.slot_data.get('fish_progression', 3))
@@ -141,10 +144,6 @@ class ConnectedPacket(ClientBoundPacketBase):
         rng_option = self.slot_data.get('seed_generation_type', 'global')
         new_seed = self.handle_seed_generation_type(av, new_seed, rng_option)
         av.b_setSeed(new_seed)
-        
-        # Get damage multiplier
-        damageMultiplier = self.slot_data.get('damage_multiplier', 100)
-        av.b_setDamageMultiplier(damageMultiplier)
 
         # Get overflow modifier
         overflowMod = self.slot_data.get('overflow_mod', 100)
@@ -224,9 +223,8 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Check to warn the player that our game version mismatches the apworld's
         if ToontownGlobals.GameVersion != self.slot_data.get('game_version', ToontownGlobals.GameVersion):
-            client.av.d_setSystemMessage(0, f"WARNING: Game version doesn't match the APWORLD's!\n"
-                                            f"GAME: {ToontownGlobals.GameVersion}\n"
-                                            f"APWORLD: {self.slot_data.get('game_version', ToontownGlobals.GameVersion)}")
+            ap_version = self.slot_data.get('game_version', ToontownGlobals.GameVersion)
+            client.av.d_setVersionMismatchMessage(ap_version)
 
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)

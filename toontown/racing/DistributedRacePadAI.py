@@ -51,7 +51,8 @@ class DistributedRacePadAI(DistributedKartPadAI, FSM):
                 self.request('WaitEmpty')
                 return
 
-        self.request('AllAboard')
+        if not self.state == 'AllAboard':
+            self.request('AllAboard')
 
         if task:
             return task.done
@@ -98,6 +99,13 @@ class DistributedRacePadAI(DistributedKartPadAI, FSM):
             block.raceExit()
 
         return task.done
+
+    def countdown(self, duration):
+        self.setCountdown(duration)
+
+    def setCountdown(self, timeToSet):
+        taskMgr.remove(self.uniqueName('countdownTask'))
+        taskMgr.doMethodLater(timeToSet, self.considerAllAboard, self.uniqueName('countdownTask'))
 
     def addAvBlock(self, avId, startingBlock, paid):
         av = self.air.doId2do.get(avId)

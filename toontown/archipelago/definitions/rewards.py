@@ -82,6 +82,22 @@ class LaffBoostReward(APReward):
         av.checkWinCondition()
 
 
+class DmgBoostReward(APReward):
+    def __init__(self, amount: int):
+        self.amount = amount
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Increased your\nGag damage by "),
+            MinimalJsonMessagePart(f"+{self.amount}%", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        old_dmg = av.getDamageMultiplier()
+        av.b_setDamageMultiplier(old_dmg + self.amount)
+
+
 class GagCapacityReward(APReward):
 
     def __init__(self, amount: int):
@@ -95,7 +111,14 @@ class GagCapacityReward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.b_setMaxCarry(av.maxCarry + self.amount)
+        new_carry = av.maxCarry + self.amount
+        av.b_setMaxCarry(new_carry)
+        if new_carry >= 75 and av.has75 == 0:
+            av.b_setHas75Capacity(1)
+            av.d_considerCapacityRewardMessage75()
+        if new_carry >= 90 and av.has90 == 0:
+            av.b_setHas90Capacity(1)
+            av.d_considerCapacityRewardMessage90()
 
 
 class JellybeanJarUpgradeReward(APReward):
@@ -112,6 +135,7 @@ class JellybeanJarUpgradeReward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         av.b_setMaxMoney(av.maxMoney + self.amount)
+        av.addMoney(self.amount)
 
 class TaskCapacityReward(APReward):
     
@@ -273,6 +297,16 @@ class GagUpgradeReward(APReward):
         DROP: "drop_%s",
     }
 
+    TRACK_TO_UPGRADE_DESC = {
+        TOONUP: "now increase defense on use!",
+        TRAP: "now further reduce Cog damage!",
+        LURE: "have increased accuracy and knockback!",
+        SOUND: "deal more damage the higher the Cogs!",
+        THROW: "provide self-heal!",
+        SQUIRT: "deal increased knockback damage!",
+        DROP: "can now hit lured Cogs!",
+    }
+
     def __init__(self, track):
         self.track = track
 
@@ -281,9 +315,9 @@ class GagUpgradeReward(APReward):
     def formatted_header(self) -> str:
         track_name_color = self.TRACK_TO_COLOR.get(self.track)
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Trees have been planted!\nYour "),
-            MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}".upper(), color=track_name_color),
-            MinimalJsonMessagePart(" Gags are now organic!"),
+            MinimalJsonMessagePart("Trees planted! Your "),
+            MinimalJsonMessagePart(f"{self.TRACK_TO_NAME[self.track]}\n".upper(), color=track_name_color),
+            MinimalJsonMessagePart(f" Gags {self.TRACK_TO_UPGRADE_DESC[self.track]}"),
         ])
 
     def get_image_path(self) -> str:
@@ -599,6 +633,24 @@ class JellybeanReward(APReward):
         av.addMoney(self.amount)
 
 
+class FishReward(APReward):
+    def __init__(self, amount: int):
+        self.amount: int = amount
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You know what that means...\n"),
+            MinimalJsonMessagePart("Fish", color='cyan'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.addMoney(self.amount)
+        sounds = ["phase_4/audio/sfx/fish.ogg", "phase_4/audio/sfx/ykwtm.ogg"]
+        sound = random.choice(sounds)
+        av.playSound(sound)
+
+
 class DamageTrapAward(APReward):
 
     def __init__(self, amount: int):
@@ -614,12 +666,17 @@ class DamageTrapAward(APReward):
         amountPercent = self.amount/100
         # Deal at least 1 damage
         damage = max(1, math.floor(amountPercent * av.getMaxHp()))
+        kill_threshold = math.floor(av.getMaxHp() * 0.1)
         if damage >= av.getHp():
-            # Means we won't kill the player unless we're already at 1 HP
-            damage = max(1, (av.getHp()-1))
+            # Means we won't kill the player unless we're under 10% hp
+            if av.getHp() <= kill_threshold:
+                damage = av.getHp()
+            # Leave the player at 1 since we were at over 10%
+            else:
+                damage = max(1, (av.getHp() - 1))
         if av.getHp() > 0:
-            # If we're at 1, we die
-            if av.getHp() == 1:
+            # If we're under threshold, we die
+            if av.getHp() <= kill_threshold:
                 av.setDeathReason(DeathReason.DAMAGE_TRAP)
             av.takeDamage(damage)
         av.playSound('phase_4/audio/sfx/oof.ogg')
@@ -810,6 +867,7 @@ class BossRewardAward(APReward):
     SOS = 0
     UNITE = 1
     PINK_SLIP = 2
+    SUMMON = 3
 
     REWARD_TO_DISPLAY_STR = {
         SOS: {3: "3-Star SOS Card",
@@ -818,6 +876,7 @@ class BossRewardAward(APReward):
         UNITE: {1: "Toon-Up Unite",
                 2: "Gag-Up Unite"},
         PINK_SLIP: "Pink Slip",
+        SUMMON: "Cog Summon"
     }
 
     def __init__(self, reward: int, type: int):
@@ -865,6 +924,8 @@ class BossRewardAward(APReward):
             av.addResistanceMessage(ResistanceChat.encodeId(uniteType, uniteChoice))
         elif self.reward == BossRewardAward.PINK_SLIP:
             av.addPinkSlips(1)
+        elif self.reward == BossRewardAward.SUMMON:
+            av.assignNewCogSummons()
 
 
 class ProofReward(APReward):
@@ -937,6 +998,10 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.LAFF_BOOST_3.value: LaffBoostReward(3),
     ToontownItemName.LAFF_BOOST_4.value: LaffBoostReward(4),
     ToontownItemName.LAFF_BOOST_5.value: LaffBoostReward(5),
+    ToontownItemName.DMG_BOOST_1.value: DmgBoostReward(1),
+    ToontownItemName.DMG_BOOST_2.value: DmgBoostReward(2),
+    ToontownItemName.DMG_BOOST_3.value: DmgBoostReward(3),
+    ToontownItemName.DMG_BOOST_4.value: DmgBoostReward(4),
     ToontownItemName.GAG_CAPACITY_5.value: GagCapacityReward(5),
     ToontownItemName.GAG_CAPACITY_10.value: GagCapacityReward(10),
     ToontownItemName.GAG_CAPACITY_15.value: GagCapacityReward(15),
@@ -983,7 +1048,6 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MML_FISHING.value: FishingLicenseReward(FishingLicenseReward.MINNIES_MELODYLAND),
     ToontownItemName.TB_FISHING.value: FishingLicenseReward(FishingLicenseReward.THE_BRRRGH),
     ToontownItemName.DDL_FISHING.value: FishingLicenseReward(FishingLicenseReward.DONALDS_DREAMLAND),
-    ToontownItemName.FISH.value: IgnoreReward(),
     ToontownItemName.GOLF_PUTTER.value: GolfPutterReward(),
     ToontownItemName.GO_KART.value: GoKartReward(),
     ToontownItemName.FRONT_FACTORY_ACCESS.value: FacilityAccessReward(FADoorCodes.FRONT_FACTORY_ACCESS_MISSING),
@@ -1006,6 +1070,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MONEY_400.value: JellybeanReward(400),
     ToontownItemName.MONEY_700.value: JellybeanReward(700),
     ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
+    ToontownItemName.FISH.value: FishReward(1),
     ToontownItemName.XP_10.value: GagExpBundleAward(10),
     ToontownItemName.XP_15.value: GagExpBundleAward(15),
     ToontownItemName.XP_20.value: GagExpBundleAward(20),
@@ -1015,6 +1080,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.UNITE_REWARD_TOONUP.value: BossRewardAward(BossRewardAward.UNITE, 1),
     ToontownItemName.UNITE_REWARD_GAG.value: BossRewardAward(BossRewardAward.UNITE, 2),
     ToontownItemName.PINK_SLIP_REWARD.value: BossRewardAward(BossRewardAward.PINK_SLIP, 0),
+    ToontownItemName.SUMMON_REWARD.value: BossRewardAward(BossRewardAward.SUMMON, 0),
     ToontownItemName.HEAL_10.value: HealAward(10),
     ToontownItemName.HEAL_20.value: HealAward(20),
     ToontownItemName.UBER_TRAP.value: UberTrapAward(),

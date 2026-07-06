@@ -33,6 +33,17 @@ class DistributedElevatorInt(DistributedElevator.DistributedElevator):
           'avId': -1}], force=1)
         return
 
+    def startCountdownClock(self, countdownTime, ts):
+        self.clockNode = TextNode('elevatorClock')
+        self.clockNode.setFont(ToontownGlobals.getSignFont())
+        self.clockNode.setAlign(TextNode.ACenter)
+        self.clockNode.setTextColor(0.5, 0.5, 0.5, 1)
+        self.clockNode.setText(str(int(countdownTime)))
+        self.clock = self.getElevatorModel().attachNewNode(self.clockNode)
+        self.clock.setPosHprScale(0, 2.0, 7.5, 0, 0, 0, 2.0, 2.0, 2.0)
+        if ts < countdownTime:
+            self.countdown(countdownTime - ts)
+
     def enterWaitCountdown(self, ts):
         DistributedElevator.DistributedElevator.enterWaitCountdown(self, ts)
         self.acceptOnce('localToonLeft', self.__handleTeleportOut)
@@ -43,10 +54,21 @@ class DistributedElevatorInt(DistributedElevator.DistributedElevator):
 
     def exitWaitCountdown(self):
         self.ignore('localToonLeft')
-        DistributedElevator.DistributedElevator.exitWaitCountdown(self)
+        self.elevatorSphereNodePath.stash()
+        self.ignore(self.uniqueName('enterelevatorSphere'))
+        self.ignore('elevatorExitButton')
+        self.ignore('localToonLeft')
+        taskMgr.remove(self.uniqueName('elevatorTimerTask'))
+        self.clock.removeNode()
+        del self.clock
+        del self.clockNode
 
     def getZoneId(self):
         return self.bldg.getZoneId()
 
     def getElevatorModel(self):
         return self.bldg.elevatorModelOut
+
+    # Silly way to ignore being able to use the hotkey in a building
+    def acceptElevatorHotkey(self):
+        self.ignore(ToontownGlobals.ElevatorHotkeyOn)

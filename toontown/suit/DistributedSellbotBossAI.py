@@ -40,6 +40,7 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             self.pieHitToonup = SellbotBossGlobals.PieToonup
             self.pieDamageMult = SellbotBossGlobals.PieDamageMult
             self.hitCountDamage = SellbotBossGlobals.HitCountDamage
+        self.lastSide = 1
         self.recoverRate = 0
         self.recoverStartTime = 0
 
@@ -212,7 +213,11 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def doNextStrafe(self, task):
         if self.attackCode != ToontownGlobals.BossCogDizzyNow:
-            side = random.choice([0, 1])
+            # Alternate which side opens each time (unless we're in a situation that forces a side)
+            if self.lastSide:
+                side = 0
+            else:
+                side = 1
             direction = random.choice([0, 1])
             # If we are on a slope, force open the back
             if (self.getHealthPercentage() <= 0.84 and self.getHealthPercentage() >= 0.65) or (self.getHealthPercentage() <= 0.48 and self.getHealthPercentage() >= 0.28):
@@ -220,8 +225,9 @@ class DistributedSellbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             # If we are near the end, always force the front door to open
             if self.getHealthPercentage() <= 0.06:
                 side = 0
+            self.lastSide = side
             self.sendUpdate('doStrafe', [side, direction])
-        delayTime = 9
+        delayTime = 8
         self.waitForNextStrafe(delayTime)
 
     def __sendDooberIds(self):

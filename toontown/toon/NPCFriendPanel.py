@@ -90,13 +90,14 @@ class NPCFriendCard(DirectFrame):
         callButtonPosZ = -0.9
         textWordWrap = 16.0
         textScale = 0.35
-        textPosZ = 1.15
+        textPosZ = 1.17
+        damagePosZ = 0.87
         nameScale = 0.4
         namePosZ = -0.45
         rarityScale = 0.2
         rarityPosZ = -1.2
-        self.NPCHeadDim = 1.2
-        self.NPCHeadPosZ = 0.45
+        self.NPCHeadDim = 1.0
+        self.NPCHeadPosZ = 0.36
         self.sosCountInfoPosZ = -0.9
         self.sosCountInfoScale = 0.4
         self.sosCountInfo2PosZ = -0.9
@@ -107,18 +108,20 @@ class NPCFriendCard(DirectFrame):
             callButtonPosZ = -2.1
             textWordWrap = 7.0
             textScale = 0.5
-            textPosZ = 2.0
+            textPosZ = 2.02
+            damagePosZ = 1.72
             nameScale = 0.5
             namePosZ = -0.89
             rarityScale = 0.25
             rarityPosZ = -2.4
-            self.NPCHeadDim = 1.8
-            self.NPCHeadPosZ = 0.4
+            self.NPCHeadDim = 1.5
+            self.NPCHeadPosZ = 0.31
             self.sosCountInfoPosZ = -2.1
             self.sosCountInfoScale = 0.4
             self.sosCountInfo2PosZ = -2.0
             self.sosCountInfo2Scale = 0.55
         self.sosTypeInfo = DirectLabel(parent=self.front, relief=None, text='', text_font=ToontownGlobals.getMinnieFont(), text_fg=self.normalTextColor, text_scale=textScale, text_align=TextNode.ACenter, text_wordwrap=textWordWrap, pos=(0, 0, textPosZ))
+        self.NPCDamage = DirectLabel(parent=self.front, relief=None, text='', text_fg=self.normalTextColor, text_scale=nameScale, text_align=TextNode.ACenter, text_wordwrap=12, pos=(0, 0, damagePosZ))
         self.NPCHead = None
         self.NPCName = DirectLabel(parent=self.front, relief=None, text='', text_fg=self.normalTextColor, text_scale=nameScale, text_align=TextNode.ACenter, text_wordwrap=8.0, pos=(0, 0, namePosZ))
         buttonModels = loader.loadModel('phase_3.5/models/gui/inventory_gui')
@@ -170,12 +173,29 @@ class NPCFriendCard(DirectFrame):
             self.NPCHead.reparentTo(self.front)
             self.NPCHead.setZ(self.NPCHeadPosZ)
             track, level, hp, rarity = NPCToons.getNPCTrackLevelHpRarity(NPCID)
+            # We don't need to show damage for these elements
+            if track in [ToontownBattleGlobals.NPC_TOONS_HIT, ToontownBattleGlobals.NPC_COGS_MISS]:
+                self.NPCDamage['text'] = "1 Round"
+            elif track == ToontownBattleGlobals.HEAL_TRACK:
+                if hp == ToontownGlobals.MaxHpLimit:
+                    hp = "Max"
+                self.NPCDamage['text'] = f"{hp} Laff"
+            elif track == ToontownBattleGlobals.LURE_TRACK:
+                kbToRounds = {
+                    60: 4,
+                    50: 3,
+                    40: 2,
+                }
+                self.NPCDamage['text'] = f"{kbToRounds[hp]} Rounds, {hp}% KB"
+            else:
+                self.NPCDamage['text'] = f"{hp} Damage"
             sosText = self.sosTracks[track]
             if track == ToontownBattleGlobals.NPC_RESTOCK_GAGS:
                 if level == -1:
                     sosText += ' All'
                 else:
                     sosText += ' Level ' + str(level + 1)
+                self.NPCDamage['text'] = ""
             sosText = TextEncoder.upper(sosText)
             self.sosTypeInfo['text'] = sosText
             for i in range(self.maxRarity):

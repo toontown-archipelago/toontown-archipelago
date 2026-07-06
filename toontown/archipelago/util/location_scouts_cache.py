@@ -30,6 +30,9 @@ class LocationScoutsCache:
     def items(self):
         return self._data_cache.items()
 
+    def clear_cache(self):
+        self._data_cache.clear()
+
     # Given another LocationScoutsCache, take all key value pairs present and add them to this one
     # If update is True, duplicate keys will be overridden, False means we keep our old keys and values
     def merge(self, other: "LocationScoutsCache", update=True):

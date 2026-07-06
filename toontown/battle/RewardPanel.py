@@ -430,7 +430,7 @@ class RewardPanel(DirectFrame):
         intervalList = []
 
         intervalList.append(Func(self.showTrackIncLabel, track, earnedSkill))
-        barTime = .5
+        barTime = .75
         numTicks = int(math.ceil(barTime / tickDelay))
         for i in range(numTicks):
             t = (i + 1) / float(numTicks)
@@ -438,15 +438,15 @@ class RewardPanel(DirectFrame):
             intervalList.append(Func(self.__incrementExp, track, newValue, toon))
             intervalList.append(Wait(tickDelay))
 
-        intervalList.append(Wait(0.1))
+        intervalList.append(Wait(0.05))
         intervalList.append(Func(self.trackBars[track].resetBarColor))
         nextExpValue = self.getNextExpValue(origSkill, track)
         finalGagFlag = 0
         if origSkill + earnedSkill < toon.experience.getExperienceCapForTrack(track):
             while origSkill + earnedSkill >= nextExpValue > origSkill and not finalGagFlag:
-                if nextExpValue not in (ToontownBattleGlobals.MaxSkill, ToontownBattleGlobals.regMaxSkill):
-                    intervalList += self.getNewGagIntervalList(toon, track,
-                                                               ToontownBattleGlobals.Levels[track].index(nextExpValue))
+                #if nextExpValue not in (ToontownBattleGlobals.MaxSkill, ToontownBattleGlobals.regMaxSkill):
+                #    intervalList += self.getNewGagIntervalList(toon, track,
+                #                                               ToontownBattleGlobals.Levels[track].index(nextExpValue))
                 newNextExpValue = self.getNextExpValue(nextExpValue, track)
                 if newNextExpValue == nextExpValue:
                     finalGagFlag = 1
@@ -473,10 +473,10 @@ class RewardPanel(DirectFrame):
 
         intervalList.append(Func(self.resetMeritBarColor, dept))
         intervalList.append(Wait(0.1))
-        if toon.cogLevels[dept] < ToontownGlobals.MaxCogSuitLevel:
-            if neededMerits and toon.readyForPromotion(dept):
-                intervalList.append(Wait(0.4))
-                intervalList += self.getPromotionIntervalList(toon, dept)
+        #if toon.cogLevels[dept] < ToontownGlobals.MaxCogSuitLevel:
+        #    if neededMerits and toon.readyForPromotion(dept):
+        #        intervalList.append(Wait(0.4))
+        #        intervalList += self.getPromotionIntervalList(toon, dept)
         return intervalList
 
     def promotion(self, toon, dept):
@@ -655,6 +655,7 @@ class RewardPanel(DirectFrame):
     def getExpTrack(self, toon, origExp, earnedExp, deathList, origQuestsList, itemList, missedItemList, origMeritList,
                     meritList, partList, toonList, helpfulToonsList, noSkip=False):
         track = Sequence(Func(self.initGagFrame, toon, origExp, origMeritList, noSkip=noSkip), Wait(1.0))
+        expSequences = Parallel()
         endTracks = [0,
                      0,
                      0,
@@ -665,14 +666,17 @@ class RewardPanel(DirectFrame):
         trackEnded = 0
         for trackIndex in range(len(earnedExp)):
             if earnedExp[trackIndex] > 0 or origExp[trackIndex] >= ToontownBattleGlobals.MaxSkill:
-                track += self.getTrackIntervalList(toon, trackIndex, origExp[trackIndex], earnedExp[trackIndex])
+                expSequences += self.getTrackIntervalList(toon, trackIndex, origExp[trackIndex], earnedExp[trackIndex])
                 if origExp[trackIndex] < ToontownBattleGlobals.MaxSkill <= earnedExp[trackIndex] + origExp[trackIndex]:
                     endTracks[trackIndex] = 1
                     trackEnded = 1
+        track.append(expSequences)
 
+        meritSequences = Parallel()
         for dept in range(len(SuitDNA.suitDepts)):
             if meritList[dept]:
-                track += self.getMeritIntervalList(toon, dept, origMeritList[dept], meritList[dept])
+                meritSequences += self.getMeritIntervalList(toon, dept, origMeritList[dept], meritList[dept])
+        track.append(meritSequences)
 
         track.append(Wait(1))
         itemInterval = self.getItemIntervalList(toon, itemList)

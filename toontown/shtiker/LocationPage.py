@@ -3,6 +3,7 @@ from . import ShtikerPage
 from apworld.toontown import locations, options, fish, test_location, ToontownWinCondition
 from BaseClasses import MultiWorld
 from toontown.toonbase import TTLocalizer
+from toontown.toonbase import ToontownGlobals
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.archipelago.definitions import util
@@ -69,9 +70,12 @@ class LocationCategory():
         return self.name
     
     def get_display_name(self):
+        name_to_use = self.name
+        if len(name_to_use) > 32:
+            name_to_use = name_to_use[:32] + "..."
         if self.get_count() != 1:
-            return self.name + f' ({self.get_count()}x)'
-        return self.name
+            return name_to_use + f' ({self.get_count()}x)'
+        return name_to_use
 
     def __str__(self):
         return self.get_raw_name()
@@ -79,7 +83,6 @@ class LocationCategory():
 
 
 class LocationPage(ShtikerPage.ShtikerPage):
-
     def __init__(self):
         ShtikerPage.ShtikerPage.__init__(self)
         self.locationsPossible: dict[str,LocationCategory] = {}
@@ -91,12 +94,13 @@ class LocationPage(ShtikerPage.ShtikerPage):
         self.LocationNode = LocationNode(self)
         self.LocationNode.setPos(0.42, 0, 0.5)
         self.LocationNode.hide()
+        self.logicalLocations = 0
         self.selectedLocation: int | None = None
-
 
     def load(self):
         title_text_scale = 0.12
         self.title = DirectLabel(parent=self, relief=None, text=TTLocalizer.LocationPageTitle, text_scale=title_text_scale, textMayChange=0, pos=(0, 0, 0.6))
+        self.logicalLocationsLabel = DirectLabel(parent=self, relief=None, text="Locations in Logic: 0", text_scale=title_text_scale/2.5, textMayChange=1, pos=(0, 0, 0.53))
         self.gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
         self.listXorigin = 0.02
         self.listFrameSizeX = 0.86
@@ -115,6 +119,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
         self.regenerateScrollList()
         self.LocationNode.show()
         self.LocationNode.showDefaultDisplay()
+        self.logicalLocationsLabel['text'] = f"Locations in Logic: {self.logicalLocations}"
         self.selectedLocation = None
 
     def getLocations(self):
@@ -124,9 +129,23 @@ class LocationPage(ShtikerPage.ShtikerPage):
         missingLocations: dict[str,LocationCategory] = {}
         # Locations to force to the top of the list.
         priorityMissingLocations: dict[str,LocationCategory] = {}
+        # Tasks, force to the bottom of the list.
+        taskMissingLocations: dict[str,LocationCategory] = {}
+        # Doodles, force to the bottom of the list.
+        doodleMissingLocations: dict[str, LocationCategory] = {}
         # Determine forbidden location types.
         forbidden_location_types: set[locations.ToontownLocationType] = self.get_disabled_location_types()
 
+        training_types = [
+            locations.ToontownLocationType.SUPPORT_GAG_TRAINING,
+            locations.ToontownLocationType.TRAP_GAG_TRAINING,
+            locations.ToontownLocationType.SOUND_GAG_TRAINING,
+            locations.ToontownLocationType.THROW_GAG_TRAINING,
+            locations.ToontownLocationType.SQUIRT_GAG_TRAINING,
+            locations.ToontownLocationType.DROP_GAG_TRAINING,
+        ]
+
+        self.logicalLocations = 0
         for location_data in locations.LOCATION_DEFINITIONS:
             # Do we need to track this location based on settings?
             if location_data.type in forbidden_location_types:
@@ -145,18 +164,25 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 enabled_locations = []
                 for x in range(cpb):
                     enabled_locations.append(boss_locations[x].value)
+                    self.logicalLocations += 1
                 obj = LocationCategory(location_data.name.value, enabled_locations)
                 priorityMissingLocations.update({location_data.name.value:obj})
                 continue
+
             # Locations that are identical with only a number appended.
-            if location_data.type in locations.TREASURE_LOCATION_TYPES + locations.TASK_LOCATION_TYPES + locations.KNOCK_KNOCK_LOCATION_TYPES:
+            if location_data.type in locations.TREASURE_LOCATION_TYPES + locations.KNOCK_KNOCK_LOCATION_TYPES:
                 name = location_data.name.value.rsplit(" ", 1)[0]
                 name = name.replace("Knock Knock", "Street")
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
-            elif location_data.region == locations.ToontownRegionName.GALLERY:
-                name = location_data.name.value.split('(')[0].rstrip()
+            elif location_data.type in (locations.ToontownLocationType.COG_LEVELS, locations.ToontownLocationType.HIGH_COG_LEVELS):
+                name = "Cog Levels"
+                obj = missingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+
+            elif location_data.type in (locations.ToontownLocationType.GALLERY, locations.ToontownLocationType.GALLERY_MAX):
+                name = "Cog Gallery"
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
@@ -165,12 +191,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
 
-            elif location_data.type == locations.ToontownLocationType.PET_SHOP:
-                name=location_data.region.name + " Pet Shop"
-                obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
-
-            elif location_data.type == locations.ToontownLocationType.GAG_TRAINING:
+            elif location_data.type in training_types:
                 name = location_data.rules[0].name
                 name = re.sub(r'(?<=\B)([A-Z])', r' \1', name).rsplit(" ", 1)[0] + " Training"
                 obj = missingLocations.get(name, LocationCategory(name))
@@ -191,13 +212,27 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 name = location_data.type.name.title()
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
-
             else:
                 name = location_data.name.value
                 obj = LocationCategory(name, name)
-            missingLocations.update({name:obj})
 
-        self.locationsPossible = {**priorityMissingLocations, **missingLocations}
+            # Task checks, we want these on the bottom
+            if location_data.type in locations.TASK_LOCATION_TYPES:
+                name = location_data.name.value.rsplit(" ", 1)[0]
+                obj = taskMissingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+                taskMissingLocations.update({name: obj})
+            # Doodle checks, we want these on the bottom
+            elif location_data.type == locations.ToontownLocationType.PET_SHOP:
+                name = location_data.region.name + " Pet Shop"
+                obj = doodleMissingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+                doodleMissingLocations.update({name: obj})
+            else:
+                missingLocations.update({name:obj})
+            self.logicalLocations += 1
+
+        self.locationsPossible = {**priorityMissingLocations, **missingLocations, **taskMissingLocations, **doodleMissingLocations}
 
     def get_disabled_location_types(self) -> set[locations.ToontownLocationType]:
         """
@@ -236,6 +271,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
 
         if not ToontownWinCondition.cog_bosses in ToontownWinCondition(wc) and cpb <= 0:
             forbidden_location_types.add(locations.ToontownLocationType.BOSS_META)
+            forbidden_location_types.add(locations.ToontownLocationType.HIGH_COG_LEVELS)
 
         racing = base.localAvatar.slotData.get('racing_logic', False)
         if not racing:
@@ -245,9 +281,23 @@ class LocationPage(ShtikerPage.ShtikerPage):
         if not golf:
             forbidden_location_types.add(locations.ToontownLocationType.GOLF)
 
+        GAG_LOCATION_TYPES = [
+            locations.ToontownLocationType.SUPPORT_GAG_TRAINING,
+            locations.ToontownLocationType.TRAP_GAG_TRAINING,
+            locations.ToontownLocationType.SOUND_GAG_TRAINING,
+            locations.ToontownLocationType.THROW_GAG_TRAINING,
+            locations.ToontownLocationType.SQUIRT_GAG_TRAINING,
+            locations.ToontownLocationType.DROP_GAG_TRAINING,
+        ]
+
         gags = base.localAvatar.slotData.get('gag_training_check_behavior', 1)
         if gags == options.GagTrainingCheckBehavior.option_disabled:
-            forbidden_location_types.add(locations.ToontownLocationType.GAG_TRAINING)
+            for type in GAG_LOCATION_TYPES:
+                forbidden_location_types.add(type)
+
+        omitted_track = base.localAvatar.slotData.get('omit_gag', 0)
+        if omitted_track != 0:
+            forbidden_location_types.add(GAG_LOCATION_TYPES[omitted_track])
 
         return forbidden_location_types
 
@@ -300,7 +350,6 @@ class LocationPage(ShtikerPage.ShtikerPage):
             button = self.makeLocationButton(index, location)
             self.locationButtons.append(button)
 
-
     def makeLocationButton(self, index: int, location: LocationCategory):
         locationName = location.get_display_name()
         command = lambda: self.setLocations(index, location)
@@ -313,3 +362,46 @@ class LocationPage(ShtikerPage.ShtikerPage):
         if not self.selectedLocation is None:
             self.locationButtons[self.selectedLocation]['state'] = DGG.NORMAL
         self.selectedLocation = index
+
+    def showLocationsOnscreen(self):
+
+        # Check if there is currently something already displaying in the hotkey interface slot
+        if not base.localAvatar.allowOnscreenInterface():
+            return
+
+        # We can now own the slot
+        base.localAvatar.setCurrentOnscreenInterface(self)
+        messenger.send('wakeup')
+
+        self.enter()
+        self.reparentTo(aspect2d)
+        self.book.show()
+        self.book.setZ(self.book.getZ() - 0.11)
+        self.book.hidePageArrows()
+        self.book.ignore(ToontownGlobals.StickerBookPageLeft)
+        self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.show()
+
+    def hideLocationsOnscreen(self):
+
+        # If the current onscreen interface is not us, don't do anything
+        if base.localAvatar.getCurrentOnscreenInterface() is not self:
+            return
+
+        base.localAvatar.setCurrentOnscreenInterface(None)  # Free up the on screen interface slot
+
+        self.reparentTo(self.book)
+        self.book.hide()
+        self.book.setZ(self.book.getZ() + 0.11)
+        self.book.showPageArrows()
+        self.book.ignore(ToontownGlobals.StickerBookPageLeft)
+        self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.hide()
+
+    def acceptOnscreenHooks(self):
+        self.accept(ToontownGlobals.LocationsHotkeyOn, self.showLocationsOnscreen)
+        self.accept(ToontownGlobals.LocationsHotkeyOff, self.hideLocationsOnscreen)
+
+    def ignoreOnscreenHooks(self):
+        self.ignore(ToontownGlobals.LocationsHotkeyOn)
+        self.ignore(ToontownGlobals.LocationsHotkeyOff)

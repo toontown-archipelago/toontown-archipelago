@@ -13,10 +13,6 @@ from toontown.fishing.FishBase import FishBase
 from toontown.safezone.DistributedFishingSpotAI import DistributedFishingSpotAI
 
 
-# How much pity to add per rod (.01) = 1%
-FISHING_ROD_PITY = 0.25
-
-
 class FishManagerAI:
     notify = DirectNotifyGlobal.directNotify.newCategory('FishManagerAI')
 
@@ -78,7 +74,7 @@ class FishManagerAI:
         return rng < threshold
 
     def addNewSpeciesPity(self, av):
-        pity = FISHING_ROD_PITY
+        pity = (av.slotData.get('fish_pity', 25) / 100)
 
         # Add the pity
         oldPity = self.newSpeciesPity.get(av.doId, 0)
@@ -157,6 +153,7 @@ class FishManagerAI:
 
             av.addCheckedLocation(ap_location_name_to_id(fishLocationName.value))
             av.addCheckedLocation(ap_location_name_to_id(genusLocationName.value))
+            self.checkForFishingLocationCompletions(av)
 
             collectionNetList = av.fishCollection.getNetLists()
             av.ap_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
@@ -177,11 +174,8 @@ class FishManagerAI:
         curTrophies = len(av.fishingTrophies)
         av.addMoney(av.fishTank.getTotalValue())
         av.b_setFishTank([], [], [])
-        self.checkForFishingLocationCompletions(av)
 
         if trophies > curTrophies:
-            # av.b_setMaxHp(av.getMaxHp() + trophies - curTrophies)
-            # av.toonUp(av.getMaxHp())
             av.b_setFishingTrophies(list(range(trophies)))
             return True
 

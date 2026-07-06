@@ -11,7 +11,7 @@ from json import JSONEncoder, JSONDecoder
 from toontown.archipelago.util.utils import Version, ByValue
 
 ARCHIPELAGO_GAME_NAME = "Toontown"
-ARCHIPELAGO_CLIENT_VERSION = Version(0, 6, 1)
+ARCHIPELAGO_CLIENT_VERSION = Version(0, 6, 3)
 
 
 class JSONMessagePart(typing.TypedDict, total=False):
@@ -224,7 +224,7 @@ class JSONPartFormatter:
 
     COLOR_BLACK = (0, 0, 0, 1)
     COLOR_RED = (.93, 0, 0, 1)
-    COLOR_GREEN = (0, 1, .5, 1)
+    COLOR_GREEN = (0.06, 0.87, 0.17, 1)
     COLOR_FLAT_GREEN = (0, 0.9, 0.49, 1)
     COLOR_YELLOW = (.98, .98, .82, 1)
     COLOR_BLUE = (.4, .58, .93, 1)

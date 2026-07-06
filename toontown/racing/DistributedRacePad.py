@@ -33,6 +33,7 @@ class DistributedRacePad(DistributedKartPad, FSM):
         self.trackType = None
         self.timeStamp = None
         self.clockNodepath = None
+        self.hintNodepath = None
         self.timerTask = None
         self.tunnelSign = None
         self.trackNameNode = None
@@ -140,6 +141,10 @@ class DistributedRacePad(DistributedKartPad, FSM):
             self.clockNodepath.removeNode()
             self.clockNodepath = None
             self.clockNode = None
+            if self.hintNodepath:
+                self.hintNodepath.removeNode()
+            self.hintNodepath = None
+            self.hintNode = None
             self.timerTask = None
         return
 
@@ -152,6 +157,19 @@ class DistributedRacePad(DistributedKartPad, FSM):
             return Task.done
         else:
             return Task.cont
+
+    def countdown(self, duration):
+        if self.timerTask and self.startingBlocks:
+            countdownTask = Task(self.updateTimerTask)
+            countdownTask.duration = duration
+            taskMgr.remove('racePadTimerTask')
+            taskMgr.add(countdownTask, 'racePadTimerTask')
+        else:
+            if self.startingBlocks:
+                self.timerTask = taskMgr.add(countdownTask, self.uniqueName('racePadTimerTask'))
+                countdownTask = Task(self.timerTask)
+                countdownTask.duration = duration
+                taskMgr.add(countdownTask, 'racePadTimerTask')
 
     def startCountdown(self):
         if not self.timerTask and self.startingBlocks:
@@ -175,6 +193,20 @@ class DistributedRacePad(DistributedKartPad, FSM):
         self.clockNodepath.setScale(2.5)
         self.clockNodepath.flattenLight()
         return
+
+    def addHotkeyHint(self):
+        self.hintNode, self.hintNodepath = self.getSignTextNodes('racePadClockHint')
+        self.hintNodepath.setPos(0, 0.125, -5.5)
+        self.hintNodepath.setScale(1.25)
+        self.hintNodepath.flattenLight()
+        self.hintNode.setText(f"Press '{base.controls.ELEVATOR_HOTKEY}' to Skip")
+
+    def removeHotkeyHint(self):
+        if hasattr(self, 'hintNode') and hasattr(self, 'hintNodepath'):
+            if self.hintNodepath:
+                self.hintNodepath.removeNode()
+            self.hintNodepath = None
+            self.hintNode = None
 
     def getTunnelSign(self):
         cPadId = RaceGlobals.RaceInfo2RacePadId(self.trackId, self.trackType)
@@ -276,3 +308,7 @@ class DistributedRacePad(DistributedKartPad, FSM):
         self.tunnelSign = None
         self.trackNameNode = None
         return
+
+    def startRace(self):
+        self.countdown(0)
+        self.sendUpdate('countdown', [0])

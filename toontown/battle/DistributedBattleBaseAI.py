@@ -73,6 +73,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.movieRequested = 0
         self.ignoreResponses = 0
         self.ignoreAdjustingResponses = 0
+        self.battleSpeeds = [2]
         self.taskNames = []
         self.exitedToons = []
         self.suitsKilled = []
@@ -245,6 +246,15 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
 
     def getState(self):
         return [self.fsm.getCurrentState().getName(), globalClockDelta.getRealNetworkTime()]
+
+    def b_setBattleSpeeds(self, speeds):
+        self.sendUpdate('setBattleSpeeds', [speeds])
+
+    def setBattleSpeeds(self, speeds):
+        self.battleSpeeds = speeds
+
+    def getBattleSpeeds(self):
+        return self.battleSpeeds
 
     def d_setMembers(self):
         self.notify.debug('network:setMembers()')
@@ -1476,6 +1486,15 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         self.__requestMovie(timeout=1)
 
     def enterMakeMovie(self):
+        self.battleSpeeds = []
+        for avId in self.toons:
+            toon = simbase.air.doId2do.get(avId)
+            if toon:
+                self.battleSpeeds.append(toon.getBattleSpeed())
+        # Catch possible edge case where list of speeds could potentially be empty
+        if len(self.battleSpeeds) == 0:
+            self.battleSpeeds.append(2)
+        self.b_setBattleSpeeds(self.battleSpeeds)
         self.notify.debug('enterMakeMovie()')
         self.runableFsm.request('Unrunable')
         self.resetResponses()
@@ -1515,6 +1534,25 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
     def exitPlayMovie(self):
         self.timer.stop()
         return None
+
+    def handleThrowHeal(self, toon, attack):
+        if toon.checkGagBonus(THROW, attack[TOON_LVL_COL]):
+            for dmg in attack[TOON_HP_COL]:
+                if dmg != -1:
+                    actDmg = dmg
+                    break
+                else:
+                    actDmg = 0
+            healDone = math.ceil(actDmg * 0.15)
+            toonHp = toon.getHp()
+            toonMaxHp = toon.getMaxHp()
+            maxHealAllowed = math.ceil(toonMaxHp * 0.2)
+            if healDone > maxHealAllowed:
+                healDone = maxHealAllowed
+            if toonHp + healDone > toonMaxHp:
+                healDone = toonMaxHp - toonHp
+            return healDone
+        return
 
     def __movieDone(self):
         self.notify.debug('__movieDone() - movie is finished')
@@ -1629,6 +1667,12 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                                     hp = 0
                                 toonHpDict[toon.doId][0] += hp
                     elif attackAffectsGroup(track, level, attack[TOON_TRACK_COL]):
+                        if track == THROW:
+                            toonId = attack[TOON_ID_COL]
+                            toon = self.getToon(toonId)
+                            heal = self.handleThrowHeal(toon, attack)
+                            if heal:
+                                toonHpDict[toon.doId][0] += heal
                         for suit in self.activeSuits:
                             targetIndex = self.activeSuits.index(suit)
                             if targetIndex < 0 or targetIndex >= len(hps):
@@ -1659,10 +1703,15 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                                 if died != 0:
                                     if deadSuits.count(suit) == 0:
                                         deadSuits.append(suit)
-
                     else:
                         targetId = attack[TOON_TGT_COL]
                         target = self.findSuit(targetId)
+                        if track == THROW:
+                            toonId = attack[TOON_ID_COL]
+                            toon = self.getToon(toonId)
+                            heal = self.handleThrowHeal(toon, attack)
+                            if heal:
+                                toonHpDict[toon.doId][0] += heal
                         if target != None:
                             targetIndex = self.activeSuits.index(target)
                             if targetIndex < 0 or targetIndex >= len(hps):

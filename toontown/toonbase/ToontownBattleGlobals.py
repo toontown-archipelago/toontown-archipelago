@@ -64,7 +64,10 @@ regMaxSkill = 20000
 MaxSkill = 999999  # How high should we allow xp to go
 
 # Exp needed per % increase
-overflowRates = [600, 300, 600, 700, 300, 300, 300]
+# [toonup, trap, lure, sound, throw, squirt, drop]
+overflowRates = [600, 400, 400, 600, 400, 400, 400]
+overflowDiminishThreshold = 30000
+overflowIncreaseRate = 1.5  # 40% more exp per % dmg
 
 def getUberDamageBonus(experience, track, overflowMod=None) -> float:
     overflow = experience - regMaxSkill
@@ -72,8 +75,27 @@ def getUberDamageBonus(experience, track, overflowMod=None) -> float:
         overflow = 0
     if not overflowMod:
         overflowMod = base.localAvatar.getOverflowMod()
+    multToAdd = 0
     adjustedOverflow = overflowRates[track] / (overflowMod / 100)
-    multiplier = 1 + (overflow / adjustedOverflow / 100)
+    overflowCutOffs = []
+    overflowRemainder = overflow % overflowDiminishThreshold
+    overflowTimesToReduce = math.floor(overflow / overflowDiminishThreshold)
+    for cutOff in range(overflowTimesToReduce):
+        overflowCutOffs.append(overflowDiminishThreshold)
+    if overflowRemainder > 0:
+        overflowCutOffs.append(overflowRemainder)
+    for cutOffCount in range(len(overflowCutOffs)):
+        # The first iteration
+        if cutOffCount == 0:
+            diminishMod = 1
+        else:
+            # modifier = (rate of decrease) ^ (times hit threshold)
+            diminishMod = overflowIncreaseRate ** cutOffCount
+        # (new exp per %) = (og per %) * (new modifier)
+        reAdjustOverflow = (adjustedOverflow * diminishMod)
+        multToAdd += (overflowCutOffs[cutOffCount] / reAdjustOverflow / 100)
+
+    multiplier = (1 + multToAdd)
     multiplier = round(multiplier, 2)
     return multiplier
 
@@ -101,6 +123,24 @@ CarryLimits = (
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
     ((10, 0, 0, 0, 0, 0, 0), (10, 5, 0, 0, 0, 0, 0), (15, 10, 5, 0, 0, 0, 0), (20, 15, 10, 5, 0, 0, 0), (25, 20, 15, 7, 3, 0, 0), (30, 25, 20, 10, 5, 2, 0), (30, 25, 20, 15, 7, 3, 1)),
+)
+CarryLimits75 = (
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 6, 0, 0, 0), (30, 25, 20, 8, 4, 0, 0), (30, 25, 25, 12, 5, 2, 0), (30, 25, 25, 15, 7, 3, 1)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 6, 0, 0, 0), (30, 25, 20, 8, 4, 0, 0), (30, 25, 25, 12, 5, 3, 0), (30, 25, 25, 17, 8, 4, 1)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 6, 0, 0, 0), (30, 25, 20, 8, 4, 0, 0), (30, 25, 25, 12, 4, 3, 0), (30, 25, 25, 17, 4, 4, 1)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 6, 0, 0, 0), (30, 25, 20, 8, 4, 0, 0), (30, 25, 25, 12, 5, 2, 0), (30, 25, 25, 15, 7, 3, 1)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 6, 0, 0, 0), (30, 25, 20, 8, 4, 0, 0), (30, 25, 25, 12, 5, 3, 0), (30, 25, 25, 17, 8, 4, 1)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 6, 0, 0, 0), (30, 25, 20, 8, 4, 0, 0), (30, 25, 25, 12, 5, 3, 0), (30, 25, 25, 17, 8, 4, 1)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 6, 0, 0, 0), (30, 25, 20, 8, 4, 0, 0), (30, 25, 25, 12, 5, 3, 0), (30, 25, 25, 17, 8, 4, 1)),
+)
+CarryLimits90 = (
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 7, 0, 0, 0), (30, 25, 20, 9, 5, 0, 0), (30, 25, 25, 14, 5, 3, 0), (30, 25, 25, 17, 8, 4, 2)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 7, 0, 0, 0), (30, 25, 20, 9, 5, 0, 0), (30, 25, 25, 14, 5, 4, 0), (30, 25, 25, 20, 9, 5, 2)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 7, 0, 0, 0), (30, 25, 20, 9, 5, 0, 0), (30, 25, 25, 14, 4, 4, 0), (30, 25, 25, 20, 4, 5, 2)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 7, 0, 0, 0), (30, 25, 20, 9, 5, 0, 0), (30, 25, 25, 14, 5, 3, 0), (30, 25, 25, 17, 8, 4, 2)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 7, 0, 0, 0), (30, 25, 20, 9, 5, 0, 0), (30, 25, 25, 14, 5, 4, 0), (30, 25, 25, 20, 9, 5, 2)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 7, 0, 0, 0), (30, 25, 20, 9, 5, 0, 0), (30, 25, 25, 14, 5, 4, 0), (30, 25, 25, 20, 9, 5, 2)),
+    ((15, 0, 0, 0, 0, 0, 0), (15, 7, 0, 0, 0, 0, 0), (20, 13, 7, 0, 0, 0, 0), (25, 18, 12, 7, 0, 0, 0), (30, 25, 20, 9, 5, 0, 0), (30, 25, 25, 14, 5, 4, 0), (30, 25, 25, 20, 9, 5, 2)),
 )
 
 MaxProps = ((15, 40), (30, 60), (75, 80))
@@ -241,67 +281,67 @@ def getAccuracyPercentString(track, level):
 
 AvPropDamage = (
     (   # Toonup
-        ((8, 10), (Levels[0][0], Levels[0][1])),
-        ((12, 16), (Levels[0][1], Levels[0][2])),
-        ((18, 24), (Levels[0][2], Levels[0][3])),
-        ((32, 40), (Levels[0][3], Levels[0][4])),
+        ((9, 10), (Levels[0][0], Levels[0][1])),
+        ((15, 16), (Levels[0][1], Levels[0][2])),
+        ((22, 24), (Levels[0][2], Levels[0][3])),
+        ((36, 40), (Levels[0][3], Levels[0][4])),
         ((45, 50), (Levels[0][4], Levels[0][5])),
-        ((72, 96), (Levels[0][5], Levels[0][6])),
-        ((100, 160), (Levels[0][6], regMaxSkill))
+        ((87, 96), (Levels[0][5], Levels[0][6])),
+        ((144, 160), (Levels[0][6], regMaxSkill))
     ),
     (   # Trap
-        ((12, 18), (Levels[1][0], Levels[1][1])),
-        ((24, 30), (Levels[1][1], Levels[1][2])),
-        ((35, 45), (Levels[1][2], Levels[1][3])),
-        ((50, 75), (Levels[1][3], Levels[1][4])),
-        ((85, 100), (Levels[1][4], Levels[1][5])),
-        ((110, 195), (Levels[1][5], Levels[1][6])),
-        ((200, 240), (Levels[1][6], regMaxSkill))
+        ((17, 18), (Levels[1][0], Levels[1][1])),
+        ((27, 30), (Levels[1][1], Levels[1][2])),
+        ((41, 45), (Levels[1][2], Levels[1][3])),
+        ((68, 75), (Levels[1][3], Levels[1][4])),
+        ((95, 105), (Levels[1][4], Levels[1][5])),
+        ((176, 195), (Levels[1][5], Levels[1][6])),
+        ((216, 240), (Levels[1][6], regMaxSkill))
     ),
     (   # Lure
-        ((30, 40), (Levels[2][0], Levels[2][1])),
-        ((30, 40), (Levels[2][1], Levels[2][2])),
-        ((40, 50), (Levels[2][2], Levels[2][3])),
-        ((40, 50), (Levels[2][3], Levels[2][4])),
-        ((50, 60), (Levels[2][4], Levels[2][5])),
-        ((50, 60), (Levels[2][5], Levels[2][6])),
-        ((65, 100), (Levels[2][6], regMaxSkill))
+        ((40, 40), (Levels[2][0], Levels[2][1])),
+        ((40, 40), (Levels[2][1], Levels[2][2])),
+        ((50, 50), (Levels[2][2], Levels[2][3])),
+        ((50, 50), (Levels[2][3], Levels[2][4])),
+        ((60, 60), (Levels[2][4], Levels[2][5])),
+        ((60, 60), (Levels[2][5], Levels[2][6])),
+        ((80, 100), (Levels[2][6], regMaxSkill))
     ),
     (   # Sound
-        ((2, 4), (Levels[3][0], Levels[3][1])),
-        ((5, 8), (Levels[3][1], Levels[3][2])),
-        ((9, 12), (Levels[3][2], Levels[3][3])),
-        ((16, 20), (Levels[3][3], Levels[3][4])),
-        ((25, 30), (Levels[3][4], Levels[3][5])),
-        ((45, 75), (Levels[3][5], Levels[3][6])),
-        ((90, 110), (Levels[3][6], regMaxSkill))
+        ((4, 4), (Levels[3][0], Levels[3][1])),
+        ((8, 8), (Levels[3][1], Levels[3][2])),
+        ((11, 12), (Levels[3][2], Levels[3][3])),
+        ((18, 20), (Levels[3][3], Levels[3][4])),
+        ((27, 30), (Levels[3][4], Levels[3][5])),
+        ((56, 62), (Levels[3][5], Levels[3][6])),
+        ((86, 95), (Levels[3][6], regMaxSkill))
     ),
     (   # Throw
-        ((4, 6), (Levels[4][0], Levels[4][1])),
-        ((8, 10), (Levels[4][1], Levels[4][2])),
-        ((14, 17), (Levels[4][2], Levels[4][3])),
-        ((24, 27), (Levels[4][3], Levels[4][4])),
+        ((6, 6), (Levels[4][0], Levels[4][1])),
+        ((9, 10), (Levels[4][1], Levels[4][2])),
+        ((16, 17), (Levels[4][2], Levels[4][3])),
+        ((26, 28), (Levels[4][3], Levels[4][4])),
         ((36, 40), (Levels[4][4], Levels[4][5])),
-        ((48, 100), (Levels[4][5], Levels[4][6])),
-        ((110, 140), (Levels[4][6], regMaxSkill))
+        ((95, 105), (Levels[4][5], Levels[4][6])),
+        ((126, 140), (Levels[4][6], regMaxSkill))
     ),
     (   # Squirt
-        ((3, 4), (Levels[5][0], Levels[5][1])),
-        ((6, 8), (Levels[5][1], Levels[5][2])),
-        ((10, 12), (Levels[5][2], Levels[5][3])),
+        ((4, 4), (Levels[5][0], Levels[5][1])),
+        ((8, 8), (Levels[5][1], Levels[5][2])),
+        ((11, 12), (Levels[5][2], Levels[5][3])),
         ((18, 21), (Levels[5][3], Levels[5][4])),
         ((27, 30), (Levels[5][4], Levels[5][5])),
-        ((36, 80), (Levels[5][5], Levels[5][6])),
-        ((85, 110), (Levels[5][6], regMaxSkill))
+        ((72, 80), (Levels[5][5], Levels[5][6])),
+        ((99, 110), (Levels[5][6], regMaxSkill))
     ),
     (   # Drop
-        ((8, 10), (Levels[6][0], Levels[6][1])),
-        ((15, 18), (Levels[6][1], Levels[6][2])),
-        ((25, 30), (Levels[6][2], Levels[6][3])),
-        ((42, 50), (Levels[6][3], Levels[6][4])),
-        ((60, 75), (Levels[6][4], Levels[6][5])),
-        ((90, 170), (Levels[6][5], Levels[6][6])),
-        ((175, 210), (Levels[6][6], regMaxSkill))
+        ((9, 10), (Levels[6][0], Levels[6][1])),
+        ((18, 20), (Levels[6][1], Levels[6][2])),
+        ((27, 30), (Levels[6][2], Levels[6][3])),
+        ((50, 55), (Levels[6][3], Levels[6][4])),
+        ((68, 75), (Levels[6][4], Levels[6][5])),
+        ((158, 175), (Levels[6][5], Levels[6][6])),
+        ((189, 210), (Levels[6][6], regMaxSkill))
     )
 )
 ATK_SINGLE_TARGET = 0
@@ -357,7 +397,9 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
     if not npc:
         multiplier = experience.getUberDamageBonus(attackTrack, overflowMod=overflowMod)
         damage *= multiplier
-        damage *= toonDamageMultiplier / 100
+        # Lure does not get affected by damage modifier settings
+        if attackTrack != 2:
+            damage *= toonDamageMultiplier / 100
 
     if propAndOrganicBonusStack:
         originalDamage = damage
@@ -365,14 +407,36 @@ def getAvPropDamage(attackTrack, attackLevel, experience: Experience,
             damage += getDamageBonus(originalDamage)
         if propBonus:
             damage += getDamageBonus(originalDamage)
+    elif organicBonus and attackTrack == 2:
+        damage += 5
     elif organicBonus or propBonus:
         damage += getDamageBonus(damage)
 
     return math.ceil(damage)
 
 
+def getAvOriginalDamage(attackTrack, attackLevel, experience: Experience, toonDamageMultiplier=100, organicBonus=False):
+    exp = experience.getExp(attackTrack)
+
+    minD = AvPropDamage[attackTrack][attackLevel][0][0]
+    maxD = AvPropDamage[attackTrack][attackLevel][0][1]
+    minE = AvPropDamage[attackTrack][attackLevel][1][0]
+    maxE = AvPropDamage[attackTrack][attackLevel][1][1]
+
+    expVal = min(exp, maxE)
+    expPerHp = float(maxE - minE + 1) / float(maxD - minD + 1)
+    damage = math.floor((expVal - minE) / expPerHp) + minD
+    damage *= toonDamageMultiplier / 100
+
+    if organicBonus:
+        damage += getDamageBonus(damage)
+
+    return math.ceil(damage)
+
+
+
 def getDamageBonus(normal):
-    bonus = math.ceil(normal * 0.1)
+    bonus = math.ceil(normal * 0.05)
     if bonus < 1 and normal > 0:
         bonus = 1
     return bonus

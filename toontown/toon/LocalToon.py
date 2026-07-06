@@ -2105,6 +2105,10 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def d_setDeathReason(self, reason: DeathReason):
         self.sendUpdate('setDeathReason', [reason.to_astron()])
 
+    # Tells the server to send out an ap location
+    def d_addCheckedLocation(self, location):
+        self.sendUpdate('addCheckedLocation', [location])
+
     # Shows a reward that we were given, called from the AI
     def showReward(self, rewardId: int, playerName: str, isLocal: bool) -> None:
         apReward = get_ap_reward_from_id(rewardId)
@@ -2115,6 +2119,10 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
     def updateLocationScoutsCache(self, cacheTuples: List[Tuple[int, str]]) -> None:
         new_cache = LocationScoutsCache.from_struct(cacheTuples)
         self.locationScoutsCache.merge(new_cache, update=True)
+
+    # Called from the ai, reset our scout cache when we start a new toon
+    def resetLocationScoutsCache(self) -> None:
+        self.locationScoutsCache.clear_cache()
 
     # Call this method to get the cached location that we have stored
     def getCachedLocationReward(self, locationId: int) -> str:
