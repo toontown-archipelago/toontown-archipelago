@@ -127,6 +127,7 @@ class ToontownItemName(enum.Enum):
     GARDEN_KIT = "Progressive Garden Kit"
     GARDEN_SHOVEL = "Progressive Shovel"
     GARDEN_WATERING_CAN = "Progressive Watering Can"
+    MISSING_CATALOG = "Missing Catalog"
 
     ### Bounty Items ###
     BOUNTY = "Bounty"
@@ -276,6 +277,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.GARDEN_KIT, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.GARDEN_SHOVEL, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.GARDEN_WATERING_CAN, ItemClassification.progression_deprioritized),
+    ToontownItemDefinition(ToontownItemName.MISSING_CATALOG, ItemClassification.progression),
     # endregion
     # region bounties
     ToontownItemDefinition(ToontownItemName.BOUNTY, ItemClassification.progression_skip_balancing),
@@ -459,7 +461,8 @@ def get_item_groups():
     GARDENING = (
         ToontownItemName.GARDEN_KIT,
         ToontownItemName.GARDEN_SHOVEL,
-        ToontownItemName.GARDEN_WATERING_CAN
+        ToontownItemName.GARDEN_WATERING_CAN,
+        ToontownItemName.MISSING_CATALOG
     )
 
     REWARD_BUNDLES = (

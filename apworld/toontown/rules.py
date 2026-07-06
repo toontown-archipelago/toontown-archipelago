@@ -229,6 +229,13 @@ class Rule(Enum):
     GardenGagLevelFive = auto()
     GardenGagLevelSix = auto()
     GardenGagLevelSeven = auto()
+    AnyGagLevelOne = auto()
+    AnyGagLevelTwo = auto()
+    AnyGagLevelThree = auto()
+    AnyGagLevelFour = auto()
+    AnyGagLevelFive = auto()
+    AnyGagLevelSix = auto()
+    AnyGagLevelSeven = auto()
 
     ### Gag Rules ###
 

@@ -81,6 +81,11 @@ class GardenAI:
             self.notify.warning('Garden associated with unknown avatar %d, deleting...' % self.avId)
             return False
 
+        av = self.air.doId2do.get(self.avId)
+        flower_gardening = bool(
+            av and av.slotData.get('flower_gardening', av.slotData.get('estate_integration', False))
+        )
+
         houseIndex = estate.activeToons.index(self.avId)
         if self.WANT_FLOWERS:
             estateBoxIndex = 0
@@ -127,7 +132,7 @@ class GardenAI:
                                            growthLevel=growthLevel, generate=False)
                     zOffset = 1.5
                 else:
-                    obj = self.plantRandomFlower(flowerIndex)
+                    obj = self.plantRandomFlower(flowerIndex) if flower_gardening else None
                     zOffset = 1.5
                     if obj is None:
                         obj = self.placePlot(flowerIndex)
@@ -176,7 +181,8 @@ class GardenAI:
         if not av:
             print('GardenAI.plantRandomFlower: No avatar with avId %d, cannot plant flower.' % self.avId)
             return None
-        if av.slotData.get('estate_integration', False) and not av.getGardenStarted():
+        flower_gardening = av.slotData.get('flower_gardening', av.slotData.get('estate_integration', False))
+        if flower_gardening and not av.getGardenStarted():
             return None
 
         # Get the list of all possible flowers at the player's current shovel level.
@@ -264,16 +270,18 @@ class GardenAI:
         if not av:
             print('GardenAI.plantTree: No avatar with avId %d, cannot plant tree.' % self.avId)
             return
-        if av.slotData.get('estate_integration', False) and not av.getGardenStarted():
+        tree_gardening = av.slotData.get('tree_gardening', av.slotData.get('estate_integration', False))
+        if tree_gardening and not av.getGardenStarted():
             print('GardenAI.plantTree: Avatar %d has not unlocked gardening.' % self.avId)
             return
 
         track, level = GardenGlobals.getTreeTrackAndLevel(value)
-        max_gag_level = GardenGlobals.GardenKitAttributes[av.getGardenKit()]['max_gag_level']
-        if level > max_gag_level:
-            print('GardenAI.plantTree: Level %d exceeds max gag level %d for avatar with garden kit %d.' %
-                  (level, max_gag_level, av.getGardenKit()))
-            return
+        if tree_gardening:
+            max_gag_level = GardenGlobals.GardenKitAttributes[av.getGardenKit()]['max_gag_level']
+            if level > max_gag_level:
+                print('GardenAI.plantTree: Level %d exceeds max gag level %d for avatar with garden kit %d.' %
+                      (level, max_gag_level, av.getGardenKit()))
+                return
 
         if plot:
             if plot not in self.objects:

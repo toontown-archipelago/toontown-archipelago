@@ -54,6 +54,7 @@ from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..shtiker import CogPageGlobals
 from ..util.astron.AstronDict import AstronDict
 from apworld.toontown import locations
+from apworld.toontown.items import ITEM_NAME_TO_ID, ToontownItemName
 
 if simbase.wantPets:
     from toontown.pets import PetLookerAI, PetObserve
@@ -3661,7 +3662,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def b_setShovelSkill(self, skillLevel):
         self.sendGardenEvent()
-        if self.slotData.get('estate_integration', False):
+        if self.slotData.get('flower_gardening', self.slotData.get('estate_integration', False)):
             skillLevel = min(skillLevel, GardenGlobals.ShovelAttributes[self.shovel]['skillPts'] - 1)
             self.setShovelSkill(skillLevel)
             self.d_setShovelSkill(skillLevel)
@@ -3702,7 +3703,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def b_setWateringCanSkill(self, skillLevel):
         self.sendGardenEvent()
-        if self.slotData.get('estate_integration', False):
+        if self.slotData.get('flower_gardening', self.slotData.get('estate_integration', False)):
             skillLevel = min(skillLevel, GardenGlobals.WateringCanAttributes[self.wateringCan]['skillPts'] - 1)
             self.setWateringCanSkill(skillLevel)
             self.d_setWateringCanSkill(skillLevel)
@@ -4559,6 +4560,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Get a list of item IDs this toon has received via AP
     def getReceivedItems(self) -> List[Tuple[int, int]]:
         return self.receivedItems
+
+    def hasReceivedItem(self, itemName: ToontownItemName) -> bool:
+        itemId = ITEM_NAME_TO_ID[itemName.value]
+        return any(item[1] == itemId for item in self.receivedItems)
 
     # Tell the client what items we have received via AP
     def d_setReceivedItems(self, receivedItems: List[Tuple[int, int]]):

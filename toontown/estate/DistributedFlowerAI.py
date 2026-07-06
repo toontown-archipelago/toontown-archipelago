@@ -69,7 +69,7 @@ class DistributedFlowerAI(DistributedPlantBaseAI, FlowerBase):
                 # Give rewards
                 av.b_setShovelSkill(av.getShovelSkill() + self.getValue())
                 av.addFlowerToBasket(self.getSpecies(), self.getVariety())
-                if av.slotData.get('estate_integration', False):
+                if av.slotData.get('flower_gardening', av.slotData.get('estate_integration', False)):
                     location = util.flower_to_location(self.getSpecies(), self.getVariety())
                     av.addCheckedLocation(util.ap_location_name_to_id(location))
 

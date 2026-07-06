@@ -150,6 +150,8 @@ class LocationPage(ShtikerPage.ShtikerPage):
             # Do we need to track this location based on settings?
             if location_data.type in forbidden_location_types:
                 continue
+            if not self.is_enabled_estate_location(location_data):
+                continue
             # Do we already have this location?
             if util.ap_location_name_to_id(location_data.name.value) in checkedLocationIds:
                 continue
@@ -300,6 +302,51 @@ class LocationPage(ShtikerPage.ShtikerPage):
             forbidden_location_types.add(GAG_LOCATION_TYPES[omitted_track])
 
         return forbidden_location_types
+
+    def is_enabled_estate_location(self, location_data):
+        if location_data.type == locations.ToontownLocationType.GARDEN_FLOWER:
+            return base.localAvatar.slotData.get(
+                'flower_gardening',
+                base.localAvatar.slotData.get('estate_integration', False)
+            )
+
+        if location_data.type == locations.ToontownLocationType.CATALOG:
+            check_count = base.localAvatar.slotData.get('catalog_checks', 0)
+            return location_data.name in locations.CATALOG_LOCATIONS[:check_count]
+
+        if location_data.type != locations.ToontownLocationType.GARDEN_TREE:
+            return True
+
+        if not base.localAvatar.slotData.get(
+            'tree_gardening',
+            base.localAvatar.slotData.get('estate_integration', False)
+        ):
+            return False
+
+        slotData = base.localAvatar.slotData
+        level_location_names = {location_name for _, location_name, _, _ in locations.TREE_LEVEL_LOCATION_DATA}
+        track_locations = {
+            location_name: track
+            for track, _, location_name, _, _ in locations.TREE_LOCATION_DATA
+        }
+        behavior = slotData.get('tree_gardening_behavior', options.TreeGardeningBehavior.option_all_tracks)
+        if behavior == options.TreeGardeningBehavior.option_levels_only:
+            return location_data.name in level_location_names
+
+        if location_data.name in level_location_names:
+            return False
+
+        if behavior == options.TreeGardeningBehavior.option_random_track:
+            return track_locations.get(location_data.name) == slotData.get('tree_gardening_track', -1)
+
+        omitted_track = {
+            1: 1,
+            2: 3,
+            3: 4,
+            4: 5,
+            5: 6,
+        }.get(slotData.get('omit_gag', 0), -1)
+        return track_locations.get(location_data.name) != omitted_track
 
     def regenerateScrollList(self):
         selectedIndex = 0

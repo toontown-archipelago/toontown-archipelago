@@ -2,7 +2,7 @@ from typing import Union
 from apworld.toontown import consts, ToontownLocationName, LOCATION_DEFINITIONS
 from apworld.toontown.locations import TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS, MML_TASK_LOCATIONS, \
     TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS, EVENT_DEFINITIONS, ToontownLocationDefinition, get_location_def_from_name, \
-    FLOWER_LOCATION_BY_SPECIES_VARIETY, TREE_LOCATION_BY_TRACK_LEVEL, CATALOG_LOCATIONS
+    FLOWER_LOCATION_BY_SPECIES_VARIETY, TREE_LOCATION_BY_TRACK_LEVEL, TREE_LOCATION_BY_LEVEL, CATALOG_LOCATIONS
 from toontown.shtiker import CogPageGlobals
 from toontown.hood import ZoneUtil
 from toontown.toonbase import ToontownGlobals
@@ -217,6 +217,10 @@ def flower_to_location(species: int, variety: int) -> str:
 
 def garden_tree_to_location(track: int, level: int) -> str:
     return TREE_LOCATION_BY_TRACK_LEVEL[(track, level)].value
+
+
+def garden_tree_level_to_location(level: int) -> str:
+    return TREE_LOCATION_BY_LEVEL[level].value
 
 
 def catalog_check_to_location(check_index: int) -> str:

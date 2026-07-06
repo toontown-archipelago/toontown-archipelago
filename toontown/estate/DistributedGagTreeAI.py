@@ -80,6 +80,7 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
         return 'garden-%d-%d-%s' % (self.ownerDoId, typeIndex, string)
 
     def delete(self):
+        taskMgr.remove(self.uniqueName('auto-remove'))
         messenger.send(self.getEventName('remove'))
         self.ignoreAll()
         DistributedPlantBaseAI.delete(self)
@@ -141,28 +142,41 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
         self.d_setMovie(GardenGlobals.MOVIE_REMOVE)
 
         def handleRemove(task):
-            if not self.air:
-                return
-
-            plot = self.mgr.placePlot(self.getTreeIndex())
-            plot.setPlot(self.plot)
-            plot.setPos(self.getPos())
-            plot.setH(self.getH())
-            plot.setOwnerIndex(self.ownerIndex)
-            plot.generateWithRequired(self.zoneId)
-            plot.d_setMovie(GardenGlobals.MOVIE_FINISHREMOVING, avId)
-            plot.d_setMovie(GardenGlobals.MOVIE_CLEAR, avId)
-            self.air.writeServerEvent('remove-tree', avId, plot=self.plot)
-            self.requestDelete()
-            self.mgr.trees.remove(self)
-            mapData = list(map(list, self.mgr.data['trees']))
-            mapData[self.getTreeIndex()] = self.mgr.getNullPlant()
-            self.mgr.data['trees'] = mapData
-            self.mgr.update()
-            self.mgr.reconsiderAvatarOrganicBonus()
+            self.removeTree(avId)
             return task.done
 
         taskMgr.doMethodLater(7, handleRemove, self.uniqueName('do-remove'))
+
+    def removeTree(self, avId=None):
+        if not self.air:
+            return
+
+        plot = self.mgr.placePlot(self.getTreeIndex())
+        plot.setPlot(self.plot)
+        plot.setPos(self.getPos())
+        plot.setH(self.getH())
+        plot.setOwnerIndex(self.ownerIndex)
+        plot.generateWithRequired(self.zoneId)
+        if avId is not None:
+            plot.d_setMovie(GardenGlobals.MOVIE_FINISHREMOVING, avId)
+            plot.d_setMovie(GardenGlobals.MOVIE_CLEAR, avId)
+            self.air.writeServerEvent('remove-tree', avId, plot=self.plot)
+        else:
+            self.air.writeServerEvent('auto-remove-tree', self.ownerDoId, plot=self.plot)
+        self.requestDelete()
+        self.mgr.trees.discard(self)
+        mapData = list(map(list, self.mgr.data['trees']))
+        mapData[self.getTreeIndex()] = self.mgr.getNullPlant()
+        self.mgr.data['trees'] = mapData
+        self.mgr.update()
+        self.mgr.reconsiderAvatarOrganicBonus()
+
+    def scheduleAutoRemove(self, delay=30):
+        def handleAutoRemove(task):
+            self.removeTree()
+            return task.done
+
+        taskMgr.doMethodLater(delay, handleAutoRemove, self.uniqueName('auto-remove'))
 
     def doGrow(self, grown):
         maxGrowth = self.growthThresholds[2]

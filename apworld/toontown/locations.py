@@ -798,6 +798,13 @@ class ToontownLocationName(Enum):
     GARDEN_TREE_DROP_5 =                        "Gag Tree (Drop Level 5)"
     GARDEN_TREE_DROP_6 =                        "Gag Tree (Drop Level 6)"
     GARDEN_TREE_DROP_7 =                        "Gag Tree (Drop Level 7)"
+    GARDEN_TREE_LEVEL_1 =                       "Gag Tree (Level 1)"
+    GARDEN_TREE_LEVEL_2 =                       "Gag Tree (Level 2)"
+    GARDEN_TREE_LEVEL_3 =                       "Gag Tree (Level 3)"
+    GARDEN_TREE_LEVEL_4 =                       "Gag Tree (Level 4)"
+    GARDEN_TREE_LEVEL_5 =                       "Gag Tree (Level 5)"
+    GARDEN_TREE_LEVEL_6 =                       "Gag Tree (Level 6)"
+    GARDEN_TREE_LEVEL_7 =                       "Gag Tree (Level 7)"
     CATALOG_CHECK_1 =                           "Clarabelle's Cattlelog Check #1"
     CATALOG_CHECK_2 =                           "Clarabelle's Cattlelog Check #2"
     CATALOG_CHECK_3 =                           "Clarabelle's Cattlelog Check #3"
@@ -1411,9 +1418,29 @@ TREE_LOCATION_BY_TRACK_LEVEL = {
     for track, level, location_name, _, _ in TREE_LOCATION_DATA
 }
 
+TREE_LEVEL_LOCATION_DATA = [
+    (0, ToontownLocationName.GARDEN_TREE_LEVEL_1, Rule.AnyGagLevelOne, Rule.GardenGagLevelOne),
+    (1, ToontownLocationName.GARDEN_TREE_LEVEL_2, Rule.AnyGagLevelTwo, Rule.GardenGagLevelTwo),
+    (2, ToontownLocationName.GARDEN_TREE_LEVEL_3, Rule.AnyGagLevelThree, Rule.GardenGagLevelThree),
+    (3, ToontownLocationName.GARDEN_TREE_LEVEL_4, Rule.AnyGagLevelFour, Rule.GardenGagLevelFour),
+    (4, ToontownLocationName.GARDEN_TREE_LEVEL_5, Rule.AnyGagLevelFive, Rule.GardenGagLevelFive),
+    (5, ToontownLocationName.GARDEN_TREE_LEVEL_6, Rule.AnyGagLevelSix, Rule.GardenGagLevelSix),
+    (6, ToontownLocationName.GARDEN_TREE_LEVEL_7, Rule.AnyGagLevelSeven, Rule.GardenGagLevelSeven),
+]
+
+TREE_LOCATION_BY_LEVEL = {
+    level: location_name
+    for level, location_name, _, _ in TREE_LEVEL_LOCATION_DATA
+}
+
 GARDEN_TREE_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_TREE, ToontownRegionName.DG, [gag_rule, garden_rule])
     for _, _, location_name, gag_rule, garden_rule in TREE_LOCATION_DATA
+]
+
+GARDEN_TREE_LEVEL_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
+    ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_TREE, ToontownRegionName.DG, [gag_rule, garden_rule])
+    for _, location_name, gag_rule, garden_rule in TREE_LEVEL_LOCATION_DATA
 ]
 
 CATALOG_LOCATIONS = [
@@ -1904,7 +1931,7 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DROP_PIANO_UNLOCKED,          ToontownLocationType.DROP_GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSix]),
     ToontownLocationDefinition(ToontownLocationName.DROP_BOAT_UNLOCKED,           ToontownLocationType.DROP_GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSeven]),
     # endregion
-    ] + BOSS_LOCATION_DEFINITIONS + BOSS_EVENT_DEFINITIONS + GARDEN_FLOWER_LOCATION_DEFINITIONS + GARDEN_TREE_LOCATION_DEFINITIONS + CATALOG_LOCATION_DEFINITIONS
+    ] + BOSS_LOCATION_DEFINITIONS + BOSS_EVENT_DEFINITIONS + GARDEN_FLOWER_LOCATION_DEFINITIONS + GARDEN_TREE_LOCATION_DEFINITIONS + GARDEN_TREE_LEVEL_LOCATION_DEFINITIONS + CATALOG_LOCATION_DEFINITIONS
 
 LOCATION_NAME_TO_DEFINITION: dict[ToontownLocationName, ToontownLocationDefinition] = {
     locdef.name: locdef for locdef in LOCATION_DEFINITIONS
@@ -1923,7 +1950,9 @@ LOCATION_DESCRIPTIONS: Dict[str, str] = {
 
 FISH_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.FISHING]
 SHOP_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.PET_SHOP]
-GARDEN_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type in (ToontownLocationType.GARDEN_FLOWER, ToontownLocationType.GARDEN_TREE)]
+FLOWER_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GARDEN_FLOWER]
+GARDEN_TREE_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GARDEN_TREE]
+GARDEN_LOCATIONS = FLOWER_LOCATIONS + GARDEN_TREE_LOCATIONS
 
 TTC_TASK_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.TTC_TASKS]
 DD_TASK_LOCATIONS  = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.DD_TASKS]
@@ -1982,6 +2011,8 @@ def get_location_groups():
     "Fishing": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.region == ToontownRegionName.FISHING],
     "Pet Shops": [name.value for name in SHOP_LOCATIONS],
     "Gardening": [name.value for name in GARDEN_LOCATIONS],
+    "Flower Gardening": [name.value for name in FLOWER_LOCATIONS],
+    "Tree Gardening": [name.value for name in GARDEN_TREE_LOCATIONS],
     "Cattlelog": [name.value for name in CATALOG_LOCATIONS],
     "Gag Training": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.region == ToontownRegionName.TRAINING],
     "Cog Discovery": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GALLERY],

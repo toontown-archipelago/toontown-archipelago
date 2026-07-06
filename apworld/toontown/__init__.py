@@ -11,9 +11,9 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, KNOCK_KNOCK_LOCATION_TYPES, BOSS_LOCATION_TYPES, BOSS_EVENT_DEFINITIONS, \
-    CATALOG_LOCATIONS, get_location_groups
+    CATALOG_LOCATIONS, TREE_LOCATION_DATA, TREE_LEVEL_LOCATION_DATA, get_location_groups
 from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups, \
-    GagTrainingFrameBehavior
+    GagTrainingFrameBehavior, TreeGardeningBehavior
 from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
 from .fish import FishProgression, FishChecks
@@ -61,6 +61,7 @@ class ToontownWorld(World):
         self.created_locations: list[ToontownLocationDefinition] = []
         self.valid_bounties = list()
         self.inserted_bounties = list()
+        self.tree_gardening_track = -1
 
     def set_rules(self):
         # Add location rules.
@@ -124,6 +125,8 @@ class ToontownWorld(World):
         # Randomize win conditions
         if "randomized" in self.options.win_condition.value:
             self.options.win_condition.value = self.randomize_win_condition(self.options.win_condition.value)
+
+        self.tree_gardening_track = self.get_random_tree_gardening_track()
 
         startingOptionToAccess = {
             StartingTaskOption.option_ttc: ToontownItemName.TTC_ACCESS,
@@ -235,6 +238,8 @@ class ToontownWorld(World):
         for i, location_data in enumerate(LOCATION_DEFINITIONS):
             # Do we skip this location generation?
             if location_data.type in forbidden_location_types:
+                continue
+            if not self.is_enabled_estate_location(location_data):
                 continue
             if location_data.name in CATALOG_LOCATIONS:
                 if CATALOG_LOCATIONS.index(location_data.name) >= self.options.catalog_checks.value:
@@ -641,12 +646,17 @@ class ToontownWorld(World):
         else:
             self.multiworld.push_precollected(item)
 
-        if self.options.estate_integration.value:
+        if self.options.flower_gardening.value or self.options.tree_gardening.value:
             for _ in range(4):
                 pool.append(self.create_item(ToontownItemName.GARDEN_KIT.value))
+
+        if self.options.flower_gardening.value:
             for _ in range(3):
                 pool.append(self.create_item(ToontownItemName.GARDEN_SHOVEL.value))
                 pool.append(self.create_item(ToontownItemName.GARDEN_WATERING_CAN.value))
+
+        if self.options.need_catalog.value and self.options.catalog_checks.value > 0:
+            pool.append(self.create_item(ToontownItemName.MISSING_CATALOG.value))
 
         # Fill the rest of the room with junk.
         junk: int = len(self.multiworld.get_unfilled_locations(self.player)) - len(pool)
@@ -792,8 +802,13 @@ class ToontownWorld(World):
             "slot_sync_gag_experience": self.options.slot_sync_gag_experience.value,
             "pet_shop_display": self.options.pet_shop_display.value,
             "task_reward_display": self.options.task_reward_display.value,
-            "estate_integration": self.options.estate_integration.value,
-            "catalog_checks": self.options.catalog_checks.value if self.options.estate_integration.value else 0,
+            "estate_integration": self.options.flower_gardening.value or self.options.tree_gardening.value or self.options.catalog_checks.value > 0,
+            "flower_gardening": self.options.flower_gardening.value,
+            "tree_gardening": self.options.tree_gardening.value,
+            "tree_gardening_behavior": self.options.tree_gardening_behavior.value,
+            "tree_gardening_track": self.tree_gardening_track,
+            "catalog_checks": self.options.catalog_checks.value,
+            "need_catalog": self.options.need_catalog.value,
             "want_cgc_mazes": self.options.want_cgc_mazes.value,
             "local_itempool": local_itempool,
             "local_locations": local_locations,
@@ -959,6 +974,54 @@ class ToontownWorld(World):
         result += rng.sample(choices, k=min(randomized, len(choices)))
         return result
 
+    def get_omitted_tree_track(self) -> int:
+        return {
+            1: 1,
+            2: 3,
+            3: 4,
+            4: 5,
+            5: 6,
+        }.get(self.options.omit_gag.value, -1)
+
+    def get_random_tree_gardening_track(self) -> int:
+        if self.options.tree_gardening_behavior.value != TreeGardeningBehavior.option_random_track:
+            return -1
+        tracks = list(range(7))
+        omitted_track = self.get_omitted_tree_track()
+        if omitted_track in tracks:
+            tracks.remove(omitted_track)
+        return self.multiworld.random.choice(tracks)
+
+    def is_enabled_estate_location(self, location_data: ToontownLocationDefinition) -> bool:
+        if location_data.type == ToontownLocationType.GARDEN_FLOWER:
+            return self.options.flower_gardening.value
+
+        if location_data.type == ToontownLocationType.CATALOG:
+            return self.options.catalog_checks.value > 0
+
+        if location_data.type != ToontownLocationType.GARDEN_TREE:
+            return True
+
+        if not self.options.tree_gardening.value:
+            return False
+
+        level_location_names = {location_name for _, location_name, _, _ in TREE_LEVEL_LOCATION_DATA}
+        track_locations = {
+            location_name: track
+            for track, _, location_name, _, _ in TREE_LOCATION_DATA
+        }
+        behavior = self.options.tree_gardening_behavior.value
+        if behavior == TreeGardeningBehavior.option_levels_only:
+            return location_data.name in level_location_names
+
+        if location_data.name in level_location_names:
+            return False
+
+        if behavior == TreeGardeningBehavior.option_random_track:
+            return track_locations.get(location_data.name) == self.tree_gardening_track
+
+        return track_locations.get(location_data.name) != self.get_omitted_tree_track()
+
     def get_disabled_location_types(self) -> set[ToontownLocationType]:
         """
         Returns a set of disabled location types.
@@ -1033,9 +1096,11 @@ class ToontownWorld(World):
         if omitted_track != 0:
             forbidden_location_types.add(GAG_LOCATION_TYPES[omitted_track])
 
-        if not self.options.estate_integration.value:
+        if self.options.catalog_checks.value <= 0:
             forbidden_location_types.add(ToontownLocationType.CATALOG)
+        if not self.options.flower_gardening.value:
             forbidden_location_types.add(ToontownLocationType.GARDEN_FLOWER)
+        if not self.options.tree_gardening.value:
             forbidden_location_types.add(ToontownLocationType.GARDEN_TREE)
 
         return forbidden_location_types

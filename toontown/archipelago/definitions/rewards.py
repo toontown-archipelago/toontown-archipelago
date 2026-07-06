@@ -1029,6 +1029,18 @@ class GardenWateringCanReward(APReward):
         av.b_setWateringCan(min(av.getWateringCan() + 1, GardenGlobals.MAX_WATERING_CANS - 1))
 
 
+class MissingCatalogReward(APReward):
+    def formatted_header(self):
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Found your "),
+            MinimalJsonMessagePart("Missing Catalog", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        pass
+
+
 class IgnoreReward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
@@ -1070,6 +1082,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.GARDEN_KIT.value: GardenKitReward(),
     ToontownItemName.GARDEN_SHOVEL.value: GardenShovelReward(),
     ToontownItemName.GARDEN_WATERING_CAN.value: GardenWateringCanReward(),
+    ToontownItemName.MISSING_CATALOG.value: MissingCatalogReward(),
     ToontownItemName.TTC_ACCESS.value: AccessKeyReward(AccessKeyReward.TOONTOWN_CENTRAL),
     ToontownItemName.DD_ACCESS.value: AccessKeyReward(AccessKeyReward.DONALDS_DOCK),
     ToontownItemName.DG_ACCESS.value: AccessKeyReward(AccessKeyReward.DAISYS_GARDENS),

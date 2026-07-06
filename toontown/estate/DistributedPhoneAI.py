@@ -4,6 +4,7 @@ from datetime import datetime
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.ClockDelta import globalClockDelta
 
+from apworld.toontown.items import ToontownItemName
 from toontown.catalog import CatalogItem
 from toontown.catalog.CatalogInvalidItem import CatalogInvalidItem
 from toontown.catalog.CatalogItemList import CatalogItemList
@@ -81,6 +82,11 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
 
         av = self.air.doId2do.get(avId)
         if not av:
+            return
+
+        if av.slotData.get('need_catalog', False) and not av.hasReceivedItem(ToontownItemName.MISSING_CATALOG):
+            av.d_setSystemMessage(0, 'You need your missing cattlelog before using the phone.')
+            self.sendUpdateToAvatarId(avId, 'freeAvatar', [])
             return
 
         if not any((av.weeklyCatalog, av.backCatalog, av.monthlyCatalog)):

@@ -734,23 +734,54 @@ class RandomShopCostToggle(Toggle):
     default = False
 
 
-class EstateIntegration(Toggle):
+class FlowerGardening(Toggle):
     """
-    Enable estate checks and gardening progression.
-    Adds progressive Garden Kits, Shovels, and Watering Cans, flower checks, gag tree checks, and cattlelog checks.
+    Enable flower gardening checks.
+    Adds progressive Garden Kits, Shovels, and Watering Cans, and makes flower varieties Archipelago checks.
     """
-    display_name = "Estate Integration"
+    display_name = "Flower Gardening"
     default = False
+
+
+class TreeGardening(Toggle):
+    """
+    Enable gag tree gardening checks.
+    Adds progressive Garden Kits and makes planting gag trees Archipelago checks.
+    """
+    display_name = "Tree Gardening"
+    default = False
+
+
+class TreeGardeningBehavior(Choice):
+    """
+    Determines which gag tree checks are generated.
+    all-tracks: Plant every gag level for every non-omitted track.
+    random-track: Plant every gag level for one randomly selected non-omitted track.
+    levels-only: Plant each gag level once; the track does not matter.
+    """
+    display_name = "Tree Gardening Behavior"
+    option_all_tracks = 0
+    option_random_track = 1
+    option_levels_only = 2
+    default = 0
 
 
 class CatalogChecks(Range):
     """
-    How many Archipelago checks Clarabelle's cattlelog offers when estate integration is enabled.
+    How many Archipelago checks Clarabelle's cattlelog offers.
     """
     display_name = "Cattlelog Checks"
     range_start = 0
     range_end = 7
     default = 6
+
+
+class NeedCatalog(Toggle):
+    """
+    Add a Missing Catalog item that is required to interact with the phone.
+    """
+    display_name = "Need Catalog"
+    default = False
 
 
 class SeedGenerationTypeOption(Choice):
@@ -1038,8 +1069,11 @@ class ToontownOptions(PerGameCommonOptions):
     pet_shop_display: PetShopRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
     random_prices: RandomShopCostToggle
-    estate_integration: EstateIntegration
+    flower_gardening: FlowerGardening
+    tree_gardening: TreeGardening
+    tree_gardening_behavior: TreeGardeningBehavior
     catalog_checks: CatalogChecks
+    need_catalog: NeedCatalog
 
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
@@ -1053,7 +1087,8 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
         StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, StartMoneyOption,
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption, RandomShopCostToggle, EstateIntegration, CatalogChecks
+        RingLinkOption, RandomShopCostToggle, FlowerGardening, TreeGardening, TreeGardeningBehavior,
+        CatalogChecks, NeedCatalog
     ]),
     OptionGroup("Win Condition", [
         WinConditions, WinConditionRandomizedWeb, OmitRandomWinConditions,
