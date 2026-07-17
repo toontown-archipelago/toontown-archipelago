@@ -131,6 +131,10 @@ class SummonCogDialog(DirectFrame, StateData.StateData):
         self.summonInvasionButton.hide()
 
     def issueSummons(self, summonsType):
+        if self.popup:
+            return
+
+        self.disableButtons()
         if summonsType == 'single':
             text = TTL.SummonDlgSingleConf
         elif summonsType == 'building':
@@ -140,6 +144,8 @@ class SummonCogDialog(DirectFrame, StateData.StateData):
         text = text % self.suitFullName
 
         def handleResponse(resp):
+            if not self.popup:
+                return
             self.popup.cleanup()
             self.popup = None
             self.reparentTo(self.getParent(), NO_FADE_SORT_INDEX)
@@ -152,6 +158,8 @@ class SummonCogDialog(DirectFrame, StateData.StateData):
                 base.localAvatar.d_reqCogSummons(self.summonsType, self.suitIndex)
                 self.hideSummonButtons()
                 self.cancel['state'] = DGG.DISABLED
+            else:
+                self.enableButtons()
             return
 
         self.reparentTo(self.getParent(), 0)
