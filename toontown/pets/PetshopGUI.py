@@ -430,7 +430,7 @@ class PetshopGUI(DirectObject):
             # Set up the Doodle Name display
             doodleName = self.getCheckName()
             if doodleName:
-                doodleName = doodleName[:(doodleName.index("(")+-2)]
+                doodleName = doodleName[:(doodleName.index("(")-1)]
                 self.doodleName['text'] = doodleName
             self.descLabel = DirectLabel(parent=self, pos=(-0.4, 0, 0.72), relief=None, scale=0.05, text=self.petDesc[self.curPet], text_align=TextNode.ALeft, text_wordwrap=TTLocalizer.PGUIwordwrap, text_scale=TTLocalizer.PGUIdescLabel)
             self.okButton['state'] = DGG.NORMAL
