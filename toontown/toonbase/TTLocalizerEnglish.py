@@ -10020,7 +10020,7 @@ OptionNames = {
     "sfx-volume": "Sound Effects Volume",
     "toon-chat-sounds": "Toon Chat Sounds",
     "random-music": "Randomize Music",
-    "random-music-style": "Music Selection",
+    "random-music-style": "Randomized Music Mode",
     'ap-sounds': "AP Item Sounds",
     'refresh-audio': "Refresh Audio",
 }
