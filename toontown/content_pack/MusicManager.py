@@ -1,5 +1,5 @@
 from toontown.toonbase import ToontownGlobals
-from panda3d.core import DecalEffect, VirtualFileSystem
+from panda3d.core import DecalEffect, VirtualFileSystem, Filename
 from direct.interval.IntervalGlobal import *
 import json
 import random
@@ -9,6 +9,7 @@ class MusicManager:
     def __init__(self):
         fileSystem = VirtualFileSystem.getGlobalPtr()
         self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
+        self.musicJsonCopy = self.musicJson.copy()
         self.previousMusic = None
         self.currentMusic = {}
         self.currentMusicInfo = {}
@@ -70,44 +71,32 @@ class MusicManager:
         if getattr(base, 'randomMusic', False):
             track_name = self._getTrackName(json_code_path)
             if getattr(base, 'localAvatar', None):
-                from toontown.archipelago.definitions import color_profile
                 from libotp.nametag.WhisperGlobals import WhisperType
-                base.localAvatar.displayWhisper(0, "Now Playing: " + track_name, WhisperType.WTSystem, colorProfileOverride=color_profile.PURPLE)
+                base.localAvatar.setSystemMessage(0, "Now Playing: " + track_name, whisperType=WhisperType.WTEmote)
 
     def _loadMusicPacks(self):
         import os
         packs_dir = "resources/music_packs"
         if not os.path.exists(packs_dir):
             try:
+                print("Making directory at " + packs_dir)
                 os.makedirs(packs_dir)
             except Exception:
                 pass
             return
         try:
-            for item in os.listdir(packs_dir):
-                item_path = os.path.join(packs_dir, item)
-                if os.path.isdir(item_path):
-                    for f in os.listdir(item_path):
-                        if f.lower().endswith(".json"):
-                            json_path = os.path.join(item_path, f)
-                            try:
-                                with open(json_path, 'r') as json_file:
-                                    pack_data = json.load(json_file)
-                                global_music = pack_data.get("global_music", {})
-                                for key, paths in global_music.items():
-                                    resolved_paths = []
-                                    for p in paths:
-                                        p_cleaned = p.replace("\\", "/")
-                                        if not os.path.exists(p_cleaned):
-                                            local_p = os.path.join(item_path, p).replace("\\", "/")
-                                            if os.path.exists(local_p):
-                                                p_cleaned = local_p
-                                        resolved_paths.append(p_cleaned)
-                                    self.musicJson.setdefault("global_music", {})[key] = resolved_paths
-                            except Exception:
-                                pass
-        except Exception:
-            pass
+            for root, folders, files in os.walk(packs_dir):
+                for f in files:
+                    if f.lower().endswith(".json"):
+                        json_path = Filename(os.path.join(root, f).replace("\\", "/"))
+                        fileSystem = VirtualFileSystem.getGlobalPtr()
+                        pack_data = json.loads(fileSystem.readFile(json_path, True))
+                        for key in list(pack_data.keys()):
+                            print(key)
+                            if key in list(self.musicJson.get("global_music", {}).keys()):
+                                self.musicJson.get("global_music", {})[key] = pack_data[key]
+        except Exception as e:
+            print(e)
 
     def _getTrackPool(self):
         import builtins
@@ -119,12 +108,13 @@ class MusicManager:
                     in_game_paths.append(p)
         import os
         custom_paths = []
-        custom_dir = "resources/custom_music"
+        custom_dir = "resources/music_packs"
         if os.path.exists(custom_dir):
             try:
-                for f in os.listdir(custom_dir):
-                    if f.lower().endswith((".ogg", ".mp3", ".wav", ".flac", ".wma", ".aac", ".m4a", ".opus")):
-                        custom_paths.append(os.path.join(custom_dir, f).replace("\\", "/"))
+                for root, folders, files in os.walk(custom_dir):
+                    for f in files:
+                        if f.lower().endswith((".ogg", ".mp3", ".wav", ".flac", ".wma", ".aac", ".m4a", ".opus")):
+                            custom_paths.append(os.path.join(root, f).replace("\\", "/"))
             except Exception:
                 pass
         style = getattr(base, 'randomMusicStyle', 'Mix')

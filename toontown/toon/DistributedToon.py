@@ -329,7 +329,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setSeed(self, seed):
         self.seed = seed
         if self.isLocal:
-            if getattr(base, 'contentPackMusicManager', None):
+            if getattr(base, 'contentPackMusicManager', None) and base.randomMusic:
                 base.contentPackMusicManager.setRandomizedMusic()
                 base.refreshRandomMusic()
 
