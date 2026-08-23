@@ -1356,10 +1356,10 @@ def _flower_rules(bean_count: int) -> list[Rule]:
     if bean_count <= 2:
         return [Rule.GardenKitOne]
     if bean_count <= 4:
-        return [Rule.GardenKitTwo, Rule.GardenShovelOne, Rule.GardenCanOne]
+        return [Rule.GardenKitTwo, Rule.GardenShovelOne]
     if bean_count <= 6:
-        return [Rule.GardenKitThree, Rule.GardenShovelTwo, Rule.GardenCanTwo]
-    return [Rule.GardenKitFour, Rule.GardenShovelThree, Rule.GardenCanThree]
+        return [Rule.GardenKitThree, Rule.GardenShovelTwo]
+    return [Rule.GardenKitFour, Rule.GardenShovelThree]
 
 
 GARDEN_FLOWER_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
