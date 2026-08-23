@@ -723,7 +723,17 @@ class PetShopRewardDisplayOption(RewardDisplayOption):
     """
     display_name = "Pet Shop Rewards"
 
-
+class CatalogRewardDisplayOption(RewardDisplayOption):
+    """
+    Controls Display of Cattlelog Rewards.
+    "hidden": hides what a multiworld reward will be, instead it'll name the check as the reward.
+    "owner": hides what the item is, but shows who it's for.
+    "class": hides what the item is, but shows who it's for, and what classification it has.
+    "shown": (default) Tells you what the reward will be when you're looking at the check.
+    "auto hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    """
+    display_name = "Cattlelog Rewards"
+    
 class RandomShopCostToggle(Toggle):
     """
     Enable to turn on the pet shop price randomization.
@@ -1068,6 +1078,7 @@ class ToontownOptions(PerGameCommonOptions):
     ring_link: RingLinkOption
     cog_dmg_rando: DamageRandoOption
     pet_shop_display: PetShopRewardDisplayOption
+    catalog_display: CatalogRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
     random_prices: RandomShopCostToggle
     flower_gardening: FlowerGardening
@@ -1079,7 +1090,7 @@ class ToontownOptions(PerGameCommonOptions):
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
         ProgressionBalancing, Accessibility, SyncJellybeans, 
-        SyncGagExp, PetShopRewardDisplayOption, TaskRewardDisplayOption,
+        SyncGagExp, PetShopRewardDisplayOption, CatalogRewardDisplayOption, TaskRewardDisplayOption,
         TrapPercentOption
     ]),
     OptionGroup("Toon Settings", [

@@ -18,7 +18,16 @@ class CatalogAPCheckItem(CatalogItem.CatalogItem):
         return "Cattlelog Check #%d" % (self.checkIndex + 1)
 
     def getDisplayName(self):
-        return self.getName()
+        av = None
+        try:
+            av = base.localAvatar
+        except (AttributeError, NameError):
+            return self.getName()
+
+        if not av or not av.hasCachedLocationReward(self.getLocationId()):
+            return self.getName()
+
+        return av.getCachedLocationReward(self.getLocationId())
 
     def getLocationName(self):
         return util.catalog_check_to_location(self.checkIndex)

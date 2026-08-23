@@ -798,6 +798,7 @@ class ToontownWorld(World):
             "slot_sync_jellybeans": self.options.slot_sync_jellybeans.value,
             "slot_sync_gag_experience": self.options.slot_sync_gag_experience.value,
             "pet_shop_display": self.options.pet_shop_display.value,
+            "catalog_display": self.options.catalog_display.value,
             "task_reward_display": self.options.task_reward_display.value,
             "estate_integration": self.options.flower_gardening.value or self.options.tree_gardening.value or self.options.catalog_checks.value > 0,
             "flower_gardening": self.options.flower_gardening.value,

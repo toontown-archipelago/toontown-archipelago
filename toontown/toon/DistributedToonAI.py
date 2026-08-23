@@ -4627,12 +4627,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Called to announce to Archipelago that we need to know what this location ID is so we can receive
     # A LocationInfo packet and keep track of it
-    def scoutLocation(self, location: int):
+    def scoutLocation(self, location: Union[int, str, Any]):
         self.scoutLocations([location])
 
     # Called to announce to Archipelago that we need to know what these location IDs are so we can receive
     # A LocationInfo packet and keep track all of them and know what item is present for this check upon completion
-    def scoutLocations(self, locations: List[int]):
+    def scoutLocations(self, locations: List[Union[int, str, Any]]):
         if self.archipelago_session:
             self.archipelago_session.scout(locations)
 
