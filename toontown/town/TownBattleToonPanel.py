@@ -26,6 +26,7 @@ class TownBattleToonPanel(DirectFrame):
         self.undecidedText = DirectLabel(parent=self, relief=None, pos=(0.1, 0, 0.015), text=TTLocalizer.TownBattleUndecided, text_scale=0.1)
         self.healthText = DirectLabel(parent=self, text='', pos=(-0.06, 0, -0.075), text_scale=0.055)
         self.gagDamageText = DirectLabel(parent=self, relief=None, pos=(0, 0, 0.15), text='', text_scale=.12, text_font=getSignFont(), text_fg=(1, 0, 0, 1))
+        self.kbDamageText = DirectLabel(parent=self.gagDamageText, relief=None, pos=(0, 0, 0.105), text='', text_scale=.07, text_font=getSignFont(), text_fg=(1, 0.5, 0, 1))
         self.hpChangeEvent = None
         self.gagNode = self.attachNewNode('gag')
         self.gagNode.setPos(0.1, 0, 0.03)
@@ -84,7 +85,7 @@ class TownBattleToonPanel(DirectFrame):
             self.laffMeter.adjustFace(hp, self.avatar.maxHp)
         self.setHealthText(hp, maxHp)
 
-    def setValues(self, index, track, level = None, numTargets = None, targetIndex = None, localNum = None, numSounds=1, highestLevel=0):
+    def setValues(self, index, track, level = None, numTargets = None, targetIndex = None, localNum = None, numSounds=1, highestLevel=0, highestKb=0):
         self.notify.debug('Toon Panel setValues: index=%s track=%s level=%s numTargets=%s targetIndex=%s localNum=%s' % (index,
          track,
          level,
@@ -98,6 +99,7 @@ class TownBattleToonPanel(DirectFrame):
         self.gagNode.hide()
         self.whichText.hide()
         self.gagDamageText.hide()
+        self.kbDamageText.hide()
         self.passNode.hide()
         if self.hasGag:
             self.gag.removeNode()
@@ -136,6 +138,14 @@ class TownBattleToonPanel(DirectFrame):
                     dmg += addedDmg
                 soundMults = [100, 80, 70, 60]
                 dmg = math.ceil(dmg * (soundMults[numSounds-1] / 100))
+            if track in (THROW_TRACK, SQUIRT_TRACK):
+                if highestKb > 0:
+                    ogDamage = getAvOriginalDamage(track, level, self.avatar.experience,
+                                                   toonDamageMultiplier=self.avatar.getDamageMultiplier(),
+                                                   organicBonus=(self.avatar.trackBonusLevel[track] >= level))
+                    kbDamage = math.ceil(ogDamage * (highestKb / 100))
+                    self.kbDamageText['text'] = "-" + str(kbDamage)
+                    self.kbDamageText.show()
             operator = '+' if track == HEAL_TRACK else '-'
             if track == LURE_TRACK:
                 operator = '%'
