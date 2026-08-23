@@ -281,6 +281,30 @@ Toontown:
   # Range: 0 to 100
   fish_pity: 25
 
+  ### Estate/Gardening Settings ###
+
+  # Enable flower gardening checks.
+  # Adds progressive Garden Kits, Shovels, and Watering Cans as items. Makes flower varieties Archipelago checks.
+  flower_gardening: 'false'
+
+  # Enable gag tree gardening checks.
+  # Adds progressive Garden Kits as items (if flower gardening isn't already enabled). Makes planting gag trees Archipelago checks.
+  tree_gardening: 'false'
+
+  # Determines which gag tree checks are generated, if tree_gardening is enabled.
+  # all-tracks: Plant every gag level for every non-omitted track.
+  # random-track: Plant every gag level for one randomly selected non-omitted track.
+  # levels-only: Plant each gag level once; the track does not matter.
+  tree_gardening_behavior: 'levels-only'
+
+  # How many Archipelago checks Clarabelle's Cattlelog offers.
+  # Range: 0 to 7
+  catalog_checks: 6
+
+  # Adds a Missing Cattlelog to the item pool to lock cattlelog purchases behind them
+  # NOTE: If catalog_checks is set to 0, the item will not be added to the pool
+  need_catalog: 'false'
+
   ### Data Sync Settings ###
 
   # Enable to sync Jellybeans between toons on the same slot.

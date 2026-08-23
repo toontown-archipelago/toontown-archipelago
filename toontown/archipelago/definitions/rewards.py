@@ -1033,7 +1033,7 @@ class MissingCatalogReward(APReward):
     def formatted_header(self):
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("Found your "),
-            MinimalJsonMessagePart("Missing Catalog", color='green'),
+            MinimalJsonMessagePart("Missing Cattlelog", color='green'),
             MinimalJsonMessagePart("!"),
         ])
 

@@ -737,7 +737,7 @@ class RandomShopCostToggle(Toggle):
 class FlowerGardening(Toggle):
     """
     Enable flower gardening checks.
-    Adds progressive Garden Kits, Shovels, and Watering Cans, and makes flower varieties Archipelago checks.
+    Adds progressive Garden Kits, Shovels, and Watering Cans as items. Makes flower varieties Archipelago checks.
     """
     display_name = "Flower Gardening"
     default = False
@@ -746,7 +746,7 @@ class FlowerGardening(Toggle):
 class TreeGardening(Toggle):
     """
     Enable gag tree gardening checks.
-    Adds progressive Garden Kits and makes planting gag trees Archipelago checks.
+    Adds progressive Garden Kits as items (if flower gardening isn't already enabled). Makes planting gag trees Archipelago checks.
     """
     display_name = "Tree Gardening"
     default = False
@@ -754,7 +754,7 @@ class TreeGardening(Toggle):
 
 class TreeGardeningBehavior(Choice):
     """
-    Determines which gag tree checks are generated.
+    Determines which gag tree checks are generated, if tree_gardening is enabled.
     all-tracks: Plant every gag level for every non-omitted track.
     random-track: Plant every gag level for one randomly selected non-omitted track.
     levels-only: Plant each gag level once; the track does not matter.
@@ -763,12 +763,12 @@ class TreeGardeningBehavior(Choice):
     option_all_tracks = 0
     option_random_track = 1
     option_levels_only = 2
-    default = 0
+    default = 2
 
 
 class CatalogChecks(Range):
     """
-    How many Archipelago checks Clarabelle's cattlelog offers.
+    How many Archipelago checks Clarabelle's Cattlelog offers.
     """
     display_name = "Cattlelog Checks"
     range_start = 0
@@ -778,9 +778,10 @@ class CatalogChecks(Range):
 
 class NeedCatalog(Toggle):
     """
-    Add a Missing Catalog item that is required to interact with the phone.
+    Adds a Missing Cattlelog to the item pool to lock cattlelog purchases behind them
+    NOTE: If catalog_checks is set to 0, the item will not be added to the pool
     """
-    display_name = "Need Catalog"
+    display_name = "Need Missing Cattlelog"
     default = False
 
 

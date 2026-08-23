@@ -3925,7 +3925,7 @@ class EstateAPTest(MagicWord):
         if operation in ('missingcatalog', 'missing-catalog'):
             self._applyGardenReward(toon, items.ToontownItemName.MISSING_CATALOG, 1)
             self._deliverCatalog(toon)
-            return f"Gave {toon.getName()} the Missing Catalog reward."
+            return f"Gave {toon.getName()} the Missing Cattlelog reward."
 
         if operation in ('catalog', 'cattlelog'):
             catalogChecks = self._getInt(argument, toon.slotData.get('catalog_checks', 7))

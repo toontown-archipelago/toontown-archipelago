@@ -127,7 +127,7 @@ class ToontownItemName(enum.Enum):
     GARDEN_KIT = "Progressive Garden Kit"
     GARDEN_SHOVEL = "Progressive Shovel"
     GARDEN_WATERING_CAN = "Progressive Watering Can"
-    MISSING_CATALOG = "Missing Catalog"
+    MISSING_CATALOG = "Missing Cattlelog"
 
     ### Bounty Items ###
     BOUNTY = "Bounty"
