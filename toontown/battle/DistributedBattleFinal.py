@@ -71,7 +71,7 @@ class DistributedBattleFinal(DistributedBattleBase.DistributedBattleBase):
     def setBattleSide(self, battleSide):
         self.battleSide = battleSide
 
-    def setMembers(self, suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, suitsImmune, timestamp):
+    def setMembers(self, suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, suitsImmune, timestamp, highestKb):
         if self.battleCleanedUp():
             return
         oldtoons = DistributedBattleBase.DistributedBattleBase.setMembers(self, suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, suitsImmune, timestamp)

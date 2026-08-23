@@ -40,6 +40,8 @@ class QuestBookPoster(QuestPoster):
             self.questProgress.setPos(0, 0, -0.12)
             self.rewardText.setScale(1.33)
             self.questProgress.setScale(0.28)
+            self.checkText.setPos(-0.305, 0, 0.175)
+            self.checkText.setScale(1.2)
         else:
             optiondefs = (('relief', None, None),
              ('reverse', 0, None),

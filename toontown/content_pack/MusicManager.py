@@ -24,12 +24,17 @@ class MusicManager:
         base = getattr(builtins, 'base', None)
         if self.previousMusic == json_code and not randomToggle:
             return
-        if self.currentMusic and interrupt:
-            self.stopMusic()
         possible_paths = self.musicJson.get('global_music', {}).get(json_code, [])
+        # Don't stop when music paths being called are the same AND rando isn't on
+        # Checking for self.currentMusic will catch cases where the music is force stopped anyway (entering tunnels), to just start the track anyways
+        if self.storedMusicInfo and self.currentMusic:
+            if self.storedMusicInfo.get(list(self.storedMusicInfo.keys())[0]).get("path", []) == possible_paths and not base.randomMusic:
+                return
         self.storedMusicInfo = {
             json_code: {"looping": looping, "volume": volume, "interrupt": interrupt, "time": time, "path": possible_paths}
         }
+        if self.currentMusic and interrupt:
+            self.stopMusic()
         self.previousMusic = json_code
         if getattr(base, 'randomMusic', False):
             is_wild = False
