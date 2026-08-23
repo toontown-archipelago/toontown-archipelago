@@ -67,6 +67,7 @@ class Settings:
         'battle-speed': 2,
         'new-popup': True,
         'random-music': False,
+        'random-music-style': 'Mix',
         "archipelago-textsize": 0.5,
         "archipelago-log-bg": False,
         'boss-alerts': True,

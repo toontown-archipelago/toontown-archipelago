@@ -209,6 +209,7 @@ class ToonBase(OTPBase.OTPBase):
         # do they want laff meter on or off?
         self.laffMeterDisplay = self.settings.get('laff-display')
         self.randomMusic = self.settings.get("random-music")
+        self.randomMusicStyle = self.settings.get("random-music-style")
         self.newPopup = self.settings.get("new-popup")
         self.discord = DiscordRPC()
         self.discord.launching()
@@ -777,6 +778,8 @@ class ToonBase(OTPBase.OTPBase):
             currentMusicInfo = self.contentPackMusicManager.getCurMusicInfo()  # this will return a dict with the current music, the value of each being data like looping, volume, etc.
             normalMusicInfo = self.contentPackMusicManager.getNormalMusicInfo()
             musicJson = self.contentPackMusicManager.musicJson
+        if getattr(self, "contentPackMusicManager", None):
+            self.contentPackMusicManager.setRandomizedMusic()
         # Play the music again
         if musicJson:
             self.contentPackMusicManager.stopMusic()
