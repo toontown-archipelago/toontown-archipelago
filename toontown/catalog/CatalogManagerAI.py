@@ -29,7 +29,7 @@ class CatalogManagerAI(DistributedObjectAI):
         check_count = av.slotData.get('catalog_checks', 0)
         if check_count > 0:
             mailboxContents = av.mailboxNotify
-            currentWeek = av.getCatalogSchedule()[0] + 1
+            currentWeek = max(av.getCatalogSchedule()[0], 1)
             nextWeek = time.time() + 604800
             if av.slotData.get('need_catalog', False) and not av.hasReceivedItem(ToontownItemName.MISSING_CATALOG):
                 catalogItems = []

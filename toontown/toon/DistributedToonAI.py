@@ -4552,6 +4552,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def b_setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
         self.setReceivedItems(receivedItems)
         self.d_setReceivedItems(receivedItems)
+        if self.slotData.get('catalog_checks', 0) > 0:
+            self.refreshAPCatalog()
 
     # Set the AP items this toon has received but only server side
     def setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
@@ -4715,13 +4717,24 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.d_setSlotData(slotData)
 
     def setSlotData(self, slotData: dict):
+        oldCatalogChecks = self.slotData.get('catalog_checks', 0)
+        oldNeedCatalog = self.slotData.get('need_catalog', False)
         self.slotData = slotData
+        newCatalogChecks = self.slotData.get('catalog_checks', 0)
+        newNeedCatalog = self.slotData.get('need_catalog', False)
+        if newCatalogChecks > 0 and (oldCatalogChecks != newCatalogChecks or oldNeedCatalog != newNeedCatalog):
+            self.refreshAPCatalog()
 
     def getSlotData(self) -> list:
         return AstronDict.fromDict(self.slotData).toStruct()
 
     def d_setSlotData(self, slotData: AstronDict):
         self.sendUpdate('setSlotData', [slotData.toStruct()])
+
+    def refreshAPCatalog(self):
+        catalogManager = self.air.catalogManager
+        if catalogManager:
+            catalogManager.deliverCatalogFor(self)
 
     def setArchipelagoAuto(self, slotName: str, serverAddr: str):
         if not self.archipelago_session:

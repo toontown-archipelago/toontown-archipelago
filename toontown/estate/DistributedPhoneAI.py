@@ -89,6 +89,9 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
             self.sendUpdateToAvatarId(avId, 'freeAvatar', [])
             return
 
+        if av.slotData.get('catalog_checks', 0) > 0:
+            self.air.catalogManager.deliverCatalogFor(av)
+
         if not any((av.weeklyCatalog, av.backCatalog, av.monthlyCatalog)):
             self.d_setMovie(PhoneGlobals.PHONE_MOVIE_EMPTY, avId)
             self.d_setMovie(PhoneGlobals.PHONE_MOVIE_CLEAR, 0)
