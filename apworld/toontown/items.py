@@ -528,6 +528,12 @@ def get_item_groups():
         ToontownItemName.DDL_JOKE_BOOK,
     )
 
+    GARDENING = (
+        ToontownItemName.GARDEN_KIT,
+        ToontownItemName.GARDEN_SHOVEL,
+        ToontownItemName.GARDEN_WATERING_CAN,
+    )
+
     ITEM_NAME_GROUPS_OBJECT = {
         "Cog Disguises": COG_DISGUISES,
         "Facility Keys": FACILITY_KEY_ITEMS,
@@ -543,6 +549,7 @@ def get_item_groups():
         "Side Activity Keys": ACTIVITY_KEYS,
         "Task Capacity": TASK_CAPACITY,
         "Laff Boosts": LAFF_BOOSTS,
+        "Gardening Items": GARDENING,
         "Reward Bundles": REWARD_BUNDLES,
         "Heals": HEALS,
         "Jellybeans": JELLYBEANS,

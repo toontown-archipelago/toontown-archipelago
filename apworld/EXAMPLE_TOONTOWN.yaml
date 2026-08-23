@@ -411,6 +411,7 @@ Toontown:
   # Task Capacity - Task capacity upgrades
   # Laff Boosts - All Laff Boosts
   # Joke Books - All Joke Books
+  # Gardening Items - All upgrades for gardening features
   # Reward Bundles - All Boss Reward items
   # Heals - All healing junk
   # Jellybeans - All Jellybean junk
@@ -485,6 +486,10 @@ Toontown:
   # Buildings - All Cog Building completion locations
   # Golfing - All minigolf locations
   # Racing - All racing locations
+  # Gardening - All Locations related to gardening
+  # Flower Gardening - All flower gardening locations
+  # Tree Gardening - All tree gardening locations
+  # Cattlelog - All locations related to the cattlelog
   # Bounty - All bounty locations
 
   start_location_hints:

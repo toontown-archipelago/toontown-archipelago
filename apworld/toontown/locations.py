@@ -805,13 +805,13 @@ class ToontownLocationName(Enum):
     GARDEN_TREE_LEVEL_5 =                       "Gag Tree (Level 5)"
     GARDEN_TREE_LEVEL_6 =                       "Gag Tree (Level 6)"
     GARDEN_TREE_LEVEL_7 =                       "Gag Tree (Level 7)"
-    CATALOG_CHECK_1 =                           "Clarabelle's Cattlelog Check #1"
-    CATALOG_CHECK_2 =                           "Clarabelle's Cattlelog Check #2"
-    CATALOG_CHECK_3 =                           "Clarabelle's Cattlelog Check #3"
-    CATALOG_CHECK_4 =                           "Clarabelle's Cattlelog Check #4"
-    CATALOG_CHECK_5 =                           "Clarabelle's Cattlelog Check #5"
-    CATALOG_CHECK_6 =                           "Clarabelle's Cattlelog Check #6"
-    CATALOG_CHECK_7 =                           "Clarabelle's Cattlelog Check #7"
+    CATALOG_CHECK_1 =                           "Clarabelle's Cattlelog #1"
+    CATALOG_CHECK_2 =                           "Clarabelle's Cattlelog #2"
+    CATALOG_CHECK_3 =                           "Clarabelle's Cattlelog #3"
+    CATALOG_CHECK_4 =                           "Clarabelle's Cattlelog #4"
+    CATALOG_CHECK_5 =                           "Clarabelle's Cattlelog #5"
+    CATALOG_CHECK_6 =                           "Clarabelle's Cattlelog #6"
+    CATALOG_CHECK_7 =                           "Clarabelle's Cattlelog #7"
     SAVED_TOONTOWN =                            "Save Toontown"
 
 
@@ -840,6 +840,13 @@ class ToontownLocationType(IntEnum):
     PLAYGROUND_4    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_5    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_6    = auto()  # Locations for discovering playground treasures
+    CATALOG_1       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_2       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_3       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_4       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_5       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_6       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_7       = auto()  # Locations for purchasing cattlelog checks
     SUPPORT_GAG_TRAINING    = auto()  # Locations for training support gags
     TRAP_GAG_TRAINING       = auto()  # Locations for training trap gags
     SOUND_GAG_TRAINING      = auto()  # Locations for training sound gags
@@ -847,7 +854,6 @@ class ToontownLocationType(IntEnum):
     SQUIRT_GAG_TRAINING     = auto()  # Locations for training squirt gags
     DROP_GAG_TRAINING       = auto()  # Locations for training drop gags
     PET_SHOP        = auto()  # Locations for purchasing checks from pet shop clerks
-    CATALOG         = auto()  # Locations for purchasing checks from Clarabelle's Cattlelog
     GARDEN_FLOWER   = auto()  # Locations for picking flower varieties
     GARDEN_TREE     = auto()  # Locations for planting organic gag trees
     TTC_TASKS       = auto()  # Locations for TTC tasks
@@ -1453,6 +1459,16 @@ CATALOG_LOCATIONS = [
     ToontownLocationName.CATALOG_CHECK_7,
 ]
 
+CATALOG_LOCATION_TYPES = [
+    ToontownLocationType.CATALOG_1,
+    ToontownLocationType.CATALOG_2,
+    ToontownLocationType.CATALOG_3,
+    ToontownLocationType.CATALOG_4,
+    ToontownLocationType.CATALOG_5,
+    ToontownLocationType.CATALOG_6,
+    ToontownLocationType.CATALOG_7,
+]
+
 CATALOG_RULES = [
     Rule.CanBuyCatalogCheckOne,
     Rule.CanBuyCatalogCheckTwo,
@@ -1464,8 +1480,8 @@ CATALOG_RULES = [
 ]
 
 CATALOG_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
-    ToontownLocationDefinition(location_name, ToontownLocationType.CATALOG, ToontownRegionName.TTC, [Rule.CanReachTTC, catalog_rule])
-    for location_name, catalog_rule in zip(CATALOG_LOCATIONS, CATALOG_RULES)
+    ToontownLocationDefinition(location_name, location_type, ToontownRegionName.TTC, [Rule.CanReachTTC, catalog_rule])
+    for location_name, location_type, catalog_rule in zip(CATALOG_LOCATIONS, CATALOG_LOCATION_TYPES, CATALOG_RULES)
 ]
 # endregion
 
@@ -1973,7 +1989,7 @@ TASK_LOCATION_TYPES = [
     ToontownLocationType.MML_TASKS, ToontownLocationType.TB_TASKS, ToontownLocationType.DDL_TASKS
 ]
 
-SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy() + SHOP_LOCATIONS.copy() + CATALOG_LOCATIONS.copy()
+SCOUTING_REQUIRED_LOCATIONS = ALL_TASK_LOCATIONS.copy() + SHOP_LOCATIONS.copy()
 
 LOCATION_NAME_TO_ID = {location.name.value: i + consts.BASE_ID for i, location in enumerate(LOCATION_DEFINITIONS)}
 LOCATION_ID_TO_NAME = {i + consts.BASE_ID: location.name.value for i, location in enumerate(LOCATION_DEFINITIONS)}

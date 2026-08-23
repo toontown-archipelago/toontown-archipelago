@@ -26,7 +26,7 @@ class CatalogManagerAI(DistributedObjectAI):
         self.deliverCatalogFor(av)
 
     def deliverCatalogFor(self, av):
-        check_count = av.slotData.get('catalog_checks', 0)
+        check_count = av.slotData.get('catalog_checks', 6)
         if check_count > 0:
             mailboxContents = av.mailboxNotify
             currentWeek = max(av.getCatalogSchedule()[0], 1)

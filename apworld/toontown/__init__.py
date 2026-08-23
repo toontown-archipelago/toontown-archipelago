@@ -11,7 +11,7 @@ from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, 
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, KNOCK_KNOCK_LOCATION_TYPES, BOSS_LOCATION_TYPES, BOSS_EVENT_DEFINITIONS, \
-    CATALOG_LOCATIONS, TREE_LOCATION_DATA, TREE_LEVEL_LOCATION_DATA, get_location_groups
+    CATALOG_LOCATION_TYPES, TREE_LOCATION_DATA, TREE_LEVEL_LOCATION_DATA, get_location_groups
 from .options import ToontownOptions, TPSanity, StartingTaskOption, GagTrainingCheckBehavior, FacilityLocking, toontown_option_groups, \
     GagTrainingFrameBehavior, TreeGardeningBehavior
 from .regions import REGION_DEFINITIONS, ToontownRegionName
@@ -241,9 +241,6 @@ class ToontownWorld(World):
                 continue
             if not self.is_enabled_estate_location(location_data):
                 continue
-            if location_data.name in CATALOG_LOCATIONS:
-                if CATALOG_LOCATIONS.index(location_data.name) >= self.options.catalog_checks.value:
-                    continue
 
             if location_data.region == ToontownRegionName.LOGIN:
                 if location_data.name in [ToontownLocationName.STARTING_TRACK_ONE, ToontownLocationName.STARTING_TRACK_TWO] and not len(self.startingTracks) == 2:
@@ -996,9 +993,6 @@ class ToontownWorld(World):
         if location_data.type == ToontownLocationType.GARDEN_FLOWER:
             return self.options.flower_gardening.value
 
-        if location_data.type == ToontownLocationType.CATALOG:
-            return self.options.catalog_checks.value > 0
-
         if location_data.type != ToontownLocationType.GARDEN_TREE:
             return True
 
@@ -1064,6 +1058,11 @@ class ToontownWorld(World):
         if cpb <= 0 and not wcb:
             forbidden_location_types.add(ToontownLocationType.BOSS_META)
 
+        ccc = self.options.catalog_checks.value
+        rev_locs = CATALOG_LOCATION_TYPES[::-1]
+        for i in range(len(rev_locs) - ccc):
+            forbidden_location_types.add(rev_locs[i])
+
         racing = self.options.racing_logic.value
         if not racing:
             forbidden_location_types.add(ToontownLocationType.RACING)
@@ -1096,8 +1095,6 @@ class ToontownWorld(World):
         if omitted_track != 0:
             forbidden_location_types.add(GAG_LOCATION_TYPES[omitted_track])
 
-        if self.options.catalog_checks.value <= 0:
-            forbidden_location_types.add(ToontownLocationType.CATALOG)
         if not self.options.flower_gardening.value:
             forbidden_location_types.add(ToontownLocationType.GARDEN_FLOWER)
         if not self.options.tree_gardening.value:

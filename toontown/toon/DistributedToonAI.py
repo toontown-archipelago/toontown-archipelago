@@ -4717,13 +4717,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.d_setSlotData(slotData)
 
     def setSlotData(self, slotData: dict):
-        oldCatalogChecks = self.slotData.get('catalog_checks', 0)
-        oldNeedCatalog = self.slotData.get('need_catalog', False)
         self.slotData = slotData
-        newCatalogChecks = self.slotData.get('catalog_checks', 0)
-        newNeedCatalog = self.slotData.get('need_catalog', False)
-        if newCatalogChecks > 0 and (oldCatalogChecks != newCatalogChecks or oldNeedCatalog != newNeedCatalog):
-            self.refreshAPCatalog()
 
     def getSlotData(self) -> list:
         return AstronDict.fromDict(self.slotData).toStruct()

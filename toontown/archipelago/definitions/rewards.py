@@ -990,9 +990,9 @@ class UndefinedReward(APReward):
 class GardenKitReward(APReward):
     def formatted_header(self):
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Unlocked a "),
+            MinimalJsonMessagePart("Upgraded your "),
             MinimalJsonMessagePart("Garden Kit", color='green'),
-            MinimalJsonMessagePart(" upgrade!"),
+            MinimalJsonMessagePart("!\n"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
@@ -1010,7 +1010,7 @@ class GardenShovelReward(APReward):
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("Upgraded your "),
             MinimalJsonMessagePart("Shovel", color='green'),
-            MinimalJsonMessagePart("!"),
+            MinimalJsonMessagePart("!\n"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
@@ -1022,7 +1022,7 @@ class GardenWateringCanReward(APReward):
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("Upgraded your "),
             MinimalJsonMessagePart("Watering Can", color='green'),
-            MinimalJsonMessagePart("!"),
+            MinimalJsonMessagePart("!\n"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
@@ -1034,11 +1034,12 @@ class MissingCatalogReward(APReward):
         return global_text_properties.get_raw_formatted_string([
             MinimalJsonMessagePart("Found your "),
             MinimalJsonMessagePart("Missing Cattlelog", color='green'),
-            MinimalJsonMessagePart("!"),
+            MinimalJsonMessagePart("!\n"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        pass
+        if av:
+            av.refreshAPCatalog()
 
 
 class IgnoreReward(APReward):

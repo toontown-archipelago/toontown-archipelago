@@ -383,12 +383,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         return False
 
     def doResultDialog(self):
-        self.startInteraction()
-        curTrack, curLevel = GardenGlobals.getTreeTrackAndLevel(self.typeIndex)
-        species = GardenGlobals.getTreeTypeIndex(curTrack, curLevel)
-        treeName = GardenGlobals.PlantAttributes[species]['name']
-        stringToShow = TTLocalizer.getResultPlantedSomethingSentence(treeName)
-        self.resultDialog = TTDialog.TTDialog(style=TTDialog.Acknowledge, text=stringToShow, command=self.resultsCallback)
+        return
 
     def resultsCallback(self, value):
         if self.resultDialog:

@@ -193,6 +193,13 @@ class ConnectedPacket(ClientBoundPacketBase):
         status_packet.status = ClientStatus.CLIENT_GOAL if (client.av.hasCheckedLocation(won_id)) else ClientStatus.CLIENT_PLAYING
         client.send_packet(status_packet)
 
+        # We have to do this here as we can't get what locations are disabled in locations.py when those exist
+        # Currently: Only cattlelog checks
+        locations_to_scout = locations.SCOUTING_REQUIRED_LOCATIONS
+        catalog_check_count = self.slot_data.get('catalog_checks', 6)
+        for catalog_location in range(catalog_check_count):
+            locations_to_scout.append(locations.CATALOG_LOCATIONS[catalog_location])
+
         # Scout some locations that we need to display
         client.av.scoutLocations(locations.SCOUTING_REQUIRED_LOCATIONS)
 
