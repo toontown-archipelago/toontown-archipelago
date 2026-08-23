@@ -66,7 +66,7 @@ class CatalogAPCheckItem(CatalogItem.CatalogItem):
         cardMaker = CardMaker('ap-catalog-check')
         cardMaker.setFrame(-1, 1, -1, 1)
         card = frame.attachNewNode(cardMaker.generate())
-        card.setTexture(loader.loadTexture('phase_14/maps/ap_icon.png'), 1)
+        card.setTexture(loader.loadTexture('phase_14/maps/ap_icon_outline.png'), 1)
         card.setTransparency(TransparencyAttrib.MAlpha)
         return (frame, None)
 

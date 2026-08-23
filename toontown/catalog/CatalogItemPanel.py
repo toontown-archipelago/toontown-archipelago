@@ -99,6 +99,10 @@ class CatalogItemPanel(DirectFrame):
             self.nameLabel['text_wordwrap'] = CATALOG_PANEL_ACCESSORY_WORDWRAP
             namePos = (0, 0, -.22)
             nameScale = 0.06
+        elif self['item'].getTypeCode() == CatalogItemTypes.AP_CHECK_ITEM:
+            namePos = (0, 0, -.18)
+            nameScale = 0.05
+            self.nameLabel['text_bg'] = (0, 0, 0, 0.4)
         else:
             namePos = (0, 0, -.22)
             nameScale = 0.06
