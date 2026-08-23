@@ -3893,11 +3893,11 @@ class EstateAPTest(MagicWord):
         if operation in ('tree', 'trees'):
             behavior = {
                 'all': 0,
-                'all-tracks': 0,
+                'all_tracks': 0,
                 'random': 1,
-                'random-track': 1,
+                'random_track': 1,
                 'levels': 2,
-                'levels-only': 2,
+                'levels_only': 2,
             }.get(argument.lower(), toon.slotData.get('tree_gardening_behavior', 0))
             slotData = dict(toon.slotData)
             slotData['tree_gardening'] = self._getBool(argument, True)

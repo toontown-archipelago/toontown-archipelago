@@ -755,9 +755,9 @@ class TreeGardening(Toggle):
 class TreeGardeningBehavior(Choice):
     """
     Determines which gag tree checks are generated, if tree_gardening is enabled.
-    all-tracks: Plant every gag level for every non-omitted track.
-    random-track: Plant every gag level for one randomly selected non-omitted track.
-    levels-only: Plant each gag level once; the track does not matter.
+    all_tracks: Plant every gag level for every non-omitted track.
+    random_track: Plant every gag level for one randomly selected non-omitted track.
+    levels_only: Plant each gag level once; the track does not matter.
     """
     display_name = "Tree Gardening Behavior"
     option_all_tracks = 0

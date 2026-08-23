@@ -292,10 +292,10 @@ Toontown:
   tree_gardening: 'false'
 
   # Determines which gag tree checks are generated, if tree_gardening is enabled.
-  # all-tracks: Plant every gag level for every non-omitted track.
-  # random-track: Plant every gag level for one randomly selected non-omitted track.
-  # levels-only: Plant each gag level once; the track does not matter.
-  tree_gardening_behavior: 'levels-only'
+  # all_tracks: Plant every gag level for every non-omitted track.
+  # random_track: Plant every gag level for one randomly selected non-omitted track.
+  # levels_only: Plant each gag level once; the track does not matter.
+  tree_gardening_behavior: 'levels_only'
 
   # How many Archipelago checks Clarabelle's Cattlelog offers.
   # Range: 0 to 7
