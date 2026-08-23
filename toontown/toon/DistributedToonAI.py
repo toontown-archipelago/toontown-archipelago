@@ -1,4 +1,5 @@
 import math
+import os
 import uuid
 from typing import List, Tuple, Union, Any
 
@@ -4756,6 +4757,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Reset location Cache
         self.resetLocationScoutsCache()
+        self.resetGardenProgress()
 
         # Now quests
         for id in self.getQuests():
@@ -4828,6 +4830,23 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Regenerate the toon's UUID used for archipelago connections.
         self.regenerateUUID()
+
+    def resetGardenProgress(self):
+        self.b_setGardenStarted(False)
+        self.b_setGardenKit(0)
+        self.b_setShovel(0)
+        self.b_setShovelSkill(0)
+        self.b_setWateringCan(0)
+        self.b_setWateringCanSkill(0)
+        self.b_setGardenTrophies([])
+        self.b_setGardenSpecials([])
+        self.b_setFlowerCollection([], [])
+        self.b_setFlowerBasket([], [])
+        self.b_setTrackBonusLevel([-1, -1, -1, -1, -1, -1, -1])
+
+        gardenPath = os.path.join('backups', 'gardens', 'garden_%s.json' % self.doId)
+        if os.path.exists(gardenPath):
+            os.remove(gardenPath)
 
     def APVictory(self):
         if self.archipelago_session:

@@ -107,6 +107,7 @@ class GardenAI:
         estatePlots = GardenGlobals.estatePlots[houseIndex]
         treeIndex = 0
         flowerIndex = 0
+        cleanedGardenData = False
         for estatePlot, (x, y, h, estatePlotType) in enumerate(estatePlots):
             if estatePlotType == GardenGlobals.GAG_TREE_TYPE and self.WANT_TREES:
                 data = self.data['trees'][treeIndex]
@@ -114,7 +115,12 @@ class GardenAI:
                 if planted != -1:
                     obj = self.plantTree(treeIndex, planted, waterLevel=waterLevel, lastCheck=lastCheck,
                                          growthLevel=growthLevel, lastHarvested=lastHarvested, generate=False)
-                    self.trees.add(obj)
+                    if obj:
+                        self.trees.add(obj)
+                    else:
+                        self.data['trees'][treeIndex] = list(NULL_PLANT)
+                        cleanedGardenData = True
+                        obj = self.placePlot(treeIndex)
                 else:
                     obj = self.placePlot(treeIndex)
 
@@ -130,7 +136,14 @@ class GardenAI:
                 if planted != -1:
                     obj = self.plantFlower(flowerIndex, planted, variety, waterLevel=waterLevel, lastCheck=lastCheck,
                                            growthLevel=growthLevel, generate=False)
-                    zOffset = 1.5
+                    if obj is None:
+                        self.data['flowers'][flowerIndex] = list(NULL_PLANT)
+                        cleanedGardenData = True
+                        obj = self.placePlot(flowerIndex)
+                        obj.setFlowerIndex(flowerIndex)
+                        zOffset = 1.2
+                    else:
+                        zOffset = 1.5
                 else:
                     obj = self.plantRandomFlower(flowerIndex) if flower_gardening else None
                     zOffset = 1.5
@@ -172,6 +185,8 @@ class GardenAI:
             tree.calcDependencies()
 
         self.reconsiderAvatarOrganicBonus()
+        if cleanedGardenData:
+            self.update()
         return True
     
     def plantRandomFlower(self, flowerIndex, plot=None, ownerIndex=-1, plotId=-1):
