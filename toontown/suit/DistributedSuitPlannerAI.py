@@ -451,7 +451,7 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
                 suitLevel = self.chooseSuitLevel(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL], buildingHeight)
             else:
                 suitLevel = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL][-1] + 1
-        suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack)
+        suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack, command)
 
         if not command:
             trackRatio = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK][SuitDNA.suitDepts.index(suitTrack)]
@@ -495,7 +495,7 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
                 # Found a cog in the department that doesn't exist
                 if not self.checkForSuitInTrack(suitTrack, tier):
                     suitType = tier
-                    suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack)
+                    suitLevel, suitType, suitTrack = self.pickLevelTypeAndTrack(suitLevel, suitType, suitTrack, command)
                     break
             # At this point we know we have everything spawned possible so just continue and go random
 
@@ -1258,7 +1258,7 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
 
         self.sendUpdateToAvatarId(self.air.getAvatarIdFromSender(), 'buildingListResponse', [buildingList])
 
-    def pickLevelTypeAndTrack(self, level=None, type=None, track=None):
+    def pickLevelTypeAndTrack(self, level=None, type=None, track=None, command=False):
         if level == None:
             level = random.choice(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LVL])
         levelRange = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_LEVEL_RANGE]
@@ -1276,8 +1276,8 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         if level < type:
             level = type
 
-        # Catch for when the level is higher than what it should be for the tier
-        if level > (type + 4):
+        # Catch for when the level is higher than what it should be for the tier, and we're not using a command
+        if level > (type + 4) and not command:
             level = (type + 4)
 
         if track == None:
