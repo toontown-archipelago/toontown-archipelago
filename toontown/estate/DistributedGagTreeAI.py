@@ -5,7 +5,7 @@ from direct.directnotify import DirectNotifyGlobal
 from toontown.estate import GardenGlobals
 from toontown.estate.DistributedPlantBaseAI import DistributedPlantBaseAI
 
-ONE_DAY = 86400
+ONE_MINUTE = 60
 PROBLEM_WILTED = 1
 PROBLEM_NOT_GROWN = 2
 PROBLEM_HARVESTED_LATELY = 4
@@ -100,7 +100,7 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
         if self.getGrowthLevel() < self.growthThresholds[2]:
             problem |= PROBLEM_NOT_GROWN
 
-        if (self.lastCheck - self.lastHarvested) < ONE_DAY:
+        if (self.lastCheck - self.lastHarvested) < ONE_MINUTE:
             problem |= PROBLEM_HARVESTED_LATELY
 
         return problem
@@ -122,6 +122,7 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
         if problem:
             self.air.writeServerEvent('suspicious', avId, 'tried to harvest a tree that\'s not fruiting!',
                                       problem=problem)
+            self.d_setMovie(GardenGlobals.MOVIE_HARVEST_REJECTED, avId)
             return
 
         harvested = 0

@@ -197,7 +197,6 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
                     location = None
                 if location is not None:
                     av.addCheckedLocation(util.ap_location_name_to_id(location))
-                tree.scheduleAutoRemove()
 
             tree.d_setMovie(GardenGlobals.MOVIE_FINISHPLANTING, self.__plantingAvId)
             tree.d_setMovie(GardenGlobals.MOVIE_CLEAR, self.__plantingAvId)

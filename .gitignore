@@ -32,3 +32,5 @@ venv/
 output/
 release/
 apworld/toontown.apworld
+# Visual Studio Code IDE
+/.vscode

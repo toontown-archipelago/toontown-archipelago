@@ -237,6 +237,8 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
     def setMovie(self, mode, avId):
         if mode == GardenGlobals.MOVIE_HARVEST:
             self.doHarvestTrack(avId)
+        elif mode == GardenGlobals.MOVIE_HARVEST_REJECTED:
+            self.doHarvestRejectedTrack(avId)
         elif mode == GardenGlobals.MOVIE_WATER:
             self.doWaterTrack(avId)
         elif mode == GardenGlobals.MOVIE_FINISHPLANTING:
@@ -266,6 +268,13 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         self.movie.start()
         self.movie.setPlayRate(5.0)
 
+    def doHarvestRejectedTrack(self, avId):
+        if avId != localAvatar.doId:
+            return
+        self.finishMovies()
+        base.localAvatar.loop('neutral')
+        self.finishInteraction()
+
     def doHarvestTrack(self, avId):
         toon = base.cr.doId2do.get(avId)
         if not toon:
@@ -273,12 +282,30 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         self.finishMovies()
         moveTrack = self.generateToonMoveTrack(toon)
         harvestTrack = self.generateHarvestTrack(toon)
-        self.movie = Sequence(self.startCamIval(avId), moveTrack, harvestTrack, self.stopCamIval(avId))
+        self.movie = Sequence(self.startCamIval(avId), moveTrack, harvestTrack,
+                              self.stopCamIval(avId))
         if avId == localAvatar.doId:
             self.movie.append(Func(self.finishInteraction))
+            self.movie.append(Func(self.resetCameraAfterHarvest))
             self.movie.append(Func(self.movieDone))
         self.movie.start()
         self.movie.setPlayRate(5.0)
+
+    def resetCameraAfterHarvest(self):
+        # Reset the camera to the default position after harvesting.
+        place = base.cr.playGame.getPlace()
+        if place and hasattr(place, 'fsm'):
+            place.fsm.request('walk')
+
+        toon = base.localAvatar
+        if toon.cameraLerp:
+            toon.cameraLerp.finish()
+            toon.cameraLerp = None
+        shouldPush = 1
+        if toon.cameraPositions:
+            shouldPush = not toon.cameraPositions[toon.cameraIndex][4]
+        toon.startUpdateSmartCamera(shouldPush)
+        toon.posCamera(0, 0)
 
     def setupShadow(self):
         if DIRT_AS_WATER_INDICATOR:

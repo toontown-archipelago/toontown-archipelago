@@ -1534,6 +1534,7 @@ MOVIE_FINISHPLANTING = 4
 MOVIE_FINISHREMOVING = 5
 MOVIE_CLEAR = 6
 MOVIE_PLANT_REJECTED = 7
+MOVIE_HARVEST_REJECTED = 8
 TrophyDict = {0: (TTLocalizer.GardenTrophyNameDict[0],),
  1: (TTLocalizer.GardenTrophyNameDict[1],),
  2: (TTLocalizer.GardenTrophyNameDict[2],),
