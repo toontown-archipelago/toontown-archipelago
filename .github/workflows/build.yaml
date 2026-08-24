@@ -153,7 +153,7 @@ jobs:
         run: |
           wget https://www.panda3d.org/download/panda3d-1.10.16/Panda3D-SDK-1.10.16-MacOSX10.9.dmg
           hdiutil attach Panda3D-SDK-1.10.16-MacOSX10.9.dmg
-          sudo installer -pkg 	"/Volumes/Panda3D SDK 1.10.16/Panda3D.mpkg" -target  /
+          sudo arch -x86_64 installer -pkg 	"/Volumes/Panda3D SDK 1.10.16/Panda3D.mpkg" -target  /
           mkdir release/game/resources
           cd resources
           for dir in */; do /Library/Developer/Panda3D/bin/multify -c -f "../release/game/resources/${dir%/}.mf" ${dir%/}; done
