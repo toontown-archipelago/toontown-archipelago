@@ -10,7 +10,6 @@ from typing import Dict, List, Tuple
 class LocationScoutsCache:
 
     def __init__(self):
-
         # This class is no more than a wrapper for a dictionary that maps our numeric AP Location IDs to Strings that
         # represent an english form of the reward it is storing
         self._data_cache: Dict[int, str] = {}
