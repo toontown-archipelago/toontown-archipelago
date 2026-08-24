@@ -17,6 +17,7 @@ from direct.directnotify import DirectNotifyGlobal
 CATALOG_PANEL_WORDWRAP = 10
 CATALOG_PANEL_CHAT_WORDWRAP = 9
 CATALOG_PANEL_ACCESSORY_WORDWRAP = 11
+CATALOG_PANEL_AP_WORDWRAP = 13
 
 class CatalogItemPanel(DirectFrame):
     notify = DirectNotifyGlobal.directNotify.newCategory('CatalogItemPanel')
@@ -100,8 +101,9 @@ class CatalogItemPanel(DirectFrame):
             namePos = (0, 0, -.22)
             nameScale = 0.06
         elif self['item'].getTypeCode() == CatalogItemTypes.AP_CHECK_ITEM:
-            namePos = (0, 0, -.18)
-            nameScale = 0.05
+            self.nameLabel['text_wordwrap'] = CATALOG_PANEL_AP_WORDWRAP
+            namePos = (0, 0, -.19)
+            nameScale = 0.048
             self.nameLabel['text_bg'] = (0, 0, 0, 0.4)
         else:
             namePos = (0, 0, -.22)
