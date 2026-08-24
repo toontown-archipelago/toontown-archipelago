@@ -210,7 +210,6 @@ class ArchipelagoSession:
         scout_packet = LocationScoutsPacket()
         scout_packet.locations = locationIDs
 
-        # todo add setting in YAML for hinting the scout
         if hint_item and force_broadcast:
             scout_packet.create_as_hint = 2
         elif hint_item:

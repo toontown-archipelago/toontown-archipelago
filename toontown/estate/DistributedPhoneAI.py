@@ -94,7 +94,7 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
 
         if av.slotData.get('catalog_checks', 0) > 0:
             self.air.catalogManager.deliverCatalogFor(av)
-            if av.slotData.get("catalog_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint:
+            if av.slotData.get("catalog_display", RewardDisplayOption.default) in (RewardDisplayOption.option_auto_hint, RewardDisplayOption.option_auto_hint_prog):
                 catalog_check_count = av.slotData.get('catalog_checks', 0)
                 if av.archipelago_session:
                     locations_to_hint = [
@@ -105,8 +105,20 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
                     if locations_to_hint:
                         packet = LocationScoutsPacket()
                         packet.create_as_hint = 2  # only announce new hints
-                        packet.locations = locations_to_hint
-                        av.archipelago_session.client.send_packet(packet)
+                        if av.slotData.get("catalog_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint_prog:
+                            prog_locations = []
+                            for loc in locations_to_hint:
+                                loc_id = util.ap_location_name_to_id(loc)
+                                cached_location = av.archipelago_session.client.location_scouts_cache.get(loc_id)
+                                if "json_plum" in cached_location:
+                                    prog_locations.append(loc_id)
+                            if prog_locations:
+                                packet.locations = prog_locations
+                                av.archipelago_session.client.send_packet(packet)
+                        else:
+                            packet.locations = locations_to_hint
+                            av.archipelago_session.client.send_packet(packet)
+
 
         if not any((av.weeklyCatalog, av.backCatalog, av.monthlyCatalog)):
             self.d_setMovie(PhoneGlobals.PHONE_MOVIE_EMPTY, avId)

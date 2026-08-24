@@ -201,7 +201,7 @@ class ConnectedPacket(ClientBoundPacketBase):
             locations_to_scout.append(locations.CATALOG_LOCATIONS[catalog_location])
 
         # Scout some locations that we need to display
-        client.av.scoutLocations(locations.SCOUTING_REQUIRED_LOCATIONS)
+        client.av.scoutLocations(locations_to_scout)
 
         # Login location rewarding
         new_game = ap_location_name_to_id(locations.ToontownLocationName.STARTING_NEW_GAME.value)

@@ -690,13 +690,15 @@ class RewardDisplayOption(Choice):
     "owner": hides what the item is, but shows who it's for.
     "class": hides what the item is, but shows who it's for, and what classification it has.
     "shown": (default) Tells you what the reward will be when you're looking at the check.
-    "auto_hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint": Same as 'shown', but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint_prog": Same as 'shown', but also sends a hint out to the multiworld when any item is progression on view.
     """
     option_hidden = 0
     option_owner = 1
     option_class = 2
     option_shown = 3
     option_auto_hint = 4
+    option_auto_hint_prog = 5
     default = 3
 
 
@@ -707,7 +709,8 @@ class TaskRewardDisplayOption(RewardDisplayOption):
     "owner": hides what the item is, but shows who it's for.
     "class": hides what the item is, but shows who it's for, and what classification it has.
     "shown": (default) Tells you what the reward will be when you're looking at the check.
-    "auto hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint_prog": Same as 'shown', but also sends a hint out to the multiworld when any item is progression on view.
     """
     display_name = "Task Rewards"
     
@@ -719,9 +722,11 @@ class PetShopRewardDisplayOption(RewardDisplayOption):
     "owner": hides what the item is, but shows who it's for.
     "class": hides what the item is, but shows who it's for, and what classification it has.
     "shown": (default) Tells you what the reward will be when you're looking at the check.
-    "auto hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint_prog": Same as 'shown', but also sends a hint out to the multiworld when any item is progression on view.
     """
     display_name = "Pet Shop Rewards"
+
 
 class CatalogRewardDisplayOption(RewardDisplayOption):
     """
@@ -730,10 +735,12 @@ class CatalogRewardDisplayOption(RewardDisplayOption):
     "owner": hides what the item is, but shows who it's for.
     "class": hides what the item is, but shows who it's for, and what classification it has.
     "shown": (default) Tells you what the reward will be when you're looking at the check.
-    "auto hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint_prog": Same as 'shown', but also sends a hint out to the multiworld when any item is progression on view.
     """
     display_name = "Cattlelog Rewards"
-    
+
+
 class RandomShopCostToggle(Toggle):
     """
     Enable to turn on the pet shop price randomization.
