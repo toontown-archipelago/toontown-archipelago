@@ -265,6 +265,22 @@ class DistributedGardenPlot(DistributedLawnDecor.DistributedLawnDecor):
         base.localAvatar.showGardeningGui()
         base.localAvatar.removeShovelRelatedDoId(self.doId)
         if willPlant:
+            # The AI also validates this, but reject it here as well so the player knows immediately if they don't have the right kit for the gag tree.
+            treeGardening = base.localAvatar.slotData.get(
+                'tree_gardening', base.localAvatar.slotData.get('estate_integration', False))
+            if treeGardening:
+                maxGagLevel = GardenGlobals.GardenKitAttributes[
+                    base.localAvatar.getGardenKit()]['max_gag_level']
+                if gagLevel > maxGagLevel:
+                    self.resultDialog = TTDialog.TTDialog(
+                        style=TTDialog.Acknowledge,
+                        text=TTLocalizer.GardenKitTooLowForGag % {
+                            'gagLevel': gagLevel,
+                            'kit': GardenGlobals.GardenKitAttributes[
+                                base.localAvatar.getGardenKit()]['name']},
+                        command=self.resultsCallback)
+                    self.resultDialog.show()
+                    return
             self.sendUpdate('plantGagTree', [gagTrack, gagLevel])
         else:
             self.finishInteraction()
@@ -289,7 +305,16 @@ class DistributedGardenPlot(DistributedLawnDecor.DistributedLawnDecor):
         if avId == localAvatar.doId:
             self.movie.append(Func(self.finishInteraction))
             self.movie.append(Func(self.movieDone))
+            self.movie.append(Func(self.showPlantRejectedDialog))
         self.movie.start()
+        self.movie.setPlayRate(2.0)
+
+    def showPlantRejectedDialog(self):
+        self.resultDialog = TTDialog.TTDialog(
+            style=TTDialog.Acknowledge,
+            text=TTLocalizer.GardenPlantRejected,
+            command=self.resultsCallback)
+        self.resultDialog.show()
 
     def doFinishRemovingTrack(self, avId):
         toon = base.cr.doId2do.get(avId)
@@ -311,6 +336,7 @@ class DistributedGardenPlot(DistributedLawnDecor.DistributedLawnDecor):
             self.movie.append(Func(self.finishInteraction))
             self.movie.append(Func(self.movieDone))
         self.movie.start()
+        self.movie.setPlayRate(5.0)
 
     def doPlaceItemTrack(self, avId, item = None):
         toon = base.cr.doId2do.get(avId)
@@ -328,6 +354,7 @@ class DistributedGardenPlot(DistributedLawnDecor.DistributedLawnDecor):
             self.expectingReplacement = 1
             self.movie.append(Func(self.movieDone))
         self.movie.start()
+        self.movie.setPlayRate(5.0)
 
     def generatePlaceItemTrack(self, toon, item):
         sound = loader.loadSfx('phase_5.5/audio/sfx/burrow.ogg')

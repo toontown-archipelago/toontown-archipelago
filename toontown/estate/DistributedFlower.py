@@ -87,29 +87,23 @@ class DistributedFlower(DistributedPlantBase.DistributedPlantBase, FlowerBase.Fl
         fullName = GardenGlobals.getFlowerVarietyName(self.species, self.variety)
         if self.isWilted():
             self.confirmDialog = TTDialog.TTDialog(style=TTDialog.YesNo, text=TTLocalizer.ConfirmWiltedFlower % {'plant': fullName}, command=self.confirmCallback)
+            self.confirmDialog.show()
+            base.localAvatar.setInGardenAction(self)
+            base.cr.playGame.getPlace().detectedGardenPlotUse()
         elif not self.isFruiting():
             self.confirmDialog = TTDialog.TTDialog(style=TTDialog.YesNo, text=TTLocalizer.ConfirmUnbloomingFlower % {'plant': fullName}, command=self.confirmCallback)
+            self.confirmDialog.show()
+            base.localAvatar.setInGardenAction(self)
+            base.cr.playGame.getPlace().detectedGardenPlotUse()
         elif base.localAvatar.isFlowerBasketFull():
             self.confirmDialog = TTDialog.TTDialog(style=TTDialog.CancelOnly, text=TTLocalizer.ConfirmBasketFull, command=self.confirmCallback)
+            self.confirmDialog.show()
+            base.localAvatar.setInGardenAction(self)
+            base.cr.playGame.getPlace().detectedGardenPlotUse()
         else:
-            shovel = base.localAvatar.shovel
-            skill = base.localAvatar.shovelSkill
-            shovelPower = GardenGlobals.getShovelPower(shovel, skill)
-            giveSkillUp = True
-            beansRequired = GardenGlobals.getNumBeansRequired(self.species, self.variety)
-            if not shovelPower == beansRequired:
-                giveSkillUp = False
-            if giveSkillUp:
-                if skill == GardenGlobals.getMaxShovelSkill():
-                    text = (TTLocalizer.ConfirmMaxedSkillFlower % {'plant': fullName},)
-                else:
-                    text = TTLocalizer.ConfirmSkillupFlower % {'plant': fullName}
-                self.confirmDialog = TTDialog.TTDialog(style=TTDialog.YesNo, text=text, command=self.confirmCallback)
-            else:
-                self.confirmDialog = TTDialog.TTDialog(style=TTDialog.YesNo, text=TTLocalizer.ConfirmNoSkillupFlower % {'plant': fullName}, command=self.confirmCallback)
-        self.confirmDialog.show()
-        base.localAvatar.setInGardenAction(self)
-        base.cr.playGame.getPlace().detectedGardenPlotUse()
+            base.localAvatar.setInGardenAction(self)
+            base.cr.playGame.getPlace().detectedGardenPlotUse()
+            self.doPicking()
 
     def confirmCallback(self, value):
         self.notify.debug('value=%d' % value)
@@ -180,10 +174,7 @@ class DistributedFlower(DistributedPlantBase.DistributedPlantBase, FlowerBase.Fl
             self.dropShadow.setColor(0.0, 0.0, 0.0, color)
 
     def doResultDialog(self):
-        self.startInteraction()
-        flowerName = GardenGlobals.getFlowerVarietyName(self.species, self.variety)
-        stringToShow = TTLocalizer.getResultPlantedSomethingSentence(flowerName)
-        self.resultDialog = TTDialog.TTDialog(style=TTDialog.Acknowledge, text=stringToShow, command=self.resultsCallback)
+        return
 
     def resultsCallback(self, value):
         self.notify.debug('value=%d' % value)

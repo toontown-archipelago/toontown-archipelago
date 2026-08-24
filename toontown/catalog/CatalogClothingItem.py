@@ -432,7 +432,7 @@ class CatalogClothingItem(CatalogItem.CatalogItem):
     def getPicture(self, avatar):
         from toontown.toon import Toon
         self.hasPicture = True
-        dna = ToonDNA.ToonDNA(type='t', dna=avatar.style)
+        dna = ToonDNA.ToonDNA(dna_type='t', dna=avatar.style)
         str = ClothingTypes[self.clothingType][CTString]
         if self.isShirt():
             defn = ToonDNA.ShirtStyles[str]

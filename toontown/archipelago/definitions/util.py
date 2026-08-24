@@ -1,10 +1,9 @@
 from typing import Union
 from apworld.toontown import consts, ToontownLocationName, LOCATION_DEFINITIONS
 from apworld.toontown.locations import TTC_TASK_LOCATIONS, DD_TASK_LOCATIONS, DG_TASK_LOCATIONS, MML_TASK_LOCATIONS, \
-    TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS, EVENT_DEFINITIONS, ToontownLocationDefinition, get_location_def_from_name
+    TB_TASK_LOCATIONS, DDL_TASK_LOCATIONS, EVENT_DEFINITIONS, ToontownLocationDefinition, get_location_def_from_name, \
+    FLOWER_LOCATION_BY_SPECIES_VARIETY, TREE_LOCATION_BY_TRACK_LEVEL, TREE_LOCATION_BY_LEVEL, CATALOG_LOCATIONS
 from toontown.shtiker import CogPageGlobals
-from toontown.hood import ZoneUtil
-from toontown.toonbase import ToontownGlobals
 
 
 # Given cog code (bf, nc, etc) return the AP location counterpart
@@ -92,7 +91,9 @@ def ap_location_to_cog_code(location: str) -> tuple[str, int]:
     }.get(location, ('', 0))
 
 # Given the string representation of a location, retrieve the numeric ID
-def ap_location_name_to_id(location_name: Union[str, ToontownLocationName]) -> int:
+def ap_location_name_to_id(location_name: Union[str, ToontownLocationName, int]) -> int:
+    if isinstance(location_name, int):
+        return location_name
     for location_definition in (LOCATION_DEFINITIONS + EVENT_DEFINITIONS):
         if (isinstance(location_name, str) and location_definition.name.value == location_name) or \
            (isinstance(location_name, ToontownLocationName) and location_definition.name == location_name):
@@ -107,7 +108,7 @@ def ap_location_id_to_name(location_id: int) -> str:
     raise KeyError(f"AP location: {location_id}<type={type(location_id)}> is not defined in Location/Event definitions")
 
 # Given an AP ID or NAME, return the definition.
-def ap_location_to_definition(location: Union[int, str]) -> ToontownLocationDefinition:
+def ap_location_to_definition(location: Union[int, str, ToontownLocationName]) -> ToontownLocationDefinition:
     if isinstance(location, int):
         for location_definition in (LOCATION_DEFINITIONS + EVENT_DEFINITIONS):
             if location_definition.unique_id == location:
@@ -116,11 +117,17 @@ def ap_location_to_definition(location: Union[int, str]) -> ToontownLocationDefi
         for location_definition in (LOCATION_DEFINITIONS + EVENT_DEFINITIONS):
             if location_definition.name.value == location:
                 return location_definition
+    if isinstance(location, ToontownLocationName):
+        for location_definition in (LOCATION_DEFINITIONS + EVENT_DEFINITIONS):
+            if location_definition.name == location:
+                return location_definition
     raise KeyError(f"AP location: {location}<type={type(location)}> is not defined in Location/Event definitions")
 
 # Given a Zone ID, give the ID of an AP location award the player.
 # returns -1 if this isn't a zone we have to worry about
 def get_zone_discovery_id(zoneId: int) -> int:
+    from toontown.hood import ZoneUtil
+    from toontown.toonbase import ToontownGlobals
 
     pgZone = ZoneUtil.getHoodId(zoneId)
 
@@ -152,6 +159,7 @@ def get_zone_discovery_id(zoneId: int) -> int:
 
 # Gets the AP location ID from a ToontownGlobals facility ID definition
 def get_facility_id(facility_id: int) -> int:
+    from toontown.toonbase import ToontownGlobals
 
     FACILITY_LOCATION_CHECKS = {
         ToontownGlobals.SellbotFactoryInt: ToontownLocationName.CLEAR_FRONT_FACTORY.value,
@@ -180,6 +188,8 @@ def get_facility_id(facility_id: int) -> int:
 
 # Given a hood ID, return a list of AP check location names present in that hood
 def hood_to_task_locations(hoodId: int):
+    from toontown.toonbase import ToontownGlobals
+
     locs = {
         ToontownGlobals.ToontownCentral: TTC_TASK_LOCATIONS,
         ToontownGlobals.DonaldsDock: DD_TASK_LOCATIONS,
@@ -208,3 +218,19 @@ def track_and_level_to_location(track: int, level: int):
         (ToontownLocationName.DROP_FLOWERPOT_UNLOCKED.value, ToontownLocationName.DROP_SANDBAG_UNLOCKED.value, ToontownLocationName.DROP_ANVIL_UNLOCKED.value, ToontownLocationName.DROP_BIGWEIGHT_UNLOCKED.value, ToontownLocationName.DROP_SAFE_UNLOCKED.value, ToontownLocationName.DROP_PIANO_UNLOCKED.value, ToontownLocationName.DROP_BOAT_UNLOCKED.value),
     )
     return trackAndLevels[track][level]
+
+
+def flower_to_location(species: int, variety: int) -> str:
+    return FLOWER_LOCATION_BY_SPECIES_VARIETY[(species, variety)].value
+
+
+def garden_tree_to_location(track: int, level: int) -> str:
+    return TREE_LOCATION_BY_TRACK_LEVEL[(track, level)].value
+
+
+def garden_tree_level_to_location(level: int) -> str:
+    return TREE_LOCATION_BY_LEVEL[level].value
+
+
+def catalog_check_to_location(check_index: int) -> str:
+    return CATALOG_LOCATIONS[check_index].value

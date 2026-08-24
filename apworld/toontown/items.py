@@ -123,6 +123,12 @@ class ToontownItemName(enum.Enum):
     GOLF_PUTTER = "Golf Putter"
     GO_KART = "Go-Kart"
 
+    ### Gardening ###
+    GARDEN_KIT = "Progressive Garden Kit"
+    GARDEN_SHOVEL = "Progressive Shovel"
+    GARDEN_WATERING_CAN = "Progressive Watering Can"
+    MISSING_CATALOG = "Missing Cattlelog"
+
     ### Bounty Items ###
     BOUNTY = "Bounty"
 
@@ -266,6 +272,12 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # region activities
     ToontownItemDefinition(ToontownItemName.GOLF_PUTTER, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.GO_KART, ItemClassification.progression),
+    # endregion
+    # region gardening
+    ToontownItemDefinition(ToontownItemName.GARDEN_KIT, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GARDEN_SHOVEL, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.GARDEN_WATERING_CAN, ItemClassification.useful),
+    ToontownItemDefinition(ToontownItemName.MISSING_CATALOG, ItemClassification.progression),
     # endregion
     # region bounties
     ToontownItemDefinition(ToontownItemName.BOUNTY, ItemClassification.progression_skip_balancing),
@@ -446,6 +458,13 @@ def get_item_groups():
         ToontownItemName.GO_KART
     )
 
+    GARDENING = (
+        ToontownItemName.GARDEN_KIT,
+        ToontownItemName.GARDEN_SHOVEL,
+        ToontownItemName.GARDEN_WATERING_CAN,
+        ToontownItemName.MISSING_CATALOG
+    )
+
     REWARD_BUNDLES = (
         ToontownItemName.SOS_REWARD_3,
         ToontownItemName.SOS_REWARD_4,
@@ -509,6 +528,12 @@ def get_item_groups():
         ToontownItemName.DDL_JOKE_BOOK,
     )
 
+    GARDENING = (
+        ToontownItemName.GARDEN_KIT,
+        ToontownItemName.GARDEN_SHOVEL,
+        ToontownItemName.GARDEN_WATERING_CAN,
+    )
+
     ITEM_NAME_GROUPS_OBJECT = {
         "Cog Disguises": COG_DISGUISES,
         "Facility Keys": FACILITY_KEY_ITEMS,
@@ -519,10 +544,12 @@ def get_item_groups():
         "Gag Upgrades": GAG_UPGRADES,
         "Damage Boosts": DMG_BOOSTS,
         "Fishing Licenses": FISHING_LICENSES,
+        "Gardening": GARDENING,
         "Jellybean Capacity": JELLYBEAN_CAPACITY,
         "Side Activity Keys": ACTIVITY_KEYS,
         "Task Capacity": TASK_CAPACITY,
         "Laff Boosts": LAFF_BOOSTS,
+        "Gardening Items": GARDENING,
         "Reward Bundles": REWARD_BUNDLES,
         "Heals": HEALS,
         "Jellybeans": JELLYBEANS,

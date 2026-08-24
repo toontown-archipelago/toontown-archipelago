@@ -431,7 +431,7 @@ class ArchipelagoClient(DirectObject):
                 owner_name = ""  # hide owner name.
                 item_name = self.get_location_name(our_location_id, self.slot)
                 item_flag = 0  # Override flag to change the item always appear as if it's filler.
-        # Pet Shop Locations.
+        # Pet purchase locations.
         elif self.get_location_name(our_location_id, self.slot) in [loc.value for loc in locations.SHOP_LOCATIONS]:
             display_option = self.av.slotData.get("pet_shop_display")
             if display_option == RewardDisplayOption.option_class:
@@ -443,7 +443,18 @@ class ArchipelagoClient(DirectObject):
                 owner_name = ""  # hide owner name.
                 item_name = self.get_location_name(our_location_id, self.slot)
                 item_flag = 0  # Override flag to change the item always appear as if it's filler.
-
+        # Catalog purchase locations.
+        elif self.get_location_name(our_location_id, self.slot) in [loc.value for loc in locations.CATALOG_LOCATIONS]:
+            display_option = self.av.slotData.get("catalog_display")
+            if display_option == RewardDisplayOption.option_class:
+                item_name = item_flag_to_string(item_flag)
+            elif display_option == RewardDisplayOption.option_owner:
+                item_name = "Item"
+                item_flag = 0  # Override flag to change the item always appear as if it's filler.
+            elif display_option == RewardDisplayOption.option_hidden:
+                owner_name = ""  # hide owner name.
+                item_name = self.get_location_name(our_location_id, self.slot)
+                item_flag = 0  # Override flag to change the item always appear as if it's filler.
 
         # Let's make the string pretty
         name_color = 'flatgreen' if someone_elses else 'magenta'

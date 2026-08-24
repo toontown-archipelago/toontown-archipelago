@@ -1,4 +1,5 @@
 import math
+import os
 import uuid
 from typing import List, Tuple, Union, Any
 
@@ -16,6 +17,7 @@ from toontown.quest import Quests
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.battle import SuitBattleGlobals
 from direct.task import Task
+from direct.showbase.PythonUtil import union
 from toontown.catalog import CatalogItemList
 from toontown.catalog import CatalogItem
 from direct.distributed.ClockDelta import *
@@ -53,6 +55,7 @@ from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..shtiker import CogPageGlobals
 from ..util.astron.AstronDict import AstronDict
 from apworld.toontown import locations
+from apworld.toontown.items import ITEM_NAME_TO_ID, ToontownItemName
 
 if simbase.wantPets:
     from toontown.pets import PetLookerAI, PetObserve
@@ -206,6 +209,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.shovelSkill = 0
         self.wateringCan = 0
         self.wateringCanSkill = 0
+        self.gardenKit = 0
+
         self.hatePets = 1
         self.golfHistory = None
         self.golfHoleBest = None
@@ -3658,6 +3663,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def b_setShovelSkill(self, skillLevel):
         self.sendGardenEvent()
+        if self.slotData.get('flower_gardening', self.slotData.get('estate_integration', False)):
+            skillLevel = min(skillLevel, GardenGlobals.ShovelAttributes[self.shovel]['skillPts'] - 1)
+            self.setShovelSkill(skillLevel)
+            self.d_setShovelSkill(skillLevel)
+            return
+
         if skillLevel >= GardenGlobals.ShovelAttributes[self.shovel]['skillPts']:
             if self.shovel < GardenGlobals.MAX_SHOVELS - 1:
                 self.b_setShovel(self.shovel + 1)
@@ -3693,6 +3704,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def b_setWateringCanSkill(self, skillLevel):
         self.sendGardenEvent()
+        if self.slotData.get('flower_gardening', self.slotData.get('estate_integration', False)):
+            skillLevel = min(skillLevel, GardenGlobals.WateringCanAttributes[self.wateringCan]['skillPts'] - 1)
+            self.setWateringCanSkill(skillLevel)
+            self.d_setWateringCanSkill(skillLevel)
+            return
+
         if skillLevel >= GardenGlobals.WateringCanAttributes[self.wateringCan]['skillPts']:
             if self.wateringCan < GardenGlobals.MAX_WATERING_CANS - 1:
                 self.b_setWateringCan(self.wateringCan + 1)
@@ -3798,6 +3815,19 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def getGardenStarted(self):
         return self.gardenStarted
+
+    def b_setGardenKit(self, gardenKit):
+        self.setGardenKit(gardenKit)
+        self.d_setGardenKit(gardenKit)
+
+    def d_setGardenKit(self, gardenKit):
+        self.sendUpdate('setGardenKit', [gardenKit])
+
+    def setGardenKit(self, gardenKit):
+        self.gardenKit = gardenKit
+
+    def getGardenKit(self):
+        return self.gardenKit
 
     def logSuspiciousEvent(self, eventName):
         senderId = self.air.getAvatarIdFromSender()
@@ -4523,6 +4553,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def b_setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
         self.setReceivedItems(receivedItems)
         self.d_setReceivedItems(receivedItems)
+        if self.slotData.get('catalog_checks', 0) > 0:
+            self.refreshAPCatalog()
 
     # Set the AP items this toon has received but only server side
     def setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
@@ -4531,6 +4563,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Get a list of item IDs this toon has received via AP
     def getReceivedItems(self) -> List[Tuple[int, int]]:
         return self.receivedItems
+
+    def hasReceivedItem(self, itemName: ToontownItemName) -> bool:
+        itemId = ITEM_NAME_TO_ID[itemName.value]
+        return any(item[1] == itemId for item in self.receivedItems)
 
     # Tell the client what items we have received via AP
     def d_setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
@@ -4591,12 +4627,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Called to announce to Archipelago that we need to know what this location ID is so we can receive
     # A LocationInfo packet and keep track of it
-    def scoutLocation(self, location: int):
+    def scoutLocation(self, location: Union[int, str, Any]):
         self.scoutLocations([location])
 
     # Called to announce to Archipelago that we need to know what these location IDs are so we can receive
     # A LocationInfo packet and keep track all of them and know what item is present for this check upon completion
-    def scoutLocations(self, locations: List[int]):
+    def scoutLocations(self, locations: List[Union[int, str, Any]]):
         if self.archipelago_session:
             self.archipelago_session.scout(locations)
 
@@ -4690,6 +4726,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def d_setSlotData(self, slotData: AstronDict):
         self.sendUpdate('setSlotData', [slotData.toStruct()])
 
+    def refreshAPCatalog(self):
+        catalogManager = self.air.catalogManager
+        if catalogManager:
+            catalogManager.deliverCatalogFor(self)
+
     def setArchipelagoAuto(self, slotName: str, serverAddr: str):
         if not self.archipelago_session:
             return
@@ -4716,6 +4757,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Reset location Cache
         self.resetLocationScoutsCache()
+        self.resetGardenProgress()
 
         # Now quests
         for id in self.getQuests():
@@ -4788,6 +4830,23 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Regenerate the toon's UUID used for archipelago connections.
         self.regenerateUUID()
+
+    def resetGardenProgress(self):
+        self.b_setGardenStarted(False)
+        self.b_setGardenKit(0)
+        self.b_setShovel(0)
+        self.b_setShovelSkill(0)
+        self.b_setWateringCan(0)
+        self.b_setWateringCanSkill(0)
+        self.b_setGardenTrophies([])
+        self.b_setGardenSpecials([])
+        self.b_setFlowerCollection([], [])
+        self.b_setFlowerBasket([], [])
+        self.b_setTrackBonusLevel([-1, -1, -1, -1, -1, -1, -1])
+
+        gardenPath = os.path.join('backups', 'gardens', 'garden_%s.json' % self.doId)
+        if os.path.exists(gardenPath):
+            os.remove(gardenPath)
 
     def APVictory(self):
         if self.archipelago_session:

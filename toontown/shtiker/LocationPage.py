@@ -133,6 +133,12 @@ class LocationPage(ShtikerPage.ShtikerPage):
         taskMissingLocations: dict[str,LocationCategory] = {}
         # Doodles, force to the bottom of the list.
         doodleMissingLocations: dict[str, LocationCategory] = {}
+        # Cattlelog, force to the bottom of the list
+        cattlelogMissingLocations: dict[str, LocationCategory] = {}
+        # Flowers, force to bottom of the list
+        flowerMissingLocations: dict[str, LocationCategory] = {}
+        # Trees, force to bottom of the list
+        treeMissingLocations: dict[str, LocationCategory] = {}
         # Determine forbidden location types.
         forbidden_location_types: set[locations.ToontownLocationType] = self.get_disabled_location_types()
 
@@ -149,6 +155,8 @@ class LocationPage(ShtikerPage.ShtikerPage):
         for location_data in locations.LOCATION_DEFINITIONS:
             # Do we need to track this location based on settings?
             if location_data.type in forbidden_location_types:
+                continue
+            if not self.is_enabled_estate_location(location_data):
                 continue
             # Do we already have this location?
             if util.ap_location_name_to_id(location_data.name.value) in checkedLocationIds:
@@ -228,11 +236,28 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 obj = doodleMissingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
                 doodleMissingLocations.update({name: obj})
+            # Cattlelog checks, we also want these on the bottom
+            elif location_data.type in locations.CATALOG_LOCATION_TYPES:
+                name = location_data.name.value.rsplit(" ", 1)[0]
+                obj = cattlelogMissingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+                cattlelogMissingLocations.update({name: obj})
+            # Flower checks, we also want these on the bottom
+            elif location_data.type == locations.ToontownLocationType.GARDEN_FLOWER:
+                name = "Flower Gardening"
+                obj = flowerMissingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+                flowerMissingLocations.update({name: obj})
+            elif location_data.type == locations.ToontownLocationType.GARDEN_TREE:
+                name = "Tree Gardening"
+                obj = treeMissingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
+                treeMissingLocations.update({name: obj})
             else:
                 missingLocations.update({name:obj})
             self.logicalLocations += 1
 
-        self.locationsPossible = {**priorityMissingLocations, **missingLocations, **taskMissingLocations, **doodleMissingLocations}
+        self.locationsPossible = {**priorityMissingLocations, **missingLocations, **taskMissingLocations, **doodleMissingLocations, **cattlelogMissingLocations, **flowerMissingLocations, **treeMissingLocations}
 
     def get_disabled_location_types(self) -> set[locations.ToontownLocationType]:
         """
@@ -262,6 +287,11 @@ class LocationPage(ShtikerPage.ShtikerPage):
         kkps = base.localAvatar.slotData.get('jokes_per_street', 3)
         rev_locs = locations.KNOCK_KNOCK_LOCATION_TYPES[::-1]
         for i in range(len(rev_locs) - kkps):
+            forbidden_location_types.add(rev_locs[i])
+
+        ccc = base.localAvatar.slotData.get('catalog_checks', 6)
+        rev_locs = locations.CATALOG_LOCATION_TYPES[::-1]
+        for i in range(len(rev_locs) - ccc):
             forbidden_location_types.add(rev_locs[i])
 
         # Differs from the apworld for special implementation here.
@@ -300,6 +330,47 @@ class LocationPage(ShtikerPage.ShtikerPage):
             forbidden_location_types.add(GAG_LOCATION_TYPES[omitted_track])
 
         return forbidden_location_types
+
+    def is_enabled_estate_location(self, location_data):
+        if location_data.type == locations.ToontownLocationType.GARDEN_FLOWER:
+            return base.localAvatar.slotData.get(
+                'flower_gardening',
+                base.localAvatar.slotData.get('estate_integration', False)
+            )
+
+        if location_data.type != locations.ToontownLocationType.GARDEN_TREE:
+            return True
+
+        if not base.localAvatar.slotData.get(
+            'tree_gardening',
+            base.localAvatar.slotData.get('estate_integration', False)
+        ):
+            return False
+
+        slotData = base.localAvatar.slotData
+        level_location_names = {location_name for _, location_name, _, _ in locations.TREE_LEVEL_LOCATION_DATA}
+        track_locations = {
+            location_name: track
+            for track, _, location_name, _, _ in locations.TREE_LOCATION_DATA
+        }
+        behavior = slotData.get('tree_gardening_behavior', options.TreeGardeningBehavior.option_all_tracks)
+        if behavior == options.TreeGardeningBehavior.option_levels_only:
+            return location_data.name in level_location_names
+
+        if location_data.name in level_location_names:
+            return False
+
+        if behavior == options.TreeGardeningBehavior.option_random_track:
+            return track_locations.get(location_data.name) == slotData.get('tree_gardening_track', -1)
+
+        omitted_track = {
+            1: 1,
+            2: 3,
+            3: 4,
+            4: 5,
+            5: 6,
+        }.get(slotData.get('omit_gag', 0), -1)
+        return track_locations.get(location_data.name) != omitted_track
 
     def regenerateScrollList(self):
         selectedIndex = 0

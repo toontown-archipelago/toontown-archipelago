@@ -219,6 +219,63 @@ def HasEnoughBeanCapacity(state: CollectionState, locentr: LocEntrDef, world: Mu
         return (state.count(ToontownItemName.MONEY_CAP_1000.value, player) >= argument[0])
 
 
+@rule(Rule.GardenKitOne, 1)
+@rule(Rule.GardenKitTwo, 2)
+@rule(Rule.GardenKitThree, 3)
+@rule(Rule.GardenKitFour, 4)
+def HasGardenKitTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    return state.count(ToontownItemName.GARDEN_KIT.value, player) >= argument[0]
+
+
+@rule(Rule.GardenShovelOne, 1)
+@rule(Rule.GardenShovelTwo, 2)
+@rule(Rule.GardenShovelThree, 3)
+def HasGardenShovelTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    return state.count(ToontownItemName.GARDEN_SHOVEL.value, player) >= argument[0]
+
+
+@rule(Rule.GardenCanOne, 1)
+@rule(Rule.GardenCanTwo, 2)
+@rule(Rule.GardenCanThree, 3)
+def HasGardenCanTier(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    return state.count(ToontownItemName.GARDEN_WATERING_CAN.value, player) >= argument[0]
+
+
+@rule(Rule.CanBuyCatalogCheckOne, 1)
+@rule(Rule.CanBuyCatalogCheckTwo, 2)
+@rule(Rule.CanBuyCatalogCheckThree, 3)
+@rule(Rule.CanBuyCatalogCheckFour, 4)
+@rule(Rule.CanBuyCatalogCheckFive, 5)
+@rule(Rule.CanBuyCatalogCheckSix, 6)
+@rule(Rule.CanBuyCatalogCheckSeven, 7)
+def CanBuyCatalogCheck(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        random_price = options.random_prices.value
+    else:
+        random_price = options.get("random_prices", False)
+    required = argument[0] + (1 if random_price else 0)
+    return state.count(ToontownItemName.MONEY_CAP_1000.value, player) >= required
+
+
+@rule(Rule.GardenGagLevelOne, 1)
+@rule(Rule.GardenGagLevelTwo, 2)
+@rule(Rule.GardenGagLevelThree, 3)
+@rule(Rule.GardenGagLevelFour, 4)
+@rule(Rule.GardenGagLevelFive, 5)
+@rule(Rule.GardenGagLevelSix, 6)
+@rule(Rule.GardenGagLevelSeven, 7)
+def CanPlantGardenGagLevel(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    level = argument[0]
+    kit_count = state.count(ToontownItemName.GARDEN_KIT.value, player)
+    if level <= 4:
+        return kit_count >= 1
+    if level == 5:
+        return kit_count >= 2
+    if level == 6:
+        return kit_count >= 3
+    return kit_count >= 4
+
+
 @rule(Rule.HasTTCBook, ToontownItemName.TTC_JOKE_BOOK)
 @rule(Rule.HasDDBook, ToontownItemName.DD_JOKE_BOOK)
 @rule(Rule.HasDGBook, ToontownItemName.DG_JOKE_BOOK)
@@ -433,6 +490,43 @@ def GagTraining(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
                and (state.has(ToontownItemName.TRAP_FRAME.value, player) or state.has(ToontownItemName.SQUIRT_FRAME.value, player) or state.has(ToontownItemName.THROW_FRAME.value, player) or state.has(ToontownItemName.SOUND_FRAME.value, player))
     return state.has(argument[0].value, player, argument[1]) \
            and has_collected_items_for_gag_level(state, player, options, argument[1])
+
+
+@rule(Rule.AnyGagLevelOne, 1)
+@rule(Rule.AnyGagLevelTwo, 2)
+@rule(Rule.AnyGagLevelThree, 3)
+@rule(Rule.AnyGagLevelFour, 4)
+@rule(Rule.AnyGagLevelFive, 5)
+@rule(Rule.AnyGagLevelSix, 6)
+@rule(Rule.AnyGagLevelSeven, 7)
+def AnyGagLevel(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    gag_rules_by_level = (
+        (Rule.ToonUpOne, Rule.TrapOne, Rule.LureOne, Rule.SoundOne, Rule.ThrowOne, Rule.SquirtOne, Rule.DropOne),
+        (Rule.ToonUpTwo, Rule.TrapTwo, Rule.LureTwo, Rule.SoundTwo, Rule.ThrowTwo, Rule.SquirtTwo, Rule.DropTwo),
+        (Rule.ToonUpThree, Rule.TrapThree, Rule.LureThree, Rule.SoundThree, Rule.ThrowThree, Rule.SquirtThree, Rule.DropThree),
+        (Rule.ToonUpFour, Rule.TrapFour, Rule.LureFour, Rule.SoundFour, Rule.ThrowFour, Rule.SquirtFour, Rule.DropFour),
+        (Rule.ToonUpFive, Rule.TrapFive, Rule.LureFive, Rule.SoundFive, Rule.ThrowFive, Rule.SquirtFive, Rule.DropFive),
+        (Rule.ToonUpSix, Rule.TrapSix, Rule.LureSix, Rule.SoundSix, Rule.ThrowSix, Rule.SquirtSix, Rule.DropSix),
+        (Rule.ToonUpSeven, Rule.TrapSeven, Rule.LureSeven, Rule.SoundSeven, Rule.ThrowSeven, Rule.SquirtSeven, Rule.DropSeven),
+    )
+    possible_rules = list(gag_rules_by_level[argument[0] - 1])
+    if isinstance(options, ToontownOptions):
+        omitted_track = options.omit_gag.value
+    else:
+        omitted_track = options.get("omit_gag", 0)
+
+    omitted_track_to_rule_index = {
+        1: 1,
+        2: 3,
+        3: 4,
+        4: 5,
+        5: 6,
+    }
+    omitted_index = omitted_track_to_rule_index.get(omitted_track)
+    if omitted_index is not None:
+        possible_rules.pop(omitted_index)
+
+    return any(passes_rule(rule, state, locentr, world, player, options) for rule in possible_rules)
 
 
 @rule(Rule.CanReachTTC,  ToontownRegionName.TTC)

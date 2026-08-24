@@ -16,6 +16,7 @@ from toontown.battle import BattleBase
 from toontown.building import FADoorCodes
 from toontown.coghq.CogDisguiseGlobals import PartsPerSuitBitmasks
 from toontown.fishing import FishGlobals
+from toontown.estate import GardenGlobals
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.toonbase import ToontownGlobals
 from toontown.toon import NPCToons
@@ -986,8 +987,62 @@ class UndefinedReward(APReward):
         av.d_setSystemMessage(0, f"Unknown AP reward: {self.desc}")
 
 
-class IgnoreReward(APReward):
+class GardenKitReward(APReward):
+    def formatted_header(self):
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Planting ability increased!\nUpgraded your "),
+            MinimalJsonMessagePart("Gardening Kit", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
 
+    def apply(self, av: "DistributedToonAI"):
+        if not av.getGardenStarted():
+            av.b_setGardenStarted(1)
+            av.b_setGardenKit(GardenGlobals.BASIC_GARDEN_KIT)
+            return
+
+        next_kit = min(av.getGardenKit() + 1, GardenGlobals.PRO_GARDEN_KIT)
+        av.b_setGardenKit(next_kit)
+
+
+class GardenShovelReward(APReward):
+    def formatted_header(self):
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Dig bigger holes!\nUpgraded your "),
+            MinimalJsonMessagePart("Shovel", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.b_setShovel(min(av.getShovel() + 1, GardenGlobals.MAX_SHOVELS - 1))
+
+
+class GardenWateringCanReward(APReward):
+    def formatted_header(self):
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Water more plants!\nUpgraded your "),
+            MinimalJsonMessagePart("Watering Can", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.b_setWateringCan(min(av.getWateringCan() + 1, GardenGlobals.MAX_WATERING_CANS - 1))
+
+
+class MissingCatalogReward(APReward):
+    def formatted_header(self):
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Make some calls!\nFound your "),
+            MinimalJsonMessagePart("Missing Cattlelog", color='green'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        if av:
+            av.refreshAPCatalog()
+
+
+class IgnoreReward(APReward):
     def apply(self, av: "DistributedToonAI"):
         pass
 
@@ -1024,6 +1079,10 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.GAG_MULTIPLIER_1.value: GagTrainingMultiplierReward(1),
     ToontownItemName.GAG_MULTIPLIER_2.value: GagTrainingMultiplierReward(2),
     ToontownItemName.FISHING_ROD_UPGRADE.value: FishingRodUpgradeReward(),
+    ToontownItemName.GARDEN_KIT.value: GardenKitReward(),
+    ToontownItemName.GARDEN_SHOVEL.value: GardenShovelReward(),
+    ToontownItemName.GARDEN_WATERING_CAN.value: GardenWateringCanReward(),
+    ToontownItemName.MISSING_CATALOG.value: MissingCatalogReward(),
     ToontownItemName.TTC_ACCESS.value: AccessKeyReward(AccessKeyReward.TOONTOWN_CENTRAL),
     ToontownItemName.DD_ACCESS.value: AccessKeyReward(AccessKeyReward.DONALDS_DOCK),
     ToontownItemName.DG_ACCESS.value: AccessKeyReward(AccessKeyReward.DAISYS_GARDENS),

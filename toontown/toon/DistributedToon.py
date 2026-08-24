@@ -190,6 +190,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.shovelModel = None
         self.wateringCan = 0
         self.wateringCanSkill = 0
+        self.gardenKit = 0
         self.wateringCanModel = None
         self.gardenSpecials = []
         self.unlimitedSwing = 0
@@ -1288,7 +1289,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if self.isLocal():
             self.gotCatalogNotify = 1
             self.refreshOnscreenButtons()
-            print('local')
 
     def setDeliverySchedule(self, onOrder):
         self.onOrder = CatalogItemList.CatalogItemList(onOrder, store=CatalogItem.Customization | CatalogItem.DeliveryDate)
@@ -2078,6 +2078,12 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def setWateringCan(self, wateringCanId):
         self.wateringCan = wateringCanId
 
+    def setGardenKit(self, gardenKit):
+        self.gardenKit = gardenKit
+
+    def getGardenKit(self):
+        return self.gardenKit
+    
     def attachWateringCan(self):
         self.wateringCanModel = self.getWateringCanModel()
         self.wateringCanModel.reparentTo(self.rightHand)
@@ -2922,6 +2928,9 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
 
     def getCheckedLocations(self) -> List[int]:
         return self.checkedLocations
+
+    def hasCheckedLocation(self, location: int) -> bool:
+        return location in self.checkedLocations
 
     # To be overridden in LocalToon, just here for safety
     def sendArchipelagoMessages(self, messages: List[str]) -> None:

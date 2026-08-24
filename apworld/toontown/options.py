@@ -723,7 +723,17 @@ class PetShopRewardDisplayOption(RewardDisplayOption):
     """
     display_name = "Pet Shop Rewards"
 
-
+class CatalogRewardDisplayOption(RewardDisplayOption):
+    """
+    Controls Display of Cattlelog Rewards.
+    "hidden": hides what a multiworld reward will be, instead it'll name the check as the reward.
+    "owner": hides what the item is, but shows who it's for.
+    "class": hides what the item is, but shows who it's for, and what classification it has.
+    "shown": (default) Tells you what the reward will be when you're looking at the check.
+    "auto hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    """
+    display_name = "Cattlelog Rewards"
+    
 class RandomShopCostToggle(Toggle):
     """
     Enable to turn on the pet shop price randomization.
@@ -731,6 +741,57 @@ class RandomShopCostToggle(Toggle):
     """
 
     display_name = "Randomize Pet Shop Prices"
+    default = False
+
+
+class FlowerGardening(Toggle):
+    """
+    Enable flower gardening checks.
+    Adds progressive Garden Kits, Shovels, and Watering Cans as items. Makes flower varieties Archipelago checks.
+    """
+    display_name = "Flower Gardening"
+    default = False
+
+
+class TreeGardening(Toggle):
+    """
+    Enable gag tree gardening checks.
+    Adds progressive Garden Kits as items (if flower gardening isn't already enabled). Makes planting gag trees Archipelago checks.
+    """
+    display_name = "Tree Gardening"
+    default = False
+
+
+class TreeGardeningBehavior(Choice):
+    """
+    Determines which gag tree checks are generated, if tree_gardening is enabled.
+    all_tracks: Plant every gag level for every non-omitted track.
+    random_track: Plant every gag level for one randomly selected non-omitted track.
+    levels_only: Plant each gag level once; the track does not matter.
+    """
+    display_name = "Tree Gardening Behavior"
+    option_all_tracks = 0
+    option_random_track = 1
+    option_levels_only = 2
+    default = 2
+
+
+class CatalogChecks(Range):
+    """
+    How many Archipelago checks Clarabelle's Cattlelog offers.
+    """
+    display_name = "Cattlelog Checks"
+    range_start = 0
+    range_end = 7
+    default = 6
+
+
+class NeedCatalog(Toggle):
+    """
+    Adds a Missing Cattlelog to the item pool to lock cattlelog purchases behind them
+    NOTE: If catalog_checks is set to 0, the item will not be added to the pool
+    """
+    display_name = "Need Missing Cattlelog"
     default = False
 
 
@@ -1017,13 +1078,19 @@ class ToontownOptions(PerGameCommonOptions):
     ring_link: RingLinkOption
     cog_dmg_rando: DamageRandoOption
     pet_shop_display: PetShopRewardDisplayOption
+    catalog_display: CatalogRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
     random_prices: RandomShopCostToggle
+    flower_gardening: FlowerGardening
+    tree_gardening: TreeGardening
+    tree_gardening_behavior: TreeGardeningBehavior
+    catalog_checks: CatalogChecks
+    need_catalog: NeedCatalog
 
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
         ProgressionBalancing, Accessibility, SyncJellybeans, 
-        SyncGagExp, PetShopRewardDisplayOption, TaskRewardDisplayOption,
+        SyncGagExp, PetShopRewardDisplayOption, CatalogRewardDisplayOption, TaskRewardDisplayOption,
         TrapPercentOption
     ]),
     OptionGroup("Toon Settings", [
@@ -1032,7 +1099,8 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
         StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, StartMoneyOption,
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption, RandomShopCostToggle
+        RingLinkOption, RandomShopCostToggle, FlowerGardening, TreeGardening, TreeGardeningBehavior,
+        CatalogChecks, NeedCatalog
     ]),
     OptionGroup("Win Condition", [
         WinConditions, WinConditionRandomizedWeb, OmitRandomWinConditions,

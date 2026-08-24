@@ -1656,12 +1656,16 @@ class GrowFlowers(MagicWord):
     accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1684,12 +1688,16 @@ class PickAllFlowers(MagicWord):
     accessLevel = 'TTOFF_DEVELOPER'
 
     def handleWord(self, invoker, avId, toon, *args):
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1714,12 +1722,16 @@ class GrowTrees(MagicWord):
         index = args[1]
         grown = args[2]
 
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1754,12 +1766,16 @@ class PickTrees(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         track = args[0]
         index = args[1]
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
 
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1796,11 +1812,15 @@ class FlowerAll(MagicWord):
         species = args[0]
         variety = args[1]
 
-        estate = toon.air.estateMgr._lookupEstate(toon)
+        estate = toon.air.estateMgr.estate.get(toon.doId)
         if not estate:
             return "Estate not found!"
 
-        house = estate.getAvHouse(avId)
+        for _house in estate.houses:
+            if _house is not None:
+                if _house.getAvatarId() == avId:
+                    house = _house
+                    break 
         garden = house.gardenManager.gardens.get(toon.doId)
         if not garden:
             return "Garden not found!"
@@ -1844,7 +1864,6 @@ class MaxDoodle(MagicWord):
 
         pet.b_setTrickAptitudes([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         return "Maxed your doodle!"
-
 
 class LeaveRace(MagicWord):
     desc = "Leave the current race you are in."
@@ -3104,6 +3123,17 @@ class FreeBldg(MagicWord):
             return "Toons are currently taking back the building!"
         return "Couldn't free building."
 
+class StartGarden(MagicWord):
+    aliases = ["garden"]
+    desc = "Starts a garden on the target."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = 'USER'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        if toon.getGardenStarted():
+            return "You already have a garden!"
+        toon.b_setGardenStarted(True)
+        return "Started a garden for %s!" % toon.getName()
 
 class MaxGarden(MagicWord):
     desc = "Maxes your garden."
@@ -3745,6 +3775,208 @@ class APClear(MagicWord):
     def handleWord(self, invoker, avId, toon, *args):
         toon.newToon()
         return f"Wiped {toon.getName()}'s progress!"
+
+
+class EstateAPTest(MagicWord):
+    aliases = ['estateap', 'apestate']
+    desc = "Developer helper for testing AP estate integration."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [('operation', str, True), ('argument', str, False, "")]
+    accessLevel = 'TTOFF_DEVELOPER'
+
+    def _setEstateSlotData(self, toon, catalogChecks=7, flowers=True, trees=True, needCatalog=False,
+                           treeBehavior=0, treeTrack=-1):
+        slotData = dict(toon.slotData)
+        slotData['flower_gardening'] = flowers
+        slotData['tree_gardening'] = trees
+        slotData['tree_gardening_behavior'] = treeBehavior
+        slotData['tree_gardening_track'] = treeTrack
+        slotData['catalog_checks'] = max(0, min(7, catalogChecks))
+        slotData['need_catalog'] = needCatalog
+        slotData['estate_integration'] = flowers or trees or slotData['catalog_checks'] > 0
+        toon.b_setSlotData(slotData)
+
+    def _deliverCatalog(self, toon):
+        simbase.air.catalogManager.deliverCatalogFor(toon)
+
+    def _applyGardenReward(self, toon, itemName, count):
+        itemId = items.ITEM_NAME_TO_ID[itemName.value]
+        reward = rewards.get_ap_reward_from_id(itemId)
+        for _ in range(count):
+            reward.apply(toon)
+            if itemName == items.ToontownItemName.MISSING_CATALOG and not toon.hasReceivedItem(itemName):
+                toon.addReceivedItem(len(toon.getReceivedItems()), itemId)
+            toon.d_showReward(itemId, "The Spellbook", False)
+
+    def _getInt(self, value, default):
+        if not value:
+            return default
+        try:
+            return int(value)
+        except ValueError:
+            return default
+
+    def _getBool(self, value, default=True):
+        if not value:
+            return default
+        value = value.lower()
+        if value in ('on', 'enable', 'enabled', 'true', 'yes', '1'):
+            return True
+        if value in ('off', 'disable', 'disabled', 'false', 'no', '0'):
+            return False
+        return default
+
+    def _getDefaultTreeTrack(self, toon):
+        omitted_track = {
+            1: 1,
+            2: 3,
+            3: 4,
+            4: 5,
+            5: 6,
+        }.get(toon.slotData.get('omit_gag', 0), -1)
+        for track in range(7):
+            if track != omitted_track:
+                return track
+        return -1
+
+    def handleWord(self, invoker, avId, toon, *args):
+        operation = args[0].lower()
+        argument = args[1]
+
+        if invoker != toon:
+            return f"You can only use this command on yourself!"
+
+        if operation in ('on', 'enable'):
+            catalogChecks = self._getInt(argument, 7)
+            self._setEstateSlotData(toon, catalogChecks)
+            self._deliverCatalog(toon)
+            return f"Enabled AP estate integration and delivered {toon.slotData.get('catalog_checks', 0)} cattlelog checks."
+
+        if operation in ('off', 'disable'):
+            slotData = dict(toon.slotData)
+            slotData['estate_integration'] = False
+            slotData['flower_gardening'] = False
+            slotData['tree_gardening'] = False
+            slotData['catalog_checks'] = 0
+            slotData['need_catalog'] = False
+            toon.b_setSlotData(slotData)
+            return "Disabled AP estate integration."
+
+        if operation in ('kit', 'gardenkit'):
+            self._setEstateSlotData(toon, toon.slotData.get('catalog_checks', 7))
+            count = max(0, self._getInt(argument, 1))
+            self._applyGardenReward(toon, items.ToontownItemName.GARDEN_KIT, count)
+            return f"Gave {toon.getName()} {count} progressive garden kit reward(s)."
+
+        if operation in ('shovel',):
+            self._setEstateSlotData(toon, toon.slotData.get('catalog_checks', 7))
+            count = max(0, self._getInt(argument, 1))
+            self._applyGardenReward(toon, items.ToontownItemName.GARDEN_SHOVEL, count)
+            return f"Gave {toon.getName()} {count} progressive shovel reward(s)."
+
+        if operation in ('can', 'wateringcan'):
+            self._setEstateSlotData(toon, toon.slotData.get('catalog_checks', 7))
+            count = max(0, self._getInt(argument, 1))
+            self._applyGardenReward(toon, items.ToontownItemName.GARDEN_WATERING_CAN, count)
+            return f"Gave {toon.getName()} {count} progressive watering can reward(s)."
+
+        if operation in ('flower', 'flowers'):
+            slotData = dict(toon.slotData)
+            slotData['flower_gardening'] = self._getBool(argument)
+            slotData['estate_integration'] = (
+                slotData['flower_gardening'] or slotData.get('tree_gardening', False) or
+                slotData.get('catalog_checks', 0) > 0
+            )
+            toon.b_setSlotData(slotData)
+            return f"Flower gardening is now {slotData['flower_gardening']}."
+
+        if operation in ('tree', 'trees'):
+            behavior = {
+                'all': 0,
+                'all_tracks': 0,
+                'random': 1,
+                'random_track': 1,
+                'levels': 2,
+                'levels_only': 2,
+            }.get(argument.lower(), toon.slotData.get('tree_gardening_behavior', 0))
+            slotData = dict(toon.slotData)
+            slotData['tree_gardening'] = self._getBool(argument, True)
+            slotData['tree_gardening_behavior'] = behavior
+            if behavior == 1 and slotData.get('tree_gardening_track', -1) == -1:
+                slotData['tree_gardening_track'] = self._getDefaultTreeTrack(toon)
+            slotData['estate_integration'] = (
+                slotData.get('flower_gardening', False) or slotData['tree_gardening'] or
+                slotData.get('catalog_checks', 0) > 0
+            )
+            toon.b_setSlotData(slotData)
+            return "Tree gardening is now %s with behavior %s and track %s." % (
+                slotData['tree_gardening'],
+                slotData['tree_gardening_behavior'],
+                slotData.get('tree_gardening_track', -1),
+            )
+
+        if operation in ('needcatalog', 'need-catalog'):
+            slotData = dict(toon.slotData)
+            slotData['need_catalog'] = self._getBool(argument)
+            toon.b_setSlotData(slotData)
+            self._deliverCatalog(toon)
+            return f"Need Catalog is now {slotData['need_catalog']}."
+
+        if operation in ('missingcatalog', 'missing-catalog'):
+            self._applyGardenReward(toon, items.ToontownItemName.MISSING_CATALOG, 1)
+            self._deliverCatalog(toon)
+            return f"Gave {toon.getName()} the Missing Cattlelog reward."
+
+        if operation in ('catalog', 'cattlelog'):
+            catalogChecks = self._getInt(argument, toon.slotData.get('catalog_checks', 7))
+            self._setEstateSlotData(
+                toon,
+                catalogChecks,
+                toon.slotData.get('flower_gardening', False),
+                toon.slotData.get('tree_gardening', False),
+                toon.slotData.get('need_catalog', False),
+                toon.slotData.get('tree_gardening_behavior', 0),
+                toon.slotData.get('tree_gardening_track', -1),
+            )
+            self._deliverCatalog(toon)
+            return f"Delivered AP cattlelog with {toon.slotData.get('catalog_checks', 0)} check(s)."
+
+        if operation == 'scout':
+            checkCount = toon.slotData.get('catalog_checks', 7)
+            catalogLocationIds = [
+                locations.LOCATION_NAME_TO_ID[location.value]
+                for location in locations.CATALOG_LOCATIONS[:checkCount]
+            ]
+            toon.scoutLocations(catalogLocationIds)
+            return f"Scouted {len(catalogLocationIds)} cattlelog check(s)."
+
+        if operation == 'clear':
+            estateLocationNames = locations.GARDEN_LOCATIONS + locations.CATALOG_LOCATIONS
+            estateLocationIds = {locations.LOCATION_NAME_TO_ID[location.value] for location in estateLocationNames}
+            toon.checkedLocations = [location for location in toon.checkedLocations if location not in estateLocationIds]
+            toon.b_setCheckedLocations(toon.checkedLocations)
+            return f"Cleared local estate AP checks for {toon.getName()}."
+
+        if operation == 'state':
+            return ("estate_integration=%s flower_gardening=%s tree_gardening=%s "
+                    "tree_behavior=%s tree_track=%s catalog_checks=%s need_catalog=%s garden_started=%s garden_kit=%s "
+                    "shovel=%s watering_can=%s checked_locations=%s") % (
+                        toon.slotData.get('estate_integration', False),
+                        toon.slotData.get('flower_gardening', False),
+                        toon.slotData.get('tree_gardening', False),
+                        toon.slotData.get('tree_gardening_behavior', 0),
+                        toon.slotData.get('tree_gardening_track', -1),
+                        toon.slotData.get('catalog_checks', 0),
+                        toon.slotData.get('need_catalog', False),
+                        toon.getGardenStarted(),
+                        toon.getGardenKit(),
+                        toon.getShovel(),
+                        toon.getWateringCan(),
+                        len(toon.checkedLocations),
+                    )
+
+        return ("Invalid operation. Use on, off, kit, shovel, can, flower, tree, catalog, "
+                "needcatalog, missingcatalog, scout, clear, or state.")
 
 
 class Archipelago(MagicWord):

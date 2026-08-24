@@ -4,6 +4,10 @@ from datetime import datetime
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.ClockDelta import globalClockDelta
 
+from apworld.toontown.items import ToontownItemName
+from apworld.toontown.options import RewardDisplayOption
+from toontown.archipelago.definitions import util
+from toontown.archipelago.packets.serverbound.location_scouts_packet import LocationScoutsPacket
 from toontown.catalog import CatalogItem
 from toontown.catalog.CatalogInvalidItem import CatalogInvalidItem
 from toontown.catalog.CatalogItemList import CatalogItemList
@@ -82,6 +86,27 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
         av = self.air.doId2do.get(avId)
         if not av:
             return
+
+        if av.slotData.get('need_catalog', False) and not av.hasReceivedItem(ToontownItemName.MISSING_CATALOG):
+            av.d_setSystemMessage(0, 'You need your missing cattlelog before using the phone.')
+            self.sendUpdateToAvatarId(avId, 'freeAvatar', [])
+            return
+
+        if av.slotData.get('catalog_checks', 0) > 0:
+            self.air.catalogManager.deliverCatalogFor(av)
+            if av.slotData.get("catalog_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint:
+                catalog_check_count = av.slotData.get('catalog_checks', 0)
+                if av.archipelago_session:
+                    locations_to_hint = [
+                        util.ap_location_name_to_id(util.catalog_check_to_location(i))
+                        for i in range(catalog_check_count)
+                        if not av.hasCheckedLocation(util.ap_location_name_to_id(util.catalog_check_to_location(i)))
+                    ]
+                    if locations_to_hint:
+                        packet = LocationScoutsPacket()
+                        packet.create_as_hint = 2  # only announce new hints
+                        packet.locations = locations_to_hint
+                        av.archipelago_session.client.send_packet(packet)
 
         if not any((av.weeklyCatalog, av.backCatalog, av.monthlyCatalog)):
             self.d_setMovie(PhoneGlobals.PHONE_MOVIE_EMPTY, avId)

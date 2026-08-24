@@ -5,7 +5,7 @@ from direct.directnotify import DirectNotifyGlobal
 from toontown.estate import GardenGlobals
 from toontown.estate.DistributedPlantBaseAI import DistributedPlantBaseAI
 
-ONE_DAY = 86400
+ONE_MINUTE = 60
 PROBLEM_WILTED = 1
 PROBLEM_NOT_GROWN = 2
 PROBLEM_HARVESTED_LATELY = 4
@@ -48,28 +48,11 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
 
     def calculate(self, lastHarvested, lastCheck):
         now = int(time.time())
-        if lastCheck == 0:
-            lastCheck = now
-
-        grown = 0
-
-        # Water level
-        elapsed = now - lastCheck
-        while elapsed > ONE_DAY:
-            if self.waterLevel >= 0:
-                grown += self.GrowRate
-
-            elapsed -= ONE_DAY
-            self.waterLevel -= 1
-
-        self.waterLevel = max(self.waterLevel, -2)
-
-        # Growth level
         maxGrowth = self.growthThresholds[2]
-        newGrowthLevel = min(self.growthLevel + grown, maxGrowth)
-        self.setGrowthLevel(newGrowthLevel)
-        self.setWilted(self.waterLevel == -2)
-        self.lastCheck = now - elapsed
+        self.waterLevel = max(self.waterLevel, 0)
+        self.setGrowthLevel(maxGrowth)
+        self.setWilted(0)
+        self.lastCheck = now
         self.lastHarvested = lastHarvested
         self.update()
 
@@ -97,6 +80,7 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
         return 'garden-%d-%d-%s' % (self.ownerDoId, typeIndex, string)
 
     def delete(self):
+        taskMgr.remove(self.uniqueName('auto-remove'))
         messenger.send(self.getEventName('remove'))
         self.ignoreAll()
         DistributedPlantBaseAI.delete(self)
@@ -116,7 +100,7 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
         if self.getGrowthLevel() < self.growthThresholds[2]:
             problem |= PROBLEM_NOT_GROWN
 
-        if (self.lastCheck - self.lastHarvested) < ONE_DAY:
+        if (self.lastCheck - self.lastHarvested) < ONE_MINUTE:
             problem |= PROBLEM_HARVESTED_LATELY
 
         return problem
@@ -138,6 +122,7 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
         if problem:
             self.air.writeServerEvent('suspicious', avId, 'tried to harvest a tree that\'s not fruiting!',
                                       problem=problem)
+            self.d_setMovie(GardenGlobals.MOVIE_HARVEST_REJECTED, avId)
             return
 
         harvested = 0
@@ -158,28 +143,41 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
         self.d_setMovie(GardenGlobals.MOVIE_REMOVE)
 
         def handleRemove(task):
-            if not self.air:
-                return
-
-            plot = self.mgr.placePlot(self.getTreeIndex())
-            plot.setPlot(self.plot)
-            plot.setPos(self.getPos())
-            plot.setH(self.getH())
-            plot.setOwnerIndex(self.ownerIndex)
-            plot.generateWithRequired(self.zoneId)
-            plot.d_setMovie(GardenGlobals.MOVIE_FINISHREMOVING, avId)
-            plot.d_setMovie(GardenGlobals.MOVIE_CLEAR, avId)
-            self.air.writeServerEvent('remove-tree', avId, plot=self.plot)
-            self.requestDelete()
-            self.mgr.trees.remove(self)
-            mapData = list(map(list, self.mgr.data['trees']))
-            mapData[self.getTreeIndex()] = self.mgr.getNullPlant()
-            self.mgr.data['trees'] = mapData
-            self.mgr.update()
-            self.mgr.reconsiderAvatarOrganicBonus()
+            self.removeTree(avId)
             return task.done
 
         taskMgr.doMethodLater(7, handleRemove, self.uniqueName('do-remove'))
+
+    def removeTree(self, avId=None):
+        if not self.air:
+            return
+
+        plot = self.mgr.placePlot(self.getTreeIndex())
+        plot.setPlot(self.plot)
+        plot.setPos(self.getPos())
+        plot.setH(self.getH())
+        plot.setOwnerIndex(self.ownerIndex)
+        plot.generateWithRequired(self.zoneId)
+        if avId is not None:
+            plot.d_setMovie(GardenGlobals.MOVIE_FINISHREMOVING, avId)
+            plot.d_setMovie(GardenGlobals.MOVIE_CLEAR, avId)
+            self.air.writeServerEvent('remove-tree', avId, plot=self.plot)
+        else:
+            self.air.writeServerEvent('auto-remove-tree', self.ownerDoId, plot=self.plot)
+        self.requestDelete()
+        self.mgr.trees.discard(self)
+        mapData = list(map(list, self.mgr.data['trees']))
+        mapData[self.getTreeIndex()] = self.mgr.getNullPlant()
+        self.mgr.data['trees'] = mapData
+        self.mgr.update()
+        self.mgr.reconsiderAvatarOrganicBonus()
+
+    def scheduleAutoRemove(self, delay=30):
+        def handleAutoRemove(task):
+            self.removeTree()
+            return task.done
+
+        taskMgr.doMethodLater(delay, handleAutoRemove, self.uniqueName('auto-remove'))
 
     def doGrow(self, grown):
         maxGrowth = self.growthThresholds[2]

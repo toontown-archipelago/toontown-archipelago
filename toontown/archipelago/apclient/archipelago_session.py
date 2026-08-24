@@ -1,7 +1,7 @@
 # Represents a gameplay session attached to toon players, handles rewarding and sending items through the multiworld
 import math
 import os
-from typing import List, TYPE_CHECKING, Any
+from typing import List, TYPE_CHECKING, Any, Union
 
 from toontown.archipelago.apclient.ap_client_enums import APClientEnums
 from toontown.archipelago.apclient.archipelago_client import ArchipelagoClient
@@ -192,15 +192,19 @@ class ArchipelagoSession:
         self.client.send_packet(goal_complete_packet)
 
     # Call to send a LocationScout packet to AP so we can receive information about items at specific locations
-    def scout(self, locations: List[str], hint_item=False, force_broadcast=False):
+    def scout(self, locations: List[Union[str, int, Any]], hint_item=False, force_broadcast=False):
 
         locationIDs = []
         for location in locations:
-            location_id = util.ap_location_name_to_id(location)
+            if isinstance(location, int):
+                location_id = location
+            else:
+                location_id = util.ap_location_name_to_id(location)
             if location_id in self.client.all_locations:
                 locationIDs.append(location_id)
             else:
-                self.avatar.d_setSystemMessage(0, f'DEBUG: {location.value} is missing, this is likely a generation bug caused by another apworld.')
+                loc_name = location.value if hasattr(location, 'value') else str(location)
+                self.avatar.d_setSystemMessage(0, f'DEBUG: {loc_name} is missing, this is likely a generation bug caused by another apworld.')
                 self.avatar.d_setSystemMessage(0, 'DEBUG: Please inform your host to check the generation log for a warning.')
 
         scout_packet = LocationScoutsPacket()
@@ -208,9 +212,9 @@ class ArchipelagoSession:
 
         # todo add setting in YAML for hinting the scout
         if hint_item and force_broadcast:
-            scout_packet.hint_item = 2
+            scout_packet.create_as_hint = 2
         elif hint_item:
-            scout_packet.hint_item = 1
+            scout_packet.create_as_hint = 1
 
         self.client.send_packet(scout_packet)
 

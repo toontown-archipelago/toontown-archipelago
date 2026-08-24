@@ -281,6 +281,30 @@ Toontown:
   # Range: 0 to 100
   fish_pity: 25
 
+  ### Estate/Gardening Settings ###
+
+  # Enable flower gardening checks.
+  # Adds progressive Garden Kits, Shovels, and Watering Cans as items. Makes flower varieties Archipelago checks.
+  flower_gardening: 'false'
+
+  # Enable gag tree gardening checks.
+  # Adds progressive Garden Kits as items (if flower gardening isn't already enabled). Makes planting gag trees Archipelago checks.
+  tree_gardening: 'false'
+
+  # Determines which gag tree checks are generated, if tree_gardening is enabled.
+  # all_tracks: Plant every gag level for every non-omitted track.
+  # random_track: Plant every gag level for one randomly selected non-omitted track.
+  # levels_only: Plant each gag level once; the track does not matter.
+  tree_gardening_behavior: 'levels_only'
+
+  # How many Archipelago checks Clarabelle's Cattlelog offers.
+  # Range: 0 to 7
+  catalog_checks: 6
+
+  # Adds a Missing Cattlelog to the item pool to lock cattlelog purchases behind them
+  # NOTE: If catalog_checks is set to 0, the item will not be added to the pool
+  need_catalog: 'false'
+
   ### Data Sync Settings ###
 
   # Enable to sync Jellybeans between toons on the same slot.
@@ -295,13 +319,14 @@ Toontown:
   # If this is 'false', the data will still be sent, but your toon will not sync with it.
   slot_sync_gag_experience: 'true'
 
-  # Controls Display of Pet Shop and Task Rewards, respectively.
+  # Controls Display of Pet Shop, Cattlelog, and Task Rewards, respectively.
   # - hidden: hides what a multiworld reward will be, instead it'll name the check as the reward.
   # - owner: hides what the item is, but shows who it's for.
   # - class: hides what the item is, but shows who it's for, and what classification it has.
   # - shown: (default) Tells you what the reward will be when you're looking at the check.
   # - auto_hint: As shown, but also sends a hint out to the multiworld when you would be shown the reward.
   pet_shop_display: 'shown'
+  catalog_display: 'shown'
   task_reward_display: 'shown'
 
   # Enable to turn on the pet shop price randomization.
@@ -387,6 +412,7 @@ Toontown:
   # Task Capacity - Task capacity upgrades
   # Laff Boosts - All Laff Boosts
   # Joke Books - All Joke Books
+  # Gardening Items - All upgrades for gardening features
   # Reward Bundles - All Boss Reward items
   # Heals - All healing junk
   # Jellybeans - All Jellybean junk
@@ -461,6 +487,10 @@ Toontown:
   # Buildings - All Cog Building completion locations
   # Golfing - All minigolf locations
   # Racing - All racing locations
+  # Gardening - All Locations related to gardening
+  # Flower Gardening - All flower gardening locations
+  # Tree Gardening - All tree gardening locations
+  # Cattlelog - All locations related to the cattlelog
   # Bounty - All bounty locations
 
   start_location_hints:

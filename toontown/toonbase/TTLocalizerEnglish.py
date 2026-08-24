@@ -9277,6 +9277,8 @@ ConfirmRemoveStatuary = 'Are you sure you want to permanently delete the %(item)
 ResultPlantedSomething = 'Congratulations! You just planted a %s.'
 ResultPlantedSomethingAn = 'Congratulations! You just planted an %s.'
 ResultPlantedNothing = "That didn't work.  Please try a different combination of jellybeans."
+GardenKitTooLowForGag = "Your %(kit)s can only grow level %(gagLevel)d gags.  Upgrade your gardening kit before planting this gag."
+GardenPlantRejected = "That gag could not be planted.  Please check your gardening kit and try again."
 GardenGagTree = ' Gag Tree'
 GardenUberGag = 'Uber Gag'
 
