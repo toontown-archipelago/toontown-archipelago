@@ -9,7 +9,7 @@ class MusicManager:
     def __init__(self):
         fileSystem = VirtualFileSystem.getGlobalPtr()
         self.musicJson = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
-        self.musicJsonCopy = self.musicJson.copy()
+        self.musicJsonCopy = json.loads(fileSystem.readFile(ToontownGlobals.musicJsonFilePath, True))
         self.previousMusic = None
         self.currentMusic = {}
         self.currentMusicInfo = {}
@@ -97,9 +97,12 @@ class MusicManager:
                         fileSystem = VirtualFileSystem.getGlobalPtr()
                         pack_data = json.loads(fileSystem.readFile(json_path, True))
                         for key in list(pack_data.keys()):
-                            print(key)
                             if key in list(self.musicJson.get("global_music", {}).keys()):
-                                self.musicJson.get("global_music", {})[key] = pack_data[key]
+                                # If we hit this, that means we've already replaced this key from a previous music pack, add to the list instead to randomize which pack music comes from
+                                if self.musicJson["global_music"][key] != self.musicJsonCopy.get("global_music", {})[key]:
+                                    self.musicJson.get("global_music", {})[key].extend(pack_data[key])
+                                else:
+                                    self.musicJson.get("global_music", {})[key] = pack_data[key]
         except Exception as e:
             print(e)
 
