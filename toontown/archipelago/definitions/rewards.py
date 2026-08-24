@@ -990,9 +990,9 @@ class UndefinedReward(APReward):
 class GardenKitReward(APReward):
     def formatted_header(self):
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Upgraded your "),
-            MinimalJsonMessagePart("Garden Kit", color='green'),
-            MinimalJsonMessagePart("!\n"),
+            MinimalJsonMessagePart("Planting ability increased!\nUpgraded your "),
+            MinimalJsonMessagePart("Gardening Kit", color='green'),
+            MinimalJsonMessagePart("!"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
@@ -1008,9 +1008,9 @@ class GardenKitReward(APReward):
 class GardenShovelReward(APReward):
     def formatted_header(self):
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Upgraded your "),
+            MinimalJsonMessagePart("Dig bigger holes!\nUpgraded your "),
             MinimalJsonMessagePart("Shovel", color='green'),
-            MinimalJsonMessagePart("!\n"),
+            MinimalJsonMessagePart("!"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
@@ -1020,9 +1020,9 @@ class GardenShovelReward(APReward):
 class GardenWateringCanReward(APReward):
     def formatted_header(self):
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Upgraded your "),
+            MinimalJsonMessagePart("Water more plants!\nUpgraded your "),
             MinimalJsonMessagePart("Watering Can", color='green'),
-            MinimalJsonMessagePart("!\n"),
+            MinimalJsonMessagePart("!"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
@@ -1032,9 +1032,9 @@ class GardenWateringCanReward(APReward):
 class MissingCatalogReward(APReward):
     def formatted_header(self):
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Found your "),
+            MinimalJsonMessagePart("Make some calls!\nFound your "),
             MinimalJsonMessagePart("Missing Cattlelog", color='green'),
-            MinimalJsonMessagePart("!\n"),
+            MinimalJsonMessagePart("!"),
         ])
 
     def apply(self, av: "DistributedToonAI"):
@@ -1043,7 +1043,6 @@ class MissingCatalogReward(APReward):
 
 
 class IgnoreReward(APReward):
-
     def apply(self, av: "DistributedToonAI"):
         pass
 
