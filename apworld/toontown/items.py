@@ -276,7 +276,7 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # region gardening
     ToontownItemDefinition(ToontownItemName.GARDEN_KIT, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.GARDEN_SHOVEL, ItemClassification.progression),
-    ToontownItemDefinition(ToontownItemName.GARDEN_WATERING_CAN, ItemClassification.progression_deprioritized),
+    ToontownItemDefinition(ToontownItemName.GARDEN_WATERING_CAN, ItemClassification.useful),
     ToontownItemDefinition(ToontownItemName.MISSING_CATALOG, ItemClassification.progression),
     # endregion
     # region bounties
