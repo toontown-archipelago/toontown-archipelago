@@ -151,12 +151,9 @@ jobs:
 
       - name: Build & Copy Resources
         run: |
-          wget https://www.panda3d.org/download/panda3d-1.10.16/Panda3D-SDK-1.10.16-MacOSX10.9.dmg
-          hdiutil attach Panda3D-SDK-1.10.16-MacOSX10.9.dmg
-          sudo arch -x86_64 installer -pkg 	"/Volumes/Panda3D SDK 1.10.16/Panda3D.mpkg" -target  /
           mkdir release/game/resources
           cd resources
-          for dir in */; do /Library/Developer/Panda3D/bin/multify -c -f "../release/game/resources/${dir%/}.mf" ${dir%/}; done
+          for dir in */; do $(dirname $(which python))/multify -c -f "../release/game/resources/${dir%/}.mf" ${dir%/}; done
       - name: Copy Config Files
         run: |
           mkdir release/game/config
