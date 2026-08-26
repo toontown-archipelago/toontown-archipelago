@@ -74,7 +74,7 @@ class DistributedPlantBase(DistributedLawnDecor.DistributedLawnDecor):
         return self.growthLevel
 
     def getShovelAction(self):
-        if self.isFruiting() and not self.isWilted() and self.canBeHarvested():
+        if self.isFruiting() and getattr(self, 'fruits', True) and not self.isWilted() and self.canBeHarvested():
             return TTLocalizer.GardeningPick
         else:
             return TTLocalizer.GardeningRemove
