@@ -76,7 +76,6 @@ class DistributedPlantBaseAI(DistributedLawnDecorAI):
         if not av:
             return
 
-        av.b_setWateringCanSkill(av.getWateringCanSkill() + 1)
         self.d_setMovie(GardenGlobals.MOVIE_CLEAR)
 
     def update(self):

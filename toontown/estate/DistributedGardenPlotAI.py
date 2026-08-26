@@ -207,37 +207,15 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
         self.__plantingAvId = av.doId
 
     def plantRandomFlower(self, usingFlowerAll=True, fullyGrown=False):
-        from toontown.toon.DistributedToonAI import DistributedToonAI
         av = self.air.doId2do.get(self.ownerDoId)
         if not av:
             return
 
-        if not isinstance(av, DistributedToonAI):
-            self.notify.warning('av is not a DistributedToonAI, but a %s' % av.__class__.__name__)
+        recipes = self.mgr.getUncollectedFlowerRecipes()
+        if not recipes:
             return
 
-        shovel, shovelSkill = av.getShovel(), av.getShovelSkill()
-        available_recipes = {}
-        for recipe_key, recipe in GardenGlobals.getAvailableRecipes(shovel, shovelSkill).items():
-            species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipe_key)
-            plant = GardenGlobals.PlantAttributes.get(species, {})
-            if plant.get('plantType') == GardenGlobals.FLOWER_TYPE:
-                available_recipes[recipe_key] = recipe
-
-        if not available_recipes:
-            return
-
-        discovered_flowers = av.flowerCollection
-        undiscovered_recipes = {}
-        for recipe_key, recipe in available_recipes.items():
-            species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipe_key)
-            if not discovered_flowers.hasFlower(species, variety):
-                undiscovered_recipes[recipe_key] = recipe
-
-        if undiscovered_recipes:
-            recipeKey = random.choice(list(undiscovered_recipes.keys()))
-        else:
-            recipeKey = random.choice(list(available_recipes.keys()))
+        recipeKey = random.choice(recipes)
 
         species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
         

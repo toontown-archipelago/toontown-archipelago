@@ -31,6 +31,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         self.signHasBeenStuck2Ground = False
         self._teaserPanel = None
         self.setName('DistributedGagTree')
+        self.fruits = None
         return
 
     def delete(self):
@@ -129,7 +130,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
 
     def handlePicking(self):
         messenger.send('wakeup')
-        if self.isFruiting() and self.canBeHarvested():
+        if self.isFruiting() and self.fruits and self.canBeHarvested():
             self.startInteraction()
             self.doHarvesting()
             return

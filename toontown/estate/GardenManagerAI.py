@@ -189,6 +189,33 @@ class GardenAI:
             self.update()
         return True
     
+    def getUncollectedFlowerRecipes(self):
+        """Prioritize uncollected flowers, falling back to available recipes."""
+        av = self.air.doId2do.get(self.avId)
+        if not av:
+            return []
+
+        shovel, shovelSkill = av.getShovel(), av.getShovelSkill()
+        planted_flowers = {
+            (flower[0], flower[4]) for flower in self.data['flowers'] if flower[0] != -1
+        }
+        collected_or_picked_flowers = {
+            (flower.getSpecies(), flower.getVariety()) for flower in av.flowerBasket.getFlower()
+        }
+        available_recipes = []
+        uncollected_recipes = []
+        for recipe_key in GardenGlobals.getAvailableRecipes(shovel, shovelSkill):
+            species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipe_key)
+            plant = GardenGlobals.PlantAttributes.get(species, {})
+            if plant.get('plantType') != GardenGlobals.FLOWER_TYPE:
+                continue
+            available_recipes.append(recipe_key)
+            if (not av.flowerCollection.hasFlower(species, variety) and
+                    (species, variety) not in collected_or_picked_flowers and
+                    (species, variety) not in planted_flowers):
+                uncollected_recipes.append(recipe_key)
+        return uncollected_recipes or available_recipes
+
     def plantRandomFlower(self, flowerIndex, plot=None, ownerIndex=-1, plotId=-1):
         """Plants a random flower (prioritizing undiscovered) at the given index.
         """
@@ -200,34 +227,11 @@ class GardenAI:
         if flower_gardening and not av.getGardenStarted():
             return None
 
-        # Get the list of all possible flowers at the player's current shovel level.
-        shovel, shovelSkill = av.getShovel(), av.getShovelSkill()
-        available_recipes = {}
-        for recipe_key, recipe in GardenGlobals.getAvailableRecipes(shovel, shovelSkill).items():
-            species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipe_key)
-            plant = GardenGlobals.PlantAttributes.get(species, {})
-            if plant.get('plantType') == GardenGlobals.FLOWER_TYPE:
-                available_recipes[recipe_key] = recipe
-
-        if not available_recipes:
+        recipes = self.getUncollectedFlowerRecipes()
+        if not recipes:
             return None
 
-        # Get the list of flowers the player has already discovered.
-        discovered_flowers = av.flowerCollection
-
-        # Determine the set of undiscovered flowers.
-        undiscovered_recipes = {}
-        for recipe_key, recipe in available_recipes.items():
-            species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipe_key)
-            if not discovered_flowers.hasFlower(species, variety):
-                undiscovered_recipes[recipe_key] = recipe
-
-        # If there are undiscovered flowers, pick a random flower from that set.
-        if undiscovered_recipes:
-            recipeKey = random.choice(list(undiscovered_recipes.keys()))
-        # If all flowers have been discovered, pick a random flower from the full list of possible flowers.
-        else:
-            recipeKey = random.choice(list(available_recipes.keys()))
+        recipeKey = random.choice(recipes)
 
         species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
         growthLevel = GardenGlobals.PlantAttributes[species]['growthThresholds'][2]
