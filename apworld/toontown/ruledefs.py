@@ -209,9 +209,9 @@ def HasItemCountRule(state: CollectionState, locentr: LocEntrDef, world: MultiWo
 @rule(Rule.CanBuyDDLDoodle, 6)
 def HasEnoughBeanCapacity(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
-        random_price = options.random_prices.value
+        random_price = options.doodle_price_rando.value
     else:
-        random_price = options.get("random_prices", False)
+        random_price = options.get("doodle_price_rando", False)
     # We expect one more jar boost logically just in-case we get a high-roll on increase
     if random_price:
         return (state.count(ToontownItemName.MONEY_CAP_1000.value, player) >= (argument[0] + 1))
@@ -241,18 +241,23 @@ def HasGardenCanTier(state: CollectionState, locentr: LocEntrDef, world: MultiWo
     return state.count(ToontownItemName.GARDEN_WATERING_CAN.value, player) >= argument[0]
 
 
-@rule(Rule.CanBuyCatalogCheckOne, 1)
-@rule(Rule.CanBuyCatalogCheckTwo, 2)
-@rule(Rule.CanBuyCatalogCheckThree, 3)
-@rule(Rule.CanBuyCatalogCheckFour, 4)
-@rule(Rule.CanBuyCatalogCheckFive, 5)
-@rule(Rule.CanBuyCatalogCheckSix, 6)
-@rule(Rule.CanBuyCatalogCheckSeven, 7)
+@rule(Rule.CanBuyCatalogCheckOne, 0)
+@rule(Rule.CanBuyCatalogCheckTwo, 1)
+@rule(Rule.CanBuyCatalogCheckThree, 2)
+@rule(Rule.CanBuyCatalogCheckFour, 2)
+@rule(Rule.CanBuyCatalogCheckFive, 3)
+@rule(Rule.CanBuyCatalogCheckSix, 4)
+@rule(Rule.CanBuyCatalogCheckSeven, 5)
+@rule(Rule.CanBuyCatalogCheckEight, 5)
+@rule(Rule.CanBuyCatalogCheckNine, 6)
+@rule(Rule.CanBuyCatalogCheckTen, 7)
+@rule(Rule.CanBuyCatalogCheckEleven, 8)
+@rule(Rule.CanBuyCatalogCheckTwelve, 8)
 def CanBuyCatalogCheck(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
-        random_price = options.random_prices.value
+        random_price = options.catalog_price_rando.value
     else:
-        random_price = options.get("random_prices", False)
+        random_price = options.get("catalog_price_rando", False)
     required = argument[0] + (1 if random_price else 0)
     return state.count(ToontownItemName.MONEY_CAP_1000.value, player) >= required
 
