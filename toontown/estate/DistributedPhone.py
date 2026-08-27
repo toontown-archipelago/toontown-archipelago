@@ -29,6 +29,7 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
         self.initialScale = None
         self.usedInitialScale = 0
         self.toonScale = None
+        self.phoneScale = None
         self.phoneGui = None
         self.phoneDialog = None
         self.model = None
@@ -302,7 +303,7 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
         self.toonScale = toon.getGeomNode().getChild(0).getScale(self.getParent())
         walkTime = 1.0
         scaleTime = 1.0
-        origScale = self.getScale()
+        self.phoneScale = self.getScale()
         origToonPos = toon.getPos()
         origToonHpr = toon.getHpr()
         self.origToonHpr = origToonHpr
@@ -311,7 +312,7 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
         destToonPos = toon.getPos()
         destToonHpr = toon.getHpr()
         destToonHpr = VBase3(PythonUtil.fitSrcAngle2Dest(destToonHpr[0], origToonHpr[0]), destToonHpr[1], destToonHpr[2])
-        self.setScale(origScale)
+        self.setScale(self.phoneScale)
         toon.setPos(origToonPos)
         toon.setHpr(origToonHpr)
         walkToPhone = Sequence(Func(toon.stopSmooth), Func(toon.loop, 'walk'), Func(base.playSfx, base.localAvatar.soundWalk), toon.posHprInterval(walkTime, destToonPos, destToonHpr, blendType='easeInOut'), Func(toon.loop, 'neutral'), Func(toon.startSmooth))
@@ -323,7 +324,8 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
         legs = TextEncoder.upper(toon.style.legs[0])
         phoneBackAnim = '%s%s_phoneBack' % (torso, legs)
         scaleTime = 1.0
-        interval = Sequence(Parallel(ActorInterval(self.model, phoneBackAnim), ActorInterval(toon, 'phoneBack'), Sequence(Wait(1.0), Func(self.__receiverToPhone), Func(base.playSfx, self.hangUpSfx))), self.scaleInterval(scaleTime, localAvatar.getGeomNode().getScale()[2], blendType='easeInOut'), Func(toon.loop, 'neutral'))
+        phoneScale = self.phoneScale or self.initialScale or (1, 1, 1)
+        interval = Sequence(Parallel(ActorInterval(self.model, phoneBackAnim), ActorInterval(toon, 'phoneBack'), Sequence(Wait(1.0), Func(self.__receiverToPhone), Func(base.playSfx, self.hangUpSfx))), self.scaleInterval(scaleTime, phoneScale, blendType='easeInOut'), Func(toon.loop, 'neutral'))
         if self.origToonHpr:
             interval.append(Func(toon.setHpr, self.origToonHpr))
             self.origToonHpr = None
@@ -362,6 +364,7 @@ class DistributedPhone(DistributedFurnitureItem.DistributedFurnitureItem):
             self.intervalAvatar = None
         self.__receiverToPhone()
         self.model.pose('SS_phoneOut', 0)
+        self.setScale(self.phoneScale or self.initialScale or (1, 1, 1))
         self.phoneInUse = 0
         return
 
