@@ -196,9 +196,6 @@ class GardenAI:
             return []
 
         shovel, shovelSkill = av.getShovel(), av.getShovelSkill()
-        planted_flowers = {
-            (flower[0], flower[4]) for flower in self.data['flowers'] if flower[0] != -1
-        }
         collected_or_picked_flowers = {
             (flower.getSpecies(), flower.getVariety()) for flower in av.flowerBasket.getFlower()
         }
@@ -211,8 +208,7 @@ class GardenAI:
                 continue
             available_recipes.append(recipe_key)
             if (not av.flowerCollection.hasFlower(species, variety) and
-                    (species, variety) not in collected_or_picked_flowers and
-                    (species, variety) not in planted_flowers):
+                    (species, variety) not in collected_or_picked_flowers):
                 uncollected_recipes.append(recipe_key)
         return uncollected_recipes or available_recipes
 
