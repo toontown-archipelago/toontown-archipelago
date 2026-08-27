@@ -20,6 +20,7 @@ class HintNode(DirectFrame):
         super().__init__(parent)
         main_text_scale = 0.055
 
+
         self.title = DirectLabel(parent=self, scale=0.07, pos=(0.02, 0, -0.08), text="Select an Item", textMayChange=True, relief=None)
         self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % (0, 0),
                                            text_scale=main_text_scale, text_align=TextNode.ACenter, relief=None,
@@ -115,6 +116,17 @@ class HintNode(DirectFrame):
         foundHints = []
         lostHints = []
         notHinted = []
+        flag_to_color = {
+            0: 'lightblue',
+            1: 'plum',
+            2: 'slateblue',
+            4: 'salmon',
+        }
+        flag_to_star = {
+            0: ["", ""],
+            1: ["*", "*"],
+            2: ["", "*"]
+        }
         for labelIndex in range(checkMax):
             # If we do not have a hint for this, set defaults
             if labelIndex >= len(hints):
@@ -128,10 +140,15 @@ class HintNode(DirectFrame):
             # We have a hint! Set up the text to tell the player where it is
             hint: HintedItem = hints[labelIndex]
             if self.externalHint:
+                # Default to blue, otherwise get right color for classification
+                item_flags = hint.item.flags
+                item_color = flag_to_color.get(item_flags, 2)
+                item_stars = flag_to_star.get(item_flags, 0)
+                item_name = item_stars[0] + hint.item_name + item_stars[1]
                 text = get_raw_formatted_string([
                     MinimalJsonMessagePart(hint.asking_name, color='magenta'),
                     MinimalJsonMessagePart('\'s ', color='black'),
-                    MinimalJsonMessagePart(hint.item_name, color='blue'),
+                    MinimalJsonMessagePart(item_name, color=item_color),
                     MinimalJsonMessagePart(' is here.', color='black'),
                 ])
             else:
