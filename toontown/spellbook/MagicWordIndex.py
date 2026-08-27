@@ -3791,7 +3791,7 @@ class EstateAPTest(MagicWord):
         slotData['tree_gardening'] = trees
         slotData['tree_gardening_behavior'] = treeBehavior
         slotData['tree_gardening_track'] = treeTrack
-        slotData['catalog_checks'] = max(0, min(7, catalogChecks))
+        slotData['catalog_checks'] = max(0, min(12, catalogChecks))
         slotData['need_catalog'] = needCatalog
         slotData['estate_integration'] = flowers or trees or slotData['catalog_checks'] > 0
         toon.b_setSlotData(slotData)

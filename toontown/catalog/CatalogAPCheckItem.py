@@ -7,9 +7,19 @@ from toontown.toonbase import ToontownGlobals
 
 class CatalogAPCheckItem(CatalogItem.CatalogItem):
 
-    def makeNewItem(self, checkIndex=0):
+    BasePrice = 700
+    PriceIncrement = 750
+    PriceRandoMin = -250
+    PriceRandoMax = 750
+
+    def makeNewItem(self, checkIndex=0, price=None):
         self.checkIndex = checkIndex
+        self.price = price if price is not None else self.getDefaultPrice(checkIndex)
         CatalogItem.CatalogItem.makeNewItem(self)
+
+    @staticmethod
+    def getDefaultPrice(checkIndex):
+        return CatalogAPCheckItem.BasePrice + checkIndex * CatalogAPCheckItem.PriceIncrement
 
     def getTypeName(self):
         return 'Archipelago Check'
@@ -58,7 +68,7 @@ class CatalogAPCheckItem(CatalogItem.CatalogItem):
         return 0
 
     def getBasePrice(self):
-        return 1600 + self.checkIndex * 1000
+        return self.price
 
     def getPicture(self, avatar):
         self.hasPicture = True
@@ -71,7 +81,7 @@ class CatalogAPCheckItem(CatalogItem.CatalogItem):
         return (frame, None)
 
     def output(self, store=-1):
-        return 'CatalogAPCheckItem(%s%s)' % (self.checkIndex, self.formatOptionalData(store))
+        return 'CatalogAPCheckItem(%s, %s%s)' % (self.checkIndex, self.price, self.formatOptionalData(store))
 
     def compareTo(self, other):
         return self.checkIndex - other.checkIndex
@@ -88,7 +98,12 @@ class CatalogAPCheckItem(CatalogItem.CatalogItem):
     def decodeDatagram(self, di, versionNumber, store):
         CatalogItem.CatalogItem.decodeDatagram(self, di, versionNumber, store)
         self.checkIndex = di.getUint8()
+        if versionNumber >= 9:
+            self.price = di.getUint16()
+        else:
+            self.price = self.getDefaultPrice(self.checkIndex)
 
     def encodeDatagram(self, dg, store):
         CatalogItem.CatalogItem.encodeDatagram(self, dg, store)
         dg.addUint8(self.checkIndex)
+        dg.addUint16(self.price)

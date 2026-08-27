@@ -741,13 +741,23 @@ class CatalogRewardDisplayOption(RewardDisplayOption):
     display_name = "Cattlelog Rewards"
 
 
-class RandomShopCostToggle(Toggle):
+class DoodlePriceRando(Toggle):
     """
-    Enable to turn on the pet shop price randomization.
+    Enable deterministic pet shop price randomization.
     Logic accounts for the random price range if enabled.
     """
 
-    display_name = "Randomize Pet Shop Prices"
+    display_name = "Randomize Doodle Prices"
+    default = False
+
+
+class CatalogPriceRando(Toggle):
+    """
+    Enable deterministic Cattlelog check price randomization.
+    Logic accounts for the highest possible randomized price.
+    """
+
+    display_name = "Randomize Cattlelog Prices"
     default = False
 
 
@@ -789,7 +799,7 @@ class CatalogChecks(Range):
     """
     display_name = "Cattlelog Checks"
     range_start = 0
-    range_end = 7
+    range_end = 12
     default = 6
 
 
@@ -1087,7 +1097,8 @@ class ToontownOptions(PerGameCommonOptions):
     pet_shop_display: PetShopRewardDisplayOption
     catalog_display: CatalogRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
-    random_prices: RandomShopCostToggle
+    doodle_price_rando: DoodlePriceRando
+    catalog_price_rando: CatalogPriceRando
     flower_gardening: FlowerGardening
     tree_gardening: TreeGardening
     tree_gardening_behavior: TreeGardeningBehavior
@@ -1106,7 +1117,7 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
         StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, StartMoneyOption,
         StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption, RandomShopCostToggle, FlowerGardening, TreeGardening, TreeGardeningBehavior,
+        RingLinkOption, DoodlePriceRando, CatalogPriceRando, FlowerGardening, TreeGardening, TreeGardeningBehavior,
         CatalogChecks, NeedCatalog
     ]),
     OptionGroup("Win Condition", [

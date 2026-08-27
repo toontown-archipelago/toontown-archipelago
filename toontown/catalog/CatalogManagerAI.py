@@ -1,4 +1,5 @@
 import time
+import random
 
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
@@ -25,6 +26,16 @@ class CatalogManagerAI(DistributedObjectAI):
 
         self.deliverCatalogFor(av)
 
+    def getCatalogCheckPrice(self, av, checkIndex):
+        basePrice = CatalogAPCheckItem.getDefaultPrice(checkIndex)
+        if not av.slotData.get('catalog_price_rando', False):
+            return basePrice
+
+        rng = random.Random()
+        rng.seed('%s-catalog-%s' % (av.getSeed(), checkIndex))
+        return rng.randint(basePrice + CatalogAPCheckItem.PriceRandoMin,
+                           basePrice + CatalogAPCheckItem.PriceRandoMax)
+
     def deliverCatalogFor(self, av):
         check_count = av.slotData.get('catalog_checks', 6)
         if check_count > 0:
@@ -34,8 +45,7 @@ class CatalogManagerAI(DistributedObjectAI):
             if av.slotData.get('need_catalog', False) and not av.hasReceivedItem(ToontownItemName.MISSING_CATALOG):
                 catalogItems = []
             else:
-                catalogItems = [CatalogAPCheckItem(i) for i in range(check_count)]
-                catalogItems = [item for item in catalogItems if not item.reachedPurchaseLimit(av)]
+                catalogItems = [CatalogAPCheckItem(i, self.getCatalogCheckPrice(av, i)) for i in range(check_count)]
             weeklyCatalog = CatalogItemList(catalogItems)
             av.b_setCatalogSchedule(currentWeek, nextWeek / 60)
             av.b_setCatalog(CatalogItemList([]), weeklyCatalog, CatalogItemList([]))

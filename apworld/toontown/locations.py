@@ -812,6 +812,11 @@ class ToontownLocationName(Enum):
     CATALOG_CHECK_5 =                           "Clarabelle's Cattlelog #5"
     CATALOG_CHECK_6 =                           "Clarabelle's Cattlelog #6"
     CATALOG_CHECK_7 =                           "Clarabelle's Cattlelog #7"
+    CATALOG_CHECK_8 =                           "Clarabelle's Cattlelog #8"
+    CATALOG_CHECK_9 =                           "Clarabelle's Cattlelog #9"
+    CATALOG_CHECK_10 =                          "Clarabelle's Cattlelog #10"
+    CATALOG_CHECK_11 =                          "Clarabelle's Cattlelog #11"
+    CATALOG_CHECK_12 =                          "Clarabelle's Cattlelog #12"
     SAVED_TOONTOWN =                            "Save Toontown"
 
 
@@ -847,6 +852,11 @@ class ToontownLocationType(IntEnum):
     CATALOG_5       = auto()  # Locations for purchasing cattlelog checks
     CATALOG_6       = auto()  # Locations for purchasing cattlelog checks
     CATALOG_7       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_8       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_9       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_10      = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_11      = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_12      = auto()  # Locations for purchasing cattlelog checks
     SUPPORT_GAG_TRAINING    = auto()  # Locations for training support gags
     TRAP_GAG_TRAINING       = auto()  # Locations for training trap gags
     SOUND_GAG_TRAINING      = auto()  # Locations for training sound gags
@@ -1356,10 +1366,10 @@ def _flower_rules(bean_count: int) -> list[Rule]:
     if bean_count <= 2:
         return [Rule.GardenKitOne]
     if bean_count <= 4:
-        return [Rule.GardenKitTwo, Rule.GardenShovelOne]
+        return [Rule.GardenKitOne, Rule.GardenShovelOne]
     if bean_count <= 6:
-        return [Rule.GardenKitThree, Rule.GardenShovelTwo]
-    return [Rule.GardenKitFour, Rule.GardenShovelThree]
+        return [Rule.GardenKitOne, Rule.GardenShovelTwo]
+    return [Rule.GardenKitOne, Rule.GardenShovelThree]
 
 
 GARDEN_FLOWER_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
@@ -1457,6 +1467,11 @@ CATALOG_LOCATIONS = [
     ToontownLocationName.CATALOG_CHECK_5,
     ToontownLocationName.CATALOG_CHECK_6,
     ToontownLocationName.CATALOG_CHECK_7,
+    ToontownLocationName.CATALOG_CHECK_8,
+    ToontownLocationName.CATALOG_CHECK_9,
+    ToontownLocationName.CATALOG_CHECK_10,
+    ToontownLocationName.CATALOG_CHECK_11,
+    ToontownLocationName.CATALOG_CHECK_12,
 ]
 
 CATALOG_LOCATION_TYPES = [
@@ -1467,6 +1482,11 @@ CATALOG_LOCATION_TYPES = [
     ToontownLocationType.CATALOG_5,
     ToontownLocationType.CATALOG_6,
     ToontownLocationType.CATALOG_7,
+    ToontownLocationType.CATALOG_8,
+    ToontownLocationType.CATALOG_9,
+    ToontownLocationType.CATALOG_10,
+    ToontownLocationType.CATALOG_11,
+    ToontownLocationType.CATALOG_12,
 ]
 
 CATALOG_RULES = [
@@ -1477,6 +1497,11 @@ CATALOG_RULES = [
     Rule.CanBuyCatalogCheckFive,
     Rule.CanBuyCatalogCheckSix,
     Rule.CanBuyCatalogCheckSeven,
+    Rule.CanBuyCatalogCheckEight,
+    Rule.CanBuyCatalogCheckNine,
+    Rule.CanBuyCatalogCheckTen,
+    Rule.CanBuyCatalogCheckEleven,
+    Rule.CanBuyCatalogCheckTwelve,
 ]
 
 CATALOG_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
