@@ -256,8 +256,13 @@ def HasGardenCanTier(state: CollectionState, locentr: LocEntrDef, world: MultiWo
 def CanBuyCatalogCheck(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
         random_price = options.catalog_price_rando.value
+        need_catalog = options.need_catalog.value
     else:
         random_price = options.get("catalog_price_rando", False)
+        need_catalog = options.get("need_catalog", False)
+    if need_catalog and not state.has(ToontownItemName.MISSING_CATALOG.value, player):
+        return False
+
     required = argument[0] + (1 if random_price else 0)
     return state.count(ToontownItemName.MONEY_CAP_1000.value, player) >= required
 

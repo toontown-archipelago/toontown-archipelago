@@ -244,23 +244,8 @@ class GardenAI:
         return NULL_PLANT
 
     def reconsiderAvatarOrganicBonus(self):
-        av = self.air.doId2do.get(self.avId)
-        if not av:
-            return
-
-        bonus = [-1] * 7
-        for track in range(7):
-            for level in range(8):
-                if not self.hasTree(track, level):
-                    break
-
-                tree = self.getTree(track, level)
-                if tree.getGrowthLevel() < tree.growthThresholds[1] or tree.getWilted():
-                    break
-
-            bonus[track] = level - 1
-
-        av.b_setTrackBonusLevel(bonus)
+        # remove vanilla behavior of giving the avatar a organic bonus as archipelago checks give organic bonuses
+        pass
 
     def hasTree(self, track, index):
         treeTypeIndex = GardenGlobals.getTreeTypeIndex(track, index)
