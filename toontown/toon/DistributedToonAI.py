@@ -264,6 +264,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         DistributedPlayerAI.DistributedPlayerAI.announceGenerate(self)
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.announceGenerate(self)
         if self.isPlayerControlled():
+            if self.getMaxFlowerBasket() < 100:
+                self.b_setMaxFlowerBasket(100)
             self.doLoginChecks()
             if self.WantOldGMNameBan:
                 self._checkOldGMName()

@@ -643,7 +643,8 @@ def getNumBeansRequired(species, variety):
 
 
 def getAvailableRecipes(shovel, shovelSkill):
-    maxBeans = getShovelPower(shovel, shovelSkill)
+    # Flower availability is based on shovel tier not exp anymore, so we just use the max shovel power for the given tier
+    maxBeans = getShovelPower(shovel, ShovelAttributes[shovel]['skillPts'] - 1)
     availableRecipes = {}
     for key, recipe in Recipes.items():
         if recipe['special'] == -1 and len(recipe['beans']) <= maxBeans:

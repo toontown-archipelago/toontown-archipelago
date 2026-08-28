@@ -1085,7 +1085,7 @@ dclass DistributedToon : DistributedPlayer {
   setFishingTrophies(uint8[] = []) required ownrecv db;
   setFlowerCollection(uint8[] = [], uint8[] = []) required ownrecv db;
   setFlowerBasket(uint8[] = [], uint8[] = []) required ownrecv db;
-  setMaxFlowerBasket(uint8 = 20) required ownrecv db;
+  setMaxFlowerBasket(uint8 = 100) required ownrecv db;
   setGardenTrophies(uint8[] = []) required ownrecv db;
   setShovel(uint8 = 0) required broadcast ownrecv db;
   setShovelSkill(uint32 = 0) required ownrecv db;

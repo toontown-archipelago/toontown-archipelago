@@ -196,9 +196,6 @@ class GardenAI:
             return []
 
         shovel, shovelSkill = av.getShovel(), av.getShovelSkill()
-        planted_flowers = {
-            (flower[0], flower[4]) for flower in self.data['flowers'] if flower[0] != -1
-        }
         collected_or_picked_flowers = {
             (flower.getSpecies(), flower.getVariety()) for flower in av.flowerBasket.getFlower()
         }
@@ -211,8 +208,7 @@ class GardenAI:
                 continue
             available_recipes.append(recipe_key)
             if (not av.flowerCollection.hasFlower(species, variety) and
-                    (species, variety) not in collected_or_picked_flowers and
-                    (species, variety) not in planted_flowers):
+                    (species, variety) not in collected_or_picked_flowers):
                 uncollected_recipes.append(recipe_key)
         return uncollected_recipes or available_recipes
 
@@ -248,23 +244,8 @@ class GardenAI:
         return NULL_PLANT
 
     def reconsiderAvatarOrganicBonus(self):
-        av = self.air.doId2do.get(self.avId)
-        if not av:
-            return
-
-        bonus = [-1] * 7
-        for track in range(7):
-            for level in range(8):
-                if not self.hasTree(track, level):
-                    break
-
-                tree = self.getTree(track, level)
-                if tree.getGrowthLevel() < tree.growthThresholds[1] or tree.getWilted():
-                    break
-
-            bonus[track] = level - 1
-
-        av.b_setTrackBonusLevel(bonus)
+        # remove vanilla behavior of giving the avatar a organic bonus as archipelago checks give organic bonuses
+        pass
 
     def hasTree(self, track, index):
         treeTypeIndex = GardenGlobals.getTreeTypeIndex(track, index)

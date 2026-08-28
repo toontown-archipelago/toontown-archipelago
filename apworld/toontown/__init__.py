@@ -651,7 +651,8 @@ class ToontownWorld(World):
             self.multiworld.push_precollected(item)
 
         if self.options.flower_gardening.value or self.options.tree_gardening.value:
-            for _ in range(4):
+            kit_count = 4 if self.options.tree_gardening.value else 1
+            for _ in range(kit_count):
                 pool.append(self.create_item(ToontownItemName.GARDEN_KIT.value))
 
         if self.options.flower_gardening.value:
