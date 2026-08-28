@@ -216,7 +216,7 @@ class PetshopGUI(DirectObject):
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
             name, dna, traitSeed = PetUtil.getPetInfoFromSeed(petSeed, zoneId)
             baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
-            if base.localAvatar.slotData.get('random_prices', False):
+            if base.localAvatar.slotData.get('doodle_price_rando', False):
                 rng = random.Random()
                 rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting
@@ -352,7 +352,7 @@ class PetshopGUI(DirectObject):
             random.seed(self.petSeeds[1])
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
             baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
-            if base.localAvatar.slotData.get('random_prices', False):
+            if base.localAvatar.slotData.get('doodle_price_rando', False):
                 rng = random.Random()
                 rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting

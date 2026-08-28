@@ -828,7 +828,8 @@ class ToontownWorld(World):
             "damage_trap_weight": self.options.damage_trap_weight.value,
             "heal_weight": self.options.heal_weight.value,
             "fish_weight": self.options.fish_weight.value,
-            "random_prices": self.options.random_prices.value,
+            "doodle_price_rando": self.options.doodle_price_rando.value,
+            "catalog_price_rando": self.options.catalog_price_rando.value,
             "item_links": self.options.item_links.value,
             "fish_pity": self.options.fish_pity.value,
         }

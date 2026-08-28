@@ -106,7 +106,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 self.notify.warning('somebody called petAdopted on a non-existent pet! avId: %s' % avId)
                 return
             baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
-            if av.slotData.get('random_prices', False):
+            if av.slotData.get('doodle_price_rando', False):
                 rng = random.Random()
                 rng.seed(f"{av.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting
