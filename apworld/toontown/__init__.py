@@ -18,9 +18,16 @@ from .regions import REGION_DEFINITIONS, ToontownRegionName
 from .ruledefs import test_location, test_entrance, test_item_location
 from .fish import FishProgression, FishChecks
 import math
+import pkgutil
+import json
 
 DEBUG_MODE = False
 
+json_data = pkgutil.get_data(__name__, "archipelago.json")
+if not json_data:
+    ap_json = {"world_version" : "Error"}
+else:
+    ap_json = json.loads(json_data.decode("utf-8"))
 
 class ToontownWeb(WebWorld):
     tutorials = [Tutorial(
@@ -750,7 +757,7 @@ class ToontownWorld(World):
         return {
             "seed": self.multiworld.seed,
             "team": self.options.team.value,
-            "game_version": "v0.20.0",
+            "game_version": "v" + str(ap_json["world_version"]),
             "seed_generation_type": self.options.seed_generation_type.value,
             "starting_laff": self.options.starting_laff.value,
             "max_laff": self.options.max_laff.value,
