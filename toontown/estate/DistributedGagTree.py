@@ -377,25 +377,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         return Task.done
 
     def canBeHarvested(self):
-        myTrack, myLevel = GardenGlobals.getTreeTrackAndLevel(self.typeIndex)
-        levelsInTrack = []
-        levelTreeDict = {}
-        allGagTrees = base.cr.doFindAll('DistributedGagTree')
-        for gagTree in allGagTrees:
-            if gagTree.getOwnerId() == localAvatar.doId:
-                curTrack, curLevel = GardenGlobals.getTreeTrackAndLevel(gagTree.typeIndex)
-                if curTrack == myTrack:
-                    levelsInTrack.append(curLevel)
-                    levelTreeDict[curLevel] = gagTree
-
-        for levelToTest in range(myLevel):
-            if levelToTest not in levelsInTrack:
-                return False
-            curTree = levelTreeDict[levelToTest]
-            if not curTree.isGTEFullGrown():
-                return False
-
-        return True
+        return False
 
     def hasDependentTrees(self):
         myTrack, myLevel = GardenGlobals.getTreeTrackAndLevel(self.typeIndex)
