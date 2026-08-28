@@ -11,6 +11,8 @@ from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacke
 from toontown.archipelago.packets.serverbound.connect_update_packet import ConnectUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
+from panda3d.core import VirtualFileSystem, Filename
+import json
 from apworld.toontown.options import DeathLinkOption
 from toontown.fishing import FishGlobals
 from otp.otpbase import OTPGlobals
@@ -48,6 +50,11 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Number of hint points that the current player has.
         self.hint_points: int = self.read_raw_field('hint_points', ignore_missing=True)
+
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        file_path = Filename("apworld/toontown/archipelago.json")
+        ap_json = json.loads(fileSystem.readFile(file_path, True))
+        self.game_version = "v" + str(ap_json.get("world_version", "Error"))
 
     def get_slot_info(self, slot: int) -> NetworkSlot:
         return self.slot_info[str(slot)]
@@ -231,9 +238,9 @@ class ConnectedPacket(ClientBoundPacketBase):
         client.av.d_setArchipelagoHintMessage(client.av.getArchipelagoIP())
 
         # Check to warn the player that our game version mismatches the apworld's
-        if ToontownGlobals.GameVersion != self.slot_data.get('game_version', ToontownGlobals.GameVersion):
-            ap_version = self.slot_data.get('game_version', ToontownGlobals.GameVersion)
-            client.av.d_setVersionMismatchMessage(ap_version)
+        ap_version = self.slot_data.get('game_version', "Error")
+        if self.game_version != ap_version:
+            client.av.d_setVersionMismatchMessage(ap_version, self.game_version)
 
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)

@@ -142,8 +142,8 @@ class HintNode(DirectFrame):
             if self.externalHint:
                 # Default to blue, otherwise get right color for classification
                 item_flags = hint.item.flags
-                item_color = flag_to_color.get(item_flags, 2)
-                item_stars = flag_to_star.get(item_flags, 0)
+                item_color = flag_to_color.get(item_flags, 'slateblue')
+                item_stars = flag_to_star.get(item_flags, ["", ""])
                 item_name = item_stars[0] + hint.item_name + item_stars[1]
                 text = get_raw_formatted_string([
                     MinimalJsonMessagePart(hint.asking_name, color='magenta'),

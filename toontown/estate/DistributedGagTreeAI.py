@@ -146,7 +146,7 @@ class DistributedGagTreeAI(DistributedPlantBaseAI):
             self.removeTree(avId)
             return task.done
 
-        taskMgr.doMethodLater(7, handleRemove, self.uniqueName('do-remove'))
+        taskMgr.doMethodLater((7/5), handleRemove, self.uniqueName('do-remove'))
 
     def removeTree(self, avId=None):
         if not self.air:
