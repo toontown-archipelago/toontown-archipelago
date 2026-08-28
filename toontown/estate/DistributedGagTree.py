@@ -138,8 +138,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         text = TTLocalizer.ConfirmRemoveTree % {'tree': fullName}
         if self.hasDependentTrees():
             text += TTLocalizer.ConfirmWontBeAbleToHarvest
-        self.confirmDialog = TTDialog.TTDialog(style=TTDialog.YesNo, text=text, command=self.confirmCallback)
-        self.confirmDialog.show()
+        self.doPicking()
         self.startInteraction()
         return
 
