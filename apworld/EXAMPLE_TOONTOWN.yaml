@@ -298,7 +298,7 @@ Toontown:
   tree_gardening_behavior: 'levels_only'
 
   # How many Archipelago checks Clarabelle's Cattlelog offers.
-  # Range: 0 to 7
+  # Range: 0 to 12
   catalog_checks: 6
 
   # Adds a Missing Cattlelog to the item pool to lock cattlelog purchases behind them
