@@ -989,11 +989,18 @@ class UndefinedReward(APReward):
 
 class GardenKitReward(APReward):
     def formatted_header(self):
-        return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Planting ability increased!\nUpgraded your "),
-            MinimalJsonMessagePart("Gardening Kit", color='green'),
-            MinimalJsonMessagePart("!"),
-        ])
+        if base.localAvatar.getGardenKit() == 0:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("Gardening unlocked!\nReceived your "),
+                MinimalJsonMessagePart("Gardening Kit", color='green'),
+                MinimalJsonMessagePart("!"),
+            ])
+        else:
+            return global_text_properties.get_raw_formatted_string([
+                MinimalJsonMessagePart("Plant higher level trees!\nUpgraded your "),
+                MinimalJsonMessagePart("Gardening Kit", color='green'),
+                MinimalJsonMessagePart("!"),
+            ])
 
     def apply(self, av: "DistributedToonAI"):
         if not av.getGardenStarted():
@@ -1008,7 +1015,7 @@ class GardenKitReward(APReward):
 class GardenShovelReward(APReward):
     def formatted_header(self):
         return global_text_properties.get_raw_formatted_string([
-            MinimalJsonMessagePart("Dig bigger holes!\nUpgraded your "),
+            MinimalJsonMessagePart("Harvest more flowers!\nUpgraded your "),
             MinimalJsonMessagePart("Shovel", color='green'),
             MinimalJsonMessagePart("!"),
         ])
