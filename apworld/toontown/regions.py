@@ -13,6 +13,7 @@ class ToontownRegionName(Enum):
     FISHING  = "Fishing"
     TRAINING = "Gag Training"
     BUILDINGS = "Cog Buildings"
+    ESTATE = "The Estate"
 
     # Playgrounds
     TTC  = "Toontown Central"
@@ -65,12 +66,14 @@ REGION_DEFINITIONS = (
             ToontownEntranceDefinition(ToontownRegionName.FISHING),
             ToontownEntranceDefinition(ToontownRegionName.TRAINING),
             ToontownEntranceDefinition(ToontownRegionName.BUILDINGS),
+            ToontownEntranceDefinition(ToontownRegionName.ESTATE),
         ]
     ),
     ToontownRegionDefinition(ToontownRegionName.GALLERY),
     ToontownRegionDefinition(ToontownRegionName.FISHING),
     ToontownRegionDefinition(ToontownRegionName.TRAINING),
     ToontownRegionDefinition(ToontownRegionName.BUILDINGS),
+    ToontownRegionDefinition(ToontownRegionName.ESTATE),
     ToontownRegionDefinition(
         ToontownRegionName.TTC,
         [
