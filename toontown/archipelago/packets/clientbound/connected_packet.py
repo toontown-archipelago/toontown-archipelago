@@ -57,14 +57,16 @@ class ConnectedPacket(ClientBoundPacketBase):
             file_path = Filename("apworld/toontown/archipelago.json")
             ap_json = json.loads(fileSystem.readFile(file_path, True))
         except OSError:
-            print("Hit the error, trying the following")
             # If we hit this error, we're on a built client so we need to grab the .json a different way
-            full_path = Path(__file__).parent / "archipelago.json"
-            json_string = str(full_path).replace("\\", "/")
-            # We do this because the abs path we need up to this point ends at /game, from there we drop the rest of the path in manually
-            b, m, a = json_string.partition("game")
-            json_string = b + m + "/apworld/toontown/archipelago.json"
-            file_path = Filename.fromOsSpecific(json_string)
+            current_directory = Path(__file__).parent
+            base_directory = None
+            for directory in current_directory.parents:
+                if directory.name in ("game", "toontown-archipelago"):
+                    base_directory = directory
+                    break
+            json_directory = base_directory / "apworld" / "toontown" / "archipelago.json"
+            directory_string = str(json_directory).replace("\\", "/")
+            file_path = Filename.fromOsSpecific(directory_string)
             json_data = fileSystem.readFile(file_path, True)
             if not json_data:
                 ap_json = {"world_version": "Error"}
