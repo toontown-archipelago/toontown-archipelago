@@ -1371,9 +1371,8 @@ def _flower_rules(bean_count: int) -> list[Rule]:
         return [Rule.GardenKitOne, Rule.GardenShovelTwo]
     return [Rule.GardenKitOne, Rule.GardenShovelThree]
 
-
 GARDEN_FLOWER_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
-    ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_FLOWER, ToontownRegionName.DG, _flower_rules(bean_count))
+    ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_FLOWER, ToontownRegionName.ESTATE, _flower_rules(bean_count))
     for _, _, location_name, bean_count in FLOWER_LOCATION_DATA
 ]
 
@@ -1450,12 +1449,12 @@ TREE_LOCATION_BY_LEVEL = {
 }
 
 GARDEN_TREE_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
-    ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_TREE, ToontownRegionName.DG, [gag_rule, garden_rule])
+    ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_TREE, ToontownRegionName.ESTATE, [gag_rule, garden_rule])
     for _, _, location_name, gag_rule, garden_rule in TREE_LOCATION_DATA
 ]
 
 GARDEN_TREE_LEVEL_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
-    ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_TREE, ToontownRegionName.DG, [gag_rule, garden_rule])
+    ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_TREE, ToontownRegionName.ESTATE, [gag_rule, garden_rule])
     for _, location_name, gag_rule, garden_rule in TREE_LEVEL_LOCATION_DATA
 ]
 
@@ -1505,7 +1504,7 @@ CATALOG_RULES = [
 ]
 
 CATALOG_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
-    ToontownLocationDefinition(location_name, location_type, ToontownRegionName.TTC, [Rule.CanReachTTC, catalog_rule])
+    ToontownLocationDefinition(location_name, location_type, ToontownRegionName.ESTATE, [catalog_rule])
     for location_name, location_type, catalog_rule in zip(CATALOG_LOCATIONS, CATALOG_LOCATION_TYPES, CATALOG_RULES)
 ]
 # endregion
