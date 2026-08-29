@@ -170,4 +170,4 @@ class DistributedFlowerAI(DistributedPlantBaseAI, FlowerBase):
         if usingPickAll:
             handleRemoveItem(None)
         else:
-            taskMgr.doMethodLater(3.5, handleRemoveItem, self.uniqueName('handle-remove-item'))
+            taskMgr.doMethodLater((7/5), handleRemoveItem, self.uniqueName('handle-remove-item'))
