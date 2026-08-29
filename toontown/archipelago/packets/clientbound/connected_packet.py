@@ -54,11 +54,9 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         fileSystem = VirtualFileSystem.getGlobalPtr()
         try:
-            print(10/0)
             file_path = Filename("apworld/toontown/archipelago.json")
             ap_json = json.loads(fileSystem.readFile(file_path, True))
-        except:
-            print("Hit the error, trying the following")
+        except OSError:
             # If we hit this error, we're on a built client so we need to grab the .json a different way
             current_directory = Path(__file__).parent
             base_directory = None
@@ -69,7 +67,6 @@ class ConnectedPacket(ClientBoundPacketBase):
             json_directory = base_directory / "apworld" / "toontown" / "archipelago.json"
             directory_string = str(json_directory).replace("\\", "/")
             file_path = Filename.fromOsSpecific(directory_string)
-            print(file_path)
             json_data = fileSystem.readFile(file_path, True)
             if not json_data:
                 ap_json = {"world_version": "Error"}
