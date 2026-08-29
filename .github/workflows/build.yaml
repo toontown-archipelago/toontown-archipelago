@@ -40,6 +40,11 @@ jobs:
           New-Item -Name "release" -ItemType "directory"
           Copy-Item -Path "output\launch.dist" -Destination "release\game" -Recurse
 
+      - name: Copy Archipelago json
+        run: |
+          New-Item -Path "release\game\apworld\toontown" -ItemType "directory" -Force
+          Copy-Item -Path "apworld\toontown\archipelago.json" -Destination "release\game\apworld\toontown\"
+
       - name: Build & Copy Resources
         run: |
           New-Item -Name "release\game\resources" -ItemType "directory"
@@ -117,8 +122,6 @@ jobs:
           python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output_arm64 --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads
           python -m nuitka ./launch/launcher/launch.py --standalone --output-dir=output_x86_64 --include-package=direct.distributed --include-package=otp --include-package=toontown --assume-yes-for-downloads --macos-target-arch=x86_64
 
-
-
       - name: Copy Built Files
         run: |
           # combine the binaries from both folders into a universal2 folder
@@ -148,6 +151,10 @@ jobs:
           mv release/game/launch.bin release/game/launch
           cp $pythonLocation/lib/python3.11/site-packages/panda3d/libpandaphysics.1.11.dylib release/game
 
+      - name: Copy Archipelago json
+        run: |
+          mkdir -p release/game/apworld/toontown
+          cp apworld/toontown/archipelago.json release/game/apworld/toontown/
 
       - name: Build & Copy Resources
         run: |
