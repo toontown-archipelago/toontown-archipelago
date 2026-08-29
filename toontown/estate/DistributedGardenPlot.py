@@ -281,6 +281,13 @@ class DistributedGardenPlot(DistributedLawnDecor.DistributedLawnDecor):
                         command=self.resultsCallback)
                     self.resultDialog.show()
                     return
+            else:
+                self.resultDialog = TTDialog.TTDialog(
+                    style=TTDialog.Acknowledge,
+                    text=TTLocalizer.GardenPlantNoTrees,
+                    command=self.resultsCallback)
+                self.resultDialog.show()
+                return
             self.sendUpdate('plantGagTree', [gagTrack, gagLevel])
         else:
             self.finishInteraction()
