@@ -635,8 +635,6 @@ class JellybeanReward(APReward):
 
 
 class FishReward(APReward):
-    def __init__(self, amount: int):
-        self.amount: int = amount
 
     def formatted_header(self) -> str:
         return global_text_properties.get_raw_formatted_string([
@@ -646,7 +644,8 @@ class FishReward(APReward):
         ])
 
     def apply(self, av: "DistributedToonAI"):
-        av.addMoney(self.amount)
+        money_added = random.randint(1, 230)
+        av.addMoney(money_added)
         sounds = ["phase_4/audio/sfx/fish.ogg", "phase_4/audio/sfx/ykwtm.ogg"]
         sound = random.choice(sounds)
         av.playSound(sound)
@@ -1136,7 +1135,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MONEY_400.value: JellybeanReward(400),
     ToontownItemName.MONEY_700.value: JellybeanReward(700),
     ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
-    ToontownItemName.FISH.value: FishReward(1),
+    ToontownItemName.FISH.value: FishReward(),
     ToontownItemName.XP_10.value: GagExpBundleAward(10),
     ToontownItemName.XP_15.value: GagExpBundleAward(15),
     ToontownItemName.XP_20.value: GagExpBundleAward(20),
