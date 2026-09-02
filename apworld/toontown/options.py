@@ -171,6 +171,18 @@ class OverflowModRange(Range):
     default = 100
 
 
+class HardCombatLogic(Toggle):
+    """
+    Toggle more difficult combat logic for the seed.
+    - All gag level requirements are reduced by 1
+    > - However, all Gag Capacity requirements stay the same
+    - All laff logic thresholds are reduced by 5-10%
+    NOTE: Might result in some incredibly difficult or potentially impossible seeds, depending on luck and skill level
+    """
+    display_name = "Hard Combat Logic"
+    default = False
+
+
 class StartMoneyOption(Range):
     """
     The starting amount of jellybeans to have when starting a new game.
@@ -1032,6 +1044,7 @@ class ToontownOptions(PerGameCommonOptions):
     max_global_gag_xp: MaxGlobalGagXPRange
     start_damage_multiplier: StartDamageMultiplierRange
     max_damage_multiplier: MaxDamageMultiplierRange
+    hard_combat_logic: HardCombatLogic
     overflow_mod: OverflowModRange
     starting_money: StartMoneyOption
     starting_task_capacity: StartingTaskCapacityOption
@@ -1115,8 +1128,8 @@ toontown_option_groups: list[OptionGroup] = [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
         StartGagOption, StartGagOptionWeb, StartGagRandomWeb, OmitGagOption,
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
-        StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, StartMoneyOption,
-        StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
+        StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, HardCombatLogic,
+        StartMoneyOption, StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
         RingLinkOption, DoodlePriceRando, CatalogPriceRando, FlowerGardening, TreeGardening, TreeGardeningBehavior,
         CatalogChecks, NeedCatalog
     ]),

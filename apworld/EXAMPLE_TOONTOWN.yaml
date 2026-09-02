@@ -72,6 +72,13 @@ Toontown:
   # Range: 25 to 300
   overflow_mod: 100
 
+  # Toggle more difficult combat logic for the seed.
+  # - All gag level requirements are reduced by 1
+  # > - However, all Gag Capacity requirements stay the same
+  # - All laff logic thresholds are reduced by 5-10%
+  # NOTE: Might result in some incredibly difficult or potentially impossible seeds, depending on luck and skill level
+  hard_combat_logic: 'false'
+
   # Toggle the ability for Cogs to deal slightly randomized damage (0.9x-1.3x).
   cog_dmg_rando: 'false'
 
