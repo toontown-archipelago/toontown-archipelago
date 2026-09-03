@@ -937,7 +937,7 @@ class SOSWeightOption(Range):
     display_name = "SOS Card Weight"
     range_start = 0
     range_end = 100
-    default = 60
+    default = 50
 
 
 class UniteWeightOption(Range):
@@ -948,7 +948,7 @@ class UniteWeightOption(Range):
     display_name = "Unite Weight"
     range_start = 0
     range_end = 100
-    default = 60
+    default = 65
 
 
 class FireWeightOption(Range):
@@ -959,7 +959,7 @@ class FireWeightOption(Range):
     display_name = "Pink Slip Weight"
     range_start = 0
     range_end = 100
-    default = 60
+    default = 50
 
 
 class SummonWeightOption(Range):
@@ -970,7 +970,7 @@ class SummonWeightOption(Range):
     display_name = "Cog Summon Weight"
     range_start = 0
     range_end = 100
-    default = 50
+    default = 60
 
 
 class HealWeightOption(Range):
@@ -992,7 +992,7 @@ class FishWeightOption(Range):
     display_name = "Fish Junk Weight"
     range_start = 0
     range_end = 100
-    default = 65
+    default = 70
 
 
 class DeathLinkOption(Choice):

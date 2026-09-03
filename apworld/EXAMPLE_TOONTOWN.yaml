@@ -367,12 +367,12 @@ Toontown:
   # At least 1 junk must have a value greater than 0.
   bean_weight: 100
   exp_weight: 100
-  sos_weight: 60
-  unite_weight: 60
-  fire_weight: 60
-  summon_weight: 50
+  sos_weight: 50
+  unite_weight: 65
+  fire_weight: 50
+  summon_weight: 60
   heal_weight: 75
-  fish_weight: 65
+  fish_weight: 70
 
   ### Trap Settings ###
 
