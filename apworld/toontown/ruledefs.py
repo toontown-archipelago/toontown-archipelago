@@ -9,7 +9,7 @@ from .items import ToontownItemName
 from .options import ToontownOptions, TPSanity, FacilityLocking, GagTrainingFrameBehavior, \
     GagTrainingCheckBehavior
 from .locations import ToontownLocationDefinition, ToontownLocationName, LOCATION_NAME_TO_ID, FISH_LOCATIONS, \
-    get_location_def_from_name
+    get_location_def_from_name, ALL_TASK_LOCATIONS, ALL_TASK_LOCATIONS_SPLIT
 from .regions import ToontownEntranceDefinition, ToontownRegionName
 from .rules import Rule, ItemRule
 
@@ -1443,38 +1443,45 @@ def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
         total_tasks = "total-tasks" in options.win_condition
         hood_tasks = "hood-tasks" in options.win_condition
         tasks_required = options.total_tasks_required.value
+        hood_tasks_required = options.hood_tasks_required.value
     else:
         total_tasks = options.get("win_condition", 0) & ToontownWinCondition.total_tasks
         hood_tasks = options.get("win_condition", 0) & ToontownWinCondition.hood_tasks
         tasks_required = options.get("total_tasks_required", 48)
+        hood_tasks_required = options.get("hood_tasks_required", 8)
     args = (state, locentr, world, player, options)
-    hq_access_to_gag_rule = {
-        Rule.HasTTCHQAccess: Rule.HasLevelOneOffenseGag,
-        Rule.HasDDHQAccess: Rule.HasLevelTwoOffenseGag,
-        Rule.HasDGHQAccess: Rule.HasLevelThreeOffenseGag,
-        Rule.HasMMLHQAccess: Rule.HasLevelFourOffenseGag,
-        Rule.HasTBHQAccess: Rule.HasLevelFiveOffenseGag,
-        Rule.HasDDLHQAccess: Rule.HasLevelSixOffenseGag
-    }
+    all_hq_rules = (passes_rule(Rule.HasTTCHQAccess, *args),
+                    passes_rule(Rule.HasDDHQAccess, *args),
+                    passes_rule(Rule.HasDGHQAccess, *args),
+                    passes_rule(Rule.HasMMLHQAccess, *args),
+                    passes_rule(Rule.HasTBHQAccess, *args),
+                    passes_rule(Rule.HasDDLHQAccess, *args))
+    goal_reachable = False
 
-    def CountAndGagRule():  # We're doing it this way so that we can grab the gag logic we want based on the highest task pg needed
-        rule_list = list(hq_access_to_gag_rule.keys())
-        access_count = 0
-        gag_rule = Rule.HasLevelOneOffenseGag
-        for rule in rule_list:
-            if passes_rule(rule, *args):
-                access_count += 1
-                gag_rule = hq_access_to_gag_rule[rule]
-        return access_count, gag_rule
+    if total_tasks:
+        tasks_logical = 0
+        for task in ALL_TASK_LOCATIONS:
+            if test_location(get_location_def_from_name(task), state, world, player, options):
+                tasks_logical += 1
+            if tasks_logical >= tasks_required:
+                goal_reachable = True
+                break
+    # Don't even bother checking unless we have access to all HQs in the first place
+    if hood_tasks and all(all_hq_rules):
+        playgrounds_can_complete = 0
+        for task_location in ALL_TASK_LOCATIONS_SPLIT:
+            tasks_logical = 0
+            for task in task_location:
+                if test_location(get_location_def_from_name(task), state, world, player, options):
+                    tasks_logical += 1
+                if tasks_logical >= hood_tasks_required:
+                    playgrounds_can_complete += 1
+                    break
+        if playgrounds_can_complete == len(ALL_TASK_LOCATIONS_SPLIT):
+            goal_reachable = True
 
-    access_count, gag_rule = CountAndGagRule()
-
-    if hood_tasks:  # Complete enough tasks in each hood
-        hoods_required = len(list(hq_access_to_gag_rule.keys()))  # We need all of them to win!
-    elif total_tasks:  # Complete enough total tasks
-        hoods_required = math.ceil(tasks_required / 12)  # How many HQs we need minimum to win!
     # Check if we have enough to win.
-    return access_count >= hoods_required and passes_rule(Rule.CanReachTTC, *args) and passes_rule(gag_rule, *args)  # TECHNICALLY TRUE!
+    return passes_rule(Rule.CanReachTTC, *args) and goal_reachable  # TECHNICALLY TRUE!
 
 
 @rule(Rule.GainedEnoughLaff)
