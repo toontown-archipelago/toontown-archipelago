@@ -1348,11 +1348,21 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     def get_num_powerful_tracks(level):
         overlevel = min((level + 1), 8)
         underlevel = max((level - 1), 1)
+        level_to_wanted_lures = {
+            1: 0,
+            2: 1,
+            3: 2,
+            4: 4,
+            5: 4,
+            6: 4,
+            7: 6,
+            8: 7
+        }
         powerful_squirt_knockback = state.has(ToontownItemName.SQUIRT_FRAME.value, player, level) \
-                                    and state.has(ToontownItemName.LURE_FRAME.value, player, level) \
+                                    and state.has(ToontownItemName.LURE_FRAME.value, player, level_to_wanted_lures[level]) \
                                     and calc_wanted_damage_for_track(ToontownItemName.SQUIRT_FRAME.value, level)
         powerful_throw_knockback = state.has(ToontownItemName.THROW_FRAME.value, player, level) \
-                                   and state.has(ToontownItemName.LURE_FRAME.value, player, level) \
+                                   and state.has(ToontownItemName.LURE_FRAME.value, player, level_to_wanted_lures[level]) \
                                    and calc_wanted_damage_for_track(ToontownItemName.THROW_FRAME.value, level)
         powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, level) and calc_wanted_damage_for_track(ToontownItemName.DROP_FRAME.value, level)
         powerful_trap = state.has(ToontownItemName.TRAP_FRAME.value, player, level) \
