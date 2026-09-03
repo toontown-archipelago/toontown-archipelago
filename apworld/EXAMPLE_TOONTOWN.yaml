@@ -72,6 +72,13 @@ Toontown:
   # Range: 25 to 300
   overflow_mod: 100
 
+  # Toggle more difficult combat logic for the seed.
+  # - All gag level requirements are reduced by 1
+  # > - However, all Gag Capacity requirements stay the same
+  # - All laff logic thresholds are reduced by 5-10%
+  # NOTE: Might result in some incredibly difficult or potentially impossible seeds, depending on luck and skill level
+  hard_combat_logic: 'false'
+
   # Toggle the ability for Cogs to deal slightly randomized damage (0.9x-1.3x).
   cog_dmg_rando: 'false'
 
@@ -360,12 +367,12 @@ Toontown:
   # At least 1 junk must have a value greater than 0.
   bean_weight: 100
   exp_weight: 100
-  sos_weight: 60
-  unite_weight: 60
-  fire_weight: 60
-  summon_weight: 50
+  sos_weight: 50
+  unite_weight: 65
+  fire_weight: 50
+  summon_weight: 60
   heal_weight: 75
-  fish_weight: 65
+  fish_weight: 70
 
   ### Trap Settings ###
 

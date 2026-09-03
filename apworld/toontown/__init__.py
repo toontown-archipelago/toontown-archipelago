@@ -773,6 +773,7 @@ class ToontownWorld(World):
             "base_global_gag_xp": self.options.base_global_gag_xp.value,
             "start_damage_multiplier": self.options.start_damage_multiplier.value,
             "max_damage_multiplier": self.options.max_damage_multiplier.value,
+            "hard_combat_logic": self.options.hard_combat_logic.value,
             "overflow_mod": self.options.overflow_mod.value,
             "win_condition": int(win_condition),
             "cog_bosses_required": self.options.cog_bosses_required.value,
