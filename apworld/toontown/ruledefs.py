@@ -647,6 +647,7 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
         },
         6: {
             "pgs": [
+                ToontownRegionName.DG,
                 ToontownRegionName.MML,
                 ToontownRegionName.TB,
                 ToontownRegionName.DDL,
