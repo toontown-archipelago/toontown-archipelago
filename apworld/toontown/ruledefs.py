@@ -647,6 +647,7 @@ def CanReachCogTier(state: CollectionState, locentr: LocEntrDef, world: MultiWor
         },
         6: {
             "pgs": [
+                ToontownRegionName.DG,
                 ToontownRegionName.MML,
                 ToontownRegionName.TB,
                 ToontownRegionName.DDL,
@@ -1184,6 +1185,7 @@ def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
             ToontownRegionName.DD,
         ]
         laff_rule = Rule.Has20PercentMax
+        gag_rule = Rule.HasLevelThreeOffenseGag
     elif argument[0] == 2:
         pgs = [
             ToontownRegionName.TTC,
@@ -1191,6 +1193,7 @@ def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
             ToontownRegionName.DG,
         ]
         laff_rule = Rule.Has20PercentMax
+        gag_rule = Rule.HasLevelFourOffenseGag
     elif argument[0] == 3:
         pgs = [
             ToontownRegionName.DD,
@@ -1200,6 +1203,7 @@ def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
             ToontownRegionName.DDL
         ]
         laff_rule = Rule.Has40PercentMax
+        gag_rule = Rule.HasLevelFiveOffenseGag
     elif argument[0] == 4:
         pgs = [
             ToontownRegionName.DG,
@@ -1208,6 +1212,7 @@ def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
             ToontownRegionName.DDL,
         ]
         laff_rule = Rule.Has60PercentMax
+        gag_rule = Rule.HasLevelSixOffenseGag
     elif argument[0] == 5:
         pgs = [
             ToontownRegionName.MML,
@@ -1215,7 +1220,8 @@ def CanReachBldg(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
             ToontownRegionName.DDL,
         ]
         laff_rule = Rule.Has60PercentMax
-    return any(state.can_reach(pg.value, None, player) for pg in pgs) and passes_rule(laff_rule, *args)
+        gag_rule = Rule.HasLevelSevenOffenseGag
+    return any(state.can_reach(pg.value, None, player) for pg in pgs) and passes_rule(laff_rule, *args) and passes_rule(gag_rule, *args)
 
 
 @rule(Rule.HasLevelOneOffenseGag,   1)

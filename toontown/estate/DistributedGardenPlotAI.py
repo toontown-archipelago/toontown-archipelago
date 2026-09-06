@@ -162,7 +162,7 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
             self.air.writeServerEvent('suspicious', av.doId, msg)
             return self.d_setMovie(GardenGlobals.MOVIE_PLANT_REJECTED)
 
-        if av.inventory.useItem(track, index) == -1:
+        if av.inventory.useItem(track, index, tree=True) == -1:
             msg = 'tried to plant tree but not carrying selected gag'
             self.notify.warning('%d %s' % (av.doId, msg))
             self.air.writeServerEvent('suspicious', av.doId, msg)

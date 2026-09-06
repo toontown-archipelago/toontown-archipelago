@@ -195,7 +195,9 @@ class InventoryBase(DirectObject.DirectObject):
             return -1
         return self.inventory[track][level]
 
-    def useItem(self, track, level):
+    def useItem(self, track, level, tree=False):
+        if tree:
+            return 1
         if type(track) == type(''):
             track = Tracks.index(track)
         if self.numItem(track, level) > 0:

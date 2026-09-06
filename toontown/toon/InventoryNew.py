@@ -1018,10 +1018,10 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                 self.showTrack(track)
                 for level in range(len(Levels[track])):
                     button = self.buttons[track][level]
-                    if self.itemIsUsable(track, level) and (level == 0 or self.toon.doIHaveRequiredTrees(track, level)):
+                    if self.itemIsUsable(track, level):
                         button.show()
                         self.makeUnpressable(button, track, level)
-                        if self.numItem(track, level) > 0:
+                        if self.numItem(track, level) >= 0:
                             if not self.toon.isTreePlanted(track, level):
                                 self.makePressable(button, track, level)
                     else:
