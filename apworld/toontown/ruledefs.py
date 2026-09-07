@@ -1336,7 +1336,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     def calc_wanted_damage_for_track(track, level):
         base_dmg_ratio = start_dmg / max_dmg
         # Our difference in base and max dmg mult is too low, always true
-        if base_dmg_ratio >= 0.9:
+        if base_dmg_ratio >= 0.9 or level == 0:
             return True
         wanted_ratio = DMG_RATIOS_FOR_GAG_TRACKS[track][level]
         dmg = start_dmg
@@ -1366,15 +1366,15 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
         }
         powerful_squirt_knockback = state.has(ToontownItemName.SQUIRT_FRAME.value, player, level) \
                                     and state.has(ToontownItemName.LURE_FRAME.value, player, level_to_wanted_lures[level]) \
-                                    and calc_wanted_damage_for_track(ToontownItemName.SQUIRT_FRAME.value, level)
+                                    and calc_wanted_damage_for_track(ToontownItemName.SQUIRT_FRAME.value, BASE_LEVEL)
         powerful_throw_knockback = state.has(ToontownItemName.THROW_FRAME.value, player, level) \
                                    and state.has(ToontownItemName.LURE_FRAME.value, player, level_to_wanted_lures[level]) \
-                                   and calc_wanted_damage_for_track(ToontownItemName.THROW_FRAME.value, level)
+                                   and calc_wanted_damage_for_track(ToontownItemName.THROW_FRAME.value, BASE_LEVEL)
         powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, level) and calc_wanted_damage_for_track(ToontownItemName.DROP_FRAME.value, level)
         powerful_trap = state.has(ToontownItemName.TRAP_FRAME.value, player, level) \
                         and state.has(ToontownItemName.LURE_FRAME.value, player, underlevel) \
-                        and calc_wanted_damage_for_track(ToontownItemName.TRAP_FRAME.value, level)
-        powerful_sound = state.has(ToontownItemName.SOUND_FRAME.value, player, overlevel) and calc_wanted_damage_for_track(ToontownItemName.SOUND_FRAME.value, overlevel)
+                        and calc_wanted_damage_for_track(ToontownItemName.TRAP_FRAME.value, BASE_LEVEL)
+        powerful_sound = state.has(ToontownItemName.SOUND_FRAME.value, player, overlevel) and calc_wanted_damage_for_track(ToontownItemName.SOUND_FRAME.value, min(BASE_LEVEL + 1, 8))
 
         powerful_tracks = 0
         tracks = [powerful_sound, powerful_throw_knockback, powerful_squirt_knockback]
