@@ -1379,7 +1379,7 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
         powerful_tracks = 0
         tracks = [powerful_sound, powerful_throw_knockback, powerful_squirt_knockback]
         tracks_extra = [powerful_trap, powerful_drop]
-        if level == LEVEL:
+        if level == LEVEL or level == BASE_LEVEL:
             # only trap or drop count for one powerful track when considering for current gag level
             if any(tracks_extra):
                 powerful_tracks += 1
@@ -1391,7 +1391,13 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
             if track:
                 powerful_tracks += 1
         return powerful_tracks
-    two_tracks_on_level = get_num_powerful_tracks(LEVEL) >= 2
+
+    if BASE_LEVEL == 6 and hard_combat_logic:
+        # Level 6 gags are such a jump in power that strictly allowing logical access at logic level 5 for things like CFO is not unlikely to be impossible
+        # So instead we do a "half level reduction" where we expect our normal level 5 logic but still want one level 6
+        two_tracks_on_level = (get_num_powerful_tracks(BASE_LEVEL) >= 1 and get_num_powerful_tracks(LEVEL) >= 2)
+    else:
+        two_tracks_on_level = get_num_powerful_tracks(LEVEL) >= 2
 
     can_obtain_exp_required = has_collected_items_for_gag_level(state, player, options, BASE_LEVEL)
     return two_tracks_on_level and sufficient_healing and minimum_lure and can_obtain_exp_required
