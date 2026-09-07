@@ -1243,7 +1243,7 @@ def hasDamageGag(state: CollectionState, locentr: LocEntrDef, world: MultiWorld,
 @rule(Rule.HasLevelFiveOffenseGag,  5)
 @rule(Rule.HasLevelSixOffenseGag,   6)
 @rule(Rule.HasLevelSevenOffenseGag, 7)
-@rule(Rule.HasLevelEightOffenseGag, 7)
+@rule(Rule.HasLevelEightOffenseGag, 8)
 def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
         start_dmg = options.start_damage_multiplier.value
