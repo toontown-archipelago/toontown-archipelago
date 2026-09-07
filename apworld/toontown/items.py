@@ -458,13 +458,6 @@ def get_item_groups():
         ToontownItemName.GO_KART
     )
 
-    GARDENING = (
-        ToontownItemName.GARDEN_KIT,
-        ToontownItemName.GARDEN_SHOVEL,
-        ToontownItemName.GARDEN_WATERING_CAN,
-        ToontownItemName.MISSING_CATALOG
-    )
-
     REWARD_BUNDLES = (
         ToontownItemName.SOS_REWARD_3,
         ToontownItemName.SOS_REWARD_4,
@@ -531,7 +524,13 @@ def get_item_groups():
     GARDENING = (
         ToontownItemName.GARDEN_KIT,
         ToontownItemName.GARDEN_SHOVEL,
+    )
+
+    ESTATE = (
+        ToontownItemName.GARDEN_KIT,
+        ToontownItemName.GARDEN_SHOVEL,
         ToontownItemName.GARDEN_WATERING_CAN,
+        ToontownItemName.MISSING_CATALOG
     )
 
     ITEM_NAME_GROUPS_OBJECT = {
@@ -544,12 +543,12 @@ def get_item_groups():
         "Gag Upgrades": GAG_UPGRADES,
         "Damage Boosts": DMG_BOOSTS,
         "Fishing Licenses": FISHING_LICENSES,
-        "Gardening": GARDENING,
         "Jellybean Capacity": JELLYBEAN_CAPACITY,
         "Side Activity Keys": ACTIVITY_KEYS,
         "Task Capacity": TASK_CAPACITY,
         "Laff Boosts": LAFF_BOOSTS,
-        "Gardening Items": GARDENING,
+        "Progressive Gardening Items": GARDENING,
+        "All Estate Items": ESTATE,
         "Reward Bundles": REWARD_BUNDLES,
         "Heals": HEALS,
         "Jellybeans": JELLYBEANS,
