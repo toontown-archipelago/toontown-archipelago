@@ -74,7 +74,7 @@ Toontown:
 
   # Toggle more difficult combat logic for the seed.
   # - All gag level requirements are reduced by 1
-  # > - However, all Gag Capacity requirements stay the same
+  # > - However, all Gag Capacity and Damage Ratio requirements stay the same
   # - All laff logic thresholds are reduced by 5-10%
   # NOTE: Might result in some incredibly difficult or potentially impossible seeds, depending on luck and skill level
   hard_combat_logic: 'false'
@@ -421,7 +421,8 @@ Toontown:
   # Task Capacity - Task capacity upgrades
   # Laff Boosts - All Laff Boosts
   # Joke Books - All Joke Books
-  # Gardening Items - All upgrades for gardening features
+  # Progressive Gardening Items - All important upgrades for gardening features
+  # All Estate Items - All items that are related to features in the estate
   # Reward Bundles - All Boss Reward items
   # Heals - All healing junk
   # Jellybeans - All Jellybean junk
