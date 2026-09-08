@@ -709,6 +709,114 @@ class ToontownLocationName(Enum):
     GEYSER_RIDE =                               "(AA) Ride the Geyser"
     FLOWER_RISE =                               "(DG) Raise the Maze Flower"
     KART_SHOWN =                                "(GS) Show off your Go-Kart by the Shop"
+    GARDEN_FLOWER_SCHOOL_DAISY =                "Garden Flower (School Daisy)"
+    GARDEN_FLOWER_LAZY_DAISY =                  "Garden Flower (Lazy Daisy)"
+    GARDEN_FLOWER_MIDSUMMER_DAISY =             "Garden Flower (Midsummer Daisy)"
+    GARDEN_FLOWER_FRESHASA_DAISY =              "Garden Flower (Freshasa Daisy)"
+    GARDEN_FLOWER_WHOOPSIE_DAISY =              "Garden Flower (Whoopsie Daisy)"
+    GARDEN_FLOWER_UPSY_DAISY =                  "Garden Flower (Upsy Daisy)"
+    GARDEN_FLOWER_CRAZY_DAISY =                 "Garden Flower (Crazy Daisy)"
+    GARDEN_FLOWER_HAZY_DAZY =                   "Garden Flower (Hazy Dazy)"
+    GARDEN_FLOWER_ONELIP =                      "Garden Flower (Onelip)"
+    GARDEN_FLOWER_TWOLIP =                      "Garden Flower (Twolip)"
+    GARDEN_FLOWER_THREELIP =                    "Garden Flower (Threelip)"
+    GARDEN_FLOWER_WHAT_IN_CARNATION =           "Garden Flower (What-in Carnation)"
+    GARDEN_FLOWER_INSTANT_CARNATION =           "Garden Flower (Instant Carnation)"
+    GARDEN_FLOWER_HYBRID_CARNATION =            "Garden Flower (Hybrid Carnation)"
+    GARDEN_FLOWER_SIDE_CARNATION =              "Garden Flower (Side Carnation)"
+    GARDEN_FLOWER_MODEL_CARNATION =             "Garden Flower (Model Carnation)"
+    GARDEN_FLOWER_LILY_OF_THE_ALLEY =           "Garden Flower (Lily-of-the-Alley)"
+    GARDEN_FLOWER_LILY_PAD =                    "Garden Flower (Lily Pad)"
+    GARDEN_FLOWER_TIGER_LILY =                  "Garden Flower (Tiger Lily)"
+    GARDEN_FLOWER_LIVERED_LILY =                "Garden Flower (Livered Lily)"
+    GARDEN_FLOWER_CHILI_LILY =                  "Garden Flower (Chili Lily)"
+    GARDEN_FLOWER_SILLY_LILY =                  "Garden Flower (Silly Lily)"
+    GARDEN_FLOWER_INDUBITAB_LILY =              "Garden Flower (Indubitab Lily)"
+    GARDEN_FLOWER_DILLY_LILLY =                 "Garden Flower (Dilly Lilly)"
+    GARDEN_FLOWER_LAFF_O_DIL =                  "Garden Flower (Laff-o-dil)"
+    GARDEN_FLOWER_DAFFY_DILL =                  "Garden Flower (Daffy Dill)"
+    GARDEN_FLOWER_GIRAFF_O_DIL =                "Garden Flower (Giraff-o-dil)"
+    GARDEN_FLOWER_TIME_AND_A_HALF_O_DIL =       "Garden Flower (Time and a half-o-dil)"
+    GARDEN_FLOWER_DANDY_PANSY =                 "Garden Flower (Dandy Pansy)"
+    GARDEN_FLOWER_CHIM_PANSY =                  "Garden Flower (Chim Pansy)"
+    GARDEN_FLOWER_POTSEN_PANSY =                "Garden Flower (Potsen Pansy)"
+    GARDEN_FLOWER_MARZI_PANSY =                 "Garden Flower (Marzi Pansy)"
+    GARDEN_FLOWER_SMARTY_PANSY =                "Garden Flower (Smarty Pansy)"
+    GARDEN_FLOWER_CAR_PETUNIA =                 "Garden Flower (Car Petunia)"
+    GARDEN_FLOWER_PLATOONIA =                   "Garden Flower (Platoonia)"
+    GARDEN_FLOWER_SUMMERS_LAST_ROSE =           "Garden Flower (Summer's Last Rose)"
+    GARDEN_FLOWER_CORN_ROSE =                   "Garden Flower (Corn Rose)"
+    GARDEN_FLOWER_TINTED_ROSE =                 "Garden Flower (Tinted Rose)"
+    GARDEN_FLOWER_STINKING_ROSE =               "Garden Flower (Stinking Rose)"
+    GARDEN_FLOWER_ISTILLA_ROSE =                "Garden Flower (Istilla Rose)"
+    GARDEN_TREE_TOONUP_1 =                      "Gag Tree (Toon-Up Level 1)"
+    GARDEN_TREE_TOONUP_2 =                      "Gag Tree (Toon-Up Level 2)"
+    GARDEN_TREE_TOONUP_3 =                      "Gag Tree (Toon-Up Level 3)"
+    GARDEN_TREE_TOONUP_4 =                      "Gag Tree (Toon-Up Level 4)"
+    GARDEN_TREE_TOONUP_5 =                      "Gag Tree (Toon-Up Level 5)"
+    GARDEN_TREE_TOONUP_6 =                      "Gag Tree (Toon-Up Level 6)"
+    GARDEN_TREE_TOONUP_7 =                      "Gag Tree (Toon-Up Level 7)"
+    GARDEN_TREE_TRAP_1 =                        "Gag Tree (Trap Level 1)"
+    GARDEN_TREE_TRAP_2 =                        "Gag Tree (Trap Level 2)"
+    GARDEN_TREE_TRAP_3 =                        "Gag Tree (Trap Level 3)"
+    GARDEN_TREE_TRAP_4 =                        "Gag Tree (Trap Level 4)"
+    GARDEN_TREE_TRAP_5 =                        "Gag Tree (Trap Level 5)"
+    GARDEN_TREE_TRAP_6 =                        "Gag Tree (Trap Level 6)"
+    GARDEN_TREE_TRAP_7 =                        "Gag Tree (Trap Level 7)"
+    GARDEN_TREE_LURE_1 =                        "Gag Tree (Lure Level 1)"
+    GARDEN_TREE_LURE_2 =                        "Gag Tree (Lure Level 2)"
+    GARDEN_TREE_LURE_3 =                        "Gag Tree (Lure Level 3)"
+    GARDEN_TREE_LURE_4 =                        "Gag Tree (Lure Level 4)"
+    GARDEN_TREE_LURE_5 =                        "Gag Tree (Lure Level 5)"
+    GARDEN_TREE_LURE_6 =                        "Gag Tree (Lure Level 6)"
+    GARDEN_TREE_LURE_7 =                        "Gag Tree (Lure Level 7)"
+    GARDEN_TREE_SOUND_1 =                       "Gag Tree (Sound Level 1)"
+    GARDEN_TREE_SOUND_2 =                       "Gag Tree (Sound Level 2)"
+    GARDEN_TREE_SOUND_3 =                       "Gag Tree (Sound Level 3)"
+    GARDEN_TREE_SOUND_4 =                       "Gag Tree (Sound Level 4)"
+    GARDEN_TREE_SOUND_5 =                       "Gag Tree (Sound Level 5)"
+    GARDEN_TREE_SOUND_6 =                       "Gag Tree (Sound Level 6)"
+    GARDEN_TREE_SOUND_7 =                       "Gag Tree (Sound Level 7)"
+    GARDEN_TREE_THROW_1 =                       "Gag Tree (Throw Level 1)"
+    GARDEN_TREE_THROW_2 =                       "Gag Tree (Throw Level 2)"
+    GARDEN_TREE_THROW_3 =                       "Gag Tree (Throw Level 3)"
+    GARDEN_TREE_THROW_4 =                       "Gag Tree (Throw Level 4)"
+    GARDEN_TREE_THROW_5 =                       "Gag Tree (Throw Level 5)"
+    GARDEN_TREE_THROW_6 =                       "Gag Tree (Throw Level 6)"
+    GARDEN_TREE_THROW_7 =                       "Gag Tree (Throw Level 7)"
+    GARDEN_TREE_SQUIRT_1 =                      "Gag Tree (Squirt Level 1)"
+    GARDEN_TREE_SQUIRT_2 =                      "Gag Tree (Squirt Level 2)"
+    GARDEN_TREE_SQUIRT_3 =                      "Gag Tree (Squirt Level 3)"
+    GARDEN_TREE_SQUIRT_4 =                      "Gag Tree (Squirt Level 4)"
+    GARDEN_TREE_SQUIRT_5 =                      "Gag Tree (Squirt Level 5)"
+    GARDEN_TREE_SQUIRT_6 =                      "Gag Tree (Squirt Level 6)"
+    GARDEN_TREE_SQUIRT_7 =                      "Gag Tree (Squirt Level 7)"
+    GARDEN_TREE_DROP_1 =                        "Gag Tree (Drop Level 1)"
+    GARDEN_TREE_DROP_2 =                        "Gag Tree (Drop Level 2)"
+    GARDEN_TREE_DROP_3 =                        "Gag Tree (Drop Level 3)"
+    GARDEN_TREE_DROP_4 =                        "Gag Tree (Drop Level 4)"
+    GARDEN_TREE_DROP_5 =                        "Gag Tree (Drop Level 5)"
+    GARDEN_TREE_DROP_6 =                        "Gag Tree (Drop Level 6)"
+    GARDEN_TREE_DROP_7 =                        "Gag Tree (Drop Level 7)"
+    GARDEN_TREE_LEVEL_1 =                       "Gag Tree (Level 1)"
+    GARDEN_TREE_LEVEL_2 =                       "Gag Tree (Level 2)"
+    GARDEN_TREE_LEVEL_3 =                       "Gag Tree (Level 3)"
+    GARDEN_TREE_LEVEL_4 =                       "Gag Tree (Level 4)"
+    GARDEN_TREE_LEVEL_5 =                       "Gag Tree (Level 5)"
+    GARDEN_TREE_LEVEL_6 =                       "Gag Tree (Level 6)"
+    GARDEN_TREE_LEVEL_7 =                       "Gag Tree (Level 7)"
+    CATALOG_CHECK_1 =                           "Clarabelle's Cattlelog #1"
+    CATALOG_CHECK_2 =                           "Clarabelle's Cattlelog #2"
+    CATALOG_CHECK_3 =                           "Clarabelle's Cattlelog #3"
+    CATALOG_CHECK_4 =                           "Clarabelle's Cattlelog #4"
+    CATALOG_CHECK_5 =                           "Clarabelle's Cattlelog #5"
+    CATALOG_CHECK_6 =                           "Clarabelle's Cattlelog #6"
+    CATALOG_CHECK_7 =                           "Clarabelle's Cattlelog #7"
+    CATALOG_CHECK_8 =                           "Clarabelle's Cattlelog #8"
+    CATALOG_CHECK_9 =                           "Clarabelle's Cattlelog #9"
+    CATALOG_CHECK_10 =                          "Clarabelle's Cattlelog #10"
+    CATALOG_CHECK_11 =                          "Clarabelle's Cattlelog #11"
+    CATALOG_CHECK_12 =                          "Clarabelle's Cattlelog #12"
     SAVED_TOONTOWN =                            "Save Toontown"
 
 
@@ -737,6 +845,18 @@ class ToontownLocationType(IntEnum):
     PLAYGROUND_4    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_5    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_6    = auto()  # Locations for discovering playground treasures
+    CATALOG_1       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_2       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_3       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_4       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_5       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_6       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_7       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_8       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_9       = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_10      = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_11      = auto()  # Locations for purchasing cattlelog checks
+    CATALOG_12      = auto()  # Locations for purchasing cattlelog checks
     SUPPORT_GAG_TRAINING    = auto()  # Locations for training support gags
     TRAP_GAG_TRAINING       = auto()  # Locations for training trap gags
     SOUND_GAG_TRAINING      = auto()  # Locations for training sound gags
@@ -744,6 +864,8 @@ class ToontownLocationType(IntEnum):
     SQUIRT_GAG_TRAINING     = auto()  # Locations for training squirt gags
     DROP_GAG_TRAINING       = auto()  # Locations for training drop gags
     PET_SHOP        = auto()  # Locations for purchasing checks from pet shop clerks
+    GARDEN_FLOWER   = auto()  # Locations for picking flower varieties
+    GARDEN_TREE     = auto()  # Locations for planting organic gag trees
     TTC_TASKS       = auto()  # Locations for TTC tasks
     DD_TASKS        = auto()  # Locations for DD tasks
     DG_TASKS        = auto()  # Locations for DG tasks
@@ -1191,6 +1313,202 @@ BOSS_EVENT_DEFINITIONS: List[ToontownLocationDefinition] = [
 ]
 # endregion
 
+# region Estate Location Definitions
+FLOWER_LOCATION_DATA = [
+    (49, 0, ToontownLocationName.GARDEN_FLOWER_SCHOOL_DAISY, 1),
+    (49, 1, ToontownLocationName.GARDEN_FLOWER_LAZY_DAISY, 2),
+    (49, 2, ToontownLocationName.GARDEN_FLOWER_MIDSUMMER_DAISY, 3),
+    (49, 3, ToontownLocationName.GARDEN_FLOWER_FRESHASA_DAISY, 4),
+    (49, 4, ToontownLocationName.GARDEN_FLOWER_WHOOPSIE_DAISY, 5),
+    (49, 5, ToontownLocationName.GARDEN_FLOWER_UPSY_DAISY, 6),
+    (49, 6, ToontownLocationName.GARDEN_FLOWER_CRAZY_DAISY, 7),
+    (49, 7, ToontownLocationName.GARDEN_FLOWER_HAZY_DAZY, 8),
+    (50, 0, ToontownLocationName.GARDEN_FLOWER_ONELIP, 5),
+    (50, 1, ToontownLocationName.GARDEN_FLOWER_TWOLIP, 6),
+    (50, 2, ToontownLocationName.GARDEN_FLOWER_THREELIP, 8),
+    (51, 0, ToontownLocationName.GARDEN_FLOWER_WHAT_IN_CARNATION, 1),
+    (51, 1, ToontownLocationName.GARDEN_FLOWER_INSTANT_CARNATION, 2),
+    (51, 2, ToontownLocationName.GARDEN_FLOWER_HYBRID_CARNATION, 3),
+    (51, 3, ToontownLocationName.GARDEN_FLOWER_SIDE_CARNATION, 5),
+    (51, 4, ToontownLocationName.GARDEN_FLOWER_MODEL_CARNATION, 7),
+    (52, 0, ToontownLocationName.GARDEN_FLOWER_LILY_OF_THE_ALLEY, 1),
+    (52, 1, ToontownLocationName.GARDEN_FLOWER_LILY_PAD, 2),
+    (52, 2, ToontownLocationName.GARDEN_FLOWER_TIGER_LILY, 3),
+    (52, 3, ToontownLocationName.GARDEN_FLOWER_LIVERED_LILY, 4),
+    (52, 4, ToontownLocationName.GARDEN_FLOWER_CHILI_LILY, 5),
+    (52, 5, ToontownLocationName.GARDEN_FLOWER_SILLY_LILY, 6),
+    (52, 6, ToontownLocationName.GARDEN_FLOWER_INDUBITAB_LILY, 7),
+    (52, 7, ToontownLocationName.GARDEN_FLOWER_DILLY_LILLY, 8),
+    (53, 0, ToontownLocationName.GARDEN_FLOWER_LAFF_O_DIL, 1),
+    (53, 1, ToontownLocationName.GARDEN_FLOWER_DAFFY_DILL, 2),
+    (53, 2, ToontownLocationName.GARDEN_FLOWER_GIRAFF_O_DIL, 4),
+    (53, 3, ToontownLocationName.GARDEN_FLOWER_TIME_AND_A_HALF_O_DIL, 5),
+    (54, 0, ToontownLocationName.GARDEN_FLOWER_DANDY_PANSY, 1),
+    (54, 1, ToontownLocationName.GARDEN_FLOWER_CHIM_PANSY, 2),
+    (54, 2, ToontownLocationName.GARDEN_FLOWER_POTSEN_PANSY, 3),
+    (54, 3, ToontownLocationName.GARDEN_FLOWER_MARZI_PANSY, 4),
+    (54, 4, ToontownLocationName.GARDEN_FLOWER_SMARTY_PANSY, 6),
+    (55, 0, ToontownLocationName.GARDEN_FLOWER_CAR_PETUNIA, 7),
+    (55, 1, ToontownLocationName.GARDEN_FLOWER_PLATOONIA, 8),
+    (56, 0, ToontownLocationName.GARDEN_FLOWER_SUMMERS_LAST_ROSE, 3),
+    (56, 1, ToontownLocationName.GARDEN_FLOWER_CORN_ROSE, 4),
+    (56, 2, ToontownLocationName.GARDEN_FLOWER_TINTED_ROSE, 6),
+    (56, 3, ToontownLocationName.GARDEN_FLOWER_STINKING_ROSE, 7),
+    (56, 4, ToontownLocationName.GARDEN_FLOWER_ISTILLA_ROSE, 8),
+]
+
+FLOWER_LOCATION_BY_SPECIES_VARIETY = {
+    (species, variety): location_name
+    for species, variety, location_name, _ in FLOWER_LOCATION_DATA
+}
+
+def _flower_rules(bean_count: int) -> list[Rule]:
+    if bean_count <= 2:
+        return [Rule.GardenKitOne]
+    if bean_count <= 4:
+        return [Rule.GardenKitOne, Rule.GardenShovelOne]
+    if bean_count <= 6:
+        return [Rule.GardenKitOne, Rule.GardenShovelTwo]
+    return [Rule.GardenKitOne, Rule.GardenShovelThree]
+
+GARDEN_FLOWER_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
+    ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_FLOWER, ToontownRegionName.ESTATE, _flower_rules(bean_count))
+    for _, _, location_name, bean_count in FLOWER_LOCATION_DATA
+]
+
+TREE_LOCATION_DATA = [
+    (0, 0, ToontownLocationName.GARDEN_TREE_TOONUP_1, Rule.ToonUpOne, Rule.GardenGagLevelOne),
+    (0, 1, ToontownLocationName.GARDEN_TREE_TOONUP_2, Rule.ToonUpTwo, Rule.GardenGagLevelTwo),
+    (0, 2, ToontownLocationName.GARDEN_TREE_TOONUP_3, Rule.ToonUpThree, Rule.GardenGagLevelThree),
+    (0, 3, ToontownLocationName.GARDEN_TREE_TOONUP_4, Rule.ToonUpFour, Rule.GardenGagLevelFour),
+    (0, 4, ToontownLocationName.GARDEN_TREE_TOONUP_5, Rule.ToonUpFive, Rule.GardenGagLevelFive),
+    (0, 5, ToontownLocationName.GARDEN_TREE_TOONUP_6, Rule.ToonUpSix, Rule.GardenGagLevelSix),
+    (0, 6, ToontownLocationName.GARDEN_TREE_TOONUP_7, Rule.ToonUpSeven, Rule.GardenGagLevelSeven),
+    (1, 0, ToontownLocationName.GARDEN_TREE_TRAP_1, Rule.TrapOne, Rule.GardenGagLevelOne),
+    (1, 1, ToontownLocationName.GARDEN_TREE_TRAP_2, Rule.TrapTwo, Rule.GardenGagLevelTwo),
+    (1, 2, ToontownLocationName.GARDEN_TREE_TRAP_3, Rule.TrapThree, Rule.GardenGagLevelThree),
+    (1, 3, ToontownLocationName.GARDEN_TREE_TRAP_4, Rule.TrapFour, Rule.GardenGagLevelFour),
+    (1, 4, ToontownLocationName.GARDEN_TREE_TRAP_5, Rule.TrapFive, Rule.GardenGagLevelFive),
+    (1, 5, ToontownLocationName.GARDEN_TREE_TRAP_6, Rule.TrapSix, Rule.GardenGagLevelSix),
+    (1, 6, ToontownLocationName.GARDEN_TREE_TRAP_7, Rule.TrapSeven, Rule.GardenGagLevelSeven),
+    (2, 0, ToontownLocationName.GARDEN_TREE_LURE_1, Rule.LureOne, Rule.GardenGagLevelOne),
+    (2, 1, ToontownLocationName.GARDEN_TREE_LURE_2, Rule.LureTwo, Rule.GardenGagLevelTwo),
+    (2, 2, ToontownLocationName.GARDEN_TREE_LURE_3, Rule.LureThree, Rule.GardenGagLevelThree),
+    (2, 3, ToontownLocationName.GARDEN_TREE_LURE_4, Rule.LureFour, Rule.GardenGagLevelFour),
+    (2, 4, ToontownLocationName.GARDEN_TREE_LURE_5, Rule.LureFive, Rule.GardenGagLevelFive),
+    (2, 5, ToontownLocationName.GARDEN_TREE_LURE_6, Rule.LureSix, Rule.GardenGagLevelSix),
+    (2, 6, ToontownLocationName.GARDEN_TREE_LURE_7, Rule.LureSeven, Rule.GardenGagLevelSeven),
+    (3, 0, ToontownLocationName.GARDEN_TREE_SOUND_1, Rule.SoundOne, Rule.GardenGagLevelOne),
+    (3, 1, ToontownLocationName.GARDEN_TREE_SOUND_2, Rule.SoundTwo, Rule.GardenGagLevelTwo),
+    (3, 2, ToontownLocationName.GARDEN_TREE_SOUND_3, Rule.SoundThree, Rule.GardenGagLevelThree),
+    (3, 3, ToontownLocationName.GARDEN_TREE_SOUND_4, Rule.SoundFour, Rule.GardenGagLevelFour),
+    (3, 4, ToontownLocationName.GARDEN_TREE_SOUND_5, Rule.SoundFive, Rule.GardenGagLevelFive),
+    (3, 5, ToontownLocationName.GARDEN_TREE_SOUND_6, Rule.SoundSix, Rule.GardenGagLevelSix),
+    (3, 6, ToontownLocationName.GARDEN_TREE_SOUND_7, Rule.SoundSeven, Rule.GardenGagLevelSeven),
+    (4, 0, ToontownLocationName.GARDEN_TREE_THROW_1, Rule.ThrowOne, Rule.GardenGagLevelOne),
+    (4, 1, ToontownLocationName.GARDEN_TREE_THROW_2, Rule.ThrowTwo, Rule.GardenGagLevelTwo),
+    (4, 2, ToontownLocationName.GARDEN_TREE_THROW_3, Rule.ThrowThree, Rule.GardenGagLevelThree),
+    (4, 3, ToontownLocationName.GARDEN_TREE_THROW_4, Rule.ThrowFour, Rule.GardenGagLevelFour),
+    (4, 4, ToontownLocationName.GARDEN_TREE_THROW_5, Rule.ThrowFive, Rule.GardenGagLevelFive),
+    (4, 5, ToontownLocationName.GARDEN_TREE_THROW_6, Rule.ThrowSix, Rule.GardenGagLevelSix),
+    (4, 6, ToontownLocationName.GARDEN_TREE_THROW_7, Rule.ThrowSeven, Rule.GardenGagLevelSeven),
+    (5, 0, ToontownLocationName.GARDEN_TREE_SQUIRT_1, Rule.SquirtOne, Rule.GardenGagLevelOne),
+    (5, 1, ToontownLocationName.GARDEN_TREE_SQUIRT_2, Rule.SquirtTwo, Rule.GardenGagLevelTwo),
+    (5, 2, ToontownLocationName.GARDEN_TREE_SQUIRT_3, Rule.SquirtThree, Rule.GardenGagLevelThree),
+    (5, 3, ToontownLocationName.GARDEN_TREE_SQUIRT_4, Rule.SquirtFour, Rule.GardenGagLevelFour),
+    (5, 4, ToontownLocationName.GARDEN_TREE_SQUIRT_5, Rule.SquirtFive, Rule.GardenGagLevelFive),
+    (5, 5, ToontownLocationName.GARDEN_TREE_SQUIRT_6, Rule.SquirtSix, Rule.GardenGagLevelSix),
+    (5, 6, ToontownLocationName.GARDEN_TREE_SQUIRT_7, Rule.SquirtSeven, Rule.GardenGagLevelSeven),
+    (6, 0, ToontownLocationName.GARDEN_TREE_DROP_1, Rule.DropOne, Rule.GardenGagLevelOne),
+    (6, 1, ToontownLocationName.GARDEN_TREE_DROP_2, Rule.DropTwo, Rule.GardenGagLevelTwo),
+    (6, 2, ToontownLocationName.GARDEN_TREE_DROP_3, Rule.DropThree, Rule.GardenGagLevelThree),
+    (6, 3, ToontownLocationName.GARDEN_TREE_DROP_4, Rule.DropFour, Rule.GardenGagLevelFour),
+    (6, 4, ToontownLocationName.GARDEN_TREE_DROP_5, Rule.DropFive, Rule.GardenGagLevelFive),
+    (6, 5, ToontownLocationName.GARDEN_TREE_DROP_6, Rule.DropSix, Rule.GardenGagLevelSix),
+    (6, 6, ToontownLocationName.GARDEN_TREE_DROP_7, Rule.DropSeven, Rule.GardenGagLevelSeven),
+]
+
+TREE_LOCATION_BY_TRACK_LEVEL = {
+    (track, level): location_name
+    for track, level, location_name, _, _ in TREE_LOCATION_DATA
+}
+
+TREE_LEVEL_LOCATION_DATA = [
+    (0, ToontownLocationName.GARDEN_TREE_LEVEL_1, Rule.AnyGagLevelOne, Rule.GardenGagLevelOne),
+    (1, ToontownLocationName.GARDEN_TREE_LEVEL_2, Rule.AnyGagLevelTwo, Rule.GardenGagLevelTwo),
+    (2, ToontownLocationName.GARDEN_TREE_LEVEL_3, Rule.AnyGagLevelThree, Rule.GardenGagLevelThree),
+    (3, ToontownLocationName.GARDEN_TREE_LEVEL_4, Rule.AnyGagLevelFour, Rule.GardenGagLevelFour),
+    (4, ToontownLocationName.GARDEN_TREE_LEVEL_5, Rule.AnyGagLevelFive, Rule.GardenGagLevelFive),
+    (5, ToontownLocationName.GARDEN_TREE_LEVEL_6, Rule.AnyGagLevelSix, Rule.GardenGagLevelSix),
+    (6, ToontownLocationName.GARDEN_TREE_LEVEL_7, Rule.AnyGagLevelSeven, Rule.GardenGagLevelSeven),
+]
+
+TREE_LOCATION_BY_LEVEL = {
+    level: location_name
+    for level, location_name, _, _ in TREE_LEVEL_LOCATION_DATA
+}
+
+GARDEN_TREE_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
+    ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_TREE, ToontownRegionName.ESTATE, [gag_rule, garden_rule])
+    for _, _, location_name, gag_rule, garden_rule in TREE_LOCATION_DATA
+]
+
+GARDEN_TREE_LEVEL_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
+    ToontownLocationDefinition(location_name, ToontownLocationType.GARDEN_TREE, ToontownRegionName.ESTATE, [gag_rule, garden_rule])
+    for _, location_name, gag_rule, garden_rule in TREE_LEVEL_LOCATION_DATA
+]
+
+CATALOG_LOCATIONS = [
+    ToontownLocationName.CATALOG_CHECK_1,
+    ToontownLocationName.CATALOG_CHECK_2,
+    ToontownLocationName.CATALOG_CHECK_3,
+    ToontownLocationName.CATALOG_CHECK_4,
+    ToontownLocationName.CATALOG_CHECK_5,
+    ToontownLocationName.CATALOG_CHECK_6,
+    ToontownLocationName.CATALOG_CHECK_7,
+    ToontownLocationName.CATALOG_CHECK_8,
+    ToontownLocationName.CATALOG_CHECK_9,
+    ToontownLocationName.CATALOG_CHECK_10,
+    ToontownLocationName.CATALOG_CHECK_11,
+    ToontownLocationName.CATALOG_CHECK_12,
+]
+
+CATALOG_LOCATION_TYPES = [
+    ToontownLocationType.CATALOG_1,
+    ToontownLocationType.CATALOG_2,
+    ToontownLocationType.CATALOG_3,
+    ToontownLocationType.CATALOG_4,
+    ToontownLocationType.CATALOG_5,
+    ToontownLocationType.CATALOG_6,
+    ToontownLocationType.CATALOG_7,
+    ToontownLocationType.CATALOG_8,
+    ToontownLocationType.CATALOG_9,
+    ToontownLocationType.CATALOG_10,
+    ToontownLocationType.CATALOG_11,
+    ToontownLocationType.CATALOG_12,
+]
+
+CATALOG_RULES = [
+    Rule.CanBuyCatalogCheckOne,
+    Rule.CanBuyCatalogCheckTwo,
+    Rule.CanBuyCatalogCheckThree,
+    Rule.CanBuyCatalogCheckFour,
+    Rule.CanBuyCatalogCheckFive,
+    Rule.CanBuyCatalogCheckSix,
+    Rule.CanBuyCatalogCheckSeven,
+    Rule.CanBuyCatalogCheckEight,
+    Rule.CanBuyCatalogCheckNine,
+    Rule.CanBuyCatalogCheckTen,
+    Rule.CanBuyCatalogCheckEleven,
+    Rule.CanBuyCatalogCheckTwelve,
+]
+
+CATALOG_LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
+    ToontownLocationDefinition(location_name, location_type, ToontownRegionName.ESTATE, [catalog_rule])
+    for location_name, location_type, catalog_rule in zip(CATALOG_LOCATIONS, CATALOG_LOCATION_TYPES, CATALOG_RULES)
+]
+# endregion
+
 LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     # region Login Locations
     ToontownLocationDefinition(ToontownLocationName.STARTING_NEW_GAME,  ToontownLocationType.STARTER, ToontownRegionName.LOGIN),
@@ -1464,7 +1782,7 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_5,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag, Rule.Has20PercentMax]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_6,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.TierFiveCogs, Rule.Has20PercentMax]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_7,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag, Rule.Has20PercentMax]),
-    ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_8,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag, Rule.Has20PercentMax]),
+    ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_8,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag, Rule.Has20PercentMax, Rule.TierSixSellbot]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_9,      ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.TierEightSellbot, Rule.TierEightLawbot]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_10,     ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag, Rule.Has20PercentMax]),
     ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_TASK_11,     ToontownLocationType.DG_TASKS, ToontownRegionName.DG, [Rule.HasDGHQAccess, Rule.HasLevelThreeOffenseGag, Rule.Has20PercentMax]),
@@ -1507,31 +1825,31 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_TASK_12,  ToontownLocationType.DDL_TASKS, ToontownRegionName.DDL, [Rule.HasDDLHQAccess, Rule.HasLevelSixOffenseGag, Rule.Has40PercentMax]),
     # endregion
     # region Buildings
-    ToontownLocationDefinition(ToontownLocationName.ONE_STORY_FIRST_FLOOR,      ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelThreeOffenseGag, Rule.OneStory]),
-    ToontownLocationDefinition(ToontownLocationName.TWO_STORY_FIRST_FLOOR,      ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFourOffenseGag,  Rule.TwoStory]),
-    ToontownLocationDefinition(ToontownLocationName.TWO_STORY_SECOND_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFourOffenseGag,  Rule.TwoStory]),
-    ToontownLocationDefinition(ToontownLocationName.THREE_STORY_FIRST_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory]),
-    ToontownLocationDefinition(ToontownLocationName.THREE_STORY_SECOND_FLOOR,   ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory]),
-    ToontownLocationDefinition(ToontownLocationName.THREE_STORY_THIRD_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory]),
-    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_FIRST_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag,   Rule.FourStory]),
-    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_SECOND_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag,   Rule.FourStory]),
-    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_THIRD_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag,   Rule.FourStory]),
-    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_FOURTH_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSixOffenseGag,   Rule.FourStory]),
-    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_FIRST_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
-    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_SECOND_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
-    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_THIRD_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
-    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_FOURTH_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
-    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_FIFTH_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelSevenOffenseGag, Rule.FiveStory]),
-    ToontownLocationDefinition(ToontownLocationName.TOONTOWN_CENTRAL_BUILDING,  ToontownLocationType.BUILDINGS, ToontownRegionName.TTC,       [Rule.HasLevelThreeOffenseGag, Rule.OneStory,   Rule.CanReachTTC]),
-    ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_BUILDING,      ToontownLocationType.BUILDINGS, ToontownRegionName.DD,        [Rule.HasLevelFourOffenseGag,  Rule.TwoStory,   Rule.CanReachDD]),
-    ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_BUILDING,    ToontownLocationType.BUILDINGS, ToontownRegionName.DG,        [Rule.HasLevelFourOffenseGag,  Rule.TwoStory,   Rule.CanReachDG]),
-    ToontownLocationDefinition(ToontownLocationName.MINNIES_MELODYLAND_BUILDING,ToontownLocationType.BUILDINGS, ToontownRegionName.MML,       [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory, Rule.CanReachMML]),
-    ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_BUILDING,        ToontownLocationType.BUILDINGS, ToontownRegionName.TB,        [Rule.HasLevelFiveOffenseGag,  Rule.ThreeStory, Rule.CanReachTB]),
-    ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_BUILDING, ToontownLocationType.BUILDINGS, ToontownRegionName.DDL,       [Rule.HasLevelSixOffenseGag,   Rule.FourStory,  Rule.CanReachDDL]),
-    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_BUILDING,           ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFourOffenseGag,  Rule.TwoStory]),
-    ToontownLocationDefinition(ToontownLocationName.LAWBOT_BUILDING,            ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFourOffenseGag,  Rule.TwoStory]),
-    ToontownLocationDefinition(ToontownLocationName.CASHBOT_BUILDING,           ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFourOffenseGag,  Rule.TwoStory]),
-    ToontownLocationDefinition(ToontownLocationName.SELLBOT_BUILDING,           ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.HasLevelFourOffenseGag,  Rule.TwoStory]),
+    ToontownLocationDefinition(ToontownLocationName.ONE_STORY_FIRST_FLOOR,      ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.OneStory]),
+    ToontownLocationDefinition(ToontownLocationName.TWO_STORY_FIRST_FLOOR,      ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.TwoStory]),
+    ToontownLocationDefinition(ToontownLocationName.TWO_STORY_SECOND_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.TwoStory]),
+    ToontownLocationDefinition(ToontownLocationName.THREE_STORY_FIRST_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.ThreeStory]),
+    ToontownLocationDefinition(ToontownLocationName.THREE_STORY_SECOND_FLOOR,   ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.ThreeStory]),
+    ToontownLocationDefinition(ToontownLocationName.THREE_STORY_THIRD_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.ThreeStory]),
+    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_FIRST_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.FourStory]),
+    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_SECOND_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.FourStory]),
+    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_THIRD_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.FourStory]),
+    ToontownLocationDefinition(ToontownLocationName.FOUR_STORY_FOURTH_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.FourStory]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_FIRST_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.FiveStory]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_SECOND_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.FiveStory]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_THIRD_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.FiveStory]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_FOURTH_FLOOR,    ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.FiveStory]),
+    ToontownLocationDefinition(ToontownLocationName.FIVE_STORY_FIFTH_FLOOR,     ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.FiveStory]),
+    ToontownLocationDefinition(ToontownLocationName.TOONTOWN_CENTRAL_BUILDING,  ToontownLocationType.BUILDINGS, ToontownRegionName.TTC,       [Rule.OneStory,   Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.DONALDS_DOCK_BUILDING,      ToontownLocationType.BUILDINGS, ToontownRegionName.DD,        [Rule.TwoStory,   Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.DAISYS_GARDENS_BUILDING,    ToontownLocationType.BUILDINGS, ToontownRegionName.DG,        [Rule.TwoStory,   Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.MINNIES_MELODYLAND_BUILDING,ToontownLocationType.BUILDINGS, ToontownRegionName.MML,       [Rule.ThreeStory, Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.THE_BRRRGH_BUILDING,        ToontownLocationType.BUILDINGS, ToontownRegionName.TB,        [Rule.ThreeStory, Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.DONALDS_DREAMLAND_BUILDING, ToontownLocationType.BUILDINGS, ToontownRegionName.DDL,       [Rule.FourStory,  Rule.CanReachDDL]),
+    ToontownLocationDefinition(ToontownLocationName.BOSSBOT_BUILDING,           ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.TwoStory]),
+    ToontownLocationDefinition(ToontownLocationName.LAWBOT_BUILDING,            ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.TwoStory]),
+    ToontownLocationDefinition(ToontownLocationName.CASHBOT_BUILDING,           ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.TwoStory]),
+    ToontownLocationDefinition(ToontownLocationName.SELLBOT_BUILDING,           ToontownLocationType.BUILDINGS, ToontownRegionName.BUILDINGS, [Rule.TwoStory]),
     # endregion
 ] + TREASURE_LOCATION_DEFINITIONS + KNOCK_KNOCK_LOCATION_DEFINITIONS + [
     # region Facilities
@@ -1653,7 +1971,7 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DROP_PIANO_UNLOCKED,          ToontownLocationType.DROP_GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSix]),
     ToontownLocationDefinition(ToontownLocationName.DROP_BOAT_UNLOCKED,           ToontownLocationType.DROP_GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSeven]),
     # endregion
-    ] + BOSS_LOCATION_DEFINITIONS + BOSS_EVENT_DEFINITIONS
+    ] + BOSS_LOCATION_DEFINITIONS + BOSS_EVENT_DEFINITIONS + GARDEN_FLOWER_LOCATION_DEFINITIONS + GARDEN_TREE_LOCATION_DEFINITIONS + GARDEN_TREE_LEVEL_LOCATION_DEFINITIONS + CATALOG_LOCATION_DEFINITIONS
 
 LOCATION_NAME_TO_DEFINITION: dict[ToontownLocationName, ToontownLocationDefinition] = {
     locdef.name: locdef for locdef in LOCATION_DEFINITIONS
@@ -1672,6 +1990,9 @@ LOCATION_DESCRIPTIONS: Dict[str, str] = {
 
 FISH_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.FISHING]
 SHOP_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.PET_SHOP]
+FLOWER_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GARDEN_FLOWER]
+GARDEN_TREE_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GARDEN_TREE]
+GARDEN_LOCATIONS = FLOWER_LOCATIONS + GARDEN_TREE_LOCATIONS
 
 TTC_TASK_LOCATIONS = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.TTC_TASKS]
 DD_TASK_LOCATIONS  = [loc_def.name for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.DD_TASKS]
@@ -1729,6 +2050,10 @@ def get_location_groups():
     "All Tasks": [name.value for name in ALL_TASK_LOCATIONS],
     "Fishing": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.region == ToontownRegionName.FISHING],
     "Pet Shops": [name.value for name in SHOP_LOCATIONS],
+    "Gardening": [name.value for name in GARDEN_LOCATIONS],
+    "Flower Gardening": [name.value for name in FLOWER_LOCATIONS],
+    "Tree Gardening": [name.value for name in GARDEN_TREE_LOCATIONS],
+    "Cattlelog": [name.value for name in CATALOG_LOCATIONS],
     "Gag Training": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.region == ToontownRegionName.TRAINING],
     "Cog Discovery": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GALLERY],
     "Cog Gallery": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.region == ToontownRegionName.GALLERY and loc_def.type != ToontownLocationType.COG_LEVELS],

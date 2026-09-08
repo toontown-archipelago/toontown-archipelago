@@ -74,6 +74,14 @@ lDonaldsDock = "Donald's Dock"
 lDonaldsDreamland = "Donald's Dreamland"
 lMinniesMelodyland = "Minnie's Melodyland"
 lToontownCentral = 'Toontown Central'
+pgNameToAbv = {
+    lToontownCentral : "TTC",
+    lDonaldsDock: "DD",
+    lDaisyGardens: "DG",
+    lMinniesMelodyland: "MML",
+    lTheBrrrgh: "TB",
+    lDonaldsDreamland: "DDL"
+}
 lToonHQ = 'Toon HQ'
 lSellbotHQ = 'Sellbot HQ'
 lGoofySpeedway = 'Goofy Speedway'
@@ -9269,6 +9277,9 @@ ConfirmRemoveStatuary = 'Are you sure you want to permanently delete the %(item)
 ResultPlantedSomething = 'Congratulations! You just planted a %s.'
 ResultPlantedSomethingAn = 'Congratulations! You just planted an %s.'
 ResultPlantedNothing = "That didn't work.  Please try a different combination of jellybeans."
+GardenKitTooLowForGag = "Your %(kit)s can only grow level %(gagLevel)d gags.  Upgrade your gardening kit before planting this gag."
+GardenPlantRejected = "That gag could not be planted.  Please check your gardening kit and try again."
+GardenPlantNoTrees = "Tree gardening is not enabled for this seed."
 GardenGagTree = ' Gag Tree'
 GardenUberGag = 'Uber Gag'
 
@@ -10020,6 +10031,7 @@ OptionNames = {
     "sfx-volume": "Sound Effects Volume",
     "toon-chat-sounds": "Toon Chat Sounds",
     "random-music": "Randomize Music",
+    "random-music-style": "Randomized Music Mode",
     'ap-sounds': "AP Item Sounds",
     'refresh-audio': "Refresh Audio",
 }

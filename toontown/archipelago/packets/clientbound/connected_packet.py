@@ -11,6 +11,9 @@ from toontown.archipelago.packets.serverbound.connect_packet import ConnectPacke
 from toontown.archipelago.packets.serverbound.connect_update_packet import ConnectUpdatePacket
 from toontown.archipelago.util.net_utils import NetworkPlayer, NetworkSlot, ClientStatus, SlotType
 from toontown.archipelago.packets.clientbound.clientbound_packet_base import ClientBoundPacketBase
+from panda3d.core import VirtualFileSystem, Filename
+import json
+from pathlib import Path
 from apworld.toontown.options import DeathLinkOption
 from toontown.fishing import FishGlobals
 from otp.otpbase import OTPGlobals
@@ -48,6 +51,30 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # Number of hint points that the current player has.
         self.hint_points: int = self.read_raw_field('hint_points', ignore_missing=True)
+
+        fileSystem = VirtualFileSystem.getGlobalPtr()
+        try:
+            file_path = Filename("apworld/toontown/archipelago.json")
+            ap_json = json.loads(fileSystem.readFile(file_path, True))
+        except OSError:
+            # If we hit this error, we're on a built client so we need to grab the .json a different way
+            current_directory = Path(__file__).parent
+            base_directory = None
+            for directory in current_directory.parents:
+                if directory.name in ("game", "toontown-archipelago"):
+                    base_directory = directory
+                    break
+            json_directory = base_directory / "apworld" / "toontown" / "archipelago.json"
+            directory_string = str(json_directory).replace("\\", "/")
+            file_path = Filename.fromOsSpecific(directory_string)
+            json_data = fileSystem.readFile(file_path, True)
+            if not json_data:
+                ap_json = {"world_version": "Error"}
+            else:
+                ap_json = json.loads(json_data)
+        self.game_version = "v" + str(ap_json.get("world_version", "Error"))
+
+
 
     def get_slot_info(self, slot: int) -> NetworkSlot:
         return self.slot_info[str(slot)]
@@ -193,8 +220,15 @@ class ConnectedPacket(ClientBoundPacketBase):
         status_packet.status = ClientStatus.CLIENT_GOAL if (client.av.hasCheckedLocation(won_id)) else ClientStatus.CLIENT_PLAYING
         client.send_packet(status_packet)
 
+        # We have to do this here as we can't get what locations are disabled in locations.py when those exist
+        # Currently: Only cattlelog checks
+        locations_to_scout = list(locations.SCOUTING_REQUIRED_LOCATIONS)
+        catalog_check_count = self.slot_data.get('catalog_checks', 6)
+        for catalog_location in range(catalog_check_count):
+            locations_to_scout.append(locations.CATALOG_LOCATIONS[catalog_location])
+
         # Scout some locations that we need to display
-        client.av.scoutLocations(locations.SCOUTING_REQUIRED_LOCATIONS)
+        client.av.scoutLocations(locations_to_scout)
 
         # Login location rewarding
         new_game = ap_location_name_to_id(locations.ToontownLocationName.STARTING_NEW_GAME.value)
@@ -221,10 +255,12 @@ class ConnectedPacket(ClientBoundPacketBase):
             update_packet.tags = tags
             client.send_packet(update_packet)
 
+        client.av.d_setArchipelagoHintMessage(client.av.getArchipelagoIP())
+
         # Check to warn the player that our game version mismatches the apworld's
-        if ToontownGlobals.GameVersion != self.slot_data.get('game_version', ToontownGlobals.GameVersion):
-            ap_version = self.slot_data.get('game_version', ToontownGlobals.GameVersion)
-            client.av.d_setVersionMismatchMessage(ap_version)
+        ap_version = self.slot_data.get('game_version', "Error")
+        if self.game_version != ap_version:
+            client.av.d_setVersionMismatchMessage(ap_version, self.game_version)
 
         # Finally at the very send, tell the AP DOG that there is some info to sync
         simbase.air.archipelagoManager.updateToonInfo(client.av.doId, client.slot, client.team)

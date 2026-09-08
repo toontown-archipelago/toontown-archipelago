@@ -1,5 +1,6 @@
 import json
 import os
+import random
 
 from direct.directnotify import DirectNotifyGlobal
 
@@ -80,6 +81,11 @@ class GardenAI:
             self.notify.warning('Garden associated with unknown avatar %d, deleting...' % self.avId)
             return False
 
+        av = self.air.doId2do.get(self.avId)
+        flower_gardening = bool(
+            av and av.slotData.get('flower_gardening', av.slotData.get('estate_integration', False))
+        )
+
         houseIndex = estate.activeToons.index(self.avId)
         if self.WANT_FLOWERS:
             estateBoxIndex = 0
@@ -101,6 +107,7 @@ class GardenAI:
         estatePlots = GardenGlobals.estatePlots[houseIndex]
         treeIndex = 0
         flowerIndex = 0
+        cleanedGardenData = False
         for estatePlot, (x, y, h, estatePlotType) in enumerate(estatePlots):
             if estatePlotType == GardenGlobals.GAG_TREE_TYPE and self.WANT_TREES:
                 data = self.data['trees'][treeIndex]
@@ -108,7 +115,12 @@ class GardenAI:
                 if planted != -1:
                     obj = self.plantTree(treeIndex, planted, waterLevel=waterLevel, lastCheck=lastCheck,
                                          growthLevel=growthLevel, lastHarvested=lastHarvested, generate=False)
-                    self.trees.add(obj)
+                    if obj:
+                        self.trees.add(obj)
+                    else:
+                        self.data['trees'][treeIndex] = list(NULL_PLANT)
+                        cleanedGardenData = True
+                        obj = self.placePlot(treeIndex)
                 else:
                     obj = self.placePlot(treeIndex)
 
@@ -124,11 +136,21 @@ class GardenAI:
                 if planted != -1:
                     obj = self.plantFlower(flowerIndex, planted, variety, waterLevel=waterLevel, lastCheck=lastCheck,
                                            growthLevel=growthLevel, generate=False)
-                    zOffset = 1.5
+                    if obj is None:
+                        self.data['flowers'][flowerIndex] = list(NULL_PLANT)
+                        cleanedGardenData = True
+                        obj = self.placePlot(flowerIndex)
+                        obj.setFlowerIndex(flowerIndex)
+                        zOffset = 1.2
+                    else:
+                        zOffset = 1.5
                 else:
-                    obj = self.placePlot(flowerIndex)
-                    obj.setFlowerIndex(flowerIndex)
-                    zOffset = 1.2
+                    obj = self.plantRandomFlower(flowerIndex) if flower_gardening else None
+                    zOffset = 1.5
+                    if obj is None:
+                        obj = self.placePlot(flowerIndex)
+                        obj.setFlowerIndex(flowerIndex)
+                        zOffset = 1.2
 
                 obj.setPlot(estatePlot)
                 obj.setOwnerIndex(houseIndex)
@@ -163,8 +185,55 @@ class GardenAI:
             tree.calcDependencies()
 
         self.reconsiderAvatarOrganicBonus()
+        if cleanedGardenData:
+            self.update()
         return True
+    
+    def getUncollectedFlowerRecipes(self):
+        """Prioritize uncollected flowers, falling back to available recipes."""
+        av = self.air.doId2do.get(self.avId)
+        if not av:
+            return []
 
+        shovel, shovelSkill = av.getShovel(), av.getShovelSkill()
+        collected_or_picked_flowers = {
+            (flower.getSpecies(), flower.getVariety()) for flower in av.flowerBasket.getFlower()
+        }
+        available_recipes = []
+        uncollected_recipes = []
+        for recipe_key in GardenGlobals.getAvailableRecipes(shovel, shovelSkill):
+            species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipe_key)
+            plant = GardenGlobals.PlantAttributes.get(species, {})
+            if plant.get('plantType') != GardenGlobals.FLOWER_TYPE:
+                continue
+            available_recipes.append(recipe_key)
+            if (not av.flowerCollection.hasFlower(species, variety) and
+                    (species, variety) not in collected_or_picked_flowers):
+                uncollected_recipes.append(recipe_key)
+        return uncollected_recipes or available_recipes
+
+    def plantRandomFlower(self, flowerIndex, plot=None, ownerIndex=-1, plotId=-1):
+        """Plants a random flower (prioritizing undiscovered) at the given index.
+        """
+        av = self.air.doId2do.get(self.avId)
+        if not av:
+            print('GardenAI.plantRandomFlower: No avatar with avId %d, cannot plant flower.' % self.avId)
+            return None
+        flower_gardening = av.slotData.get('flower_gardening', av.slotData.get('estate_integration', False))
+        if flower_gardening and not av.getGardenStarted():
+            return None
+
+        recipes = self.getUncollectedFlowerRecipes()
+        if not recipes:
+            return None
+
+        recipeKey = random.choice(recipes)
+
+        species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
+        growthLevel = GardenGlobals.PlantAttributes[species]['growthThresholds'][2]
+        return self.plantFlower(flowerIndex, species, variety, waterLevel=0, lastCheck=0, growthLevel=growthLevel,
+                                plot=plot, generate=False, ownerIndex=ownerIndex, plotId=plotId)
+    
     def placePlot(self, treeIndex):
         obj = DistributedGardenPlotAI(self)
         obj.setTreeIndex(treeIndex)
@@ -175,23 +244,8 @@ class GardenAI:
         return NULL_PLANT
 
     def reconsiderAvatarOrganicBonus(self):
-        av = self.air.doId2do.get(self.avId)
-        if not av:
-            return
-
-        bonus = [-1] * 7
-        for track in range(7):
-            for level in range(8):
-                if not self.hasTree(track, level):
-                    break
-
-                tree = self.getTree(track, level)
-                if tree.getGrowthLevel() < tree.growthThresholds[1] or tree.getWilted():
-                    break
-
-            bonus[track] = level - 1
-
-        av.b_setTrackBonusLevel(bonus)
+        # remove vanilla behavior of giving the avatar a organic bonus as archipelago checks give organic bonuses
+        pass
 
     def hasTree(self, track, index):
         treeTypeIndex = GardenGlobals.getTreeTypeIndex(track, index)
@@ -209,10 +263,29 @@ class GardenAI:
     def plantTree(self, treeIndex, value, plot=None, waterLevel=-1, lastCheck=0, growthLevel=0, lastHarvested=0,
                   ownerIndex=-1, plotId=-1, pos=None, generate=True):
         if not self.air:
+            print('GardenAI.plantTree: No air, cannot plant tree.')
             return
+
+        av = self.air.doId2do.get(self.avId)
+        if not av:
+            print('GardenAI.plantTree: No avatar with avId %d, cannot plant tree.' % self.avId)
+            return
+        tree_gardening = av.slotData.get('tree_gardening', av.slotData.get('estate_integration', False))
+        if tree_gardening and not av.getGardenStarted():
+            print('GardenAI.plantTree: Avatar %d has not unlocked gardening.' % self.avId)
+            return
+
+        track, level = GardenGlobals.getTreeTrackAndLevel(value)
+        if tree_gardening:
+            max_gag_level = GardenGlobals.GardenKitAttributes[av.getGardenKit()]['max_gag_level']
+            if level > max_gag_level:
+                print('GardenAI.plantTree: Level %d exceeds max gag level %d for avatar with garden kit %d.' %
+                      (level, max_gag_level, av.getGardenKit()))
+                return
 
         if plot:
             if plot not in self.objects:
+                print('GardenAI.plantTree: Plot not found in objects, cannot plant tree.')
                 return
 
             plot.requestDelete()
@@ -286,10 +359,17 @@ class GardenAI:
     def plantFlower(self, flowerIndex, species, variety, plot=None, waterLevel=-1, lastCheck=0, growthLevel=0,
                     ownerIndex=-1, plotId=-1, generate=True):
         if not self.air:
+            print('GardenAI.plantFlower: No air, cannot plant flower.')
+            return
+
+        av = self.air.doId2do.get(self.avId)
+        if not av:
+            print('GardenAI.plantFlower: No avatar with avId %d, cannot plant flower.' % self.avId)
             return
 
         if plot:
             if plot not in self.objects:
+                print('GardenAI.plantFlower: Plot not found in objects, cannot plant flower.')
                 return
 
             plot.requestDelete()

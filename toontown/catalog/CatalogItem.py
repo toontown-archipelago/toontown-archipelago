@@ -9,7 +9,7 @@ from direct.distributed.PyDatagramIterator import PyDatagramIterator
 import types
 import sys
 CatalogReverseType = None
-CatalogItemVersion = 8
+CatalogItemVersion = 9
 CatalogBackorderMarkup = 1.2
 CatalogSaleMarkdown = 0.75
 Customization = 1

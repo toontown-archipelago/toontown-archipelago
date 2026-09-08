@@ -1,5 +1,8 @@
+import random
+
 from direct.directnotify import DirectNotifyGlobal
 
+from toontown.archipelago.definitions import util
 from toontown.estate import GardenGlobals
 from toontown.estate.DistributedLawnDecorAI import DistributedLawnDecorAI
 
@@ -59,7 +62,7 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
 
         return av
 
-    def plantFlower(self, species, variety, usingFlowerAll=False):
+    def plantFlower(self, species, variety, usingFlowerAll=False, fullyGrown=False):
         av = self.__initialSanityCheck(GardenGlobals.FLOWER_TYPE if not usingFlowerAll else None, usingFlowerAll)
         if not av:
             return
@@ -84,9 +87,17 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
             self.d_setMovie(GardenGlobals.MOVIE_PLANT)
 
         def handlePlantFlower(task):
+            growthLevel = 0
+            if fullyGrown:
+                plantAttribs = GardenGlobals.PlantAttributes.get(species)
+                if plantAttribs:
+                    growthThresholds = plantAttribs.get('growthThresholds')
+                    if growthThresholds:
+                        growthLevel = growthThresholds[2]
+
             flower = self.mgr.plantFlower(self.getFlowerIndex(), species, variety, plot=self,
                                           ownerIndex=self.ownerIndex, plotId=self.plot,
-                                          waterLevel=0, generate=False)
+                                          waterLevel=0, generate=False, growthLevel=growthLevel)
 
             # <hack>
             index = (0, 1, 2, 2, 2, 3, 3, 3, 4, 4)[self.getFlowerIndex()]
@@ -113,7 +124,7 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
         if usingFlowerAll:
             handlePlantFlower(None)
         else:
-            taskMgr.doMethodLater(7, handlePlantFlower, self.uniqueName('handle-plant-flower'))
+            taskMgr.doMethodLater(1.0, handlePlantFlower, self.uniqueName('handle-plant-flower'))
 
         self.__plantingAvId = av.doId
         return 1
@@ -122,13 +133,28 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
         av = self.__initialSanityCheck(GardenGlobals.GAG_TREE_TYPE)
         if not av:
             return
+        tree_gardening = av.slotData.get('tree_gardening', av.slotData.get('estate_integration', False))
+        if tree_gardening and not av.getGardenStarted():
+            msg = 'tried to plant tree before unlocking gardening'
+            self.notify.warning('%d %s' % (av.doId, msg))
+            self.air.writeServerEvent('suspicious', av.doId, msg)
+            return self.d_setMovie(GardenGlobals.MOVIE_PLANT_REJECTED)
 
-        for i in range(index):
-            if not self.mgr.hasTree(track, i):
-                msg = 'tried to plant tree but an index is missing: %d' % index
+        if tree_gardening:
+            max_gag_level = GardenGlobals.GardenKitAttributes[av.getGardenKit()]['max_gag_level']
+            if index > max_gag_level:
+                msg = 'tried to plant tree above garden kit cap'
                 self.notify.warning('%d %s' % (av.doId, msg))
                 self.air.writeServerEvent('suspicious', av.doId, msg)
                 return self.d_setMovie(GardenGlobals.MOVIE_PLANT_REJECTED)
+
+        if not tree_gardening:
+            for i in range(index):
+                if not self.mgr.hasTree(track, i):
+                    msg = 'tried to plant tree but an index is missing: %d' % index
+                    self.notify.warning('%d %s' % (av.doId, msg))
+                    self.air.writeServerEvent('suspicious', av.doId, msg)
+                    return self.d_setMovie(GardenGlobals.MOVIE_PLANT_REJECTED)
 
         if self.mgr.hasTree(track, index):
             msg = 'tried to plant tree but gag already planted'
@@ -136,7 +162,7 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
             self.air.writeServerEvent('suspicious', av.doId, msg)
             return self.d_setMovie(GardenGlobals.MOVIE_PLANT_REJECTED)
 
-        if av.inventory.useItem(track, index) == -1:
+        if av.inventory.useItem(track, index, tree=True) == -1:
             msg = 'tried to plant tree but not carrying selected gag'
             self.notify.warning('%d %s' % (av.doId, msg))
             self.air.writeServerEvent('suspicious', av.doId, msg)
@@ -151,13 +177,49 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
 
             tree = self.mgr.plantTree(self.getTreeIndex(), GardenGlobals.getTreeTypeIndex(track, index), plot=self,
                                       ownerIndex=self.ownerIndex, plotId=self.plot, pos=(self.getPos(), self.getH()))
+            if not tree:
+                return task.done
+
+            if tree_gardening:
+                behavior = av.slotData.get('tree_gardening_behavior', 0)
+                omitted_track = {
+                    1: 1,
+                    2: 3,
+                    3: 4,
+                    4: 5,
+                    5: 6,
+                }.get(av.slotData.get('omit_gag', 0), -1)
+                if behavior == 2:
+                    location = util.garden_tree_level_to_location(index)
+                elif behavior != 1 or track == av.slotData.get('tree_gardening_track', -1):
+                    location = util.garden_tree_to_location(track, index) if track != omitted_track else None
+                else:
+                    location = None
+                if location is not None:
+                    av.addCheckedLocation(util.ap_location_name_to_id(location))
+
             tree.d_setMovie(GardenGlobals.MOVIE_FINISHPLANTING, self.__plantingAvId)
             tree.d_setMovie(GardenGlobals.MOVIE_CLEAR, self.__plantingAvId)
             self.air.writeServerEvent('plant-tree', self.__plantingAvId, track=track, index=index, plot=self.plot)
             return task.done
 
-        taskMgr.doMethodLater(7, handlePlantTree, self.uniqueName('handle-plant-tree'))
+        taskMgr.doMethodLater(1.0, handlePlantTree, self.uniqueName('handle-plant-tree'))
         self.__plantingAvId = av.doId
+
+    def plantRandomFlower(self, usingFlowerAll=True, fullyGrown=False):
+        av = self.air.doId2do.get(self.ownerDoId)
+        if not av:
+            return
+
+        recipes = self.mgr.getUncollectedFlowerRecipes()
+        if not recipes:
+            return
+
+        recipeKey = random.choice(recipes)
+
+        species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
+        
+        self.plantFlower(species, variety, usingFlowerAll=usingFlowerAll, fullyGrown=fullyGrown)
 
     def plantStatuary(self, species):
         av = self.__initialSanityCheck(GardenGlobals.STATUARY_TYPE)
@@ -196,7 +258,7 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
             self.air.writeServerEvent('plant-statuary', self.__plantingAvId, species=species, plot=self.plot)
             return task.done
 
-        taskMgr.doMethodLater(7, handlePlaceStatuary, self.uniqueName('handle-place-statuary'))
+        taskMgr.doMethodLater(1.0, handlePlaceStatuary, self.uniqueName('handle-place-statuary'))
         self.__plantingAvId = av.doId
 
     def plantToonStatuary(self, species, dnaCode):
@@ -231,7 +293,7 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
             self.air.writeServerEvent('plant-statuary', self.__plantingAvId, species=species, plot=self.plot)
             return task.done
 
-        taskMgr.doMethodLater(7, handlePlaceStatuary, self.uniqueName('handle-place-statuary'))
+        taskMgr.doMethodLater(1.0, handlePlaceStatuary, self.uniqueName('handle-place-statuary'))
         self.__plantingAvId = av.doId
 
     def plantNothing(self, burntBeans):

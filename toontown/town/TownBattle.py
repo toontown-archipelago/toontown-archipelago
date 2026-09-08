@@ -276,7 +276,7 @@ class TownBattle(StateData.StateData):
             self.notify.error('Bad number of toons: %s' % num)
         return None
 
-    def updateChosenAttacks(self, battleIndices, tracks, levels, targets):
+    def updateChosenAttacks(self, battleIndices, tracks, levels, targets, highestKb):
         self.notify.debug('updateChosenAttacks bi=%s tracks=%s levels=%s targets=%s' % (battleIndices,
          tracks,
          levels,
@@ -288,6 +288,18 @@ class TownBattle(StateData.StateData):
             else:
                 if tracks[i] == BattleBase.SOUND:
                     numSounds += 1
+        for i in range(4):
+            if battleIndices[i] == -1:
+                pass
+            else:
+                if tracks[i] == BattleBase.LURE:
+                    if hasattr(self.toonPanels[battleIndices[i]].avatar, "experience") and hasattr(self.toonPanels[battleIndices[i]].avatar, "trackBonusLevel") \
+                    and hasattr(self.toonPanels[battleIndices[i]].avatar, "getDamageMultiplier") and hasattr(self.toonPanels[battleIndices[i]].avatar, "getOverflowMod"):
+                        newLureKB = getAvPropDamage(tracks[i], levels[i], self.toonPanels[battleIndices[i]].avatar.experience,
+                                              self.toonPanels[battleIndices[i]].avatar.trackBonusLevel[tracks[i]] >= levels[i],
+                                              toonDamageMultiplier=self.toonPanels[battleIndices[i]].avatar.getDamageMultiplier(), overflowMod=self.toonPanels[battleIndices[i]].avatar.getOverflowMod())
+                    if newLureKB >= highestKb:
+                        highestKb = newLureKB
         for i in range(4):
             if battleIndices[i] == -1:
                 pass
@@ -315,8 +327,7 @@ class TownBattle(StateData.StateData):
                         target = targets[i]
                         if target == -1:
                             numTargets = None
-                self.toonPanels[battleIndices[i]].setValues(battleIndices[i], tracks[i], levels[i], numTargets, target, self.localNum, numSounds, self.maxSuitLevel)
-
+                self.toonPanels[battleIndices[i]].setValues(battleIndices[i], tracks[i], levels[i], numTargets, target, self.localNum, numSounds, self.maxSuitLevel, highestKb)
         return
 
     def chooseDefaultTarget(self):

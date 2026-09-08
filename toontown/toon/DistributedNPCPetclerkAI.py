@@ -40,11 +40,21 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
         self.d_setMovie(avId, flag)
         # taskMgr.doMethodLater(PetConstants.PETCLERK_TIMER, self.sendTimeoutMovie, self.uniqueName('clearMovie'))
         #is auto hint turned on?
-        if av.slotData.get("pet_shop_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint:
+        if av.slotData.get("pet_shop_display", RewardDisplayOption.default) in (RewardDisplayOption.option_auto_hint, RewardDisplayOption.option_auto_hint_prog):
             packet = LocationScoutsPacket()
             packet.create_as_hint = 2 # only announce new hints
-            packet.locations = [util.ap_location_name_to_id(self.getCheckName())]
-            av.archipelago_session.client.send_packet(packet)
+            if av.slotData.get("pet_shop_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint_prog:
+                prog_locations = []
+                loc_id = util.ap_location_name_to_id(self.getCheckName())
+                cached_location = av.archipelago_session.client.location_scouts_cache.get(loc_id)
+                if "json_plum" in cached_location:
+                    prog_locations.append(loc_id)
+                if prog_locations:
+                    packet.locations = prog_locations
+                    av.archipelago_session.client.send_packet(packet)
+            else:
+                packet.locations = [util.ap_location_name_to_id(self.getCheckName())]
+                av.archipelago_session.client.send_packet(packet)
         DistributedNPCToonBaseAI.avatarEnter(self)
 
     def rejectAvatar(self, avId):
@@ -96,7 +106,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 self.notify.warning('somebody called petAdopted on a non-existent pet! avId: %s' % avId)
                 return
             baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
-            if av.slotData.get('random_prices', False):
+            if av.slotData.get('doodle_price_rando', False):
                 rng = random.Random()
                 rng.seed(f"{av.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting

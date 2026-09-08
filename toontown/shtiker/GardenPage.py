@@ -249,16 +249,6 @@ class GardenPage(ShtikerPage.ShtikerPage):
             self.picker = FlowerPicker.FlowerPicker(self)
             self.picker.setPos(-0.555, 0, 0.1)
             self.picker.setScale(0.95)
-            self.FUDGE_FACTOR = 0.01
-            self.barLength = 1.1
-            self.shovelBar = DirectWaitBar(parent=self.picker, pos=(0.95, 0, -0.55), relief=DGG.SUNKEN, frameSize=(-0.65,
-             1.05,
-             -0.1,
-             0.1), borderWidth=(0.025, 0.025), scale=0.45, frameColor=(0.8, 0.8, 0.7, 1), barColor=(0.6, 0.4, 0.2, 1), range=self.barLength + self.FUDGE_FACTOR, value=self.barLength * 0.5 + self.FUDGE_FACTOR, text=' ' + TTLocalizer.Laff, text_scale=0.11, text_fg=(0.05, 0.14, 0.2, 1), text_align=TextNode.ALeft, text_pos=(-0.57, -0.035))
-            self.wateringCanBar = DirectWaitBar(parent=self.picker, pos=(0.95, 0, -0.75), relief=DGG.SUNKEN, frameSize=(-0.65,
-             1.05,
-             -0.1,
-             0.1), borderWidth=(0.025, 0.025), scale=0.45, frameColor=(0.8, 0.8, 0.7, 1), barColor=(0.4, 0.6, 1.0, 1), range=self.barLength + self.FUDGE_FACTOR, value=self.barLength * 0.5 + self.FUDGE_FACTOR, text=' ' + TTLocalizer.Laff, text_scale=0.11, text_fg=(0.05, 0.14, 0.2, 1), text_align=TextNode.ALeft, text_pos=(-0.57, -0.035))
 
     def unload(self):
         print('gardenPage Unloading')
@@ -282,27 +272,6 @@ class GardenPage(ShtikerPage.ShtikerPage):
     def updatePage(self):
         if hasattr(self, 'collectedTotal'):
             self.collectedTotal['text'] = TTLocalizer.GardenPageCollectedTotal % (len(base.localAvatar.flowerCollection), GardenGlobals.getNumberOfFlowerVarieties())
-        if hasattr(self, 'shovelBar'):
-            shovel = base.localAvatar.shovel
-            shovelName = TTLocalizer.ShovelNameDict[shovel]
-            curShovelSkill = base.localAvatar.shovelSkill
-            maxShovelSkill = GardenGlobals.ShovelAttributes[shovel]['skillPts']
-            if shovel == GardenGlobals.MAX_SHOVELS - 1:
-                maxShovelSkill -= 1
-            wateringCan = base.localAvatar.wateringCan
-            wateringCanName = TTLocalizer.WateringCanNameDict[wateringCan]
-            curWateringCanSkill = base.localAvatar.wateringCanSkill
-            maxWateringCanSkill = GardenGlobals.WateringCanAttributes[wateringCan]['skillPts']
-            if wateringCan == GardenGlobals.MAX_WATERING_CANS - 1:
-                maxWateringCanSkill -= 1
-            textToUse = TTLocalizer.GardenPageShovelInfo % (shovelName, curShovelSkill, maxShovelSkill)
-            self.shovelBar['text'] = textToUse
-            self.shovelBar['value'] = float(curShovelSkill) / float(maxShovelSkill) * self.barLength + self.FUDGE_FACTOR
-            textToUse = TTLocalizer.GardenPageWateringCanInfo % (wateringCanName, curWateringCanSkill, maxWateringCanSkill)
-            self.wateringCanBar['text'] = textToUse
-            self.wateringCanBar['value'] = float(curWateringCanSkill) / float(maxWateringCanSkill) * self.barLength + self.FUDGE_FACTOR
-        else:
-            print('no shovel bar')
         if self.mode == GardenPage_Collection:
             if hasattr(self, 'browser'):
                 self.browser.update()

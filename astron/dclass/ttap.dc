@@ -533,7 +533,7 @@ dclass DistributedPlayer : DistributedAvatar {
   setWhisperSCEmoteFrom(uint32, uint16) ownrecv clsend;
   setSystemMessage(uint32, string(0-256)) ownrecv;
   setArchipelagoHintMessage(string(0-256)) ownrecv;
-  setVersionMismatchMessage(string(0-256)) ownrecv;
+  setVersionMismatchMessage(string(0-256), string(0-256)) ownrecv;
   setCommonChatFlags(uint8) broadcast ownrecv ram airecv;
   setWhitelistChatFlags(uint8) broadcast ownrecv ram airecv;
   setSC(uint16) broadcast ownsend airecv;
@@ -1085,12 +1085,13 @@ dclass DistributedToon : DistributedPlayer {
   setFishingTrophies(uint8[] = []) required ownrecv db;
   setFlowerCollection(uint8[] = [], uint8[] = []) required ownrecv db;
   setFlowerBasket(uint8[] = [], uint8[] = []) required ownrecv db;
-  setMaxFlowerBasket(uint8 = 20) required ownrecv db;
+  setMaxFlowerBasket(uint8 = 100) required ownrecv db;
   setGardenTrophies(uint8[] = []) required ownrecv db;
   setShovel(uint8 = 0) required broadcast ownrecv db;
   setShovelSkill(uint32 = 0) required ownrecv db;
   setWateringCan(uint8 = 0) required broadcast ownrecv db;
   setWateringCanSkill(uint32 = 0) required ownrecv db;
+  setGardenKit(uint8 = 0) required ownrecv db;
   promoteShovel(uint8) ownrecv;
   promoteWateringCan(uint8) ownrecv;
   reactivateWater() ownrecv;
@@ -1547,7 +1548,7 @@ dclass DistributedBattleBase : DistributedObject {
   setPosition(int16/10, int16/10, int16/10) required broadcast ram;
   setZoneId(uint32) required broadcast ram;
   setInitialSuitPos(int16/10, int16/10, int16/10) required broadcast ram;
-  setMembers(uint32[], string, string, string, string, string, uint32[], string, string, string, string, string, int16) required broadcast ram;
+  setMembers(uint32[], string, string, string, string, string, uint32[], string, string, string, string, string, int16, int16) required broadcast ram;
   setBattleSpeeds(uint8[]) required broadcast ram;
   adjust(int16) broadcast;
   setMovie(BattleMovie movie) required broadcast ram;

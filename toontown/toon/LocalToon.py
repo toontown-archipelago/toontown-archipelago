@@ -1051,7 +1051,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
     def showFurnitureGui(self):
         self.loadFurnitureGui()
-        self.__furnitureGui.show()
+        self.__furnitureGui.hide()
 
     def hideFurnitureGui(self):
         if self.__furnitureGui:

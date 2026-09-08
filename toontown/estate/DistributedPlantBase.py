@@ -74,7 +74,7 @@ class DistributedPlantBase(DistributedLawnDecor.DistributedLawnDecor):
         return self.growthLevel
 
     def getShovelAction(self):
-        if self.isFruiting() and not self.isWilted() and self.canBeHarvested():
+        if self.isFruiting() and getattr(self, 'fruits', True) and not self.isWilted() and self.canBeHarvested():
             return TTLocalizer.GardeningPick
         else:
             return TTLocalizer.GardeningRemove
@@ -173,6 +173,8 @@ class DistributedPlantBase(DistributedLawnDecor.DistributedLawnDecor):
             self.doFinishPlantingTrack(avId)
         elif mode == GardenGlobals.MOVIE_REMOVE:
             self.doDigupTrack(avId)
+        elif mode == GardenGlobals.MOVIE_FINISHREMOVING:
+            self.doFinishPlantingTrack(avId)
 
     def doWaterTrack(self, avId):
         toon = base.cr.doId2do.get(avId)
@@ -192,6 +194,7 @@ class DistributedPlantBase(DistributedLawnDecor.DistributedLawnDecor):
             track.append(Func(self.sendUpdate, 'waterPlantDone'))
             track.append(Func(self.finishInteraction))
         track.start()
+        track.setPlayRate(2.0)
         self.waterTrackDict[avId] = track
 
     def generateWaterTrack(self, toon):

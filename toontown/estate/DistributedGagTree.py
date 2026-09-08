@@ -31,6 +31,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         self.signHasBeenStuck2Ground = False
         self._teaserPanel = None
         self.setName('DistributedGagTree')
+        self.fruits = None
         return
 
     def delete(self):
@@ -129,7 +130,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
 
     def handlePicking(self):
         messenger.send('wakeup')
-        if self.isFruiting() and self.canBeHarvested():
+        if self.isFruiting() and self.fruits and self.canBeHarvested():
             self.startInteraction()
             self.doHarvesting()
             return
@@ -137,8 +138,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         text = TTLocalizer.ConfirmRemoveTree % {'tree': fullName}
         if self.hasDependentTrees():
             text += TTLocalizer.ConfirmWontBeAbleToHarvest
-        self.confirmDialog = TTDialog.TTDialog(style=TTDialog.YesNo, text=text, command=self.confirmCallback)
-        self.confirmDialog.show()
+        self.doPicking()
         self.startInteraction()
         return
 
@@ -237,6 +237,8 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
     def setMovie(self, mode, avId):
         if mode == GardenGlobals.MOVIE_HARVEST:
             self.doHarvestTrack(avId)
+        elif mode == GardenGlobals.MOVIE_HARVEST_REJECTED:
+            self.doHarvestRejectedTrack(avId)
         elif mode == GardenGlobals.MOVIE_WATER:
             self.doWaterTrack(avId)
         elif mode == GardenGlobals.MOVIE_FINISHPLANTING:
@@ -264,6 +266,14 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
             self.movie.append(Func(self.movieDone))
             self.movie.append(Func(self.doResultDialog))
         self.movie.start()
+        self.movie.setPlayRate(5.0)
+
+    def doHarvestRejectedTrack(self, avId):
+        if avId != localAvatar.doId:
+            return
+        self.finishMovies()
+        base.localAvatar.loop('neutral')
+        self.finishInteraction()
 
     def doHarvestTrack(self, avId):
         toon = base.cr.doId2do.get(avId)
@@ -272,11 +282,30 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         self.finishMovies()
         moveTrack = self.generateToonMoveTrack(toon)
         harvestTrack = self.generateHarvestTrack(toon)
-        self.movie = Sequence(self.startCamIval(avId), moveTrack, harvestTrack, self.stopCamIval(avId))
+        self.movie = Sequence(self.startCamIval(avId), moveTrack, harvestTrack,
+                              self.stopCamIval(avId))
         if avId == localAvatar.doId:
             self.movie.append(Func(self.finishInteraction))
+            self.movie.append(Func(self.resetCameraAfterHarvest))
             self.movie.append(Func(self.movieDone))
         self.movie.start()
+        self.movie.setPlayRate(5.0)
+
+    def resetCameraAfterHarvest(self):
+        # Reset the camera to the default position after harvesting.
+        place = base.cr.playGame.getPlace()
+        if place and hasattr(place, 'fsm'):
+            place.fsm.request('walk')
+
+        toon = base.localAvatar
+        if toon.cameraLerp:
+            toon.cameraLerp.finish()
+            toon.cameraLerp = None
+        shouldPush = 1
+        if toon.cameraPositions:
+            shouldPush = not toon.cameraPositions[toon.cameraIndex][4]
+        toon.startUpdateSmartCamera(shouldPush)
+        toon.posCamera(0, 0)
 
     def setupShadow(self):
         if DIRT_AS_WATER_INDICATOR:
@@ -348,25 +377,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         return Task.done
 
     def canBeHarvested(self):
-        myTrack, myLevel = GardenGlobals.getTreeTrackAndLevel(self.typeIndex)
-        levelsInTrack = []
-        levelTreeDict = {}
-        allGagTrees = base.cr.doFindAll('DistributedGagTree')
-        for gagTree in allGagTrees:
-            if gagTree.getOwnerId() == localAvatar.doId:
-                curTrack, curLevel = GardenGlobals.getTreeTrackAndLevel(gagTree.typeIndex)
-                if curTrack == myTrack:
-                    levelsInTrack.append(curLevel)
-                    levelTreeDict[curLevel] = gagTree
-
-        for levelToTest in range(myLevel):
-            if levelToTest not in levelsInTrack:
-                return False
-            curTree = levelTreeDict[levelToTest]
-            if not curTree.isGTEFullGrown():
-                return False
-
-        return True
+        return False
 
     def hasDependentTrees(self):
         myTrack, myLevel = GardenGlobals.getTreeTrackAndLevel(self.typeIndex)
@@ -381,12 +392,7 @@ class DistributedGagTree(DistributedPlantBase.DistributedPlantBase):
         return False
 
     def doResultDialog(self):
-        self.startInteraction()
-        curTrack, curLevel = GardenGlobals.getTreeTrackAndLevel(self.typeIndex)
-        species = GardenGlobals.getTreeTypeIndex(curTrack, curLevel)
-        treeName = GardenGlobals.PlantAttributes[species]['name']
-        stringToShow = TTLocalizer.getResultPlantedSomethingSentence(treeName)
-        self.resultDialog = TTDialog.TTDialog(style=TTDialog.Acknowledge, text=stringToShow, command=self.resultsCallback)
+        return
 
     def resultsCallback(self, value):
         if self.resultDialog:
