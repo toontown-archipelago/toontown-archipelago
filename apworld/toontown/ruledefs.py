@@ -1468,7 +1468,10 @@ def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
                     passes_rule(Rule.HasMMLHQAccess, *args),
                     passes_rule(Rule.HasTBHQAccess, *args),
                     passes_rule(Rule.HasDDLHQAccess, *args))
-    goal_reachable = False
+    # goal_reachable = False
+    total_goal_reachable = not total_tasks
+    hood_goal_reachable = not hood_tasks
+
 
     if total_tasks:
         tasks_logical = 0
@@ -1476,7 +1479,7 @@ def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
             if test_location(get_location_def_from_name(task), state, world, player, options):
                 tasks_logical += 1
             if tasks_logical >= tasks_required:
-                goal_reachable = True
+                total_goal_reachable = True
                 break
     # Don't even bother checking unless we have access to all HQs in the first place
     if hood_tasks and all(all_hq_rules):
@@ -1490,10 +1493,14 @@ def TaskedAllHoods(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
                     playgrounds_can_complete += 1
                     break
         if playgrounds_can_complete == len(ALL_TASK_LOCATIONS_SPLIT):
-            goal_reachable = True
+            hood_goal_reachable = True
 
     # Check if we have enough to win.
-    return passes_rule(Rule.CanReachTTC, *args) and goal_reachable  # TECHNICALLY TRUE!
+    return (
+     passes_rule(Rule.CanReachTTC, *args) # TECHNICALLY TRUE!
+     and (total_goal_reachable 
+     and hood_goal_reachable)  
+    )
 
 
 @rule(Rule.GainedEnoughLaff)
