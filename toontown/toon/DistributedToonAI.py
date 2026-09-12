@@ -3640,6 +3640,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             flower = FlowerBase.FlowerBase(species, variety)
             moneyEarned = flower.getValue() * 75
             self.addMoney(moneyEarned)
+            self.flowerCollection.collectFlower(flower)
+            self.d_setFlowerCollection(*self.flowerCollection.getNetLists())
             return 1
         else:
             self.notify.warning('addFlowerToBasket: addFlower failed')
