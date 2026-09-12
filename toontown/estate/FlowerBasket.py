@@ -36,7 +36,6 @@ class FlowerBasket:
         return 0
 
     def addFlower(self, species, variety):
-        self.flowerList.append(FlowerBase.FlowerBase(species, variety))
         return 1
 
     def removeFishAtIndex(self, index):

@@ -15,6 +15,7 @@ from direct.distributed import DistributedSmoothNodeAI
 from toontown.toonbase import ToontownGlobals
 from toontown.quest import Quests
 from toontown.toonbase import ToontownBattleGlobals
+from toontown.estate import FlowerBase
 from toontown.battle import SuitBattleGlobals
 from direct.task import Task
 from direct.showbase.PythonUtil import union
@@ -3636,7 +3637,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             self.notify.warning('addFlowerToBasket: cannot add flower, basket is full')
             return 0
         elif self.flowerBasket.addFlower(species, variety):
-            self.d_setFlowerBasket(*self.flowerBasket.getNetLists())
+            flower = FlowerBase.FlowerBase(species, variety)
+            moneyEarned = flower.getValue() * 75
+            self.addMoney(moneyEarned)
             return 1
         else:
             self.notify.warning('addFlowerToBasket: addFlower failed')
