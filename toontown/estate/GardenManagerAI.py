@@ -231,8 +231,11 @@ class GardenAI:
 
         species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
         growthLevel = GardenGlobals.PlantAttributes[species]['growthThresholds'][2]
-        return self.plantFlower(flowerIndex, species, variety, waterLevel=0, lastCheck=0, growthLevel=growthLevel,
-                                plot=plot, generate=False, ownerIndex=ownerIndex, plotId=plotId)
+        if av.slotData.get('auto_flower_growth', True):
+            return self.plantFlower(flowerIndex, species, variety, waterLevel=0, lastCheck=0, growthLevel=growthLevel,
+                                    plot=plot, generate=False, ownerIndex=ownerIndex, plotId=plotId)
+        else:
+            return None
     
     def placePlot(self, treeIndex):
         obj = DistributedGardenPlotAI(self)
@@ -379,6 +382,7 @@ class GardenAI:
         flower.setTypeIndex(species)
         flower.setVariety(variety)
         flower.setWaterLevel(waterLevel)
+        growthLevel = GardenGlobals.PlantAttributes[species]['growthThresholds'][2]
         flower.setGrowthLevel(growthLevel)
         if ownerIndex != -1:
             flower.setOwnerIndex(ownerIndex)

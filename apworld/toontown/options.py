@@ -782,6 +782,16 @@ class FlowerGardening(Toggle):
     default = False
 
 
+class AutoFlowerGrowing(Toggle):
+    """
+    Toggles if flowers automatically grow when picked or not.
+    If disabled, you will need to plant the flowers manually with their bean combinations. (You might have to look it up.)
+    Only does anything if flower gardening is enabled.
+    """
+    display_name = "Automatic Flower Growth"
+    default = True
+
+
 class TreeGardening(Toggle):
     """
     Enable gag tree gardening checks.
@@ -1113,6 +1123,7 @@ class ToontownOptions(PerGameCommonOptions):
     doodle_price_rando: DoodlePriceRando
     catalog_price_rando: CatalogPriceRando
     flower_gardening: FlowerGardening
+    auto_flower_growth: AutoFlowerGrowing
     tree_gardening: TreeGardening
     tree_gardening_behavior: TreeGardeningBehavior
     catalog_checks: CatalogChecks
@@ -1130,7 +1141,7 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
         StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, HardCombatLogic,
         StartMoneyOption, StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption, DoodlePriceRando, CatalogPriceRando, FlowerGardening, TreeGardening, TreeGardeningBehavior,
+        RingLinkOption, DoodlePriceRando, CatalogPriceRando, FlowerGardening, AutoFlowerGrowing, TreeGardening, TreeGardeningBehavior,
         CatalogChecks, NeedCatalog
     ]),
     OptionGroup("Win Condition", [

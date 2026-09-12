@@ -815,6 +815,7 @@ class ToontownWorld(World):
             "task_reward_display": self.options.task_reward_display.value,
             "estate_integration": self.options.flower_gardening.value or self.options.tree_gardening.value or self.options.catalog_checks.value > 0,
             "flower_gardening": self.options.flower_gardening.value,
+            "auto_flower_growth": self.options.auto_flower_growth.value,
             "tree_gardening": self.options.tree_gardening.value,
             "tree_gardening_behavior": self.options.tree_gardening_behavior.value,
             "tree_gardening_track": self.tree_gardening_track,
