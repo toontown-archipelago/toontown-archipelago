@@ -388,8 +388,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.loadDisguisePages()
         if self.sosPageFlag:
             self.loadSosPages()
-        if self.gardenStarted:
-            self.loadGardenPages()
+        self.loadGardenPages()
         self.addGolfPage()
         self.addEventsPage()
         if WantNewsPage:
