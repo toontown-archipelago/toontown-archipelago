@@ -41,7 +41,6 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
             State.State('frameworkWaitClientsExit', self.enterFrameworkWaitClientsExit,self.exitFrameworkWaitClientsExit, ['frameworkCleanup']),
             State.State('frameworkCleanup', self.enterFrameworkCleanup, self.exitFrameworkCleanup, ['frameworkOff'])
         ], 'frameworkOff', 'frameworkOff')
-
         self.frameworkFSM.enterInitialState()
         self.avIdList = []
         self.toonsSkipped = []
@@ -427,10 +426,6 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
         return self.local2GameTime(globalClock.getFrameTime())
 
     def getDifficulty(self):
-        if self.difficultyOverride is not None:
-            return self.difficultyOverride
-        if hasattr(self.air, 'minigameDifficulty'):
-            return float(self.air.minigameDifficulty)
         return MinigameGlobals.getDifficulty(self.getSafezoneId())
 
     def getSafezoneId(self):

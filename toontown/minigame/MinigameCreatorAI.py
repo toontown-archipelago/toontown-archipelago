@@ -80,7 +80,6 @@ class MinigameCreatorAI:
 
         return random.choice(playgroundChoices)
 
-
     def createMinigame(self, playerArray, trolleyZone, minigameZone=None, previousGameId=ToontownGlobals.NoPreviousGameId, newbieIds=None, startingVotes=None, metagameRound=-1, desiredNextGame=None) -> GeneratedMinigame:
         if newbieIds is None:
             newbieIds = []
