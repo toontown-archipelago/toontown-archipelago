@@ -8,8 +8,8 @@ JellybeanTrolleyHolidayScoreMultiplier = 2
 DifficultyOverrideMult = int(1 << 16)
 
 # Multipliers for trolley games, min is TTC max is DDL
-MinimumRewardMultiplier = 75.0
-MaximumRewardMultiplier = 75.0
+MinimumRewardMultiplier = 90.0
+MaximumRewardMultiplier = 90.0
 
 
 def QuantizeDifficultyOverride(diffOverride):
