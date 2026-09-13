@@ -3641,7 +3641,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             moneyEarned = flower.getValue() * 75
             self.addMoney(moneyEarned)
             self.flowerCollection.collectFlower(flower)
-            self.d_setFlowerCollection(*self.flowerCollection.getNetLists())
+            self.ap_setFlowerCollection(*self.flowerCollection.getNetLists())
             return 1
         else:
             self.notify.warning('addFlowerToBasket: addFlower failed')
@@ -4955,6 +4955,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.notify.debug(f"setting AP fish-collection for {self.getDoId()} to: {[genusList, speciesList, weightList]}" )
         self.set_ap_data("fish-collection", [genusList, speciesList, weightList], True)
 
+    # Set flower collection and send out to AP.
+    def ap_setFlowerCollection(self, speciesList: list[int], varietyList: list[int]):
+        self.d_setFlowerCollection(speciesList, varietyList)
+        self.notify.debug(f"setting AP flower-collection for {self.getDoId()} to: {[speciesList, varietyList]}" )
+        self.set_ap_data("flower-collection", [speciesList, varietyList], True)
+
     def ap_setCogCount(self, cogCountList: List[int]):
         #only send the main cog types, anything in notMainTypes shouldn't be in the gallery anyways.
         cogCountList = cogCountList[:len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes)]
@@ -4996,7 +5002,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def request_default_ap_data(self) -> None:
         # keys currently unused = ["tasks"]
-        privateKeys = ["fish-collection", "cog-gallery"]
+        privateKeys = ["fish-collection", "flower-collection", "cog-gallery"]
         if self.slotData.get("slot_sync_jellybeans", True):
             privateKeys.append("jellybeans")
         if self.slotData.get("slot_sync_gag_experience", True): 
@@ -5017,11 +5023,23 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                         continue
                     # Getting data from here assumes AP already tracked it.
                     # The client that set the data should have gotten any location checks for it when it was sent.
-                    # Possiblity you might need to catch any fish to update it if you skip past a check, somehow.
+                    # Possiblity that you might need to catch any fish to update it if you skip past a check, somehow.
                     for i in zip(*v):
                         self.fishCollection.collectFish(i)
                     collectionNetList = self.fishCollection.getNetLists()
                     self.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
+
+                case "flower-collection":
+                    if v == self.flowerCollection.getNetLists():
+                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
+                        continue
+                    # Getting data from here assumes AP already tracked it.
+                    # The client that set the data should have gotten any location checks for it when it was sent.
+                    # Possiblity that you might need to pick a flower to update it if you skip past a check, somehow.
+                    for i in zip(*v):
+                        flower = FlowerBase.FlowerBase(i[0], i[1])
+                        self.flowerCollection.collectFlower(flower)
+                    self.d_setFlowerCollection(*self.flowerCollection.getNetLists())
 
                 case track if track in ToontownBattleGlobals.Tracks:
                     trackIndex = ToontownBattleGlobals.Tracks.index(k)
@@ -5036,7 +5054,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                         self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
                         continue
                     # Getting data from here assumes AP already tracked it.
-                    # Should be the case, this can"t add more cogs than any toon had individually.
+                    # Should be the case, this can't add more cogs than any toon had individually.
                     cogCount = self.getCogCount()
                     cogStatus = self.getCogStatus()
                     for suitIndex, count in enumerate(v):
