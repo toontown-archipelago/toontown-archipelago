@@ -398,21 +398,21 @@ MinigameTemplateId = -1
 MinigameIDs = (
     RaceGameId,
     CannonGameId,
-    TagGameId,
+    # TagGameId,
     # PatternGameId,
     RingGameId,
     MazeGameId,
     TugOfWarGameId,
     CatchGameId,
     DivingGameId,
-    # TargetGameId,
+    TargetGameId,
     PairingGameId,
     VineGameId,
     # IceGameId,
     CogThiefGameId,
     # TwoDGameId,
     PhotoGameId,
-    TravelGameId
+    # TravelGameId
 )
 
 MultiplayerMinigames = (
