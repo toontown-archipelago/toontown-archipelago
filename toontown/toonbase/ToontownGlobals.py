@@ -415,6 +415,15 @@ MinigameIDs = (
     # TravelGameId
 )
 
+PlaygroundToMinigames = {
+    ToontownCentral: [TargetGameId, RingGameId],
+    DonaldsDock: [DivingGameId, TugOfWarGameId],
+    DaisyGardens: [MazeGameId, CogThiefGameId],
+    MinniesMelodyland: [RaceGameId, CannonGameId],
+    TheBrrrgh: [CatchGameId, PairingGameId],
+    DonaldsDreamland: [VineGameId, PhotoGameId],
+}
+
 MultiplayerMinigames = (
     PatternGameId,
     TagGameId,

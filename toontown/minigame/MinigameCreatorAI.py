@@ -71,24 +71,15 @@ class MinigameCreatorAI:
             del self.minigameZoneReferences[zoneId]
             self.air.deallocateZone(zoneId)
 
-    def getMinigameChoices(self, numPlayers: int, previousGameId=ToontownGlobals.NoPreviousGameId, allowTrolleyTracks=False) -> list[int]:
-        choices = list(ToontownGlobals.MinigameIDs)
+    def getMinigameChoice(self, numPlayers: int, previousGameId=ToontownGlobals.NoPreviousGameId, allowTrolleyTracks=False, zoneId=None) -> list[int]:
+        allChoices = list(ToontownGlobals.MinigameIDs)
+        playgroundChoices = (ToontownGlobals.PlaygroundToMinigames.get(zoneId, allChoices)).copy()
 
-        # Remove trolley tracks if we don't want to consider it
-        if not allowTrolleyTracks and ToontownGlobals.TravelGameId in choices:
-            choices.remove(ToontownGlobals.TravelGameId)
+        if previousGameId in playgroundChoices:
+            playgroundChoices.remove(previousGameId)
 
-        # Remove previous game from the pool
-        if previousGameId in choices:
-            choices.remove(previousGameId)
+        return random.choice(playgroundChoices)
 
-        # If a player is solo filter out multiplayer games
-        if numPlayers <= 1:
-            for multiplayerGame in ToontownGlobals.MultiplayerMinigames:
-                if multiplayerGame in choices:
-                    choices.remove(multiplayerGame)
-
-        return choices
 
     def createMinigame(self, playerArray, trolleyZone, minigameZone=None, previousGameId=ToontownGlobals.NoPreviousGameId, newbieIds=None, startingVotes=None, metagameRound=-1, desiredNextGame=None) -> GeneratedMinigame:
         if newbieIds is None:
@@ -99,8 +90,7 @@ class MinigameCreatorAI:
 
         self.acquireMinigameZone(minigameZone)
 
-        minigameChoices = self.getMinigameChoices(len(playerArray), previousGameId=previousGameId, allowTrolleyTracks=False)
-        mgId = random.choice(minigameChoices)
+        mgId = self.getMinigameChoice(len(playerArray), previousGameId=previousGameId, allowTrolleyTracks=False, zoneId=trolleyZone)
 
         if metagameRound > -1:
             if metagameRound % 2 == 0:
