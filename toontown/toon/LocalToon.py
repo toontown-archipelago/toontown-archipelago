@@ -1535,6 +1535,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.__shovelButtonFake.hide()
 
     def levelWater(self, change = 1):
+        return
         if change < 0:
             return
         self.showWateringCanButtonFake(1)
@@ -1546,6 +1547,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.waterTrack.start()
 
     def levelShovel(self, change = 1):
+        return
         if change < 1:
             return
         self.showShovelButtonFake(1)
