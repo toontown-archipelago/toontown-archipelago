@@ -660,7 +660,7 @@ class RacingOption(Toggle):
     Enable to turn on racing checks.
     """
 
-    display_name = "Racing Logic"
+    display_name = "Toggle Racing Checks"
     default = False
 
 
@@ -669,7 +669,16 @@ class GolfingOption(Toggle):
     Enable to turn on the minigolf checks.
     """
 
-    display_name = "Golfing Logic"
+    display_name = "Toggle Golfing Checks"
+    default = False
+
+
+class TrolleyOption(Toggle):
+    """
+    Enable to turn on trolley checks.
+    """
+
+    display_name = "Toggle Trolley Checks"
     default = False
 
 
@@ -780,6 +789,16 @@ class FlowerGardening(Toggle):
     """
     display_name = "Flower Gardening"
     default = False
+
+
+class AutoFlowerGrowing(Toggle):
+    """
+    Toggles if flowers automatically grow when picked or not.
+    If disabled, you will need to plant the flowers manually with their bean combinations. (You might have to look it up.)
+    Only does anything if flower gardening is enabled.
+    """
+    display_name = "Automatic Flower Growth"
+    default = True
 
 
 class TreeGardening(Toggle):
@@ -1089,6 +1108,7 @@ class ToontownOptions(PerGameCommonOptions):
     slot_sync_gag_experience: SyncGagExp
     racing_logic: RacingOption
     minigolf_logic: GolfingOption
+    trolley_logic: TrolleyOption
     seed_generation_type: SeedGenerationTypeOption
     trap_percent: TrapPercentOption
     uber_trap_weight: UberWeightOption
@@ -1113,6 +1133,7 @@ class ToontownOptions(PerGameCommonOptions):
     doodle_price_rando: DoodlePriceRando
     catalog_price_rando: CatalogPriceRando
     flower_gardening: FlowerGardening
+    auto_flower_growth: AutoFlowerGrowing
     tree_gardening: TreeGardening
     tree_gardening_behavior: TreeGardeningBehavior
     catalog_checks: CatalogChecks
@@ -1130,7 +1151,7 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
         StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, HardCombatLogic,
         StartMoneyOption, StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption, DoodlePriceRando, CatalogPriceRando, FlowerGardening, TreeGardening, TreeGardeningBehavior,
+        RingLinkOption, DoodlePriceRando, CatalogPriceRando, FlowerGardening, AutoFlowerGrowing, TreeGardening, TreeGardeningBehavior,
         CatalogChecks, NeedCatalog
     ]),
     OptionGroup("Win Condition", [
@@ -1147,7 +1168,7 @@ toontown_option_groups: list[OptionGroup] = [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, WantCGCMazes, FishChecks, FishLocations,
-        FishProgression, FishPity, RacingOption, GolfingOption, SeedGenerationTypeOption,
+        FishProgression, FishPity, RacingOption, GolfingOption, TrolleyOption, SeedGenerationTypeOption,
         JokesPerStreet, JokeBookToggle
     ], False),
     OptionGroup("Junk Weights", [

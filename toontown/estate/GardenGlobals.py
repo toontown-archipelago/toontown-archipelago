@@ -524,8 +524,7 @@ def getShovelPower(shovel, shovelSkill):
             if shovelSkill >= skill:
                 gardenNotify.warning("this shouldn't happen shovelSkill %d >= skill %d" % (shovelSkill, skill))
                 shovelSkill = skill - 1
-            skillPtPerBox = skill / curBoxes
-            numBoxes += 1 + int(shovelSkill) // int(skillPtPerBox)
+            numBoxes += curBoxes
         else:
             numBoxes += curBoxes
 

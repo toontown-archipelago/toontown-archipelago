@@ -603,7 +603,7 @@ def TierOneCogs(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, 
 @rule(Rule.TierFiveSellbot, 5, ToontownRegionName.SBHQ)
 @rule(Rule.TierFiveCashbot, 5, ToontownRegionName.CBHQ)
 @rule(Rule.TierFiveLawbot,  5, ToontownRegionName.LBHQ)
-@rule(Rule.TierFiveBossbot, 5, ToontownRegionName.BBHQ)
+@rule(Rule.TierFiveBossbot, 5, None)
 @rule(Rule.TierSixCogs, 6, None)
 @rule(Rule.TierSixSellbot, 6, ToontownRegionName.SBHQ)
 @rule(Rule.TierSixCashbot, 6, ToontownRegionName.CBHQ)
