@@ -88,7 +88,7 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
             return
 
         if av.slotData.get('need_catalog', False) and not av.hasReceivedItem(ToontownItemName.MISSING_CATALOG):
-            av.d_setSystemMessage(0, 'You need your missing cattlelog before using the phone.')
+            av.d_setSystemMessage(0, "You go to call for the cattlelog, but you forgot the phone number! You'll need your Missing Cattlelog.")
             self.sendUpdateToAvatarId(avId, 'freeAvatar', [])
             return
 
