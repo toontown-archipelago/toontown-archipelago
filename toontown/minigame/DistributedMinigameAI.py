@@ -15,6 +15,8 @@ from . import MinigameGlobals
 from direct.showbase import PythonUtil
 from . import TravelGameGlobals
 from toontown.toonbase import ToontownGlobals
+from ..archipelago.definitions import util
+from apworld.toontown import locations
 EXITED = 0
 EXPECTED = 1
 JOINED = 2
@@ -173,6 +175,29 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
         self.setGameAbort()
 
     def gameOver(self):
+        minigameIdToTrolleyCheck = {
+            ToontownGlobals.TargetGameId:   locations.ToontownLocationName.TROLLEY_TTC_1.value,
+            ToontownGlobals.RingGameId:     locations.ToontownLocationName.TROLLEY_TTC_2.value,
+            ToontownGlobals.DivingGameId:   locations.ToontownLocationName.TROLLEY_DD_1.value,
+            ToontownGlobals.TugOfWarGameId: locations.ToontownLocationName.TROLLEY_DD_2.value,
+            ToontownGlobals.MazeGameId:     locations.ToontownLocationName.TROLLEY_DG_1.value,
+            ToontownGlobals.CogThiefGameId: locations.ToontownLocationName.TROLLEY_DG_2.value,
+            ToontownGlobals.RaceGameId:     locations.ToontownLocationName.TROLLEY_MML_1.value,
+            ToontownGlobals.CannonGameId:   locations.ToontownLocationName.TROLLEY_MML_2.value,
+            ToontownGlobals.CatchGameId:    locations.ToontownLocationName.TROLLEY_TB_1.value,
+            ToontownGlobals.PairingGameId:  locations.ToontownLocationName.TROLLEY_TB_2.value,
+            ToontownGlobals.VineGameId:     locations.ToontownLocationName.TROLLEY_DDL_1.value,
+            ToontownGlobals.PhotoGameId:    locations.ToontownLocationName.TROLLEY_DDL_2.value,
+        }
+        if self.minigameId in list(minigameIdToTrolleyCheck.keys()):
+            check_to_send = util.ap_location_name_to_id(minigameIdToTrolleyCheck.get(self.minigameId)),
+            for avId in self.avIdList:
+                av = simbase.air.doId2do.get(avId)
+                if av:
+                    for _ in range(20):
+                        print(check_to_send)
+                    av.addCheckedLocation(check_to_send[0])
+
         self.notify.debug('BASE: gameOver')
         self.frameworkFSM.request('frameworkWaitClientsExit')
 

@@ -357,6 +357,9 @@ Toontown:
   # Also adds "Golf Putter" to the item pool.
   minigolf_logic: 'false'
 
+  # Determines if trolley game locations are enabled
+  trolley_logic: 'false'
+
   ### Seed Generation Settings ###
 
   # Type of seeding to use when RNG checks happen in game.
@@ -506,6 +509,7 @@ Toontown:
   # Flower Gardening - All flower gardening locations
   # Tree Gardening - All tree gardening locations
   # Cattlelog - All locations related to the cattlelog
+  # Trolley - All locations related to the trolley
   # Bounty - All bounty locations
 
   start_location_hints:

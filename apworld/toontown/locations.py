@@ -264,6 +264,18 @@ class ToontownLocationName(Enum):
     URBAN_1_QUALIFY =                           "City Circuit Qualified"
     URBAN_2_CLEAR =                             "Blizzard Boulevard Cleared"
     URBAN_2_QUALIFY =                           "Blizzard Boulevard Qualified"
+    TROLLEY_TTC_1 =                             "TTC Trolley - Toon Slingshot"
+    TROLLEY_TTC_2 =                             "TTC Trolley - Ring Game"
+    TROLLEY_DD_1 =                              "DD Trolley - Treasure Dive"
+    TROLLEY_DD_2 =                              "DD Trolley - Tug-o-War"
+    TROLLEY_DG_1 =                              "DG Trolley - Maze Game"
+    TROLLEY_DG_2 =                              "DG Trolley - Cog Thief"
+    TROLLEY_MML_1 =                             "MML Trolley - Race Game"
+    TROLLEY_MML_2 =                             "MML Trolley - Cannon Game"
+    TROLLEY_TB_1 =                              "TB Trolley - Catching Game"
+    TROLLEY_TB_2 =                              "TB Trolley - Toon Memory"
+    TROLLEY_DDL_1 =                             "DDL Trolley - Jungle Vines"
+    TROLLEY_DDL_2 =                             "DDL Trolley - Photo Fun"
     TOONTOWN_CENTRAL_TASK_1 =                   "Toontown Central Task #1"
     TOONTOWN_CENTRAL_TASK_2 =                   "Toontown Central Task #2"
     TOONTOWN_CENTRAL_TASK_3 =                   "Toontown Central Task #3"
@@ -838,7 +850,8 @@ class ToontownLocationType(IntEnum):
     FISHING_GENUS   = auto()  # Locations for catching unique genus
     FISHING_GALLERY = auto()  # Locations for fishing gallery
     RACING          = auto()  # Locations for racing
-    GOLF            = auto()  # Location for golf
+    GOLF            = auto()  # Locations for golf
+    TROLLEY         = auto()  # Locations for trolley
     PLAYGROUND_1    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_2    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_3    = auto()  # Locations for discovering playground treasures
@@ -1971,7 +1984,22 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DROP_PIANO_UNLOCKED,          ToontownLocationType.DROP_GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSix]),
     ToontownLocationDefinition(ToontownLocationName.DROP_BOAT_UNLOCKED,           ToontownLocationType.DROP_GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSeven]),
     # endregion
-    ] + BOSS_LOCATION_DEFINITIONS + BOSS_EVENT_DEFINITIONS + GARDEN_FLOWER_LOCATION_DEFINITIONS + GARDEN_TREE_LOCATION_DEFINITIONS + GARDEN_TREE_LEVEL_LOCATION_DEFINITIONS + CATALOG_LOCATION_DEFINITIONS
+    ] + BOSS_LOCATION_DEFINITIONS + BOSS_EVENT_DEFINITIONS + GARDEN_FLOWER_LOCATION_DEFINITIONS + GARDEN_TREE_LOCATION_DEFINITIONS + GARDEN_TREE_LEVEL_LOCATION_DEFINITIONS + CATALOG_LOCATION_DEFINITIONS + [
+    # start region Trolley
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_TTC_1,                ToontownLocationType.TROLLEY, ToontownRegionName.TTC, [Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_TTC_2,                ToontownLocationType.TROLLEY, ToontownRegionName.TTC, [Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DD_1,                 ToontownLocationType.TROLLEY, ToontownRegionName.DD, [Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DD_2,                 ToontownLocationType.TROLLEY, ToontownRegionName.DD, [Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DG_1,                 ToontownLocationType.TROLLEY, ToontownRegionName.DG, [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DG_2,                 ToontownLocationType.TROLLEY, ToontownRegionName.DG, [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_MML_1,                ToontownLocationType.TROLLEY, ToontownRegionName.MML, [Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_MML_2,                ToontownLocationType.TROLLEY, ToontownRegionName.MML, [Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_TB_1,                 ToontownLocationType.TROLLEY, ToontownRegionName.TB, [Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_TB_2,                 ToontownLocationType.TROLLEY, ToontownRegionName.TB, [Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DDL_1,                ToontownLocationType.TROLLEY, ToontownRegionName.DDL, [Rule.CanReachDDL]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DDL_2,                ToontownLocationType.TROLLEY, ToontownRegionName.DDL, [Rule.CanReachDDL]),
+    # endregion
+    ]
 
 LOCATION_NAME_TO_DEFINITION: dict[ToontownLocationName, ToontownLocationDefinition] = {
     locdef.name: locdef for locdef in LOCATION_DEFINITIONS
@@ -2080,5 +2108,6 @@ def get_location_groups():
     "Buildings": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.BUILDINGS],
     "Golfing": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GOLF],
     "Racing": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.RACING],
+    "Trolley": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.TROLLEY],
     "Bounty": [location.value for location in BOUNTY_LOCATIONS]
     }

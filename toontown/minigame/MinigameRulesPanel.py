@@ -60,6 +60,7 @@ class MinigameRulesPanel(StateData.StateData):
         self.ignore('enter')
 
     def playCallback(self):
+        taskMgr.remove("showForSlingshot")
         messenger.send(self.doneEvent)
 
     def skipCallback(self):

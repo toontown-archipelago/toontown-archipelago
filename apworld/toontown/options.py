@@ -660,7 +660,7 @@ class RacingOption(Toggle):
     Enable to turn on racing checks.
     """
 
-    display_name = "Racing Logic"
+    display_name = "Toggle Racing Checks"
     default = False
 
 
@@ -669,7 +669,16 @@ class GolfingOption(Toggle):
     Enable to turn on the minigolf checks.
     """
 
-    display_name = "Golfing Logic"
+    display_name = "Toggle Golfing Checks"
+    default = False
+
+
+class TrolleyOption(Toggle):
+    """
+    Enable to turn on trolley checks.
+    """
+
+    display_name = "Toggle Trolley Checks"
     default = False
 
 
@@ -1099,6 +1108,7 @@ class ToontownOptions(PerGameCommonOptions):
     slot_sync_gag_experience: SyncGagExp
     racing_logic: RacingOption
     minigolf_logic: GolfingOption
+    trolley_logic: TrolleyOption
     seed_generation_type: SeedGenerationTypeOption
     trap_percent: TrapPercentOption
     uber_trap_weight: UberWeightOption
@@ -1158,7 +1168,7 @@ toontown_option_groups: list[OptionGroup] = [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, WantCGCMazes, FishChecks, FishLocations,
-        FishProgression, FishPity, RacingOption, GolfingOption, SeedGenerationTypeOption,
+        FishProgression, FishPity, RacingOption, GolfingOption, TrolleyOption, SeedGenerationTypeOption,
         JokesPerStreet, JokeBookToggle
     ], False),
     OptionGroup("Junk Weights", [
