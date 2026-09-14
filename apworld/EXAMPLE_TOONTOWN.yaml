@@ -294,6 +294,11 @@ Toontown:
   # Adds progressive Garden Kits, Shovels, and Watering Cans as items. Makes flower varieties Archipelago checks.
   flower_gardening: 'false'
 
+  # Toggles if flowers automatically grow when picked or not.
+  # If disabled, you will need to plant the flowers manually with their bean combinations. (You might have to look it up.)
+  # Only does anything if flower gardening is enabled.
+  auto_flower_growth: 'true'
+
   # Enable gag tree gardening checks.
   # Adds progressive Garden Kits as items (if flower gardening isn't already enabled). Makes planting gag trees Archipelago checks.
   tree_gardening: 'false'
@@ -351,6 +356,9 @@ Toontown:
   # Determines if mini golf locations are enabled
   # Also adds "Golf Putter" to the item pool.
   minigolf_logic: 'false'
+
+  # Determines if trolley game locations are enabled
+  trolley_logic: 'false'
 
   ### Seed Generation Settings ###
 
@@ -501,6 +509,7 @@ Toontown:
   # Flower Gardening - All flower gardening locations
   # Tree Gardening - All tree gardening locations
   # Cattlelog - All locations related to the cattlelog
+  # Trolley - All locations related to the trolley
   # Bounty - All bounty locations
 
   start_location_hints:

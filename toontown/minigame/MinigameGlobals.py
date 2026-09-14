@@ -8,8 +8,8 @@ JellybeanTrolleyHolidayScoreMultiplier = 2
 DifficultyOverrideMult = int(1 << 16)
 
 # Multipliers for trolley games, min is TTC max is DDL
-MinimumRewardMultiplier = 25.0
-MaximumRewardMultiplier = 75.0
+MinimumRewardMultiplier = 90.0
+MaximumRewardMultiplier = 90.0
 
 
 def QuantizeDifficultyOverride(diffOverride):
@@ -25,9 +25,10 @@ SafeZones = [ToontownGlobals.ToontownCentral,
  ToontownGlobals.TheBrrrgh,
  ToontownGlobals.DonaldsDreamland]
 
+
 def getDifficulty(trolleyZone):
     hoodZone = getSafezoneId(trolleyZone)
-    return float(SafeZones.index(hoodZone)) / (len(SafeZones) - 1)
+    return float(SafeZones.index(ToontownGlobals.DaisyGardens)) / (len(SafeZones) - 1)
 
 
 def getSafezoneId(trolleyZone):

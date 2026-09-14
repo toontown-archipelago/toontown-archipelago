@@ -32,7 +32,7 @@ class DistributedTargetGameAI(DistributedMinigameAI):
              State.State('cleanup', self.enterCleanup, self.exitCleanup, ['inactive'])], 'inactive', 'inactive')
             self.addChildGameFSM(self.gameFSM)
             self.__timeBase = globalClockDelta.localToNetworkTime(globalClock.getRealTime())
-            self.round = 2
+            self.round = 0
             self.barrierScore = None
             self.scoreTrack = []
 

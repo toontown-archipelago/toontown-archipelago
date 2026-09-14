@@ -379,7 +379,7 @@ class ShtikerBook(DirectFrame, StateData.StateData):
         if not localAvatar.getGardenStarted():
             for tab in self.pageTabs:
                 if tab['text'][2] == TTLocalizer.GardenPageTitle:
-                    tab.hide()
+                    tab.show()
 
     def __close(self):
         base.playSfx(self.closeSound)

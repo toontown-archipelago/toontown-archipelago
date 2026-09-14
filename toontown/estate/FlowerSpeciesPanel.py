@@ -106,35 +106,49 @@ class FlowerSpeciesPanel(DirectFrame):
         return
 
     def showRecipe(self):
-        if base.localAvatar.flowerCollection.hasSpecies(self.species):
-            self['text'] = TTLocalizer.FlowerSpeciesNames[self.species]
-            if base.localAvatar.flowerCollection.hasFlower(self.species, self.variety):
-                name = GardenGlobals.getFlowerVarietyName(self.species, self.variety)
-                recipeKey = GardenGlobals.PlantAttributes[self.species]['varieties'][self.variety][0]
-                self['text'] = name
-                self.createBeanRecipeGui(GardenGlobals.Recipes[recipeKey]['beans'])
-            else:
-                self.cleanupBeanRecipeGui()
-        else:
-            self['text'] = TTLocalizer.FlowerUnknown
-            self.cleanupBeanRecipeGui()
+        self['text'] = TTLocalizer.FlowerSpeciesNames[self.species]
+        name = GardenGlobals.getFlowerVarietyName(self.species, self.variety)
+        recipeKey = GardenGlobals.PlantAttributes[self.species]['varieties'][self.variety][0]
+        self['text'] = name
+        self.createBeanRecipeGui(GardenGlobals.Recipes[recipeKey]['beans'])
 
     def update(self):
-        if base.localAvatar.flowerCollection.hasSpecies(self.species):
-            self.flowerPanel.show(showBackground=0)
-            self['text'] = TTLocalizer.FlowerSpeciesNames[self.species]
+        hasSpecies = base.localAvatar.flowerCollection.hasSpecies(self.species)
+
+        if self.flowerPanel is not None:
+            self.flowerPanel.show(showBackground=1)
+            textProperty = '\1black\1' if hasSpecies else '\1red\1'
+            self['text'] = textProperty + TTLocalizer.FlowerSpeciesNames[self.species] + '\2'
         for variety in range(len(GardenGlobals.getFlowerVarieties(self.species))):
-            if base.localAvatar.flowerCollection.hasFlower(self.species, variety):
-                name = GardenGlobals.getFlowerVarietyName(self.species, variety)
-                self.speciesLabels[variety]['text'] = name
-                self.speciesLabels[variety]['state'] = DGG.NORMAL
+            hasFlower = base.localAvatar.flowerCollection.hasFlower(self.species, variety)
+            hasSufficientShovel = False
+
+            shovel, shovelSkill = base.localAvatar.shovel, base.localAvatar.shovelSkill
+            for recipeKey in GardenGlobals.getAvailableRecipes(shovel, shovelSkill):
+                wantedSpecies, wantedVariety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
+                if wantedSpecies == self.species and wantedVariety == variety and base.localAvatar.gardenStarted:
+                    hasSufficientShovel = True
+
+            textProperty = '\1measly_brown\1' if hasFlower else '\1freaky_orange\1' if hasSufficientShovel else '\1red\1'
+
+            flowerName = GardenGlobals.getFlowerVarietyName(self.species, variety) + "\n\1json_flower_subtext\1"
+            flowerText = textProperty + flowerName
+            if hasFlower:
+                flowerSubtext = '\2'
+            elif hasSufficientShovel:
+                subtextProperty = '\1measly_brown\1'
+                flowerSubtext = subtextProperty + "Can Plant\2"
+            else:
+                flowerSubtext = "\2"
+            self.speciesLabels[variety]['text'] = flowerText + flowerSubtext
+            self.speciesLabels[variety]['state'] = DGG.NORMAL
 
         self.showRecipe()
 
     def changeVariety(self, variety):
         self.variety = variety
         self.flowerPanel.changeVariety(variety)
-        self.flowerPanel.show()
+        self.flowerPanel.show(showBackground=1)
         self.showRecipe()
 
     def createBeanRecipeGui(self, recipe):

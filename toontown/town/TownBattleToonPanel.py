@@ -143,6 +143,9 @@ class TownBattleToonPanel(DirectFrame):
                     ogDamage = getAvOriginalDamage(track, level, self.avatar.experience,
                                                    toonDamageMultiplier=self.avatar.getDamageMultiplier(),
                                                    organicBonus=(self.avatar.trackBonusLevel[track] >= level))
+                    # Squirt has an additional 30% knockback bonus when organic
+                    if track == SQUIRT_TRACK and (self.avatar.trackBonusLevel[track] >= level):
+                        highestKb += 30
                     kbDamage = math.ceil(ogDamage * (highestKb / 100))
                     self.kbDamageText['text'] = "-" + str(kbDamage)
                     self.kbDamageText.show()

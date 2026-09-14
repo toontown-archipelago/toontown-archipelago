@@ -398,22 +398,31 @@ MinigameTemplateId = -1
 MinigameIDs = (
     RaceGameId,
     CannonGameId,
-    TagGameId,
+    # TagGameId,
     # PatternGameId,
     RingGameId,
     MazeGameId,
     TugOfWarGameId,
     CatchGameId,
     DivingGameId,
-    # TargetGameId,
+    TargetGameId,
     PairingGameId,
     VineGameId,
     # IceGameId,
     CogThiefGameId,
     # TwoDGameId,
     PhotoGameId,
-    TravelGameId
+    # TravelGameId
 )
+
+PlaygroundToMinigames = {
+    ToontownCentral: [TargetGameId, RingGameId],
+    DonaldsDock: [DivingGameId, TugOfWarGameId],
+    DaisyGardens: [MazeGameId, CogThiefGameId],
+    MinniesMelodyland: [RaceGameId, CannonGameId],
+    TheBrrrgh: [CatchGameId, PairingGameId],
+    DonaldsDreamland: [VineGameId, PhotoGameId],
+}
 
 MultiplayerMinigames = (
     PatternGameId,

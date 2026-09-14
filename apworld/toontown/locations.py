@@ -264,6 +264,18 @@ class ToontownLocationName(Enum):
     URBAN_1_QUALIFY =                           "City Circuit Qualified"
     URBAN_2_CLEAR =                             "Blizzard Boulevard Cleared"
     URBAN_2_QUALIFY =                           "Blizzard Boulevard Qualified"
+    TROLLEY_TTC_1 =                             "TTC Trolley - Toon Slingshot"
+    TROLLEY_TTC_2 =                             "TTC Trolley - Ring Game"
+    TROLLEY_DD_1 =                              "DD Trolley - Treasure Dive"
+    TROLLEY_DD_2 =                              "DD Trolley - Tug-o-War"
+    TROLLEY_DG_1 =                              "DG Trolley - Maze Game"
+    TROLLEY_DG_2 =                              "DG Trolley - Cog Thief"
+    TROLLEY_MML_1 =                             "MML Trolley - Race Game"
+    TROLLEY_MML_2 =                             "MML Trolley - Cannon Game"
+    TROLLEY_TB_1 =                              "TB Trolley - Catching Game"
+    TROLLEY_TB_2 =                              "TB Trolley - Toon Memory"
+    TROLLEY_DDL_1 =                             "DDL Trolley - Jungle Vines"
+    TROLLEY_DDL_2 =                             "DDL Trolley - Photo Fun"
     TOONTOWN_CENTRAL_TASK_1 =                   "Toontown Central Task #1"
     TOONTOWN_CENTRAL_TASK_2 =                   "Toontown Central Task #2"
     TOONTOWN_CENTRAL_TASK_3 =                   "Toontown Central Task #3"
@@ -709,46 +721,46 @@ class ToontownLocationName(Enum):
     GEYSER_RIDE =                               "(AA) Ride the Geyser"
     FLOWER_RISE =                               "(DG) Raise the Maze Flower"
     KART_SHOWN =                                "(GS) Show off your Go-Kart by the Shop"
-    GARDEN_FLOWER_SCHOOL_DAISY =                "Garden Flower (School Daisy)"
-    GARDEN_FLOWER_LAZY_DAISY =                  "Garden Flower (Lazy Daisy)"
-    GARDEN_FLOWER_MIDSUMMER_DAISY =             "Garden Flower (Midsummer Daisy)"
-    GARDEN_FLOWER_FRESHASA_DAISY =              "Garden Flower (Freshasa Daisy)"
-    GARDEN_FLOWER_WHOOPSIE_DAISY =              "Garden Flower (Whoopsie Daisy)"
-    GARDEN_FLOWER_UPSY_DAISY =                  "Garden Flower (Upsy Daisy)"
-    GARDEN_FLOWER_CRAZY_DAISY =                 "Garden Flower (Crazy Daisy)"
-    GARDEN_FLOWER_HAZY_DAZY =                   "Garden Flower (Hazy Dazy)"
-    GARDEN_FLOWER_ONELIP =                      "Garden Flower (Onelip)"
-    GARDEN_FLOWER_TWOLIP =                      "Garden Flower (Twolip)"
-    GARDEN_FLOWER_THREELIP =                    "Garden Flower (Threelip)"
-    GARDEN_FLOWER_WHAT_IN_CARNATION =           "Garden Flower (What-in Carnation)"
-    GARDEN_FLOWER_INSTANT_CARNATION =           "Garden Flower (Instant Carnation)"
-    GARDEN_FLOWER_HYBRID_CARNATION =            "Garden Flower (Hybrid Carnation)"
-    GARDEN_FLOWER_SIDE_CARNATION =              "Garden Flower (Side Carnation)"
-    GARDEN_FLOWER_MODEL_CARNATION =             "Garden Flower (Model Carnation)"
-    GARDEN_FLOWER_LILY_OF_THE_ALLEY =           "Garden Flower (Lily-of-the-Alley)"
-    GARDEN_FLOWER_LILY_PAD =                    "Garden Flower (Lily Pad)"
-    GARDEN_FLOWER_TIGER_LILY =                  "Garden Flower (Tiger Lily)"
-    GARDEN_FLOWER_LIVERED_LILY =                "Garden Flower (Livered Lily)"
-    GARDEN_FLOWER_CHILI_LILY =                  "Garden Flower (Chili Lily)"
-    GARDEN_FLOWER_SILLY_LILY =                  "Garden Flower (Silly Lily)"
-    GARDEN_FLOWER_INDUBITAB_LILY =              "Garden Flower (Indubitab Lily)"
-    GARDEN_FLOWER_DILLY_LILLY =                 "Garden Flower (Dilly Lilly)"
-    GARDEN_FLOWER_LAFF_O_DIL =                  "Garden Flower (Laff-o-dil)"
-    GARDEN_FLOWER_DAFFY_DILL =                  "Garden Flower (Daffy Dill)"
-    GARDEN_FLOWER_GIRAFF_O_DIL =                "Garden Flower (Giraff-o-dil)"
-    GARDEN_FLOWER_TIME_AND_A_HALF_O_DIL =       "Garden Flower (Time and a half-o-dil)"
-    GARDEN_FLOWER_DANDY_PANSY =                 "Garden Flower (Dandy Pansy)"
-    GARDEN_FLOWER_CHIM_PANSY =                  "Garden Flower (Chim Pansy)"
-    GARDEN_FLOWER_POTSEN_PANSY =                "Garden Flower (Potsen Pansy)"
-    GARDEN_FLOWER_MARZI_PANSY =                 "Garden Flower (Marzi Pansy)"
-    GARDEN_FLOWER_SMARTY_PANSY =                "Garden Flower (Smarty Pansy)"
-    GARDEN_FLOWER_CAR_PETUNIA =                 "Garden Flower (Car Petunia)"
-    GARDEN_FLOWER_PLATOONIA =                   "Garden Flower (Platoonia)"
-    GARDEN_FLOWER_SUMMERS_LAST_ROSE =           "Garden Flower (Summer's Last Rose)"
-    GARDEN_FLOWER_CORN_ROSE =                   "Garden Flower (Corn Rose)"
-    GARDEN_FLOWER_TINTED_ROSE =                 "Garden Flower (Tinted Rose)"
-    GARDEN_FLOWER_STINKING_ROSE =               "Garden Flower (Stinking Rose)"
-    GARDEN_FLOWER_ISTILLA_ROSE =                "Garden Flower (Istilla Rose)"
+    GARDEN_FLOWER_SCHOOL_DAISY =                "1 Bean Flower (School Daisy)"
+    GARDEN_FLOWER_LAZY_DAISY =                  "2 Bean Flower (Lazy Daisy)"
+    GARDEN_FLOWER_MIDSUMMER_DAISY =             "3 Bean Flower (Midsummer Daisy)"
+    GARDEN_FLOWER_FRESHASA_DAISY =              "4 Bean Flower (Freshasa Daisy)"
+    GARDEN_FLOWER_WHOOPSIE_DAISY =              "5 Bean Flower (Whoopsie Daisy)"
+    GARDEN_FLOWER_UPSY_DAISY =                  "6 Bean Flower (Upsy Daisy)"
+    GARDEN_FLOWER_CRAZY_DAISY =                 "7 Bean Flower (Crazy Daisy)"
+    GARDEN_FLOWER_HAZY_DAZY =                   "8 Bean Flower (Hazy Dazy)"
+    GARDEN_FLOWER_ONELIP =                      "5 Bean Flower (Onelip)"
+    GARDEN_FLOWER_TWOLIP =                      "6 Bean Flower (Twolip)"
+    GARDEN_FLOWER_THREELIP =                    "8 Bean Flower (Threelip)"
+    GARDEN_FLOWER_WHAT_IN_CARNATION =           "1 Bean Flower (What-in Carnation)"
+    GARDEN_FLOWER_INSTANT_CARNATION =           "2 Bean Flower (Instant Carnation)"
+    GARDEN_FLOWER_HYBRID_CARNATION =            "3 Bean Flower (Hybrid Carnation)"
+    GARDEN_FLOWER_SIDE_CARNATION =              "5 Bean Flower (Side Carnation)"
+    GARDEN_FLOWER_MODEL_CARNATION =             "7 Bean Flower (Model Carnation)"
+    GARDEN_FLOWER_LILY_OF_THE_ALLEY =           "1 Bean Flower (Lily-of-the-Alley)"
+    GARDEN_FLOWER_LILY_PAD =                    "2 Bean Flower (Lily Pad)"
+    GARDEN_FLOWER_TIGER_LILY =                  "3 Bean Flower (Tiger Lily)"
+    GARDEN_FLOWER_LIVERED_LILY =                "4 Bean Flower (Livered Lily)"
+    GARDEN_FLOWER_CHILI_LILY =                  "5 Bean Flower (Chili Lily)"
+    GARDEN_FLOWER_SILLY_LILY =                  "6 Bean Flower (Silly Lily)"
+    GARDEN_FLOWER_INDUBITAB_LILY =              "7 Bean Flower (Indubitab Lily)"
+    GARDEN_FLOWER_DILLY_LILLY =                 "8 Bean Flower (Dilly Lilly)"
+    GARDEN_FLOWER_LAFF_O_DIL =                  "1 Bean Flower (Laff-o-dil)"
+    GARDEN_FLOWER_DAFFY_DILL =                  "2 Bean Flower (Daffy Dill)"
+    GARDEN_FLOWER_GIRAFF_O_DIL =                "4 Bean Flower (Giraff-o-dil)"
+    GARDEN_FLOWER_TIME_AND_A_HALF_O_DIL =       "5 Bean Flower (Time and a Half-o-dil)"
+    GARDEN_FLOWER_DANDY_PANSY =                 "1 Bean Flower (Dandy Pansy)"
+    GARDEN_FLOWER_CHIM_PANSY =                  "2 Bean Flower (Chim Pansy)"
+    GARDEN_FLOWER_POTSEN_PANSY =                "3 Bean Flower (Potsen Pansy)"
+    GARDEN_FLOWER_MARZI_PANSY =                 "4 Bean Flower (Marzi Pansy)"
+    GARDEN_FLOWER_SMARTY_PANSY =                "6 Bean Flower (Smarty Pansy)"
+    GARDEN_FLOWER_CAR_PETUNIA =                 "7 Bean Flower (Car Petunia)"
+    GARDEN_FLOWER_PLATOONIA =                   "8 Bean Flower (Platoonia)"
+    GARDEN_FLOWER_SUMMERS_LAST_ROSE =           "3 Bean Flower (Summer's Last Rose)"
+    GARDEN_FLOWER_CORN_ROSE =                   "4 Bean Flower (Corn Rose)"
+    GARDEN_FLOWER_TINTED_ROSE =                 "6 Bean Flower (Tinted Rose)"
+    GARDEN_FLOWER_STINKING_ROSE =               "7 Bean Flower (Stinking Rose)"
+    GARDEN_FLOWER_ISTILLA_ROSE =                "8 Bean Flower (Istilla Rose)"
     GARDEN_TREE_TOONUP_1 =                      "Gag Tree (Toon-Up Level 1)"
     GARDEN_TREE_TOONUP_2 =                      "Gag Tree (Toon-Up Level 2)"
     GARDEN_TREE_TOONUP_3 =                      "Gag Tree (Toon-Up Level 3)"
@@ -838,7 +850,8 @@ class ToontownLocationType(IntEnum):
     FISHING_GENUS   = auto()  # Locations for catching unique genus
     FISHING_GALLERY = auto()  # Locations for fishing gallery
     RACING          = auto()  # Locations for racing
-    GOLF            = auto()  # Location for golf
+    GOLF            = auto()  # Locations for golf
+    TROLLEY         = auto()  # Locations for trolley
     PLAYGROUND_1    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_2    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_3    = auto()  # Locations for discovering playground treasures
@@ -1971,7 +1984,22 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.DROP_PIANO_UNLOCKED,          ToontownLocationType.DROP_GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSix]),
     ToontownLocationDefinition(ToontownLocationName.DROP_BOAT_UNLOCKED,           ToontownLocationType.DROP_GAG_TRAINING, ToontownRegionName.TRAINING, [Rule.DropSeven]),
     # endregion
-    ] + BOSS_LOCATION_DEFINITIONS + BOSS_EVENT_DEFINITIONS + GARDEN_FLOWER_LOCATION_DEFINITIONS + GARDEN_TREE_LOCATION_DEFINITIONS + GARDEN_TREE_LEVEL_LOCATION_DEFINITIONS + CATALOG_LOCATION_DEFINITIONS
+    ] + BOSS_LOCATION_DEFINITIONS + BOSS_EVENT_DEFINITIONS + GARDEN_FLOWER_LOCATION_DEFINITIONS + GARDEN_TREE_LOCATION_DEFINITIONS + GARDEN_TREE_LEVEL_LOCATION_DEFINITIONS + CATALOG_LOCATION_DEFINITIONS + [
+    # start region Trolley
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_TTC_1,                ToontownLocationType.TROLLEY, ToontownRegionName.TTC, [Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_TTC_2,                ToontownLocationType.TROLLEY, ToontownRegionName.TTC, [Rule.CanReachTTC]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DD_1,                 ToontownLocationType.TROLLEY, ToontownRegionName.DD, [Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DD_2,                 ToontownLocationType.TROLLEY, ToontownRegionName.DD, [Rule.CanReachDD]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DG_1,                 ToontownLocationType.TROLLEY, ToontownRegionName.DG, [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DG_2,                 ToontownLocationType.TROLLEY, ToontownRegionName.DG, [Rule.CanReachDG]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_MML_1,                ToontownLocationType.TROLLEY, ToontownRegionName.MML, [Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_MML_2,                ToontownLocationType.TROLLEY, ToontownRegionName.MML, [Rule.CanReachMML]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_TB_1,                 ToontownLocationType.TROLLEY, ToontownRegionName.TB, [Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_TB_2,                 ToontownLocationType.TROLLEY, ToontownRegionName.TB, [Rule.CanReachTB]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DDL_1,                ToontownLocationType.TROLLEY, ToontownRegionName.DDL, [Rule.CanReachDDL]),
+    ToontownLocationDefinition(ToontownLocationName.TROLLEY_DDL_2,                ToontownLocationType.TROLLEY, ToontownRegionName.DDL, [Rule.CanReachDDL]),
+    # endregion
+    ]
 
 LOCATION_NAME_TO_DEFINITION: dict[ToontownLocationName, ToontownLocationDefinition] = {
     locdef.name: locdef for locdef in LOCATION_DEFINITIONS
@@ -2080,5 +2108,6 @@ def get_location_groups():
     "Buildings": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.BUILDINGS],
     "Golfing": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.GOLF],
     "Racing": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.RACING],
+    "Trolley": [loc_def.name.value for loc_def in LOCATION_DEFINITIONS if loc_def.type == ToontownLocationType.TROLLEY],
     "Bounty": [location.value for location in BOUNTY_LOCATIONS]
     }

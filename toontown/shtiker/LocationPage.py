@@ -220,6 +220,11 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 name = location_data.type.name.title()
                 obj = missingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
+
+            elif location_data.type == locations.ToontownLocationType.TROLLEY:
+                name = "Trolley Games"
+                obj = missingLocations.get(name, LocationCategory(name))
+                obj.add_location(location_data.name.value)
             else:
                 name = location_data.name.value
                 obj = LocationCategory(name, name)
@@ -242,7 +247,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 obj = cattlelogMissingLocations.get(name, LocationCategory(name))
                 obj.add_location(location_data.name.value)
                 cattlelogMissingLocations.update({name: obj})
-            # Flower checks, we also want these on the bottom
+            # Gardening checks, we also want these on the bottom
             elif location_data.type == locations.ToontownLocationType.GARDEN_FLOWER:
                 name = "Flower Gardening"
                 obj = flowerMissingLocations.get(name, LocationCategory(name))
@@ -310,6 +315,10 @@ class LocationPage(ShtikerPage.ShtikerPage):
         golf = base.localAvatar.slotData.get('golfing_logic', False)
         if not golf:
             forbidden_location_types.add(locations.ToontownLocationType.GOLF)
+
+        trolley = base.localAvatar.slotData.get('trolley_logic', False)
+        if not trolley:
+            forbidden_location_types.add(locations.ToontownLocationType.TROLLEY)
 
         GAG_LOCATION_TYPES = [
             locations.ToontownLocationType.SUPPORT_GAG_TRAINING,

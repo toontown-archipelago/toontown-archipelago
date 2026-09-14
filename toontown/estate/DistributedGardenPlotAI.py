@@ -218,8 +218,11 @@ class DistributedGardenPlotAI(DistributedLawnDecorAI):
         recipeKey = random.choice(recipes)
 
         species, variety = GardenGlobals.getSpeciesVarietyGivenRecipe(recipeKey)
-        
-        self.plantFlower(species, variety, usingFlowerAll=usingFlowerAll, fullyGrown=fullyGrown)
+        if av.slotData.get('auto_flower_growth', True):
+            self.plantFlower(species, variety, usingFlowerAll=usingFlowerAll, fullyGrown=fullyGrown)
+        else:
+            return
+
 
     def plantStatuary(self, species):
         av = self.__initialSanityCheck(GardenGlobals.STATUARY_TYPE)
