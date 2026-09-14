@@ -190,11 +190,11 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
             ToontownGlobals.PhotoGameId:    locations.ToontownLocationName.TROLLEY_DDL_2.value,
         }
         if self.minigameId in list(minigameIdToTrolleyCheck.keys()):
-            check_to_send = util.ap_location_name_to_id(minigameIdToTrolleyCheck.get(self.minigameId)),
+            check_to_send = util.ap_location_name_to_id(minigameIdToTrolleyCheck.get(self.minigameId))
             for avId in self.avIdList:
                 av = simbase.air.doId2do.get(avId)
                 if av:
-                    av.addCheckedLocation(check_to_send[0])
+                    av.addCheckedLocation(check_to_send)
 
         self.notify.debug('BASE: gameOver')
         self.frameworkFSM.request('frameworkWaitClientsExit')
