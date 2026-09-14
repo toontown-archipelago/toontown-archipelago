@@ -194,8 +194,6 @@ class DistributedMinigameAI(DistributedObjectAI.DistributedObjectAI):
             for avId in self.avIdList:
                 av = simbase.air.doId2do.get(avId)
                 if av:
-                    for _ in range(20):
-                        print(check_to_send)
                     av.addCheckedLocation(check_to_send[0])
 
         self.notify.debug('BASE: gameOver')
