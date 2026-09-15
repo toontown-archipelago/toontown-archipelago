@@ -579,18 +579,18 @@ class DistributedPhotoGame(DistributedMinigame, PhotoGameBase.PhotoGameBase):
             else:
                 score = 0
                 if angle >= 135:
-                    score += 2
+                    score += 3
                 elif angle >= 90:
-                    score += 1
+                    score += 2
                 elif angle <= 60:
-                    score -= 1
+                    score -= 2
                 score += interest
                 if quality >= 5 and (not tooClose or portrait):
-                    score += 1
+                    score += 2
                     if quality >= 10:
-                        score += 1
+                        score += 2
                         if quality >= 15:
-                            score += 1
+                            score += 2
                 score -= 2
                 if score > NUMSTARS:
                     score = float(NUMSTARS)
@@ -897,7 +897,7 @@ class DistributedPhotoGame(DistributedMinigame, PhotoGameBase.PhotoGameBase):
         self.generateAssignmentPanels()
         self.scorePanel = self.makeScoreFrame()
         self.scorePanel.reparentTo(aspect2d)
-        self.scorePanel.setPos(1.05, 0.0, -0.725)
+        self.scorePanel.setPos(1.45, 0.0, -0.725)
         self.updateAssignmentPanels()
         for subject in self.subjects:
             subject.useLOD(1000)
@@ -949,8 +949,8 @@ class DistributedPhotoGame(DistributedMinigame, PhotoGameBase.PhotoGameBase):
 
         spacing = self.screenSizeX / PhotoGameGlobals.ONSCREENASSIGNMENTS * 1.61
         index = 0
-        Xoff = self.screenSizeX - 0.735
-        Zoff = -self.screenSizeZ + 0.25
+        Xoff = self.screenSizeX - 0.925
+        Zoff = -self.screenSizeZ + 0.2
         for assignment in self.assignments:
             self.notify.debug('made assignment panel %s' % str(assignment))
             panel, texturePanel, toon = self.makeAssignmentPanel(assignment)
