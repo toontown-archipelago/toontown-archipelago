@@ -392,6 +392,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             PetLookerAI.PetLookerAI.destroy(self)
         del self.kart
         self._sendExitServerEvent()
+        taskName = self.uniqueName('send-locations')
+        taskMgr.remove(taskName)
+        if self.locationsToSend:
+            self.sendCheckedLocations(self.locationsToSend[:])
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.delete(self)
         DistributedPlayerAI.DistributedPlayerAI.delete(self)
 
