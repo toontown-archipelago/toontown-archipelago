@@ -372,6 +372,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 self.exitEstate()
             if self.zoneId != ToontownGlobals.QuietZone:
                 self.announceZoneChange(ToontownGlobals.QuietZone, self.zoneId)
+        taskName = self.uniqueName('send-locations')
+        taskMgr.remove(taskName)
+        if self.locationsToSend:
+            self.sendCheckedLocations(self.locationsToSend)
         taskName = self.uniqueName('cheesy-expires')
         taskMgr.remove(taskName)
         taskName = self.uniqueName('next-catalog')
