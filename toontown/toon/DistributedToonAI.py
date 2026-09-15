@@ -247,6 +247,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.damageMultiplier = 100
         self.overflowMod = 100
         self.beingShuffled = False
+        self.locationsToSend = []
 
         self.archipelago_session: ArchipelagoSession = None
         self.apRewardQueue: DistributedToonRewardQueue = DistributedToonRewardQueue(self)
@@ -4605,16 +4606,33 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         return location in self.checkedLocations
 
     def addCheckedLocation(self, location: int):
+        taskName = self.uniqueName('send-locations')
+        taskMgr.remove(taskName)
+
         if self.hasCheckedLocation(location):
             return
 
-        self.checkedLocations.append(location)
-        self.b_setCheckedLocations(self.checkedLocations)
+        if location not in self.locationsToSend:
+            self.locationsToSend.append(location)
 
-        if self.archipelago_session:
-            self.archipelago_session.complete_check(location)
+        taskMgr.doMethodLater(0.10, self.sendCheckedLocations, taskName, extraArgs=[self.locationsToSend])
 
     def addCheckedLocations(self, locations: List[int]):
+        taskName = self.uniqueName('send-locations')
+        taskMgr.remove(taskName)
+        locationsToSend = locations.copy()
+        for location in locations:
+            if self.hasCheckedLocation(location):
+                locationsToSend.remove(location)
+
+        for location in locationsToSend:
+            if location not in self.locationsToSend:
+                self.locationsToSend.append(location)
+
+        taskMgr.doMethodLater(0.10, self.sendCheckedLocations, taskName, extraArgs=[self.locationsToSend])
+
+    def sendCheckedLocations(self, locations: List[int]):
+        self.locationsToSend = []
         self.checkedLocations.extend(locations)
         unique = set(self.checkedLocations)
         self.checkedLocations = list(unique)
