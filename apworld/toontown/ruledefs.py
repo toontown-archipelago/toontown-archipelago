@@ -38,10 +38,12 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
         start_xp = options.get("start_gag_xp", 5)
         gag_training_item = options.get("gag_frame_item_behavior", 0)
         gag_training_check = options.get("gag_training_check_behavior", 0)
+
     # Determines if a given player has collected a sufficient amount of the XP items in the run.
-    # Always returns True if the player has a difference of less than 10 mult between start and max (aka, assumes they don't care)
-    xp = state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
-    sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if (max_xp - start_xp) >= 10 else True
+    # Always returns True if the player has a difference of less than 5 mult between start and max (aka, assumes they don't care)
+    xp = start_xp + state.count(ToontownItemName.GAG_MULTIPLIER_1.value, player) + (2 * state.count(ToontownItemName.GAG_MULTIPLIER_2.value, player))
+
+    sufficient_xp = XP_RATIO_FOR_GAG_LEVEL.get(level) <= (xp / max_xp) if (max_xp - start_xp) >= 5 else True
     # We aren't even training gags this seed, return true
     gags_pretrained = gag_training_item == GagTrainingFrameBehavior.option_trained
     gags_unlocked = gag_training_item == GagTrainingFrameBehavior.option_unlock
@@ -50,11 +52,12 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
         sufficient_xp = True
 
     # Check collected gag capacity items too.
-    cap = state.count(ToontownItemName.GAG_CAPACITY_5.value, player) + (
-                2 * state.count(ToontownItemName.GAG_CAPACITY_10.value, player)) + (
-                      2 * state.count(ToontownItemName.GAG_CAPACITY_15.value, player))
-    max_cap = 12 + (2 * 2)  # TODO - have this be dynamic to gag capacity items in pool
-    sufficient_cap = CAP_RATIO_FOR_GAG_LEVEL.get(level) <= (cap / max_cap)
+    current_cap = (20 +  # Base Gag Capacity
+                  (5 * state.count(ToontownItemName.GAG_CAPACITY_5.value, player)) +
+                  (10 * state.count(ToontownItemName.GAG_CAPACITY_10.value, player)) +
+                  (15 * state.count(ToontownItemName.GAG_CAPACITY_15.value, player)))
+    max_cap = 100  # Currently, max gag capacity is always 100
+    sufficient_cap = CAP_RATIO_FOR_GAG_LEVEL.get(level) <= (current_cap / max_cap)
 
     # Return TRUE if we have enough xp and cap.
     return sufficient_xp and sufficient_cap
