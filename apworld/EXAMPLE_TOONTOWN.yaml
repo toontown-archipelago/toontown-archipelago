@@ -31,7 +31,7 @@ Toontown:
   # Additional global gag experience that can be obtained from items.
   # Stacks additively onto the base value above.
   # Must be above or equal to the base_global_gag_xp.
-  # Range: 0 to 30
+  # Range: 10 to 30
   max_global_gag_xp: 30
 
   # The gags to have when starting a new game. using "randomized" instead of a gag will replace with a random extra gag.

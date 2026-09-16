@@ -133,7 +133,7 @@ class MaxGlobalGagXPRange(Range):
     Must be above or equal to the base_global_gag_xp.
     """
     display_name = "Max Global Gag XP"
-    range_start = 0
+    range_start = 10
     range_end = 30
     default = 30
 
