@@ -247,6 +247,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.damageMultiplier = 100
         self.overflowMod = 100
         self.beingShuffled = False
+        self.locationTaskName = None
         self.locationsToSend = []
 
         self.archipelago_session: ArchipelagoSession = None
@@ -372,8 +373,9 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 self.exitEstate()
             if self.zoneId != ToontownGlobals.QuietZone:
                 self.announceZoneChange(ToontownGlobals.QuietZone, self.zoneId)
-        taskName = self.uniqueName('send-locations')
-        taskMgr.remove(taskName)
+        if self.locationTaskName:
+            taskMgr.remove(self.locationTaskName)
+            self.locationTaskName = None
         if self.locationsToSend:
             self.sendCheckedLocations(self.locationsToSend)
         taskName = self.uniqueName('cheesy-expires')
@@ -4609,21 +4611,25 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def hasCheckedLocation(self, location: int):
         return location in self.checkedLocations
 
-    def addCheckedLocation(self, location: int):
-        taskName = self.uniqueName('send-locations')
-        taskMgr.remove(taskName)
+    def shouldRemoveLocationTask(self):
+        if self.locationTaskName:
+            taskMgr.remove(self.locationTaskName)
+            self.locationTaskName = None
 
+    def addCheckedLocation(self, location: int):
         if self.hasCheckedLocation(location):
             return
+
+        self.shouldRemoveLocationTask()
 
         if location not in self.locationsToSend:
             self.locationsToSend.append(location)
 
-        taskMgr.doMethodLater(0.10, self.sendCheckedLocations, taskName, extraArgs=[self.locationsToSend])
+        self.locationTaskName = 'send-locations-%s' % self.doId
+        taskMgr.doMethodLater(0.1, self.sendCheckedLocations, self.locationTaskName, extraArgs=[self.locationsToSend])
 
     def addCheckedLocations(self, locations: List[int]):
-        taskName = self.uniqueName('send-locations')
-        taskMgr.remove(taskName)
+        self.shouldRemoveLocationTask()
         locationsToSend = locations.copy()
         for location in locations:
             if self.hasCheckedLocation(location):
@@ -4633,7 +4639,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             if location not in self.locationsToSend:
                 self.locationsToSend.append(location)
 
-        taskMgr.doMethodLater(0.10, self.sendCheckedLocations, taskName, extraArgs=[self.locationsToSend])
+        self.locationTaskName = 'send-locations-%s' % self.doId
+        taskMgr.doMethodLater(0.1, self.sendCheckedLocations, self.locationTaskName, extraArgs=[self.locationsToSend])
 
     def sendCheckedLocations(self, locations: List[int]):
         self.locationsToSend = []
