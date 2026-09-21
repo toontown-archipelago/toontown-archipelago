@@ -1151,8 +1151,8 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
         StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, HardCombatLogic,
         StartMoneyOption, StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption, DoodlePriceRando, CatalogPriceRando, FlowerGardening, AutoFlowerGrowing, TreeGardening, TreeGardeningBehavior,
-        CatalogChecks, NeedCatalog
+        RingLinkOption, DoodlePriceRando, CatalogPriceRando, AutoFlowerGrowing
+
     ]),
     OptionGroup("Win Condition", [
         WinConditions, WinConditionRandomizedWeb, OmitRandomWinConditions,
@@ -1169,7 +1169,8 @@ toontown_option_groups: list[OptionGroup] = [
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, WantCGCMazes, FishChecks, FishLocations,
         FishProgression, FishPity, RacingOption, GolfingOption, TrolleyOption, SeedGenerationTypeOption,
-        JokesPerStreet, JokeBookToggle
+        JokesPerStreet, JokeBookToggle, CatalogChecks, NeedCatalog,
+        FlowerGardening, TreeGardening, TreeGardeningBehavior
     ], False),
     OptionGroup("Junk Weights", [
         BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, SummonWeightOption, FireWeightOption, HealWeightOption, FishWeightOption
