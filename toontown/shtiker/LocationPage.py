@@ -22,7 +22,7 @@ class LocationNode(DirectFrame):
         elif yOffset > 25:
             text=""
         if glitched:
-            text_color = (0.78, 0.77, 0.32, 1)
+            text_color = (0.65, 0.64, 0.27, 1)
         else:
             text_color = (0, 0, 0, 1)
         return DirectLabel(
@@ -90,7 +90,6 @@ class LocationCategory():
 
     def __str__(self):
         return self.get_raw_name()
-
 
 
 class LocationPage(ShtikerPage.ShtikerPage):
@@ -488,7 +487,7 @@ class LocationPage(ShtikerPage.ShtikerPage):
         locationName = location.get_display_name()
         command = lambda: self.setLocations(index, location)
         if location.is_glitched_logic():
-            text_color = (0.78, 0.77, 0.32, 1)
+            text_color = (0.65, 0.64, 0.27, 1)
         else:
             text_color = (0, 0, 0, 1)
         locationButton = DirectButton(relief=None, text=locationName, text_pos=(0.04, 0), text_scale=0.051, text_fg=text_color, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_bg=self.textDisabledColor, textMayChange=0, command=command)
