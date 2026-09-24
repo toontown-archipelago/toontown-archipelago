@@ -195,6 +195,8 @@ class LocationPage(ShtikerPage.ShtikerPage):
                     enabled_locations[boss_locations[x].value] = hard_logic_check
                     if not hard_logic_check:
                         self.logicalLocations += 1
+                if cpb == 0:
+                    enabled_locations["Defeat Boss for Goal Progress"] = hard_logic_check
                 obj = LocationCategory(location_data.name.value, enabled_locations)
                 if hard_logic_check:
                     obj.glitched_logic = hard_logic_check
