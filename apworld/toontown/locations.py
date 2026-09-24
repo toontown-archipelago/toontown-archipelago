@@ -2059,6 +2059,7 @@ BOUNTY_LOCATIONS = [
     ToontownLocationName.THROW_WEDDING_UNLOCKED, ToontownLocationName.SQUIRT_GEYSER_UNLOCKED, ToontownLocationName.DROP_BOAT_UNLOCKED,  # Gag bounty locations (2)
     ToontownLocationName.LEVEL_TWELVE_COG_DEFEATED,  # Cog tier bounty locations
     ToontownLocationName.FIVE_STORY_FIFTH_FLOOR,  # Building bounty locations
+    ToontownLocationName.GARDEN_FLOWER_PLATOONIA, ToontownLocationName.CATALOG_CHECK_12  # Estate bounty locations
 ]
 
 BOSS_BOUNTIES = [ToontownLocationName.SELLBOT_PROOF_1, ToontownLocationName.CASHBOT_PROOF_1, ToontownLocationName.LAWBOT_PROOF_1, ToontownLocationName.BOSSBOT_PROOF_1]
@@ -2069,6 +2070,8 @@ FISH_ALBUM_BOUNTIES = [ToontownLocationName.FISHING_COMPLETE_ALBUM]
 ALL_FISH_BOUNTIES = [ToontownLocationName.DOG_FISH_1, ToontownLocationName.FISHING_COMPLETE_ALBUM]
 GAG_BOUNTIES = [ToontownLocationName.TOONUP_HIGHDIVE_UNLOCKED, ToontownLocationName.TRAP_TRAIN_UNLOCKED, ToontownLocationName.LURE_PRESENTATION_UNLOCKED, ToontownLocationName.SOUND_OPERA_UNLOCKED,
                 ToontownLocationName.THROW_WEDDING_UNLOCKED, ToontownLocationName.SQUIRT_GEYSER_UNLOCKED, ToontownLocationName.DROP_BOAT_UNLOCKED]
+FLOWER_BOUNTIES = [ToontownLocationName.GARDEN_FLOWER_PLATOONIA]
+CATTLELOG_BOUNTIES = [ToontownLocationName.CATALOG_CHECK_12]
 
 def get_location_def_from_name(name: ToontownLocationName) -> ToontownLocationDefinition:
     return LOCATION_NAME_TO_DEFINITION[name]
