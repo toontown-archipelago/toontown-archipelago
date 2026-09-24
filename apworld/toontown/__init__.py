@@ -191,6 +191,16 @@ class ToontownWorld(World):
             for bounty in locations.GAG_BOUNTIES:
                 self.valid_bounties.remove(bounty)
 
+        # No flower checks
+        if not self.options.flower_gardening.value:
+            for bounty in locations.FLOWER_BOUNTIES:
+                self.valid_bounties.remove(bounty)
+
+        # Not enough cattlelog checks
+        if self.options.catalog_checks.value < 12:
+            for bounty in locations.CATTLELOG_BOUNTIES:
+                self.valid_bounties.remove(bounty)
+
         # We omitted a gag track, remove its respective bounty from the pool
         OMITTABLE_BOUNTIES = [
             "NONE",

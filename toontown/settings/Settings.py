@@ -66,6 +66,7 @@ class Settings:
         'laff-display': True,
         'battle-speed': 2,
         'new-popup': True,
+        'show-glitched-logic': False,
         'random-music': False,
         'random-music-style': 'Mix',
         "archipelago-textsize": 0.5,

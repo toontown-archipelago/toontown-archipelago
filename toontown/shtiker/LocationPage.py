@@ -1,4 +1,6 @@
 import re
+from typing import Any
+
 from . import ShtikerPage
 from apworld.toontown import locations, options, fish, test_location, ToontownWinCondition
 from BaseClasses import MultiWorld
@@ -14,27 +16,34 @@ class LocationNode(DirectFrame):
         super().__init__(parent)
         self.locationNodes = []
 
-    def __createDisplay(self, text, yOffset, total) -> DirectLabel:
+    def __createDisplay(self, text, yOffset, total, glitched=False) -> DirectLabel:
         if yOffset == 25 and total > 26:
             text=f"and {total - yOffset} more..."
         elif yOffset > 25:
             text=""
+        if glitched:
+            text_color = (0.65, 0.64, 0.27, 1)
+        else:
+            text_color = (0, 0, 0, 1)
         return DirectLabel(
             parent=self, relief=None, image_scale=(1.25, 1.25, 1.25),
             pos=(-0.36, 0, -0.06 - 0.044 * yOffset), text=text, text_scale=0.035,
-            text_align=TextNode.ALeft, text_pos=(0.03, -0.0125), text_fg=Vec4(0, 0, 0, 1),
+            text_align=TextNode.ALeft, text_pos=(0.03, -0.0125), text_fg=text_color,
             text_wordwrap=24
         )
 
-    def updateDisplays(self, originals: list[str]):
+    def updateDisplays(self, originals: dict[Any, Any]):
         # Clear the old lines
         for h in self.locationNodes:
             h.destroy()
         self.locationNodes.clear()
 
-        total = len(originals)
-        for index, label in enumerate(originals):
-            node = self.__createDisplay(label, index, total)
+        total = len(originals.keys())
+        for index, label in enumerate(list(originals.keys())):
+            glitched = False
+            if originals.get(label, False):
+                glitched = True
+            node = self.__createDisplay(label, index, total, glitched)
             self.locationNodes.append(node)
 
     def showDefaultDisplay(self):
@@ -48,26 +57,28 @@ class LocationNode(DirectFrame):
         self.locationNodes.append(defaultNode)
 
 class LocationCategory():
-    def __init__(self, name: str, location: list[str] | str | None = None):
+    def __init__(self, name: str, location: dict[Any, Any] | None=None):
         self.name = name
+        self.glitched_logic = False
         if location is None:
-            self.locations = set()
-        elif isinstance(location, str):
-            self.locations = {location}
-        else:
-            self.locations = set(location)
+            self.locations = {}
+        elif isinstance(location, dict):
+            self.locations = location
 
-    def add_location(self, location: str):
-        self.locations.update([location])
+    def add_location(self, location: str, glitched_logic=False):
+        self.locations[location] = glitched_logic
 
     def get_count(self):
         return len(self.locations)
 
     def get_locations(self):
-        return sorted(self.locations, key=locations.LOCATION_NAME_TO_ID.get)
+        return dict(sorted(self.locations.items(), key=lambda item: locations.LOCATION_NAME_TO_ID.get(item[0])))
     
     def get_raw_name(self):
         return self.name
+
+    def is_glitched_logic(self):
+        return self.glitched_logic
     
     def get_display_name(self):
         name_to_use = self.name
@@ -79,7 +90,6 @@ class LocationCategory():
 
     def __str__(self):
         return self.get_raw_name()
-
 
 
 class LocationPage(ShtikerPage.ShtikerPage):
@@ -151,6 +161,12 @@ class LocationPage(ShtikerPage.ShtikerPage):
             locations.ToontownLocationType.DROP_GAG_TRAINING,
         ]
 
+        hard_logic_check = False
+        # making a copy of our slotdata to change hard logic setting
+        hard_combat_logic = base.localAvatar.slotData.get("hard_combat_logic", False)
+        if not hard_combat_logic:
+            slotDataCopy = base.localAvatar.slotData.copy()
+            slotDataCopy["hard_combat_logic"] = True
         self.logicalLocations = 0
         for location_data in locations.LOCATION_DEFINITIONS:
             # Do we need to track this location based on settings?
@@ -162,18 +178,28 @@ class LocationPage(ShtikerPage.ShtikerPage):
             if util.ap_location_name_to_id(location_data.name.value) in checkedLocationIds:
                 continue
             # Is this location in logic?
-            if not test_location(location_data, base.localAvatar, MultiWorld, 1, base.localAvatar.slotData):
-                continue
+            if test_location(location_data, base.localAvatar, MultiWorld, 1, base.localAvatar.slotData):
+                hard_logic_check = False
+            else:
+                if not hard_combat_logic and test_location(location_data, base.localAvatar, MultiWorld, 1, slotDataCopy) and base.settings.get('show-glitched-logic'):
+                    hard_logic_check = True
+                else:
+                    continue
 
             # Boss checks, combine the rewards into this location for the tracker.
             if location_data.type == locations.ToontownLocationType.BOSS_META:
                 cpb = base.localAvatar.slotData.get('checks_per_boss', 4)
                 boss_locations = locations.REGION_TO_BOSS_LOCATIONS.get(location_data.region)
-                enabled_locations = []
+                enabled_locations = {}
                 for x in range(cpb):
-                    enabled_locations.append(boss_locations[x].value)
-                    self.logicalLocations += 1
+                    enabled_locations[boss_locations[x].value] = hard_logic_check
+                    if not hard_logic_check:
+                        self.logicalLocations += 1
+                if cpb == 0:
+                    enabled_locations["Defeat Boss for Goal Progress"] = hard_logic_check
                 obj = LocationCategory(location_data.name.value, enabled_locations)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
                 priorityMissingLocations.update({location_data.name.value:obj})
                 continue
 
@@ -182,85 +208,114 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 name = location_data.name.value.rsplit(" ", 1)[0]
                 name = name.replace("Knock Knock", "Street")
                 obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
 
             elif location_data.type in (locations.ToontownLocationType.COG_LEVELS, locations.ToontownLocationType.HIGH_COG_LEVELS):
                 name = "Cog Levels"
                 obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
 
             elif location_data.type in (locations.ToontownLocationType.GALLERY, locations.ToontownLocationType.GALLERY_MAX):
                 name = "Cog Gallery"
                 obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
 
             elif location_data.region in [locations.ToontownRegionName.FISHING]:
                 name = location_data.type.name.replace("_", " ").title()
                 obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
 
             elif location_data.type in training_types:
                 name = location_data.rules[0].name
                 name = re.sub(r'(?<=\B)([A-Z])', r' \1', name).rsplit(" ", 1)[0] + " Training"
                 obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
 
             elif location_data.type == locations.ToontownLocationType.FACILITIES:
                 name = location_data.rules[0].name
                 name = re.sub(r'(?<=\B)([A-Z])', r' \1', name).rsplit(" ", 1)[0]
                 obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
 
             elif location_data.type == locations.ToontownLocationType.BUILDINGS:
                 name = "Building Clear"
                 obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
 
             elif location_data.type in [locations.ToontownLocationType.RACING, locations.ToontownLocationType.GOLF]:
                 name = location_data.type.name.title()
                 obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
 
             elif location_data.type == locations.ToontownLocationType.TROLLEY:
                 name = "Trolley Games"
                 obj = missingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
             else:
                 name = location_data.name.value
-                obj = LocationCategory(name, name)
+                obj = LocationCategory(name, {name: hard_logic_check})
 
             # Task checks, we want these on the bottom
             if location_data.type in locations.TASK_LOCATION_TYPES:
                 name = location_data.name.value.rsplit(" ", 1)[0]
                 obj = taskMissingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
                 taskMissingLocations.update({name: obj})
             # Doodle checks, we want these on the bottom
             elif location_data.type == locations.ToontownLocationType.PET_SHOP:
                 name = location_data.region.name + " Pet Shop"
                 obj = doodleMissingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
                 doodleMissingLocations.update({name: obj})
             # Cattlelog checks, we also want these on the bottom
             elif location_data.type in locations.CATALOG_LOCATION_TYPES:
                 name = location_data.name.value.rsplit(" ", 1)[0]
                 obj = cattlelogMissingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
                 cattlelogMissingLocations.update({name: obj})
             # Gardening checks, we also want these on the bottom
             elif location_data.type == locations.ToontownLocationType.GARDEN_FLOWER:
                 name = "Flower Gardening"
                 obj = flowerMissingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
                 flowerMissingLocations.update({name: obj})
             elif location_data.type == locations.ToontownLocationType.GARDEN_TREE:
                 name = "Tree Gardening"
                 obj = treeMissingLocations.get(name, LocationCategory(name))
-                obj.add_location(location_data.name.value)
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
                 treeMissingLocations.update({name: obj})
             else:
                 missingLocations.update({name:obj})
-            self.logicalLocations += 1
+            if not hard_logic_check:
+                self.logicalLocations += 1
 
         self.locationsPossible = {**priorityMissingLocations, **missingLocations, **taskMissingLocations, **doodleMissingLocations, **cattlelogMissingLocations, **flowerMissingLocations, **treeMissingLocations}
 
@@ -433,7 +488,11 @@ class LocationPage(ShtikerPage.ShtikerPage):
     def makeLocationButton(self, index: int, location: LocationCategory):
         locationName = location.get_display_name()
         command = lambda: self.setLocations(index, location)
-        locationButton = DirectButton(relief=None, text=locationName, text_pos=(0.04, 0), text_scale=0.051, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_bg=self.textDisabledColor, textMayChange=0, command=command)
+        if location.is_glitched_logic():
+            text_color = (0.65, 0.64, 0.27, 1)
+        else:
+            text_color = (0, 0, 0, 1)
+        locationButton = DirectButton(relief=None, text=locationName, text_pos=(0.04, 0), text_scale=0.051, text_fg=text_color, text_align=TextNode.ALeft, text1_bg=self.textDownColor, text2_bg=self.textRolloverColor, text3_bg=self.textDisabledColor, textMayChange=0, command=command)
         return locationButton
 
     def setLocations(self, index, location: LocationCategory):

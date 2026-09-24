@@ -45,6 +45,7 @@ class TownBattle(StateData.StateData):
         self.level = -1
         self.target = 0
         self.maxSuitLevel = 0
+        self.avgSuitLevel = 0
         self.toonAttacks = [(-1, 0, 0),
          (-1, 0, 0),
          (-1, 0, 0),
@@ -327,7 +328,7 @@ class TownBattle(StateData.StateData):
                         target = targets[i]
                         if target == -1:
                             numTargets = None
-                self.toonPanels[battleIndices[i]].setValues(battleIndices[i], tracks[i], levels[i], numTargets, target, self.localNum, numSounds, self.maxSuitLevel, highestKb)
+                self.toonPanels[battleIndices[i]].setValues(battleIndices[i], tracks[i], levels[i], numTargets, target, self.localNum, numSounds, self.avgSuitLevel, highestKb)
         return
 
     def chooseDefaultTarget(self):
@@ -483,10 +484,13 @@ class TownBattle(StateData.StateData):
         self.notify.debug('adjustCogsAndToons() immuneIndices: %s self.immuneIndices: %s' % (immuneIndices, self.immuneIndices))
         self.maxSuitLevel = 0
         cogFireCostIndex = 0
+        sumCogLvls = 0
         for cog in cogs:
+            sumCogLvls += cog.getActualLevel()
             self.maxSuitLevel = max(self.maxSuitLevel, cog.getActualLevel())
             self.cogFireCosts[cogFireCostIndex] = 1
             cogFireCostIndex += 1
+        self.avgSuitLevel = sumCogLvls / max(len(cogs), 1)
 
         creditLevel = self.maxSuitLevel
         if numCogs == self.numCogs and creditLevel == self.creditLevel and luredIndices == self.luredIndices and trappedIndices == self.trappedIndices and toonIds == self.toons and immuneIndices == self.immuneIndices:
