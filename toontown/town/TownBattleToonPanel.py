@@ -85,7 +85,7 @@ class TownBattleToonPanel(DirectFrame):
             self.laffMeter.adjustFace(hp, self.avatar.maxHp)
         self.setHealthText(hp, maxHp)
 
-    def setValues(self, index, track, level = None, numTargets = None, targetIndex = None, localNum = None, numSounds=1, highestLevel=0, highestKb=0):
+    def setValues(self, index, track, level = None, numTargets = None, targetIndex = None, localNum = None, numSounds=1, avgLevel=0, highestKb=0):
         self.notify.debug('Toon Panel setValues: index=%s track=%s level=%s numTargets=%s targetIndex=%s localNum=%s' % (index,
          track,
          level,
@@ -133,7 +133,7 @@ class TownBattleToonPanel(DirectFrame):
                     ogDamage = getAvOriginalDamage(track, level, self.avatar.experience,
                                                    toonDamageMultiplier=self.avatar.getDamageMultiplier(),
                                                    organicBonus=(self.avatar.trackBonusLevel[track] >= level))
-                    mult = ((highestLevel * 4) / 100)
+                    mult = ((avgLevel * 4) / 100)
                     addedDmg = ogDamage * mult
                     dmg += addedDmg
                 soundMults = [100, 80, 70, 60]
