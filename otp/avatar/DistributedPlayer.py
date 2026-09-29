@@ -154,7 +154,7 @@ class DistributedPlayer(DistributedAvatar.DistributedAvatar, PlayerBase.PlayerBa
         self.gameVersion = game_version
         # Only immediately display the version mismatch if we don't have a connect popup
         if not base.settings.get('new-popup'):
-            base.localAvatar.chatMgr.mimicApButtonPressed()
+            base.localAvatar.chatMgr.mimicHideAPGui()
             taskMgr.doMethodLater(0.15, self.displayVersionMessage, 'versionMessage', extraArgs=[self.apVersion, self.gameVersion])
 
     def displayArchipelagoMessage(self, task):
