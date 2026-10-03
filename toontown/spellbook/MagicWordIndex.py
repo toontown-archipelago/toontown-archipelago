@@ -1307,8 +1307,8 @@ class SetTop(MagicWord):
 
 
 class SetTopColor(MagicWord):
-    aliases = ["shirtcolor"]
-    desc = "Set shirt color of target toon."
+    aliases = ["topcolor"]
+    desc = "Set only the top color of target toon."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
     arguments = [("colorId", int, True)]
     accessLevel = 'NO_ACCESS'
@@ -1362,6 +1362,24 @@ class SetSleevesColor(MagicWord):
         dna.sleeveTexColor = sleeveTexColor
         toon.b_setDNAString(dna.makeNetString())
 
+class setShirtColor(MagicWord):
+    aliases = ["shirtcolor"]
+    desc = "Set both top and sleeves color of target toon."
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("colorId", int, True)]
+    accessLevel = 'NO_ACCESS'
+
+    def handleWord(self, invoker, avId, toon, *args):
+        dna = ToonDNA.ToonDNA()
+        dna.makeFromNetString(toon.getDNAString())
+
+        shirtColor = args[0]
+
+        if not 0 <= sleeveTexColor <= len(ToonDNA.ClothesColors):
+            return "Invalid shirt color specified!"
+        dna.sleeveTexColor = shirtColor
+        dna.topTexColor = shirtColor
+        toon.b_setDNAString(dna.makeNetString())
 
 class SetBottoms(MagicWord):
     aliases = ["bottoms"]
@@ -3613,6 +3631,14 @@ class SetDNA(MagicWord):
             dna.sleeveTexColor = value
             invoker.b_setDNAString(dna.makeNetString())
             return 'Sleeve texture color index set to: ' + str(dna.sleeveTexColor)
+            
+        if part == 'shirtcolor':
+            if not 0 <= value <= len(ToonDNA.ClothesColors):
+                return 'Shirt texture color index out of range(0-%d).' % len(ToonDNA.ClothesColors)
+            dna.topTexColor = value
+            dna.sleeveTexColor = value
+            invoker.b_setDNAString(dna.makeNetString())
+            return 'Set both top and sleeve texture color index set to: ' + str(value)
 
         if part == 'bottex':
             if dna.gender not in ('m', 'f'):
