@@ -681,6 +681,8 @@ class OptionElement(DirectFrame):
             # This control is different, but the keybind is the same.
             # Make the button red.
             if control != self.optionName and keybind == currentKeybind:
+                if self.optionName in ("JUMP", "CRANE_GRAB_KEY") and control in ("JUMP", "CRANE_GRAB_KEY"):
+                    continue
                 self.optionModifier["image_color"] = Vec4(1, 0.1, 0.1, 1)
                 return
 
