@@ -10010,10 +10010,11 @@ OptionNames = {
     "QUEST_HOTKEY": "ToonTask Hotkey",
     "GALLERY_HOTKEY": "Cog Gallery Hotkey",
     "LOCATIONS_HOTKEY": "Location Tracker Hotkey",
+    "ITEMS_HOTKEY": "Item/Hint Tracker Hotkey",
     "ELEVATOR_HOTKEY": "Skip Elevator Timer Hotkey",
     "CRANE_GRAB_KEY": "Crane Grab Key",
-    "ACTION_BUTTON": "Action Button",
-    "SECONDARY_ACTION": "Secondary Action Button",
+    "ACTION_BUTTON": "Charged Pie Throw",
+    "SECONDARY_ACTION": "Low Power Pie Throw",
     "CHAT_HOTKEY": "Chat Button",
 
     # Video

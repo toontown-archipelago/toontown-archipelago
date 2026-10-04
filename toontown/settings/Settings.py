@@ -16,7 +16,11 @@ class ControlSettings:
     MOVE_LEFT: str = "arrow_left"
     MOVE_RIGHT: str = "arrow_right"
     JUMP: str = "control"
+    CRANE_GRAB_KEY: str = "control"
     SPRINT: str = "shift"
+    ACTION_BUTTON: str = "delete"
+    SECONDARY_ACTION: str = "insert"
+    CHAT_HOTKEY: str = "t"
     SCREENSHOT: str = "f9"
     TOGGLE_RUN_HOTKEY: str = "f8"
     MAP_PAGE_HOTKEY: str = "escape"
@@ -26,11 +30,8 @@ class ControlSettings:
     QUEST_HOTKEY: str = "end"
     GALLERY_HOTKEY: str = "g"
     LOCATIONS_HOTKEY: str = "v"
+    ITEMS_HOTKEY: str = "c"
     ELEVATOR_HOTKEY: str = "f"
-    CRANE_GRAB_KEY: str = "control"
-    ACTION_BUTTON: str = "delete"
-    SECONDARY_ACTION: str = "insert"
-    CHAT_HOTKEY: str = "t"
 
 
 class Settings:
