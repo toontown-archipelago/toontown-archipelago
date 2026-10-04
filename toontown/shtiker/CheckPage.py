@@ -599,6 +599,7 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.book.showPageArrows()
         self.book.ignore(ToontownGlobals.StickerBookPageLeft)
         self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.viewingHint = False
         self.hide()
 
     def acceptOnscreenHooks(self):
