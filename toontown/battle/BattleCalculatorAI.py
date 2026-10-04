@@ -611,7 +611,7 @@ class BattleCalculatorAI:
                         ogDamage = getAvOriginalDamage(attackTrack, attackLevel, toon.experience,
                                                        toonDamageMultiplier=toon.getDamageMultiplier(),
                                                        organicBonus=organicBonus)
-                        highestLevel = max(lvls)
+                        highestLevel = sum(lvls) / max(len(lvls), 1)
                         mult = ((highestLevel * 4) / 100)
                         addedDmg = ogDamage * mult
                         result += addedDmg

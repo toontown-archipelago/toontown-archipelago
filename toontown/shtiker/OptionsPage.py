@@ -45,6 +45,7 @@ OptionToType = {
     'want-legacy-models': OptionTypes.BUTTON,
     'laff-display': OptionTypes.BUTTON,
     'new-popup': OptionTypes.BUTTON,
+    'show-glitched-logic': OptionTypes.BUTTON,
     'battle-speed': OptionTypes.DROPDOWN,
 
     # Privacy
@@ -149,6 +150,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'sprint_mode',
             'battle-speed',
             'new-popup',
+            'show-glitched-logic',
             'fovEffects',
             'cam-toggle-lock',
             'boss-alerts',
@@ -679,6 +681,8 @@ class OptionElement(DirectFrame):
             # This control is different, but the keybind is the same.
             # Make the button red.
             if control != self.optionName and keybind == currentKeybind:
+                if self.optionName in ("JUMP", "CRANE_GRAB_KEY") and control in ("JUMP", "CRANE_GRAB_KEY"):
+                    continue
                 self.optionModifier["image_color"] = Vec4(1, 0.1, 0.1, 1)
                 return
 
@@ -814,6 +818,8 @@ class OptionElement(DirectFrame):
             base.refreshRandomMusic()
         elif self.optionName == "new-popup":
             base.newPopup = newSetting
+        elif self.optionName == "show-glitched-logic":
+            base.showGlitchedLogic = newSetting
 
         # Update the button text with the new setting.
         self.optionModifier["text"] = self.formatSetting(newSetting)

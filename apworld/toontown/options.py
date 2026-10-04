@@ -400,7 +400,7 @@ class BountiesRequired(Range):
     """
     display_name = "Bounties Required"
     range_start = 0
-    range_end = 34
+    range_end = 36
     default = 7
 
 
@@ -413,7 +413,7 @@ class TotalBounties(Range):
     """
     display_name = "Total Bounties"
     range_start = 1
-    range_end = 34
+    range_end = 36
     default = 15
 
 
@@ -1151,8 +1151,8 @@ toontown_option_groups: list[OptionGroup] = [
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
         StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, HardCombatLogic,
         StartMoneyOption, StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption, DoodlePriceRando, CatalogPriceRando, FlowerGardening, AutoFlowerGrowing, TreeGardening, TreeGardeningBehavior,
-        CatalogChecks, NeedCatalog
+        RingLinkOption, DoodlePriceRando, CatalogPriceRando, AutoFlowerGrowing
+
     ]),
     OptionGroup("Win Condition", [
         WinConditions, WinConditionRandomizedWeb, OmitRandomWinConditions,
@@ -1169,7 +1169,8 @@ toontown_option_groups: list[OptionGroup] = [
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, WantCGCMazes, FishChecks, FishLocations,
         FishProgression, FishPity, RacingOption, GolfingOption, TrolleyOption, SeedGenerationTypeOption,
-        JokesPerStreet, JokeBookToggle
+        JokesPerStreet, JokeBookToggle, CatalogChecks, NeedCatalog,
+        FlowerGardening, TreeGardening, TreeGardeningBehavior
     ], False),
     OptionGroup("Junk Weights", [
         BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, SummonWeightOption, FireWeightOption, HealWeightOption, FishWeightOption
