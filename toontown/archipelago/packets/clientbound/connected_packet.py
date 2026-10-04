@@ -222,7 +222,7 @@ class ConnectedPacket(ClientBoundPacketBase):
 
         # We have to do this here as we can't get what locations are disabled in locations.py when those exist
         # Currently: Only cattlelog checks
-        locations_to_scout = locations.SCOUTING_REQUIRED_LOCATIONS
+        locations_to_scout = list(locations.SCOUTING_REQUIRED_LOCATIONS)
         catalog_check_count = self.slot_data.get('catalog_checks', 6)
         for catalog_location in range(catalog_check_count):
             locations_to_scout.append(locations.CATALOG_LOCATIONS[catalog_location])
