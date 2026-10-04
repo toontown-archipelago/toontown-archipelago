@@ -30,6 +30,7 @@ class ControlSettings:
     QUEST_HOTKEY: str = "end"
     GALLERY_HOTKEY: str = "g"
     LOCATIONS_HOTKEY: str = "v"
+    ITEMS_HOTKEY: str = "c"
     ELEVATOR_HOTKEY: str = "f"
 
 

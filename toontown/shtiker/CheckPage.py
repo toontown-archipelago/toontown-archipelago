@@ -4,7 +4,7 @@ from apworld.toontown.locations import LOCATION_ID_TO_NAME
 from . import ShtikerPage
 import random
 from apworld.toontown import ToontownItemName, ToontownItemDefinition, get_item_def_from_id, TPSanity, FacilityLocking
-from toontown.toonbase import TTLocalizer
+from toontown.toonbase import TTLocalizer, ToontownGlobals
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from direct.task import Task
@@ -565,3 +565,46 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.hintNode.hintButton['state'] = DGG.NORMAL
         self.hintNode.show()
         self.hintNode.updateHintDisplays(checkDef, checkMax, self.externalHints, checkName)
+
+    def showItemsOnscreen(self):
+
+        # Check if there is currently something already displaying in the hotkey interface slot
+        if not base.localAvatar.allowOnscreenInterface():
+            return
+
+        # We can now own the slot
+        base.localAvatar.setCurrentOnscreenInterface(self)
+        messenger.send('wakeup')
+
+        self.enter()
+        self.reparentTo(aspect2d)
+        self.book.show()
+        self.book.setZ(self.book.getZ() - 0.11)
+        self.book.hidePageArrows()
+        self.book.ignore(ToontownGlobals.StickerBookPageLeft)
+        self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.show()
+
+    def hideItemsOnscreen(self):
+
+        # If the current onscreen interface is not us, don't do anything
+        if base.localAvatar.getCurrentOnscreenInterface() is not self:
+            return
+
+        base.localAvatar.setCurrentOnscreenInterface(None)  # Free up the on screen interface slot
+
+        self.reparentTo(self.book)
+        self.book.hide()
+        self.book.setZ(self.book.getZ() + 0.11)
+        self.book.showPageArrows()
+        self.book.ignore(ToontownGlobals.StickerBookPageLeft)
+        self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.hide()
+
+    def acceptOnscreenHooks(self):
+        self.accept(ToontownGlobals.ItemsHotkeyOn, self.showItemsOnscreen)
+        self.accept(ToontownGlobals.ItemsHotkeyOff, self.hideItemsOnscreen)
+
+    def ignoreOnscreenHooks(self):
+        self.ignore(ToontownGlobals.ItemsHotkeyOn)
+        self.ignore(ToontownGlobals.ItemsHotkeyOff)
