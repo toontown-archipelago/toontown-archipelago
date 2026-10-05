@@ -1863,6 +1863,29 @@ def getTops(gender, tailorId = MAKE_A_TOON):
     return tops
 
 
+def getTopColors(gender, top, tailorId = MAKE_A_TOON):
+    if gender == 'm':
+        collection = TailorCollections[tailorId][BOY_SHIRTS]
+    else:
+        collection = TailorCollections[tailorId][GIRL_SHIRTS]
+    tops = getTopStyles(gender, tailorId)
+    colors = []
+    index = collection[tops.index(top)]
+    for color in ShirtStyles[index][2]:
+        colors.append((color[0], color[1]))
+    return colors
+
+def getTopStyles(gender, tailorId = MAKE_A_TOON):
+    if gender == 'm':
+        collection = TailorCollections[tailorId][BOY_SHIRTS]
+    else:
+        collection = TailorCollections[tailorId][GIRL_SHIRTS]
+    tops = []
+    for style in collection:
+        tops.append((ShirtStyles[style][0], ShirtStyles[style][1]))
+    return tops
+
+
 def getAllTops(gender):
     tops = []
     for style in ShirtStyles.keys():
@@ -1891,6 +1914,30 @@ def getBottoms(gender, tailorId = MAKE_A_TOON):
             bottoms.append((BottomStyles[style][0], color))
 
     return bottoms
+
+
+def getBottomStyles(gender, tailorId = MAKE_A_TOON):
+    if gender == 'm':
+        collection = TailorCollections[tailorId][BOY_SHORTS]
+    else:
+        collection = TailorCollections[tailorId][GIRL_BOTTOMS]
+    bottoms = []
+    for style in collection:
+            bottoms.append(BottomStyles[style][0])
+
+    return bottoms
+
+def getBottomColors(gender, bottom, tailorId = MAKE_A_TOON):
+    if gender == 'm':
+        collection = TailorCollections[tailorId][BOY_SHORTS]
+    else:
+        collection = TailorCollections[tailorId][GIRL_BOTTOMS]
+    bottoms = getBottomStyles(gender, tailorId)
+    colors = []
+    index = collection[bottoms.index(bottom)]
+    for color in BottomStyles[index][1]:
+        colors.append(color)
+    return colors
 
 
 def getAllBottoms(gender, output = 'both'):
