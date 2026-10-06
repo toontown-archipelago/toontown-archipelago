@@ -3,3 +3,4 @@ websockets==13.1
 certifi==2024.8.30
 sentry-sdk==2.13.0
 pypresence==4.3.0
+panda3d-crowdcontrol==0.1.0

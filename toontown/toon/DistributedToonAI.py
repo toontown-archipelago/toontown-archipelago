@@ -1,9 +1,11 @@
 import math
+import time
 import uuid
 from typing import List, Tuple, Union, Any
 
 from otp.ai.AIBaseGlobal import *
 from otp.otpbase import OTPGlobals
+from otp.otpbase.OTPLocalizerEnglish import EmoteFuncDict
 from . import ToonDNA
 from toontown.suit import SuitDNA
 from . import InventoryBase
@@ -46,6 +48,8 @@ from ..archipelago.apclient.distributed_toon_apmessage_queue import DistributedT
 from ..archipelago.apclient.distributed_toon_reward_queue import DistributedToonRewardQueue
 from ..archipelago.definitions.death_reason import DeathReason
 from ..archipelago.definitions.rewards import EarnedAPReward
+from ..archipelago.definitions import rewards
+from ..archipelago.crowdcontrol.constants import GO_SAD_CD_SCNDS
 from ..archipelago.definitions.util import ap_location_name_to_id
 from ..archipelago.util import win_condition
 from ..archipelago.util.HintContainer import HintedItem
@@ -4810,6 +4814,75 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def queueAPReward(self, reward: EarnedAPReward):
         self.apRewardQueue.queue(reward)
+
+    def requestApplyCrowdControl(self, code: str, viewer: str):
+        senderId = self.air.getAvatarIdFromSender()
+        if senderId != self.getDoId():
+            self.air.writeServerEvent('suspicious', senderId, 'sent requestApplyCrowdControl for another toon')
+            return
+
+        self.notify.info(f"Crowd Control effect '{code}' requested by viewer '{viewer}' for toon {self.getName()} ({self.doId})")
+
+        if code == "forced_dance":
+            # If the toon is alive and not watching a battle movie, make them dance
+            if self.getHp() > 0 and not self.hpOwnedByBattle:
+                self.d_playEmote(EmoteFuncDict['Dance'], 1)
+                self.d_setSystemMessage(0, f"[Crowd Control] {viewer} started a dance party!")
+            return
+
+        if code == "gag_restock":
+            # Restock the toon's gags to their max carry amount
+            self.inventory.maxInventory(restockAmount=self.getMaxCarry())
+            self.b_setInventory(self.inventory.makeNetString())
+            self.d_setSystemMessage(0, f"[Crowd Control] {viewer} restocked your gags!")
+            return
+
+        if code == "go_sad":
+            now = time.monotonic()
+            if (self.getHp() <= 0 or self.immortalMode
+                    or now < getattr(self, '_crowdControlGoSadReadyAt', 0)):
+                return
+            self._crowdControlGoSadReadyAt = now + GO_SAD_CD_SCNDS
+            self.setDeathReason(DeathReason.CROWD_CONTROL)
+            self.takeDamage(self.getHp())
+            self.d_setSystemMessage(0, f"[Crowd Control] {viewer} made you go sad!")
+            return
+
+        cc_reward_map = {
+            "heal_toon": rewards.HealAward(100),
+            "minor_heal": rewards.HealAward(25),
+            "jellybeans": rewards.JellybeanReward(500),
+            "gag_xp": rewards.GagExpBundleAward(15),
+            "unite_toonup": rewards.BossRewardAward(rewards.BossRewardAward.UNITE, 1),
+            "unite_gag": rewards.BossRewardAward(rewards.BossRewardAward.UNITE, 2),
+            "pink_slip": rewards.BossRewardAward(rewards.BossRewardAward.PINK_SLIP, 0),
+            "cog_summon": rewards.BossRewardAward(rewards.BossRewardAward.SUMMON, 0),
+
+            "damage_15": rewards.DamageTrapAward(15),
+            "damage_25": rewards.DamageTrapAward(25),
+            "uber_trap": rewards.UberTrapAward(),
+            "bean_tax": rewards.BeanTaxTrapAward(1000),
+            "drip_trap": rewards.DripTrapAward(),
+            "gag_shuffle": rewards.GagShuffleAward(),
+        }
+
+        if code == "sos_card":
+            reward = rewards.BossRewardAward(rewards.BossRewardAward.SOS, random.choice((3, 4, 5)))
+        else:
+            reward = cc_reward_map.get(code)
+        if not reward:
+            return
+
+        try:
+            reward.apply(self)
+            formatted_name = {
+                'unite_gag': 'Gag Unite',
+                'unite_toonup': 'Toon-Up Unite',
+            }.get(code, code.replace('_', ' ').title())
+            message = f"[Crowd Control] {viewer} triggered the {formatted_name} effect!"
+            self.d_setSystemMessage(0, message)
+        except Exception as e:
+            self.notify.error(f"Failed to apply Crowd Control reward '{code}': {e}")
 
     # Can be called either from the AI directly or via an astron update from the client.
     # When we are given a string, we know that it is from the client so we need to make sure

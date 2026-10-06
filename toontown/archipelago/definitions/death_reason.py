@@ -73,6 +73,7 @@ class DeathReason(Enum):
 
     # Traps
     DAMAGE_TRAP = "%s went sad from unfortunate timing."
+    CROWD_CONTROL = "%s went sad from Crowd Control."
 
     # Commands
     SPELLBOOK = "%s went sad from abusing the spellbook."

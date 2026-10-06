@@ -9977,6 +9977,8 @@ OptionNames = {
     "want-legacy-models": "Toggle TTO Species Models*",
     'laff-display': "Toggle Overhead Laff Meter",
     'battle-speed': "Battle Speed Multiplier",
+    'crowd-control-toggle': "Crowd Control Mod",
+    'crowd-control-port': "Crowd Control Port",
 
     # Privacy
     "competitive-boss-scoring": "Want Competitive Boss Scoring",

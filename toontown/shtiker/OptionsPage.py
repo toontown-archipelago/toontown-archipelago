@@ -26,6 +26,7 @@ class OptionTypes(IntEnum):
     SLIDER = auto()
     CONTROL = auto()
     BUTTON_SPEEDCHAT = auto()
+    ENTRY = auto()
 
 
 OptionToType = {
@@ -45,6 +46,8 @@ OptionToType = {
     'want-legacy-models': OptionTypes.BUTTON,
     'laff-display': OptionTypes.BUTTON,
     'new-popup': OptionTypes.BUTTON,
+    'crowd-control-toggle': OptionTypes.BUTTON,
+    'crowd-control-port': OptionTypes.ENTRY,
     'battle-speed': OptionTypes.DROPDOWN,
 
     # Privacy
@@ -158,6 +161,8 @@ class OptionsTabPage(DirectFrame, FSM):
             'color-blind-mode',
             'want-legacy-models',
             'laff-display',
+            'crowd-control-toggle',
+            'crowd-control-port',
         ],
         "Privacy": [
             "competitive-boss-scoring",
@@ -591,6 +596,14 @@ class OptionElement(DirectFrame):
                 parent=self.optionModifier, relief=None, pos=(0.3, 0, -0.01),
                 text=str(round(currSetting * 100)), text_scale=0.052,
             )
+        elif self.optionType == OptionTypes.ENTRY:
+            self.optionModifier = DirectEntry(
+                parent=self, relief=DGG.SUNKEN, pos=(0.30, 0, z - 0.01),
+                scale=0.045, width=4.5,
+                initialText=str(currSetting),
+                numLines=1, focus=0, cursorKeys=1,
+                command=self._updateEntryOption,
+            )
         else:
             raise Exception(f"Undefined option type: {self.optionType}")
 
@@ -706,6 +719,11 @@ class OptionElement(DirectFrame):
                 globalClock.setFrameRate(newSetting)
             else:
                 globalClock.setMode(ClockObject.MNormal)
+        elif self.optionName == "crowd-control-port":
+            if hasattr(base, 'crowdControlManager') and base.crowdControlManager:
+                base.crowdControlManager.port = int(newSetting)
+                if base.crowdControlManager.is_connected:
+                    base.crowdControlManager.start()
 
         # Update the button text with the new setting.
         self.optionModifier["text"] = self.formatSetting(newSetting)
@@ -808,6 +826,12 @@ class OptionElement(DirectFrame):
             base.refreshRandomMusic()
         elif self.optionName == "new-popup":
             base.newPopup = newSetting
+        elif self.optionName == "crowd-control-toggle":
+            if hasattr(base, 'crowdControlManager') and base.crowdControlManager:
+                if newSetting:
+                    base.crowdControlManager.start()
+                else:
+                    base.crowdControlManager.stop()
 
         # Update the button text with the new setting.
         self.optionModifier["text"] = self.formatSetting(newSetting)
@@ -826,3 +850,24 @@ class OptionElement(DirectFrame):
 
         self.sliderLabel["text"] = str(round(newSetting * 100))
         base.settings.set(self.optionName, newSetting)
+
+    def _updateEntryOption(self, text: str) -> None:
+        messenger.send("wakeup")
+        text = str(text).strip()
+        if self.optionName == "crowd-control-port":
+            if text.isdigit():
+                port = int(text)
+                if 1024 <= port <= 65535:
+                    base.settings.set("crowd-control-port", port)
+                    if hasattr(base, 'crowdControlManager') and base.crowdControlManager:
+                        base.crowdControlManager.port = port
+                        if base.crowdControlManager.is_connected:
+                            base.crowdControlManager.start()
+                    if hasattr(base, 'localAvatar') and base.localAvatar:
+                        base.localAvatar.setSystemMessage(0, f"[Crowd Control] Port updated to {port}")
+                    return
+
+            current_port = base.settings.get("crowd-control-port")
+            self.optionModifier.enterText(str(current_port))
+            if hasattr(base, 'localAvatar') and base.localAvatar:
+                base.localAvatar.setSystemMessage(0, "[Crowd Control] Invalid port! Enter a number between 1024 and 65535.")

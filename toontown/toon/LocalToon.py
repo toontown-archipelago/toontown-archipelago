@@ -269,6 +269,9 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         DistributedToon.DistributedToon.announceGenerate(self)
 
     def disable(self):
+        if hasattr(base, 'crowdControlManager') and base.crowdControlManager:
+            base.crowdControlManager.stop()
+            base.crowdControlManager = None
         self.laffMeter.destroy()
         del self.laffMeter
         self.questMap.destroy()
@@ -348,6 +351,14 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         return
 
     def initInterface(self):
+        from toontown.archipelago.crowdcontrol.ToontownCrowdControl import (
+            ToontownCrowdControlManager, register_all_toontown_effects)
+        port = base.settings.get('crowd-control-port')
+        base.crowdControlManager = ToontownCrowdControlManager(port=port)
+        register_all_toontown_effects(base.crowdControlManager)
+        if base.settings.get('crowd-control-toggle'):
+            base.crowdControlManager.start()
+
         self.newsButtonMgr = NewsPageButtonManager.NewsPageButtonManager()
         self.newsButtonMgr.request('Hidden')
         self.book = ShtikerBook.ShtikerBook('bookDone')

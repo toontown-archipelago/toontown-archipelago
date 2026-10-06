@@ -1197,6 +1197,7 @@ dclass DistributedToon : DistributedPlayer {
   setDeathReason(string) airecv clsend;
   addCheckedLocation(int64) airecv clsend;
   clientDied() airecv clsend;
+  requestApplyCrowdControl(string code, string viewer) ownsend airecv;
 };
 
 dclass DistributedCCharBase : DistributedObject {

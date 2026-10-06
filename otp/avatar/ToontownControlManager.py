@@ -1,6 +1,7 @@
 from direct.controls.ControlManager import ControlManager
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.InputStateGlobal import inputState
+from otp.otpbase import OTPGlobals
 
 
 class ToontownControlManager(ControlManager):
@@ -9,7 +10,35 @@ class ToontownControlManager(ControlManager):
     def __init__(self, enable=True):
         self.forceTokens = None
         self.craneControlsEnabled = False
+        self._crowdControlModifiers = {}
+        self._crowdControlSpeeds = (
+            OTPGlobals.ToonForwardSpeed, OTPGlobals.ToonJumpForce,
+            OTPGlobals.ToonReverseSpeed, OTPGlobals.ToonRotateSpeed, 0, 0)
         super().__init__(enable)
+
+    def setSpeeds(self, forwardSpeed, jumpForce, reverseSpeed, rotateSpeed,
+                  strafeLeft=0, strafeRight=0):
+        self._crowdControlSpeeds = (
+            forwardSpeed, jumpForce, reverseSpeed, rotateSpeed, strafeLeft, strafeRight)
+        self._applyCrowdControlSpeeds()
+
+    def setCrowdControlModifier(self, code, movement=1.0, jump=1.0, rotation=1.0):
+        self._crowdControlModifiers[code] = (movement, jump, rotation)
+        self._applyCrowdControlSpeeds()
+
+    def clearCrowdControlModifier(self, code):
+        self._crowdControlModifiers.pop(code, None)
+        self._applyCrowdControlSpeeds()
+
+    def _applyCrowdControlSpeeds(self):
+        movement = jump = rotation = 1.0
+        for movementFactor, jumpFactor, rotationFactor in self._crowdControlModifiers.values():
+            movement *= movementFactor
+            jump *= jumpFactor
+            rotation *= rotationFactor
+        forward, jumpForce, reverse, rotate, left, right = self._crowdControlSpeeds
+        super().setSpeeds(forward * movement, jumpForce * jump,
+                          reverse * movement, rotate * rotation, left, right)
 
     def enable(self):
         assert self.notify.debugCall(id(self))

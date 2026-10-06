@@ -97,6 +97,8 @@ class SafeZoneLoader(StateData.StateData):
             np.setTag('transformIndex', repr(i))
             self.holidayPropTransforms[i] = np.getNetTransform()
 
+        from toontown.archipelago.crowdcontrol.QueuedEffects import get_playground_teleport_candidates
+        self.crowdControlTeleportCandidates = get_playground_teleport_candidates(self.geom, include_hidden=True)
         self.geom.flattenMedium()
         gsg = base.win.getGsg()
         if gsg:

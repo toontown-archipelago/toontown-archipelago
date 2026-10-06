@@ -70,6 +70,8 @@ class Settings:
         "archipelago-textsize": 0.5,
         "archipelago-log-bg": False,
         'boss-alerts': True,
+        'crowd-control-toggle': False,
+        'crowd-control-port': 43384,
         # Options below this comment will not be exposed by OptionsPage
         # They can still be configurable by the end user
         "want-legacy-models": False,
