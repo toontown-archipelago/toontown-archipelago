@@ -456,6 +456,11 @@ class ToontownChatManager(ChatManager.ChatManager):
             self.apGuiToggled = False
             self.apButton['text'] = ""
 
+    def mimicHideAPGui(self):
+        self.apGui.hide()
+        self.apGuiToggled = False
+        self.apButton['text'] = ""
+
     def __whisperButtonPressed(self, avatarName, avatarId, playerId):
         messenger.send('wakeup')
         playerInfo = None

@@ -376,7 +376,7 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 suit = self.__genSuitObject(self.zoneId, 2, 'c', 2, 0)
             else:
                 suitType = random.randint(6, 8)
-                suitLevel = 14
+                suitLevel = 13
                 suit = self.__genSuitObject(self.zoneId, suitType, 'c', suitLevel, 0)
             active.append(suit)
 

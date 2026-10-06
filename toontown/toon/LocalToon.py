@@ -399,8 +399,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
             self.loadDisguisePages()
         if self.sosPageFlag:
             self.loadSosPages()
-        if self.gardenStarted:
-            self.loadGardenPages()
+        self.loadGardenPages()
         self.addGolfPage()
         self.addEventsPage()
         if WantNewsPage:
@@ -1062,7 +1061,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
 
     def showFurnitureGui(self):
         self.loadFurnitureGui()
-        self.__furnitureGui.show()
+        self.__furnitureGui.hide()
 
     def hideFurnitureGui(self):
         if self.__furnitureGui:
@@ -1546,6 +1545,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.__shovelButtonFake.hide()
 
     def levelWater(self, change = 1):
+        return
         if change < 0:
             return
         self.showWateringCanButtonFake(1)
@@ -1557,6 +1557,7 @@ class LocalToon(DistributedToon.DistributedToon, LocalAvatar.LocalAvatar):
         self.waterTrack.start()
 
     def levelShovel(self, change = 1):
+        return
         if change < 1:
             return
         self.showShovelButtonFake(1)

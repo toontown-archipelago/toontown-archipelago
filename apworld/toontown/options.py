@@ -133,7 +133,7 @@ class MaxGlobalGagXPRange(Range):
     Must be above or equal to the base_global_gag_xp.
     """
     display_name = "Max Global Gag XP"
-    range_start = 0
+    range_start = 10
     range_end = 30
     default = 30
 
@@ -169,6 +169,18 @@ class OverflowModRange(Range):
     range_start = 25
     range_end = 300
     default = 100
+
+
+class HardCombatLogic(Toggle):
+    """
+    Toggle more difficult combat logic for the seed.
+    - All gag level requirements are reduced by 1
+    > - However, all Gag Capacity and Damage Ratio requirements stay the same
+    - All laff logic thresholds are reduced by 5-10%
+    NOTE: Might result in some incredibly difficult or potentially impossible seeds, depending on luck and skill level
+    """
+    display_name = "Hard Combat Logic"
+    default = False
 
 
 class StartMoneyOption(Range):
@@ -388,7 +400,7 @@ class BountiesRequired(Range):
     """
     display_name = "Bounties Required"
     range_start = 0
-    range_end = 34
+    range_end = 36
     default = 7
 
 
@@ -401,7 +413,7 @@ class TotalBounties(Range):
     """
     display_name = "Total Bounties"
     range_start = 1
-    range_end = 34
+    range_end = 36
     default = 15
 
 
@@ -648,7 +660,7 @@ class RacingOption(Toggle):
     Enable to turn on racing checks.
     """
 
-    display_name = "Racing Logic"
+    display_name = "Toggle Racing Checks"
     default = False
 
 
@@ -657,7 +669,16 @@ class GolfingOption(Toggle):
     Enable to turn on the minigolf checks.
     """
 
-    display_name = "Golfing Logic"
+    display_name = "Toggle Golfing Checks"
+    default = False
+
+
+class TrolleyOption(Toggle):
+    """
+    Enable to turn on trolley checks.
+    """
+
+    display_name = "Toggle Trolley Checks"
     default = False
 
 
@@ -690,13 +711,15 @@ class RewardDisplayOption(Choice):
     "owner": hides what the item is, but shows who it's for.
     "class": hides what the item is, but shows who it's for, and what classification it has.
     "shown": (default) Tells you what the reward will be when you're looking at the check.
-    "auto_hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint": Same as 'shown', but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint_prog": Same as 'shown', but also sends a hint out to the multiworld when any item is progression on view.
     """
     option_hidden = 0
     option_owner = 1
     option_class = 2
     option_shown = 3
     option_auto_hint = 4
+    option_auto_hint_prog = 5
     default = 3
 
 
@@ -707,7 +730,8 @@ class TaskRewardDisplayOption(RewardDisplayOption):
     "owner": hides what the item is, but shows who it's for.
     "class": hides what the item is, but shows who it's for, and what classification it has.
     "shown": (default) Tells you what the reward will be when you're looking at the check.
-    "auto hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint_prog": Same as 'shown', but also sends a hint out to the multiworld when any item is progression on view.
     """
     display_name = "Task Rewards"
     
@@ -719,18 +743,103 @@ class PetShopRewardDisplayOption(RewardDisplayOption):
     "owner": hides what the item is, but shows who it's for.
     "class": hides what the item is, but shows who it's for, and what classification it has.
     "shown": (default) Tells you what the reward will be when you're looking at the check.
-    "auto hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint_prog": Same as 'shown', but also sends a hint out to the multiworld when any item is progression on view.
     """
     display_name = "Pet Shop Rewards"
 
 
-class RandomShopCostToggle(Toggle):
+class CatalogRewardDisplayOption(RewardDisplayOption):
     """
-    Enable to turn on the pet shop price randomization.
+    Controls Display of Cattlelog Rewards.
+    "hidden": hides what a multiworld reward will be, instead it'll name the check as the reward.
+    "owner": hides what the item is, but shows who it's for.
+    "class": hides what the item is, but shows who it's for, and what classification it has.
+    "shown": (default) Tells you what the reward will be when you're looking at the check.
+    "auto_hint": As shown, but also sends a hint out to the multiworld when you would be shown the reward.
+    "auto_hint_prog": Same as 'shown', but also sends a hint out to the multiworld when any item is progression on view.
+    """
+    display_name = "Cattlelog Rewards"
+
+
+class DoodlePriceRando(Toggle):
+    """
+    Enable deterministic pet shop price randomization.
     Logic accounts for the random price range if enabled.
     """
 
-    display_name = "Randomize Pet Shop Prices"
+    display_name = "Randomize Doodle Prices"
+    default = False
+
+
+class CatalogPriceRando(Toggle):
+    """
+    Enable deterministic Cattlelog check price randomization.
+    Logic accounts for the highest possible randomized price.
+    """
+
+    display_name = "Randomize Cattlelog Prices"
+    default = False
+
+
+class FlowerGardening(Toggle):
+    """
+    Enable flower gardening checks.
+    Adds progressive Garden Kits, Shovels, and Watering Cans as items. Makes flower varieties Archipelago checks.
+    """
+    display_name = "Flower Gardening"
+    default = False
+
+
+class AutoFlowerGrowing(Toggle):
+    """
+    Toggles if flowers automatically grow when picked or not.
+    If disabled, you will need to plant the flowers manually with their bean combinations. (You might have to look it up.)
+    Only does anything if flower gardening is enabled.
+    """
+    display_name = "Automatic Flower Growth"
+    default = True
+
+
+class TreeGardening(Toggle):
+    """
+    Enable gag tree gardening checks.
+    Adds progressive Garden Kits as items (if flower gardening isn't already enabled). Makes planting gag trees Archipelago checks.
+    """
+    display_name = "Tree Gardening"
+    default = False
+
+
+class TreeGardeningBehavior(Choice):
+    """
+    Determines which gag tree checks are generated, if tree_gardening is enabled.
+    all_tracks: Plant every gag level for every non-omitted track.
+    random_track: Plant every gag level for one randomly selected non-omitted track.
+    levels_only: Plant each gag level once; the track does not matter.
+    """
+    display_name = "Tree Gardening Behavior"
+    option_all_tracks = 0
+    option_random_track = 1
+    option_levels_only = 2
+    default = 2
+
+
+class CatalogChecks(Range):
+    """
+    How many Archipelago checks Clarabelle's Cattlelog offers.
+    """
+    display_name = "Cattlelog Checks"
+    range_start = 0
+    range_end = 12
+    default = 6
+
+
+class NeedCatalog(Toggle):
+    """
+    Adds a Missing Cattlelog to the item pool to lock cattlelog purchases behind them
+    NOTE: If catalog_checks is set to 0, the item will not be added to the pool
+    """
+    display_name = "Need Missing Cattlelog"
     default = False
 
 
@@ -847,7 +956,7 @@ class SOSWeightOption(Range):
     display_name = "SOS Card Weight"
     range_start = 0
     range_end = 100
-    default = 60
+    default = 50
 
 
 class UniteWeightOption(Range):
@@ -858,7 +967,7 @@ class UniteWeightOption(Range):
     display_name = "Unite Weight"
     range_start = 0
     range_end = 100
-    default = 60
+    default = 65
 
 
 class FireWeightOption(Range):
@@ -869,7 +978,7 @@ class FireWeightOption(Range):
     display_name = "Pink Slip Weight"
     range_start = 0
     range_end = 100
-    default = 60
+    default = 50
 
 
 class SummonWeightOption(Range):
@@ -880,7 +989,7 @@ class SummonWeightOption(Range):
     display_name = "Cog Summon Weight"
     range_start = 0
     range_end = 100
-    default = 50
+    default = 60
 
 
 class HealWeightOption(Range):
@@ -902,7 +1011,7 @@ class FishWeightOption(Range):
     display_name = "Fish Junk Weight"
     range_start = 0
     range_end = 100
-    default = 65
+    default = 70
 
 
 class DeathLinkOption(Choice):
@@ -954,6 +1063,7 @@ class ToontownOptions(PerGameCommonOptions):
     max_global_gag_xp: MaxGlobalGagXPRange
     start_damage_multiplier: StartDamageMultiplierRange
     max_damage_multiplier: MaxDamageMultiplierRange
+    hard_combat_logic: HardCombatLogic
     overflow_mod: OverflowModRange
     starting_money: StartMoneyOption
     starting_task_capacity: StartingTaskCapacityOption
@@ -998,6 +1108,7 @@ class ToontownOptions(PerGameCommonOptions):
     slot_sync_gag_experience: SyncGagExp
     racing_logic: RacingOption
     minigolf_logic: GolfingOption
+    trolley_logic: TrolleyOption
     seed_generation_type: SeedGenerationTypeOption
     trap_percent: TrapPercentOption
     uber_trap_weight: UberWeightOption
@@ -1017,22 +1128,31 @@ class ToontownOptions(PerGameCommonOptions):
     ring_link: RingLinkOption
     cog_dmg_rando: DamageRandoOption
     pet_shop_display: PetShopRewardDisplayOption
+    catalog_display: CatalogRewardDisplayOption
     task_reward_display: TaskRewardDisplayOption
-    random_prices: RandomShopCostToggle
+    doodle_price_rando: DoodlePriceRando
+    catalog_price_rando: CatalogPriceRando
+    flower_gardening: FlowerGardening
+    auto_flower_growth: AutoFlowerGrowing
+    tree_gardening: TreeGardening
+    tree_gardening_behavior: TreeGardeningBehavior
+    catalog_checks: CatalogChecks
+    need_catalog: NeedCatalog
 
 toontown_option_groups: list[OptionGroup] = [
     OptionGroup("Archipelago Settings", [
         ProgressionBalancing, Accessibility, SyncJellybeans, 
-        SyncGagExp, PetShopRewardDisplayOption, TaskRewardDisplayOption,
+        SyncGagExp, PetShopRewardDisplayOption, CatalogRewardDisplayOption, TaskRewardDisplayOption,
         TrapPercentOption
     ]),
     OptionGroup("Toon Settings", [
         TeamOption, MaxLaffOption, StartLaffOption, StartingTaskOption,
         StartGagOption, StartGagOptionWeb, StartGagRandomWeb, OmitGagOption,
         BaseGlobalGagXPRange, MaxGlobalGagXPRange, DamageRandoOption,
-        StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, StartMoneyOption,
-        StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
-        RingLinkOption, RandomShopCostToggle
+        StartDamageMultiplierRange, MaxDamageMultiplierRange, OverflowModRange, HardCombatLogic,
+        StartMoneyOption, StartingTaskCapacityOption, MaxTaskCapacityOption, DeathLinkOption,
+        RingLinkOption, DoodlePriceRando, CatalogPriceRando, AutoFlowerGrowing
+
     ]),
     OptionGroup("Win Condition", [
         WinConditions, WinConditionRandomizedWeb, OmitRandomWinConditions,
@@ -1048,8 +1168,9 @@ toontown_option_groups: list[OptionGroup] = [
         TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, WantCGCMazes, FishChecks, FishLocations,
-        FishProgression, FishPity, RacingOption, GolfingOption, SeedGenerationTypeOption,
-        JokesPerStreet, JokeBookToggle
+        FishProgression, FishPity, RacingOption, GolfingOption, TrolleyOption, SeedGenerationTypeOption,
+        JokesPerStreet, JokeBookToggle, CatalogChecks, NeedCatalog,
+        FlowerGardening, TreeGardening, TreeGardeningBehavior
     ], False),
     OptionGroup("Junk Weights", [
         BeanWeightOption, GagExpWeightOption, SOSWeightOption, UniteWeightOption, SummonWeightOption, FireWeightOption, HealWeightOption, FishWeightOption

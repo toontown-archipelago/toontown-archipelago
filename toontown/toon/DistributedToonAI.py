@@ -1,4 +1,6 @@
 import math
+import math
+import os
 import time
 import uuid
 from typing import List, Tuple, Union, Any
@@ -16,8 +18,10 @@ from direct.distributed import DistributedSmoothNodeAI
 from toontown.toonbase import ToontownGlobals
 from toontown.quest import Quests
 from toontown.toonbase import ToontownBattleGlobals
+from toontown.estate import FlowerBase
 from toontown.battle import SuitBattleGlobals
 from direct.task import Task
+from direct.showbase.PythonUtil import union
 from toontown.catalog import CatalogItemList
 from toontown.catalog import CatalogItem
 from direct.distributed.ClockDelta import *
@@ -57,6 +61,7 @@ from ..archipelago.util.location_scouts_cache import LocationScoutsCache
 from ..shtiker import CogPageGlobals
 from ..util.astron.AstronDict import AstronDict
 from apworld.toontown import locations
+from apworld.toontown.items import ITEM_NAME_TO_ID, ToontownItemName
 
 if simbase.wantPets:
     from toontown.pets import PetLookerAI, PetObserve
@@ -210,6 +215,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.shovelSkill = 0
         self.wateringCan = 0
         self.wateringCanSkill = 0
+        self.gardenKit = 0
+
         self.hatePets = 1
         self.golfHistory = None
         self.golfHoleBest = None
@@ -245,6 +252,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.damageMultiplier = 100
         self.overflowMod = 100
         self.beingShuffled = False
+        self.locationTaskName = None
+        self.locationsToSend = []
 
         self.archipelago_session: ArchipelagoSession = None
         self.apRewardQueue: DistributedToonRewardQueue = DistributedToonRewardQueue(self)
@@ -263,6 +272,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         DistributedPlayerAI.DistributedPlayerAI.announceGenerate(self)
         DistributedSmoothNodeAI.DistributedSmoothNodeAI.announceGenerate(self)
         if self.isPlayerControlled():
+            if self.getMaxFlowerBasket() < 100:
+                self.b_setMaxFlowerBasket(100)
             self.doLoginChecks()
             if self.WantOldGMNameBan:
                 self._checkOldGMName()
@@ -367,6 +378,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                 self.exitEstate()
             if self.zoneId != ToontownGlobals.QuietZone:
                 self.announceZoneChange(ToontownGlobals.QuietZone, self.zoneId)
+        if self.locationTaskName:
+            taskMgr.remove(self.locationTaskName)
+            self.locationTaskName = None
+        if self.locationsToSend:
+            self.sendCheckedLocations(self.locationsToSend)
         taskName = self.uniqueName('cheesy-expires')
         taskMgr.remove(taskName)
         taskName = self.uniqueName('next-catalog')
@@ -3633,7 +3649,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             self.notify.warning('addFlowerToBasket: cannot add flower, basket is full')
             return 0
         elif self.flowerBasket.addFlower(species, variety):
-            self.d_setFlowerBasket(*self.flowerBasket.getNetLists())
+            flower = FlowerBase.FlowerBase(species, variety)
+            moneyEarned = flower.getValue() * 75
+            self.addMoney(moneyEarned)
+            self.flowerCollection.collectFlower(flower)
+            self.ap_setFlowerCollection(*self.flowerCollection.getNetLists())
             return 1
         else:
             self.notify.warning('addFlowerToBasket: addFlower failed')
@@ -3662,6 +3682,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def b_setShovelSkill(self, skillLevel):
         self.sendGardenEvent()
+        if self.slotData.get('flower_gardening', self.slotData.get('estate_integration', False)):
+            skillLevel = min(skillLevel, GardenGlobals.ShovelAttributes[self.shovel]['skillPts'] - 1)
+            self.setShovelSkill(skillLevel)
+            self.d_setShovelSkill(skillLevel)
+            return
+
         if skillLevel >= GardenGlobals.ShovelAttributes[self.shovel]['skillPts']:
             if self.shovel < GardenGlobals.MAX_SHOVELS - 1:
                 self.b_setShovel(self.shovel + 1)
@@ -3697,6 +3723,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def b_setWateringCanSkill(self, skillLevel):
         self.sendGardenEvent()
+        if self.slotData.get('flower_gardening', self.slotData.get('estate_integration', False)):
+            skillLevel = min(skillLevel, GardenGlobals.WateringCanAttributes[self.wateringCan]['skillPts'] - 1)
+            self.setWateringCanSkill(skillLevel)
+            self.d_setWateringCanSkill(skillLevel)
+            return
+
         if skillLevel >= GardenGlobals.WateringCanAttributes[self.wateringCan]['skillPts']:
             if self.wateringCan < GardenGlobals.MAX_WATERING_CANS - 1:
                 self.b_setWateringCan(self.wateringCan + 1)
@@ -3802,6 +3834,19 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def getGardenStarted(self):
         return self.gardenStarted
+
+    def b_setGardenKit(self, gardenKit):
+        self.setGardenKit(gardenKit)
+        self.d_setGardenKit(gardenKit)
+
+    def d_setGardenKit(self, gardenKit):
+        self.sendUpdate('setGardenKit', [gardenKit])
+
+    def setGardenKit(self, gardenKit):
+        self.gardenKit = gardenKit
+
+    def getGardenKit(self):
+        return self.gardenKit
 
     def logSuspiciousEvent(self, eventName):
         senderId = self.air.getAvatarIdFromSender()
@@ -4527,6 +4572,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def b_setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
         self.setReceivedItems(receivedItems)
         self.d_setReceivedItems(receivedItems)
+        if self.slotData.get('catalog_checks', 0) > 0:
+            self.refreshAPCatalog()
 
     # Set the AP items this toon has received but only server side
     def setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
@@ -4535,6 +4582,10 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     # Get a list of item IDs this toon has received via AP
     def getReceivedItems(self) -> List[Tuple[int, int]]:
         return self.receivedItems
+
+    def hasReceivedItem(self, itemName: ToontownItemName) -> bool:
+        itemId = ITEM_NAME_TO_ID[itemName.value]
+        return any(item[1] == itemId for item in self.receivedItems)
 
     # Tell the client what items we have received via AP
     def d_setReceivedItems(self, receivedItems: List[Tuple[int, int]]):
@@ -4565,17 +4616,39 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def hasCheckedLocation(self, location: int):
         return location in self.checkedLocations
 
+    def shouldRemoveLocationTask(self):
+        if self.locationTaskName:
+            taskMgr.remove(self.locationTaskName)
+            self.locationTaskName = None
+
     def addCheckedLocation(self, location: int):
         if self.hasCheckedLocation(location):
             return
 
-        self.checkedLocations.append(location)
-        self.b_setCheckedLocations(self.checkedLocations)
+        self.shouldRemoveLocationTask()
 
-        if self.archipelago_session:
-            self.archipelago_session.complete_check(location)
+        if location not in self.locationsToSend:
+            self.locationsToSend.append(location)
+
+        self.locationTaskName = 'send-locations-%s' % self.doId
+        taskMgr.doMethodLater(0.1, self.sendCheckedLocations, self.locationTaskName, extraArgs=[self.locationsToSend])
 
     def addCheckedLocations(self, locations: List[int]):
+        self.shouldRemoveLocationTask()
+        locationsToSend = locations.copy()
+        for location in locations:
+            if self.hasCheckedLocation(location):
+                locationsToSend.remove(location)
+
+        for location in locationsToSend:
+            if location not in self.locationsToSend:
+                self.locationsToSend.append(location)
+
+        self.locationTaskName = 'send-locations-%s' % self.doId
+        taskMgr.doMethodLater(0.1, self.sendCheckedLocations, self.locationTaskName, extraArgs=[self.locationsToSend])
+
+    def sendCheckedLocations(self, locations: List[int]):
+        self.locationsToSend = []
         self.checkedLocations.extend(locations)
         unique = set(self.checkedLocations)
         self.checkedLocations = list(unique)
@@ -4595,12 +4668,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     # Called to announce to Archipelago that we need to know what this location ID is so we can receive
     # A LocationInfo packet and keep track of it
-    def scoutLocation(self, location: int):
+    def scoutLocation(self, location: Union[int, str, Any]):
         self.scoutLocations([location])
 
     # Called to announce to Archipelago that we need to know what these location IDs are so we can receive
     # A LocationInfo packet and keep track all of them and know what item is present for this check upon completion
-    def scoutLocations(self, locations: List[int]):
+    def scoutLocations(self, locations: List[Union[int, str, Any]]):
         if self.archipelago_session:
             self.archipelago_session.scout(locations)
 
@@ -4694,6 +4767,11 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def d_setSlotData(self, slotData: AstronDict):
         self.sendUpdate('setSlotData', [slotData.toStruct()])
 
+    def refreshAPCatalog(self):
+        catalogManager = self.air.catalogManager
+        if catalogManager:
+            catalogManager.deliverCatalogFor(self)
+
     def setArchipelagoAuto(self, slotName: str, serverAddr: str):
         if not self.archipelago_session:
             return
@@ -4720,6 +4798,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Reset location Cache
         self.resetLocationScoutsCache()
+        self.resetGardenProgress()
 
         # Now quests
         for id in self.getQuests():
@@ -4792,6 +4871,23 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
         # Regenerate the toon's UUID used for archipelago connections.
         self.regenerateUUID()
+
+    def resetGardenProgress(self):
+        self.b_setGardenStarted(False)
+        self.b_setGardenKit(0)
+        self.b_setShovel(0)
+        self.b_setShovelSkill(0)
+        self.b_setWateringCan(0)
+        self.b_setWateringCanSkill(0)
+        self.b_setGardenTrophies([])
+        self.b_setGardenSpecials([])
+        self.b_setFlowerCollection([], [])
+        self.b_setFlowerBasket([], [])
+        self.b_setTrackBonusLevel([-1, -1, -1, -1, -1, -1, -1])
+
+        gardenPath = os.path.join('backups', 'gardens', 'garden_%s.json' % self.doId)
+        if os.path.exists(gardenPath):
+            os.remove(gardenPath)
 
     def APVictory(self):
         if self.archipelago_session:
@@ -4962,6 +5058,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.notify.debug(f"setting AP fish-collection for {self.getDoId()} to: {[genusList, speciesList, weightList]}" )
         self.set_ap_data("fish-collection", [genusList, speciesList, weightList], True)
 
+    # Set flower collection and send out to AP.
+    def ap_setFlowerCollection(self, speciesList: list[int], varietyList: list[int]):
+        self.d_setFlowerCollection(speciesList, varietyList)
+        self.notify.debug(f"setting AP flower-collection for {self.getDoId()} to: {[speciesList, varietyList]}" )
+        self.set_ap_data("flower-collection", [speciesList, varietyList], True)
+
     def ap_setCogCount(self, cogCountList: List[int]):
         #only send the main cog types, anything in notMainTypes shouldn't be in the gallery anyways.
         cogCountList = cogCountList[:len(SuitDNA.suitHeadTypes) - len(SuitDNA.notMainTypes)]
@@ -5003,7 +5105,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def request_default_ap_data(self) -> None:
         # keys currently unused = ["tasks"]
-        privateKeys = ["fish-collection", "cog-gallery"]
+        privateKeys = ["fish-collection", "flower-collection", "cog-gallery"]
         if self.slotData.get("slot_sync_jellybeans", True):
             privateKeys.append("jellybeans")
         if self.slotData.get("slot_sync_gag_experience", True): 
@@ -5024,11 +5126,23 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                         continue
                     # Getting data from here assumes AP already tracked it.
                     # The client that set the data should have gotten any location checks for it when it was sent.
-                    # Possiblity you might need to catch any fish to update it if you skip past a check, somehow.
+                    # Possiblity that you might need to catch any fish to update it if you skip past a check, somehow.
                     for i in zip(*v):
                         self.fishCollection.collectFish(i)
                     collectionNetList = self.fishCollection.getNetLists()
                     self.d_setFishCollection(collectionNetList[0], collectionNetList[1], collectionNetList[2])
+
+                case "flower-collection":
+                    if v == self.flowerCollection.getNetLists():
+                        self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
+                        continue
+                    # Getting data from here assumes AP already tracked it.
+                    # The client that set the data should have gotten any location checks for it when it was sent.
+                    # Possiblity that you might need to pick a flower to update it if you skip past a check, somehow.
+                    for i in zip(*v):
+                        flower = FlowerBase.FlowerBase(i[0], i[1])
+                        self.flowerCollection.collectFlower(flower)
+                    self.d_setFlowerCollection(*self.flowerCollection.getNetLists())
 
                 case track if track in ToontownBattleGlobals.Tracks:
                     trackIndex = ToontownBattleGlobals.Tracks.index(k)
@@ -5043,7 +5157,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
                         self.notify.debug(f"value of {k} unchanged for {self.getDoId()}")
                         continue
                     # Getting data from here assumes AP already tracked it.
-                    # Should be the case, this can"t add more cogs than any toon had individually.
+                    # Should be the case, this can't add more cogs than any toon had individually.
                     cogCount = self.getCogCount()
                     cogStatus = self.getCogStatus()
                     for suitIndex, count in enumerate(v):

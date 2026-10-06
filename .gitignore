@@ -17,6 +17,9 @@ backups/
 settings.json
 errorCode
 PPYTHON_PATH
+Panda3D/
+
+resources/custom_music
 
 toontown/archipelago/output/
 
@@ -30,3 +33,6 @@ output/
 release/
 apworld/toontown.apworld
 toontown/archipelago/crowdcontrol/toontown_archipelago_cc_pack.json
+
+# Visual Studio Code IDE
+/.vscode

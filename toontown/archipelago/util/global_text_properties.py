@@ -156,12 +156,20 @@ __TEXT_PROPERTIES_UNDERLINE.setUnderscore(True)
 __register_property('underline', TEXT_PROPERTIES_CODE_UNDERLINE, __TEXT_PROPERTIES_UNDERLINE)
 
 
-# salmon text
+# fish text
 TEXT_PROPERTIES_CODE_FISH_SUBTEXT = "json_fish_subtext"
 __TEXT_PROPERTIES_FISH = TextProperties()
 __TEXT_PROPERTIES_FISH.setSlant(0.25)
 __TEXT_PROPERTIES_FISH.setTextScale(0.73)
 __register_property('fishSubtext', TEXT_PROPERTIES_CODE_FISH_SUBTEXT, __TEXT_PROPERTIES_FISH)
+
+
+# flower text
+TEXT_PROPERTIES_CODE_FLOWER_SUBTEXT = "json_flower_subtext"
+__TEXT_PROPERTIES_FLOWER = TextProperties()
+__TEXT_PROPERTIES_FLOWER.setSlant(0.25)
+__TEXT_PROPERTIES_FLOWER.setTextScale(0.65)
+__register_property('fishSubtext', TEXT_PROPERTIES_CODE_FLOWER_SUBTEXT, __TEXT_PROPERTIES_FLOWER)
 
 
 # Called publically to get the TextProperties property code from a json color code

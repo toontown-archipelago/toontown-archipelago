@@ -65,11 +65,7 @@ class DistributedPlantBaseAI(DistributedLawnDecorAI):
         if not av:
             return
 
-        waterLevel = max(1, self.getWaterLevel() + av.getWateringCan() + 1)
-        waterLevel = min(20, waterLevel)
-        self.b_setWaterLevel(waterLevel)
         self.d_setMovie(GardenGlobals.MOVIE_WATER)
-        self.update()
 
     def waterPlantDone(self):
         avId = self.air.getAvatarIdFromSender()
@@ -79,11 +75,6 @@ class DistributedPlantBaseAI(DistributedLawnDecorAI):
         av = self.air.doId2do.get(avId)
         if not av:
             return
-
-        if self.waterLevel < 6:
-            av.b_setWateringCanSkill(av.getWateringCanSkill() + 1)
-        else:
-            av.b_setWateringCanSkill(av.getWateringCanSkill())
 
         self.d_setMovie(GardenGlobals.MOVIE_CLEAR)
 

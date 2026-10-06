@@ -281,6 +281,16 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         for s in self.luredSuits:
             luredSuits += str(suits.index(s.doId))
 
+        highestKbbonus = 0
+        for s in self.suits:
+            if hasattr(s, 'effectHandler'):
+                if s.effectHandler:
+                    knockbackEffect = s.effectHandler.children.get('knockbackBonus', None)
+                    if hasattr(knockbackEffect, 'children'):
+                        if knockbackEffect.children:
+                            knockDamage = knockbackEffect.children['value']
+                            highestKbbonus = max(highestKbbonus, knockDamage)
+
         immuneSuits = ''
         for s in self.immuneSuits:
             immuneSuits += str(suits.index(s.doId))
@@ -316,7 +326,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         for t in self.runningToons:
             runningToons += str(toons.index(t))
 
-        self.notify.debug('getMembers() - suits: %s joiningSuits: %s pendingSuits: %s activeSuits: %s luredSuits: %s suitTraps: %s toons: %s joiningToons: %s pendingToons: %s activeToons: %s runningToons: %s immuneSuits: %s' % (suits,
+        self.notify.debug('getMembers() - suits: %s joiningSuits: %s pendingSuits: %s activeSuits: %s luredSuits: %s suitTraps: %s toons: %s joiningToons: %s pendingToons: %s activeToons: %s runningToons: %s immuneSuits: %s highestkb: %s' % (suits,
          joiningSuits,
          pendingSuits,
          activeSuits,
@@ -327,7 +337,8 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
          pendingToons,
          activeToons,
          runningToons,
-         immuneSuits))
+         immuneSuits,
+         highestKbbonus))
         return [suits,
          joiningSuits,
          pendingSuits,
@@ -340,7 +351,8 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
          activeToons,
          runningToons,
          immuneSuits,
-         globalClockDelta.getRealNetworkTime()]
+         globalClockDelta.getRealNetworkTime(),
+         highestKbbonus]
 
     def d_adjust(self):
         self.notify.debug('network:adjust()')

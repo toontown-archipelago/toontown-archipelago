@@ -4,7 +4,7 @@ from apworld.toontown.locations import LOCATION_ID_TO_NAME
 from . import ShtikerPage
 import random
 from apworld.toontown import ToontownItemName, ToontownItemDefinition, get_item_def_from_id, TPSanity, FacilityLocking
-from toontown.toonbase import TTLocalizer
+from toontown.toonbase import TTLocalizer, ToontownGlobals
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from direct.task import Task
@@ -19,6 +19,7 @@ class HintNode(DirectFrame):
     def __init__(self, parent):
         super().__init__(parent)
         main_text_scale = 0.055
+
 
         self.title = DirectLabel(parent=self, scale=0.07, pos=(0.02, 0, -0.08), text="Select an Item", textMayChange=True, relief=None)
         self.hintPointsTitle = DirectFrame(parent=self, text=TTLocalizer.HintPointsTitle % (0, 0),
@@ -115,6 +116,17 @@ class HintNode(DirectFrame):
         foundHints = []
         lostHints = []
         notHinted = []
+        flag_to_color = {
+            0: 'lightblue',
+            1: 'plum',
+            2: 'slateblue',
+            4: 'salmon',
+        }
+        flag_to_star = {
+            0: ["", ""],
+            1: ["*", "*"],
+            2: ["", "*"]
+        }
         for labelIndex in range(checkMax):
             # If we do not have a hint for this, set defaults
             if labelIndex >= len(hints):
@@ -128,10 +140,15 @@ class HintNode(DirectFrame):
             # We have a hint! Set up the text to tell the player where it is
             hint: HintedItem = hints[labelIndex]
             if self.externalHint:
+                # Default to blue, otherwise get right color for classification
+                item_flags = hint.item.flags
+                item_color = flag_to_color.get(item_flags, 'slateblue')
+                item_stars = flag_to_star.get(item_flags, ["", ""])
+                item_name = item_stars[0] + hint.item_name + item_stars[1]
                 text = get_raw_formatted_string([
                     MinimalJsonMessagePart(hint.asking_name, color='magenta'),
                     MinimalJsonMessagePart('\'s ', color='black'),
-                    MinimalJsonMessagePart(hint.item_name, color='blue'),
+                    MinimalJsonMessagePart(item_name, color=item_color),
                     MinimalJsonMessagePart(' is here.', color='black'),
                 ])
             else:
@@ -548,3 +565,47 @@ class CheckPage(ShtikerPage.ShtikerPage):
         self.hintNode.hintButton['state'] = DGG.NORMAL
         self.hintNode.show()
         self.hintNode.updateHintDisplays(checkDef, checkMax, self.externalHints, checkName)
+
+    def showItemsOnscreen(self):
+
+        # Check if there is currently something already displaying in the hotkey interface slot
+        if not base.localAvatar.allowOnscreenInterface():
+            return
+
+        # We can now own the slot
+        base.localAvatar.setCurrentOnscreenInterface(self)
+        messenger.send('wakeup')
+
+        self.enter()
+        self.reparentTo(aspect2d)
+        self.book.show()
+        self.book.setZ(self.book.getZ() - 0.11)
+        self.book.hidePageArrows()
+        self.book.ignore(ToontownGlobals.StickerBookPageLeft)
+        self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.show()
+
+    def hideItemsOnscreen(self):
+
+        # If the current onscreen interface is not us, don't do anything
+        if base.localAvatar.getCurrentOnscreenInterface() is not self:
+            return
+
+        base.localAvatar.setCurrentOnscreenInterface(None)  # Free up the on screen interface slot
+
+        self.reparentTo(self.book)
+        self.book.hide()
+        self.book.setZ(self.book.getZ() + 0.11)
+        self.book.showPageArrows()
+        self.book.ignore(ToontownGlobals.StickerBookPageLeft)
+        self.book.ignore(ToontownGlobals.StickerBookPageRight)
+        self.viewingHint = False
+        self.hide()
+
+    def acceptOnscreenHooks(self):
+        self.accept(ToontownGlobals.ItemsHotkeyOn, self.showItemsOnscreen)
+        self.accept(ToontownGlobals.ItemsHotkeyOff, self.hideItemsOnscreen)
+
+    def ignoreOnscreenHooks(self):
+        self.ignore(ToontownGlobals.ItemsHotkeyOn)
+        self.ignore(ToontownGlobals.ItemsHotkeyOff)

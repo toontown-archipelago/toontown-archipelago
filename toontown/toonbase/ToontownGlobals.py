@@ -6,7 +6,6 @@ from direct.showbase.PythonUtil import invertDict
 from panda3d.core import BitMask32, Vec4, Filename
 import collections
 
-GameVersion = "v0.19.6"
 MapHotkey = 'MapHotkey'
 AccountDatabaseChannelId = 4008
 ToonDatabaseChannelId = 4021
@@ -399,22 +398,31 @@ MinigameTemplateId = -1
 MinigameIDs = (
     RaceGameId,
     CannonGameId,
-    TagGameId,
+    # TagGameId,
     # PatternGameId,
     RingGameId,
     MazeGameId,
     TugOfWarGameId,
     CatchGameId,
     DivingGameId,
-    # TargetGameId,
+    TargetGameId,
     PairingGameId,
     VineGameId,
     # IceGameId,
     CogThiefGameId,
     # TwoDGameId,
     PhotoGameId,
-    TravelGameId
+    # TravelGameId
 )
+
+PlaygroundToMinigames = {
+    ToontownCentral: [TargetGameId, RingGameId],
+    DonaldsDock: [DivingGameId, TugOfWarGameId],
+    DaisyGardens: [MazeGameId, CogThiefGameId],
+    MinniesMelodyland: [RaceGameId, CannonGameId],
+    TheBrrrgh: [CatchGameId, PairingGameId],
+    DonaldsDreamland: [VineGameId, PhotoGameId],
+}
 
 MultiplayerMinigames = (
     PatternGameId,

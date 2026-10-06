@@ -3,6 +3,7 @@ from panda3d.core import *
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.DirectObject import DirectObject
 from toontown.archipelago.definitions import util
+from apworld.toontown import get_item_def_from_id
 from toontown.toonbase import ToontownGlobals
 from toontown.toonbase import TTLocalizer
 from toontown.toonbase import ToontownTimer
@@ -215,7 +216,7 @@ class PetshopGUI(DirectObject):
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
             name, dna, traitSeed = PetUtil.getPetInfoFromSeed(petSeed, zoneId)
             baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
-            if base.localAvatar.slotData.get('random_prices', False):
+            if base.localAvatar.slotData.get('doodle_price_rando', False):
                 rng = random.Random()
                 rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting
@@ -333,7 +334,9 @@ class PetshopGUI(DirectObject):
             self.petView.setPos(-0.05, 0, 1.15)
             model.removeNode()
             self.pawLButton['state'] = DGG.DISABLED
+            self.pawLButton.setColorScale(1, 1, 1, 0)
             self.pawRButton['state'] = DGG.DISABLED
+            self.pawRButton.setColorScale(1, 1, 1, 0)
             self.petSeeds = petSeeds
             self.subId = subId
             self.makeCheckList()
@@ -349,7 +352,7 @@ class PetshopGUI(DirectObject):
             random.seed(self.petSeeds[1])
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
             baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
-            if base.localAvatar.slotData.get('random_prices', False):
+            if base.localAvatar.slotData.get('doodle_price_rando', False):
                 rng = random.Random()
                 rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
                 # This price will be consistent based on our archi rng setting
@@ -419,10 +422,16 @@ class PetshopGUI(DirectObject):
 
         def showPet(self):
             self.nameLabel = DirectLabel(parent=self, pos=(0, 0, 1.35), relief=None, text=self.petName[self.curPet], text_pos=(0, 0), text_scale=0.04)
-            self.apLabel = DirectLabel(parent=self, pos=(-0.01, 0, 1.05), relief=None, text=None, text_fg=Vec4(1, 1, 1, 1), text_pos=(0, 0), text_scale=0.08, text_shadow=(1, 1, 1, 1))
+            self.apLabel = DirectLabel(parent=self, pos=(-0.015, 0, 1.015), relief=None, text="", text_fg=Vec4(1, 1, 1, 1), text_pos=(0, 0), text_scale=0.06, text_shadow=(0, 0, 0, 1))
+            self.doodleName = DirectLabel(parent=self, pos=(-0.015, 0, 1.165), relief=None, text="", text_pos=(0, 0), text_scale=0.06)
             self.apLabel.setImage('phase_14/maps/ap_icon_outline.png')
             self.apLabel.setTransparency(TransparencyAttrib.MAlpha)
             self.apLabel['image_scale'] = 0.12
+            # Set up the Doodle Name display
+            doodleName = self.getCheckName()
+            if doodleName:
+                doodleName = doodleName[:(doodleName.index("(")-1)]
+                self.doodleName['text'] = doodleName
             self.descLabel = DirectLabel(parent=self, pos=(-0.4, 0, 0.72), relief=None, scale=0.05, text=self.petDesc[self.curPet], text_align=TextNode.ALeft, text_wordwrap=TTLocalizer.PGUIwordwrap, text_scale=TTLocalizer.PGUIdescLabel)
             self.okButton['state'] = DGG.NORMAL
             if self.petCost[self.curPet] > base.localAvatar.getTotalMoney():

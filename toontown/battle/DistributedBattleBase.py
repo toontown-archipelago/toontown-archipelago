@@ -56,6 +56,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         self.needAdjustTownBattle = 0
         self.streetBattle = 1
         self.levelBattle = 0
+        self.highestKbbonus = 0
         self.localToonFsm = ClassicFSM.ClassicFSM('LocalToon', [State.State('HasLocalToon', self.enterHasLocalToon, self.exitHasLocalToon, ['NoLocalToon', 'WaitForServer']), State.State('NoLocalToon', self.enterNoLocalToon, self.exitNoLocalToon, ['HasLocalToon', 'WaitForServer']), State.State('WaitForServer', self.enterWaitForServer, self.exitWaitForServer, ['HasLocalToon', 'NoLocalToon'])], 'WaitForServer', 'WaitForServer')
         self.localToonFsm.enterInitialState()
         self.fsm = ClassicFSM.ClassicFSM('DistributedBattle', [State.State('Off', self.enterOff, self.exitOff, ['FaceOff',
@@ -349,10 +350,10 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
     def getBattleSpeeds(self):
         return self.battleSpeeds
 
-    def setMembers(self, suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, suitsImmune, timestamp):
+    def setMembers(self, suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, suitsImmune, timestamp, highestKbbonus):
         if self.__battleCleanedUp:
             return
-        self.notify.debug('setMembers() - suits: %s suitsJoining: %s suitsPending: %s suitsActive: %s suitsLured: %s suitTraps: %s toons: %s toonsJoining: %s toonsPending: %s toonsActive: %s toonsRunning: %s suitsImmune: %s' % (suits,
+        self.notify.debug('setMembers() - suits: %s suitsJoining: %s suitsPending: %s suitsActive: %s suitsLured: %s suitTraps: %s toons: %s toonsJoining: %s toonsPending: %s toonsActive: %s toonsRunning: %s suitsImmune: %s highestKb: %s' % (suits,
          suitsJoining,
          suitsPending,
          suitsActive,
@@ -363,8 +364,10 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
          toonsPending,
          toonsActive,
          toonsRunning,
-         suitsImmune))
+         suitsImmune,
+         highestKbbonus))
         ts = globalClockDelta.localElapsedTime(timestamp)
+        self.highestKbbonus = highestKbbonus
         oldsuits = self.suits
         self.suits = []
         suitGone = 0
@@ -643,7 +646,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
             if unAttack == 1 and self.fsm.getCurrentState().getName() == 'WaitForInput':
                 if self.townBattle.fsm.getCurrentState().getName() != 'Attack':
                     self.townBattle.setState('Attack')
-            self.townBattle.updateChosenAttacks(self.townBattleAttacks[0], self.townBattleAttacks[1], self.townBattleAttacks[2], self.townBattleAttacks[3])
+            self.townBattle.updateChosenAttacks(self.townBattleAttacks[0], self.townBattleAttacks[1], self.townBattleAttacks[2], self.townBattleAttacks[3], self.highestKbbonus)
         return
 
     def setBattleExperience(self, id0, origExp0, earnedExp0, origQuests0, items0, missedItems0, origMerits0, merits0, parts0, id1, origExp1, earnedExp1, origQuests1, items1, missedItems1, origMerits1, merits1, parts1, id2, origExp2, earnedExp2, origQuests2, items2, missedItems2, origMerits2, merits2, parts2, id3, origExp3, earnedExp3, origQuests3, items3, missedItems3, origMerits3, merits3, parts3, deathList, helpfulToonsList):
@@ -1454,7 +1457,7 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
 
             self.townBattle.adjustCogsAndToons(self.activeSuits, luredSuits, trappedSuits, self.activeToons, immuneSuits)
             if hasattr(self, 'townBattleAttacks'):
-                self.townBattle.updateChosenAttacks(self.townBattleAttacks[0], self.townBattleAttacks[1], self.townBattleAttacks[2], self.townBattleAttacks[3])
+                self.townBattle.updateChosenAttacks(self.townBattleAttacks[0], self.townBattleAttacks[1], self.townBattleAttacks[2], self.townBattleAttacks[3], self.highestKbbonus)
         self.needAdjustTownBattle = 0
 
     def __adjustDone(self):

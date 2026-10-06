@@ -19,14 +19,12 @@ from direct.showbase import PythonUtil
 from toontown.hood import Place
 from . import Estate
 from . import HouseGlobals
-from toontown.estate import GardenGlobals
 from toontown.estate import DistributedFlower
 from toontown.estate import DistributedGagTree
 from toontown.estate import DistributedStatuary
 from . import GardenDropGame
 from . import GardenProgressMeter
 from toontown.estate import FlowerSellGUI
-from toontown.toontowngui import TTDialog
 
 class DistributedEstate(DistributedObject.DistributedObject):
     notify = directNotify.newCategory('DistributedEstate')
@@ -375,16 +373,6 @@ class DistributedEstate(DistributedObject.DistributedObject):
         self.acceptOnce(self.flowerGuiDoneEvent, self.__handleSaleDone)
         self.flowerGui = FlowerSellGUI.FlowerSellGUI(self.flowerGuiDoneEvent)
         self.accept('stoppedAsleep', self.__handleSaleDone)
-
-    def closedAwardDialog(self, value):
-        self.awardDialog.destroy()
-        base.cr.playGame.getPlace().detectedGardenPlotDone()
-
-    def awardedTrophy(self, avId):
-        if base.localAvatar.doId == avId:
-            base.cr.playGame.getPlace().detectedGardenPlotUse()
-            msg = TTLocalizer.GardenTrophyAwarded % (len(base.localAvatar.getFlowerCollection()), GardenGlobals.getNumberOfFlowerVarieties())
-            self.awardDialog = TTDialog.TTDialog(style=TTDialog.Acknowledge, text=msg, command=self.closedAwardDialog)
 
     def setClouds(self, clouds):
         self.clouds = clouds

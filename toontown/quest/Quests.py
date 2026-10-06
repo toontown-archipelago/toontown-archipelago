@@ -2841,11 +2841,22 @@ def chooseBestQuests(currentNpc, av, excludeRewards: List[int], seed=None):
     locationsWeOffer = allHoodTaskLocationNames[taskLocationOffset:taskLocationEnd]
 
     # Optionally, Hint the locally available tasks
-    if av.slotData.get("task_reward_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint:
+    if av.slotData.get("task_reward_display", RewardDisplayOption.default) in (RewardDisplayOption.option_auto_hint, RewardDisplayOption.option_auto_hint_prog):
         packet = LocationScoutsPacket()
         packet.create_as_hint = 2 # only announce new hints
-        packet.locations = [util.ap_location_name_to_id(loc) for loc in locationsWeOffer]
-        av.archipelago_session.client.send_packet(packet)
+        if av.slotData.get("task_reward_display", RewardDisplayOption.default) == RewardDisplayOption.option_auto_hint_prog:
+            prog_locations = []
+            for loc in locationsWeOffer:
+                loc_id = util.ap_location_name_to_id(loc)
+                cached_location = av.archipelago_session.client.location_scouts_cache.get(loc_id)
+                if "json_plum" in cached_location:
+                    prog_locations.append(loc_id)
+            if prog_locations:
+                packet.locations = prog_locations
+                av.archipelago_session.client.send_packet(packet)
+        else:
+            packet.locations = [util.ap_location_name_to_id(loc) for loc in locationsWeOffer]
+            av.archipelago_session.client.send_packet(packet)
 
     # Now convert these AP locations into base Toontown quest reward items
     rewardsFromLocation = []

@@ -62,9 +62,6 @@ class DistributedStartingBlockAI(DistributedObjectAI.DistributedObjectAI):
                 self.acceptOnce(self.unexpectedEvent, self.unexpectedExit)
                 self.d_setOccupied(self.avId)
                 self.d_setMovie(KartGlobals.ENTER_MOVIE)
-                av = self.air.doId2do.get(avId)
-                if av:
-                    av.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.KART_SHOWN.value))
             else:
                 self.sendUpdateToAvatarId(avId, 'rejectEnter', [success])
         else:
@@ -122,6 +119,30 @@ class DistributedViewingBlockAI(DistributedStartingBlockAI):
 
     def __init__(self, air, kartPad, x, y, z, h, p, r, padLocationId):
         DistributedStartingBlockAI.__init__(self, air, kartPad, x, y, z, h, p, r, padLocationId)
+
+    def requestEnter(self, paid):
+        avId = self.air.getAvatarIdFromSender()
+        if self.isActive and self.avId == 0:
+            success = self.kartPad.addAvBlock(avId, self, paid)
+            self.notify.debug('requestEnter: avId %s wants to enter the kart block.' % avId)
+            if success == KartGlobals.ERROR_CODE.success:
+                self.avId = avId
+                self.isActive = False
+                self.unexpectedEvent = self.air.getAvatarExitEvent(self.avId)
+                self.acceptOnce(self.unexpectedEvent, self.unexpectedExit)
+                self.d_setOccupied(self.avId)
+                self.d_setMovie(KartGlobals.ENTER_MOVIE)
+                av = self.air.doId2do.get(avId)
+                if av:
+                    av.addCheckedLocation(ap_location_name_to_id(locations.ToontownLocationName.KART_SHOWN.value))
+            else:
+                self.sendUpdateToAvatarId(avId, 'rejectEnter', [success])
+        else:
+            if hasattr(self.kartPad, 'state') and self.kartPad.state in ['WaitBoarding', 'AllAboard']:
+                errorCode = KartGlobals.ERROR_CODE.eBoardOver
+            else:
+                errorCode = KartGlobals.ERROR_CODE.eOccupied
+            self.sendUpdateToAvatarId(avId, 'rejectEnter', [errorCode])
 
     def delete(self):
         DistributedStartingBlockAI.delete(self)

@@ -1,9 +1,13 @@
 import time
+import random
 
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
+from apworld.toontown.items import ToontownItemName
+from toontown.catalog.CatalogAPCheckItem import CatalogAPCheckItem
 from toontown.catalog.CatalogGenerator import CatalogGenerator
+from toontown.catalog.CatalogItemList import CatalogItemList
 from toontown.toonbase import ToontownGlobals
 
 
@@ -22,7 +26,32 @@ class CatalogManagerAI(DistributedObjectAI):
 
         self.deliverCatalogFor(av)
 
+    def getCatalogCheckPrice(self, av, checkIndex):
+        basePrice = CatalogAPCheckItem.getDefaultPrice(checkIndex)
+        if not av.slotData.get('catalog_price_rando', False):
+            return basePrice
+
+        rng = random.Random()
+        rng.seed('%s-catalog-%s' % (av.getSeed(), checkIndex))
+        return rng.randint(basePrice + CatalogAPCheckItem.PriceRandoMin,
+                           basePrice + CatalogAPCheckItem.PriceRandoMax)
+
     def deliverCatalogFor(self, av):
+        check_count = av.slotData.get('catalog_checks', 6)
+        if check_count > 0:
+            mailboxContents = av.mailboxNotify
+            currentWeek = max(av.getCatalogSchedule()[0], 1)
+            nextWeek = time.time() + 604800
+            if av.slotData.get('need_catalog', False) and not av.hasReceivedItem(ToontownItemName.MISSING_CATALOG):
+                catalogItems = []
+            else:
+                catalogItems = [CatalogAPCheckItem(i, self.getCatalogCheckPrice(av, i)) for i in range(check_count)]
+            weeklyCatalog = CatalogItemList(catalogItems)
+            av.b_setCatalogSchedule(currentWeek, nextWeek / 60)
+            av.b_setCatalog(CatalogItemList([]), weeklyCatalog, CatalogItemList([]))
+            av.b_setCatalogNotify(ToontownGlobals.NewItems, mailboxContents)
+            return
+
         previousWeek, previousTime = av.getCatalogSchedule()
         mailboxContents = av.mailboxNotify
         currentTime = time.time()

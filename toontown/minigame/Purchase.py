@@ -4,6 +4,7 @@ from direct.task.Task import Task
 from toontown.toon import ToonHead
 from toontown.toonbase import ToontownTimer
 from direct.gui import DirectGuiGlobals as DGG
+from toontown.toon.InventoryBase import InventoryBase
 from direct.directnotify import DirectNotifyGlobal
 from direct.showbase.PythonUtil import Functor
 from toontown.minigame import TravelGameGlobals
@@ -76,6 +77,7 @@ class Purchase(PurchaseBase):
          purchaseModels.find('**/PurchScrn_BTN_RLVR'),
          purchaseModels.find('**/PurchScrn_BTN_UP')), text=TTLocalizer.GagShopBackToPlayground, text_fg=(0, 0.1, 0.7, 1), text_scale=0.05, text_pos=(0, 0.015, 0), image3_color=Vec4(0.6, 0.6, 0.6, 1), text3_fg=Vec4(0, 0, 0.4, 1), command=self.__handleBackToPlayground)
         self.fastRestockButton = DirectButton(parent=self.frame, relief=None, scale=.80, pos=(-0.55, 0, -0.25), image=(purchaseModels.find('**/PurchScrn_BTN_UP'), purchaseModels.find('**/PurchScrn_BTN_DN'), purchaseModels.find('**/PurchScrn_BTN_RLVR')), text=TTLocalizer.GagShopFastRestock, text_fg=(0, 0.1, 0.7, 1), text_scale=0.06, text_pos=(0, 0.015, 0), command=self.__handleFastRestock)
+        self.fastRestockButton.bind(DGG.B3PRESS, self.__handleFastRestockRC)
         self.timer = ToontownTimer.ToontownTimer()
         self.timer.hide()
         self.timer.posInTopRightCorner()
@@ -748,14 +750,27 @@ class Purchase(PurchaseBase):
         # See how many gags are new
         return sum(newGags.values())
 
-    def __handleFastRestock(self):
+    def __handleFastRestockRC(self, event):
+        self.fastRestockButton.guiItem.setState(1)
+        soundEffect = base.loader.loadSfx('phase_3/audio/sfx/GUI_create_toon_fwd.ogg')
+        base.playSfx(soundEffect)
+        self.__handleFastRestock(rightClick=True)
+        taskMgr.doMethodLater(0.05, self.unpressButton, 'unpress-button')
+
+    def unpressButton(self, task):
+        self.fastRestockButton.guiItem.setState(0)
+
+    def __handleFastRestock(self, rightClick=False):
         # First, get the old gags we had for cost calculation purposes and reset the inventory
         oldGags = self.__getPropCounts()
         self.toon.inventory.clearInventory()
         self.toon.inventory.updateGUI()  # We update the GUI here to reflect that we have 0 gags for our animation.
 
         # Now max out our inventory with default settings (Balanced fill, no clearing etc)
-        self.toon.inventory.maxInventory()
+        if rightClick:
+            self.toon.inventory.maxInventory(mode=InventoryBase.FillMode.POWER)
+        else:
+            self.toon.inventory.maxInventory()
         newGags = self.__getPropCounts()
         gagCost = self.__calculateRestockCost(oldGags, newGags)
 

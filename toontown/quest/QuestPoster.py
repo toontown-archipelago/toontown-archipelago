@@ -82,6 +82,7 @@ class QuestPoster(DirectFrame):
         self.questInfo = DirectLabel(parent=self.questFrame, relief=None, text='', text_fg=self.normalTextColor, text_scale=TEXT_SCALE, text_align=TextNode.ACenter, text_wordwrap=TEXT_WORDWRAP, textMayChange=1, pos=(0, 0, -0.0625))
         self.rewardText = DirectLabel(parent=self.questFrame, relief=None, text='', text_fg=self.colors['rewardRed'], text_scale=0.035, text_align=TextNode.ACenter, text_wordwrap=22.0, textMayChange=1, pos=(0, 0, -0.21), text_shadow=(0, 0, 0, .5))
         self.rewardText.hide()
+        self.checkText = DirectLabel(parent=self.questFrame, relief=None, text='', text_fg=self.normalTextColor, text_scale=0.0318, text_align=TextNode.ACenter, text_wordwrap=22.0, textMayChange=1, pos=(-0.30, 0, 0.184), text_shadow=(0, 0, 0, .5))
         self.lPictureFrame = DirectFrame(parent=self.questFrame, relief=None, image=bookModel.find('**/questPictureFrame'), image_scale=IMAGE_SCALE_SMALL, text='', text_pos=(0, -0.11), text_fg=self.normalTextColor, text_scale=TEXT_SCALE, text_align=TextNode.ACenter, text_wordwrap=11.0, textMayChange=1)
         self.lPictureFrame.hide()
         self.rPictureFrame = DirectFrame(parent=self.questFrame, relief=None, image=bookModel.find('**/questPictureFrame'), image_scale=IMAGE_SCALE_SMALL, text='', text_pos=(0, -0.11), text_fg=self.normalTextColor, text_scale=TEXT_SCALE, text_align=TextNode.ACenter, text_wordwrap=11.0, textMayChange=1, pos=(0.18, 0, 0.13))
@@ -122,6 +123,7 @@ class QuestPoster(DirectFrame):
         self['image_scale'] = sc
         self.questFrame.setZ(0.03)
         self.headline.setZ(0.23 + 0.03)
+        self.checkText.setZ(self.checkText.getZ() + 0.03)
         self.lPictureFrame.setZ(0.13 + 0.03)
         self.rPictureFrame.setZ(0.13 + 0.03)
         self.questInfo.setZ(-0.0625 + 0.03)
@@ -135,6 +137,7 @@ class QuestPoster(DirectFrame):
         self['image_scale'] = self.initImageScale
         self.questFrame.setZ(0)
         self.headline.setZ(0.23)
+        self.checkText.setZ(self.checkText.getZ() - 0.03)
         self.lPictureFrame.setZ(0.13)
         self.rPictureFrame.setZ(0.13)
         self.questInfo.setZ(-0.0625)
@@ -228,6 +231,7 @@ class QuestPoster(DirectFrame):
         self.questInfo['text'] = ''
         self.questInfo['text_fg'] = self.normalTextColor
         self.rewardText['text'] = ''
+        self.checkText['text'] = ''
         self.auxText['text'] = ''
         self.auxText['text_fg'] = self.normalTextColor
         self.funQuest.hide()
@@ -292,13 +296,27 @@ class QuestPoster(DirectFrame):
             reward = Quests.getReward(rewardId)
         if reward:
             rewardString = reward.getPosterString()
+            checkString = reward.getCheckName()
         else:
+            checkString = ''
             rewardString = ''
         self.rewardText['text'] = rewardString
         # if Quests.isQuestJustForFun(questId, rewardId):
         #     self.funQuest.show()
         # else:
         self.funQuest.hide()
+        # Some logic to cut down on the label for location and check num
+        checkLabel = ""
+        for pgName in list(TTLocalizer.pgNameToAbv.keys()):
+            if pgName in checkString:
+                pgAbv = TTLocalizer.pgNameToAbv[pgName]
+                taskNum = checkString[checkString.index("#"):]
+                if taskNum:
+                    checkLabel += f"{pgAbv}\n{taskNum}"
+                else:
+                    checkLabel += f"{pgAbv}"
+                break
+        self.checkText['text'] = checkLabel
         if self._deleteCallback:
             self.showDeleteButton(questDesc)
         else:

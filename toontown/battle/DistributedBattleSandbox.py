@@ -111,8 +111,8 @@ class DistributedBattleSandbox(DistributedBattle):
         self.__destroyOptionsMenu()
 
     # If local av is not in list of toons and menu was created, destroy it
-    def setMembers(self, suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, immuneSuits, timestamp):
-        super().setMembers(suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, immuneSuits, timestamp)
+    def setMembers(self, suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, immuneSuits, timestamp, highestKb):
+        super().setMembers(suits, suitsJoining, suitsPending, suitsActive, suitsLured, suitTraps, toons, toonsJoining, toonsPending, toonsActive, toonsRunning, immuneSuits, timestamp, highestKb)
 
         if localAvatar.doId not in list(toons) + list(toonsActive) + list(toonsPending):
             self.__destroyOptionsMenu()

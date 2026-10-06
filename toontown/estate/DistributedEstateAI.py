@@ -4,12 +4,9 @@ from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.DistributedObjectAI import DistributedObjectAI
 
 from toontown.estate import CannonGlobals
-from toontown.estate import GardenGlobals
 from toontown.estate import HouseGlobals
 from toontown.estate.DistributedCannonAI import DistributedCannonAI
 from toontown.estate.DistributedTargetAI import DistributedTargetAI
-from toontown.fishing.DistributedFishingPondAI import DistributedFishingPondAI
-from toontown.safezone.DistributedFishingSpotAI import DistributedFishingSpotAI
 from toontown.safezone.EFlyingTreasurePlannerAI import EFlyingTreasurePlannerAI
 from toontown.safezone.ETreasurePlannerAI import ETreasurePlannerAI
 from toontown.toonbase import ToontownGlobals
@@ -34,11 +31,6 @@ class DistributedEstateAI(DistributedObjectAI):
         self.lawnItems = [[], [], [], [], [], []]
         self.activeToons = [0, 0, 0, 0, 0, 0]
         self.idList = []
-        self.spotPosHpr = [(49.1029, -124.805, 0.344704, 90, 0, 0),
-                           (46.5222, -134.739, 0.390713, 75, 0, 0),
-                           (41.31, -144.559, 0.375978, 45, 0, 0),
-                           (46.8254, -113.682, 0.46015, 135, 0, 0)]
-        self.pond = None
         self.treasurePlanner = None
         self.flyingTreasurePlanner = None
 
@@ -48,24 +40,6 @@ class DistributedEstateAI(DistributedObjectAI):
         # Spawn our treasures:
         self.treasurePlanner = ETreasurePlannerAI(self.zoneId)
         self.treasurePlanner.start()
-
-        # Generate our fishing pond:
-        self.pond = DistributedFishingPondAI(self.air)
-        self.pond.setArea(ToontownGlobals.MyEstate)
-        self.pond.generateWithRequired(self.zoneId)
-        self.pond.generateTargets()
-
-        # Generate our fishing spots:
-        for i in range(len(self.spotPosHpr)):
-            spot = DistributedFishingSpotAI(self.air)
-            spot.setPondDoId(self.pond.doId)
-            spot.setPosHpr(*self.spotPosHpr[i])
-            if not isinstance(spot, DistributedFishingSpotAI):
-                self.notify.warning('Failed to generate spot for pond %d!' % self.pond.doId)
-                continue
-
-            spot.generateWithRequired(self.zoneId)
-            self.pond.addSpot(spot)
 
         # Start the collision loop:
         taskMgr.add(self.__collisionLoop, self.uniqueName('collisionLoop'), sort=30)
@@ -296,24 +270,14 @@ class DistributedEstateAI(DistributedObjectAI):
 
         collection = av.flowerCollection
         earning = 0
-        newSpecies = 0
         for flower in av.flowerBasket.getFlower():
-            if collection.collectFlower(flower) == GardenGlobals.COLLECT_NEW_ENTRY:
-                newSpecies += 1
+            collection.collectFlower(flower)
 
-            earning += flower.getValue()
+            earning += flower.getValue() * 50 # modified to give 50x the value of the flower as earnings
 
         av.b_setFlowerBasket([], [])
         av.d_setFlowerCollection(*av.flowerCollection.getNetLists())
         av.addMoney(earning)
-        oldSpecies = len(collection) - newSpecies
-        dt = abs(len(collection) // 10 - oldSpecies // 10)
-        if dt:
-            self.notify.info('%d is getting a gardening trophy!' % avId)
-            # av.b_setMaxHp(maxHp)
-            # av.toonUp(maxHp)
-            self.sendUpdate('awardedTrophy', [avId])
-
         av.b_setGardenTrophies(list(range(len(collection) // 10)))
 
     def setClouds(self, clouds):
@@ -360,10 +324,6 @@ class DistributedEstateAI(DistributedObjectAI):
         if self.flyingTreasurePlanner:
             self.flyingTreasurePlanner.deleteAllTreasuresNow()
             self.flyingTreasurePlanner = None
-
-        if self.pond is not None:
-            self.pond.requestDelete()
-            self.pond = None
 
         for cannon in self.cannons[:]:
             cannon.requestDelete()

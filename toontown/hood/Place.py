@@ -227,6 +227,7 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.questMap.acceptOnscreenHooks()
         base.localAvatar.suitPage.acceptOnscreenHooks()
         base.localAvatar.locationPage.acceptOnscreenHooks()
+        base.localAvatar.checkPage.acceptOnscreenHooks()
         self.walkStateData.fsm.request('walking')
         self.enablePeriodTimer()
         base.localAvatar.enterPlaceWalk()
@@ -253,6 +254,8 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.localAvatar.questMap.ignoreOnscreenHooks()
         base.localAvatar.locationPage.ignoreOnscreenHooks()
         base.localAvatar.locationPage.hideLocationsOnscreen()
+        base.localAvatar.checkPage.ignoreOnscreenHooks()
+        base.localAvatar.checkPage.hideItemsOnscreen()
         return
 
     def handleWalkDone(self, doneStatus):
@@ -414,7 +417,6 @@ class Place(StateData.StateData, FriendsListManager.FriendsListManager):
         base.cr.gameFSM.request(self.exitTo)
 
     def goHomeNow(self, curZoneId):
-        return  # todo: fix estates
         if localAvatar.hasActiveBoardingGroup():
             rejectText = TTLocalizer.BoardingCannotLeaveZone
             localAvatar.elevatorNotifier.showMe(rejectText)

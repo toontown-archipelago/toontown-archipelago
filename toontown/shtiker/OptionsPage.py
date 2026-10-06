@@ -48,6 +48,8 @@ OptionToType = {
     'new-popup': OptionTypes.BUTTON,
     'crowd-control-toggle': OptionTypes.BUTTON,
     'crowd-control-port': OptionTypes.ENTRY,
+    'show-glitched-logic': OptionTypes.BUTTON,
+
     'battle-speed': OptionTypes.DROPDOWN,
 
     # Privacy
@@ -71,6 +73,7 @@ OptionToType = {
     "toon-chat-sounds": OptionTypes.BUTTON,
     'ap-sounds': OptionTypes.BUTTON,
     "random-music": OptionTypes.BUTTON,
+    "random-music-style": OptionTypes.BUTTON,
     "refresh-audio": OptionTypes.BUTTON
 }
 
@@ -151,6 +154,7 @@ class OptionsTabPage(DirectFrame, FSM):
             'sprint_mode',
             'battle-speed',
             'new-popup',
+            'show-glitched-logic',
             'fovEffects',
             'cam-toggle-lock',
             'boss-alerts',
@@ -175,7 +179,7 @@ class OptionsTabPage(DirectFrame, FSM):
         ],
         "Audio": [
             "music", "sfx", "music-volume", "sfx-volume", "toon-chat-sounds",
-            'ap-sounds', "random-music", "refresh-audio"
+            'ap-sounds', "random-music", "random-music-style", "refresh-audio"
         ],
     }
 
@@ -510,6 +514,8 @@ class OptionElement(DirectFrame):
             optionOptions[option] = ["TTCC", "TTR"]
         elif option == "sprint_mode":
             optionOptions[option] = ["Hold", "Toggle"]
+        elif option == "random-music-style":
+            optionOptions[option] = ["Custom Only", "Mix", "In-Game Only"]
 
     optionOptions.update({
         "resolution": base.possibleScreenSizes,
@@ -689,6 +695,8 @@ class OptionElement(DirectFrame):
             # This control is different, but the keybind is the same.
             # Make the button red.
             if control != self.optionName and keybind == currentKeybind:
+                if self.optionName in ("JUMP", "CRANE_GRAB_KEY") and control in ("JUMP", "CRANE_GRAB_KEY"):
+                    continue
                 self.optionModifier["image_color"] = Vec4(1, 0.1, 0.1, 1)
                 return
 
@@ -824,6 +832,9 @@ class OptionElement(DirectFrame):
         elif self.optionName == "random-music":
             base.randomMusic = newSetting
             base.refreshRandomMusic()
+        elif self.optionName == "random-music-style":
+            base.randomMusicStyle = newSetting
+            base.refreshRandomMusic()
         elif self.optionName == "new-popup":
             base.newPopup = newSetting
         elif self.optionName == "crowd-control-toggle":
@@ -832,6 +843,8 @@ class OptionElement(DirectFrame):
                     base.crowdControlManager.start()
                 else:
                     base.crowdControlManager.stop()
+        elif self.optionName == "show-glitched-logic":
+            base.showGlitchedLogic = newSetting
 
         # Update the button text with the new setting.
         self.optionModifier["text"] = self.formatSetting(newSetting)

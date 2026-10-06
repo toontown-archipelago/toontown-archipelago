@@ -209,7 +209,9 @@ class ToonBase(OTPBase.OTPBase):
         # do they want laff meter on or off?
         self.laffMeterDisplay = self.settings.get('laff-display')
         self.randomMusic = self.settings.get("random-music")
+        self.randomMusicStyle = self.settings.get("random-music-style")
         self.newPopup = self.settings.get("new-popup")
+        self.showGlitchedLogic = self.settings.get("show-glitched-logic")
         self.discord = DiscordRPC()
         self.discord.launching()
         self.ap_version_text = OnscreenText(text=f"Toontown: Archipelago {version}", parent=self.a2dBottomLeft, pos=(.3, .05), mayChange=False, sort=-100, scale=.04, fg=(1, 1, 1, .3), shadow=(0, 0, 0, .3), align=TextNode.ALeft)
@@ -612,6 +614,16 @@ class ToonBase(OTPBase.OTPBase):
             extraArgs=[ToontownGlobals.LocationsHotkeyOff]
         )
         self.accept(
+            self.controls.ITEMS_HOTKEY,
+            messenger.send,
+            extraArgs=[ToontownGlobals.ItemsHotkeyOn]
+        )
+        self.accept(
+            f"{self.controls.ITEMS_HOTKEY}-up",
+            messenger.send,
+            extraArgs=[ToontownGlobals.ItemsHotkeyOff]
+        )
+        self.accept(
             self.controls.ELEVATOR_HOTKEY,
             messenger.send,
             extraArgs=[ToontownGlobals.ElevatorHotkeyOn]
@@ -652,6 +664,8 @@ class ToonBase(OTPBase.OTPBase):
         self.ignore(f"{self.controls.GALLERY_HOTKEY}-up")
         self.ignore(self.controls.LOCATIONS_HOTKEY)
         self.ignore(f"{self.controls.LOCATIONS_HOTKEY}-up")
+        self.ignore(self.controls.ITEMS_HOTKEY)
+        self.ignore(f"{self.controls.ITEMS_HOTKEY}-up")
         self.ignore(self.controls.ELEVATOR_HOTKEY)
         self.ignore(f"{self.controls.ELEVATOR_HOTKEY}-up")
         self.ignore(self.controls.CHAT_HOTKEY)
@@ -777,6 +791,8 @@ class ToonBase(OTPBase.OTPBase):
             currentMusicInfo = self.contentPackMusicManager.getCurMusicInfo()  # this will return a dict with the current music, the value of each being data like looping, volume, etc.
             normalMusicInfo = self.contentPackMusicManager.getNormalMusicInfo()
             musicJson = self.contentPackMusicManager.musicJson
+        if getattr(self, "contentPackMusicManager", None):
+            self.contentPackMusicManager.setRandomizedMusic()
         # Play the music again
         if musicJson:
             self.contentPackMusicManager.stopMusic()
