@@ -85,16 +85,28 @@ def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
     return True
 
 
-@rule(Rule.SellbotDisguise, ToontownItemName.SELLBOT_DISGUISE)
-@rule(Rule.CashbotDisguise, ToontownItemName.CASHBOT_DISGUISE)
-@rule(Rule.LawbotDisguise,  ToontownItemName.LAWBOT_DISGUISE)
-@rule(Rule.BossbotDisguise, ToontownItemName.BOSSBOT_DISGUISE)
 @rule(Rule.Golfing,         ToontownItemName.GOLF_PUTTER)
 @rule(Rule.Racing,          ToontownItemName.GO_KART)
 def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if len(argument) == 2:
         return state.has(argument[0].value, player, argument[1])
     return state.has(argument[0].value, player)
+
+
+@rule(Rule.SellbotDisguise, ToontownItemName.SELLBOT_DISGUISE, ToontownItemName.SELLBOT_DISGUISE_PART)
+@rule(Rule.CashbotDisguise, ToontownItemName.CASHBOT_DISGUISE, ToontownItemName.CASHBOT_DISGUISE_PART)
+@rule(Rule.LawbotDisguise,  ToontownItemName.LAWBOT_DISGUISE, ToontownItemName.LAWBOT_DISGUISE_PART)
+@rule(Rule.BossbotDisguise, ToontownItemName.BOSSBOT_DISGUISE, ToontownItemName.BOSSBOT_DISGUISE_PART)
+def HasCogDisguiseRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        disguise_parts = options.disguise_parts.value
+    else:
+        disguise_parts = options.get("disguise_parts", False)
+
+    if disguise_parts:
+        return state.count(argument[1].value, player) >= 5
+    else:
+        return state.has(argument[0].value, player)
 
 
 @rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)

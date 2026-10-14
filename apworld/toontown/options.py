@@ -480,6 +480,15 @@ class JokesPerStreet(Range):
     default = 3
 
 
+class DisguisePartsToggle(Toggle):
+    """
+    Turns the "Cog Disguise" items into 5 "Cog Disguise Part" items each (4 -> 20 Items)
+    All 5 disguise parts will be needed to access the HQ's boss.
+    """
+    display_name = "Split Disguises Into Parts"
+    default = False
+
+
 class ChecksPerBoss(Range):
     """
     How many checks you will receive from a cog boss upon completion.
@@ -1091,6 +1100,7 @@ class ToontownOptions(PerGameCommonOptions):
     treasures_per_location: TreasuresPerLocation
     jokes_per_street: JokesPerStreet
     joke_books: JokeBookToggle
+    disguise_parts: DisguisePartsToggle
     checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
     gag_frame_item_behavior: GagTrainingFrameBehavior
@@ -1165,7 +1175,7 @@ toontown_option_groups: list[OptionGroup] = [
         WinConditionBountyWeb, BountiesRequired, TotalBounties, BountiesHinted
         ], False),
     OptionGroup("Check/Item Behavior", [
-        TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
+        TPSanity, TreasuresPerLocation, DisguisePartsToggle, ChecksPerBoss, GagTrainingCheckBehavior,
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, WantCGCMazes, FishChecks, FishLocations,
         FishProgression, FishPity, RacingOption, GolfingOption, TrolleyOption, SeedGenerationTypeOption,

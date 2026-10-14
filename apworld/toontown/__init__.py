@@ -7,7 +7,7 @@ import logging
 from . import regions, consts
 from .consts import ToontownItem, ToontownLocation, ToontownWinCondition
 from .items import ITEM_DESCRIPTIONS, ITEM_DEFINITIONS, ToontownItemDefinition, get_item_def_from_id, ToontownItemName, \
-    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS, get_item_groups, DISGUISE_ITEMS
+    ITEM_NAME_TO_ID, FISHING_LICENSES, TELEPORT_ACCESS_ITEMS, FACILITY_KEY_ITEMS, get_item_groups, DISGUISE_ITEMS, DISGUISE_PART_ITEMS
 from .locations import LOCATION_DESCRIPTIONS, LOCATION_DEFINITIONS, EVENT_DEFINITIONS, ToontownLocationName, \
     ToontownLocationType, ALL_TASK_LOCATIONS_SPLIT, LOCATION_NAME_TO_ID, ToontownLocationDefinition, \
     TREASURE_LOCATION_TYPES, KNOCK_KNOCK_LOCATION_TYPES, BOSS_LOCATION_TYPES, BOSS_EVENT_DEFINITIONS, \
@@ -381,12 +381,22 @@ class ToontownWorld(World):
         if not bosses_condition and self.options.checks_per_boss.value == 0:
             # Bosses aren't relevant to the seed, we don't want disguises to be on priority and
             # not progression balanced.
-            for itemName in DISGUISE_ITEMS:
-                pool.append(self.create_progression_deprioritized_skip_balancing(itemName.value))
+            if self.options.disguise_parts.value:
+                for itemName in DISGUISE_PART_ITEMS:
+                    for _ in range(5):
+                        pool.append(self.create_progression_deprioritized_skip_balancing(itemName.value))
+            else:
+                for itemName in DISGUISE_ITEMS:
+                    pool.append(self.create_progression_deprioritized_skip_balancing(itemName.value))
         else:
             # Bosses are relevant to the seed, make them progression as normal
-            for itemName in DISGUISE_ITEMS:
-                pool.append(self.create_item(itemName.value))
+            if self.options.disguise_parts.value:
+                for itemName in DISGUISE_PART_ITEMS:
+                    for _ in range(5):
+                        pool.append(self.create_item(itemName.value))
+            else:
+                for itemName in DISGUISE_ITEMS:
+                    pool.append(self.create_item(itemName.value))
 
         # Handle facility key generation
         if self.options.facility_locking.value == FacilityLocking.option_keys:
@@ -837,6 +847,7 @@ class ToontownWorld(World):
             "local_locations": local_locations,
             "tpsanity": self.options.tpsanity.value,
             "treasures_per_location": self.options.treasures_per_location.value,
+            "disguise_parts": self.options.disguise_parts.value,
             "checks_per_boss": self.options.checks_per_boss.value,
             "jokes_per_street": self.options.jokes_per_street.value,
             "joke_books": self.options.joke_books.value,
