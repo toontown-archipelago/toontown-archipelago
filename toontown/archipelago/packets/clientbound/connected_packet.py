@@ -15,6 +15,7 @@ from panda3d.core import VirtualFileSystem, Filename
 import json
 from pathlib import Path
 from apworld.toontown.options import DeathLinkOption
+from apworld.toontown import get_item_def_from_id, ToontownItemName
 from toontown.fishing import FishGlobals
 from otp.otpbase import OTPGlobals
 from toontown.toonbase import ToontownGlobals
@@ -254,6 +255,20 @@ class ConnectedPacket(ClientBoundPacketBase):
                 tags.append(ConnectPacket.TAG_RINGLINK)
             update_packet.tags = tags
             client.send_packet(update_packet)
+
+        # Check if we should be able to jump, but only if we need to
+        if self.slot_data.get('restrict_jump', False):
+            can_jump = False
+            for item in client.av.getReceivedItems():
+                index_received, item_id = item
+                itemDef = get_item_def_from_id(item_id)
+                itemName = itemDef.name.value
+                if itemName == ToontownItemName.JUMP.value:
+                    can_jump = True
+                    client.av.enableAPJump()
+                    break
+            if not can_jump:
+                client.av.disableJump()
 
         client.av.d_setArchipelagoHintMessage(client.av.getArchipelagoIP())
 

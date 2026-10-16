@@ -137,6 +137,9 @@ class ToontownItemName(enum.Enum):
     ### Bounty Items ###
     BOUNTY = "Bounty"
 
+    ### Misc ###
+    JUMP = "Enable Jump"
+
     ### Reward Bundles ###
     SOS_REWARD_3        = "Random 3-Star SOS Card"
     SOS_REWARD_4        = "Random 4-Star SOS Card"
@@ -267,6 +270,9 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.FRONT_ONE_ACCESS,     ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.MIDDLE_TWO_ACCESS,    ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.BACK_THREE_ACCESS,    ItemClassification.progression),
+    # endregion
+    # region Misc
+    ToontownItemDefinition(ToontownItemName.JUMP, ItemClassification.progression),
     # endregion
     # region Boss Disguises
     ToontownItemDefinition(ToontownItemName.SELLBOT_DISGUISE, ItemClassification.progression),

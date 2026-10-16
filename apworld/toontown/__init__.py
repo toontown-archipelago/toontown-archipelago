@@ -398,6 +398,10 @@ class ToontownWorld(World):
                 for itemName in DISGUISE_ITEMS:
                     pool.append(self.create_item(itemName.value))
 
+        # Handle jump generation
+        if self.options.restrict_jump.value:
+            pool.append(self.create_item(ToontownItemName.JUMP.value))
+
         # Handle facility key generation
         if self.options.facility_locking.value == FacilityLocking.option_keys:
             for itemName in FACILITY_KEY_ITEMS:
@@ -826,6 +830,7 @@ class ToontownWorld(World):
             "trolley_logic": self.options.trolley_logic.value,
             "maxed_cog_gallery_quota": self.options.maxed_cog_gallery_quota.value,
             "facility_locking": self.options.facility_locking.value,
+            "restrict_jump": self.options.restrict_jump.value,
             "death_link": self.options.death_link.value,
             "ring_link": self.options.ring_link.value,
             "cog_dmg_rando": self.options.cog_dmg_rando.value,

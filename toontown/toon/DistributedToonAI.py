@@ -1883,6 +1883,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
     def playSound(self, sound):
         self.sendUpdate('playSound', [sound])
 
+    def enableAPJump(self):
+        self.sendUpdate('enableAPJump', [])
+
+    def disableJump(self):
+        self.sendUpdate('disableJump', [])
+
     def b_setSlotName(self, slotName):
         self.setSlotName(slotName)
         self.d_setSlotName(slotName)

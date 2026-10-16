@@ -662,6 +662,19 @@ class JellybeanReward(APReward):
         av.addMoney(self.amount)
 
 
+class JumpReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("A new spring in your step!\nYou can now "),
+            MinimalJsonMessagePart("Jump", color='plum'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.enableAPJump()
+
+
 class FishReward(APReward):
 
     def formatted_header(self) -> str:
@@ -1168,6 +1181,7 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.MONEY_700.value: JellybeanReward(700),
     ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
     ToontownItemName.FISH.value: FishReward(),
+    ToontownItemName.JUMP.value: JumpReward(),
     ToontownItemName.XP_10.value: GagExpBundleAward(10),
     ToontownItemName.XP_15.value: GagExpBundleAward(15),
     ToontownItemName.XP_20.value: GagExpBundleAward(20),

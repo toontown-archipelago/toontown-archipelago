@@ -193,6 +193,9 @@ Toontown:
   # - none: All areas are accessible. You start with global teleport access.
   tpsanity: 'keys'
 
+  # Enable to lock the ability to jump behind receiving it as an item.
+  restrict_jump: 'false'
+
   ### Treasure Settings ###
 
   # The amount of archipelago treasures that'll have items in each location
