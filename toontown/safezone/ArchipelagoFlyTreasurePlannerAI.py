@@ -12,7 +12,7 @@ class ArchipelagoFlyTreasurePlannerAI(TreasurePlannerAI.TreasurePlannerAI):
         self.zoneId = zoneId
         TreasurePlannerAI.TreasurePlannerAI.__init__(self, zoneId, treasureConstructor, callback)
         self.taskName = 'apfly-%s' % zoneId
-        self.spawnInterval = 2
+        self.spawnInterval = 4
         self.maxTreasures = treasureCount
 
     def start(self):
