@@ -618,6 +618,34 @@ class CogDisguiseReward(APReward):
         av.b_setCogParts(parts)
 
 
+class CogPartReward(APReward):
+    BOSSBOT = 0
+    LAWBOT = 1
+    CASHBOT = 2
+    SELLBOT = 3
+
+    ENUM_TO_NAME = {
+        BOSSBOT: "Bossbot",
+        LAWBOT: "Lawbot",
+        CASHBOT: "Cashbot",
+        SELLBOT: "Sellbot",
+    }
+
+    def __init__(self, dept: int):
+        self.dept: int = dept
+
+    def formatted_header(self) -> str:
+        dept = self.ENUM_TO_NAME[self.dept]
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("You were given a\n"),
+            MinimalJsonMessagePart(f"{dept} Disguise Part", color='plum'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.giveCogPartAP(self.dept)
+
+
 class JellybeanReward(APReward):
 
     def __init__(self, amount: int):
@@ -632,6 +660,19 @@ class JellybeanReward(APReward):
 
     def apply(self, av: "DistributedToonAI"):
         av.addMoney(self.amount)
+
+
+class JumpReward(APReward):
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("A new spring in your step!\nYou can now "),
+            MinimalJsonMessagePart("Jump", color='plum'),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.enableAPJump()
 
 
 class FishReward(APReward):
@@ -1131,11 +1172,16 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.CASHBOT_DISGUISE.value: CogDisguiseReward(CogDisguiseReward.CASHBOT),
     ToontownItemName.LAWBOT_DISGUISE.value: CogDisguiseReward(CogDisguiseReward.LAWBOT),
     ToontownItemName.BOSSBOT_DISGUISE.value: CogDisguiseReward(CogDisguiseReward.BOSSBOT),
+    ToontownItemName.SELLBOT_DISGUISE_PART.value: CogPartReward(CogPartReward.SELLBOT),
+    ToontownItemName.CASHBOT_DISGUISE_PART.value: CogPartReward(CogPartReward.CASHBOT),
+    ToontownItemName.LAWBOT_DISGUISE_PART.value: CogPartReward(CogPartReward.LAWBOT),
+    ToontownItemName.BOSSBOT_DISGUISE_PART.value: CogPartReward(CogPartReward.BOSSBOT),
     ToontownItemName.MONEY_150.value: JellybeanReward(150),
     ToontownItemName.MONEY_400.value: JellybeanReward(400),
     ToontownItemName.MONEY_700.value: JellybeanReward(700),
     ToontownItemName.MONEY_1000.value: JellybeanReward(1000),
     ToontownItemName.FISH.value: FishReward(),
+    ToontownItemName.JUMP.value: JumpReward(),
     ToontownItemName.XP_10.value: GagExpBundleAward(10),
     ToontownItemName.XP_15.value: GagExpBundleAward(15),
     ToontownItemName.XP_20.value: GagExpBundleAward(20),

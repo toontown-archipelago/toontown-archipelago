@@ -101,6 +101,7 @@ from toontown.safezone import DistributedOZTreasure/AI
 from toontown.safezone import DistributedETreasure/AI
 from toontown.safezone import DistributedEFlyingTreasure/AI
 from toontown.safezone import DistributedArchiTreasure/AI
+from toontown.safezone import DistributedArchiFlyTreasure/AI
 from toontown.minigame import DistributedTagTreasure/AI
 from toontown.coghq import DistributedCashbotBossTreasure/AI
 from toontown.building import DistributedTrophyMgr/AI
@@ -1076,6 +1077,8 @@ dclass DistributedToon : DistributedPlayer {
   setCheesyEffect(int16 = 0, uint32 = 0, uint32 = 0) required broadcast ownrecv db;
   setGhostMode(uint8) broadcast ownrecv ram;
   playSound(char [0-1024]) ownrecv;
+  enableAPJump() ownrecv;
+  disableJump() ownrecv;
   checkWinCondition() ownrecv;
   setPosIndex(uint8 = 0) required ownrecv db;
   setFishCollection(uint8[] = [], uint8[] = [], uint16[] = []) required ownrecv db;
@@ -2213,6 +2216,9 @@ dclass DistributedTagTreasure : DistributedTreasure {
 };
 
 dclass DistributedArchiTreasure : DistributedTreasure {
+};
+
+dclass DistributedArchiFlyTreasure : DistributedTreasure {
 };
 
 dclass DistributedCashbotBossTreasure : DistributedTreasure {

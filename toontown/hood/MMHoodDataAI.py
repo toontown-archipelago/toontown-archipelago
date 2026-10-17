@@ -7,6 +7,8 @@ from toontown.safezone import DistributedTrolleyAI
 from toontown.safezone import MMTreasurePlannerAI
 from toontown.safezone import ArchipelagoTreasurePlannerAI
 from toontown.safezone import DistributedArchiTreasureAI
+from toontown.safezone import ArchipelagoFlyTreasurePlannerAI
+from toontown.safezone import DistributedArchiFlyTreasureAI
 from toontown.safezone import DistributedMMPianoAI
 
 class MMHoodDataAI(HoodDataAI.HoodDataAI):
@@ -26,7 +28,8 @@ class MMHoodDataAI(HoodDataAI.HoodDataAI):
         trolley.start()
         self.addDistObj(trolley)
         self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
-                                MMTreasurePlannerAI.MMTreasurePlannerAI(self.zoneId)
+                                MMTreasurePlannerAI.MMTreasurePlannerAI(self.zoneId),
+                                ArchipelagoFlyTreasurePlannerAI.ArchipelagoFlyTreasurePlannerAI(self.zoneId, DistributedArchiFlyTreasureAI.DistributedArchiFlyTreasureAI),
                                 ]
         for planner in self.treasurePlanner:
             planner.start()

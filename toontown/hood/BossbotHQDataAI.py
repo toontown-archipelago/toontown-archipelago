@@ -14,6 +14,8 @@ from toontown.building import FADoorCodes
 from toontown.coghq import DistributedCogKartAI
 from toontown.safezone import ArchipelagoTreasurePlannerAI
 from toontown.safezone import DistributedArchiTreasureAI
+from toontown.safezone import ArchipelagoFlyTreasurePlannerAI
+from toontown.safezone import DistributedArchiFlyTreasureAI
 
 class BossbotHQDataAI(HoodDataAI.HoodDataAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('BossbotHQDataAI')
@@ -37,6 +39,7 @@ class BossbotHQDataAI(HoodDataAI.HoodDataAI):
         self.lobbyElevator.generateWithRequired(ToontownGlobals.BossbotLobby)
         self.addDistObj(self.lobbyElevator)
         self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
+                                ArchipelagoFlyTreasurePlannerAI.ArchipelagoFlyTreasurePlannerAI(self.zoneId, DistributedArchiFlyTreasureAI.DistributedArchiFlyTreasureAI),
                                 ]
         for planner in self.treasurePlanner:
             planner.start()

@@ -612,6 +612,8 @@ class Toon(Avatar.Avatar, ToonHead):
         self.defaultColorScale = None
         self.jar = None
         self.bobSwim = None
+        self.hasAPJump = True
+        self.canJump = True
         self.setTag('pieCode', str(ToontownGlobals.PieCodeToon))
         self.setFont(ToontownGlobals.getToonFont())
         self.soundChatBubble = base.loader.loadSfx('phase_3/audio/sfx/GUI_balloon_popup.ogg')
@@ -1660,6 +1662,9 @@ class Toon(Avatar.Avatar, ToonHead):
         Emote.globalEmote.disableBody(self, 'toon, enterSad')
         self.setActiveShadow(1)
         if self.isLocal():
+            self.canJump = False
+            if self.controlManager.forceAvJumpToken is not None:
+                self.controlManager.forceAvJumpToken = None
             self.controlManager.disableAvatarJump()
         return
 
@@ -1669,8 +1674,38 @@ class Toon(Avatar.Avatar, ToonHead):
         self.motion.exit()
         Emote.globalEmote.releaseBody(self, 'toon, exitSad')
         if self.isLocal():
-            self.controlManager.enableAvatarJump()
+            self.canJump = True
+            if self.hasAPJump:
+                self.controlManager.enableAvatarJump()
         return
+
+    def enableAPJumpControl(self):
+        self.hasAPJump = True
+        self.checkAPJump()
+
+    def disableJumpControl(self):
+        self.hasAPJump = False
+        if self.controlManager.forceAvJumpToken is not None:
+            self.controlManager.forceAvJumpToken = None
+        self.controlManager.disableAvatarJump()
+
+    def enableJumpTask(self, task):
+        if not self.controlManager.forceAvJumpToken:
+            taskMgr.doMethodLater(0.1, self.enableJumpTask, "delayEnableJump")
+            return
+        self.controlManager.enableAvatarJump()
+
+    def checkAPJump(self):
+        if self.isLocal():
+            if self.hasAPJump and self.canJump:
+                if not self.controlManager.forceAvJumpToken:
+                    taskMgr.doMethodLater(0.1, self.enableJumpTask, "delayEnableJump")
+                else:
+                    self.controlManager.enableAvatarJump()
+            else:
+                if self.controlManager.forceAvJumpToken is not None:
+                    self.controlManager.forceAvJumpToken = None
+                self.controlManager.disableAvatarJump()
 
     def enterCatching(self, animMultiplier = 1, ts = 0, callback = None, extraArgs = []):
         self.playingAnim = None
@@ -3032,6 +3067,9 @@ class Toon(Avatar.Avatar, ToonHead):
             if self.hasTrackAnimToSpeed():
                 self.stopTrackAnimToSpeed()
                 self.startTrackAnimToSpeed()
+            self.canJump = False
+            if self.controlManager.forceAvJumpToken is not None:
+                self.controlManager.forceAvJumpToken = None
             self.controlManager.disableAvatarJump()
             indices = list(range(OTPLocalizer.SCMenuCommonCogIndices[0], OTPLocalizer.SCMenuCommonCogIndices[1] + 1))
             customIndices = OTPLocalizer.SCMenuCustomCogIndices[suitType]
@@ -3094,7 +3132,9 @@ class Toon(Avatar.Avatar, ToonHead):
             del self.oldReverse
             del self.oldRotate
             if self.controlManager.forceAvJumpToken:
-                self.controlManager.enableAvatarJump()
+                self.canJump = True
+                if self.hasAPJump:
+                    self.controlManager.enableAvatarJump()
             self.chatMgr.chatInputSpeedChat.removeCogMenu()
         self.suit.delete()
         del self.suit

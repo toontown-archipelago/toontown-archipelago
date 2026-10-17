@@ -434,6 +434,12 @@ class WinConditionRandomizedWeb(Range):
     visibility = Visibility.simple_ui|Visibility.complex_ui
 
 
+class RestrictJump(Toggle):
+    """Enable to lock the ability to jump behind receiving it as an item."""
+    display_name = "Restricted Jump"
+    default = False
+
+
 class TPSanity(Choice):
     """
     Determines how Teleport Access is shuffled in the Item Pool for all Playgrounds/HQs.
@@ -478,6 +484,15 @@ class JokesPerStreet(Range):
     range_start = 0
     range_end = 10
     default = 3
+
+
+class DisguisePartsToggle(Toggle):
+    """
+    Turns the "Cog Disguise" items into 5 "Cog Disguise Part" items each (4 -> 20 Items)
+    All 5 disguise parts will be needed to access the HQ's boss.
+    """
+    display_name = "Split Disguises Into Parts"
+    default = False
 
 
 class ChecksPerBoss(Range):
@@ -1087,10 +1102,12 @@ class ToontownOptions(PerGameCommonOptions):
     bounties_required: BountiesRequired
     total_bounties: TotalBounties
     hint_bounties: BountiesHinted
+    restrict_jump: RestrictJump
     tpsanity: TPSanity
     treasures_per_location: TreasuresPerLocation
     jokes_per_street: JokesPerStreet
     joke_books: JokeBookToggle
+    disguise_parts: DisguisePartsToggle
     checks_per_boss: ChecksPerBoss
     gag_training_check_behavior: GagTrainingCheckBehavior
     gag_frame_item_behavior: GagTrainingFrameBehavior
@@ -1165,7 +1182,7 @@ toontown_option_groups: list[OptionGroup] = [
         WinConditionBountyWeb, BountiesRequired, TotalBounties, BountiesHinted
         ], False),
     OptionGroup("Check/Item Behavior", [
-        TPSanity, TreasuresPerLocation, ChecksPerBoss, GagTrainingCheckBehavior,
+        TPSanity, RestrictJump, TreasuresPerLocation, DisguisePartsToggle, ChecksPerBoss, GagTrainingCheckBehavior,
         GagTrainingFrameBehavior, LogicalTasksPerPlayground, LogicalMaxedCogGallery,
         MaxedCogGalleryQuota, FacilityLocking, WantCGCMazes, FishChecks, FishLocations,
         FishProgression, FishPity, RacingOption, GolfingOption, TrolleyOption, SeedGenerationTypeOption,
