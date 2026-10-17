@@ -1663,6 +1663,8 @@ class Toon(Avatar.Avatar, ToonHead):
         self.setActiveShadow(1)
         if self.isLocal():
             self.canJump = False
+            if self.controlManager.forceAvJumpToken is not None:
+                self.controlManager.forceAvJumpToken = None
             self.controlManager.disableAvatarJump()
         return
 
@@ -1683,6 +1685,8 @@ class Toon(Avatar.Avatar, ToonHead):
 
     def disableJumpControl(self):
         self.hasAPJump = False
+        if self.controlManager.forceAvJumpToken is not None:
+            self.controlManager.forceAvJumpToken = None
         self.controlManager.disableAvatarJump()
 
     def enableJumpTask(self, task):
@@ -1699,6 +1703,8 @@ class Toon(Avatar.Avatar, ToonHead):
                 else:
                     self.controlManager.enableAvatarJump()
             else:
+                if self.controlManager.forceAvJumpToken is not None:
+                    self.controlManager.forceAvJumpToken = None
                 self.controlManager.disableAvatarJump()
 
     def enterCatching(self, animMultiplier = 1, ts = 0, callback = None, extraArgs = []):
@@ -3062,6 +3068,8 @@ class Toon(Avatar.Avatar, ToonHead):
                 self.stopTrackAnimToSpeed()
                 self.startTrackAnimToSpeed()
             self.canJump = False
+            if self.controlManager.forceAvJumpToken is not None:
+                self.controlManager.forceAvJumpToken = None
             self.controlManager.disableAvatarJump()
             indices = list(range(OTPLocalizer.SCMenuCommonCogIndices[0], OTPLocalizer.SCMenuCommonCogIndices[1] + 1))
             customIndices = OTPLocalizer.SCMenuCustomCogIndices[suitType]

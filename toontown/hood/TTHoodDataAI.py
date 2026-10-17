@@ -7,6 +7,8 @@ from toontown.safezone import DistributedTrolleyAI
 from toontown.safezone import TTTreasurePlannerAI
 from toontown.safezone import ArchipelagoTreasurePlannerAI
 from toontown.safezone import DistributedArchiTreasureAI
+from toontown.safezone import ArchipelagoFlyTreasurePlannerAI
+from toontown.safezone import DistributedArchiFlyTreasureAI
 from toontown.safezone import ButterflyGlobals
 from direct.task import Task
 
@@ -28,7 +30,8 @@ class TTHoodDataAI(HoodDataAI.HoodDataAI):
         self.addDistObj(trolley)
         self.trolley = trolley
         self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
-                                TTTreasurePlannerAI.TTTreasurePlannerAI(self.zoneId)
+                                TTTreasurePlannerAI.TTTreasurePlannerAI(self.zoneId),
+                                ArchipelagoFlyTreasurePlannerAI.ArchipelagoFlyTreasurePlannerAI(self.zoneId, DistributedArchiFlyTreasureAI.DistributedArchiFlyTreasureAI),
                                 ]
         for planner in self.treasurePlanner:
             planner.start()

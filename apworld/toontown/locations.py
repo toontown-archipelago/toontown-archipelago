@@ -391,6 +391,18 @@ class ToontownLocationName(Enum):
     DDL_SHOP_1 =                                "Bozo (DDL Pet Shop)"
     DDL_SHOP_2 =                                "Brainchild (DDL Pet Shop)"
     DDL_SHOP_3 =                                "Critter (DDL Pet Shop)"
+    FLYING_TREASURE_TTC =                       "Flying AP Treasure TTC"
+    FLYING_TREASURE_DD =                        "Flying AP Treasure DD"
+    FLYING_TREASURE_DG =                        "Flying AP Treasure DG"
+    FLYING_TREASURE_MML =                       "Flying AP Treasure MML"
+    FLYING_TREASURE_TB =                        "Flying AP Treasure TB"
+    FLYING_TREASURE_DDL =                       "Flying AP Treasure DDL"
+    FLYING_TREASURE_AA =                        "Flying AP Treasure AA"
+    FLYING_TREASURE_GS =                        "Flying AP Treasure GS"
+    FLYING_TREASURE_SBHQ =                      "Flying AP Treasure SBHQ"
+    FLYING_TREASURE_CBHQ =                      "Flying AP Treasure CBHQ"
+    FLYING_TREASURE_LBHQ =                      "Flying AP Treasure LBHQ"
+    FLYING_TREASURE_BBHQ =                      "Flying AP Treasure BBHQ"
     TTC_TREASURE_1 =                            "Toontown Central AP Treasure 1"
     TTC_TREASURE_2 =                            "Toontown Central AP Treasure 2"
     TTC_TREASURE_3 =                            "Toontown Central AP Treasure 3"
@@ -858,6 +870,7 @@ class ToontownLocationType(IntEnum):
     PLAYGROUND_4    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_5    = auto()  # Locations for discovering playground treasures
     PLAYGROUND_6    = auto()  # Locations for discovering playground treasures
+    FLYING_PG       = auto()  # Locations for flying ap treasures
     CATALOG_1       = auto()  # Locations for purchasing cattlelog checks
     CATALOG_2       = auto()  # Locations for purchasing cattlelog checks
     CATALOG_3       = auto()  # Locations for purchasing cattlelog checks
@@ -1998,6 +2011,20 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.TROLLEY_TB_2,                 ToontownLocationType.TROLLEY, ToontownRegionName.TB, [Rule.CanReachTB]),
     ToontownLocationDefinition(ToontownLocationName.TROLLEY_DDL_1,                ToontownLocationType.TROLLEY, ToontownRegionName.DDL, [Rule.CanReachDDL]),
     ToontownLocationDefinition(ToontownLocationName.TROLLEY_DDL_2,                ToontownLocationType.TROLLEY, ToontownRegionName.DDL, [Rule.CanReachDDL]),
+    # endregion
+    # start region Fly treasures
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_TTC,                ToontownLocationType.FLYING_PG, ToontownRegionName.TTC, [Rule.CanReachTTC, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_DD,                 ToontownLocationType.FLYING_PG, ToontownRegionName.DD, [Rule.CanReachDD, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_DG,                 ToontownLocationType.FLYING_PG, ToontownRegionName.DG, [Rule.CanReachDG, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_MML,                ToontownLocationType.FLYING_PG, ToontownRegionName.MML, [Rule.CanReachMML, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_TB,                 ToontownLocationType.FLYING_PG, ToontownRegionName.TB, [Rule.CanReachTB, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_DDL,                ToontownLocationType.FLYING_PG, ToontownRegionName.DDL, [Rule.CanReachDDL, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_GS,                 ToontownLocationType.FLYING_PG, ToontownRegionName.GS, [Rule.CanReachGS, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_AA,                 ToontownLocationType.FLYING_PG, ToontownRegionName.AA, [Rule.CanReachAA, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_SBHQ,               ToontownLocationType.FLYING_PG, ToontownRegionName.SBHQ, [Rule.CanReachSBHQ, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_CBHQ,               ToontownLocationType.FLYING_PG, ToontownRegionName.CBHQ, [Rule.CanReachCBHQ, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_LBHQ,               ToontownLocationType.FLYING_PG, ToontownRegionName.LBHQ, [Rule.CanReachLBHQ, Rule.CanJump]),
+    ToontownLocationDefinition(ToontownLocationName.FLYING_TREASURE_BBHQ,               ToontownLocationType.FLYING_PG, ToontownRegionName.BBHQ, [Rule.CanReachBBHQ, Rule.CanJump]),
     # endregion
     ]
 

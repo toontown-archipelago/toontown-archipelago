@@ -1079,6 +1079,10 @@ class ToontownWorld(World):
             forbidden_location_types.add(ToontownLocationType.FISHING_GENUS)
             forbidden_location_types.add(ToontownLocationType.FISHING_GALLERY)
 
+        # Disable the flying treasure locations if we're not restricting jump
+        if not self.options.restrict_jump.value:
+            forbidden_location_types.add(ToontownLocationType.FLYING_PG)
+
         tpl = self.options.treasures_per_location.value
         # If treasures are 0, but our tp sanity is treasures; let's make it one to avoid crashes on gen
         if tpl == 0 and self.options.tpsanity.value == TPSanity.option_treasure:
