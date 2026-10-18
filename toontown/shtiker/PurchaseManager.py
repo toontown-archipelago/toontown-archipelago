@@ -48,6 +48,7 @@ class PurchaseManager(DistributedObject.DistributedObject):
         DistributedObject.DistributedObject.announceGenerate(self)
         self.hasLocalToon = self.calcHasLocalToon()
         if self.hasLocalToon:
+            self.localUsedFastRestock = False
             self.announcePlayerStates()
             et = globalClockDelta.localElapsedTime(self.countdownTimestamp)
             remain = PURCHASE_COUNTDOWN_TIME - et
@@ -91,17 +92,24 @@ class PurchaseManager(DistributedObject.DistributedObject):
     def d_setInventory(self, invString, money, done, laff=0):
         self.sendUpdate('setInventory', [invString, money, done, laff])
 
+    def d_setExitFastRestocked(self):
+        self.sendUpdate('setExitFastRestocked', [])
+
     def __handleBoughtGag(self):
         self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 0)
 
     def __handleBoughtGagFast(self):
+        self.localUsedFastRestock = True
         self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 0, laff=1)
 
     def setPurchaseExit(self):
         if self.hasLocalToon:
             self.ignore('boughtGag')
             self.ignore('boughtGagFast')
-            self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 1)
+            if self.localUsedFastRestock:
+                self.d_setExitFastRestocked()
+            else:
+                self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 1)
             messenger.send('purchaseOver', [self.playAgain])
 
     def setMetagameRound(self, round):

@@ -108,6 +108,11 @@ class ToontownItemName(enum.Enum):
     LAWBOT_DISGUISE  = "Lawbot Disguise"
     BOSSBOT_DISGUISE = "Bossbot Disguise"
 
+    SELLBOT_DISGUISE_PART = "Sellbot Disguise Part"
+    CASHBOT_DISGUISE_PART = "Cashbot Disguise Part"
+    LAWBOT_DISGUISE_PART  = "Lawbot Disguise Part"
+    BOSSBOT_DISGUISE_PART = "Bossbot Disguise Part"
+
     ### Jellybean Bundles ###
     MONEY_150  = "150 Jellybeans"
     MONEY_400  = "400 Jellybeans"
@@ -131,6 +136,9 @@ class ToontownItemName(enum.Enum):
 
     ### Bounty Items ###
     BOUNTY = "Bounty"
+
+    ### Misc ###
+    JUMP = "Enable Jump"
 
     ### Reward Bundles ###
     SOS_REWARD_3        = "Random 3-Star SOS Card"
@@ -263,11 +271,18 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.MIDDLE_TWO_ACCESS,    ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.BACK_THREE_ACCESS,    ItemClassification.progression),
     # endregion
+    # region Misc
+    ToontownItemDefinition(ToontownItemName.JUMP, ItemClassification.progression),
+    # endregion
     # region Boss Disguises
     ToontownItemDefinition(ToontownItemName.SELLBOT_DISGUISE, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.CASHBOT_DISGUISE, ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.LAWBOT_DISGUISE,  ItemClassification.progression),
     ToontownItemDefinition(ToontownItemName.BOSSBOT_DISGUISE, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.SELLBOT_DISGUISE_PART, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.CASHBOT_DISGUISE_PART, ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.LAWBOT_DISGUISE_PART,  ItemClassification.progression),
+    ToontownItemDefinition(ToontownItemName.BOSSBOT_DISGUISE_PART, ItemClassification.progression),
     # endregion
     # region activities
     ToontownItemDefinition(ToontownItemName.GOLF_PUTTER, ItemClassification.progression),
@@ -389,6 +404,13 @@ DISGUISE_ITEMS = (
     ToontownItemName.CASHBOT_DISGUISE,
     ToontownItemName.LAWBOT_DISGUISE,
     ToontownItemName.BOSSBOT_DISGUISE
+)
+
+DISGUISE_PART_ITEMS = (
+    ToontownItemName.SELLBOT_DISGUISE_PART,
+    ToontownItemName.CASHBOT_DISGUISE_PART,
+    ToontownItemName.LAWBOT_DISGUISE_PART,
+    ToontownItemName.BOSSBOT_DISGUISE_PART
 )
 
 FACILITY_KEY_ITEMS = (

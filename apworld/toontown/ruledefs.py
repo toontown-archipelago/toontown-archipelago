@@ -85,16 +85,41 @@ def AlwaysTrueRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorl
     return True
 
 
-@rule(Rule.SellbotDisguise, ToontownItemName.SELLBOT_DISGUISE)
-@rule(Rule.CashbotDisguise, ToontownItemName.CASHBOT_DISGUISE)
-@rule(Rule.LawbotDisguise,  ToontownItemName.LAWBOT_DISGUISE)
-@rule(Rule.BossbotDisguise, ToontownItemName.BOSSBOT_DISGUISE)
 @rule(Rule.Golfing,         ToontownItemName.GOLF_PUTTER)
 @rule(Rule.Racing,          ToontownItemName.GO_KART)
 def HasItemRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if len(argument) == 2:
         return state.has(argument[0].value, player, argument[1])
     return state.has(argument[0].value, player)
+
+
+@rule(Rule.CanJump,          ToontownItemName.JUMP)
+def CanJumpRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        restrict_jump = options.restrict_jump.value
+    else:
+        restrict_jump = options.get("restrict_jump", False)
+
+    if restrict_jump:
+        return state.has(argument[0].value, player)
+    else:
+        return True
+
+
+@rule(Rule.SellbotDisguise, ToontownItemName.SELLBOT_DISGUISE, ToontownItemName.SELLBOT_DISGUISE_PART)
+@rule(Rule.CashbotDisguise, ToontownItemName.CASHBOT_DISGUISE, ToontownItemName.CASHBOT_DISGUISE_PART)
+@rule(Rule.LawbotDisguise,  ToontownItemName.LAWBOT_DISGUISE, ToontownItemName.LAWBOT_DISGUISE_PART)
+@rule(Rule.BossbotDisguise, ToontownItemName.BOSSBOT_DISGUISE, ToontownItemName.BOSSBOT_DISGUISE_PART)
+def HasCogDisguiseRule(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
+    if isinstance(options, ToontownOptions):
+        disguise_parts = options.disguise_parts.value
+    else:
+        disguise_parts = options.get("disguise_parts", False)
+
+    if disguise_parts:
+        return state.count(argument[1].value, player) >= 5
+    else:
+        return state.has(argument[0].value, player)
 
 
 @rule(Rule.FrontFactoryKey, ToontownItemName.FRONT_FACTORY_ACCESS)
@@ -1141,25 +1166,32 @@ def CanDoAnyFacility(state: CollectionState, locentr: LocEntrDef, world: MultiWo
                      and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
     CanCoin = passes_rule(Rule.CoinMintKey, state, locentr, world, player, options) \
               and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
-              and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+              and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options) \
+              and passes_rule(Rule.CanJump, state, locentr, world, player, options)
     CanDollar = passes_rule(Rule.DollarMintKey, state, locentr, world, player, options) \
                 and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
-                and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+                and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options) \
+                and passes_rule(Rule.CanJump, state, locentr, world, player, options)
     CanBullion = passes_rule(Rule.BullionMintKey, state, locentr, world, player, options) \
                  and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
-                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options) \
+                 and passes_rule(Rule.CanJump, state, locentr, world, player, options)
     CanAOffice = passes_rule(Rule.OfficeAKey, state, locentr, world, player, options) \
                  and passes_rule(Rule.HasLevelFourOffenseGag, state, locentr, world, player, options) \
-                 and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+                 and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options) \
+                 and passes_rule(Rule.CanJump, state, locentr, world, player, options)
     CanBOffice = passes_rule(Rule.OfficeBKey, state, locentr, world, player, options) \
                  and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
-                 and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
+                 and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options) \
+                 and passes_rule(Rule.CanJump, state, locentr, world, player, options)
     CanCOffice = passes_rule(Rule.OfficeCKey, state, locentr, world, player, options) \
                  and passes_rule(Rule.HasLevelSixOffenseGag, state, locentr, world, player, options) \
-                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options) \
+                 and passes_rule(Rule.CanJump, state, locentr, world, player, options)
     CanDOffice = passes_rule(Rule.OfficeDKey, state, locentr, world, player, options) \
                  and passes_rule(Rule.HasLevelSevenOffenseGag, state, locentr, world, player, options) \
-                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options)
+                 and passes_rule(Rule.Has60PercentMax, state, locentr, world, player, options) \
+                 and passes_rule(Rule.CanJump, state, locentr, world, player, options)
     CanFrontOne = passes_rule(Rule.FrontOneKey, state, locentr, world, player, options) \
                   and passes_rule(Rule.HasLevelFiveOffenseGag, state, locentr, world, player, options) \
                   and passes_rule(Rule.Has40PercentMax, state, locentr, world, player, options)
@@ -1406,24 +1438,32 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     return two_tracks_on_level and sufficient_healing and minimum_lure and can_obtain_exp_required
 
 
-@rule(Rule.CanFightVP,  Rule.CanReachSBHQ, Rule.SellbotDisguise, Rule.HasLevelFiveOffenseGag,  Rule.Has40PercentMax)
-@rule(Rule.CanFightCFO, Rule.CanReachCBHQ, Rule.CashbotDisguise, Rule.HasLevelSixOffenseGag,   Rule.Has60PercentMax)
-@rule(Rule.CanFightCJ,  Rule.CanReachLBHQ, Rule.LawbotDisguise,  Rule.HasLevelSevenOffenseGag, Rule.Has60PercentMax)
-@rule(Rule.CanFightCEO, Rule.CanReachBBHQ, Rule.BossbotDisguise, Rule.HasLevelEightOffenseGag, Rule.Has80PercentMax)
+@rule(Rule.CanFightVP,  Rule.CanReachSBHQ, Rule.SellbotDisguise, Rule.HasLevelFiveOffenseGag,  Rule.Has40PercentMax, Rule.CanJump)
+@rule(Rule.CanFightCFO, Rule.CanReachCBHQ, Rule.CashbotDisguise, Rule.HasLevelSixOffenseGag,   Rule.Has60PercentMax, Rule.CanJump)
+@rule(Rule.CanFightCJ,  Rule.CanReachLBHQ, Rule.LawbotDisguise,  Rule.HasLevelSevenOffenseGag, Rule.Has60PercentMax, Rule.CanJump)
+@rule(Rule.CanFightCEO, Rule.CanReachBBHQ, Rule.BossbotDisguise, Rule.HasLevelEightOffenseGag, Rule.Has80PercentMax, None)
 def CanFightBoss(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
         cpb = options.checks_per_boss.value
         bosses_on = "cog-bosses" in options.win_condition
+        restrict_jump = options.restrict_jump.value
     else:
         cpb = options.get("checks_per_boss", 4)
         bosses_on = options.get("win_condition", 0) & ToontownWinCondition.cog_bosses
+        restrict_jump = options.get("restrict_jump", False)
     # Not normally necessary, but other rules that reference this one shouldn't consider bosses when checks are off
     # AND we're not wanting bosses for goal
     if cpb == 0 and not bosses_on:
         return False
     args = (state, locentr, world, player, options)
+
+    # Checking if we hit the jump rule, but only if we need to (CEO specifically doesn't need it)
+    jump_rule = True
+    if argument[4] and restrict_jump:
+        jump_rule = passes_rule(argument[4], *args)
+        
     return passes_rule(argument[0], *args) and passes_rule(argument[1], *args) \
-           and passes_rule(argument[2], *args) and passes_rule(argument[3], *args)
+           and passes_rule(argument[2], *args) and passes_rule(argument[3], *args) and jump_rule
 
 
 @rule(Rule.AllBossesDefeated)

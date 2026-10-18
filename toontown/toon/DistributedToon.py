@@ -374,7 +374,6 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 base.cr.onlinePlayerManager.cacheOnlineToon(self, overwrite=True)
                 messenger.send(f"{self.getDoId()}-postGenerate", [self.getDoId()])
 
-
     def _handleClientCleanup(self):
         if self.track != None:
             DelayDelete.cleanupDelayDeletes(self.track)
@@ -1243,6 +1242,14 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         if base.apSounds:
             soundEffect = base.loader.loadSfx(sound)
             base.playSfx(soundEffect)
+
+    def enableAPJump(self):
+        if base.localAvatar == self:
+            base.localAvatar.enableAPJumpControl()
+
+    def disableJump(self):
+        if base.localAvatar == self:
+            base.localAvatar.disableJumpControl()
 
     def setCustomMessages(self, customMessages):
         self.customMessages = customMessages

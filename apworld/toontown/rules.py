@@ -321,6 +321,7 @@ class Rule(Enum):
     CanFightCFO = auto()
     CanFightCJ  = auto()
     CanFightCEO = auto()
+    CanJump     = auto()
 
     ### WIN CONDITION ###
 

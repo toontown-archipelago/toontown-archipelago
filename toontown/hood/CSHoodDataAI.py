@@ -11,6 +11,8 @@ from toontown.suit import DistributedSellbotBossAI
 from toontown.building import DistributedBoardingPartyAI
 from toontown.safezone import ArchipelagoTreasurePlannerAI
 from toontown.safezone import DistributedArchiTreasureAI
+from toontown.safezone import ArchipelagoFlyTreasurePlannerAI
+from toontown.safezone import DistributedArchiFlyTreasureAI
 
 class CSHoodDataAI(HoodDataAI.HoodDataAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('CSHoodDataAI')
@@ -40,6 +42,7 @@ class CSHoodDataAI(HoodDataAI.HoodDataAI):
         self.lobbyElevator.generateWithRequired(ToontownGlobals.SellbotLobby)
         self.addDistObj(self.lobbyElevator)
         self.treasurePlanner = [ArchipelagoTreasurePlannerAI.ArchipelagoTreasurePlannerAI(self.zoneId, DistributedArchiTreasureAI.DistributedArchiTreasureAI, 0),
+                                ArchipelagoFlyTreasurePlannerAI.ArchipelagoFlyTreasurePlannerAI(self.zoneId, DistributedArchiFlyTreasureAI.DistributedArchiFlyTreasureAI),
                                 ]
         for planner in self.treasurePlanner:
             planner.start()

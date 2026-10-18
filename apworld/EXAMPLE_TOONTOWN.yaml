@@ -96,6 +96,10 @@ Toontown:
   
   ### Boss Settings ###
 
+  # Turns the "Cog Disguise" items into 5 "Cog Disguise Part" items each (4 -> 20 Items)
+  # All 5 disguise parts will be needed to access the HQ's boss.
+  disguise_parts: 'false'
+
   # How many checks you will receive from a cog boss upon completion.
   # Range: 0 to 5
   checks_per_boss: 4
@@ -188,6 +192,9 @@ Toontown:
   # - shuffle: All areas are accessible. Teleport Access items are shuffled in the pool.
   # - none: All areas are accessible. You start with global teleport access.
   tpsanity: 'keys'
+
+  # Enable to lock the ability to jump behind receiving it as an item.
+  restrict_jump: 'false'
 
   ### Treasure Settings ###
 

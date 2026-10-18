@@ -269,6 +269,13 @@ class LocationPage(ShtikerPage.ShtikerPage):
                 if hard_logic_check:
                     obj.glitched_logic = hard_logic_check
                 obj.add_location(location_data.name.value, hard_logic_check)
+
+            elif location_data.type == locations.ToontownLocationType.FLYING_PG:
+                name = "Flying AP Treasures"
+                obj = missingLocations.get(name, LocationCategory(name))
+                if hard_logic_check:
+                    obj.glitched_logic = hard_logic_check
+                obj.add_location(location_data.name.value, hard_logic_check)
             else:
                 name = location_data.name.value
                 obj = LocationCategory(name, {name: hard_logic_check})
@@ -338,6 +345,10 @@ class LocationPage(ShtikerPage.ShtikerPage):
             forbidden_location_types.add(locations.ToontownLocationType.FISHING)
             forbidden_location_types.add(locations.ToontownLocationType.FISHING_GENUS)
             forbidden_location_types.add(locations.ToontownLocationType.FISHING_GALLERY)
+
+        # Disable the flying treasure locations if we're not restricting jump
+        if not base.localAvatar.slotData.get('restrict_jump', False):
+            forbidden_location_types.add(locations.ToontownLocationType.FLYING_PG)
 
         tpl = base.localAvatar.slotData.get('treasures_per_location', 4)
         rev_locs = locations.TREASURE_LOCATION_TYPES[::-1]

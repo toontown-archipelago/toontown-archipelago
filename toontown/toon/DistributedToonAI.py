@@ -1461,6 +1461,17 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         parts[dept] = parts[dept] | part
         self.b_setCogParts(parts)
 
+    def giveCogPartAP(self, dept):
+        for _ in range(2):
+            nextPart = None
+            for partTypeId in self.partTypeIds[ToontownGlobals.FT_FullSuit]:
+                nextPart = CogDisguiseGlobals.getNextPart(self.getCogParts(), partTypeId, dept)
+                if nextPart:
+                     break
+
+            if nextPart:
+                self.giveCogPart(nextPart, dept)
+
     def hasCogPart(self, part, dept):
         dept = CogDisguiseGlobals.dept2deptIndex(dept)
         if self.cogParts[dept] & part:
@@ -1871,6 +1882,12 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
 
     def playSound(self, sound):
         self.sendUpdate('playSound', [sound])
+
+    def enableAPJump(self):
+        self.sendUpdate('enableAPJump', [])
+
+    def disableJump(self):
+        self.sendUpdate('disableJump', [])
 
     def b_setSlotName(self, slotName):
         self.setSlotName(slotName)

@@ -393,7 +393,6 @@ class ArchipelagoClient(DirectObject):
             self.av.d_sendArchipelagoMessage(f"Failed to communicate with the server ({e})")
             traceback.print_exc()
 
-
     def set_connect_url(self, server_url: str):
         self.address = server_url
 

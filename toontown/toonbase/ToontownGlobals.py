@@ -1694,6 +1694,20 @@ ZONE_TO_ID_TO_CHECK = {
                            3: locations.ToontownLocationName.DDL_SHOP_3.value,
                            },
 }
+ARCHI_JUMP_ZONE_TO_LOCATION = {
+        ToontownCentral: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_TTC.value),
+        DonaldsDock: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_DD.value),
+        DaisyGardens: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_DG.value),
+        MinniesMelodyland: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_MML.value),
+        TheBrrrgh: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_TB.value),
+        DonaldsDreamland: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_DDL.value),
+        OutdoorZone: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_AA.value),
+        GoofySpeedway: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_GS.value),
+        SellbotHQ: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_SBHQ.value),
+        CashbotHQ: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_CBHQ.value),
+        LawbotHQ:  util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_LBHQ.value),
+        BossbotHQ: util.ap_location_name_to_id(locations.ToontownLocationName.FLYING_TREASURE_BBHQ.value),
+    }
 ARCHI_CODE_TO_LOCATION = {
         ToontownCentral: [util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_1.value),
                           util.ap_location_name_to_id(locations.ToontownLocationName.TTC_TREASURE_2.value),

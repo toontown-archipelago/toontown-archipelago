@@ -5,13 +5,13 @@ import types
 from toontown.toonbase import TTLocalizer
 from direct.showbase import PythonUtil
 from otp.otpbase import OTPGlobals
-PartsPerSuit = (17,
- 14,
- 12,
+PartsPerSuit = (10,
+ 10,
+ 10,
  10)
-PartsPerSuitBitmasks = (131071,
- 130175,
- 56447,
+PartsPerSuitBitmasks = (56411,
+ 56411,
+ 56411,
  56411)
 AllBits = 131071
 MinPartLoss = 2
@@ -434,7 +434,6 @@ PartsQueryNames = ({1: PartNameStrings[0],
 suitTypes = IntEnum('suitTypes', ('NoSuit', 'NoMerits', 'FullSuit'), start=0)
 
 def getNextPart(parts, partIndex, dept):
-    dept = dept2deptIndex(dept)
     needMask = PartsPerSuitBitmasks[dept] & PartsQueryMasks[partIndex]
     haveMask = parts[dept] & PartsQueryMasks[partIndex]
     nextPart = ~needMask | haveMask
