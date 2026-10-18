@@ -5,10 +5,10 @@ BarrelStartingPositions = (VBase3(4.3, 4, 0),
  VBase3(4.3, -4, 0),
  VBase3(-4.3, 4, 0),
  VBase3(-4.3, -4, 0))
-ToonStartingPositions = (VBase3(0, 16, 0),
- VBase3(0, -16, 0),
- VBase3(-16, 0, 0),
- VBase3(16, 0, 0))
+ToonStartingPositions = (VBase3(0, 14, 0),
+ VBase3(0, -14, 0),
+ VBase3(-14, 0, 0),
+ VBase3(14, 0, 0))
 CogStartingPositions = (VBase3(35, 18, 0),
  VBase3(35, 0, 0),
  VBase3(35, -18, 0),
