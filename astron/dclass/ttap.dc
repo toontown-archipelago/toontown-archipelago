@@ -2148,6 +2148,7 @@ dclass PurchaseManager : DistributedObject {
   requestExit() airecv clsend;
   requestPlayAgain() airecv clsend;
   setInventory(blob, int16, uint8, int8) airecv clsend;
+  setExitFastRestocked() airecv clsend;
   setPurchaseExit() broadcast;
 };
 
