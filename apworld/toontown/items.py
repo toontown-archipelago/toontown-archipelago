@@ -510,7 +510,11 @@ def get_item_groups():
         ToontownItemName.SELLBOT_DISGUISE,
         ToontownItemName.CASHBOT_DISGUISE,
         ToontownItemName.LAWBOT_DISGUISE,
-        ToontownItemName.BOSSBOT_DISGUISE
+        ToontownItemName.BOSSBOT_DISGUISE,
+        ToontownItemName.SELLBOT_DISGUISE_PART,
+        ToontownItemName.CASHBOT_DISGUISE_PART,
+        ToontownItemName.LAWBOT_DISGUISE_PART,
+        ToontownItemName.BOSSBOT_DISGUISE_PART
     )
 
     GAG_EXP = (
