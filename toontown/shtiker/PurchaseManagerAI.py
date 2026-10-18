@@ -244,6 +244,15 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
             self.notify.warning('Not receiving inventory. Ignored ' + str(avId) + "'s request")
         return
 
+    def setExitFastRestocked(self):
+        avId = self.air.getAvatarIdFromSender()
+        if avId in self.air.doId2do:
+            av = self.air.doId2do[avId]
+            avIndex = self.findAvIndex(avId)
+            self.playersReported[avIndex] = PURCHASE_REPORTED_STATE
+            if self.getNumUnreported() == 0:
+                self.shutDown()
+
     def d_setPurchaseExit(self):
         self.sendUpdate('setPurchaseExit', [])
         return None

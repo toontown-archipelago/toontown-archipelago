@@ -92,6 +92,9 @@ class PurchaseManager(DistributedObject.DistributedObject):
     def d_setInventory(self, invString, money, done, laff=0):
         self.sendUpdate('setInventory', [invString, money, done, laff])
 
+    def d_setExitFastRestocked(self):
+        self.sendUpdate('setExitFastRestocked', [])
+
     def __handleBoughtGag(self):
         self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 0)
 
@@ -103,7 +106,9 @@ class PurchaseManager(DistributedObject.DistributedObject):
         if self.hasLocalToon:
             self.ignore('boughtGag')
             self.ignore('boughtGagFast')
-            if not self.localUsedFastRestock:
+            if self.localUsedFastRestock:
+                self.d_setExitFastRestocked()
+            else:
                 self.d_setInventory(base.localAvatar.inventory.makeNetString(), base.localAvatar.getMoney(), 1)
             messenger.send('purchaseOver', [self.playAgain])
 
