@@ -1,0 +1,53 @@
+general:
+  eventlogger: 127.0.0.1:7197
+  dc_files:
+    - astron/dclass/ttap.dc
+
+messagedirector:
+  bind: 127.0.0.1:7199
+
+uberdogs:
+  - {id: 4688, class: CentralLogger}
+  - {id: 4670, class: TTGameServicesManager}
+  - {id: 4686, class: AvatarFriendsManager}
+  - {id: 4687, class: PlayerFriendsManager}
+  - {id: 4712, class: TTSpeedchatRelay}
+  - {id: 4683, class: DistributedDeliveryManager}
+  - {id: 4695, class: TTCodeRedemptionMgr}
+  - {id: 4501, class: FriendManager}
+  - {id: 4707, class: OnlinePlayerManager}
+  - {id: 4681, class: TTOffChatManager}
+
+roles:
+  - type: clientagent
+    bind: 127.0.0.1:7198
+    version: tt-ap-edition
+    lua_file: otpgo/client.lua
+    client:
+      relocate: true
+      add_interest: enabled
+      heartbeat_timeout: 300000
+    channels:
+      min: 1000000000
+      max: 1009999999
+  - type: stateserver
+    control: 4002
+  - type: database
+    control: 4003
+    generate:
+      min: 100000000
+      max: 399999999
+    objects:
+      - {id: 2, class: Account}
+      - {id: 68, class: DistributedToon}
+    backend:
+      type: yaml
+      directory: otpgo/databases/objects
+  - type: dbss
+    database: 4003
+    ranges:
+      min: 100000000
+      max: 399999999
+  - type: eventlogger
+    bind: 127.0.0.1:7197
+    output: otpgo/logs/events-%Y%m%d_%H%M%S.log

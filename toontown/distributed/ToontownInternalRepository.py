@@ -1,18 +1,24 @@
 from direct.directnotify import DirectNotifyGlobal
 from direct.distributed.AstronInternalRepository import AstronInternalRepository
 from direct.distributed.PyDatagram import PyDatagram
+from panda3d.core import ConfigVariableString
+
+if ConfigVariableString('network-backend', 'astron').getValue() == 'otpgo':
+    from direct.distributed.OtpGoInternalRepository import OtpGoInternalRepository as InternalRepository
+else:
+    InternalRepository = AstronInternalRepository
 
 from otp.distributed.OtpDoGlobals import *
 
 
-class ToontownInternalRepository(AstronInternalRepository):
+class ToontownInternalRepository(InternalRepository):
     notify = DirectNotifyGlobal.directNotify.newCategory('ToontownInternalRepository')
     GameGlobalsId = OTP_DO_ID_TOONTOWN
     dbId = 4003
 
     def __init__(self, baseChannel, serverId=None, dcFileNames=None, dcSuffix='AI', connectMethod=None,
                  threadedNet=None):
-        AstronInternalRepository.__init__(self, baseChannel, serverId, dcFileNames, dcSuffix, connectMethod,
+        InternalRepository.__init__(self, baseChannel, serverId, dcFileNames, dcSuffix, connectMethod,
                                           threadedNet)
 
     def getAvatarIdFromSender(self):

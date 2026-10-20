@@ -51,6 +51,9 @@ class OTPClientRepository(ClientRepositoryBase):
 
     def __init__(self, serverVersion, launcher = None, playGame = None):
         ClientRepositoryBase.__init__(self)
+        self.usingOtpGo = self.config.GetString('network-backend', 'astron') == 'otpgo'
+        if self.usingOtpGo:
+            self.setHandleCUpdates(False)
         self.handler = None
         self.launcher = launcher
         base.launcher = launcher
@@ -1836,6 +1839,9 @@ class OTPClientRepository(ClientRepositoryBase):
             print('ClientRepository received datagram:')
             # di.getDatagram().dumpHex(ostream) weird error
         msgType = self.getMsgType()
+        if self.usingOtpGo:
+            from direct.distributed.OtpGoClientProtocol import decode
+            msgType, di = decode(self, msgType, di)
         if msgType == 65535:
             self.lostConnection()
             return

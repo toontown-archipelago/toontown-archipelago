@@ -1,0 +1,234 @@
+diff --git a/clientagent/client.go b/clientagent/client.go
+index f2d43dc..6ccc622 100644
+--- a/clientagent/client.go
++++ b/clientagent/client.go
+@@ -562,6 +562,9 @@ func (c *Client) HandleDatagram(dg Datagram, dgi *DatagramIterator) {
+ 		} else {
+ 			c.log.Debugf("Attempted to remove non-existant interest: %d", interestId)
+ 		}
++	case CLIENT_AGENT_SET_STATE:
++		c.state = ClientState(dgi.ReadUint16())
++		c.authenticated = c.state == CLIENT_STATE_ESTABLISHED
+ 	case CLIENT_AGENT_SET_CLIENT_ID:
+ 		c.SetChannel(dgi.ReadChannel())
+ 	case CLIENT_AGENT_SEND_DATAGRAM:
+diff --git a/database/databaseserver.go b/database/databaseserver.go
+index 21d53ca..8148e61 100644
+--- a/database/databaseserver.go
++++ b/database/databaseserver.go
+@@ -22,6 +22,7 @@ const (
+ 	SetStoredValuesOperation
+ 	DeleteObjectOperation
+ 	GetRelatedOperation
++	CompareAndSetOperation
+ )
+ 
+ type OperationQueueEntry struct {
+@@ -178,6 +179,8 @@ func (d *DatabaseServer) queueLoop() {
+ 					d.backend.SetStoredValues(op.doId, op.data.(map[string][]byte))
+ 				case DeleteObjectOperation:
+ 					d.backend.DeleteStoredObject(op.doId)
++				case CompareAndSetOperation:
++					d.handleCompareAndSet(op)
+ 				case GetRelatedOperation:
+ 					d.backend.GetRelatedValues(op.data.(GetRelatedRequest), op.sender)
+ 				}
+@@ -203,6 +206,8 @@ func (d *DatabaseServer) HandleDatagram(dg Datagram, dgi *DatagramIterator) {
+ 	msgType := dgi.ReadUint16()
+ 
+ 	switch msgType {
++	case 1015:
++		d.queueCompareAndSet(dgi, sender)
+ 	case DBSERVER_CREATE_STORED_OBJECT:
+ 		d.HandleCreateObject(dgi, sender)
+ 	case DBSERVER_GET_STORED_VALUES:
+diff --git a/database/yaml.go b/database/yaml.go
+index 6a3c166..c67ab91 100644
+--- a/database/yaml.go
++++ b/database/yaml.go
+@@ -331,18 +331,18 @@ func (b *YAMLBackend) GetStoredValues(doId Doid_t, fields []string, ctx uint32,
+ 
+ 	packedData := map[string][]byte{}
+ 	for _, field := range fields {
++		if field == "DcObjectType" {
++			value := NewDatagram()
++			value.AddString(obj.Class)
++			packedData[field] = value.Bytes()
++			continue
++		}
+ 		dcField := dclass.GetFieldByName(field)
+ 		if dcField == nil {
+ 			b.db.log.Errorf("Field %s for class %s does not exist!", field, obj.Class)
+ 			continue
+ 		}
+ 
+-		if field == "DcObjectType" {
+-			// Return dclass type
+-			packedData[field] = dcField.ParseString("\"" + obj.Class + "\"")
+-			continue
+-		}
+-
+ 		value, ok := objFields[field]
+ 		if !ok {
+ 			// Field not found, that's alright, continue on.
+diff --git a/database/compare_and_set.go b/database/compare_and_set.go
+new file mode 100644
+index 0000000..9f73e4e
+--- /dev/null
++++ b/database/compare_and_set.go
+@@ -0,0 +1,60 @@
++//go:build !no_dbserver
++
++package database
++
++import (
++	. "otpgo/util"
++)
++
++const compareAndSetResponse = 1016
++
++type conditionalValues struct {
++	names []string
++	old   map[string][]byte
++	next  map[string][]byte
++}
++
++type conditionalBackend interface {
++	CompareAndSet(Doid_t, conditionalValues) (uint8, map[string][]byte)
++}
++
++func (d *DatabaseServer) queueCompareAndSet(di *DatagramIterator, sender Channel_t) {
++	context, doId := di.ReadUint32(), di.ReadDoid()
++	values := conditionalValues{old: make(map[string][]byte), next: make(map[string][]byte)}
++	count := di.ReadUint16()
++	for i := uint16(0); i < count; i++ {
++		name := di.ReadString()
++		values.names = append(values.names, name)
++		values.old[name] = di.ReadBlob()
++		values.next[name] = di.ReadBlob()
++	}
++	d.queueLock.Lock()
++	d.queue = append(d.queue, OperationQueueEntry{operation: CompareAndSetOperation,
++		doId: doId, context: context, sender: sender, data: values})
++	d.queueLock.Unlock()
++	select {
++	case d.processQueue <- true:
++	default:
++	}
++}
++
++func (d *DatabaseServer) handleCompareAndSet(op OperationQueueEntry) {
++	values := op.data.(conditionalValues)
++	status := uint8(2)
++	var current map[string][]byte
++	if backend, ok := d.backend.(conditionalBackend); ok {
++		status, current = backend.CompareAndSet(op.doId, values)
++	}
++	dg := NewDatagram()
++	dg.AddServerHeader(op.sender, d.control, compareAndSetResponse)
++	dg.AddUint32(op.context)
++	dg.AddUint8(status)
++	if status == 1 {
++		dg.AddUint16(uint16(len(values.names)))
++		for _, name := range values.names {
++			dg.AddString(name)
++			dg.AddDataBlob(current[name])
++		}
++	}
++	d.RouteDatagram(dg)
++}
+diff --git a/database/yaml_compare_and_set.go b/database/yaml_compare_and_set.go
+new file mode 100644
+index 0000000..13f20ee
+--- /dev/null
++++ b/database/yaml_compare_and_set.go
+@@ -0,0 +1,89 @@
++//go:build !no_dbserver && !no_yaml
++
++package database
++
++import (
++	"bytes"
++	"fmt"
++	"gopkg.in/yaml.v2"
++	"os"
++	"otpgo/core"
++	. "otpgo/util"
++	"path/filepath"
++)
++
++// Runs on the database operation queue, alongside all other reads and writes.
++func (b *YAMLBackend) CompareAndSet(doId Doid_t, values conditionalValues) (uint8, map[string][]byte) {
++	filename := filepath.Join(b.directory, fmt.Sprintf("%d.yaml", doId))
++	data, err := os.ReadFile(filename)
++	if err != nil {
++		return 2, nil
++	}
++	var object YAMLObject
++	if yaml.Unmarshal(data, &object) != nil || object.ID != doId {
++		return 2, nil
++	}
++	class := core.DC.GetClassByName(object.Class)
++	if class == nil {
++		return 2, nil
++	}
++	stored := make(map[string]string)
++	for _, entry := range object.Fields {
++		stored[entry.Key.(string)] = entry.Value.(string)
++	}
++	current := make(map[string][]byte)
++	matches := true
++	for _, name := range values.names {
++		field := class.GetFieldByName(name)
++		if field == nil || !field.IsDb() {
++			return 2, nil
++		}
++		current[name] = field.GetDefaultValue()
++		if text, exists := stored[name]; exists {
++			current[name] = field.ParseString(text)
++		}
++		if !bytes.Equal(current[name], values.old[name]) {
++			matches = false
++		}
++		if !field.ValidateRanges(values.next[name]) {
++			return 2, nil
++		}
++	}
++	if !matches {
++		return 1, current
++	}
++	for _, name := range values.names {
++		stored[name] = class.GetFieldByName(name).FormatData(values.next[name], false)
++	}
++	object.Fields = yaml.MapSlice{}
++	for i := 0; i < class.GetNumInheritedFields(); i++ {
++		field := class.GetInheritedField(i)
++		if text, exists := stored[field.GetName()]; exists {
++			object.Fields = append(object.Fields, yaml.MapItem{Key: field.GetName(), Value: text})
++		}
++	}
++	data, err = yaml.Marshal(&object)
++	if err != nil {
++		return 2, nil
++	}
++	file, err := os.CreateTemp(b.directory, ".conditional-*.yaml")
++	if err != nil {
++		return 2, nil
++	}
++	defer os.Remove(file.Name())
++	if _, err = file.Write(data); err != nil {
++		file.Close()
++		return 2, nil
++	}
++	if err = file.Sync(); err != nil {
++		file.Close()
++		return 2, nil
++	}
++	if err = file.Close(); err != nil {
++		return 2, nil
++	}
++	if err = os.Rename(file.Name(), filename); err != nil {
++		return 2, nil
++	}
++	return 0, nil
++}
