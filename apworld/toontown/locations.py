@@ -1757,24 +1757,24 @@ LOCATION_DEFINITIONS: List[ToontownLocationDefinition] = [
     ToontownLocationDefinition(ToontownLocationName.FISHING_COMPLETE_ALBUM, ToontownLocationType.FISHING_GALLERY, ToontownRegionName.FISHING, [Rule.FishGallery]),
     # endregion
     # region shopping
-    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC, Rule.CanBuyTTCDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC, Rule.CanBuyTTCDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC, Rule.CanBuyTTCDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD, Rule.CanBuyDDDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD, Rule.CanBuyDDDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD, Rule.CanBuyDDDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG, Rule.CanBuyDGDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG, Rule.CanBuyDGDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG, Rule.CanBuyDGDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML, Rule.CanBuyMMLDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML, Rule.CanBuyMMLDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML, Rule.CanBuyMMLDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB, Rule.CanBuyTBDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB, Rule.CanBuyTBDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB, Rule.CanBuyTBDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL, Rule.CanBuyDDLDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL, Rule.CanBuyDDLDoodle]),
-    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL, Rule.CanBuyDDLDoodle]),
+    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC, Rule.CanBuyTTCDoodle1]),
+    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC, Rule.CanBuyTTCDoodle2]),
+    ToontownLocationDefinition(ToontownLocationName.TTC_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.TTC, [Rule.CanReachTTC, Rule.CanBuyTTCDoodle3]),
+    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD, Rule.CanBuyDDDoodle1]),
+    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD, Rule.CanBuyDDDoodle2]),
+    ToontownLocationDefinition(ToontownLocationName.DD_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DD, [Rule.CanReachDD, Rule.CanBuyDDDoodle3]),
+    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG, Rule.CanBuyDGDoodle1]),
+    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG, Rule.CanBuyDGDoodle2]),
+    ToontownLocationDefinition(ToontownLocationName.DG_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DG, [Rule.CanReachDG, Rule.CanBuyDGDoodle3]),
+    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML, Rule.CanBuyMMLDoodle1]),
+    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML, Rule.CanBuyMMLDoodle2]),
+    ToontownLocationDefinition(ToontownLocationName.MML_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.MML, [Rule.CanReachMML, Rule.CanBuyMMLDoodle3]),
+    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB, Rule.CanBuyTBDoodle1]),
+    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB, Rule.CanBuyTBDoodle2]),
+    ToontownLocationDefinition(ToontownLocationName.TB_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.TB, [Rule.CanReachTB, Rule.CanBuyTBDoodle3]),
+    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_1,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL, Rule.CanBuyDDLDoodle1]),
+    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_2,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL, Rule.CanBuyDDLDoodle2]),
+    ToontownLocationDefinition(ToontownLocationName.DDL_SHOP_3,  ToontownLocationType.PET_SHOP, ToontownRegionName.DDL, [Rule.CanReachDDL, Rule.CanBuyDDLDoodle3]),
     # endregion
     # region Tasking
     ToontownLocationDefinition(ToontownLocationName.TOONTOWN_CENTRAL_TASK_1,    ToontownLocationType.TTC_TASKS, ToontownRegionName.TTC, [Rule.HasTTCHQAccess, Rule.HasLevelOneOffenseGag]),
@@ -2086,7 +2086,8 @@ BOUNTY_LOCATIONS = [
     ToontownLocationName.THROW_WEDDING_UNLOCKED, ToontownLocationName.SQUIRT_GEYSER_UNLOCKED, ToontownLocationName.DROP_BOAT_UNLOCKED,  # Gag bounty locations (2)
     ToontownLocationName.LEVEL_TWELVE_COG_DEFEATED,  # Cog tier bounty locations
     ToontownLocationName.FIVE_STORY_FIFTH_FLOOR,  # Building bounty locations
-    ToontownLocationName.GARDEN_FLOWER_PLATOONIA, ToontownLocationName.CATALOG_CHECK_12  # Estate bounty locations
+    ToontownLocationName.GARDEN_FLOWER_PLATOONIA, ToontownLocationName.CATALOG_CHECK_12,  # Estate bounty locations
+    ToontownLocationName.DDL_SHOP_3  # Pet shop locations
 ]
 
 BOSS_BOUNTIES = [ToontownLocationName.SELLBOT_PROOF_1, ToontownLocationName.CASHBOT_PROOF_1, ToontownLocationName.LAWBOT_PROOF_1, ToontownLocationName.BOSSBOT_PROOF_1]

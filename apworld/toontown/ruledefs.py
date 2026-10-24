@@ -239,12 +239,24 @@ def HasItemCountRule(state: CollectionState, locentr: LocEntrDef, world: MultiWo
     return state.count(argument[0].value, player) >= 2
 
 
-@rule(Rule.CanBuyTTCDoodle, 1)
-@rule(Rule.CanBuyDDDoodle, 2)
-@rule(Rule.CanBuyDGDoodle, 3)
-@rule(Rule.CanBuyMMLDoodle, 4)
-@rule(Rule.CanBuyTBDoodle, 5)
-@rule(Rule.CanBuyDDLDoodle, 6)
+@rule(Rule.CanBuyTTCDoodle1, 0)
+@rule(Rule.CanBuyTTCDoodle2, 1)
+@rule(Rule.CanBuyTTCDoodle3, 2)
+@rule(Rule.CanBuyDDDoodle1, 1)
+@rule(Rule.CanBuyDDDoodle2, 2)
+@rule(Rule.CanBuyDDDoodle3, 3)
+@rule(Rule.CanBuyDGDoodle1, 2)
+@rule(Rule.CanBuyDGDoodle2, 3)
+@rule(Rule.CanBuyDGDoodle3, 4)
+@rule(Rule.CanBuyMMLDoodle1, 3)
+@rule(Rule.CanBuyMMLDoodle2, 4)
+@rule(Rule.CanBuyMMLDoodle3, 5)
+@rule(Rule.CanBuyTBDoodle1, 4)
+@rule(Rule.CanBuyTBDoodle2, 5)
+@rule(Rule.CanBuyTBDoodle3, 6)
+@rule(Rule.CanBuyDDLDoodle1, 5)
+@rule(Rule.CanBuyDDLDoodle2, 6)
+@rule(Rule.CanBuyDDLDoodle3, 7)
 def HasEnoughBeanCapacity(state: CollectionState, locentr: LocEntrDef, world: MultiWorld, player: int, options, argument: Tuple = None):
     if isinstance(options, ToontownOptions):
         random_price = options.doodle_price_rando.value
