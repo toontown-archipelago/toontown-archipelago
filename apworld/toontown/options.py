@@ -400,7 +400,7 @@ class BountiesRequired(Range):
     """
     display_name = "Bounties Required"
     range_start = 0
-    range_end = 36
+    range_end = 37
     default = 7
 
 
@@ -413,7 +413,7 @@ class TotalBounties(Range):
     """
     display_name = "Total Bounties"
     range_start = 1
-    range_end = 36
+    range_end = 37
     default = 15
 
 

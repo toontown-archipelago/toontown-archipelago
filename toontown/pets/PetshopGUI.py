@@ -215,7 +215,7 @@ class PetshopGUI(DirectObject):
             self.subId = subId
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
             name, dna, traitSeed = PetUtil.getPetInfoFromSeed(petSeed, zoneId)
-            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId][self.subId-1]
             if base.localAvatar.slotData.get('doodle_price_rando', False):
                 rng = random.Random()
                 rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")
@@ -351,7 +351,7 @@ class PetshopGUI(DirectObject):
             self.petCost = []
             random.seed(self.petSeeds[1])
             zoneId = ZoneUtil.getCanonicalSafeZoneId(base.localAvatar.getZoneId())
-            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId][self.subId-1]
             if base.localAvatar.slotData.get('doodle_price_rando', False):
                 rng = random.Random()
                 rng.seed(f"{base.localAvatar.getSeed()}-{self.subId}")

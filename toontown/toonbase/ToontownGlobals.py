@@ -105,7 +105,7 @@ PassiveHealPercentage = .10  # How much percentage of laff should toons regen pa
 MaxCarryLimit = 100
 MaxQuestCarryLimit = 6
 CogMoneyDropChance = 0.95  # What percent chance to drop jellybeans as a reward per cog?
-CogMoneyBonusChance = 0.30
+CogMoneyBonusChance = 0.50
 CogMoneyDropRange = (25, 35)  # How many jellybeans do we reward per cog? (Assuming we rolled the chance for it)
 CogImmuneColor = Vec4(1, 1, 1, 1)
 CogImmuneGlowColor = CogImmuneColor - Vec4(0, 0, 0, 0.5)
@@ -1659,15 +1659,15 @@ PUTTER_KEY = 38
 from ..archipelago.definitions import util
 from apworld.toontown import locations
 ZONE_TO_CHECK_COST = {
-    ToontownCentral: 1600,
-    DonaldsDock: 2600,
-    DaisyGardens: 3600,
-    MinniesMelodyland: 4600,
-    TheBrrrgh: 5600,
-    DonaldsDreamland: 6600
+    ToontownCentral: (800, 1600, 2400),
+    DonaldsDock: (1800, 2600, 3400),
+    DaisyGardens: (2800, 3600, 4400),
+    MinniesMelodyland: (3800, 4600, 5400),
+    TheBrrrgh: (4800, 5600, 6400),
+    DonaldsDreamland: (5800, 6600, 7400)
 }
 PRICE_RANDO_MIN = -750
-PRICE_RANDO_MAX = 1300
+PRICE_RANDO_MAX = 1100
 ZONE_TO_ID_TO_CHECK = {
         ToontownCentral: {1: locations.ToontownLocationName.TTC_SHOP_1.value,
                           2: locations.ToontownLocationName.TTC_SHOP_2.value,
