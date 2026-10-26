@@ -15,6 +15,10 @@ vfs-mount resources/phase_12 /phase_12
 vfs-mount resources/phase_13 /phase_13
 vfs-mount resources/phase_14 /phase_14
 
+# Graphics
+load-display p3metaldisplay
+aux-display pandagl
+
 # Developer settings
 want-injector true
 
