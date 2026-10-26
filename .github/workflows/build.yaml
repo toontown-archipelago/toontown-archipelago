@@ -194,3 +194,143 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             gh release upload ${{ github.ref_name }} TTAP-macos.zip
+
+  build-game-linux:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Needed for release upload
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            patchelf \
+            libgl1-mesa-dev \
+            libopenal-dev \
+            libasound2-dev \
+            libpulse-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libxcursor-dev \
+            libassimp-dev \
+            libode-dev \
+            libsquish-dev \
+            libvorbis-dev \
+            zip
+
+      - name: Install Python Packages
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install nuitka
+          python -m pip install -r requirements.txt
+          python -m pip install "https://github.com/toontown-archipelago/panda3d/releases/latest/download/panda3d-1.11.0-cp311-cp311-linux_x86_64.whl"
+
+      - name: Build Client
+        run: |
+          python -m nuitka ./launch/launcher/launch.py \
+            --standalone \
+            --output-dir=output \
+            --include-package=direct.distributed \
+            --include-package=otp \
+            --include-package=toontown \
+            --include-package-data=panda3d \
+            --assume-yes-for-downloads
+
+      - name: Build APWorld Files
+        run: |
+          cd apworld
+          chmod +x make_apworld.sh
+          ./make_apworld.sh
+
+      - name: Copy Built Files & Panda3D Plugins
+        run: |
+          mkdir -p release/game
+          cp -r output/launch.dist/* release/game/
+          if [ -f release/game/launch.bin ]; then
+            mv release/game/launch.bin release/game/launch
+          fi
+          chmod +x release/game/launch
+
+          # Copy Panda3D DSO plugins and config into release/game
+          PANDA_DIR=$(python -c "import panda3d, os; print(os.path.dirname(panda3d.__file__))")
+          echo "Panda3D directory: $PANDA_DIR"
+          cp -P $PANDA_DIR/*.so* release/game/ 2>/dev/null || true
+          if [ -d "$PANDA_DIR/etc" ]; then
+            mkdir -p release/game/etc
+            cp -r $PANDA_DIR/etc/* release/game/etc/
+          fi
+
+          # Bundle non-system runtime libraries so end users do not need to install distro packages
+          echo "Bundling runtime libraries (OpenAL, Vorbis, Squish, ODE, Assimp)..."
+          BUNDLE_LIBS=(
+            "libopenal.so*"
+            "libsndio.so*"
+            "libvorbisfile.so*"
+            "libvorbis.so*"
+            "libogg.so*"
+            "libsquish.so*"
+            "libode.so*"
+            "libassimp.so*"
+          )
+          for lib in "${BUNDLE_LIBS[@]}"; do
+            find /usr/lib /lib -name "$lib" -exec cp -P {} release/game/ \; 2>/dev/null || true
+          done
+
+      - name: Copy Archipelago json
+        run: |
+          mkdir -p release/game/apworld/toontown
+          cp apworld/toontown/archipelago.json release/game/apworld/toontown/
+
+      - name: Build & Copy Resources
+        run: |
+          mkdir -p release/game/resources
+          cd resources
+          for dir in */; do
+            $(dirname $(which python))/multify -c -f "../release/game/resources/${dir%/}.mf" "${dir%/}"
+          done
+
+      - name: Copy Config Files
+        run: |
+          mkdir -p release/game/config
+          cp config/production.prc release/game/config/
+          cp config/common.prc release/game/config/
+
+      - name: Copy Scripts
+        run: |
+          cp build/scripts/*.sh release/
+          chmod +x release/*.sh
+
+      - name: Copy Astron
+        run: |
+          cp -r astron release/game
+          chmod +x release/game/astron/astrond-linux* 2>/dev/null || true
+
+      - name: Compress Release
+        run: |
+          zip -r TTAP-linux.zip release
+
+      - name: Upload Game Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "TTAP-linux.zip"
+          path: "TTAP-linux.zip"
+          if-no-files-found: "error"
+
+      - name: Upload Game to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.ref_name }} TTAP-linux.zip
+

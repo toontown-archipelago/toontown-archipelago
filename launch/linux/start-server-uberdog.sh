@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
 echo "Toontown Archipelago: UD Launcher"
 echo
+
+cd "$(dirname "$0")"
 export PPYTHON_PATH=$(cat PPYTHON_PATH)
 export SERVICE_TO_RUN=UD
 cd ../..
