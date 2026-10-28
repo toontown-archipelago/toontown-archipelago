@@ -20,6 +20,7 @@ notify-timestamp false
 default-directnotify-level info
 
 # Window settings
+plugin-path .
 load-display pandagl
 window-title Toontown: Archipelago
 win-origin -2 -2
