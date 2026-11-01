@@ -228,9 +228,9 @@ class InventoryBase(DirectObject.DirectObject):
         if type(track) == type(''):
             track = Tracks.index(track)
         capacity = self.toon.getMaxCarry()
-        if capacity < 75:
+        if capacity < 85:
             maxList = CarryLimits[track]
-        elif capacity >= 75 and capacity < 90:
+        elif capacity >= 85 and capacity < 95:
             maxList = CarryLimits75[track]
         else:
             maxList = CarryLimits90[track]

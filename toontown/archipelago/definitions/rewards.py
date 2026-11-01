@@ -114,10 +114,10 @@ class GagCapacityReward(APReward):
     def apply(self, av: "DistributedToonAI"):
         new_carry = av.maxCarry + self.amount
         av.b_setMaxCarry(new_carry)
-        if new_carry >= 75 and av.has75 == 0:
+        if new_carry >= 85 and av.has75 == 0:
             av.b_setHas75Capacity(1)
             av.d_considerCapacityRewardMessage75()
-        if new_carry >= 90 and av.has90 == 0:
+        if new_carry >= 95 and av.has90 == 0:
             av.b_setHas90Capacity(1)
             av.d_considerCapacityRewardMessage90()
 
