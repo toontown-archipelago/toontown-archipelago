@@ -1659,12 +1659,12 @@ PUTTER_KEY = 38
 from ..archipelago.definitions import util
 from apworld.toontown import locations
 ZONE_TO_CHECK_COST = {
-    ToontownCentral: (800, 1600, 2400),
-    DonaldsDock: (1800, 2600, 3400),
-    DaisyGardens: (2800, 3600, 4400),
-    MinniesMelodyland: (3800, 4600, 5400),
-    TheBrrrgh: (4800, 5600, 6400),
-    DonaldsDreamland: (5800, 6600, 7400)
+    ToontownCentral: (800, 2400, 1600),
+    DonaldsDock: (1800, 3400, 2600),
+    DaisyGardens: (2800, 4400, 3600),
+    MinniesMelodyland: (3800, 5400, 4600),
+    TheBrrrgh: (4800, 6400, 5600),
+    DonaldsDreamland: (5800, 7400, 6600)
 }
 PRICE_RANDO_MIN = -750
 PRICE_RANDO_MAX = 1100
