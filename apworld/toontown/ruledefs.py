@@ -1313,67 +1313,15 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     LUREMIN = max(0, LEVEL - 2)
 
     # The ratio of Gag Capacity items required to reach a given gag level.
-    DMG_RATIOS_FOR_GAG_TRACKS = {
-        ToontownItemName.TOONUP_FRAME.value: {
-            1: 0.25,
-            2: 0.30,
-            3: 0.35,
-            4: 0.45,
-            5: 0.60,
-            6: 0.75,
-            7: 0.90,
-            8: 0.90
-        },
-        ToontownItemName.TRAP_FRAME.value: {
-            1: 0.25,
-            2: 0.30,
-            3: 0.35,
-            4: 0.45,
-            5: 0.55,
-            6: 0.70,
-            7: 0.80,
-            8: 0.90
-        },
-        ToontownItemName.SOUND_FRAME.value: {
-            1: 0.30,
-            2: 0.40,
-            3: 0.50,
-            4: 0.60,
-            5: 0.70,
-            6: 0.80,
-            7: 0.90,
-            8: 0.90
-        },
-        ToontownItemName.THROW_FRAME.value: {
-            1: 0.25,
-            2: 0.30,
-            3: 0.35,
-            4: 0.45,
-            5: 0.60,
-            6: 0.75,
-            7: 0.90,
-            8: 0.90
-        },
-        ToontownItemName.SQUIRT_FRAME.value: {
-            1: 0.25,
-            2: 0.35,
-            3: 0.45,
-            4: 0.55,
-            5: 0.65,
-            6: 0.75,
-            7: 0.90,
-            8: 0.90
-        },
-        ToontownItemName.DROP_FRAME.value: {
-            1: 0.25,
-            2: 0.30,
-            3: 0.35,
-            4: 0.45,
-            5: 0.55,
-            6: 0.70,
-            7: 0.80,
-            8: 0.90
-        },
+    DMG_RATIOS_FOR_GAG_LEVELS = {
+        1: 0,
+        2: 0.1,
+        3: 0.2,
+        4: 0.3,
+        5: 0.45,
+        6: 0.6,
+        7: 0.7,
+        8: 0.8
     }
 
     # To pass the check, we must have:
@@ -1382,23 +1330,27 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     # - + Sufficient Lure (Lure @ level - 2)
     # - + EXP + Capacity required at level
 
-    def calc_wanted_damage_for_track(track, level):
+    def calc_wanted_damage_for_track(level):
         base_dmg_ratio = start_dmg / max_dmg
         # Our difference in base and max dmg mult is too low, always true
         if base_dmg_ratio >= 0.9 or level == 0:
             return True
-        wanted_ratio = DMG_RATIOS_FOR_GAG_TRACKS[track][level]
-        dmg = start_dmg
+
+        dmg = 0
         dmg += state.count(ToontownItemName.DMG_BOOST_1.value, player)
         dmg += (2 * state.count(ToontownItemName.DMG_BOOST_2.value, player))
         dmg += (3 * state.count(ToontownItemName.DMG_BOOST_3.value, player))
         dmg += (4 * state.count(ToontownItemName.DMG_BOOST_4.value, player))
-        final_ratio = dmg / max_dmg
+
+        # We're figuring out our ratios based on ratio of collected, rather than ratio of total
+        wanted_ratio = DMG_RATIOS_FOR_GAG_LEVELS[level]
+        dmg_diff = max(1, max_dmg - start_dmg)
+        final_ratio = dmg / dmg_diff
         # Second case here is for the case of gags are just always going to be powerful enough anyways and we don't need to restrict logic
-        return (final_ratio >= wanted_ratio) or (dmg >= 120)
+        return (final_ratio >= wanted_ratio) or ((start_dmg + dmg) >= 135)
 
     minimum_lure = state.has(ToontownItemName.LURE_FRAME.value, player, LUREMIN)
-    sufficient_healing = state.has(ToontownItemName.TOONUP_FRAME.value, player, UNDERLEVEL) and calc_wanted_damage_for_track(ToontownItemName.TOONUP_FRAME.value, UNDERLEVEL)
+    sufficient_healing = state.has(ToontownItemName.TOONUP_FRAME.value, player, UNDERLEVEL) and calc_wanted_damage_for_track(UNDERLEVEL)
 
     def get_num_powerful_tracks(level):
         overlevel = min((level + 1), 8)
@@ -1415,15 +1367,15 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
         }
         powerful_squirt_knockback = state.has(ToontownItemName.SQUIRT_FRAME.value, player, level) \
                                     and state.has(ToontownItemName.LURE_FRAME.value, player, level_to_wanted_lures[level]) \
-                                    and calc_wanted_damage_for_track(ToontownItemName.SQUIRT_FRAME.value, BASE_LEVEL)
+                                    and calc_wanted_damage_for_track(BASE_LEVEL)
         powerful_throw_knockback = state.has(ToontownItemName.THROW_FRAME.value, player, level) \
                                    and state.has(ToontownItemName.LURE_FRAME.value, player, level_to_wanted_lures[level]) \
-                                   and calc_wanted_damage_for_track(ToontownItemName.THROW_FRAME.value, BASE_LEVEL)
-        powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, level) and calc_wanted_damage_for_track(ToontownItemName.DROP_FRAME.value, level)
+                                   and calc_wanted_damage_for_track(BASE_LEVEL)
+        powerful_drop = state.has(ToontownItemName.DROP_FRAME.value, player, level) and calc_wanted_damage_for_track(level)
         powerful_trap = state.has(ToontownItemName.TRAP_FRAME.value, player, level) \
                         and state.has(ToontownItemName.LURE_FRAME.value, player, underlevel) \
-                        and calc_wanted_damage_for_track(ToontownItemName.TRAP_FRAME.value, BASE_LEVEL)
-        powerful_sound = state.has(ToontownItemName.SOUND_FRAME.value, player, overlevel) and calc_wanted_damage_for_track(ToontownItemName.SOUND_FRAME.value, min(BASE_LEVEL + 1, 8))
+                        and calc_wanted_damage_for_track(BASE_LEVEL)
+        powerful_sound = state.has(ToontownItemName.SOUND_FRAME.value, player, overlevel) and calc_wanted_damage_for_track(min(BASE_LEVEL + 1, 8))
 
         powerful_tracks = 0
         tracks = [powerful_sound, powerful_throw_knockback, powerful_squirt_knockback]
