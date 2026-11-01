@@ -53,6 +53,8 @@ def has_collected_items_for_gag_level(state: CollectionState, player: int, optio
 
     # Check collected gag capacity items too.
     current_cap = (20 +  # Base Gag Capacity
+                  (2 * state.count(ToontownItemName.GAG_CAPACITY_2.value, player)) +
+                  (3 * state.count(ToontownItemName.GAG_CAPACITY_3.value, player)) +
                   (5 * state.count(ToontownItemName.GAG_CAPACITY_5.value, player)) +
                   (10 * state.count(ToontownItemName.GAG_CAPACITY_10.value, player)) +
                   (15 * state.count(ToontownItemName.GAG_CAPACITY_15.value, player)))
