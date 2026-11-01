@@ -1,6 +1,7 @@
 from . import DistributedBarrelBaseAI
 from direct.directnotify import DirectNotifyGlobal
 from direct.task import Task
+import random
 
 class DistributedBeanBarrelAI(DistributedBarrelBaseAI.DistributedBarrelBaseAI):
 
@@ -13,4 +14,4 @@ class DistributedBeanBarrelAI(DistributedBarrelBaseAI.DistributedBarrelBaseAI):
         self.sendUpdate('setGrab', [avId])
         av = self.air.doId2do.get(avId)
         if av:
-            av.addMoney(self.rewardPerGrab)
+            av.addMoney(random.randint(750, 1250))

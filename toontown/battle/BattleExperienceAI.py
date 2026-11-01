@@ -140,18 +140,18 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
     # We should award the toons for killing some cogs, randomly generate some amount of beans to give to the players
     # so they can sustain restocking gags without taking fishing/trolley breaks
     moneyAward = 0
-    for _ in suitsKilled:
-
-        # Some percent chance that this suit will not drop any money
-        if random.random() > ToontownGlobals.CogMoneyDropChance:
-            continue
+    for suit in suitsKilled:
 
         # Calculate a random amount of beans to give to the player
         _min, _max = ToontownGlobals.CogMoneyDropRange
+
+        level = min(1, suit['level']) * 1.5
         if random.random() > ToontownGlobals.CogMoneyBonusChance:
-            moneyAward += (random.randint(_min, _max) * 3)
+            moneyToAdd = math.ceil((random.randint(_min, _max) * 3 * level))
         else:
-            moneyAward += random.randint(_min, _max)
+            moneyToAdd = math.ceil((random.randint(_min, _max) * 2 * level))
+        moneyAward += moneyToAdd
+        print(moneyAward)
 
     for toon in activeToonList:
 

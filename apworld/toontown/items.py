@@ -55,6 +55,8 @@ class ToontownItemName(enum.Enum):
     DROP_UPGRADE   = "Organic Drop Upgrade"
 
     ### Gag Capacity ###
+    GAG_CAPACITY_2  = "+2 Gag Capacity"
+    GAG_CAPACITY_3  = "+3 Gag Capacity"
     GAG_CAPACITY_5  = "+5 Gag Capacity"
     GAG_CAPACITY_10 = "+10 Gag Capacity"
     GAG_CAPACITY_15 = "+15 Gag Capacity"
@@ -194,9 +196,11 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     ToontownItemDefinition(ToontownItemName.DMG_BOOST_4, ItemClassification.progression),
     # endregion
     # region Gag Capacity
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.progression_deprioritized, quantity=12),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.progression, quantity=2),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
-    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.progression, quantity=0),  # NOTE: update values in has_collected_items_for_gag_level to match quantity
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_2,  ItemClassification.progression_deprioritized, quantity=7),
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_3,  ItemClassification.progression_deprioritized, quantity=7),
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_5,  ItemClassification.progression_deprioritized, quantity=5),
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_10, ItemClassification.progression, quantity=2),
+    ToontownItemDefinition(ToontownItemName.GAG_CAPACITY_15, ItemClassification.progression, quantity=0),
     # endregion
     # region Jellybean Capacity
     ToontownItemDefinition(ToontownItemName.MONEY_CAP_1000, ItemClassification.progression, quantity=9),
@@ -450,6 +454,8 @@ GAG_UPGRADES = (
 
 def get_item_groups():
     GAG_CAPACITY = (
+        ToontownItemName.GAG_CAPACITY_2,
+        ToontownItemName.GAG_CAPACITY_3,
         ToontownItemName.GAG_CAPACITY_5,
         ToontownItemName.GAG_CAPACITY_10,
         ToontownItemName.GAG_CAPACITY_15
@@ -510,7 +516,11 @@ def get_item_groups():
         ToontownItemName.SELLBOT_DISGUISE,
         ToontownItemName.CASHBOT_DISGUISE,
         ToontownItemName.LAWBOT_DISGUISE,
-        ToontownItemName.BOSSBOT_DISGUISE
+        ToontownItemName.BOSSBOT_DISGUISE,
+        ToontownItemName.SELLBOT_DISGUISE_PART,
+        ToontownItemName.CASHBOT_DISGUISE_PART,
+        ToontownItemName.LAWBOT_DISGUISE_PART,
+        ToontownItemName.BOSSBOT_DISGUISE_PART
     )
 
     GAG_EXP = (

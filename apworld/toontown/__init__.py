@@ -263,10 +263,6 @@ class ToontownWorld(World):
             if not self.is_enabled_estate_location(location_data):
                 continue
 
-            if location_data.region == ToontownRegionName.LOGIN:
-                if location_data.name in [ToontownLocationName.STARTING_TRACK_ONE, ToontownLocationName.STARTING_TRACK_TWO] and not len(self.startingTracks) == 2:
-                    continue
-
             # Now create the location.
             region = regions[location_data.region]
             location = ToontownLocation(player, location_data.name.value, self.location_name_to_id[location_data.name.value], region)
@@ -298,7 +294,10 @@ class ToontownWorld(World):
 
         # Force various item placements.
         self._force_item_placement(ToontownLocationName.STARTING_NEW_GAME,  ToontownItemName.TTC_ACCESS)
-        if len(self.startingTracks) == 2:
+        tracks_length = len(self.startingTracks)
+        if tracks_length == 1:
+            self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.startingTracks[0])
+        elif tracks_length >= 2:
             self._force_item_placement(ToontownLocationName.STARTING_TRACK_ONE, self.startingTracks[0])
             self._force_item_placement(ToontownLocationName.STARTING_TRACK_TWO, self.startingTracks[1])
 
@@ -610,8 +609,9 @@ class ToontownWorld(World):
             quantity = 8 if frame not in self.startingTracks else 7
             for _ in range(quantity):
                 pool.append(self.create_item(frame.value))
-        if len(self.startingTracks) != 2:  # we're not generating starting tracks...
-            for frame in self.startingTracks:
+        # Precollect gag tracks after the 2nd
+        if len(self.startingTracks) > 2:
+            for frame in self.startingTracks[2:]:
                 self.multiworld.push_precollected(self.create_item(frame.value))
 
         # Dynamically generate gag upgrades.
