@@ -1315,13 +1315,13 @@ def HasOffensiveLevel(state: CollectionState, locentr: LocEntrDef, world: MultiW
     # The ratio of Gag Capacity items required to reach a given gag level.
     DMG_RATIOS_FOR_GAG_LEVELS = {
         1: 0,
-        2: 0.1,
-        3: 0.2,
-        4: 0.3,
-        5: 0.45,
-        6: 0.6,
+        2: 0.05,
+        3: 0.1,
+        4: 0.2,
+        5: 0.4,
+        6: 0.55,
         7: 0.7,
-        8: 0.8
+        8: 0.75
     }
 
     # To pass the check, we must have:
