@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 cd "$(dirname "$0")"
 
+pidFile="$(pwd)/.server_launcher.pid"
+echo $$ > "$pidFile"
+trap 'exit 0' INT TERM
+trap 'rm -f "$pidFile"' EXIT
+
 echo "Starting Astron..."
 ./start_server_astron.sh &
 
@@ -12,4 +17,5 @@ echo "Starting UberDOG..."
 sleep 2
 
 echo "Starting AI..."
-./start_server_ai.sh
+./start_server_ai.sh &
+wait $!
