@@ -4,7 +4,7 @@ set SERVICE_TO_RUN=UD
 cd game
 
 :launch
-start /B "%~dp0" "launch.exe" ^
+start /B "Toontown Archipelago - UberDOG Server" "launch.exe" ^
     --base-channel 1000000 ^
     --max-channels 999999 ^
     --stateserver 4002 ^

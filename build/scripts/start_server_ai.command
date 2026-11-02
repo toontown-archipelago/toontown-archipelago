@@ -1,4 +1,12 @@
-cd $(dirname $0 )
+#!/usr/bin/env bash
+cd "$(dirname "$0")"
+
+pidFile="$(pwd)/.server_ai.pid"
+serverPid=
+echo $$ > "$pidFile"
+trap 'exit 0' INT TERM
+trap 'kill "$serverPid" 2>/dev/null; wait "$serverPid" 2>/dev/null; rm -f "$pidFile"' EXIT
+
 export SERVICE_TO_RUN=AI
 cd game
 export BASE_CHANNEL=401000000
@@ -11,6 +19,9 @@ while true;
 do
     ./launch \
     config/common.prc \
-    config/production.prc
+    config/production.prc &
+    serverPid=$!
+    wait "$serverPid"
+    serverPid=
     sleep 5
 done
