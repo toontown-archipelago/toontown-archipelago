@@ -129,10 +129,11 @@ class BouncedPacket(ClientBoundPacketBase):
             toon.addMoney(amount, isLocalChange=False)
         else:
             toon_money = toon.getMoney()
+            actual_amount = -amount
             # We do this so we only take what the toon has when it's over
             # If we don't loss packets that are too big are essentially dropped
-            amount = min(amount, toon_money)
-            toon.takeMoney((amount*-1), isLocalChange=False)
+            actual_amount = min(actual_amount, toon_money)
+            toon.takeMoney(actual_amount, isLocalChange=False)
 
     def handle(self, client):
         self.debug("Handling packet")
