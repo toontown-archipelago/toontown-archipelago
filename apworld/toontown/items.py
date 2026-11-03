@@ -22,6 +22,10 @@ class ToontownItemName(enum.Enum):
 
     ### Jellybean Jar Capacity ###
     MONEY_CAP_1000 = "Progressive Jellybean Jar"
+
+    ### Bank Capacity ###
+    BANK_CAP_1500 = "+1500 Bank Capacity"
+    BANK_CAP_3000 = "+3000 Bank Capacity"
     
     ### Task Carry Capacity ###
     TASK_CAPACITY = "Progressive Task Capacity"
@@ -204,6 +208,11 @@ ITEM_DEFINITIONS: List[ToontownItemDefinition] = [
     # endregion
     # region Jellybean Capacity
     ToontownItemDefinition(ToontownItemName.MONEY_CAP_1000, ItemClassification.progression, quantity=9),
+    # endregion
+    # region Jellybean Bank Capacity
+    ToontownItemDefinition(ToontownItemName.BANK_CAP_1500, ItemClassification.useful, quantity=4),
+    ToontownItemDefinition(ToontownItemName.BANK_CAP_3000, ItemClassification.useful, quantity=1),
+    # endregion
     # region Task Capacity
     # range depends on the starting capacity
     ToontownItemDefinition(ToontownItemName.TASK_CAPACITY, ItemClassification.progression_deprioritized_skip_balancing),
@@ -540,6 +549,11 @@ def get_item_groups():
         ToontownItemName.MONEY_CAP_1000,
     )
 
+    BANK_CAPACITY = (
+        ToontownItemName.BANK_CAP_1500,
+        ToontownItemName.BANK_CAP_3000
+    )
+
     TASK_CAPACITY = (
         ToontownItemName.TASK_CAPACITY,
     )
@@ -576,6 +590,7 @@ def get_item_groups():
         "Damage Boosts": DMG_BOOSTS,
         "Fishing Licenses": FISHING_LICENSES,
         "Jellybean Capacity": JELLYBEAN_CAPACITY,
+        "Bank Capacity": BANK_CAPACITY,
         "Side Activity Keys": ACTIVITY_KEYS,
         "Task Capacity": TASK_CAPACITY,
         "Laff Boosts": LAFF_BOOSTS,

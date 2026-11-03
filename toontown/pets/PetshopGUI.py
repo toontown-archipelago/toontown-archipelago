@@ -236,7 +236,7 @@ class PetshopGUI(DirectObject):
             #self.petModel.reparentTo(self.petView)
             #self.petModel.setH(130)
             #self.petModel.enterNeutralHappy()
-            self.moneyDisplay = DirectLabel(parent=self, relief=None, text=str(base.localAvatar.getTotalMoney()), text_scale=0.075, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.225, 0.33), text_font=ToontownGlobals.getSignFont())
+            self.moneyDisplay = DirectLabel(parent=self, relief=None, text=str(base.localAvatar.getMoney()), text_scale=0.075, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.225, 0.33), text_font=ToontownGlobals.getSignFont())
             self.maxMoneyDisplay = DirectLabel(parent=self, relief=None, text="/ "+str(base.localAvatar.getMaxMoney()), text_scale=0.035, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.25, 0.3), text_font=ToontownGlobals.getSignFont())
             self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
             self.accept(localAvatar.uniqueName('bankMoneyChange'), self.__moneyChange)
@@ -255,7 +255,7 @@ class PetshopGUI(DirectObject):
             DirectFrame.destroy(self)
 
         def __moneyChange(self, money):
-            self.moneyDisplay['text'] = str(base.localAvatar.getTotalMoney())
+            self.moneyDisplay['text'] = str(base.localAvatar.getMoney())
             self.maxMoneyDisplay['text'] = "/ "+str(base.localAvatar.getMaxMoney())
 
     class ReturnPetDlg(DirectFrame):
@@ -326,7 +326,7 @@ class PetshopGUI(DirectObject):
             self.pawLButton = DirectButton(parent=self, relief=None, image=pawLImageList, geom=pawLArrowImageList, scale=modelScale, pressEffect=False, command=lambda : self.__handlePetChange(-1))
             self.pawRButton = DirectButton(parent=self, relief=None, image=pawRImageList, geom=pawRArrowImageList, scale=modelScale, pressEffect=False, command=lambda : self.__handlePetChange(1))
             self.okButton = DirectButton(parent=self, relief=None, image=adoptImageList, image3_color=disabledImageColor, scale=modelScale, text=TTLocalizer.PetshopAdopt, text_scale=TTLocalizer.PGUIokButton, text_pos=TTLocalizer.PGUIokButtonPos, text0_fg=text0Color, text1_fg=text1Color, text2_fg=text2Color, text3_fg=text3Color, pressEffect=False, command=lambda : messenger.send(doneEvent, [self.curPet]))
-            self.moneyDisplay = DirectLabel(parent=self, relief=None, text=str(base.localAvatar.getTotalMoney()), text_scale=0.1, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.34, 0.12), text_font=ToontownGlobals.getSignFont())
+            self.moneyDisplay = DirectLabel(parent=self, relief=None, text=str(base.localAvatar.getMoney()), text_scale=0.1, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.34, 0.12), text_font=ToontownGlobals.getSignFont())
             self.maxMoneyDisplay = DirectLabel(parent=self, relief=None, text="/ "+str(base.localAvatar.getMaxMoney()), text_scale=0.05, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.36, 0.08), text_font=ToontownGlobals.getSignFont())
             self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
             self.accept(localAvatar.uniqueName('bankMoneyChange'), self.__moneyChange)
@@ -434,7 +434,7 @@ class PetshopGUI(DirectObject):
                 self.doodleName['text'] = doodleName
             self.descLabel = DirectLabel(parent=self, pos=(-0.4, 0, 0.72), relief=None, scale=0.05, text=self.petDesc[self.curPet], text_align=TextNode.ALeft, text_wordwrap=TTLocalizer.PGUIwordwrap, text_scale=TTLocalizer.PGUIdescLabel)
             self.okButton['state'] = DGG.NORMAL
-            if self.petCost[self.curPet] > base.localAvatar.getTotalMoney():
+            if self.petCost[self.curPet] > base.localAvatar.getMoney():
                 self.okButton['state'] = DGG.DISABLED
             if self.getCheckId() in base.localAvatar.getCheckedLocations():
                 self.nameLabel.destroy()
@@ -443,7 +443,7 @@ class PetshopGUI(DirectObject):
             return
 
         def __moneyChange(self, money):
-            self.moneyDisplay['text'] = str(base.localAvatar.getTotalMoney())
+            self.moneyDisplay['text'] = str(base.localAvatar.getMoney())
             self.maxMoneyDisplay['text'] = "/ "+str(base.localAvatar.getMaxMoney())
 
     def __init__(self, eventDict, petSeeds, subId):

@@ -141,20 +141,18 @@ def assignRewards(activeToons, toonSkillPtsGained, suitsKilled, zoneId, helpfulT
     # so they can sustain restocking gags without taking fishing/trolley breaks
     moneyAward = 0
     for suit in suitsKilled:
-
         # Calculate a random amount of beans to give to the player
         _min, _max = ToontownGlobals.CogMoneyDropRange
 
-        level = min(1, suit['level']) * 1.5
+        level = (max(1, suit['level']) * 0.75)
+        base_amount = random.randint(_min, _max)
         if random.random() > ToontownGlobals.CogMoneyBonusChance:
-            moneyToAdd = math.ceil((random.randint(_min, _max) * 3 * level))
+            moneyToAdd = math.ceil(base_amount * 3 * level)
         else:
-            moneyToAdd = math.ceil((random.randint(_min, _max) * 2 * level))
+            moneyToAdd = math.ceil(base_amount * 2 * level)
         moneyAward += moneyToAdd
-        print(moneyAward)
 
     for toon in activeToonList:
-
         # New gags [(track, level), (track, level), ....]
         newGags: List[tuple[int, int]] = []
 

@@ -2508,7 +2508,15 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             return False
         self.ap_takeMoney(deltaMoney)
         self.b_setMoney(self.money - deltaMoney)
+        self.pullMoneyFromBank(deltaMoney)
         return True
+
+    def pullMoneyFromBank(self, amount):
+        if self.getBankMoney() == 0:
+            return
+        moneyPulled = min(self.getBankMoney(), amount)
+        self.b_setBankMoney(self.getBankMoney() - moneyPulled)
+        self.addMoney(moneyPulled)
 
     def b_setMoney(self, money):
         if bboard.get('autoRich-%s' % self.doId, False):
@@ -4832,7 +4840,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.b_setMaxMoney(1000)
         self.b_setMoney(100)
         self.b_setBankMoney(0)
-        self.b_setMaxBankMoney(0)
+        self.b_setMaxBankMoney(1000)
 
         # Activities
         self.b_setTickets(0)

@@ -185,7 +185,7 @@ class PlantingGUI(DirectFrame):
         self.jellyBeanPickerInterval = None
         self.createBoxes()
         guiItems = loader.loadModel('phase_5.5/models/gui/catalog_gui')
-        self.beanBank = DirectLabel(self, relief=None, image=guiItems.find('**/bean_bank'), text=str(base.localAvatar.getMoney() + base.localAvatar.getBankMoney()), text_align=TextNode.ARight, text_scale=0.11, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.75, -0.81), text_font=ToontownGlobals.getSignFont(), pos=(-0.85, 0, 0.2), scale=0.5)
+        self.beanBank = DirectLabel(self, relief=None, image=guiItems.find('**/bean_bank'), text=str(base.localAvatar.getMoney()), text_align=TextNode.ARight, text_scale=0.11, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.75, -0.81), text_font=ToontownGlobals.getSignFont(), pos=(-0.85, 0, 0.2), scale=0.5)
         self.matchBoxesToAvailableMoney()
         if PICKER_ALWAYS_UP:
             self.spiffyBeanBoxClicked(0)
@@ -222,7 +222,7 @@ class PlantingGUI(DirectFrame):
         for box in self.boxList:
             box.setSelectedIndex(0)
 
-        self.beanBank['text'] = str(base.localAvatar.getMoney() + base.localAvatar.getBankMoney())
+        self.beanBank['text'] = str(base.localAvatar.getMoney())
         self.matchBoxesToAvailableMoney()
         if PICKER_ALWAYS_UP:
             self.spiffyBeanBoxClicked(0)
@@ -387,7 +387,7 @@ class PlantingGUI(DirectFrame):
             self.jellyBeanPicker.destroy()
             self.jellyBeanPicker = None
         cost = len(self.getRecipeStr())
-        newMoney = base.localAvatar.getMoney() + base.localAvatar.getBankMoney() - cost
+        newMoney = base.localAvatar.getMoney() - cost
         self.beanBank['text'] = str(newMoney)
         self.matchBoxesToAvailableMoney()
         messenger.send('wakeup')
