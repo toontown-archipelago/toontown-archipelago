@@ -130,7 +130,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
             else:
                 self.transactionType = 'checked'
                 return
-            av.takeMoney(cost)
+            av.takeMoney(cost, isShop=True)
 
     def getCheckName(self):
         zoneId = ZoneUtil.getCanonicalSafeZoneId(self.zoneId)

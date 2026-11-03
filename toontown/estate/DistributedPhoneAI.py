@@ -281,7 +281,7 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
 
             self.sendUpdateToAvatarId(avId, 'requestPurchaseResponse', [context, retCode])
             if retCode in (ToontownGlobals.P_ItemOnOrder, ToontownGlobals.P_ItemAvailable):
-                av.takeMoney(price)
+                av.takeMoney(price, isShop=True)
 
         self.air.dbInterface.queryObject(self.air.dbId, accId, handleAccount)
 

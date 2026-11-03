@@ -2499,7 +2499,7 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
         self.ap_addMoney(deltaMoney)
         self.b_setMoney(pocketMoney)
 
-    def takeMoney(self, deltaMoney, isLocalChange=True):
+    def takeMoney(self, deltaMoney, isLocalChange=True, isShop=False):
         totalMoney = self.money
         if isLocalChange:
             self.archipelago_session.toon_change_money((deltaMoney * -1), isLocalChange)
@@ -2508,7 +2508,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             return False
         self.ap_takeMoney(deltaMoney)
         self.b_setMoney(self.money - deltaMoney)
-        self.pullMoneyFromBank(deltaMoney)
+        if isShop:
+            self.pullMoneyFromBank(deltaMoney)
         return True
 
     def pullMoneyFromBank(self, amount):
@@ -2516,7 +2517,8 @@ class DistributedToonAI(DistributedPlayerAI.DistributedPlayerAI, DistributedSmoo
             return
         moneyPulled = min(self.getBankMoney(), amount)
         self.b_setBankMoney(self.getBankMoney() - moneyPulled)
-        self.addMoney(moneyPulled)
+        # Setting isLocalChange to false here prevents the refill from giving a positive ringlink
+        self.addMoney(moneyPulled, isLocalChange=False)
 
     def b_setMoney(self, money):
         if bboard.get('autoRich-%s' % self.doId, False):
