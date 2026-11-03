@@ -7,6 +7,7 @@ echo $$ > "$pidFile"
 trap 'exit 0' INT TERM
 trap 'kill "$serverPid" 2>/dev/null; wait "$serverPid" 2>/dev/null; rm -f "$pidFile"' EXIT
 
+export LD_LIBRARY_PATH="$(pwd)/game:${LD_LIBRARY_PATH:-}"
 cd game/astron
 
 while true; do
