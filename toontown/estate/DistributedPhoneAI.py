@@ -92,6 +92,11 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
             self.sendUpdateToAvatarId(avId, 'freeAvatar', [])
             return
 
+        if av.slotData.get('catalog_checks', 0) == 0:
+            av.d_setSystemMessage(0, "You go to call for the cattlelog, but there's nothing to buy!")
+            self.sendUpdateToAvatarId(avId, 'freeAvatar', [])
+            return
+
         if av.slotData.get('catalog_checks', 0) > 0:
             self.air.catalogManager.deliverCatalogFor(av)
             if av.slotData.get("catalog_display", RewardDisplayOption.default) in (RewardDisplayOption.option_auto_hint, RewardDisplayOption.option_auto_hint_prog):
