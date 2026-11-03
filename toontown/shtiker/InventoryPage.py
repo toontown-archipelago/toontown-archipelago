@@ -27,8 +27,9 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         self.trackProgress = GagTrackBarGUI(parent=self.trackInfo, track=0, pos=(0, 0, -0.25), scale=1.1)
         self.trackProgress.hide()
         jarGui = loader.loadModel('phase_3.5/models/gui/jar_gui')
-        self.moneyDisplay = DirectLabel(parent=self, relief=None, pos=(0.55, 0, -0.5), scale=0.8, text=str(base.localAvatar.getMoney()), text_scale=0.18, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.1, 0), image=jarGui.find('**/Jar'), text_font=ToontownGlobals.getSignFont())
-        self.maxMoneyDisplay = DirectLabel(parent=self, relief=None, pos=(0.57, 0, -0.6), scale=0.4, text="/ "+str(base.localAvatar.getMaxMoney()), text_scale=0.18, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.1, 0), text_font=ToontownGlobals.getSignFont())
+        self.moneyDisplay = DirectLabel(parent=self, relief=None, pos=(0.55, 0, -0.5), scale=0.8, text=str(base.localAvatar.getMoney()), text_scale=0.18, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.08, 0), image=jarGui.find('**/Jar'), text_font=ToontownGlobals.getSignFont())
+        self.maxMoneyDisplay = DirectLabel(parent=self, relief=None, pos=(0.57, 0, -0.58), scale=0.4, text="/ "+str(base.localAvatar.getMaxMoney()), text_scale=0.18, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.1, 0), text_font=ToontownGlobals.getSignFont())
+        self.bankMoneyDisplay = DirectLabel(parent=self, relief=None, pos=(0.56, 0, -0.65), scale=0.25, text="Bank: "+str(base.localAvatar.getBankMoney()), text_scale=0.18, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.1, 0), text_font=ToontownGlobals.getSignFont())
         jarGui.removeNode()
         return
 
@@ -39,7 +40,7 @@ class InventoryPage(ShtikerPage.ShtikerPage):
     def __moneyChange(self, money):
         self.moneyDisplay['text'] = str(money)
         self.maxMoneyDisplay['text'] = '/ '+str(base.localAvatar.getMaxMoney())
-
+        self.bankMoneyDisplay['text'] = "Bank: "+str(base.localAvatar.getBankMoney())
 
     def enter(self):
         ShtikerPage.ShtikerPage.enter(self)
@@ -48,6 +49,7 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         base.localAvatar.inventory.reparentTo(self)
         self.moneyDisplay['text'] = str(base.localAvatar.getMoney())
         self.maxMoneyDisplay['text'] = '/ '+str(base.localAvatar.getMaxMoney())
+        self.bankMoneyDisplay['text'] = "Bank: "+str(base.localAvatar.getBankMoney())
         self.accept('enterBookDelete', self.enterDeleteMode)
         self.accept('exitBookDelete', self.exitDeleteMode)
         self.accept('enterTrackFrame', self.updateTrackInfo)
@@ -130,8 +132,6 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         self.ignore(ToontownGlobals.InventoryHotkeyOff)
 
     def showInventoryOnscreen(self):
-
-
         # Check if there is currently something already displaying in the hotkey interface slot
         if not base.localAvatar.allowOnscreenInterface():
             return
@@ -145,6 +145,7 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         base.localAvatar.inventory.reparentTo(self)
         self.moneyDisplay['text'] = str(base.localAvatar.getMoney())
         self.maxMoneyDisplay['text'] = '/ '+str(base.localAvatar.getMaxMoney())
+        self.bankMoneyDisplay['text'] = "Bank: "+str(base.localAvatar.getBankMoney())
         self.accept('enterTrackFrame', self.updateTrackInfo)
         self.accept('exitTrackFrame', self.clearTrackInfo)
         self.accept(localAvatar.uniqueName('moneyChange'), self.__moneyChange)
@@ -153,7 +154,6 @@ class InventoryPage(ShtikerPage.ShtikerPage):
         self.show()
 
     def hideInventoryOnscreen(self):
-
         # If the current onscreen interface is not us, don't do anything
         if base.localAvatar.getCurrentOnscreenInterface() is not self:
             return

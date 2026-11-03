@@ -196,12 +196,24 @@ class Rule(Enum):
 
     ### Doodles ###
 
-    CanBuyTTCDoodle = auto()
-    CanBuyDDDoodle = auto()
-    CanBuyDGDoodle = auto()
-    CanBuyMMLDoodle = auto()
-    CanBuyTBDoodle = auto()
-    CanBuyDDLDoodle = auto()
+    CanBuyTTCDoodle1 = auto()
+    CanBuyDDDoodle1 = auto()
+    CanBuyDGDoodle1 = auto()
+    CanBuyMMLDoodle1 = auto()
+    CanBuyTBDoodle1 = auto()
+    CanBuyDDLDoodle1 = auto()
+    CanBuyTTCDoodle2 = auto()
+    CanBuyDDDoodle2 = auto()
+    CanBuyDGDoodle2 = auto()
+    CanBuyMMLDoodle2 = auto()
+    CanBuyTBDoodle2 = auto()
+    CanBuyDDLDoodle2 = auto()
+    CanBuyTTCDoodle3 = auto()
+    CanBuyDDDoodle3 = auto()
+    CanBuyDGDoodle3 = auto()
+    CanBuyMMLDoodle3 = auto()
+    CanBuyTBDoodle3 = auto()
+    CanBuyDDLDoodle3 = auto()
 
     ### Gardening ###
 

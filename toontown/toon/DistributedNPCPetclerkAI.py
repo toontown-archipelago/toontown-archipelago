@@ -105,7 +105,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
                 self.air.writeServerEvent('suspicious', avId, 'DistributedNPCPetshopAI.petAdopted and no such pet!')
                 self.notify.warning('somebody called petAdopted on a non-existent pet! avId: %s' % avId)
                 return
-            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId]
+            baseCost = ToontownGlobals.ZONE_TO_CHECK_COST[zoneId][self.subId-1]
             if av.slotData.get('doodle_price_rando', False):
                 rng = random.Random()
                 rng.seed(f"{av.getSeed()}-{self.subId}")
@@ -130,7 +130,7 @@ class DistributedNPCPetclerkAI(DistributedNPCToonBaseAI):
             else:
                 self.transactionType = 'checked'
                 return
-            av.takeMoney(cost)
+            av.takeMoney(cost, isShop=True)
 
     def getCheckName(self):
         zoneId = ZoneUtil.getCanonicalSafeZoneId(self.zoneId)

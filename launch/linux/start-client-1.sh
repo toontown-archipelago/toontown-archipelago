@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
 echo "Toontown Archipelago: Client 1 Launcher"
 echo
+
+cd "$(dirname "$0")"
 export PPYTHON_PATH=$(cat PPYTHON_PATH)
 export SERVICE_TO_RUN=CLIENT
 cd ../..

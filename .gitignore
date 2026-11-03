@@ -34,3 +34,5 @@ release/
 apworld/toontown.apworld
 # Visual Studio Code IDE
 /.vscode
+/dist
+TTAP-linux.zip

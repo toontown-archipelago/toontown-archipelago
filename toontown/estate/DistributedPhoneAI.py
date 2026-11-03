@@ -92,6 +92,11 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
             self.sendUpdateToAvatarId(avId, 'freeAvatar', [])
             return
 
+        if av.slotData.get('catalog_checks', 0) == 0:
+            av.d_setSystemMessage(0, "You go to call for the cattlelog, but there's nothing to buy!")
+            self.sendUpdateToAvatarId(avId, 'freeAvatar', [])
+            return
+
         if av.slotData.get('catalog_checks', 0) > 0:
             self.air.catalogManager.deliverCatalogFor(av)
             if av.slotData.get("catalog_display", RewardDisplayOption.default) in (RewardDisplayOption.option_auto_hint, RewardDisplayOption.option_auto_hint_prog):
@@ -244,7 +249,7 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
                 return
 
             # Take the jellybeans away:
-            if price > av.getTotalMoney():
+            if price > av.getMoney():
                 self.air.writeServerEvent('suspicious', avId, 'Failed to take away the jellybeans from the avatar')
                 self.sendUpdateToAvatarId(avId, 'requestPurchaseResponse', [context, ToontownGlobals.P_NotEnoughMoney])
                 return
@@ -276,7 +281,7 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
 
             self.sendUpdateToAvatarId(avId, 'requestPurchaseResponse', [context, retCode])
             if retCode in (ToontownGlobals.P_ItemOnOrder, ToontownGlobals.P_ItemAvailable):
-                av.takeMoney(price)
+                av.takeMoney(price, isShop=True)
 
         self.air.dbInterface.queryObject(self.air.dbId, accId, handleAccount)
 
@@ -344,7 +349,7 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
                 price = item.getPrice(0)
 
             # Take the jellybeans away:
-            if price > av.getTotalMoney():
+            if price > av.getMoney():
                 self.air.writeServerEvent('suspicious', avId, 'Failed to take away the jellybeans from the avatar')
                 self.sendUpdateToAvatarId(avId, 'requestGiftPurchaseResponse',
                                           [context, ToontownGlobals.P_NotEnoughMoney])
