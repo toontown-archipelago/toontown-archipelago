@@ -230,7 +230,7 @@ class PurchaseManagerAI(DistributedObjectAI.DistributedObjectAI):
                             self.notify.warning('Bad report state: ' + str(self.playersReported[avIndex]))
                         else:
                             av.d_setInventory(av.inventory.makeNetString())
-                            av.takeMoney(newMoney - currentMoney)
+                            av.takeMoney(newMoney - currentMoney, isShop=True)
                     else:
                         self.air.writeServerEvent('suspicious', avId, 'PurchaseManager.setInventory invalid purchase')
                         self.notify.warning('Avatar ' + str(avId) + ' attempted an invalid purchase.')

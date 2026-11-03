@@ -136,7 +136,7 @@ class DistributedFishingSpotAI(DistributedObjectAI):
             self.air.writeServerEvent('suspicious', avId, 'Toon tried to cast with too many fish!')
             return
 
-        av.takeMoney(cost, False)
+        av.takeMoney(cost, isLocalChange=False)
         self.d_setMovie(FishGlobals.CastMovie, 0, 0, 0, 0, p, h)
         taskMgr.remove('cancel-animation-%d' % self.doId)
         taskMgr.doMethodLater(2, self.d_setMovie, 'cancel-animation-%d' % self.doId,

@@ -83,7 +83,7 @@ class DistributedNPCClerkAI(DistributedNPCToonBaseAI):
                 # spamming archipelago with changing jellybeans by 1 repeatedly.
                 if done:
                     av.d_setInventory(av.inventory.makeNetString())
-                    av.takeMoney(currentMoney - newMoney)
+                    av.takeMoney(currentMoney - newMoney, isShop=True)
             else:
                 self.air.writeServerEvent('suspicious', avId, 'DistributedNPCClerkAI.setInventory invalid purchase')
                 self.notify.warning('Avatar ' + str(avId) + ' attempted an invalid purchase.')
