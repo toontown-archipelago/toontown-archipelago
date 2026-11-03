@@ -64,22 +64,6 @@ if [ -d "$PANDA_DIR/etc" ]; then
     cp -r "$PANDA_DIR"/etc/* release/game/etc/
 fi
 
-# Bundle runtime shared libraries so end users do not need to install distro packages
-echo "Bundling non-system runtime libraries..."
-BUNDLE_LIBS=(
-    "libopenal.so*"
-    "libsndio.so*"
-    "libvorbisfile.so*"
-    "libvorbis.so*"
-    "libogg.so*"
-    "libsquish.so*"
-    "libode.so*"
-    "libassimp.so*"
-)
-for lib in "${BUNDLE_LIBS[@]}"; do
-    find /usr/lib /lib -name "$lib" -exec cp -P {} release/game/ \; 2>/dev/null || true
-done
-
 echo "Copying apworld definitions..."
 mkdir -p release/game/apworld/toontown
 cp apworld/toontown/archipelago.json release/game/apworld/toontown/
@@ -106,6 +90,29 @@ chmod +x release/*.sh
 echo "Copying Astron server..."
 cp -r astron release/game
 chmod +x release/game/astron/astrond-linux* 2>/dev/null || true
+
+# Include transitive dependencies of Panda3D and its plugins, not just known codecs.
+# Keep glibc and graphics driver libraries supplied by the user's system.
+while IFS= read -r -d '' binary; do
+    while read -r name arrow library rest; do
+        [ "$arrow" = '=>' ] && [ -f "$library" ] || continue
+        case "$name" in
+            libc.so.*|libm.so.*|libmvec.so.*|libpthread.so.*|libdl.so.*|librt.so.*|libresolv.so.*|libutil.so.*|ld-linux*|libGL*.so*|libEGL.so*|libOpenGL.so*) continue ;;
+        esac
+        if [ ! -e "release/game/$name" ]; then
+            cp -L "$library" "release/game/$name"
+        fi
+    done < <(LD_LIBRARY_PATH="$(pwd)/release/game" ldd "$binary" 2>/dev/null)
+done < <(find release/game -type f \( -name '*.so*' -o -name 'launch' -o -name 'astrond-linux' \) -print0)
+
+# Fail packaging if the game, plugins, or Astron have unresolved dependencies.
+while IFS= read -r -d '' binary; do
+    dependencies=$(LD_LIBRARY_PATH="$(pwd)/release/game" ldd "$binary" 2>&1) || { echo "$dependencies" >&2; exit 1; }
+    if [[ "$dependencies" == *"not found"* ]]; then
+        echo "Unresolved runtime dependencies for $binary: $dependencies" >&2
+        exit 1
+    fi
+done < <(find release/game -type f \( -name '*.so*' -o -name 'launch' -o -name 'astrond-linux' \) -print0)
 
 echo "Compressing release into TTAP-linux.zip..."
 rm -f TTAP-linux.zip

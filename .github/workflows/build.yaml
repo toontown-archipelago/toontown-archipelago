@@ -196,7 +196,7 @@ jobs:
             gh release upload ${{ github.ref_name }} TTAP-macos.zip
 
   build-game-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Build against glibc 2.35 for older Linux distributions.
     permissions:
       contents: write  # Needed for release upload
     defaults:
@@ -207,7 +207,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -216,9 +216,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
+            bison \
+            flex \
+            pkg-config \
             patchelf \
             libgl1-mesa-dev \
             libopenal-dev \
+            libuv1-dev \
+            libjpeg-dev \
+            libeigen3-dev \
+            libfreetype6-dev \
+            libharfbuzz-dev \
+            libpng-dev \
+            libssl-dev \
             libasound2-dev \
             libpulse-dev \
             libx11-dev \
@@ -235,7 +245,21 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install nuitka
           python -m pip install -r requirements.txt
-          python -m pip install "https://github.com/toontown-archipelago/panda3d/releases/latest/download/panda3d-1.11.0-cp311-cp311-linux_x86_64.whl"
+
+      - name: Build Panda3D on the release baseline
+        run: |
+          # The published Linux wheel requires newer glibc; build the same engine source here.
+          git clone --depth 1 --branch v9.3 https://github.com/toontown-archipelago/panda3d.git "$RUNNER_TEMP/panda3d-src"
+          cd "$RUNNER_TEMP/panda3d-src"
+          python makepanda/makepanda.py \
+            --wheel \
+            --optimize 3 \
+            --lzma \
+            --threads=4 \
+            --archipelago \
+            --python-incdir="$pythonLocation/include" \
+            --python-libdir="$pythonLocation/lib"
+          python -m pip install ./panda3d-*.whl
 
       - name: Build Client
         run: |
@@ -272,22 +296,6 @@ jobs:
             cp -r $PANDA_DIR/etc/* release/game/etc/
           fi
 
-          # Bundle non-system runtime libraries so end users do not need to install distro packages
-          echo "Bundling runtime libraries (OpenAL, Vorbis, Squish, ODE, Assimp)..."
-          BUNDLE_LIBS=(
-            "libopenal.so*"
-            "libsndio.so*"
-            "libvorbisfile.so*"
-            "libvorbis.so*"
-            "libogg.so*"
-            "libsquish.so*"
-            "libode.so*"
-            "libassimp.so*"
-          )
-          for lib in "${BUNDLE_LIBS[@]}"; do
-            find /usr/lib /lib -name "$lib" -exec cp -P {} release/game/ \; 2>/dev/null || true
-          done
-
       - name: Copy Archipelago json
         run: |
           mkdir -p release/game/apworld/toontown
@@ -316,6 +324,31 @@ jobs:
         run: |
           cp -r astron release/game
           chmod +x release/game/astron/astrond-linux* 2>/dev/null || true
+
+      - name: Bundle and check Linux runtime libraries
+        run: |
+          # Include transitive dependencies of Panda3D and its plugins, not just known codecs.
+          # Keep glibc and graphics driver libraries supplied by the user's system.
+          while IFS= read -r -d '' binary; do
+              while read -r name arrow library rest; do
+                  [ "$arrow" = '=>' ] && [ -f "$library" ] || continue
+                  case "$name" in
+                      libc.so.*|libm.so.*|libmvec.so.*|libpthread.so.*|libdl.so.*|librt.so.*|libresolv.so.*|libutil.so.*|ld-linux*|libGL*.so*|libEGL.so*|libOpenGL.so*) continue ;;
+                  esac
+                  if [ ! -e "release/game/$name" ]; then
+                      cp -L "$library" "release/game/$name"
+                  fi
+              done < <(LD_LIBRARY_PATH="$(pwd)/release/game" ldd "$binary" 2>/dev/null)
+          done < <(find release/game -type f \( -name '*.so*' -o -name 'launch' -o -name 'astrond-linux' \) -print0)
+
+          # Fail packaging if the game, plugins, or Astron have unresolved dependencies.
+          while IFS= read -r -d '' binary; do
+              dependencies=$(LD_LIBRARY_PATH="$(pwd)/release/game" ldd "$binary" 2>&1) || { echo "$dependencies" >&2; exit 1; }
+              if [[ "$dependencies" == *"not found"* ]]; then
+                  echo "Unresolved runtime dependencies for $binary: $dependencies" >&2
+                  exit 1
+              fi
+          done < <(find release/game -type f \( -name '*.so*' -o -name 'launch' -o -name 'astrond-linux' \) -print0)
 
       - name: Compress Release
         run: |

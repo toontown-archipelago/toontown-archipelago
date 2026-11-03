@@ -19,6 +19,7 @@ RUN apt-get update && apt-get upgrade -y && \
         patchelf \
         libgl1-mesa-dev \
         libopenal-dev \
+        libuv1-dev \
         libasound2-dev \
         libpulse-dev \
         libx11-dev \
