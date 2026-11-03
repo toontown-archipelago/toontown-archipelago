@@ -320,7 +320,7 @@ class CatalogItemPanel(DirectFrame):
                 if localAvatar.getFont() == ToontownGlobals.getToonFont():
                     auxText = TTLocalizer.CatalogCurrent
                     self.buyButton['state'] = DGG.DISABLED
-            elif self['item'].getPrice(self['type']) > base.localAvatar.getMoney() + base.localAvatar.getBankMoney():
+            elif self['item'].getPrice(self['type']) > base.localAvatar.getMoney():
                 self.buyButton['state'] = DGG.DISABLED
         elif isNameTag and self['item'].nametagStyle == localAvatar.getNametagStyle():
             auxText = TTLocalizer.CatalogCurrent
@@ -345,7 +345,7 @@ class CatalogItemPanel(DirectFrame):
             self.buyButton['state'] = DGG.DISABLED
         elif self['item'].getEmblemPrices() and not base.localAvatar.isEnoughMoneyAndEmblemsToBuy(self['item'].getPrice(self['type']), self['item'].getEmblemPrices()):
             self.buyButton['state'] = DGG.DISABLED
-        elif self['item'].getPrice(self['type']) <= base.localAvatar.getMoney() + base.localAvatar.getBankMoney():
+        elif self['item'].getPrice(self['type']) <= base.localAvatar.getMoney():
             self.buyButton['state'] = DGG.NORMAL
             self.buyButton.show()
         else:
@@ -508,7 +508,7 @@ class CatalogItemPanel(DirectFrame):
                     auxText = TTLocalizer.CatalogMailboxFull
                     self.auxText['text'] = auxText
                     return
-                elif self['item'].getPrice(self['type']) <= base.localAvatar.getMoney() + base.localAvatar.getBankMoney():
+                elif self['item'].getPrice(self['type']) <= base.localAvatar.getMoney():
                     self.giftButton['state'] = DGG.NORMAL
                     self.giftButton.show()
 

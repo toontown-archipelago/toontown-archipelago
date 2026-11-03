@@ -138,6 +138,23 @@ class JellybeanJarUpgradeReward(APReward):
         av.b_setMaxMoney(av.maxMoney + self.amount)
         av.addMoney(self.amount)
 
+
+class JellybeanBankUpgradeReward(APReward):
+    def __init__(self, amount: int):
+        self.amount: int = amount
+
+    def formatted_header(self) -> str:
+        return global_text_properties.get_raw_formatted_string([
+            MinimalJsonMessagePart("Store "),
+            MinimalJsonMessagePart(f"+{self.amount}", color='green'),
+            MinimalJsonMessagePart(" more beans in the\nbank at your Estate!"),
+            MinimalJsonMessagePart("!"),
+        ])
+
+    def apply(self, av: "DistributedToonAI"):
+        av.b_setMaxBankMoney(av.getMaxBankMoney() + self.amount)
+
+
 class TaskCapacityReward(APReward):
     
         def __init__(self, amount: int):
@@ -1110,6 +1127,8 @@ ITEM_NAME_TO_AP_REWARD: [str, APReward] = {
     ToontownItemName.GAG_CAPACITY_10.value: GagCapacityReward(10),
     ToontownItemName.GAG_CAPACITY_15.value: GagCapacityReward(15),
     ToontownItemName.MONEY_CAP_1000.value: JellybeanJarUpgradeReward(1000),
+    ToontownItemName.BANK_CAP_1500.value: JellybeanBankUpgradeReward(1500),
+    ToontownItemName.BANK_CAP_3000.value: JellybeanBankUpgradeReward(3000),
     ToontownItemName.TASK_CAPACITY.value: TaskCapacityReward(1),
     ToontownItemName.TOONUP_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.TOONUP),
     ToontownItemName.TRAP_FRAME.value: GagTrainingFrameReward(GagTrainingFrameReward.TRAP),

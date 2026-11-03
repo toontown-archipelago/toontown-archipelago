@@ -244,7 +244,7 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
                 return
 
             # Take the jellybeans away:
-            if price > av.getTotalMoney():
+            if price > av.getMoney():
                 self.air.writeServerEvent('suspicious', avId, 'Failed to take away the jellybeans from the avatar')
                 self.sendUpdateToAvatarId(avId, 'requestPurchaseResponse', [context, ToontownGlobals.P_NotEnoughMoney])
                 return
@@ -344,7 +344,7 @@ class DistributedPhoneAI(DistributedFurnitureItemAI):
                 price = item.getPrice(0)
 
             # Take the jellybeans away:
-            if price > av.getTotalMoney():
+            if price > av.getMoney():
                 self.air.writeServerEvent('suspicious', avId, 'Failed to take away the jellybeans from the avatar')
                 self.sendUpdateToAvatarId(avId, 'requestGiftPurchaseResponse',
                                           [context, ToontownGlobals.P_NotEnoughMoney])

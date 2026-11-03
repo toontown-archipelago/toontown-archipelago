@@ -690,7 +690,7 @@ class CatalogScreen(DirectFrame):
          hangupRolloverGui,
          hangupGui], text=['', TTLocalizer.CatalogHangUp, TTLocalizer.CatalogHangUp], text_fg=Vec4(1), text_scale=0.07, text_pos=(0.0, 0.14), command=self.hangUp)
         self.hangup.setBin('gui-popup', 0)
-        self.beanBank = DirectLabel(self, relief=None, image=guiItems.find('**/bean_bank'), text=str(base.localAvatar.getMoney() + base.localAvatar.getBankMoney()), text_align=TextNode.ARight, text_scale=0.11, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.75, -0.81), text_font=ToontownGlobals.getSignFont())
+        self.beanBank = DirectLabel(self, relief=None, image=guiItems.find('**/bean_bank'), text=str(base.localAvatar.getMoney()), text_align=TextNode.ARight, text_scale=0.11, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0.75, -0.81), text_font=ToontownGlobals.getSignFont())
         nextUp = guiItems.find('**/arrow_up')
         nextRollover = guiItems.find('**/arrow_Rollover')
         nextDown = guiItems.find('**/arrow_Down')
@@ -894,7 +894,7 @@ class CatalogScreen(DirectFrame):
             if self.gifting == 1:
                 self.__giftToggle()
         if hasattr(self, 'beanBank'):
-            self.beanBank['text'] = str(base.localAvatar.getTotalMoney())
+            self.beanBank['text'] = str(base.localAvatar.getMoney())
             if lock == 0:
                 for item in self.panelList + self.backPanelList + self.loyaltyPanelList + self.emblemPanelList:
                     if type(item) != type(''):

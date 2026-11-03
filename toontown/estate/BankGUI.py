@@ -8,7 +8,7 @@ from direct.task.Task import Task
 class BankGui(DirectFrame):
     notify = DirectNotifyGlobal.directNotify.newCategory('BankGui')
 
-    def __init__(self, doneEvent, allowWithdraw = 1):
+    def __init__(self, doneEvent, allowWithdraw = 0):
         DirectFrame.__init__(self, relief=None, geom=DGG.getDefaultDialogGeom(), geom_color=ToontownGlobals.GlobalDialogColor, geom_scale=(1.33, 1, 1.1), pos=(0, 0, 0))
         self.initialiseoptions(BankGui)
         self.doneEvent = doneEvent
@@ -30,11 +30,12 @@ class BankGui(DirectFrame):
         self.cancelButton = DirectButton(parent=self, relief=None, image=cancelImageList, pos=(-0.2, 0, -0.4), text=TTLocalizer.BankGuiCancel, text_scale=0.06, text_pos=(0, -0.1), command=self.__cancel)
         self.okButton = DirectButton(parent=self, relief=None, image=okImageList, pos=(0.2, 0, -0.4), text=TTLocalizer.BankGuiOk, text_scale=0.06, text_pos=(0, -0.1), command=self.__requestTransaction)
         self.jarDisplay = DirectLabel(parent=self, relief=None, pos=(-0.4, 0, 0), scale=0.7, text=str(base.localAvatar.getMoney()), text_scale=0.2, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.1, 0), image=jarGui.find('**/Jar'), text_font=ToontownGlobals.getSignFont())
-        self.bankDisplay = DirectLabel(parent=self, relief=None, pos=(0.4, 0, 0), scale=0.9, text=str(base.localAvatar.getBankMoney()), text_scale=0.2, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.1, 0), geom=bankModel, geom_scale=0.08, geom_pos=(0, 10, -0.26), geom_hpr=(0, 0, 0), text_font=ToontownGlobals.getSignFont())
-        self.depositArrow = DirectButton(parent=self, relief=None, image=arrowImageList, image_scale=(1, 1, 1), image3_color=Vec4(0.6, 0.6, 0.6, 0.25), pos=(0.01, 0, 0.15))
+        self.bankDisplay = DirectLabel(parent=self, relief=None, pos=(0.4, 0, 0), scale=0.9, text=str(base.localAvatar.getBankMoney()), text_scale=0.2, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(0, -0.01, 0), geom=bankModel, geom_scale=0.08, geom_pos=(0, 10, -0.26), geom_hpr=(0, 0, 0), text_font=ToontownGlobals.getSignFont())
+        self.maxBankDisplay = DirectLabel(parent=self.bankDisplay, relief=None, pos=(0.4, 0, -0.025), text="/ "+str(base.localAvatar.getMaxBankMoney()), text_scale=0.125, text_fg=(0.95, 0.95, 0, 1), text_shadow=(0, 0, 0, 1), text_pos=(-0.4, -0.085), text_font=ToontownGlobals.getSignFont())
+        self.depositArrow = DirectButton(parent=self, relief=None, image=arrowImageList, image_scale=(1, 1, 1), image3_color=Vec4(0.6, 0.6, 0.6, 0.25), pos=(0.01, 0, 0.15), text="Deposit", text_scale=0.06, text_pos=(-0.015, -0.013), command=self.__depositMoney)
         self.withdrawArrow = DirectButton(parent=self, relief=None, image=arrowImageList, image_scale=(-1, 1, 1), image3_color=Vec4(0.6, 0.6, 0.6, 0.25), pos=(-0.01, 0, -0.15))
-        self.depositArrow.bind(DGG.B1PRESS, self.__depositButtonDown)
-        self.depositArrow.bind(DGG.B1RELEASE, self.__depositButtonUp)
+        #self.depositArrow.bind(DGG.B1PRESS, self.__depositButtonDown)
+        #self.depositArrow.bind(DGG.B1RELEASE, self.__depositButtonUp)
         self.withdrawArrow.bind(DGG.B1PRESS, self.__withdrawButtonDown)
         self.withdrawArrow.bind(DGG.B1RELEASE, self.__withdrawButtonUp)
         self.accept('bankAsleep', self.__cancel)
@@ -77,7 +78,7 @@ class BankGui(DirectFrame):
         self.__transactionAmount = -min(-self.__transactionAmount, bankMoney)
         newJarMoney = jarMoney - self.__transactionAmount
         newBankMoney = bankMoney + self.__transactionAmount
-        if newJarMoney <= 0 or newBankMoney >= maxBankMoney:
+        if newJarMoney <= 100 or newBankMoney >= maxBankMoney:
             self.depositArrow['state'] = DGG.DISABLED
             hitLimit = 1
         else:
@@ -109,6 +110,17 @@ class BankGui(DirectFrame):
     def __depositButtonUp(self, event):
         messenger.send('wakeup')
         taskMgr.remove(self.taskName('runCounter'))
+
+    def __depositMoney(self):
+        messenger.send('wakeup')
+        jarMoney = base.localAvatar.getMoney()
+        bankMoney = base.localAvatar.getBankMoney()
+        maxBankMoney = base.localAvatar.getMaxBankMoney()
+        bankMoneyRoom = maxBankMoney - bankMoney
+        # We want to save 100 beans just in case
+        despoitedjarMoney = max(0, jarMoney - 100)
+        actualDeposit = min(despoitedjarMoney, bankMoneyRoom)
+        self.__updateTransaction(actualDeposit)
 
     def __depositButtonDown(self, event):
         messenger.send('wakeup')
