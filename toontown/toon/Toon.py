@@ -1692,7 +1692,7 @@ class Toon(Avatar.Avatar, ToonHead):
     def checkAPJump(self):
         if self.isLocal():
             if self.hasAPJump and self.canJump:
-                # We only hit this on login, game handles giving jump fine if we have it on connect/login
+                # We only hit this on login, game handles giving jump control fine if we already have it on future connect/logins
                 if not self.controlManager.forceAvJumpToken:
                     return
                 else:
