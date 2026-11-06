@@ -1689,17 +1689,12 @@ class Toon(Avatar.Avatar, ToonHead):
             self.controlManager.forceAvJumpToken = None
         self.controlManager.disableAvatarJump()
 
-    def enableJumpTask(self, task):
-        if not self.controlManager.forceAvJumpToken:
-            taskMgr.doMethodLater(0.1, self.enableJumpTask, "delayEnableJump")
-            return
-        self.controlManager.enableAvatarJump()
-
     def checkAPJump(self):
         if self.isLocal():
             if self.hasAPJump and self.canJump:
+                # We only hit this on login, game handles giving jump control fine if we already have it on future connect/logins
                 if not self.controlManager.forceAvJumpToken:
-                    taskMgr.doMethodLater(0.1, self.enableJumpTask, "delayEnableJump")
+                    return
                 else:
                     self.controlManager.enableAvatarJump()
             else:
